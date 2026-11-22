@@ -3,30 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Grafos y problema de rutas · Avanzado · 45 min
 
-**Conceptos clave:** matriz de coste, VRP, capacidad, ventanas, heurísticas y restricciones.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-La ruta más corta puede incumplir capacidad, prioridad o horario. El problema real minimiza coste sujeto a restricciones y cambios. Este tema construye la base: el camino más corto entre dos nodos con Dijkstra. Resolver el VRP completo (por ejemplo, partir de nearest-neighbor, mejorar con 2-opt y comparar con una solución de referencia) queda fuera de este tema; cuando lo hagas, toda heurística debe registrar semilla, tiempo y brecha. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 1: Grafos y problema de rutas dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio…
 
-**Analogía:** Es como organizar citas médicas: cercanía importa, pero también horario, urgencia y duración.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 1: Grafos y problema de rutas dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque permite explicar por qué una ruta es viable aunque no sea geométricamente mínima. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** una ruta geométricamente corta que incumple una ventana horaria; una parada con prioridad alta; una heurística que cambia de resultado en cada ejecución. Registra semilla, tiempo y brecha frente a la referencia.
+#### ► LA ANALOGÍA
+Piensa en grafos y problema de rutas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 1: Grafos y problema de rutas** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** un conductor debe ir del depósito a una parada final (`parada_b`) pasando por una intermedia. Dos caminos existen: uno más corto en kilómetros que cruza una avenida con congestión conocida en ese horario, y otro ligeramente más largo que la evita. El sistema debe comparar ambos por tiempo real de viaje, no solo por distancia, antes de asignar la ruta al conductor.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
-Modelá la red de paradas como un grafo: cada parada es un nodo y cada tramo transitable es una arista con dos pesos distintos — la distancia en kilómetros y el tiempo real de viaje en minutos (que ya incluye congestión conocida). El algoritmo de camino mínimo no sabe nada de tráfico por sí mismo: encuentra el camino de menor peso según la métrica que vos le indiques. Si le pedís el camino de menor `km`, te va a devolver el más corto en el mapa, aunque cruce la avenida más congestionada de la ciudad a las 6pm.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A((Deposito)) -->|"3.0 km / 6 min"| B((Parada A))
@@ -38,9 +34,53 @@ flowchart LR
   R -->|"por minutos reales"| Y["Deposito-C-B: 6.5 km, 19 min reales"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Grafos y problema de rutas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea una carpeta independiente y, dentro, `rutas.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Grafos y problema de rutas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses grafos y problema de rutas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: grafos y problema de rutas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Grafos y problema de rutas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve grafos y problema de rutas en tu contexto?
+2. ¿Cómo sabrías que grafos y problema de rutas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar grafos y problema de rutas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A((Deposito)) -->|"3.0 km / 6 min"| B((Parada A))
+  B -->|"2.0 km / 25 min: cruza Av. Caracas en hora pico"| D((Parada B))
+  A -->|"4.0 km / 9 min"| C((Parada C))
+  C -->|"2.5 km / 10 min"| D
+  D --> R{"Camino elegido"}
+  R -->|"por distancia_km"| X["Deposito-A-B: 5.0 km, 31 min reales"]
+  R -->|"por minutos reales"| Y["Deposito-C-B: 6.5 km, 19 min reales"]
+```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-grafos-y-problema-de-rutas
@@ -93,54 +133,27 @@ print("Ruta por distancia:", ruta_por_distancia, "->", minutos_reales(ruta_por_d
 print("Ruta por tiempo real:", ruta_por_tiempo, "->", minutos_reales(ruta_por_tiempo), "min reales")
 ```
 
-Ejecuta `python3 rutas.py` desde `rutaflow-labs/tema-1-grafos-y-problema-de-rutas/`.
-
-**Resultado esperado:** `Ruta por distancia: ['deposito', 'parada_a', 'parada_b'] -> 31 min reales` y `Ruta por tiempo real: ['deposito', 'parada_c', 'parada_b'] -> 19 min reales`. La ruta "más corta" en kilómetros (5.0 km) tarda 31 minutos reales porque cruza la Av. Caracas en hora pico; la ruta por `parada_c` mide 6.5 km pero tarda solo 19 minutos.
-
-**Fallo deliberado:** si el sistema de asignación llama `camino_minimo(grafo, "deposito", "parada_b", peso="km")` para decidir qué ruta darle al conductor — como hace cualquier optimizador que solo conoce distancias — va a asignar la ruta por `parada_a`, que en el mapa se ve más corta pero cruza la avenida congestionada y tarda 31 minutos reales, 12 minutos más que la alternativa. El conductor cumple la ruta "óptima" del sistema y llega tarde igual. Diagnosticá comparando `minutos_reales(ruta_por_distancia)` contra `minutos_reales(ruta_por_tiempo)` — la diferencia (12 minutos) es el costo de optimizar por la métrica equivocada — y corregí el criterio de asignación para que use siempre `peso="min"` como fuente de verdad operativa, reservando `km` solo para reportes de combustible.
-
-#### Paso 5 · Práctica guiada
-
-1. Agregá una arista `parada_b -> deposito` y comprobá que `camino_minimo` no la usa para ir de `deposito` a `parada_b` (el grafo es dirigido: una arista de regreso no habilita el camino inverso).
-2. Agregá una regla: si la diferencia entre `ruta_por_distancia` y `ruta_por_tiempo` supera el 20% en minutos, el sistema debe registrar una advertencia de "ruta mal priorizada" antes de asignarla.
-3. Pista: si pedís un camino entre nodos sin conexión, el código actual lanza `KeyError` al reconstruir la ruta porque `previos` nunca tiene esa clave; decidí cómo manejar ese caso explícitamente en vez de dejar que explote con un error genérico.
-
-#### Paso 6 · Práctica independiente
-
-Implementa una función `mejor_ruta(grafo, origen, destino)` que calcule ambos caminos (por `km` y por `min`), devuelva el de menor tiempo real por defecto, y además reporte cuántos minutos se habrían perdido si el sistema hubiera elegido por distancia. No copies la solución del paso anterior; escribe primero el contrato y después el código.
-
-#### Paso 7 · Cierre y proyecto
-
-Entrega el archivo `rutas.py`, la salida de ambas rutas y una breve explicación de por qué la ruta más corta en kilómetros no siempre es la mejor asignación. El siguiente tema toma las coordenadas de estas paradas y resuelve de dónde salen: **Tema 2: Geocoding y map matching** convierte una dirección de texto en las coordenadas que este grafo necesita como nodos. **Fuente oficial:** [Python docs — heapq (cola de prioridad usada en Dijkstra)](https://docs.python.org/3/library/heapq.html).
-
-**Errores comunes:** optimizar únicamente por distancia; ignorar que el grafo es dirigido y asumir que toda arista tiene su inversa; no actualizar los pesos de tiempo cuando cambia el tráfico conocido; mezclar unidades (minutos y kilómetros) en la misma comparación; asumir que el camino más corto siempre existe sin manejar el caso sin conexión.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Construye una ruta pequeña con restricciones de capacidad y tiempo conocidas. Verifica cada parada y compara con una solución manual, diferenciando una solución válida de una supuesta óptima.
+</details>
 
 ### Tema 2: Geocoding y map matching · Avanzado · 45 min
 
-**Conceptos clave:** calidad de dirección, candidatos, snapping, error y fallback humano.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Geocodificar produce candidatos con confianza, no verdad. Se normaliza sin destruir información y se permite corrección humana. Map matching usa secuencia, red vial y velocidad para evitar saltar a una vía paralela. El sistema conserva entrada original y procedencia. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 2: Geocoding y map matching dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no…
 
-**Analogía:** Es como reconocer una canción con ruido: el mejor resultado necesita un nivel de confianza.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 2: Geocoding y map matching dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque evita despachos a coordenadas plausibles pero incorrectas. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** una dirección que produce tres candidatos; un GPS que salta a una vía paralela; una corrección manual que debe conservar la entrada original. Exige confianza y procedencia antes de despachar.
+#### ► LA ANALOGÍA
+Piensa en geocoding y map matching como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 2: Geocoding y map matching** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** un cliente registra un envío a "Calle 10 # 5-30" en Bogotá. Esa misma combinación de calle y carrera también existe en Cali. Si el geocodificador no recibe una pista de región, puede devolver el candidato de Cali (el primero de su lista interna) y el sistema le asigna al conductor una parada a cientos de kilómetros de donde debía entregar.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
-Un geocodificador real (como Nominatim sobre datos de OpenStreetMap, respaldado por PostGIS) no devuelve "la" coordenada de una dirección: devuelve una lista de candidatos, cada uno con su propia ciudad y nivel de confianza. Cuando el texto de la dirección es ambiguo (existe en más de una ciudad), el primer candidato de esa lista no necesariamente es el correcto para tu caso de uso. La forma de resolverlo no es "confiar en el primero", sino acotar la búsqueda con una pista de región y, después, verificar que la ciudad del candidato devuelto coincide con la que esperabas.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["Calle 10 # 5-30"] --> B["Geocodificador"]
@@ -152,9 +165,53 @@ flowchart LR
   D -->|"con viewbox y verificacion"| F["Candidato filtrado: Bogota, Chapinero"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Geocoding y map matching se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea una carpeta independiente y, dentro, `geocoding.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Geocoding y map matching | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses geocoding y map matching por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: geocoding y map matching funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Geocoding y map matching existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve geocoding y map matching en tu contexto?
+2. ¿Cómo sabrías que geocoding y map matching no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar geocoding y map matching?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["Calle 10 # 5-30"] --> B["Geocodificador"]
+  B --> C1["Candidato: Cali, San Fernando"]
+  B --> C2["Candidato: Bogota, Chapinero"]
+  C1 --> D{"Viewbox = Bogota?"}
+  C2 --> D
+  D -->|"sin viewbox"| E["Primer candidato de la lista: puede ser Cali"]
+  D -->|"con viewbox y verificacion"| F["Candidato filtrado: Bogota, Chapinero"]
+```
 
 ```bash
 mkdir -p rutaflow-labs/tema-2-geocoding-y-map-matching
@@ -188,63 +245,32 @@ resultado = geocodificar("Calle 10 # 5-30", ciudad_esperada="Bogota")
 print(resultado)
 ```
 
-Ejecuta `python3 geocoding.py` desde `rutaflow-labs/tema-2-geocoding-y-map-matching/`.
-
-**Resultado esperado:** `{'ciudad': 'Bogota', 'localidad': 'Chapinero', 'lat': 4.6126, 'lon': -74.0705}` — el candidato correcto, porque la búsqueda está acotada a la ciudad esperada.
-
-**Fallo deliberado:** quitá el parámetro `ciudad_esperada` y llamá a la misma dirección como lo haría un servicio que confía en el primer resultado:
-
 ```python
 resultado_ambiguo = geocodificar("Calle 10 # 5-30")
 print(resultado_ambiguo)
 ```
 
-Esto imprime `{'ciudad': 'Cali', 'localidad': 'San Fernando', 'lat': 3.4372, 'lon': -76.5225}` — coordenadas válidas, con formato correcto, pero a más de 400 km de donde el envío debía entregarse, y sin ningún error que lo señale: el programa termina sin excepciones. Diagnosticá comparando `resultado["ciudad"]` contra la ciudad real del pedido en tu sistema (nunca asumas que coincide), y corregí siempre pasando `ciudad_esperada` y verificando `resultado["ciudad"] == ciudad_esperada` antes de aceptar el candidato como válido.
-
-#### Paso 5 · Práctica guiada
-
-1. Agregá un tercer candidato para "Calle 10 # 5-30" en Medellín y comprobá que `ciudad_esperada="Medellin"` lo selecciona sin afectar los otros dos casos.
-2. Hacé que `geocodificar` lance un error explícito (no devuelva `None` silenciosamente) cuando `ciudad_esperada` no tiene ningún candidato.
-3. Pista: nunca aceptes un candidato sin registrar en la evidencia qué otros candidatos existían y por qué se descartaron; un operador humano debe poder revisar esa decisión.
-
-#### Paso 6 · Práctica independiente
-
-Implementa una función `geocodificar_verificado(direccion, ciudad_esperada)` que, además de filtrar por ciudad, rechace el resultado si la localidad devuelta no está en una lista de localidades válidas conocidas para esa ciudad, y registre cuántos candidatos alternativos existían. No copies la solución del paso anterior; escribe primero el contrato y después el código.
-
-#### Paso 7 · Cierre y proyecto
-
-Entrega `geocoding.py`, la salida correcta, la salida del fallo deliberado (coordenadas en la ciudad equivocada) y una breve explicación de por qué una respuesta válida no garantiza la ciudad correcta. El siguiente tema toma estas coordenadas ya verificadas y las sigue en movimiento: **Tema 3: Streaming y ETA con incertidumbre** usa la posición geocodificada como punto de partida de cada actualización GPS. **Fuente oficial:** [Nominatim — Search API (parámetros viewbox y bounded)](https://nominatim.org/release-docs/latest/api/Search/).
-
-**Errores comunes:** confiar en el primer candidato sin verificar la ciudad; no acotar la búsqueda con una región esperada; tratar una respuesta con coordenadas como sinónimo de "dirección correcta"; descartar el score de confianza del geocodificador; no conservar el texto original de la dirección junto con el resultado.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Geocodifica direcciones sintéticas y revisa candidatos ambiguos antes de asignar coordenadas. Compara map matching con puntos originales y conserva la incertidumbre cuando varias calles son plausibles.
-
-**Límites y decisión de uso:** Una coincidencia de geocoding puede corresponder a otra calle con el mismo nombre. Usa contexto y confirmación cuando haya ambigüedad; map matching ajusta una trayectoria probable, no demuestra que el vehículo recorrió esa calle.
+</details>
 
 ### Tema 3: Streaming y ETA con incertidumbre · Avanzado · 45 min
 
-**Conceptos clave:** orden, partición, backpressure, datos tardíos, percentiles e intervalos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-El stream particiona por conductor, usa sequence_number y tolera eventos tardíos. El cliente recibe actualizaciones limitadas, no cada punto bruto. ETA combina distancia, tráfico histórico y operación; se evalúa con MAE y percentiles y se comunica como intervalo cuando la incertidumbre es alta. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 3: Streaming y ETA con incertidumbre dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repos…
 
-**Analogía:** Es como un pronóstico del tiempo: una franja honesta es más útil que un minuto falso.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 3: Streaming y ETA con incertidumbre dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque protege infraestructura y confianza del usuario. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** un evento que llega tarde y no debe retroceder la posición; un ETA con intervalo amplio por tráfico incierto; un cliente que recibe cada punto bruto y satura la red. Particiona por conductor y limita la frecuencia.
+#### ► LA ANALOGÍA
+Piensa en streaming y eta con incertidumbre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 3: Streaming y ETA con incertidumbre** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** un conductor envía un ping a las `10:00:08` que llega a tiempo. Un ping anterior, de las `10:00:05`, se había perdido en la red y llega recién después, por un reintento automático del dispositivo. Si el servidor procesa "el último mensaje recibido" como la posición vigente, reemplaza la posición de las `10:00:08` (más cercana al destino) por la de las `10:00:05` (más lejana), y el ETA mostrado empeora aunque el conductor ya avanzó.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
-La trampa más común en streaming es confundir "el mensaje que acabo de recibir" con "el dato más nuevo". Un stream de posiciones GPS no garantiza orden de entrega: la red puede repetir, retrasar o reordenar paquetes. La única fuente de verdad sobre qué tan reciente es un dato es su `evento_time` (cuándo ocurrió en el dispositivo), nunca el momento en que el servidor lo procesó. Mantener el estado correcto significa comparar el `evento_time` del evento entrante contra el `evento_time` ya guardado, y descartar cualquier evento más viejo que el estado actual.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
   participant Conductor
@@ -259,9 +285,56 @@ sequenceDiagram
   Servidor->>Servidor: correcto descarta por ser mas viejo que el estado actual
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streaming y ETA con incertidumbre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea una carpeta independiente y, dentro, `eta.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streaming y ETA con incertidumbre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses streaming y eta con incertidumbre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streaming y eta con incertidumbre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Streaming y ETA con incertidumbre existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streaming y eta con incertidumbre en tu contexto?
+2. ¿Cómo sabrías que streaming y eta con incertidumbre no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streaming y eta con incertidumbre?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+  participant Conductor
+  participant Red
+  participant Servidor
+  Conductor->>Red: ping evento_time=10:00:05 (se retrasa)
+  Conductor->>Red: ping evento_time=10:00:08
+  Red->>Servidor: llega primero el ping de 10:00:08
+  Servidor->>Servidor: estado = 10:00:08, 2 km restantes
+  Red->>Servidor: llega despues (reintento) el ping de 10:00:05
+  Servidor->>Servidor: ingenuo sobrescribe con 10:00:05, 5 km restantes
+  Servidor->>Servidor: correcto descarta por ser mas viejo que el estado actual
+```
 
 ```bash
 mkdir -p rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre
@@ -305,12 +378,6 @@ posicion = estado_correcto["RF-4471"]
 print("ETA correcto:", eta_minutos(posicion["km_restantes"]), "min, basado en evento de", posicion["evento_time"].time())
 ```
 
-Ejecuta `python3 eta.py` desde `rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre/`.
-
-**Resultado esperado:** `ETA correcto: 4.0 min, basado en evento de 10:00:08` — el servidor conserva la posición más nueva por timestamp (2.0 km restantes) aunque no haya sido la última en llegar.
-
-**Fallo deliberado:** agregá esta función ingenua, que procesa los eventos en el orden en que llegaron y deja que el último sobrescriba siempre al anterior sin comparar `evento_time`:
-
 ```python
 def procesar_por_orden_de_llegada(eventos):
     """Ingenuo: el ultimo evento recibido siempre pisa el estado anterior."""
@@ -325,45 +392,27 @@ posicion = estado_ingenuo["RF-4471"]
 print("ETA ingenuo:", eta_minutos(posicion["km_restantes"]), "min, basado en evento de", posicion["evento_time"].time())
 ```
 
-Esto imprime `ETA ingenuo: 10.0 min, basado en evento de 10:00:05` — el ping tardío de las `10:00:05` pisó el estado más nuevo de las `10:00:08` solo porque llegó después por la red, y el ETA empeora (de 4 a 10 minutos) aunque el conductor en realidad está más cerca. Diagnosticá comparando los dos `evento_time` impresos — el ingenuo termina con el timestamp más viejo, no el más nuevo — y corregí reemplazando la sobrescritura incondicional por la comparación `evento["evento_time"] > actual["evento_time"]` de `procesar_por_event_time`.
-
-#### Paso 5 · Práctica guiada
-
-1. Agregá un tercer ping con `evento_time=10:00:03` que llegue último de todos y comprobá que `procesar_por_event_time` lo descarta sin tocar el estado de las `10:00:08`.
-2. Calculá, además del ETA, cuántos minutos de diferencia hubo entre el estado ingenuo y el correcto, y registralo como métrica de "corrección por evento tardío".
-3. Pista: comparar timestamps con `>` no alcanza si dos eventos llegan con el mismo `evento_time` exacto; definí qué hacer en ese empate (por ejemplo, conservar el de menor `km_restantes`).
-
-#### Paso 6 · Práctica independiente
-
-Implementa una función `actualizar_posicion(estado, evento)` que aplique la regla de "solo el más nuevo por `evento_time` gana", devuelva un nuevo estado sin mutar el anterior, y pueda recibir los eventos en cualquier orden de llegada sin cambiar el resultado final. No copies la solución del paso anterior; escribe primero el contrato y después el código.
-
-#### Paso 7 · Cierre y proyecto
-
-Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia entre ambas, y una breve explicación de por qué el orden de llegada nunca debe ser la fuente de verdad del tiempo. Con esto cierra el recorrido del Módulo 5: desde el grafo de rutas (Tema 1), pasando por coordenadas verificadas por ciudad (Tema 2), hasta un ETA que resiste datos tardíos (Tema 3). El Módulo 6 retoma estas rutas, posiciones y ETAs ya confiables como entrada para facturación, recaudo y liquidaciones. **Fuente oficial:** [RFC 6455 — The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455) (la especificación solo garantiza orden de entrega dentro de una misma conexión; una reconexión por reintento abre una conexión nueva y no hereda esa garantía, por eso el `evento_time` del mensaje — no el orden de llegada — debe ser la fuente de verdad).
-
-**Errores comunes:** usar el orden de llegada como si fuera el orden de ocurrencia; sobrescribir estado sin comparar `evento_time`; ignorar reintentos de red como fuente de eventos tardíos o duplicados; calcular el ETA sin registrar de qué evento salió; no definir una regla explícita para eventos con el mismo timestamp.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Calcula ETA con datos de antigüedad conocida y comunica un rango. Simula una interrupción de posiciones y verifica que el rango o advertencia cambia sin presentar certeza falsa.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
+</details>
 
 ### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas. **Prerrequisitos:** HTTP, JSON, eventos y Node 24 con npm. Para el cliente Dart, SDK Dart 3. El ejemplo es independiente desde una carpeta vacía; no necesitas Kafka ni una cuenta cloud.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El temario de RutaFlow pide Socket.IO en app y backend. El laboratorio Spring 14 enseña STOMP, que es otro protocolo. **¿Por qué es importante?** Compartir el transporte WebSocket no hace que esos clientes y servidores se entiendan. Aquí la variante elegida es Socket.IO 4 en ambos extremos. El backend Spring puede publicar por HTTP hacia este gateway después de confirmar su transacción; su laboratorio STOMP sigue siendo una variante separada.
+#### ► DE QUÉ TRATA
+Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas. Prerrequisitos: HTTP, JSON, eventos y Node 24 con npm. Para el cliente Dart, SDK Dart 3. El ejemplo es independiente desde una carpeta vac…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Socket.IO añade handshake, eventos, acknowledgements y salas sobre sus transportes. Una sala agrupa conexiones; no acredita propiedad de un envío. La identidad autenticada debe autorizar cada suscripción en el servidor. En este laboratorio solo existe ENV-42 y una credencial de prueba; no fingimos que equivale a OAuth2/JWT ni a autorización multiusuario.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas.**
 
-**Analogía:** dos radios necesitan el mismo protocolo de conversación, no solo una antena. El límite es que reconectar la radio no reproduce mensajes perdidos. El número de secuencia evita aplicar un dato anterior; un producto también necesita snapshot o replay, persistencia, backpressure y límites por identidad.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Recorrido del evento:** `┌─ HTTP autenticado → validar coordenadas y secuencia ─┐`<br>`└─ emitir a sala autorizada → cliente Socket.IO aplica ─┘`. Una nueva conexión necesita recuperar un snapshot; la sala y la secuencia de este ejemplo no ofrecen persistencia.
+#### ► LA ANALOGÍA
+Piensa en socket.io extremo a extremo: un gateway compatible con el cliente móvil como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente Socket.IO
@@ -381,21 +430,70 @@ sequenceDiagram
     G-->>H: 409
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y guarda en ella cada archivo indicado a continuación:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Socket.IO extremo a extremo: un gateway compatible con el cliente móvil se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Socket.IO extremo a extremo: un gateway compatible con el cliente móvil | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses socket.io extremo a extremo: un gateway compatible con el cliente móvil por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: socket.io extremo a extremo: un gateway compatible con el cliente móvil funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Socket.IO extremo a extremo: un gateway compatible con el cliente móvil existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve socket.io extremo a extremo: un gateway compatible con el cliente móvil en tu contexto?
+2. ¿Cómo sabrías que socket.io extremo a extremo: un gateway compatible con el cliente móvil no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar socket.io extremo a extremo: un gateway compatible con el cliente móvil?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant C as Cliente Socket.IO
+    participant G as Gateway
+    participant H as Publicador HTTP
+    C->>G: handshake con token
+    G-->>C: conexión aceptada
+    C->>G: seguir-envio ENV-42
+    Note over G: unir la sala ENV-42
+    G-->>C: ack ok
+    H->>G: POST /posiciones/ENV-42
+    Note over G: validar token, secuencia y coordenadas
+    G-->>C: evento posicion
+    H->>G: POST duplicado con sequence 1
+    G-->>H: 409
+```
+
 ```bash
 mkdir ejemplo-socketio && cd ejemplo-socketio
 npm install
 npm test
 ```
-Ejecuta `npm install` después de crear `package.json` y `npm test` después de crear el servidor y las pruebas. No mezcles las versiones del protocolo con las de una librería STOMP.
 
-Crea `package.json` con este contenido completo:
 ```json
 {"name":"rutaflow-socketio-lab","private":true,"type":"module","scripts":{"test":"node --test gateway.test.mjs"},"dependencies":{"express":"^5.1.0","socket.io":"^4.8.1","socket.io-client":"^4.8.1"}}
 ```
 
-Crea `gateway.mjs` con este contenido completo:
 ```javascript
 import express from 'express';
 import { createServer } from 'node:http';
@@ -435,7 +533,6 @@ export async function startGateway({ port = 0, token = 'solo-laboratorio' } = {}
 }
 ```
 
-Crea `gateway.test.mjs` con este contenido completo:
 ```javascript
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -463,7 +560,6 @@ test('HTTP publica y un cliente Socket.IO compatible recibe; rechaza duplicado y
 });
 ```
 
-Crea `serve.mjs` con este contenido completo:
 ```javascript
 import { startGateway } from './gateway.mjs';
 const gateway = await startGateway({ port: 3100 });
@@ -471,65 +567,75 @@ console.log(gateway.url);
 process.once('SIGINT', async () => { await gateway.close(); });
 ```
 
-Crea `cliente.dart` con este contenido completo:
-```dart
-import 'package:socket_io_client/socket_io_client.dart' as io;
-
-void main() {
-  final socket = io.io('http://127.0.0.1:3100', io.OptionBuilder()
-      .setTransports(['websocket']).disableAutoConnect()
-      .setAuth({'token': 'solo-laboratorio'}).build());
-  socket.onConnect((_) {
-    socket.emitWithAck('seguir-envio', 'ENV-42', ack: (data) => print(data));
-  });
-  socket.on('posicion', (data) { print(data); socket.dispose(); });
-  socket.onConnectError((error) { print(error); socket.dispose(); });
-  socket.connect();
-}
-```
-
-**Resultado esperado:** la prueba de Node pasa; una petición HTTP produce un evento `posicion` real en el socket suscrito. La prueba también comprueba un ID ajeno rechazado, duplicado 409 y credencial inválida 401. Explica cada bloque: middleware limita tamaño de JSON, handshake verifica la credencial de laboratorio, la sala restringe el único envío de prueba y la secuencia impide publicar una versión anterior.
-
-Para probar el cliente Dart manualmente, ejecuta `node serve.mjs` desde `ejemplo-socketio`. En otra carpeta vacía crea un proyecto con `dart create -t console cliente_posiciones`, ejecuta `dart pub add socket_io_client:^3.1.6`, guarda el contenido de `cliente.dart` en `bin/cliente_posiciones.dart` y ejecuta `dart run`. Publica en otra terminal:
-```bash
-curl -i -X POST http://127.0.0.1:3100/posiciones/ENV-42 -H 'Content-Type: application/json' -H 'Authorization: Bearer solo-laboratorio' -d '{"sequence":1,"latitude":4.65,"longitude":-74.08}'
-```
-Debes ver 202 en HTTP y el evento en Dart. El servidor solo escucha loopback: el cliente mostrado corre en el mismo computador. Un teléfono físico requiere una dirección y una configuración de red explícitas; no uses localhost del teléfono para referirte a tu computador.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia la credencial del cliente por `incorrecta`. Se recibe `connect_error` y no hay suscripción. **Pista:** primero comprueba protocolo, dirección y handshake; cambiar Flutter por un cliente STOMP no arregla credenciales ni protocolo. Restáuralas y repite.
-
-#### Paso 6 · Práctica independiente
-Añade un segundo envío con un mapa de permisos por identidad de prueba, y demuestra que una identidad de A no se puede unir a B aunque conozca su ID. Añade una consulta de snapshot para recuperar la secuencia actual al reconectar. No deduzcas que «se conectó» significa «no perdió datos».
-
-#### Paso 7 · Cierre y evidencia
-**Evidencia de aprendizaje:** salida de prueba, 202/401/409, suscripción rechazada y evento recibido. **Transferencia al proyecto integrador RutaFlow:** conecta el evento de posición con el mapa solo después de verificar identidad, permisos, versión y secuencia; al reconectar, solicita estado actual antes de reanudar la animación.
-El siguiente tema conecta las posiciones con una ruta calculada. En el proyecto integrador RutaFlow, este gateway alimenta el mapa con posiciones validadas desde `gateway.mjs`. **Errores comunes:** conectar socket_io_client al endpoint STOMP, confiar en IDs del cliente y registrar tokens completos. **Límites y decisión de uso:** el gateway usa memoria y credencial fija solo para aislar compatibilidad; no es una implementación lista para Internet ni una garantía de entrega durable.
-
-**Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
-
+</details>
 
 ### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta. **Prerrequisitos:** coordenadas, HTTP, JSON y Python 3. Ejemplo independiente desde carpeta vacía; la primera fase usa una respuesta sintética declarada para aislar el contrato sin descargar mapas ni depender de Internet.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El proyecto integrador necesita una ruta por calles, no una línea recta entre dos puntos GPS. **¿Por qué es importante?** Un buen algoritmo sobre una matriz incorrecta sigue produciendo una planificación inútil. OSRM calcula sobre una red preparada con un perfil de circulación, no sobre distancia euclídea.
+#### ► DE QUÉ TRATA
+Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta. Prerrequisitos: coordenadas, HTTP, JSON y Python 3. Ejemplo independiente desde carpeta vacía; la primera fase usa una respuesta sintética declarada para aislar el contrato sin descarga…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La API usa `longitud,latitud` y devuelve distancia en metros y duración en segundos. Route calcula un recorrido; Table calcula matrices de tiempos/distancias; Match ajusta trazas y Trip propone un recorrido bajo sus supuestos. No son llamadas intercambiables. **Analogía:** tener un mapa de carreteras permite encontrar caminos, pero no conocer tráfico actual si el perfil no lo incluye. El límite es que la duración estimada no promete hora de llegada ni incluye todas las restricciones operativas de una entrega.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta.**
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea en ella los tres archivos siguientes:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en osrm: del contrato de coordenadas a una respuesta de ruta verificable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que osrm: del contrato de coordenadas a una respuesta de ruta verificable resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| OSRM: del contrato de coordenadas a una respuesta de ruta verificable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar OSRM: del contrato de coordenadas a una respuesta de ruta verificable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses osrm: del contrato de coordenadas a una respuesta de ruta verificable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: osrm: del contrato de coordenadas a una respuesta de ruta verificable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- OSRM: del contrato de coordenadas a una respuesta de ruta verificable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve osrm: del contrato de coordenadas a una respuesta de ruta verificable en tu contexto?
+2. ¿Cómo sabrías que osrm: del contrato de coordenadas a una respuesta de ruta verificable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar osrm: del contrato de coordenadas a una respuesta de ruta verificable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-osrm && cd ejemplo-osrm
 python3 ruta.py --fixture respuesta.json
 python3 -m unittest test_ruta.py
 ```
-Ejecuta los comandos después de guardar los archivos:
 
-Crea `ruta.py` con este contenido completo:
 ```python
 import argparse
 import json
@@ -576,12 +682,10 @@ if __name__ == '__main__':
     print(f'{metros:g} metros; {segundos:g} segundos')
 ```
 
-Crea `respuesta.json` con este contenido completo:
 ```json
 {"code":"Ok","routes":[{"distance":1500,"duration":300,"geometry":{"type":"LineString","coordinates":[[13.38886,52.517037],[13.397634,52.529407]]}}]}
 ```
 
-Crea `test_ruta.py` con este contenido completo:
 ```python
 import unittest
 from ruta import ruta_url, interpretar
@@ -599,17 +703,4 @@ class RutaTest(unittest.TestCase):
 if __name__=='__main__':unittest.main()
 ```
 
-**Resultado esperado:** la fixture muestra `1500 metros; 300 segundos` y dos pruebas correctas. Explica cada bloque: validación de coordenadas, construcción de URL, verificación de `code` y comprobación de geometría/métricas. La línea de dos puntos de la fixture es sintética; no es una ruta real ni evidencia de un motor OSRM ejecutado.
-
-Para probar el motor real, prepara un dataset y un perfil siguiendo el README oficial: descarga un extracto OSM autorizado, ejecuta `osrm-extract`, después `osrm-partition` y `osrm-customize` para MLD, y levanta `osrm-routed --algorithm mld`. Con el servicio accesible en el puerto 5000 ejecuta `python3 ruta.py --base-url http://localhost:5000`. Usa coordenadas dentro del extracto; las de ejemplo son de Berlín. Registra versión/digest de la imagen, fecha del mapa, perfil y comando. No publiques un servidor de laboratorio ni atribuyas tráfico en tiempo real a un perfil estático.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia `code` por `NoRoute` y vacía routes en una copia de la fixture. El programa debe rechazarla, no mostrar distancia cero. **Pista:** sin ruta no significa que origen y destino coincidan; maneja ese estado antes de calcular una tarifa.
-
-#### Paso 6 · Práctica independiente
-Añade un rechazo de métricas NaN y una prueba de coordenadas fuera de rango. Diseña cómo conservarías el último resultado si el proveedor falla, indicando antigüedad al usuario. Decide cuándo usar Table para construir una matriz y por qué eso todavía no resuelve ventanas horarias ni capacidad del vehículo.
-
-#### Paso 7 · Cierre
-El siguiente paso es registrar una respuesta obtenida de un dataset real. **Errores comunes:** invertir coordenadas, convertir segundos dos veces y confundir ajuste GPS con optimización de flota. **Límites y decisión de uso:** el laboratorio de contrato no acredita despliegue Docker ni calidad de los mapas; esas dos pruebas quedan separadas.
-
-**Fuentes oficiales:** [OSRM API](https://project-osrm.org/docs/v5.24.0/api/) y [preparación del motor](https://github.com/Project-OSRM/osrm-backend).
+</details>

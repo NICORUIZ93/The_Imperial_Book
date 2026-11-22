@@ -82,7 +82,13 @@ def main() -> None:
             heading_id = slugify(TOPIC_META.sub("", title), seen)
             if level != "###":
                 continue
-            if re.match(r"^Tema(?:\s|:)", title, re.IGNORECASE) or is_ficha_topic(headings, position):
+            # Editorial standard: ### topic headings are topics; exclude module/chapter headings.
+            is_topic = (
+                re.match(r"^Tema(?:\s|:)", title, re.IGNORECASE)
+                or is_ficha_topic(headings, position)
+                or not re.match(r"^(Módulo|Modulo|Fase|Capítulo|Capitulo)\b", title, re.IGNORECASE)
+            )
+            if is_topic:
                 topics.append({"title": clean_topic_title(TOPIC_META.sub("", title)), "fragment": heading_id})
         index[path.parent.name][match.group(1)] = topics
 

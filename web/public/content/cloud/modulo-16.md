@@ -3,33 +3,72 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: State machine y Task states · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar como state machine el mismo flujo que `confirmar-entrega` (Módulo 5) ya hace en código: validar, guardar el evento, notificar. Prerrequisitos: Módulos 5 y 11 completos.
-#### Paso 2 · Contexto y caso real
-Hoy, si `confirmar-entrega` falla a mitad de camino (guardó en `ShipmentEvents` pero no llegó a publicar en SNS), lo único que tenés son los logs de CloudWatch del Módulo 12 para reconstruir qué pasó — una state machine lo haría visible por diseño.
-#### Paso 3 · Teoría, modelo mental y analogía
-Una state machine es un tablero de estados con transiciones visibles: `ValidarComando → GuardarEvento → Notificar`, en vez de esa misma secuencia escondida dentro del código imperativo de una sola función.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** flujo declarado explícitamente como una secuencia de estados, no código imperativo disperso.
+#### ► DE QUÉ TRATA
+Al finalizar vas a declarar como state machine el mismo flujo que confirmar-entrega (Módulo 5) ya hace en código: validar, guardar el evento, notificar. Prerrequisitos: Módulos 5 y 11 completos.
 
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a declarar como state machine el mismo flujo que confirmar-entrega (Módulo 5) ya hace en código: validar, guardar el evento, notificar.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en state machine y task states como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que state machine y task states resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| State machine y Task states se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar State machine y Task states | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses state machine y task states por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: state machine y task states funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- State machine y Task states existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve state machine y task states en tu contexto?
+2. ¿Cómo sabrías que state machine y task states no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar state machine y task states?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 aws stepfunctions create-state-machine --name FlujoTareas --definition file://maquina.json --role-arn arn:aws:iam::000000000000:role/sfn-role
 aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:FlujoTareas --input '{"tarea":"001"}'
 ```
-
-`--definition` es la bandera que apunta al archivo JSON que declara los estados y transiciones del flujo (el "diagrama" en formato Amazon States Language). Al arrancar una ejecución, `--state-machine-arn` identifica qué state machine ejecutar, e `--input` es el JSON con el que arranca esa ejecución en particular (los datos de esta tarea puntual, no la definición del flujo).
-
-Una state machine define un flujo de trabajo completo como una secuencia explícita de estados declarados en JSON/YAML (`ValidarTarea → GuardarEnDynamoDB → EnviarNotificacion`), cada uno típicamente un Task state que invoca un servicio específico (una Lambda, una operación directa sobre DynamoDB o SNS mediante integraciones de servicio nativas); esto contrasta con la alternativa de coordinar la misma secuencia mediante código imperativo dentro de una única función Lambda que llama secuencialmente a cada servicio, un enfoque donde la lógica de orquestación (qué paso sigue a cuál, qué pasa si uno falla) queda implícita y dispersa dentro del código en vez de ser explícita y visualizable como un diagrama de flujo declarado.
-
-Observar una ejecución específica con `describe-execution` muestra exactamente en qué estado se encuentra (o se detuvo) una invocación particular del flujo, con el historial completo de transiciones entre estados, una visibilidad operativa que sería considerablemente más difícil de reconstruir a partir únicamente de logs dispersos de una función Lambda monolítica que coordinara la misma lógica de forma imperativa.
-
-**Analogía:** una state machine es como un diagrama de flujo formal y visual que documenta explícitamente cada paso de un proceso y sus transiciones, en vez de una descripción narrativa en prosa de esos mismos pasos incrustada dentro del código de una única función, donde la estructura del proceso completo es más difícil de visualizar de un vistazo.
-
-**¿Por qué es importante?** Una state machine declara explícitamente la secuencia y lógica de un flujo de trabajo, ofreciendo visibilidad operativa clara sobre en qué estado se encuentra cada ejecución, en contraste con coordinar la misma lógica de forma imperativa dentro de una única función donde esa estructura queda implícita.
-
-**Configuración del ejemplo:**
 
 ```json
 {
@@ -42,9 +81,6 @@ Observar una ejecución específica con `describe-execution` muestra exactamente
 }
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Modela validar, asignar y notificar una entrega como estados observables. Ejecuta una entrada válida y otra rechazada, y conserva el historial que identifica qué tarea falló.
-
-#### Paso 4 · Demostración guiada
 ```bash
 cat > maquina-confirmar.json <<'EOF'
 {
@@ -68,104 +104,93 @@ EOF
 aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --definition file://maquina-confirmar.json --role-arn arn:aws:iam::000000000000:role/sfn-role
 aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --input '{"shipmentId":"env-7001"}'
 ```
-Resultado esperado: `describe-execution` sobre esa ejecución muestra claramente que pasó por `GuardarEvento` y después por `Notificar` — la misma secuencia que `confirmar-entrega` hace en código, ahora visible como un historial de transiciones, no como líneas de log dispersas.
-#### Paso 5 · Práctica guiada
-Pista: quitá el estado `Notificar` del JSON (dejá `GuardarEvento` con `"End": true`) y volvé a crear la state machine con otro nombre — ese es el fallo deliberado: el flujo "funciona" (guarda el evento), pero la notificación al cliente desaparece silenciosamente porque el estado que la ejecutaba nunca llegó a declararse.
-#### Paso 6 · Práctica independiente
-Agregale un `TimeoutSeconds: 10` al estado `GuardarEvento`, y documentá qué pasaría si DynamoDB tardara más de eso en responder (pista: Step Functions marcaría la ejecución como fallida por `States.Timeout`, no se quedaría esperando indefinidamente).
-#### Paso 7 · Cierre
-Entregá la state machine completa ejecutándose, el estado faltante del Paso 5 y el timeout del Paso 6; explicá qué visibilidad ganaste frente a la misma lógica escrita como código imperativo en `confirmar-entrega`. Siguiente paso: errores. Errores comunes: estados sin timeout y efectos duplicados. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html.
+
+</details>
 
 ### Tema 2: Choice state, Retry y Catch · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a agregarle a ConfirmarEntregaFlow (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a agregarle a ConfirmarEntregaFlow (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en choice state, retry y catch como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que choice state, retry y catch resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Choice state, Retry y Catch se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Choice state, Retry y Catch | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses choice state, retry y catch por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: choice state, retry y catch funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Choice state, Retry y Catch existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve choice state, retry y catch en tu contexto?
+2. ¿Cómo sabrías que choice state, retry y catch no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar choice state, retry y catch?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
 Al finalizar vas a agregarle a `ConfirmarEntregaFlow` (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-`GuardarEvento` puede fallar transitoriamente si `ShipmentEvents` está siendo throttled en un pico de tráfico — eso no debería tirar toda la ejecución a la basura sin intentarlo de nuevo, pero tampoco debería reintentar para siempre sin límite.
-#### Paso 3 · Teoría, modelo mental y analogía
-`Retry` y `Catch` son protocolos de contingencia declarados en el propio flujo: señales y salidas de emergencia visibles, no manejo de excepciones escondido dentro del código de cada función.
 
-**Diagrama interactivo:** [Qué ocurre si falla GuardarEvento](/visuals/temas/cloud/modulo-16-tema-2-retry-catch.html)
-
-**Conceptos clave:** lógica condicional y manejo de errores declarados, no anidados en código imperativo.
-
-Un Choice state enruta la ejecución hacia distintos estados siguientes según una condición evaluada sobre el input actual (por ejemplo, distinguir entre una tarea "urgente" y una "normal", dirigiendo cada una hacia una rama distinta del flujo con distinto tratamiento), expresando lógica condicional de forma declarativa dentro de la definición de la state machine misma, en vez de anidar esa lógica condicional dentro del código imperativo de una función coordinadora.
-
-```json
-"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}]
-"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
-```
-
-`Retry` declara reintentos automáticos ante un tipo específico de error, con backoff exponencial configurable (esperando progresivamente más tiempo entre reintentos sucesivos, el mismo patrón de resiliencia estudiado en Swift, Módulo 5 del track de iOS), sin que el desarrollador escriba manualmente ningún bucle de reintento imperativo; `Catch` declara hacia qué estado transicionar si un error específico (o cualquier error, con `States.ALL`) ocurre durante un Task state, permitiendo manejar fallos de forma explícita y visible directamente en la definición del flujo, en vez de depender de manejo de excepciones disperso e implícito dentro del código de cada función individual invocada por el flujo.
-
-**Analogía:** un Choice state es como una bifurcación claramente señalizada en un mapa de proceso que indica exactamente qué condición dirige hacia cada camino posible; `Retry`/`Catch` declarados en la state machine son como protocolos de contingencia predefinidos y visibles en el manual de operaciones de un proceso, en vez de reglas de manejo de excepciones dispersas e implícitas que cada operador individual debe recordar aplicar por su cuenta.
-
-**¿Por qué es importante?** `Choice` expresa lógica condicional de forma declarativa y visible en la definición del flujo; `Retry`/`Catch` declaran manejo de errores explícito (con backoff automático) sin código imperativo disperso, haciendo el comportamiento ante fallos parte visible de la definición del flujo mismo.
-
-**Configuración del ejemplo:**
-
-```json
-"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}],
-"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Añade decisiones y recuperación al flujo de asignación. Simula un fallo temporal y uno permanente; solo el primero debe reintentarse y ambos deben terminar en estados explicables.
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
-
-```bash
-cat > maquina-confirmar-v2.json <<'EOF'
-{
-  "StartAt": "GuardarEvento",
-  "States": {
-    "GuardarEvento": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::dynamodb:putItem",
-      "Parameters": {"TableName": "ShipmentEvents", "Item": {"shipmentId": {"S.$": "$.shipmentId"}, "sequence": {"N": "1"}, "estado": {"S": "entregado"}}},
-      "Retry": [{"ErrorEquals": ["DynamoDB.ProvisionedThroughputExceededException"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}],
-      "Catch": [{"ErrorEquals": ["States.ALL"], "Next": "RegistrarFalloEntrega"}],
-      "Next": "Notificar"
-    },
-    "Notificar": {"Type": "Task", "Resource": "arn:aws:states:::sns:publish", "Parameters": {"TopicArn": "arn:aws:sns:us-east-1:000000000000:rutaflow-envio-entregado", "Message.$": "$.shipmentId"}, "End": true},
-    "RegistrarFalloEntrega": {"Type": "Pass", "Result": {"motivo": "no se pudo guardar el evento tras reintentos"}, "End": true}
-  }
-}
-EOF
-aws stepfunctions update-state-machine --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --definition file://maquina-confirmar-v2.json
-```
-Resultado esperado: la definición se actualiza sin error — ahora un fallo transitorio de DynamoDB se reintenta hasta 3 veces con backoff exponencial antes de rendirse, y solo si los 3 reintentos fallan la ejecución cae en `RegistrarFalloEntrega`, nunca en silencio.
-#### Paso 5 · Práctica guiada
-Pista: corré una ejecución con un `shipmentId` que provoque un error no cubierto por `Retry` (por ejemplo, un `Item` mal formado que DynamoDB rechaza de inmediato con `DynamoDB.AmazonDynamoDBException`) — ese es el fallo deliberado: sin un `Catch` que cubra ese error específico (o `States.ALL`), la ejecución completa queda en estado `FAILED` sin ninguna rama de recuperación, perdiendo visibilidad de qué pasó exactamente.
-#### Paso 6 · Práctica independiente
-Agregá una rama de compensación real: que `RegistrarFalloEntrega` publique también en una cola SQS de reintentos manuales (`sqs:sendMessage` como integración directa) en vez de solo devolver un `Pass` con un motivo fijo, para que alguien pueda reprocesar esa entrega más tarde.
-#### Paso 7 · Cierre
-Entregá el `Retry`/`Catch` agregados, el fallo sin cobertura del Paso 5, y la compensación real del Paso 6; explicá por qué `Catch: States.ALL` sin pensar qué hacer después solo oculta el error, no lo resuelve. Siguiente paso: elección de servicio. Errores comunes: Catch demasiado amplio y reintentos infinitos. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html.
+</details>
 
 ### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.
-#### Paso 2 · Contexto y caso real
-`ConfirmarEntregaFlow` corre miles de veces al día, dura menos de un segundo, y cada ejecución es casi idéntica; el planificador de rutas corre pocas veces al día, dura 20-30 minutos, y cada fallo necesita trazabilidad completa para auditoría. No son el mismo caso de uso.
-#### Paso 3 · Teoría, modelo mental y analogía
-Elegir Standard vs Express es comparar un expediente administrativo completo (Standard) con un proceso ágil de alto volumen (Express); EventBridge Pipes es un cable directo cuando ni siquiera hace falta un panel de control.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** elegir según duración y frecuencia de ejecución, o simplificar si no se necesita orquestación compleja.
+#### ► DE QUÉ TRATA
+Al finalizar vas a decidir, con números reales, si ConfirmarEntregaFlow debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.
 
-Standard workflows están diseñados para flujos de larga duración (hasta un año) con garantía de ejecución exactamente una vez y un historial de ejecución detallado y persistente, apropiado para procesos de negocio críticos donde la trazabilidad completa importa; Express workflows están optimizados para flujos de alto volumen y corta duración (hasta cinco minutos), con un modelo de ejecución "al menos una vez" (potencialmente duplicada en casos raros) y un costo considerablemente menor por ejecución, apropiado para procesar eventos de alta frecuencia donde la trazabilidad exhaustiva de Standard no es tan crítica como el costo y el throughput.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a decidir, con números reales, si ConfirmarEntregaFlow debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto.**
 
-Cuando la necesidad real es simplemente conectar dos servicios de forma directa sin lógica condicional compleja, reintentos elaborados, ni múltiples pasos coordinados (por ejemplo, simplemente enviar cada mensaje de una cola SQS directamente hacia una Lambda sin ninguna transformación u orquestación intermedia), EventBridge Pipes ofrece esa conexión directa de forma considerablemente más simple y económica que definir una state machine completa de Step Functions para un caso que no requiere ese nivel de orquestación; reservar Step Functions específicamente para casos que genuinamente necesitan lógica condicional, reintentos declarativos complejos, o coordinación de múltiples pasos secuenciales o paralelos evita la sobre-ingeniería de introducir una herramienta de orquestación completa donde una conexión simple sería suficiente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** elegir entre Standard y Express es como elegir entre un proceso administrativo formal con expediente completo archivado (Standard, para trámites críticos que requieren trazabilidad total) y un proceso ágil de alto volumen con menor formalidad de registro (Express, para trámites rutinarios de bajo riesgo); EventBridge Pipes frente a Step Functions es como elegir un cable directo simple entre dos dispositivos en vez de instalar un panel de control completo con lógica programable cuando la necesidad real es simplemente conectar A con B sin ninguna condición intermedia.
+#### ► LA ANALOGÍA
+Piensa en express vs standard, y cuándo eventbridge pipes es suficiente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Elegir entre Standard (trazabilidad completa, larga duración) y Express (alto volumen, económico) depende de los requisitos específicos del flujo; EventBridge Pipes es suficiente y más simple cuando no se necesita lógica condicional ni coordinación de múltiples pasos, evitando sobre-ingeniería.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["Standard workflow"] --> A1["larga duración, ejecución exactamente una vez, trazabilidad completa"]
@@ -173,61 +198,66 @@ flowchart LR
     C["EventBridge Pipes"] --> C1["conexión directa simple entre dos servicios, sin orquestación compleja"]
 ```
 
----
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Express vs Standard, y cuándo EventBridge Pipes es suficiente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Compara un flujo de entrega con auditoría por ejecución y una transferencia simple de eventos. Documenta qué garantías necesita cada caso y prueba la opción elegida sin asumir equivalencia entre motores.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Express vs Standard, y cuándo EventBridge Pipes es suficiente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
-```bash
-aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --type EXPRESS \
-  --definition file://maquina-confirmar-v2.json --role-arn arn:aws:iam::000000000000:role/sfn-role
-```
-Resultado esperado: se crea sin error — `ConfirmarEntregaFlow` encaja perfecto en Express (dura segundos, corre miles de veces), mucho más barato por ejecución que Standard para este volumen.
-#### Paso 5 · Práctica guiada
-Pista: ese es justo el fallo deliberado de coste que advierte este Tema — si hubieras creado `ConfirmarEntregaFlow` como `--type STANDARD` (el tipo por defecto si no especificás `--type`), pagarías por transición de estado en un flujo de altísima frecuencia y corta duración, el peor caso de uso para Standard. Corregilo siempre especificando `--type EXPRESS` para este flujo específico.
-#### Paso 6 · Práctica independiente
-Para el planificador de rutas del Módulo 14 (larga duración, baja frecuencia, necesita auditoría completa si falla a mitad de camino), razoná por qué Standard es la elección correcta ahí, exactamente al revés que para `ConfirmarEntregaFlow` — y por qué, si el planificador fuera solo "leer de una cola y mandar a una Lambda sin ninguna condición", ni siquiera necesitaría Step Functions: EventBridge Pipes alcanzaría.
-#### Paso 7 · Cierre
-Entregá `ConfirmarEntregaFlow` creado como Express, el riesgo de coste de usar Standard por defecto del Paso 5, y la justificación opuesta para el planificador del Paso 6; explicá qué pregunta (duración y frecuencia) decide entre los tres. Siguiente paso: eventos. Errores comunes: orquestar todo y no medir latencia. Fuente oficial: https://aws.amazon.com/step-functions/.
+#### ► CUÁNDO NO USAR ESTO
+No uses express vs standard, y cuándo eventbridge pipes es suficiente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: express vs standard, y cuándo eventbridge pipes es suficiente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Express vs Standard, y cuándo EventBridge Pipes es suficiente existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve express vs standard, y cuándo eventbridge pipes es suficiente en tu contexto?
+2. ¿Cómo sabrías que express vs standard, y cuándo eventbridge pipes es suficiente no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar express vs standard, y cuándo eventbridge pipes es suficiente?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.
+
+</details>
 
 ### Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min
 
-**Prerrequisito:** temas «Choice state, Retry y Catch» de este módulo y «Dead Letter Queues» (módulo 3).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** dividir un trabajo grande en lotes independientes, reintentar solo el lote que falla, hacer que repetir un lote no duplique resultados y relacionarlo con AWS Batch y el estado Map distribuido de Step Functions.
+#### ► DE QUÉ TRATA
+Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/lotes. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
 
-**¿Por qué es importante?** Procesar el cierre del mes (miles de archivos) en un solo programa significa que una falla al 90 % obliga a empezar de nuevo. Con lotes independientes, idempotentes y con reintentos, solo se repite lo que falló.
+#### ► LA IDEA EN UNA FRASE
+**Usa Python 3.10 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Python 3.10 o superior. Crea la carpeta `academia-labs/cloud/lotes`. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
+#### ► LA ANALOGÍA
+Piensa en procesamiento por lotes: trabajos independientes, reintentos e idempotencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El cierre mensual de guías de RutaFlow procesaba diez archivos grandes en un solo script. Un timeout de red en el sexto archivo hacía repetir todo, y a veces duplicaba filas en el reporte. Dividirlo en lotes resolvió ambos problemas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** trabajo por lotes (*batch*), lote, array job, reintento, idempotencia, cola de revisión, AWS Batch, estado Map distribuido.
-
-Un buen trabajo por lotes cumple tres reglas:
-
-1. **Lotes independientes:** cada lote se puede procesar sin los demás, en cualquier orden y en paralelo.
-2. **Reintentos acotados:** si un lote falla por algo transitorio (timeout), se reintenta unas pocas veces; si sigue fallando, va a una **cola de revisión** y el resto continúa.
-3. **Idempotencia:** repetir un lote no duplica nada; por ejemplo, se salta lo que ya tiene su marca de terminado.
-
-En la nube:
-
-| Servicio | Para |
-|---|---|
-| AWS Batch (array jobs) | contenedores de larga duración, uno por índice del array |
-| Step Functions, Map distribuido | miles de elementos en paralelo con reintentos declarados |
-| SQS + Lambda | lotes pequeños y rápidos con DLQ |
-
-**Analogía:** es empacar mil pedidos en cajas de cuatro: si una caja se rompe, se rearma esa caja, no las mil. La idempotencia es la etiqueta «empacado» que evita empacar dos veces el mismo pedido.
-
-**Límite de uso:** no todos los trabajos se pueden dividir (un cálculo que necesita todos los datos juntos). Los reintentos no arreglan errores de datos: esos van a revisión, no a reintentos infinitos.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     E["10 archivos"] --> L1["lote 1"] & L2["lote 2"] & L3["lote 3"]
@@ -237,9 +267,51 @@ flowchart LR
     R -->|"3 fallos"| Q["cola de revisión"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Procesamiento por lotes: trabajos independientes, reintentos e idempotencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/cloud/lotes/lote.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Procesamiento por lotes: trabajos independientes, reintentos e idempotencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses procesamiento por lotes: trabajos independientes, reintentos e idempotencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: procesamiento por lotes: trabajos independientes, reintentos e idempotencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Procesamiento por lotes: trabajos independientes, reintentos e idempotencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve procesamiento por lotes: trabajos independientes, reintentos e idempotencia en tu contexto?
+2. ¿Cómo sabrías que procesamiento por lotes: trabajos independientes, reintentos e idempotencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar procesamiento por lotes: trabajos independientes, reintentos e idempotencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    E["10 archivos"] --> L1["lote 1"] & L2["lote 2"] & L3["lote 3"]
+    L2 -->|"timeout"| R["reintento (máx. 3)"]
+    R --> L2
+    L1 & L2 & L3 --> S["procesados/*.ok<br/>idempotente"]
+    R -->|"3 fallos"| Q["cola de revisión"]
+```
 
 ```python
 import json
@@ -277,19 +349,11 @@ for n, inicio in enumerate(range(0, len(ENTRADA), TAMANO_LOTE), start=1):
 print(f"procesados: {len(list(salida.glob('*.ok')))} de {len(ENTRADA)}")
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/cloud/lotes
 python3 lote.py
 python3 lote.py   # segunda vez: idempotente
 ```
-
-**Explicación por bloques:** `ENTRADA` simula los diez archivos del mes, divididos en lotes de cuatro. `procesar` es idempotente: si ya existe la marca `.ok`, no hace nada. `fallos_simulados` hace que `guias-06.csv` falle una vez, como un timeout real. Cada lote se intenta hasta tres veces; el `else` del `for` solo corre si nunca hubo `break`, es decir, si los tres intentos fallaron. En el reintento del lote 2, solo `guias-05.csv`, que ya estaba hecho, se salta gracias a la marca; `guias-06.csv` falló en el primer intento y se procesa ahora, junto con `guias-07.csv` y `guias-08.csv`, que no se alcanzaron a procesar.
-
-![Captura de terminal: el lote 2 falla por tiempo agotado, se reintenta y al final se procesan los 10 archivos](content/figures/cloud/procesamiento-batch.svg)
-
-**Resultado esperado:**
 
 ```text
 lote 1 (4 archivos): ok en el intento 1
@@ -299,57 +363,4 @@ lote 3 (2 archivos): ok en el intento 1
 procesados: 10 de 10
 ```
 
-**Fallo deliberado:** quita el bloque `if destino.exists(): return` y cambia la escritura para que agregue una línea a un único `reporte.csv` en lugar de crear un archivo por entrada. **Error esperado:** después del reintento del lote 2, el reporte tiene filas duplicadas de `guias-05.csv`. **Diagnóstico:** sin idempotencia, cada reintento repite efectos. Usa una marca por elemento o una clave única en el destino.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta dos veces y explica por qué la segunda no repite trabajo.
-2. **Variación:** cambia `fallos_simulados` para que `guias-06.csv` falle 5 veces y mira dónde termina.
-3. **Diagnóstico:** reproduce el fallo deliberado de duplicación.
-4. **Integración:** procesa los lotes en paralelo con `concurrent.futures.ThreadPoolExecutor` y compara el tiempo.
-5. **Diseño:** dibuja cómo quedaría este trabajo en Step Functions con un estado Map distribuido y un `Retry`.
-
-**Pista:** si un reintento cambia el resultado final, el proceso no es idempotente.
-
-#### Paso 6 · Práctica independiente
-
-Convierte el script en una definición de AWS Batch array job (`arrayProperties.size = 3`) donde cada índice (`AWS_BATCH_JOB_ARRAY_INDEX`) procesa un lote, y explica qué hace Batch cuando un índice falla.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas las tres reglas de un buen trabajo por lotes.
-- [ ] El script procesa 10 de 10 con un reintento.
-- [ ] Reprodujiste la duplicación sin idempotencia.
-- [ ] Sabes qué servicio de la nube usar según el tamaño del trabajo.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reintentar errores de datos, procesar todo en un solo bloque y no marcar lo que ya se hizo. **Siguiente paso:** el tema «Express vs Standard, y cuándo EventBridge» elige el tipo de flujo para orquestar estos lotes.
-
-**Transferencia al proyecto integrador «RutaFlow»:** divide el cierre mensual de RutaFlow en lotes idempotentes con reintentos y una cola de revisión para los que fallen.
-
-**Fuente oficial:** [AWS Batch — Array jobs](https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html) y [AWS Step Functions — Distributed Map state](https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html).
-
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** construir un flujo de procesamiento de tareas con validación, guardado, notificación y manejo de errores.
-
-**Requisitos previos:** Módulo 15 completado.
-
-| Paso | Acción | Comando | Explicación |
-|---|---|---|---|
-| 1 | Escribir la state machine con estados secuenciales | Ver Tema 1 | ValidarTarea → Guardar → Notificar |
-| 2 | Crear e iniciar una ejecución | `aws stepfunctions create-state-machine` + `start-execution` | Observa con `describe-execution` |
-| 3 | Agregar un Choice state | Ver Tema 2 | Enruta según tipo de tarea |
-| 4 | Configurar Retry y Catch | Ver Tema 2 | Manejo declarativo de errores |
-| 5 | Comparar con EventBridge Pipes | Ver Tema 3 | ¿Cuándo sería suficiente? |
-
-**Verificación:** el laboratorio se considera exitoso si la ejecución completa el flujo correctamente para el caso feliz, y si el manejo de Retry/Catch responde correctamente ante un fallo simulado en uno de los estados.
-
-**Errores comunes y soluciones**
-
-- **Coordinar un flujo complejo con código imperativo disperso en una función monolítica.** Considera declarar el flujo con Step Functions para visibilidad y manejo de errores explícito.
-- **Usar Standard workflows para eventos de alto volumen y corta duración.** Considera Express, más económico para ese caso.
-- **Introducir Step Functions para una simple conexión directa entre dos servicios sin lógica condicional.** Considera EventBridge Pipes, más simple para ese caso.
-
----
+</details>

@@ -3,18 +3,71 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Unit tests y widget tests · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir un unit test de la regla "envío atrasado" y un widget test que confirme que `TarjetaEnvio` muestra la guía correcta. Prerrequisitos: Módulo 8 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-La regla de negocio que marca un envío como "atrasado" no debería necesitar renderizar ningún widget para probarse; pero confirmar que `TarjetaEnvio` efectivamente muestra ese estado en pantalla sí necesita un entorno de renderizado, aunque no un dispositivo real completo.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir un unit test de la regla "envío atrasado" y un widget test que confirme que TarjetaEnvio muestra la guía correcta. Prerrequisitos: Módulo 8 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un unit test verifica lógica pura completamente aislada; un widget test usa `WidgetTester` para renderizar en un entorno simulado, sin necesidad de un dispositivo real.
-**Conceptos clave:** entorno simulado sin dispositivo real, considerablemente más rápido que un test end-to-end.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir un unit test de la regla "envío atrasado" y un widget test que confirme que TarjetaEnvio muestra la guía correcta.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en unit tests y widget tests como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["¿La lógica depende de widgets renderizados?"] -->|No| B["unit test: test()"]
+    A -->|Sí, necesita verificar UI| C["widget test: testWidgets() + WidgetTester"]
+    C --> D["tester.tap() / enterText()"]
+    D --> E["await tester.pump() — refleja el setState"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Unit tests y widget tests se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Unit tests y widget tests | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses unit tests y widget tests por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: unit tests y widget tests funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Unit tests y widget tests existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve unit tests y widget tests en tu contexto?
+2. ¿Cómo sabrías que unit tests y widget tests no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar unit tests y widget tests?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 test('valida un email correcto', () {
   expect(esEmailValido('ana@ejemplo.com'), isTrue);
@@ -35,16 +88,6 @@ testWidgets('incrementa el contador al tocar el botón', (tester) async {
 });
 ```
 
-Un unit test verifica lógica pura (como una función de validación) completamente aislada de cualquier widget o UI, la forma más rápida y directa de testear; un widget test usa `WidgetTester` para renderizar un widget en un entorno de renderizado simulado (sin necesidad de un dispositivo físico o emulador completo corriendo), permitiendo verificar tanto el contenido renderizado (`find.text(...).assertExists`) como simular interacciones del usuario (`tester.tap(...)`) y verificar el estado resultante tras esa interacción, todo ejecutándose considerablemente más rápido que si se lanzara la app completa en un dispositivo real.
-
-`tester.pump()` después de simular una interacción fuerza una reconstrucción del árbol de widgets, reflejando el efecto de un `setState()` disparado por esa interacción (Módulo 1); sin esa llamada explícita a `pump()`, el test no vería el resultado de la reconstrucción que la interacción disparó, dado que el entorno de test no ejecuta automáticamente un ciclo continuo de refresco como lo haría un dispositivo real corriendo la app en vivo.
-
-**Analogía:** un unit test es como verificar una fórmula matemática de forma aislada en un pizarrón, sin ningún contexto visual; un widget test es como montar una maqueta simplificada en un taller controlado para verificar cómo se comporta visualmente un componente específico ante ciertas acciones, sin necesidad de construir el edificio completo a tamaño real para esa verificación puntual.
-
-**¿Por qué es importante?** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real, cerrando la brecha entre "la lógica es correcta" (unit test) y "la UI refleja correctamente esa lógica" sin el costo de un integration test completo.
-
-**Diagrama: unit test vs widget test**
-
 ```mermaid
 flowchart TD
     A["¿La lógica depende de widgets renderizados?"] -->|No| B["unit test: test()"]
@@ -53,18 +96,11 @@ flowchart TD
     D --> E["await tester.pump() — refleja el setState"]
 ```
 
-En el proyecto integrador RutaFlow, estos tests viven en `test/tarjeta_envio_test.dart` sobre `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene escribir un widget test para lógica puramente de dominio (como `estaAtrasado()`) — eso es más rápido y claro como unit test aislado; reservá el widget test específicamente para verificar que la UI refleja correctamente ese resultado.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea el proyecto y quita la prueba de la plantilla, que prueba un contador que no vas a usar:
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 rm test/widget_test.dart
 ```
-
-Crea `lib/envios.dart` con la regla y el widget que vas a probar:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -86,8 +122,6 @@ class TarjetaEnvio extends StatelessWidget {
 }
 ```
 
-Crea `test/envios_test.dart`:
-
 ```dart
 import 'package:demo_flutter/envios.dart';
 import 'package:flutter/material.dart';
@@ -106,29 +140,23 @@ void main() {
 }
 ```
 
-Ejecuta `flutter test`.
-
-Resultado esperado: el unit test verifica la regla de negocio en milisegundos sin ningún widget involucrado; el widget test renderiza `TarjetaEnvio` en un entorno simulado y confirma que el texto "RF-4471" aparece, sin necesitar un emulador completo corriendo.
-
-#### Paso 5 · Práctica guiada
-Pista: en un tercer test, simulá tocar el botón "Marcar revisado" con `tester.tap(...)` pero no llamés a `tester.pump()` después — ese es el fallo deliberado: la aserción que verifica que el ícono cambió a "revisado" falla, aunque el `onPressed` sí se ejecutó correctamente, porque el test nunca le pidió a Flutter que reconstruyera el árbol para reflejar el `setState()` disparado por ese tap.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando `await tester.pump()` inmediatamente después del `tap`, y confirmá que ahora la aserción sobre el ícono "revisado" pasa correctamente.
-
-#### Paso 7 · Cierre
-Entregá el unit test y el widget test del Paso 4, el fallo por `pump()` faltante del Paso 5, y la corrección del Paso 6; explicá por qué un widget test necesita simular explícitamente el ciclo de reconstrucción que un dispositivo real haría automáticamente. Siguiente paso: estudia cómo mockear dependencias con mocktail. Errores comunes: olvidar `tester.pump()` tras simular una interacción, escribir un widget test para lógica que en realidad es pura, y buscar widgets por texto visible cuando ese texto puede cambiar por copywriting. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/overview.
-**Implicación práctica:** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real.
+</details>
 
 ### Tema 2: Mocking con mocktail · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a mockear `EnviosRepository` con `mocktail` para testear `EnviosViewModel` sin hacer ninguna llamada de red real. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Testear `EnviosViewModel.cargar()` contra la API real de RutaFlow haría el test lento, dependiente de que el backend esté disponible, y frágil ante cualquier cambio en los datos reales de prueba.
+#### ► DE QUÉ TRATA
+Al finalizar vas a mockear EnviosRepository con mocktail para testear EnviosViewModel sin hacer ninguna llamada de red real. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a mockear EnviosRepository con mocktail para testear EnviosViewModel sin hacer ninguna llamada de red real.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `mocktail` genera un mock de una dependencia, permitiendo configurar exactamente qué debe devolver un método específico sin una implementación real completa.
 **Conceptos clave:** aislar el widget bajo prueba de sus dependencias reales.
 
@@ -162,15 +190,78 @@ flowchart LR
 
 En el proyecto integrador RutaFlow, el mock vive en `test/envios_viewmodel_test.dart` sobre `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: no conviene mockear una dependencia que no tiene efectos externos reales (una función pura de cálculo, por ejemplo) — ahí llamarla directamente en el test es más simple y claro; reservá `mocktail` específicamente para dependencias con red, disco o estado externo real.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["test"] --> B["EnviosViewModel"]
+    B --> C["EnviosRepositoryFake\n(Mock)"]
+    C -.->|"sin red real"| D["API de RutaFlow"]
+    style D stroke-dasharray: 5 5
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mocking con mocktail se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mocking con mocktail | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses mocking con mocktail por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mocking con mocktail funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Mocking con mocktail existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mocking con mocktail en tu contexto?
+2. ¿Cómo sabrías que mocking con mocktail no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mocking con mocktail?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+class RepositorioFake extends Mock implements TareaRepository {}
+
+test('el ViewModel carga tareas del repositorio', () async {
+  final repo = RepositorioFake();
+  when(() => repo.obtenerTodas()).thenAnswer((_) async => [tareaDePrueba]);
+  // ...
+});
+```
+
+```mermaid
+flowchart LR
+    A["test"] --> B["EnviosViewModel"]
+    B --> C["EnviosRepositoryFake\n(Mock)"]
+    C -.->|"sin red real"| D["API de RutaFlow"]
+    style D stroke-dasharray: 5 5
+```
+
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 rm test/widget_test.dart
 flutter pub add dev:mocktail
 ```
-
-Crea `lib/envios_view_model.dart`:
 
 ```dart
 import 'package:flutter/foundation.dart';
@@ -196,8 +287,6 @@ class EnviosViewModel extends ChangeNotifier {
 }
 ```
 
-Crea `test/envios_view_model_test.dart`:
-
 ```dart
 import 'package:demo_flutter/envios_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -218,32 +307,70 @@ void main() {
 }
 ```
 
-Ejecuta `flutter test`.
-
-Resultado esperado: el test completa en milisegundos sin ninguna conexión de red real — `EnviosRepositoryFake` responde exactamente lo configurado con `when(...).thenAnswer(...)`, sin depender de que el backend de RutaFlow esté corriendo.
-
-#### Paso 5 · Práctica guiada
-Pista: en un segundo test, llamá a `vm.cargar()` sin haber configurado ningún `when(() => repo.obtenerEnvios())` sobre el mock — ese es el fallo deliberado: `mocktail` lanza una excepción indicando que ese método no tiene ningún comportamiento configurado, en vez de devolver silenciosamente `null` o una lista vacía.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando el `when(...)` correspondiente antes de llamar a `cargar()`, y agregá un tercer test que configure el mock para lanzar una excepción (`thenThrow`), confirmando que `EnviosViewModel` maneja ese error sin crashear.
-
-#### Paso 7 · Cierre
-Entregá el mock configurado del Paso 4, el error por mock sin configurar del Paso 5, y el test del camino de error del Paso 6; explicá por qué que `mocktail` falle explícitamente ante un método sin configurar ayuda a detectar tests incompletos. Siguiente paso: estudia integration tests para el flujo completo end-to-end. Errores comunes: depender de una API real en un test que debería estar aislado, no configurar el comportamiento de un método del mock antes de invocarlo, y mockear solo el camino feliz sin probar el camino de error. Fuentes oficiales: https://pub.dev/packages/mocktail y https://docs.flutter.dev/cookbook/testing/unit/mocking.
-**Implicación práctica:** Aislar dependencias externas con `mocktail` hace los tests más rápidos y confiables, sin depender de la disponibilidad de servicios externos reales.
+</details>
 
 ### Tema 3: Integration tests · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a escribir un integration test que confirme en un dispositivo o emulador real el flujo completo de confirmar una entrega. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Los widget tests del Tema 1 y los mocks del Tema 2 prueban piezas aisladas — nadie confirmó todavía que el flujo completo (navegación real, formulario real, llamada real al backend de staging) funciona de punta a punta como lo experimentaría un conductor real.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir un integration test que confirme en un dispositivo o emulador real el flujo completo de confirmar una entrega.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un integration test corre contra un dispositivo o emulador real, validando la integración completa de la app, incluyendo plugins nativos y navegación real.
-**Conceptos clave:** validación completa contra un dispositivo o emulador real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en integration tests como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["Integration tests\n(pocos, lentos, dispositivo real)"] --- B["Widget tests\n(más, rápidos, entorno simulado)"]
+    B --- C["Unit tests\n(muchos, instantáneos, lógica pura)"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Integration tests se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Integration tests | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses integration tests por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: integration tests funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Integration tests existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve integration tests en tu contexto?
+2. ¿Cómo sabrías que integration tests no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar integration tests?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 testWidgets('flujo completo: crear y ver una tarea', (tester) async {
   await tester.pumpWidget(MiApp());
@@ -255,23 +382,11 @@ testWidgets('flujo completo: crear y ver una tarea', (tester) async {
 });
 ```
 
-Un integration test corre contra un dispositivo o emulador real (no el entorno de renderizado simulado de un widget test), validando la integración completa de la app tal como la experimentaría un usuario real, incluyendo la interacción real con plugins nativos, persistencia real, y navegación completa entre pantallas; `tester.pumpAndSettle()` espera a que todas las animaciones y transiciones en curso completen antes de continuar con las siguientes aserciones, apropiado específicamente en este contexto de integración completa donde las transiciones reales sí ocurren, a diferencia de un widget test simulado donde `pump()` simple suele ser suficiente.
-
-Esta distinción de velocidad y alcance (widget test rápido en entorno simulado frente a integration test lento pero completo en dispositivo real) refleja la misma pirámide de tests estudiada en Android con Espresso (Módulo 9 de ese track) y en iOS con XCUITest (Módulo 9 de ese track): la mayoría de la suite debería ser widget tests rápidos, reservando integration tests más costosos para validar únicamente los flujos más críticos de la app de principio a fin.
-
-**Analogía:** un integration test es como una prueba de manejo real completa del vehículo terminado en condiciones de tráfico real, mientras un widget test es como probar un componente específico del vehículo en un banco de pruebas de laboratorio controlado — ambos son necesarios, pero la prueba de manejo real es considerablemente más costosa de repetir con frecuencia.
-
-**¿Por qué es importante?** Un widget test (entorno simulado) es rápido y aísla el componente bajo prueba sin necesidad de dispositivo real; un integration test valida la integración completa contra un dispositivo real, más lento pero necesario para verificar flujos críticos de principio a fin.
-
-**Diagrama:**
-
 ```
 Unit tests        → lógica pura, sin UI, más rápidos
 Widget tests       → entorno simulado, con UI, rápidos
 Integration tests   → dispositivo/emulador real, lentos, flujos completos críticos
 ```
-
-**Diagrama: pirámide de tests**
 
 ```mermaid
 flowchart TD
@@ -279,15 +394,10 @@ flowchart TD
     B --- C["Unit tests\n(muchos, instantáneos, lógica pura)"]
 ```
 
-En el proyecto integrador RutaFlow, este test vive en `integration_test/confirmar_entrega_test.dart`. Ejecutalo con:
-
 ```bash
 flutter test integration_test/confirmar_entrega_test.dart
 ```
 
----
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 // integration_test/confirmar_entrega_test.dart (archivo completo)
 import 'package:flutter/material.dart';
@@ -310,48 +420,11 @@ void main() {
 }
 ```
 
-**Ejecuta el ejemplo** en el proyecto integrador `rutaflow_flutter` (Módulo 4), cuyo `lib/main.dart` define `RutaFlowApp` con la lista, el detalle y la confirmación. Este archivo **no** va en `lib/main.dart`: va en la carpeta `integration_test/` y necesita la dependencia `integration_test`:
-
 ```bash
 cd rutaflow_flutter
 flutter pub add "dev:integration_test:{sdk: flutter}"
 flutter devices
 flutter test integration_test/confirmar_entrega_test.dart -d <id-del-dispositivo>
 ```
-Fuente: https://docs.flutter.dev/testing/integration-tests.
 
-Resultado esperado: corriendo este test contra un emulador o dispositivo real, el flujo completo navega desde la lista hasta la confirmación exitosa, validando la integración real entre pantallas, formulario y backend de staging.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `await tester.pumpAndSettle()` después de tocar "Confirmar" por un simple `await tester.pump()` — ese es el fallo deliberado: si la confirmación depende de una animación de transición todavía en curso, la aserción final puede ejecutarse antes de que termine, y el test falla de forma intermitente según cuánto tarde la animación en cada corrida.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `pumpAndSettle()`, y agregá un segundo integration test que confirme el camino de error (PIN incorrecto), verificando que el mensaje de error aparece en el dispositivo real.
-
-#### Paso 7 · Cierre
-Entregá el integration test del flujo feliz del Paso 4, la falla intermitente provocada en el Paso 5, y el test del camino de error del Paso 6; explicá por qué `pumpAndSettle()` es necesario específicamente en integration tests donde las animaciones reales ocurren, a diferencia de un widget test simulado donde `pump()` simple suele bastar. Siguiente paso: cerrá el módulo integrando unit tests, widget tests e integration tests en la suite completa de RutaFlow. Errores comunes: usar `pump()` simple en vez de `pumpAndSettle()` cuando hay animaciones reales en curso, escribir únicamente integration tests sin ninguna base de widget tests más rápidos, y no cubrir el camino de error en los flujos críticos. Fuentes oficiales: https://docs.flutter.dev/testing/integration-tests y https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html.
-**Implicación práctica:** Un integration test valida la integración completa contra un dispositivo real, necesario para verificar flujos críticos de principio a fin que los widget tests aislados no cubren.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una suite de widget tests sobre una feature completa de la app.
-
-**Requisitos previos:** Módulo 8 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Unit test de una función pura | Ver Tema 1 | Ej. validación de formulario |
-| 2 | Widget test que verifica texto renderizado | Ver Tema 1 | `WidgetTester.pumpWidget` |
-| 3 | Simular un tap y verificar el estado resultante | Ver Tema 1 | `tester.tap` + `tester.pump()` |
-| 4 | Mockear una dependencia con `mocktail` | Ver Tema 2 | Aísla el widget test |
-| 5 | Escribir un integration test end-to-end | Ver Tema 3 | Flujo completo en dispositivo/emulador |
-
-**Verificación:** el laboratorio se considera exitoso si la suite de widget tests pasa consistentemente con dependencias mockeadas (sin llamadas reales de red), y si el integration test completa correctamente el flujo de crear y ver una tarea en un dispositivo o emulador real.
-
-**Errores comunes y soluciones**
-
-- **Olvidar `tester.pump()` tras simular una interacción.** El test no verá el resultado de la reconstrucción disparada por esa interacción.
-- **Depender de una API real en un widget test.** Hace el test lento y frágil; mockea la dependencia con `mocktail`.
-- **Confiar únicamente en widget tests sin ningún integration test.** No cubre la validación completa de la integración real de la app en un dispositivo.
-
----
+</details>

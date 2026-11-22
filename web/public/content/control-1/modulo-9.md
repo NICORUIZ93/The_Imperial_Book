@@ -9,131 +9,68 @@ Todo lo que ves en este curso supone sistemas lineales. Los reales casi nunca lo
 
 ## Aprende construyendo
 
+
 ### Tema 1: La idea de la linealización: aproximar con la recta tangente · Avanzado · 45 min
 
-**¿Por qué es importante?** Casi ningún sistema real es lineal; linealizar alrededor del punto de operación es lo que permite usar todo este curso con ellos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
+#### ► DE QUÉ TRATA
+Este tema te guía por la idea de la linealización: aproximar con la recta tangente con foco en comprensión antes de implementación.
 
-> **Idea clave.** Cerca de un punto, cualquier curva suave se parece a su recta tangente. Si el sistema trabaja con variaciones pequeñas alrededor de ese punto, la recta basta.
+#### ► LA IDEA EN UNA FRASE
+**Entender la idea de la linealización: aproximar con la recta tangente te permite tomar mejores decisiones técnicas.**
 
-\[f(x) \approx f(x_0) + f'(x_0)\,(x - x_0)\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-*Serie de Taylor cortada en el primer término. Con dos variables: \(f(x,u) \approx f(x_0,u_0) + \dfrac{\partial f}{\partial x}\delta x + \dfrac{\partial f}{\partial u}\delta u\).*
+#### ► LA ANALOGÍA
+Piensa en la idea de la linealización: aproximar con la recta tangente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Procedimiento**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que la idea de la linealización: aproximar con la recta tangente resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-1. Escribe la ecuación no lineal \(\dot x = f(x,u)\).
-2. Halla el equilibrio: \(f(x_0,u_0) = 0\) (nada cambia).
-3. Define desviaciones \(\delta x = x - x_0\), \(\delta u = u - u_0\).
-4. \(\dot{\delta x} = \dfrac{\partial f}{\partial x}\Big|_0\delta x + \dfrac{\partial f}{\partial u}\Big|_0\delta u\). Ya es lineal: aplica Laplace.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| La idea de la linealización: aproximar con la recta tangente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Ejemplo 1 · Tanque con salida libre · *Experto*
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar La idea de la linealización: aproximar con la recta tangente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Enunciado.** \(A\dot h = q_i - k\sqrt h\), con \(A = 1\) m², \(k = 0{,}5\). Linealiza alrededor de \(h_0 = 4\) m.
+#### ► CUÁNDO NO USAR ESTO
+No uses la idea de la linealización: aproximar con la recta tangente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-1. Equilibrio: \(\dot h = 0 \Rightarrow q_{i0} = k\sqrt{h_0} = 0{,}5\cdot2 = 1\) m³/s.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: la idea de la linealización: aproximar con la recta tangente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-   **¿Por qué?** En equilibrio nada cambia: lo que entra es igual a lo que sale.
+#### ► LO QUE DEBES RECORDAR
+- La idea de la linealización: aproximar con la recta tangente existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-2. Lo no lineal es \(k\sqrt h\). Su pendiente: \(\dfrac{d}{dh}k\sqrt h = \dfrac{k}{2\sqrt h}\). En \(h_0 = 4\): \(\dfrac{0{,}5}{4} = 0{,}125\).
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve la idea de la linealización: aproximar con la recta tangente en tu contexto?
+2. ¿Cómo sabrías que la idea de la linealización: aproximar con la recta tangente no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar la idea de la linealización: aproximar con la recta tangente?
 
-   **¿Por qué?** Se reemplaza la curva por su recta tangente, y la pendiente de la tangente es la derivada.
+</details>
 
-3. Ecuación en desviaciones: \(A\,\dot{\delta h} = \delta q_i - 0{,}125\,\delta h\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** Taylor: \(k\sqrt h \approx k\sqrt{h_0} + 0{,}125\,\delta h\), y los términos de equilibrio se cancelan.
-
-4. Laplace: \((s + 0{,}125)\Delta H = \Delta Q_i\), es decir \(\dfrac{\Delta H}{\Delta Q_i} = \dfrac{8}{8s+1}\).
-
-   **¿Por qué?** Se multiplica arriba y abajo por 8 para tener la forma \(\dfrac{K}{\tau s+1}\).
-
-**Resultado:** \(\dfrac{8}{8s+1}\): vale solo cerca de 4 m
-
-#### Ejemplo 2 · Péndulo · *Experto*
-
-> **Qué cambia respecto al anterior:** La no linealidad está en un seno, no en una raíz.
-
-**Enunciado.** \(mL^2\ddot\theta + mgL\sin\theta = T\). Linealiza alrededor de \(\theta_0 = 0\).
-
-1. Para ángulos pequeños, \(\sin\theta \approx \theta\).
-
-   **¿Por qué?** Taylor de \(\sin\) en 0: \(\sin0 + \cos0\cdot\theta = \theta\).
-
-2. \(mL^2\ddot\theta + mgL\theta = T\). Laplace: \(\dfrac{\Theta}{T} = \dfrac{1/(mL^2)}{s^2+g/L}\).
-
-   **¿Por qué?** Ya es lineal.
-
-3. Polos \(\pm j\sqrt{g/L}\).
-
-   **¿Por qué?** Oscila sin amortiguamiento: no hay fricción en el modelo.
-
-**Resultado:** Oscilador con \(\omega_n = \sqrt{g/L}\). Si se linealiza en \(\theta_0 = \pi\) (invertido), aparece un polo positivo: inestable
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 3 · Linealizar \(\sin{\left(x \right)}\) en \(0\) · *Básico*
-
-**Enunciado.** Linealiza \(\sin{\left(x \right)}\) alrededor de \(x_0 = 0\) (péndulo cerca de la vertical inferior).
-
-1. Valor en el punto: \(f(x_0) = 0\).
-
-   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
-
-2. Pendiente: \(f'(x_0) = 1\).
-
-   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
-
-**Resultado.** \(f(x) \approx 0 + 1\,\delta x\), con \(\delta x = x - x_0\) pequeño.
-
-#### Ejemplo 4 · Linealizar \(\sin{\left(x \right)}\) en \(\pi\) · *Intermedio*
-
-**Enunciado.** Linealiza \(\sin{\left(x \right)}\) alrededor de \(x_0 = \pi\) (péndulo invertido (cerca de la vertical superior)).
-
-1. Valor en el punto: \(f(x_0) = 0\).
-
-   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
-
-2. Pendiente: \(f'(x_0) = -1\).
-
-   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
-
-**Resultado.** \(f(x) \approx -\delta x\), con \(\delta x = x - x_0\) pequeño.
-
-#### Ejemplo 5 · Linealizar \(\sqrt{x}\) en \(4\) · *Intermedio*
-
-**Enunciado.** Linealiza \(\sqrt{x}\) alrededor de \(x_0 = 4\) (salida de un tanque \(q = k\sqrt{h}\) con \(h_0 = 4\)).
-
-1. Valor en el punto: \(f(x_0) = 2\).
-
-   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
-
-2. Pendiente: \(f'(x_0) = \frac{1}{4}\).
-
-   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
-
-**Resultado.** \(f(x) \approx 2 + \frac{1}{4}\,\delta x\), con \(\delta x = x - x_0\) pequeño.
-
-#### Ejemplo 6 · Linealizar \(x^{2}\) en \(3\) · *Básico*
-
-**Enunciado.** Linealiza \(x^{2}\) alrededor de \(x_0 = 3\) (potencia en una resistencia \(P = v^2/R\) con \(v_0 = 3\)).
-
-1. Valor en el punto: \(f(x_0) = 9\).
-
-   **¿Por qué?** La aproximación lineal pasa por el punto de operación.
-
-2. Pendiente: \(f'(x_0) = 6\).
-
-   **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
-
-**Resultado.** \(f(x) \approx 9 + 6\,\delta x\), con \(\delta x = x - x_0\) pequeño.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 5 (linealizar \(\sqrt{x}\) en 4).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, sqrt, diff
@@ -144,17 +81,8 @@ print("f(4):", f.subs(x, 4))
 print("f'(4):", diff(f, x).subs(x, 4))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `f(4): 2` y `f'(4): 1/4`, igual al Ejemplo 5.
-
-#### Practica
-
-cambia `f` por `x**2` y evalúa en `x0 = 3` (usa `.subs(x, 3)`) para confirmar el Ejemplo 6: \(f(3)=9\), \(f'(3)=6\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la aproximación lineal solo es válida para desviaciones pequeñas (\(\delta x\)) alrededor del punto de operación; lejos de \(x_0\) el error crece y hay que volver al modelo no lineal o re-linealizar en otro punto (como en el péndulo invertido del Ejemplo 2).
-
+</details>

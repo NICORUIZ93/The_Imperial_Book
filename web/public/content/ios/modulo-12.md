@@ -5,18 +5,73 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Arquitectura del proyecto integrador · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a trazar en un diagrama de capas cómo se conectan `EnviosViewModel`, `ServicioAPI` y SwiftData en RutaFlow, confirmando que ninguna vista accede directamente a ninguna de las dos fuentes de datos. Prerrequisitos: módulos 0-11 completos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A lo largo del track construiste piezas sueltas de RutaFlow (vistas, ViewModels, servicios, persistencia, tests) en módulos distintos — nadie confirmó todavía que todas esas piezas encajan juntas como un único sistema coherente.
+#### ► DE QUÉ TRATA
+Al finalizar vas a trazar en un diagrama de capas cómo se conectan EnviosViewModel, ServicioAPI y SwiftData en RutaFlow, confirmando que ninguna vista accede directamente a ninguna de las dos fuentes de datos. Prerrequisitos: módulos 0-11 completos.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El proyecto integra capas con ownership claro (vista, ViewModel, servicio, persistencia, dominio) — una central móvil donde cada estación tiene un contrato y una responsabilidad distinta, no una mezcla de todo en un solo lugar.
-**Conceptos clave:** cada módulo del track como una pieza que encaja en un sistema mayor coherente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a trazar en un diagrama de capas cómo se conectan EnviosViewModel, ServicioAPI y SwiftData en RutaFlow, confirmando que ninguna vista accede directamente a ninguna de las dos fuentes de datos.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en arquitectura del proyecto integrador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    V["Vistas/"] --> VM["ViewModels/"]
+    VM --> S["Servicios/"]
+    VM --> P["Persistencia/"]
+    S --> D["Dominio/"]
+    P --> D["Dominio/"]
+    style D fill:#c8e6c9
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura del proyecto integrador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura del proyecto integrador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura del proyecto integrador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura del proyecto integrador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura del proyecto integrador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura del proyecto integrador en tu contexto?
+2. ¿Cómo sabrías que arquitectura del proyecto integrador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura del proyecto integrador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Vistas/         ← SwiftUI puro
 ViewModels/      ← @Observable, orquesta servicios (módulo 8)
@@ -26,16 +81,6 @@ Dominio/            ← structs/enums puros (módulo 0)
 Tests/                ← Swift Testing sobre la capa de dominio (módulo 9)
 ```
 
-Este proyecto integra directamente cada concepto estudiado a lo largo del track en un único sistema coherente: el modelado de dominio seguro con structs y enums sin force-unwrap (Módulo 0) forma la base de los tipos que fluyen entre capas; la navegación con `NavigationStack` y al menos un sheet (Módulo 3) estructura las pantallas; la concurrencia estructurada con `async`/`await` y `TaskGroup` (Módulo 4) resuelve el networking de forma segura; la persistencia local reactiva con SwiftData (Módulo 6) cierra el ciclo offline; la arquitectura MVVM con inyección de dependencias por inicializador (Módulo 8) organiza todo el código en capas testeables; y los tests de la capa de dominio con Swift Testing (Módulo 9) dan confianza real antes de subir el build a TestFlight (Módulo 11).
-
-Esta integración demuestra que cada concepto estudiado de forma aislada en su propio módulo encaja naturalmente como parte de un sistema mayor, reflejando cómo se construyen apps iOS profesionales reales: no como una colección de features aisladas, sino como capas que se comunican de forma predecible entre sí, cada una con una responsabilidad clara y bien delimitada.
-
-**Analogía:** el proyecto integrador es como el ensamblaje final de un vehículo donde cada componente estudiado por separado (motor, transmisión, sistema eléctrico) se integra en un producto funcional completo, y solo al ensamblarlos todos juntos se puede verificar que realmente funcionan de forma coordinada como se esperaba de cada uno individualmente.
-
-**¿Por qué es importante?** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado (modelado de dominio, navegación, concurrencia, persistencia, arquitectura, testing) se combinan naturalmente en un sistema coherente, reflejando cómo se construyen apps iOS profesionales reales.
-
-**Diagrama:**
-
 ```
 Vistas/         ← SwiftUI puro
 ViewModels/      ← @Observable, orquesta servicios
@@ -44,8 +89,6 @@ Persistencia/      ← SwiftData
 Dominio/            ← structs/enums puros
 Tests/                ← Swift Testing
 ```
-
-**Diagrama: capas y dirección permitida de dependencia**
 
 ```mermaid
 flowchart TD
@@ -57,9 +100,6 @@ flowchart TD
     style D fill:#c8e6c9
 ```
 
-En tu propio proyecto RutaFlow, crea el grupo `ViewModels` y dentro el archivo `EnviosViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, asignado al target de la app. Límite de la decisión: esta separación estricta en capas no conviene para un prototipo descartable de una sola pantalla — ahí el costo de las carpetas y protocolos intermedios supera el beneficio; se justifica específicamente cuando el proyecto, como RutaFlow, crece a varios módulos que varios desarrolladores tocan en paralelo.
-
-#### Paso 4 · Demostración guiada desde cero
 ```text
 Vistas/         ← SwiftUI puro (Módulos 1-3)
 ViewModels/      ← @Observable, orquesta servicios (Módulo 8)
@@ -69,47 +109,76 @@ Dominio/            ← structs/enums puros (Módulo 0)
 Tests/                ← Swift Testing sobre dominio (Módulo 9)
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: recorriendo el código fuente de RutaFlow carpeta por carpeta, cada archivo vive exactamente en la capa que le corresponde — ninguna vista en `Vistas/` importa `URLSession` ni `ModelContext` directamente, y ningún archivo en `Dominio/` importa nada de `Servicios/` ni `Persistencia/`.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá temporalmente una llamada directa a `ServicioAPI().obtenerEnvios()` dentro del `body` de `ListaEnvios`, "solo para probar algo rápido" — ese es el fallo deliberado: ahora la vista conoce directamente el servicio de red, rompiendo la separación de capas que el Módulo 8 estableció, y cualquier test de `ListaEnvios` necesitaría de nuevo renderizar la vista completa.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el resto del código fuente de RutaFlow buscando otras violaciones similares de capas (una vista que importe SwiftData directamente, o un ViewModel que importe SwiftUI) — documentá cualquiera que encuentres y corregila.
-
-#### Paso 7 · Cierre
-Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
-**Implicación práctica:** Integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
+</details>
 
 ### Tema 2: Sincronización entre red y persistencia local · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a hacer que `EnviosViewModel` orqueste tanto `ServicioAPI` (red) como SwiftData (persistencia local) para que `ListaEnvios` siga mostrando datos aunque la red falle. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si un conductor pierde señal en medio de una ruta, `ListaEnvios` no debería quedar vacía — debería seguir mostrando los últimos envíos sincronizados, y actualizarse silenciosamente cuando la red vuelva.
+#### ► DE QUÉ TRATA
+Al finalizar vas a hacer que EnviosViewModel orqueste tanto ServicioAPI (red) como SwiftData (persistencia local) para que ListaEnvios siga mostrando datos aunque la red falle. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El ViewModel orquesta ambas fuentes sin que la vista conozca ninguna de las dos directamente — un gerente de logística que coordina almacén local y proveedores externos sin que el personal de ventas trate directamente con ninguno.
-**Conceptos clave:** el ViewModel orquesta ambas fuentes, sin que la vista conozca ninguna de las dos directamente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a hacer que EnviosViewModel orqueste tanto ServicioAPI (red) como SwiftData (persistencia local) para que ListaEnvios siga mostrando datos aunque la red falle.**
 
-El `EnviosViewModel` del proyecto integrador orquesta ambas fuentes de datos (el servicio de red y el `ModelContext` de SwiftData) sin que la vista necesite conocer ninguno de los dos directamente: la vista simplemente observa `viewModel.envios` y llama a `viewModel.sincronizar()` cuando corresponde, sin ninguna referencia directa a `URLSession` ni a `ModelContext` en el código de la vista misma; esta separación es exactamente el mismo principio de "cada capa con una única responsabilidad, comunicándose en una única dirección" aplicado en el proyecto integrador de Android con Room y Retrofit (Módulo 12 de ese track).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El manejo de errores con `try?` en `sincronizar()` refleja una decisión deliberada de degradación silenciosa ante un fallo de sincronización (la app simplemente continúa mostrando los últimos datos locales conocidos si la sincronización falla), apropiada para una operación de background no crítica, en contraste con un error que sí requeriría propagarse explícitamente a la UI si ocurriera durante una acción directa del usuario (como guardar un formulario).
+#### ► LA ANALOGÍA
+Piensa en sincronización entre red y persistencia local como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** el ViewModel orquestando ambas fuentes es como un gerente de logística que coordina tanto el almacén local (SwiftData) como los proveedores externos (la API remota) sin que el personal de ventas (la vista) necesite tratar directamente con ninguno de los dos: simplemente consulta el inventario disponible y solicita una actualización cuando corresponde.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["ListaEnvios (vista)"] -->|observa envios y llama sincronizar| B["EnviosViewModel"]
+    B --> C["ServicioAPI (red)"]
+    B --> D["ModelContext (SwiftData)"]
+    C -.->|falla: try? sin propagar| B
+```
 
-**¿Por qué es importante?** Mantener la orquestación entre red y persistencia local completamente dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación estricta de responsabilidades que hace que cada capa sea testeable y reemplazable de forma independiente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sincronización entre red y persistencia local se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Código del ejemplo:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sincronización entre red y persistencia local | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses sincronización entre red y persistencia local por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sincronización entre red y persistencia local funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Sincronización entre red y persistencia local existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sincronización entre red y persistencia local en tu contexto?
+2. ¿Cómo sabrías que sincronización entre red y persistencia local no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sincronización entre red y persistencia local?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 @Observable
 class EnviosViewModel {
@@ -121,8 +190,6 @@ class EnviosViewModel {
 }
 ```
 
-**Diagrama: orquestación sin que la vista conozca las fuentes**
-
 ```mermaid
 flowchart LR
     A["ListaEnvios (vista)"] -->|observa envios y llama sincronizar| B["EnviosViewModel"]
@@ -130,12 +197,6 @@ flowchart LR
     B --> D["ModelContext (SwiftData)"]
     C -.->|falla: try? sin propagar| B
 ```
-
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices el proyecto del Tema 1. Crea los grupos `Dominio`, `Servicios`, `ViewModels` y `Vistas`. Dentro de cada uno crea manualmente, con **File ▸ New ▸ File ▸ Swift File** y el target `RutaFlowApp` seleccionado, los archivos `EnvioLocal.swift`, `ServicioAPI.swift`, `EnviosViewModel.swift` y `ListaEnvios.swift`. Escribe en ellos los fragmentos correspondientes del Paso 4: inyecta servicio y `ModelContext`, convierte DTOs a `EnvioLocal` y actualiza por ID sin insertar duplicados en cada refresco. Límite de la decisión: degradar silenciosamente con `try?` no conviene para un error que ocurre durante una acción directa del conductor (como un PIN incorrecto al confirmar una entrega) — ahí el error debe propagarse y mostrarse explícitamente; `try?` se reserva específicamente para sincronización de background no crítica, como este caso.
-
-#### Paso 4 · Demostración guiada desde cero
-
-En `Dominio/EnvioLocal.swift`, declara el modelo persistente y el DTO:
 
 ```swift
 import SwiftData
@@ -157,8 +218,6 @@ struct EnvioRemoto: Sendable {
 }
 ```
 
-En `Servicios/ServicioAPI.swift`, escribe este servicio local determinista; representa la respuesta remota sin depender de una API preparada:
-
 ```swift
 import Foundation
 
@@ -169,8 +228,6 @@ final class ServicioAPI {
     }
 }
 ```
-
-En `ViewModels/EnviosViewModel.swift`, implementa la orquestación completa:
 
 ```swift
 import Foundation
@@ -214,8 +271,6 @@ final class EnviosViewModel {
 }
 ```
 
-En `Vistas/ListaEnvios.swift`, crea la vista que solo conoce el ViewModel:
-
 ```swift
 import SwiftUI
 
@@ -234,89 +289,27 @@ struct ListaEnvios: View {
 }
 ```
 
-Por último, sustituye el contenido del `RutaFlowApp.swift` generado para conectar tus propios tipos:
-
-```swift
-import SwiftUI
-import SwiftData
-
-@main
-struct RutaFlowApp: App {
-    private let container: ModelContainer
-    private let vm: EnviosViewModel
-
-    init() {
-        do {
-            let container = try ModelContainer(for: EnvioLocal.self)
-            self.container = container
-            self.vm = EnviosViewModel(
-                servicio: ServicioAPI(),
-                context: container.mainContext
-            )
-        } catch {
-            fatalError("No se pudo crear el almacén local: \(error)")
-        }
-    }
-
-    var body: some Scene {
-        WindowGroup { ListaEnvios(vm: vm) }
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: `ListaEnvios` observa `envios` (poblado desde SwiftData), y llamar a `sincronizar()` actualiza esos datos locales con lo que responda `ServicioAPI`; si `ServicioAPI` falla, `sincronizar()` simplemente no actualiza nada, y la vista sigue mostrando los últimos envíos guardados localmente.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `try?` por `try` (sin el `?`) en la llamada a `servicio.obtenerEnvios()` dentro de una función que no declaraste como `throws` — ese es el fallo deliberado: el proyecto deja de compilar, porque propagar el error sin manejarlo exige que `sincronizar()` también sea `throws`, y entonces quien la llama necesitaría decidir qué hacer con ese error.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a la UI) cuando `obtenerEnvios()` falle, para poder diagnosticar fallas de sincronización sin interrumpir al conductor con un error intrusivo por cada corte de señal.
-
-#### Paso 7 · Cierre
-Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: separá esa arquitectura en paquetes locales con Swift Package Manager. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
-**Implicación práctica:** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
+</details>
 
 ### Tema 3: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min
 
-**Prerrequisito:** tema «Arquitectura del proyecto integrador» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** crear un paquete local con dos módulos (dominio y red), agregar una dependencia externa con versión fijada, usarlo desde la app y ejecutar sus pruebas con `swift test`.
+#### ► DE QUÉ TRATA
+Usa Xcode 26 (Swift 6.2) o posterior. Dentro de academia-ios, crea el paquete con mkdir -p Paquetes/RutaFlowKit && cd Paquetes/RutaFlowKit && swift package init --type library --name RutaFlowKit.
 
-**¿Por qué es importante?** Cuando todo el código vive en el target de la app, compilar tarda, las pruebas necesitan el simulador y cualquier archivo puede depender de cualquier otro. Los paquetes separan responsabilidades y sus pruebas corren en segundos.
+#### ► LA IDEA EN UNA FRASE
+**Usa Xcode 26 (Swift 6.2) o posterior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Xcode 26 (Swift 6.2) o posterior. Dentro de `academia-ios`, crea el paquete con `mkdir -p Paquetes/RutaFlowKit && cd Paquetes/RutaFlowKit && swift package init --type library --name RutaFlowKit`.
+#### ► LA ANALOGÍA
+Piensa en swift package manager: separar la app en paquetes locales y declarar dependencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-La app de RutaFlow tardaba cuatro minutos en compilar desde cero y las reglas de tarifas solo se podían probar con el simulador. Al moverlas a un paquete, sus pruebas corren en la terminal en dos segundos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** paquete, `Package.swift`, producto, target, dependencia, versión semántica, `Package.resolved`, paquete local.
-
-Un **paquete** se describe en `Package.swift`:
-
-- **targets:** módulos de código (`Dominio`, `Red`) y sus pruebas.
-- **productos:** lo que otros pueden importar (una librería con uno o más targets).
-- **dependencias:** otros paquetes, con una regla de versión (`from: "1.2.0"` acepta 1.x desde 1.2.0).
-
-Cada target solo puede importar los targets que declara como dependencia, así que el compilador hace cumplir la arquitectura. `Package.resolved` guarda las versiones exactas resueltas: súbelo al repositorio para builds reproducibles.
-
-En Xcode, un paquete local se agrega arrastrando su carpeta al proyecto o con **File > Add Package Dependencies > Add Local**.
-
-**Analogía:** los targets son habitaciones con puertas que solo abren hacia donde dice el plano (`dependencies`). La analogía falla en que el plano lo revisa el compilador en cada build, no un inspector de vez en cuando.
-
-**Límite de uso:** no separes en paquetes demasiado pequeños: cada uno agrega configuración. Los recursos (imágenes, catálogos) en paquetes necesitan `resources:` y `Bundle.module`.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     App["RutaFlowApp"] --> K["producto RutaFlowKit"]
@@ -326,9 +319,51 @@ flowchart TB
     R --> E["swift-collections (externo)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Swift Package Manager: separar la app en paquetes locales y declarar dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-ios/Paquetes/RutaFlowKit/Package.swift`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Swift Package Manager: separar la app en paquetes locales y declarar dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses swift package manager: separar la app en paquetes locales y declarar dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: swift package manager: separar la app en paquetes locales y declarar dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Swift Package Manager: separar la app en paquetes locales y declarar dependencias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve swift package manager: separar la app en paquetes locales y declarar dependencias en tu contexto?
+2. ¿Cómo sabrías que swift package manager: separar la app en paquetes locales y declarar dependencias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar swift package manager: separar la app en paquetes locales y declarar dependencias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    App["RutaFlowApp"] --> K["producto RutaFlowKit"]
+    K --> R["target Red"]
+    K --> D["target Dominio"]
+    R --> D
+    R --> E["swift-collections (externo)"]
+```
 
 ```swift
 // swift-tools-version: 6.0
@@ -354,16 +389,12 @@ let package = Package(
 )
 ```
 
-Archivo `academia-ios/Paquetes/RutaFlowKit/Sources/Dominio/Tarifa.swift`:
-
 ```swift
 public struct Tarifa: Sendable {
     public init() {}
     public func centavos(kilos: Int) -> Int { 1_000 + kilos * 120 }
 }
 ```
-
-Archivo `academia-ios/Paquetes/RutaFlowKit/Sources/Red/ColaDeTarifas.swift` (SwiftPM rechaza un target sin archivos, así que `Red` necesita al menos uno; este usa `Deque` de swift-collections):
 
 ```swift
 import Collections
@@ -377,8 +408,6 @@ public struct ColaDeTarifas: Sendable {
 }
 ```
 
-Archivo `academia-ios/Paquetes/RutaFlowKit/Tests/DominioTests/TarifaTests.swift`:
-
 ```swift
 import Testing
 @testable import Dominio
@@ -388,77 +417,33 @@ import Testing
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-ios/Paquetes/RutaFlowKit
 swift build
 swift test
 ```
 
-**Explicación por bloques:** `Package.swift` declara la librería `RutaFlowKit` con dos targets. `Dominio` no depende de nada; `Red` depende de `Dominio` y del producto `Collections` del paquete externo, fijado desde la versión 1.1.0. El target de pruebas solo ve `Dominio`. `Tarifa` es `public` para que la app la pueda usar. La prueba usa Swift Testing y corre con `swift test`, sin simulador.
-
-**Resultado esperado:**
-
-```text
-Building for debugging...
-Build complete!
-◇ Test run started.
-✔ Test tarifaDeDosKilos() passed
-✔ Test run with 1 test passed
-```
-
-**Fallo deliberado:** en `Dominio/Tarifa.swift` agrega `import Collections`. **Error esperado:** con Swift 6.4 / Xcode 27, `unable to resolve module dependency: 'Collections'` (versiones anteriores decían `no such module 'Collections'`). **Diagnóstico:** `Dominio` no declara esa dependencia. El compilador hace cumplir la regla «el dominio no depende de librerías externas».
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** compila y prueba el paquete desde la terminal.
-2. **Variación:** agrega el paquete local a `RutaFlowApp` en Xcode y usa `Tarifa` en una vista.
-3. **Diagnóstico:** reproduce el fallo deliberado del import.
-4. **Integración:** agrega un recurso JSON de tarifas al target `Dominio` con `resources: [.process("tarifas.json")]` y léelo con `Bundle.module`.
-5. **Diseño:** decide qué partes de RutaFlow merecen paquete propio y dibuja sus dependencias.
-
-**Pista:** si Xcode no encuentra un módulo del paquete, revisa que esté en el producto que agregaste al target de la app.
-
-#### Paso 6 · Práctica independiente
-
-Crea el target `Persistencia` que dependa de `Dominio` y no de `Red`, con su target de pruebas, y comprueba con un import indebido que el compilador lo rechaza.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas producto, target y dependencia.
-- [ ] `swift test` pasa sin simulador.
-- [ ] Reprodujiste el error de un import no declarado.
-- [ ] Subes `Package.resolved` al repositorio.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar `public` en lo que usa la app, no subir `Package.resolved` y crear paquetes para cada archivo. **Siguiente paso:** el tema «Sincronización entre red y persistencia local» usa los targets `Red` y `Dominio`.
-
-**Transferencia al proyecto integrador «RutaFlow»:** mueve las reglas de tarifas y el cliente de red de RutaFlow a `RutaFlowKit` y ejecuta sus pruebas en el CI con `swift test`.
-
-**Fuente oficial:** [Swift.org — Package Manager](https://www.swift.org/documentation/package-manager/) y [Apple — Swift packages](https://developer.apple.com/documentation/xcode/swift-packages).
+</details>
 
 ### Tema 4: Cierre del track · Experto · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (`@Observable` en `EnviosViewModel`) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo. Si no has hecho ninguno de esos cursos, compara en su lugar con la alternativa dentro de iOS que descartaste (por ejemplo, `ObservableObject` con `@Published` frente a `@Observable`, Módulo 2); el ejercicio es el mismo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió todavía que articules explícitamente qué de esa experiencia fue específico de Swift/SwiftUI y qué es un principio universal de UI declarativa que verías igual en otra plataforma.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (@Observable en EnviosViewModel) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo. Si no…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una app iOS completa combina seguridad de tipos (optionals, enums exhaustivos), concurrencia estructurada (`async`/`await`, actors) y UI reactiva sincronizada automáticamente (`@Observable`) — una pieza musical interpretada con instrumentos diseñados para resaltar esas fortalezas específicas.
-**Conceptos clave:** lo que hace que una app "se sienta nativa" en el sentido más profundo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (@Observable en EnviosViewModel) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web).**
 
-Una app iOS "completa" combina precisamente lo que Swift y SwiftUI hacen especialmente bien y que se ha estudiado a lo largo de todo el track: seguridad de tipos incorporada desde el diseño mismo del lenguaje (optionals, enums exhaustivos, Módulo 0), concurrencia estructurada que elimina por completo el anidamiento de callbacks tradicional (`async`/`await`, actors, `TaskGroup`, Módulo 4), y una UI declarativa que se mantiene automáticamente sincronizada con el estado subyacente sin código manual de actualización (`@Observable`, `@Query`, Módulos 2 y 6); el resultado combinado de estos tres pilares se percibe, de forma bastante literal, como genuinamente "nativo" de la plataforma, no simplemente como una app funcional construida con las herramientas de Apple.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Reflexionar sobre qué decisión de arquitectura resultó más natural en SwiftUI comparado con otros frameworks conocidos (Compose en Android, React en la web) es un ejercicio valioso para consolidar qué aspectos son genuinamente específicos del ecosistema Apple (la integración nativa de `@Observable` con el sistema de tipos de Swift, la verificación de exhaustividad de los enums) frente a principios universales de UI declarativa moderna (composición de vistas, estado como fuente de verdad, flujo unidireccional de datos) que simplemente se expresan con sintaxis distinta en cada plataforma estudiada a lo largo de la Academia.
+#### ► LA ANALOGÍA
+Piensa en cierre del track como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** una app iOS completa es como una pieza musical interpretada con instrumentos específicamente diseñados para resaltar sus fortalezas naturales (seguridad de tipos, concurrencia estructurada, UI reactiva), en vez de forzar un estilo genérico que ignora las capacidades particulares de la plataforma para la que fue compuesta.
-
-**¿Por qué es importante?** Cerrar el track integrando todos los conceptos en un proyecto real consolida que una app iOS profesional requiere la combinación de seguridad de tipos, concurrencia estructurada, y UI reactiva sincronizada automáticamente, los tres pilares que hacen que una app se perciba genuinamente nativa de la plataforma.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["App iOS nativa"]
@@ -477,11 +462,61 @@ graph TD
     style F fill:#fff3e0
 ```
 
-* Código: escribe la retrospectiva sobre tu propio `ViewModels/EnviosViewModel.swift`, creado manualmente en el target `RutaFlowApp`.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cierre del track se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
----
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cierre del track | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► CUÁNDO NO USAR ESTO
+No uses cierre del track por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cierre del track funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cierre del track existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cierre del track en tu contexto?
+2. ¿Cómo sabrías que cierre del track no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cierre del track?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["App iOS nativa"]
+    A -->|Pilar 1| B["Seguridad de tipos<br/>optionals, enums exhaustivos<br/>M0"]
+    A -->|Pilar 2| C["Concurrencia estructurada<br/>async/await, actors<br/>M4"]
+    A -->|Pilar 3| D["UI reactiva<br/>@Observable, @Query<br/>M2, M6"]
+    
+    E["Principios universales"]
+    E -.->|Composición de vistas| F["También en React, Compose"]
+    E -.->|Estado como verdad| F
+    E -.->|Flujo unidireccional| F
+    
+    style B fill:#e3f2fd
+    style C fill:#e3f2fd
+    style D fill:#e3f2fd
+    style F fill:#fff3e0
+```
+
 ```text
 Decisión: EnviosViewModel usa @Observable (Módulo 2) para que ListaEnvios
 se redibuje solo cuando lee la propiedad que cambió.
@@ -494,45 +529,8 @@ valor y una forma de notificar cambios, sin poseer el estado él mismo
 (igual en Compose/Android y en hooks de React).
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de SwiftUI y no existe nada parecido en otras plataformas" — ese es el fallo deliberado: es una afirmación incorrecta que ignora que Compose (`mutableStateOf`) y React (hooks) resuelven exactamente el mismo problema de redibujado granular, solo con mecanismos de lenguaje distintos.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
-
-#### Paso 7 · Cierre
-Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
-**Implicación práctica:** Distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app iOS con SwiftUI, datos reales, persistencia local y tests.
-
-**Requisitos previos:** Módulos 0-11 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Diseñar la arquitectura MVVM completa | Ver Tema 1 | Vistas, ViewModels, Servicios, Dominio |
-| 2 | Implementar networking con `URLSession` + `async`/`await` | Ver Tema 2 | Con manejo de errores tipado |
-| 3 | Persistir datos localmente con SwiftData | Ver Tema 2 | Sincronizados con la API |
-| 4 | Escribir tests de la capa de dominio | Ver Módulo 9 | Con Swift Testing |
-| 5 | Subir un build a TestFlight | Ver Módulo 11 | Para pruebas internas |
-
-**Verificación:** el proyecto se considera exitoso si la app funciona correctamente con datos persistidos localmente incluso sin conexión (mostrando el último caché sincronizado), si el ViewModel orquesta ambas fuentes sin que la vista conozca ninguna directamente, y si la suite de tests de dominio pasa consistentemente con Swift Testing.
-
-**Errores comunes y soluciones**
-
-- **Hacer que la vista acceda directamente a `URLSession` o `ModelContext`.** Rompe la separación de capas; toda orquestación debe pasar por el ViewModel.
-- **Propagar errores de sincronización en background directamente a la UI de forma intrusiva.** Considera una degradación silenciosa apropiada para operaciones no críticas.
-- **Omitir tests de la capa de dominio, confiando solo en probar manualmente en el simulador.** Los tests dan confianza repetible antes de cada subida a TestFlight.
-
----
+</details>

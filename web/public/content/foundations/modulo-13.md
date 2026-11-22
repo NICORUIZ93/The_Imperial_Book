@@ -8,21 +8,26 @@ Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo 
 
 ## Aprende construyendo
 
+
 ### Tema 1: Decorator: agregar comportamiento sin heredar · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador `@` de Python y decidir cuándo preferirlo a la herencia. Prerrequisitos: Módulo 7, Tema 3 (diseño modular y principios).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-RutaFlow envía notificaciones de estado. Unos clientes quieren el texto en mayúsculas, otros con firma, otros ambas cosas. Con herencia necesitarías una subclase por combinación (`NotificadorFirmadoMayusculas`…). Este mismo patrón es el que usan los middlewares de Express, los filtros de Spring y los interceptores de Angular: un caso real que verás en cada framework.
+#### ► DE QUÉ TRATA
+Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador @ de Python y decidir cuándo preferirlo a la herencia. Prerrequisitos: Módulo 7, Tema 3 (diseño modular y principios).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un **decorador** implementa la misma interfaz que el objeto que envuelve, delega en él y agrega algo antes o después. Como cada decorador también es "un notificador", se pueden apilar en cualquier orden y combinación en tiempo de ejecución. Python además tiene el **decorador de función** (`@cronometrado`): una función que recibe otra y devuelve una envoltura. Son la misma idea aplicada a funciones.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador @ de Python y decidir cuándo preferirlo a la herencia.**
 
-**Analogía:** es como vestirse por capas: la camiseta, el saco y la chaqueta se agregan y se quitan sin cambiar a la persona que está debajo.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama:**
+#### ► LA ANALOGÍA
+Piensa en decorator: agregar comportamiento sin heredar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     C[Cliente] --> F[ConFirma]
@@ -30,23 +35,53 @@ flowchart LR
     M --> N[Notificador]
 ```
 
-**¿Por qué es importante?** porque reconocer el patrón te permite entender middlewares, interceptores y anotaciones como `@Transactional` sin magia.
-**Fuente oficial:** [Decorator (refactoring.guru)](https://refactoring.guru/es/design-patterns/decorator), [functools.wraps (docs.python.org)](https://docs.python.org/3/library/functools.html#functools.wraps).
-**Conceptos clave:** misma interfaz, composición, delegación, apilamiento, `functools.wraps`, decorador de función.
-**Cuándo no usarlo:** si solo hay una variante fija, una subclase o un parámetro es más claro. Muchas capas de decoradores dificultan depurar qué capa hizo qué.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Decorator: agregar comportamiento sin heredar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Decorator: agregar comportamiento sin heredar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses decorator: agregar comportamiento sin heredar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: decorator: agregar comportamiento sin heredar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Decorator: agregar comportamiento sin heredar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve decorator: agregar comportamiento sin heredar en tu contexto?
+2. ¿Cómo sabrías que decorator: agregar comportamiento sin heredar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar decorator: agregar comportamiento sin heredar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    C[Cliente] --> F[ConFirma]
+    F --> M[EnMayusculas]
+    M --> N[Notificador]
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `decorator.py`:
 
 ```python
 import time
@@ -89,13 +124,9 @@ print(completo.enviar("G-101", "Tu paquete salió"))
 print("Tarifa:", calcular_tarifa(3))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 decorator.py
 ```
-
-**Resultado esperado:**
 
 ```text
 [G-101] Tu paquete salió
@@ -104,34 +135,27 @@ python3 decorator.py
 Tarifa: 7600
 ```
 
-La segunda línea pasó por dos decoradores: primero `EnMayusculas` cambió el mensaje y luego `ConFirma` agregó la firma. El tiempo exacto de `calcular_tarifa` varía unos milisegundos entre ejecuciones.
-
-**Fallo deliberado:** Borra la línea `@wraps(funcion)` y agrega al final `print(calcular_tarifa.__name__)`. Imprime `envoltura` en vez de `calcular_tarifa`: el decorador ocultó el nombre y la documentación de la función original, lo que confunde logs, trazas y herramientas de pruebas. `functools.wraps` copia esos metadatos.
-
-#### Paso 5 · Práctica guiada
-Crea un decorador `ConRegistro` que imprima `enviando G-101` antes de delegar, y apílalo encima de los otros dos. **Pista:** el orden de construcción importa: `ConRegistro(ConFirma(EnMayusculas(Notificador())))` registra antes que todo lo demás.
-
-#### Paso 6 · Práctica independiente
-Escribe un decorador de función `@reintentar(veces=3)` que repita la llamada si lanza `ConnectionError` y pruébalo con una función que falla dos veces y luego funciona.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 2: State: un objeto que cambia de comportamiento según su estado · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reemplazar cadenas de `if estado == ...` por objetos estado, impedir transiciones inválidas y dibujar la máquina de estados de un envío. Prerrequisitos: Tema 1 de este módulo, que a su vez usa las clases del Módulo 1. La máquina de estados se define aquí, en el Paso 3; su versión con entradas eléctricas se estudia en el curso Control 1, módulo 29, tema 4.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un envío de RutaFlow pasa por registrado, en ruta, entregado o cancelado. Un bug real muy común es cancelar un envío que ya se entregó porque un `if` olvidó un caso. Con el patrón State, cada estado decide qué acciones permite.
+#### ► DE QUÉ TRATA
+Al finalizar podrás reemplazar cadenas de if estado == ... por objetos estado, impedir transiciones inválidas y dibujar la máquina de estados de un envío. Prerrequisitos: Tema 1 de este módulo, que a su vez usa las clases del Módulo 1. La máquina de estados se define aquí, en el…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El objeto **contexto** (`Envio`) guarda una referencia a su estado actual y le **delega** cada acción. Cada clase de estado implementa solo las transiciones válidas y cambia el estado del contexto; las demás lanzan un error. Agregar un estado nuevo es agregar una clase, no tocar diez `if`.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reemplazar cadenas de if estado == ...**
 
-**Analogía:** un semáforo no tiene un manual de "si estoy en rojo y… si estoy en verde y…": cada luz sabe cuál viene después.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama:**
+#### ► LA ANALOGÍA
+Piensa en state: un objeto que cambia de comportamiento según su estado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
     [*] --> Registrado
@@ -140,23 +164,54 @@ stateDiagram-v2
     EnRuta --> Entregado: entregar
 ```
 
-**¿Por qué es importante?** porque los flujos de pedidos, pagos y aprobaciones son máquinas de estados, y modelarlas explícitamente elimina transiciones imposibles.
-**Fuente oficial:** [State (refactoring.guru)](https://refactoring.guru/es/design-patterns/state).
-**Conceptos clave:** contexto, objeto estado, delegación, transición válida, máquina de estados.
-**Cuándo no usarlo:** con dos o tres estados y casi sin comportamiento distinto, un `Enum` y un diccionario de transiciones permitidas es más simple.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| State: un objeto que cambia de comportamiento según su estado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar State: un objeto que cambia de comportamiento según su estado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses state: un objeto que cambia de comportamiento según su estado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: state: un objeto que cambia de comportamiento según su estado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- State: un objeto que cambia de comportamiento según su estado existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve state: un objeto que cambia de comportamiento según su estado en tu contexto?
+2. ¿Cómo sabrías que state: un objeto que cambia de comportamiento según su estado no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar state: un objeto que cambia de comportamiento según su estado?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+stateDiagram-v2
+    [*] --> Registrado
+    Registrado --> EnRuta: despachar
+    Registrado --> Cancelado: cancelar
+    EnRuta --> Entregado: entregar
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `state.py`:
 
 ```python
 class Estado:
@@ -196,13 +251,9 @@ except ValueError as error:
     print("Rechazado:", error)
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 state.py
 ```
-
-**Resultado esperado:**
 
 ```text
 G-202: despachar -> en ruta
@@ -210,34 +261,27 @@ G-202: entregar  -> entregado
 Rechazado: No se puede cancelar en estado entregado
 ```
 
-La cancelación se rechaza porque `Entregado` no redefine `cancelar`, así que hereda la versión que lanza `ValueError`.
-
-**Fallo deliberado:** Agrega `envio.ejecutar("pagar")` después de crear el envío. Obtienes `AttributeError: 'Registrado' object has no attribute 'pagar'`: la acción no existe en ningún estado. Diagnostica si debe ser una acción nueva (agrégala a `Estado` con su error por defecto) o un error de quien llama.
-
-#### Paso 5 · Práctica guiada
-Agrega el estado `Devuelto`, al que solo se llega desde `EnRuta` con la acción `devolver`. **Pista:** crea la clase `Devuelto(Estado)`, agrega `devolver` a `Estado` con el error por defecto y redefínela solo en `EnRuta`.
-
-#### Paso 6 · Práctica independiente
-Guarda en el contexto un historial de transiciones con fecha y hora, e imprímelo al final.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 3: Template Method: un algoritmo fijo con pasos variables · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con `abc` (Módulo 1, Tema 7).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-RutaFlow genera varios reportes diarios: CSV para contabilidad y una lista de entregas fallidas para soporte. Todos siguen el mismo orden (filtrar, formatear, encabezado y pie); solo cambian algunos pasos. Es el caso real de los frameworks: `unittest.TestCase` llama a `setUp`, la prueba y `tearDown` en un orden fijo.
+#### ► DE QUÉ TRATA
+Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con abc (Módulo 1, Tema 7).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El **método plantilla** (`generar`) fija el orden de los pasos y no se sobrescribe. Algunos pasos son **abstractos** (cada subclase debe implementarlos) y otros son **ganchos** con un comportamiento por defecto que se puede cambiar. Es el principio de Hollywood: "no nos llames, nosotros te llamamos".
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos).**
 
-**Analogía:** una receta de pan fija los pasos (mezclar, amasar, hornear); cada panadero decide qué harina usar y cuánto tiempo hornear.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama:**
+#### ► LA ANALOGÍA
+Piensa en template method: un algoritmo fijo con pasos variables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 classDiagram
     ReporteDiario <|-- ReporteCSV
@@ -251,23 +295,59 @@ classDiagram
     }
 ```
 
-**¿Por qué es importante?** porque explica cómo funcionan los ciclos de vida de los frameworks (pruebas, componentes, servlets) que te llaman a ti.
-**Fuente oficial:** [Template Method (refactoring.guru)](https://refactoring.guru/es/design-patterns/template-method), [abc (docs.python.org)](https://docs.python.org/3/library/abc.html).
-**Conceptos clave:** método plantilla, paso abstracto, gancho, principio de Hollywood, `abc.abstractmethod`.
-**Cuándo no usarlo:** si las variantes difieren en un solo paso, pasar una función o usar Strategy evita una jerarquía de clases.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Template Method: un algoritmo fijo con pasos variables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Template Method: un algoritmo fijo con pasos variables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses template method: un algoritmo fijo con pasos variables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: template method: un algoritmo fijo con pasos variables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Template Method: un algoritmo fijo con pasos variables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve template method: un algoritmo fijo con pasos variables en tu contexto?
+2. ¿Cómo sabrías que template method: un algoritmo fijo con pasos variables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar template method: un algoritmo fijo con pasos variables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+classDiagram
+    ReporteDiario <|-- ReporteCSV
+    ReporteDiario <|-- ReporteFallidas
+    class ReporteDiario {
+      +generar()
+      +encabezado()
+      +incluir()
+      +formatear()*
+      +pie()
+    }
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `template_method.py`:
 
 ```python
 from abc import ABC, abstractmethod
@@ -304,13 +384,9 @@ print(ReporteCSV().generar(entregas))
 print(ReporteFallidas().generar(entregas))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 template_method.py
 ```
-
-**Resultado esperado:**
 
 ```text
 Reporte RutaFlow
@@ -327,34 +403,27 @@ Entregas fallidas
 Total: 2
 ```
 
-`ReporteFallidas` solo cambió el encabezado y el filtro; el orden de los pasos lo sigue decidiendo la clase base.
-
-**Fallo deliberado:** Crea `class ReporteVacio(ReporteDiario): pass` e instancia `ReporteVacio()`. Python 3.14 responde `TypeError: Can't instantiate abstract class ReporteVacio without an implementation for abstract method 'formatear'`: el paso obligatorio no está implementado y el error aparece al crear el objeto, no en producción.
-
-#### Paso 5 · Práctica guiada
-Crea `ReporteJSON` que devuelva las entregas como JSON usando `json.dumps`. **Pista:** solo necesitas redefinir `formatear`; si el JSON no debe llevar encabezado ni pie, redefine también esos dos ganchos para que devuelvan una cadena vacía.
-
-#### Paso 6 · Práctica independiente
-Reescribe los dos reportes sin herencia, pasando funciones como parámetros (`generar(entregas, formatear, incluir)`), y compara cuál te parece más fácil de extender.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 4: Chain of Responsibility: una cadena de validadores · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás encadenar manejadores independientes, cortar la cadena en el primer error y razonar sobre el orden de la cadena. Prerrequisito: Tema 1 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Antes de aceptar un pedido, RutaFlow valida dirección, peso y cobertura. Mañana se agregarán validaciones de seguro y de horario. Es el caso real de los middlewares HTTP y de los filtros de seguridad de Spring: cada eslabón decide si atiende, rechaza o pasa al siguiente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás encadenar manejadores independientes, cortar la cadena en el primer error y razonar sobre el orden de la cadena.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Cada **manejador** tiene una referencia al **siguiente**. Al recibir una petición la revisa: si encuentra un problema responde y corta; si no, la pasa. El cliente solo conoce el primer eslabón, y agregar una validación es insertar un eslabón sin tocar los demás.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** es la fila de controles de un aeropuerto: documentos, equipaje y puerta de embarque; cualquiera puede detenerte y ninguno necesita saber cómo trabaja el otro.
+#### ► LA ANALOGÍA
+Piensa en chain of responsibility: una cadena de validadores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     P[Pedido] --> D[Direccion]
@@ -366,23 +435,57 @@ flowchart LR
     C -- error --> X
 ```
 
-**¿Por qué es importante?** porque es la estructura interna de los pipelines de middlewares, filtros de seguridad y manejadores de eventos.
-**Fuente oficial:** [Chain Of Responsibility (refactoring.guru)](https://refactoring.guru/es/design-patterns/chain-of-responsibility).
-**Conceptos clave:** manejador, siguiente eslabón, corte de la cadena, orden de evaluación, falla silenciosa.
-**Cuándo no usarlo:** si todas las validaciones siempre se ejecutan y no importa el orden, una lista de funciones recorrida con un bucle es más simple.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Chain of Responsibility: una cadena de validadores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Chain of Responsibility: una cadena de validadores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses chain of responsibility: una cadena de validadores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: chain of responsibility: una cadena de validadores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Chain of Responsibility: una cadena de validadores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve chain of responsibility: una cadena de validadores en tu contexto?
+2. ¿Cómo sabrías que chain of responsibility: una cadena de validadores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar chain of responsibility: una cadena de validadores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    P[Pedido] --> D[Direccion]
+    D -- ok --> W[Peso]
+    W -- ok --> C[Cobertura]
+    C -- ok --> A[aceptado]
+    D -- error --> X[rechazado]
+    W -- error --> X
+    C -- error --> X
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `chain.py`:
 
 ```python
 class Validador:
@@ -420,13 +523,9 @@ for pedido in pedidos:
     print(cadena.manejar(pedido))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 chain.py
 ```
-
-**Resultado esperado:**
 
 ```text
 aceptado
@@ -435,34 +534,27 @@ rechazado por Peso: 45 kg fuera de rango
 rechazado por Cobertura: sin cobertura en Leticia
 ```
 
-Cada pedido se detiene en el primer eslabón que encuentra un problema; el primero pasa los tres.
-
-**Fallo deliberado:** Construye la cadena como `Direccion(Peso())`, olvidando `Cobertura`. El pedido a Leticia ahora imprime `aceptado`: no hay ningún error visible, pero se aceptó un envío sin cobertura. Las cadenas mal armadas fallan en silencio, por eso conviene una prueba por cada eslabón.
-
-#### Paso 5 · Práctica guiada
-Agrega un eslabón `Horario` que rechace pedidos con `"hora"` fuera de 7 a 19. **Pista:** crea la subclase con su `revisar`, ponle a los pedidos de prueba la clave `"hora"` y decide en qué posición de la cadena colocarla.
-
-#### Paso 6 · Práctica independiente
-Haz que la cadena devuelva **todos** los errores en lugar de cortar en el primero y discute cuándo es mejor cada comportamiento (formularios frente a seguridad).
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 5: Mediator: coordinar objetos sin que se conozcan · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás centralizar la coordinación entre objetos en un mediador, reducir dependencias cruzadas y reconocer cuándo el mediador se vuelve demasiado grande. Prerrequisito: Tema 4 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Cuando un mensajero de RutaFlow sufre una avería, otro libre debe tomar su paquete. Si cada mensajero conociera a todos los demás, con 50 mensajeros habría cientos de referencias cruzadas. Es el mismo caso real de una torre de control o de un formulario en el que cambiar un campo habilita otros.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás centralizar la coordinación entre objetos en un mediador, reducir dependencias cruzadas y reconocer cuándo el mediador se vuelve demasiado grande.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El **mediador** (`Central`) es el único que conoce a todos los participantes. Los participantes solo le **notifican eventos** y él decide qué hacer. Las dependencias pasan de "muchos a muchos" a "muchos a uno", y la regla de reasignación vive en un solo lugar.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** los aviones no se hablan entre ellos para decidir quién aterriza: todos hablan con la torre de control.
+#### ► LA ANALOGÍA
+Piensa en mediator: coordinar objetos sin que se conozcan como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A[Ana] --> C((Central))
@@ -471,23 +563,54 @@ flowchart TD
     C --> B
 ```
 
-**¿Por qué es importante?** porque te da un lugar claro para reglas de coordinación, y te enseña a detectar el riesgo opuesto: un mediador que lo sabe todo y se convierte en una "clase dios".
-**Fuente oficial:** [Mediator (refactoring.guru)](https://refactoring.guru/es/design-patterns/mediator).
-**Conceptos clave:** mediador, participante, notificación de eventos, acoplamiento muchos a uno, clase dios.
-**Cuándo no usarlo:** si solo dos objetos se comunican, una referencia directa es más clara. Si la coordinación crece mucho, divide el mediador o usa eventos (Observer).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mediator: coordinar objetos sin que se conozcan se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mediator: coordinar objetos sin que se conozcan | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses mediator: coordinar objetos sin que se conozcan por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mediator: coordinar objetos sin que se conozcan funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Mediator: coordinar objetos sin que se conozcan existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mediator: coordinar objetos sin que se conozcan en tu contexto?
+2. ¿Cómo sabrías que mediator: coordinar objetos sin que se conozcan no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mediator: coordinar objetos sin que se conozcan?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    A[Ana] --> C((Central))
+    B[Beto] --> C
+    K[Caro] --> C
+    C --> B
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `mediator.py`:
 
 ```python
 class Central:                                # mediador: único punto que conoce a todos
@@ -524,13 +647,9 @@ caro.reportar_averia("G-302")
 print("Eventos registrados:", len(central.registro))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 mediator.py
 ```
-
-**Resultado esperado:**
 
 ```text
 Ana reporta avería con G-301
@@ -540,34 +659,27 @@ Caro reporta avería con G-302
 Eventos registrados: 2
 ```
 
-Ana no sabe que Beto existe; la Central eligió a Beto porque era el primero libre. Para G-302 ya no quedaba nadie disponible.
-
-**Fallo deliberado:** Crea `dani = Mensajero("Dani")` sin registrarlo y llama `dani.reportar_averia("G-303")`. Obtienes `AttributeError: 'NoneType' object has no attribute 'notificar'`: un participante sin mediador no puede comunicarse. Diagnostica si conviene exigir la central en el constructor.
-
-#### Paso 5 · Práctica guiada
-Haz que la Central elija al mensajero libre con menos entregas asignadas en vez del primero. **Pista:** agrega un contador `entregas` a `Mensajero`, increméntalo en `asignar` y usa `min(libres, key=...)`.
-
-#### Paso 6 · Práctica independiente
-Agrega el evento `"libre"`: cuando un mensajero termina, avisa a la Central y esta le asigna el primer paquete en espera.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 6: Memento: guardar y restaurar estado para deshacer · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás implementar deshacer con instantáneas inmutables, separar a quien guarda el estado de quien lo produce y explicar por qué una copia superficial rompe el historial. Prerrequisito: Módulo 2, Tema 2 (pilas).
 
-#### Paso 2 · Contexto y caso real
-El planificador de rutas de RutaFlow permite agregar paradas y deshacer cambios. Es el caso real de "Ctrl+Z" en editores, de los borradores de formularios y de los puntos de restauración.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás implementar deshacer con instantáneas inmutables, separar a quien guarda el estado de quien lo produce y explicar por qué una copia superficial rompe el historial.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El **originador** (`Ruta`) sabe crear una **instantánea** (memento) de su estado y restaurarse desde ella. El **cuidador** (`Historial`) apila los mementos sin mirar su contenido. La instantánea debe ser una **copia**: si comparte la lista interna con el originador, los cambios posteriores la modifican y el historial deja de servir.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** es la foto que tomas de un rompecabezas antes de moverlo: si algo sale mal, lo armas igual que en la foto.
+#### ► LA ANALOGÍA
+Piensa en memento: guardar y restaurar estado para deshacer como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant H as Historial
@@ -578,23 +690,56 @@ sequenceDiagram
     H->>R: restaurar(Memento)
 ```
 
-**¿Por qué es importante?** porque deshacer, borradores y versiones son requisitos frecuentes, y el error de la copia superficial aparece también en Redux, NgRx y cualquier estado inmutable.
-**Fuente oficial:** [Memento (refactoring.guru)](https://refactoring.guru/es/design-patterns/memento), [dataclasses (docs.python.org)](https://docs.python.org/3/library/dataclasses.html).
-**Conceptos clave:** originador, memento, cuidador, instantánea inmutable, copia superficial frente a copia.
-**Cuándo no usarlo:** si el estado es enorme, guardar copias completas es caro: usa comandos reversibles (patrón Command) o diferencias.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Memento: guardar y restaurar estado para deshacer se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Memento: guardar y restaurar estado para deshacer | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses memento: guardar y restaurar estado para deshacer por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: memento: guardar y restaurar estado para deshacer funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Memento: guardar y restaurar estado para deshacer existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve memento: guardar y restaurar estado para deshacer en tu contexto?
+2. ¿Cómo sabrías que memento: guardar y restaurar estado para deshacer no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar memento: guardar y restaurar estado para deshacer?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant H as Historial
+    participant R as Ruta
+    H->>R: guardar()
+    R-->>H: Memento
+    H->>R: agregar(parada)
+    H->>R: restaurar(Memento)
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `memento.py`:
 
 ```python
 from dataclasses import dataclass
@@ -636,13 +781,9 @@ historial.deshacer()
 print("Deshacer:", ruta)
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 memento.py
 ```
-
-**Resultado esperado:**
 
 ```text
 Actual:   Depósito -> Chapinero -> Suba
@@ -650,34 +791,27 @@ Deshacer: Depósito -> Chapinero
 Deshacer: Depósito
 ```
 
-Cada `deshacer` restaura la instantánea que se tomó antes del último cambio.
-
-**Fallo deliberado:** En `guardar` cambia `Memento(tuple(self._paradas))` por `Memento(self._paradas)`. Ahora `deshacer` no cambia nada: el memento guarda **la misma lista** que la ruta sigue modificando. No aparece ningún error, solo un resultado incorrecto; compara con `id()` las dos listas para demostrarlo.
-
-#### Paso 5 · Práctica guiada
-Agrega `rehacer`: al deshacer, guarda el estado actual en una segunda pila. **Pista:** al hacer un cambio nuevo, vacía la pila de rehacer, como hacen todos los editores.
-
-#### Paso 6 · Práctica independiente
-Limita el historial a 20 instantáneas y mide cuánta memoria ahorras con `sys.getsizeof` en una ruta de 1 000 paradas.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 7: Visitor: operaciones nuevas sin tocar las clases · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás separar operaciones (tarifa, etiqueta) de una jerarquía estable de clases usando doble despacho, y reconocer su costo cuando la jerarquía cambia. Prerrequisitos: Temas 1 y 3 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-RutaFlow transporta sobres, cajas y pallets. Cada mes contabilidad, bodega y seguros piden una operación nueva sobre esos mismos tipos. El caso real más conocido es el de los compiladores y linters, que recorren el árbol de sintaxis con visitantes (`ast.NodeVisitor` en Python).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás separar operaciones (tarifa, etiqueta) de una jerarquía estable de clases usando doble despacho, y reconocer su costo cuando la jerarquía cambia.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Cada elemento implementa `aceptar(visitante)` y llama al método del visitante que corresponde a su tipo (**doble despacho**). Una operación nueva es una clase visitante nueva; las clases de paquetes no cambian. El precio: agregar un **tipo** nuevo obliga a modificar todos los visitantes.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** un inspector de impuestos visita una tienda, una fábrica y una finca; cada lugar le abre la puerta y el inspector aplica las reglas de ese tipo de negocio.
+#### ► LA ANALOGÍA
+Piensa en visitor: operaciones nuevas sin tocar las clases como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S[Sobre] -- aceptar --> V{Visitante}
@@ -687,23 +821,55 @@ flowchart LR
     V --> E[EtiquetaBodega]
 ```
 
-**¿Por qué es importante?** porque explica cómo funcionan los linters, compiladores y serializadores, y entrena el análisis de qué cambia más: los tipos o las operaciones.
-**Fuente oficial:** [Visitor (refactoring.guru)](https://refactoring.guru/es/design-patterns/visitor), [ast.NodeVisitor (docs.python.org)](https://docs.python.org/3/library/ast.html#ast.NodeVisitor).
-**Conceptos clave:** doble despacho, visitante, elemento, jerarquía estable, `ast.NodeVisitor`.
-**Cuándo no usarlo:** si los tipos cambian a menudo, o si Python te permite resolverlo con `match` o `singledispatch` en pocas líneas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Visitor: operaciones nuevas sin tocar las clases se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Visitor: operaciones nuevas sin tocar las clases | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses visitor: operaciones nuevas sin tocar las clases por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: visitor: operaciones nuevas sin tocar las clases funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Visitor: operaciones nuevas sin tocar las clases existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve visitor: operaciones nuevas sin tocar las clases en tu contexto?
+2. ¿Cómo sabrías que visitor: operaciones nuevas sin tocar las clases no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar visitor: operaciones nuevas sin tocar las clases?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    S[Sobre] -- aceptar --> V{Visitante}
+    K[Caja] -- aceptar --> V
+    P[Pallet] -- aceptar --> V
+    V --> T[CalculoTarifa]
+    V --> E[EtiquetaBodega]
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `visitor.py`:
 
 ```python
 class Sobre:
@@ -733,13 +899,9 @@ for paquete in carga:
     print(f"{paquete.aceptar(EtiquetaBodega()):<22} tarifa ${paquete.aceptar(CalculoTarifa()):,}")
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 visitor.py
 ```
-
-**Resultado esperado:**
 
 ```text
 SOBRE 120 g            tarifa $3,000
@@ -747,34 +909,27 @@ CAJA 4 kg FRÁGIL       tarifa $15,000
 PALLET con 2 cajas     tarifa $97,000
 ```
 
-El pallet visita sus cajas con el mismo visitante, así que su tarifa incluye la de cada caja.
-
-**Fallo deliberado:** Agrega `class Bolsa:` con `def aceptar(self, visitante): return visitante.visitar_bolsa(self)` y ponla en `carga`. Obtienes `AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'`: el visitante no conoce el tipo nuevo. Ese es el costo de Visitor, y el motivo de usarlo solo con jerarquías estables.
-
-#### Paso 5 · Práctica guiada
-Crea el visitante `PesoTotal` que devuelva los kilos de cada paquete (un sobre pesa sus gramos / 1000). **Pista:** el pallet debe sumar el resultado de visitar cada una de sus cajas, igual que `CalculoTarifa`.
-
-#### Paso 6 · Práctica independiente
-Reescribe `CalculoTarifa` con `functools.singledispatch` o `match` por tipo y compara las dos soluciones.
-
-#### Paso 7 · Cierre
-
+</details>
 
 ### Tema 8: Flyweight: compartir estado para ahorrar memoria · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás separar estado intrínseco (compartido) de extrínseco (propio), compartir objetos con una fábrica y medir el ahorro de memoria. Prerrequisito: Módulo 2, Tema 6 (tablas hash).
 
-#### Paso 2 · Contexto y caso real
-El mapa de RutaFlow muestra 10 000 entregas, cada una con un marcador. Si cada marcador guardara su propio ícono, el mapa consumiría cientos de megas. Es el caso real de los videojuegos (miles de árboles con la misma textura) y de los editores de texto (glifos compartidos).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás separar estado intrínseco (compartido) de extrínseco (propio), compartir objetos con una fábrica y medir el ahorro de memoria.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El **estado intrínseco** (color, ícono) es igual para muchos objetos y se guarda una sola vez en un **flyweight** inmutable. El **estado extrínseco** (latitud, longitud) es propio de cada marcador. Una **fábrica** con caché devuelve siempre el mismo flyweight para la misma clave. Python ya hace algo parecido con cadenas cortas y enteros pequeños (*interning*).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** en una biblioteca hay un solo ejemplar de cada libro de referencia; cada lector anota sus apuntes en su propio cuaderno.
+#### ► LA ANALOGÍA
+Piensa en flyweight: compartir estado para ahorrar memoria como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     M1[Marcador 1] --> T1[TipoMarcador verde]
@@ -784,23 +939,55 @@ flowchart LR
     F --> T2
 ```
 
-**¿Por qué es importante?** porque te enseña a medir memoria y a separar datos compartidos de datos propios, algo clave en mapas, juegos y cachés.
-**Fuente oficial:** [Flyweight (refactoring.guru)](https://refactoring.guru/es/design-patterns/flyweight), [tracemalloc (docs.python.org)](https://docs.python.org/3/library/tracemalloc.html).
-**Conceptos clave:** estado intrínseco, estado extrínseco, fábrica con caché, inmutabilidad, `__slots__`, interning.
-**Cuándo no usarlo:** con pocos objetos o sin datos repetidos el ahorro no compensa la complejidad. Mide antes de optimizar.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Flyweight: compartir estado para ahorrar memoria se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Flyweight: compartir estado para ahorrar memoria | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses flyweight: compartir estado para ahorrar memoria por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: flyweight: compartir estado para ahorrar memoria funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Flyweight: compartir estado para ahorrar memoria existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve flyweight: compartir estado para ahorrar memoria en tu contexto?
+2. ¿Cómo sabrías que flyweight: compartir estado para ahorrar memoria no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar flyweight: compartir estado para ahorrar memoria?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    M1[Marcador 1] --> T1[TipoMarcador verde]
+    M2[Marcador 4] --> T1
+    M3[Marcador 2] --> T2[TipoMarcador rojo]
+    F[FabricaMarcadores] --> T1
+    F --> T2
+```
 
 ```bash
 mkdir patrones && cd patrones
 ```
-
-Crea `flyweight.py`:
 
 ```python
 import sys
@@ -835,13 +1022,9 @@ sin_compartir = sum(sys.getsizeof(m.tipo.icono) for m in marcadores)   # si cada
 print(f"Sin compartir serían: {sin_compartir / 1024 / 1024:.0f} MB")
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 flyweight.py
 ```
-
-**Resultado esperado:**
 
 ```text
 Marcadores: 10000
@@ -850,38 +1033,69 @@ Memoria de íconos compartidos: 45 KB
 Sin compartir serían: 147 MB
 ```
 
-10 000 marcadores comparten solo 3 objetos de tipo. La cifra "sin compartir" suma lo que ocuparía un ícono por marcador.
-
-**Fallo deliberado:** Al final agrega `marcadores[0].tipo.color = "negro"` y cuenta cuántos marcadores quedaron negros con `sum(m.tipo.color == "negro" for m in marcadores)`. Resultado: `3334`. Cambiaste un dato compartido y afectaste a todos los marcadores verdes. Por eso un flyweight debe ser inmutable (por ejemplo, con `@dataclass(frozen=True)`).
-
-#### Paso 5 · Práctica guiada
-Haz inmutable `TipoMarcador` y comprueba que el fallo deliberado ahora lanza un error. **Pista:** con `@dataclass(frozen=True)`, asignar un atributo lanza `dataclasses.FrozenInstanceError`.
-
-#### Paso 6 · Práctica independiente
-Mide con `tracemalloc` la memoria real de crear 10 000 marcadores con y sin la fábrica, y compárala con la estimación del ejemplo.
-
-#### Paso 7 · Cierre
-
-
-## Construcción guiada del capítulo
+</details>
 
 ### Proyecto 13: núcleo de envíos con patrones
 
-Desde una carpeta vacía crea `nucleo-envios/`, inicializa Git y construye una pequeña librería de consola con:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Un `Envio` cuyo ciclo de vida es una máquina de estados (State).
-2. Una cadena de validadores para aceptar envíos (Chain of Responsibility).
-3. Notificaciones decoradas con firma y registro (Decorator).
-4. Deshacer y rehacer en la planificación de paradas (Memento).
-5. Reportes diarios con un esqueleto común (Template Method).
-6. Cálculo de tarifas y etiquetas por tipo de paquete (Visitor).
-7. README con un diagrama por patrón y, para cada uno, la alternativa más simple que descartaste y por qué.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto 13: núcleo de envíos con patrones con foco en comprensión antes de implementación.
 
-**Verificación:** una transición inválida se rechaza; una cadena sin un eslabón tiene una prueba que falla; deshacer restaura exactamente el estado anterior; el README justifica cada patrón con un requisito, no con el nombre del patrón.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto 13: núcleo de envíos con patrones te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- Aplicar un patrón porque existe: escribe primero el requisito y la alternativa simple.
-- Compartir estado mutable en mementos o flyweights: usa tuplas o `dataclass(frozen=True)`.
-- Mediadores que lo saben todo: divide por responsabilidad.
-- Visitor sobre jerarquías que cambian cada semana: usa `match` o `singledispatch`.
+#### ► LA ANALOGÍA
+Piensa en proyecto 13: núcleo de envíos con patrones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto 13: núcleo de envíos con patrones resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto 13: núcleo de envíos con patrones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto 13: núcleo de envíos con patrones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto 13: núcleo de envíos con patrones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto 13: núcleo de envíos con patrones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto 13: núcleo de envíos con patrones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto 13: núcleo de envíos con patrones en tu contexto?
+2. ¿Cómo sabrías que proyecto 13: núcleo de envíos con patrones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto 13: núcleo de envíos con patrones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto 13: núcleo de envíos con patrones.
+
+</details>

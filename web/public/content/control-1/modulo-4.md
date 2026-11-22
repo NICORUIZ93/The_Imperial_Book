@@ -10,66 +10,68 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 
 ## Aprende construyendo
 
+
 ### Tema 1: Qué es la función de transferencia · Básico · 45 min
 
-**¿Por qué es importante?** La función de transferencia resume un sistema completo en una fracción; con ella se calcula la salida para cualquier entrada.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling) y [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
+#### ► DE QUÉ TRATA
+Este tema te guía por qué es la función de transferencia con foco en comprensión antes de implementación.
 
-> **Idea clave.** \(G(s)\) es la salida dividida por la entrada, en Laplace, con condiciones iniciales cero. Describe al sistema sin importar qué entrada le pongas.
+#### ► LA IDEA EN UNA FRASE
+**Entender qué es la función de transferencia te permite tomar mejores decisiones técnicas.**
 
-\[G(s) = \frac{Y(s)}{U(s)} \qquad\Longrightarrow\qquad Y(s) = G(s)\,U(s)\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- **Polos:** raíces del denominador. Deciden la forma de la respuesta (si oscila, si se apaga, qué tan rápido).
-- **Ceros:** raíces del numerador. Modifican cuánto pesa cada término.
-- **Orden:** el grado del denominador.
-- **Ganancia estática:** \(G(0)\), el valor final ante escalón unitario.
+#### ► LA ANALOGÍA
+Piensa en qué es la función de transferencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**De la ecuación a G(s)**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que qué es la función de transferencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-1. Cambia cada derivada por una potencia de \(s\): \(y' \to sY\), \(y'' \to s^2Y\) (condiciones iniciales cero).
-2. Agrupa todo lo que tiene \(Y\) a un lado y lo que tiene \(U\) al otro.
-3. Despeja \(Y/U\).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Qué es la función de transferencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Demostración · por qué G(s) no depende de la entrada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Qué es la función de transferencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Toda ecuación lineal de coeficientes constantes tiene la forma \(a_n y^{(n)} + \cdots + a_1\dot y + a_0 y = b_m u^{(m)} + \cdots + b_0 u\).
-2. Con condiciones iniciales cero, cada derivada \(k\)-ésima se vuelve \(s^k\) (propiedad de la derivada, módulo 2): \((a_ns^n + \cdots + a_0)Y(s) = (b_ms^m + \cdots + b_0)U(s)\).
-3. Despejando: \(\dfrac{Y}{U} = \dfrac{b_ms^m + \cdots + b_0}{a_ns^n + \cdots + a_0}\). Solo aparecen los coeficientes del sistema, no la entrada.
-4. Además, como \(\mathcal{L}\{\delta\} = 1\), la respuesta al impulso es \(g(t) = \mathcal{L}^{-1}\{G(s)\}\): la función de transferencia es la transformada de la respuesta al impulso.
+#### ► CUÁNDO NO USAR ESTO
+No uses qué es la función de transferencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-∎
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: qué es la función de transferencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-> **Respuesta libre y forzada:** si hay condiciones iniciales, la salida es la suma de dos partes: la que causa la entrada (\(G\cdot U\)) y la que causan las condiciones iniciales. \(G(s)\) solo describe la primera.
+#### ► LO QUE DEBES RECORDAR
+- Qué es la función de transferencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-#### Ejemplo 1 · Primer orden · *Básico*
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve qué es la función de transferencia en tu contexto?
+2. ¿Cómo sabrías que qué es la función de transferencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar qué es la función de transferencia?
 
-**Enunciado.** Halla \(G(s)\) de \(2\dot y + 6y = 12u\) y la respuesta a un escalón unitario.
+</details>
 
-1. Pasa a Laplace: \(\dot y \to sY\), \(y \to Y\), \(u \to U\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   \[2sY + 6Y = 12U\]
-
-   **¿Por qué?** Con condiciones iniciales cero, derivar es multiplicar por \(s\) (módulo 2).
-
-2. Saca \(Y\) como factor común: \(Y(2s+6) = 12U\).
-
-   **¿Por qué?** Queremos \(Y/U\), así que \(Y\) tiene que quedar sola.
-
-3. Divide: \(G(s) = \dfrac{Y}{U} = \dfrac{12}{2s+6}\). Simplifica dividiendo todo por 2: \(\dfrac{6}{s+3}\).
-
-   **¿Por qué?** Simplificar deja el polo a la vista: \(s = -3\).
-
-4. Escalón: \(Y = \dfrac{6}{s(s+3)}\). Es el Ejemplo 1 del módulo 3: \(y = 2(1-e^{-3t})\).
-
-   **¿Por qué?** Ya sabemos invertir esa forma.
-
-**Resultado:** \(G(s) = \dfrac{6}{s+3}\), \(y(t) = 2(1-e^{-3t})\)
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar que \(G(s)\) queda simplificado como en el Ejemplo 1.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, simplify
@@ -79,212 +81,8 @@ G = 12 / (2 * s + 6)
 print("G(s) simplificado:", simplify(G))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `G(s) simplificado: 6/(s + 3)`, igual al Ejemplo 1 y evita el error común de dejarlo como \(12/(2s+6)\).
-
-#### Practica
-
-cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simplifica a \(\dfrac{4}{s+2}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta simplificación algebraica supone condiciones iniciales cero; si hay una condición inicial distinta de cero (Ejemplo 2), \(G(s)\) no describe toda la salida — hay que sumar aparte la respuesta libre que produce esa condición inicial.
-
-#### Ejemplo 2 · Con condición inicial · *Básico*
-
-> **Qué cambia respecto al anterior:** No hay entrada; lo que mueve al sistema es la condición inicial.
-
-**Enunciado.** Resuelve \(\dot y + 2y = 0\) con \(y(0) = 5\).
-
-1. Laplace con condición inicial: \(\dot y \to sY - y(0) = sY - 5\).
-
-   **¿Por qué?** Ahora \(y(0)\) no es cero, así que se usa la propiedad completa de la derivada.
-
-2. \(sY - 5 + 2Y = 0 \Rightarrow Y(s+2) = 5 \Rightarrow Y = \dfrac{5}{s+2}\).
-
-   **¿Por qué?** Despejar \(Y\).
-
-3. Tabla: \(5e^{-2t}\).
-
-   **¿Por qué?** Forma \(\dfrac{1}{s+a}\).
-
-**Resultado:** \(y(t) = 5e^{-2t}\): la salida parte de 5 y se descarga sola
-
-#### Ejemplo 3 · Segundo orden · *Intermedio*
-
-> **Qué cambia respecto al anterior:** La ecuación tiene segunda derivada.
-
-**Enunciado.** Halla \(G(s)\) de \(\ddot y + 3\dot y + 2y = 4u\) y sus polos.
-
-1. \(\ddot y \to s^2Y\), \(\dot y \to sY\).
-
-   \[s^2Y + 3sY + 2Y = 4U\]
-
-   **¿Por qué?** Cada derivada es un factor \(s\); la segunda derivada es \(s^2\).
-
-2. \(G(s) = \dfrac{4}{s^2+3s+2}\).
-
-   **¿Por qué?** Mismo despeje del Ejemplo 1.
-
-3. Factoriza: \(s^2+3s+2 = (s+1)(s+2)\). Polos \(-1\) y \(-2\). Ganancia \(G(0) = 4/2 = 2\).
-
-   **¿Por qué?** Dos números que sumen 3 y multipliquen 2.
-
-**Resultado:** \(G(s) = \dfrac{4}{(s+1)(s+2)}\)
-
-#### Ejemplo 4 · Un sistema físico · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Los coeficientes ahora tienen significado físico.
-
-**Enunciado.** Masa \(m = 1\) kg, resorte \(k = 20\) N/m, amortiguador \(b = 4\) N·s/m: \(m\ddot x + b\dot x + kx = f\). Halla \(X/F\).
-
-1. Laplace: \((ms^2 + bs + k)X = F\).
-
-   **¿Por qué?** Igual que en el Ejemplo 3, con letras.
-
-2. \(G = \dfrac{1}{s^2+4s+20}\).
-
-   **¿Por qué?** Se reemplazan los valores.
-
-3. Polos con el atajo del módulo 1: \(-4/2 = -2\) y \(\sqrt{20-4} = 4\): \(-2\pm4j\).
-
-   **¿Por qué?** \(\Delta < 0\): oscila.
-
-4. \(G(0) = 1/20 = 0{,}05\) m/N.
-
-   **¿Por qué?** Con 1 N, la masa termina desplazada 5 cm.
-
-**Resultado:** \(G = \dfrac{1}{s^2+4s+20}\), polos \(-2\pm4j\)
-
-#### Ejemplo 5 · Resolver completa · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** Se pide \(y(t)\) completo: se juntan el módulo 3 y el módulo 4.
-
-**Enunciado.** Resuelve \(\ddot y + 4\dot y + 13y = 26u(t)\), condiciones iniciales cero.
-
-1. \(Y = \dfrac{26}{s(s^2+4s+13)}\).
-
-   **¿Por qué?** \(G = \dfrac{26}{s^2+4s+13}\) por el escalón \(1/s\).
-
-2. \(A = \dfrac{26}{13} = 2\). Resto \(= \dfrac{26 - 2(s^2+4s+13)}{s(\ldots)} = \dfrac{-2s^2-8s}{s(\ldots)} = \dfrac{-2(s+4)}{s^2+4s+13}\).
-
-   **¿Por qué?** Mismo método del Ejemplo 8 del módulo 3.
-
-3. Completa: \((s+2)^2+9\) y \(s+4 = (s+2)+2\).
-
-   **¿Por qué?** \(a = 2\), \(\omega = 3\).
-
-4. \(-2\dfrac{s+2}{(\ldots)} \to -2e^{-2t}\cos3t\); \(-2\cdot\dfrac{2}{(\ldots)} = -\dfrac43\cdot\dfrac{3}{(\ldots)} \to -\tfrac43e^{-2t}\sin3t\).
-
-   **¿Por qué?** El seno necesita \(\omega = 3\) arriba.
-
-**Resultado:** \(y(t) = 2\left[1 - e^{-2t}\left(\cos3t + \tfrac23\sin3t\right)\right]\)
-
-#### Errores comunes
-
-- Dejar \(G(s)\) sin simplificar, por ejemplo \(\dfrac{12}{2s+6}\) en lugar de \(\dfrac{6}{s+3}\): así es fácil equivocar el polo.
-- Olvidar la condición inicial cuando el ejercicio la da.
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 6 · De la ecuación a \(G(s)\) · *Básico*
-
-**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y' + 3y = 5u\) (condiciones iniciales nulas).
-
-1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
-
-   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
-
-2. \((s + 3)Y(s) = (5)U(s)\).
-
-   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
-
-**Resultado.** \(G(s) = \frac{5}{s + 3}\); ceros \(\text{ninguno}\), polos \(-3\), ganancia DC \(G(0) = \frac{5}{3}\).
-
-#### Ejemplo 7 · De la ecuación a \(G(s)\) · *Intermedio*
-
-**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y'' + 4y' + 3y = 2u' + 6u\) (condiciones iniciales nulas).
-
-1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
-
-   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
-
-2. \((s^{2} + 4 s + 3)Y(s) = (2 s + 6)U(s)\).
-
-   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
-
-**Resultado.** \(G(s) = \frac{2 s + 6}{s^{2} + 4 s + 3}\); ceros \(-3\), polos \(-3, -1\), ganancia DC \(G(0) = 2\).
-
-#### Ejemplo 8 · De la ecuación a \(G(s)\) · *Intermedio*
-
-**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(y'' + 2y' + 10y = 10u\) (condiciones iniciales nulas).
-
-1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
-
-   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
-
-2. \((s^{2} + 2 s + 10)Y(s) = (10)U(s)\).
-
-   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
-
-**Resultado.** \(G(s) = \frac{10}{s^{2} + 2 s + 10}\); ceros \(\text{ninguno}\), polos \(-1 - 3 j, -1 + 3 j\), ganancia DC \(G(0) = 1\).
-
-#### Ejemplo 9 · De la ecuación a \(G(s)\) · *Intermedio*
-
-**Enunciado.** Halla \(G(s)=Y(s)/U(s)\) para \(2y'' + 7y' + 3y = u'\) (condiciones iniciales nulas).
-
-1. Transforma con condiciones iniciales cero: cada derivada se vuelve una potencia de \(s\).
-
-   **¿Por qué?** La función de transferencia se define así: solo relaciona entrada y salida, sin la "memoria" del estado inicial.
-
-2. \((2 s^{2} + 7 s + 3)Y(s) = (s)U(s)\).
-
-   **¿Por qué?** Se factoriza \(Y\) a la izquierda y \(U\) a la derecha.
-
-**Resultado.** \(G(s) = \frac{s}{2 s^{2} + 7 s + 3}\); ceros \(0\), polos \(-3, - \frac{1}{2}\), ganancia DC \(G(0) = 0\).
-
-#### Ejemplo 10 · Respuesta de \(\frac{4}{s + 2}\) a un escalón unitario · *Intermedio*
-
-**Enunciado.** Calcula la salida de \(G(s) = \frac{4}{s + 2}\) ante un escalón unitario.
-
-1. \(Y(s) = G(s)U(s) = \frac{4}{s \left(s + 2\right)}\).
-
-   **¿Por qué?** Con condiciones iniciales nulas, la salida en \(s\) es el producto.
-
-2. Fracciones parciales: \(- \frac{2}{s + 2} + \frac{2}{s}\).
-
-   **¿Por qué?** Para invertir con la tabla.
-
-**Resultado.** \(y(t) = 2 - 2 e^{- 2 t}\).
-
-#### Práctica para resolver sola o solo
-
-- **1.**\(G(s)\) de \(5\dot y + y = 3u\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\dfrac{3}{5s+1}\): \(K=3\), \(\tau=5\).
-  
-  </details>
-
-- **2.**\(G(s)\) y polos de \(\ddot y + 6\dot y + 25 y = 50u\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\dfrac{50}{s^2+6s+25}\), polos \(-3\pm4j\), ganancia 2.
-  
-  </details>
-
-- **3.**Resuelve \(\dot y + 4y = 8\) (escalón de amplitud 8), \(y(0)=0\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(Y = \dfrac{8}{s(s+4)}\): \(y = 2(1-e^{-4t})\).
-  
-  </details>
-
+</details>

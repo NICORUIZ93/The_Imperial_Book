@@ -27,43 +27,26 @@ directamente con node en el motor V8 con su event loop. Ambos carriles llegan a 
 
 ---
 
+
 ### Java y Node.js lado a lado: sintaxis y ejecución
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 0.3, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-2.md` y `tienda.js`.
+#### ► DE QUÉ TRATA
+Ejecutar el mismo programa en Java y en Node.js, señalar al menos cinco diferencias de sintaxis (clase, main, tipos declarados, ;, impresión) y explicar el camino de cada lenguaje desde el archivo hasta la salida (compilar + JVM frente a ejecutar con V8); lo compruebas cuando jav…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Ejecutar el mismo programa en Java y en Node.js, señalar al menos cinco diferencias de sintaxis (clase, main, tipos declarados, ;, impresión) y explicar el camino de cada lenguaje desde el archivo hasta la salida (compilar + JVM frente a ejecutar con V8); lo compruebas cuando java TiendaTest.java y node --test tienda.test.js pasan 5 de 5 cada uno.**
 
-- Módulo 0.2: variables, `if/else`, `for`, funciones y tests con `node --test`.
-- Tener **JDK 25** (comprueba con `java -version`: debe decir `25.0.x`) y **Node.js 26** (`node -v`).
-- Saber cambiar de carpeta con `cd`.
+#### ► POR QUÉ EXISTE ESTO
+Java y JavaScript son lenguajes distintos (el parecido del nombre es marketing de 1995). Node.js es el programa que ejecuta JavaScript fuera del navegador. Ambos sirven para construir servidores y microservicios.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en java y node.js lado a lado: sintaxis y ejecución como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Ejecutar** el mismo programa en Java y en Node.js, **señalar** al menos cinco diferencias de sintaxis (clase,
-`main`, tipos declarados, `;`, impresión) y **explicar** el camino de cada lenguaje desde el archivo hasta la
-salida (compilar + JVM frente a ejecutar con V8); lo compruebas cuando `java TiendaTest.java` y
-`node --test tienda.test.js` pasan 5 de 5 cada uno.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja **dos cocinas una al lado de la otra**, preparando la misma receta (la cuenta de una papelería: 3
-cuadernos, 4 lápices, 1 mochila).
-
-- **Cocina Java**: antes de encender el fuego, un **inspector con casco** revisa la receta completa y la pasa a
-  un formato estándar en tarjetas plastificadas (compilar a *bytecode*). Cada ingrediente tiene una **etiqueta de
-  tipo** pegada («entero», «texto»). Todo ocurre dentro de un **cuarto con letrero** «class Tienda» y la cocina
-  arranca siempre por la puerta marcada **main**. Las instrucciones terminan con un punto y coma, como puntos al
-  final de cada oración.
-- **Cocina Node.js**: el cocinero lee la receta **directamente** y empieza a cocinar de arriba abajo; traduce
-  sobre la marcha (compila «justo a tiempo»). Los ingredientes no llevan etiqueta de tipo, no hay cuarto
-  obligatorio ni puerta «main».
-
-Al final, las dos cocinas sacan **el mismo plato** con el mismo cartel: «Total: 56000 · Envío: gratis».
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     subgraph J["Java"]
@@ -78,18 +61,6 @@ flowchart TD
     end
 ```
 
-**Texto alternativo:** dos columnas. En Java, el archivo de texto pasa por javac, que revisa tipos, puntos y
-coma y llaves; si falla, hay un error de compilación y no se ejecuta nada; si pasa, se genera Tienda.class y la
-JVM carga la clase, entra por main y optimiza con JIT. En Node.js, el archivo pasa por V8, que solo revisa la
-sintaxis; si falla hay un SyntaxError al arrancar; si pasa, ejecuta de arriba abajo y optimiza con JIT.
-
-#### 6. EXPLICACIÓN NIVEL 0
-
-**Java** y **JavaScript** son lenguajes distintos (el parecido del nombre es marketing de 1995). **Node.js** es
-el programa que ejecuta JavaScript fuera del navegador. Ambos sirven para construir servidores y microservicios.
-
-Mira el mismo programa en los dos (sección 9) y fíjate en esto:
-
 | Qué | Java | Node.js (JavaScript) |
 |---|---|---|
 | Dónde vive el código | dentro de una `class` obligatoria | suelto en el archivo |
@@ -101,47 +72,55 @@ Mira el mismo programa en los dos (sección 9) y fíjate en esto:
 | Imprimir | `System.out.println(...)` | `console.log(...)` |
 | Ejecutar | `java Tienda.java` (compila y ejecuta) | `node tienda.js` |
 
-Lo que **no** cambia: las ideas. Variable, decisión, bucle y función son iguales en los dos.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Java y Node.js lado a lado: sintaxis y ejecución se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Java y Node.js lado a lado: sintaxis y ejecución | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-- **Compilación en Java.** `javac Tienda.java` revisa todo el archivo y produce `Tienda.class` (y
-  `Tienda$Producto.class` para el record): *bytecode*, un formato intermedio que entiende la **JVM** (Java Virtual
-  Machine) en cualquier sistema operativo. `java Tienda` arranca la JVM, carga la clase y llama a
-  `public static void main(String[] args)`. Desde JDK 11 puedes saltarte el paso con `java Tienda.java` (el
-  lanzador compila en memoria), y desde JDK 22 ese modo acepta programas de **varios archivos**: por eso
-  `java TiendaTest.java` encuentra `Tienda.java` en la misma carpeta.
-- **Nombre de archivo = nombre de clase.** Con `javac`, una clase `public class Tienda` debe vivir en
-  `Tienda.java` (con la misma mayúscula).
-- **Ejecución en Node.** `node tienda.js` le entrega el archivo al motor **V8**, que lo analiza, lo ejecuta de
-  arriba abajo y optimiza las partes calientes mientras corre. Con `"type": "module"` en `package.json` usas
-  `import/export` (módulos ES).
-- **`static` en Java:** las funciones `subtotal`, `total` y `envio` pertenecen a la clase, no a un objeto; por eso
-  se llaman como `Tienda.total(...)` desde el test. En JavaScript son funciones sueltas exportadas.
-- **Formato de salida:** `printf("%-9s x%d = %d%n", ...)` en Java y `padEnd(9)` en JavaScript producen
-  exactamente las mismas columnas.
+#### ► CUÁNDO NO USAR ESTO
+Escribir Java como si fuera JavaScript (o al revés): traducir línea por línea sin respetar los modismos de cada lenguaje.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: java y node.js lado a lado: sintaxis y ejecución funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Compilado + JVM frente a JIT directo.** Java detecta antes de ejecutar errores de tipos y de sintaxis en
-  **todo** el programa, y la JVM tiene décadas de optimización para procesos de larga vida (servicios que corren
-  días). A cambio, arranca más lento y usa más memoria base; para eso existen CRaC y GraalVM Native Image
-  (Módulo 1). Node arranca en milisegundos con poca memoria y un solo hilo para tu código, ideal para servicios
-  dominados por E/S (llamar a otras APIs, bases de datos), pero sin red de seguridad de tipos salvo que uses
-  **TypeScript** (Módulo 13).
-- **Ecosistemas.** Java: **Maven/Gradle** (herramientas para compilar y gestionar dependencias), Spring Boot, librerías empresariales maduras. Node: **npm** (gestor de paquetes de Node.js), Express/NestJS,
-  enorme cantidad de paquetes pequeños (más agilidad, más riesgo de cadena de suministro).
-- **Alternativas** reales para microservicios además de estos dos: Go (binario único, arranque instantáneo),
-  Kotlin (JVM con sintaxis moderna), C#/.NET, Python (FastAPI). El curso usa Java y Node porque dominan el mercado
-  de backend empresarial y startups, respectivamente.
-- **Cuándo NO** mezclar: no elijas un lenguaje distinto por servicio solo porque se puede. Cada lenguaje extra
-  duplica pipelines, librerías de observabilidad, imágenes base y conocimiento del equipo. Un segundo lenguaje se
-  justifica por una necesidad concreta (rendimiento, una librería única, un equipo existente).
+#### ► LO QUE DEBES RECORDAR
+- Java y JavaScript son lenguajes distintos (el parecido del nombre es marketing de 1995).
+- Node.js es el programa que ejecuta JavaScript fuera del navegador.
+- Ambos sirven para construir servidores y microservicios.
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve java y node.js lado a lado: sintaxis y ejecución en tu contexto?
+2. ¿Cómo sabrías que java y node.js lado a lado: sintaxis y ejecución no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar java y node.js lado a lado: sintaxis y ejecución?
 
-Versiones: **JDK 25 LTS (25.0.5)** y **Node.js 26.13.1 LTS**. Sin dependencias: Java no necesita `pom.xml` para
-un archivo suelto (Maven llega en el Módulo 0.5 y la Fase 1); Node usa este `package.json` en `node/`:
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    subgraph J["Java"]
+      JA["Tienda.java (texto)"] --> JB{"javac: ¿compila?<br/>tipos, ; y llaves"}
+      JB -- "no" --> JE["error de compilación<br/>(no se ejecuta nada)"]
+      JB -- "sí" --> JC["Tienda.class (bytecode)"] --> JD["JVM: carga clase → main() → JIT"]
+    end
+    subgraph N["Node.js"]
+      NA["tienda.js (texto)"] --> NB{"V8: ¿sintaxis válida?"}
+      NB -- "no" --> NE["SyntaxError al arrancar"]
+      NB -- "sí" --> NC["ejecuta de arriba abajo → JIT"]
+    end
+```
 
 ```json
 {
@@ -153,8 +132,6 @@ un archivo suelto (Maven llega en el Módulo 0.5 y la Fase 1); Node usa este `pa
   "scripts": { "test": "node --test" }
 }
 ```
-
-`Tienda.java`:
 
 ```java
 // Módulo 0.3 · Java y Node.js lado a lado: sintaxis y ejecución
@@ -206,8 +183,6 @@ public class Tienda { // En Java todo vive dentro de una clase.
 }
 ```
 
-`tienda.js`:
-
 ```javascript
 // Módulo 0.3 · Java y Node.js lado a lado: sintaxis y ejecución
 // El MISMO programa que java/Tienda.java, escrito en JavaScript para Node.js.
@@ -252,176 +227,38 @@ if (import.meta.main) {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta la versión Java (compila en memoria y ejecuta):
-   ```bash
+```bash
    java Tienda.java
    ```
-2. Ahora en dos pasos, para ver el *bytecode* que genera el compilador:
-   ```bash
+
+```bash
    javac Tienda.java
    ls *.class
    java Tienda
    rm *.class
    ```
-3. Ejecuta la versión Node:
-   ```bash
-   cd ../node
-   node tienda.js
-   ```
-4. **Rómpelo a propósito:** en `java/Tienda.java` borra el `;` de `int suma = 0;` y ejecuta `java Tienda.java`.
-   Haz lo mismo en `node/tienda.js` con `let suma = 0;` y ejecuta `node tienda.js`. Compara qué lenguaje se queja.
-   Deshaz ambos cambios.
 
-**Output esperado** (pasos 1, 2 y 3 producen exactamente estas líneas):
-
-```text
-Cuaderno  x3 = 18000
-Lápiz     x4 = 6000
-Mochila   x1 = 32000
-Total: 56000
-Envío: gratis
-```
-
-`ls *.class` muestra `Tienda$Producto.class  Tienda.class`. En el paso 4, Java se niega a ejecutar:
-
-```text
-Tienda.java:20: error: ';' expected
-        int suma = 0 // variable con tipo: solo puede guardar enteros
-                    ^
-1 error
-error: compilation failed
-```
-
-y Node.js ejecuta igual y muestra la salida normal (en JavaScript el `;` al final de línea es opcional).
-
-**Captura comentada:** la salida idéntica demuestra que la lógica es la misma. En el paso 4, el `^` de Java
-apunta a la columna exacta donde faltó el `;`, y **ninguna** línea del programa se imprimió: el error se detectó
-antes de ejecutar.
-
-#### 11. VERIFICACIÓN
-
-Los dos lenguajes tienen el mismo test con los mismos 5 casos. En tu carpeta de trabajo:
-
-```bash
-(cd java && java TiendaTest.java)
-(cd node && node --test --test-reporter=spec tienda.test.js)
-```
-
-Salida real:
-
-```text
-✔ subtotal de 3 cuadernos
-✔ total del carrito
-✔ carrito vacío suma 0
-✔ envío gratis desde 50000
-✔ envío con costo bajo 50000
-Java: todos los tests pasaron
-✔ subtotal de 3 cuadernos (0.618169ms)
-✔ total del carrito (0.146858ms)
-✔ carrito vacío suma 0 (0.11317ms)
-✔ envío gratis desde 50000 (0.088809ms)
-✔ envío con costo bajo 50000 (0.076171ms)
-ℹ tests 5
-ℹ pass 5
-ℹ fail 0
-```
-
-El test de Java no usa librerías (JUnit 5 llega en la Fase 1): imprime `✔`/`✖` y termina con código 1 si algo
-falla. **Pregunta de comprobación:** ¿por qué en Java el test llama `Tienda.total(...)` y en Node solo
-`total(...)`? *(En Java la función es `static` dentro de la clase `Tienda`; en Node es una función exportada del
-módulo e importada por nombre.)*
-
-#### 12. ERROR COMÚN
-
-**Síntoma:** en Windows o en un servidor Linux, la salida de Java muestra `L?piz` y `Env?o` en vez de `Lápiz` y
-`Envío`, mientras que Node se ve bien. **Cómo se ve:** signos `?` justo donde hay tildes, solo en Java. Lo
-reproducimos en un Linux con la configuración regional mínima (`LANG=POSIX`):
-
-```text
-Cuaderno  x3 = 18000
-L?piz     x4 = 6000
-Mochila   x1 = 32000
-Total: 56000
-Env?o: gratis
-```
-
-**Diagnóstico:** desde JDK 18 los archivos fuente se leen en UTF-8, pero la **consola** usa la codificación de tu
-sistema (`stdout.encoding`). Compruébala con
-`java -XshowSettings:properties -version 2>&1 | grep stdout.encoding`; en ese Linux responde
-`stdout.encoding = ANSI_X3.4-1968` (ASCII, sin tildes). **Arreglo:** usa una terminal en UTF-8
-(`export LANG=es_ES.UTF-8` o `C.UTF-8` en Linux; en Windows, `chcp 65001`) o ejecuta con
-`java -Dstdout.encoding=UTF-8 Tienda.java`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué hace la JVM y por qué se dice que Java es "compila una vez, ejecuta en cualquier parte"?»
-
-**Respuesta modelo:** `javac` no genera código de máquina para un procesador concreto, sino *bytecode*, un
-conjunto de instrucciones para una máquina virtual. La JVM de cada plataforma (macOS ARM, Linux x86…) interpreta
-ese bytecode y, con su compilador JIT, convierte en código nativo las partes que más se ejecutan, optimizándolas
-con información de la ejecución real. Por eso el mismo `.class` o `.jar` corre en cualquier sistema con una JVM
-compatible. Node.js tiene un modelo parecido con V8, pero parte del código fuente JavaScript en vez de bytecode
-precompilado.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Escribir Java como si fuera JavaScript (o al revés):** traducir línea por línea sin respetar los modismos de
-cada lenguaje.
-
-```java
-// ✖ Anti-patrón: "objetos" de JavaScript imitados con mapas sin tipo en Java
-Map<String, Object> p = new HashMap<>();
-p.put("precio", "1500");                          // texto donde debía ir número: compila igual
-int subtotal = (Integer) p.get("precio") * 4;      // ClassCastException en ejecución
-```
-
-Se ve como `Map<String, Object>` y conversiones `(Integer)` por todas partes: renuncias a la ventaja principal de
-Java (que el compilador revise los tipos) y el error aparece en producción. En Java usa `record` o clases con
-tipos; en JavaScript usa objetos simples (y TypeScript cuando quieras tipos), no imitaciones de clases Java con
-*getters* para todo.
-
----
+</details>
 
 ### Java y Node.js lado a lado: tipos, errores y concurrencia
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 0.3, Lección 2 de 2 · Fase 0
-`diferencias.js`.
+#### ► DE QUÉ TRATA
+Comparar cómo Java y Node.js manejan tipos (estáticos frente a dinámicos), errores (excepciones tipadas frente a NaN/try-catch) y concurrencia (hilos virtuales frente a event loop con async/await), y demostrar con tests que tres esperas de 1 segundo terminan en ~1 segundo en ambo…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Comparar cómo Java y Node.js manejan tipos (estáticos frente a dinámicos), errores (excepciones tipadas frente a NaN/try-catch) y concurrencia (hilos virtuales frente a event loop con async/await), y demostrar con tests que tres esperas de 1 segundo terminan en ~1 segundo en ambos; lo compruebas cuando java DiferenciasTest.java pasa 4 de 4 y node --test diferencias.test.js pasa 5 de 5.**
 
-- Tema anterior (ejecutar Java y Node, clase y `main`, `import/export`).
-- Módulo 0.2: `throw` y la idea de error.
-- Módulo 0.1: un servidor atiende muchos pedidos; aquí verás **cómo** lo hace cada lenguaje.
+#### ► POR QUÉ EXISTE ESTO
+Tres diferencias de fondo:
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en java y node.js lado a lado: tipos, errores y concurrencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Comparar** cómo Java y Node.js manejan tipos (estáticos frente a dinámicos), errores (excepciones tipadas frente
-a `NaN`/`try-catch`) y concurrencia (hilos virtuales frente a event loop con `async/await`), y **demostrar** con
-tests que tres esperas de 1 segundo terminan en ~1 segundo en ambos; lo compruebas cuando
-`java DiferenciasTest.java` pasa 4 de 4 y `node --test diferencias.test.js` pasa 5 de 5.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja **dos restaurantes** a la hora del almuerzo, con tres mesas cada uno esperando sopa (que tarda 1 minuto
-en calentarse):
-
-- **Restaurante Java**: hay **tres meseros** (hilos), uno por mesa. Cada mesero se queda parado junto a su olla
-  esperando. Antes eran meseros caros (hilos de plataforma) y se contrataban pocos; ahora son **meseros
-  virtuales** casi gratis: puedes tener miles, y cuando uno espera, el restaurante le presta su delantal a otro.
-- **Restaurante Node.js**: hay **un solo mesero muy rápido** (un hilo) y un **tablero de avisos** junto a la
-  cocina (el event loop). Pone las tres ollas al fuego, deja una nota en el tablero por cada una («avísame cuando
-  hierva») y mientras tanto atiende otras cosas. Cuando suena el aviso, sirve.
-
-En los dos, las tres sopas salen a **1 minuto**, no a 3. Encima de las puertas hay dos letreros más: en Java, un
-**guardia** revisa que en el plato de sopa no sirvan una ensalada (tipos estáticos, antes de abrir); en Node no
-hay guardia: si pides «2» + 2 te traen «22» (dos tarjetas pegadas) y nadie protesta.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant M as main / script
@@ -437,64 +274,42 @@ sequenceDiagram
     E-->>M: await → ~1000 ms
 ```
 
-**Texto alternativo:** diagrama de secuencia. En Java, main envía tres tareas a un ejecutor de hilos virtuales;
-cada hilo duerme 1 segundo en paralelo y main recoge los tres resultados en unos 1000 ms. En Node.js, el script
-llama a Promise.all con tres tareas; el event loop registra tres temporizadores, el único hilo queda libre y el
-await termina en unos 1000 ms.
+1. Tres diferencias de fondo:
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Java y Node.js lado a lado: tipos, errores y concurrencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Tres diferencias de fondo:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Java y Node.js lado a lado: tipos, errores y concurrencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. **Tipos.** Un **tipo** dice qué clase de dato es algo: número, texto, verdadero/falso. Java exige declararlo
-   y lo **revisa antes de ejecutar**: si una función pide números y le das texto, el programa ni arranca.
-   JavaScript lo decide **mientras ejecuta**: `'2' + 2` da `'22'` (une textos) sin avisar.
-2. **Errores.** Cuando algo sale mal, Java **lanza una excepción** con nombre (`NumberFormatException`) que
-   puedes atrapar con `try/catch`. JavaScript también tiene `try/catch`, pero algunas operaciones no lanzan
-   nada: `Number('cuarenta')` devuelve `NaN` («no es un número») y tienes que comprobarlo tú.
-3. **Concurrencia** (hacer varias cosas a la vez). Java usa **hilos**: varios trabajadores en paralelo. Node.js
-   usa **un trabajador** que nunca se queda quieto esperando: deja la espera anotada y sigue con otra cosa
-   (`async/await`).
+#### ► CUÁNDO NO USAR ESTO
+Bloquear el event loop con operaciones síncronas en un servidor Node:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: java y node.js lado a lado: tipos, errores y concurrencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Tipado estático (Java):** `static int sumar(int a, int b)`; la llamada `sumar("2", 2)` produce
-  `error: method sumar in class Suma cannot be applied to given types` en compilación. **Tipado dinámico (JS):**
-  `+` con un texto concatena; `*` convierte a número (`'5' * 3` es `15`). TypeScript añade tipos estáticos a
-  JavaScript (Módulo 13).
-- **Excepciones comprobadas:** en Java algunas excepciones deben declararse (`throws Exception` en `main`) o
-  atraparse; `NumberFormatException` no es obligatoria, pero sí específica. En JS, `JSON.parse` lanza
-  `SyntaxError`, mientras que `Number()` y `parseInt()` devuelven `NaN`; `Number.isNaN(n)` lo detecta.
-- **Hilos virtuales (Java 21+):** `Executors.newVirtualThreadPerTaskExecutor()` crea un hilo virtual por tarea.
-  `Thread.sleep(1000)` bloquea solo ese hilo virtual; la JVM lo «aparca» y reutiliza el hilo del sistema operativo.
-  El `try (var ejecutor = ...)` cierra el ejecutor esperando a que terminen todas las tareas. `f.get()` espera el
-  resultado de cada `Future`.
-- **Event loop (Node):** `await esperar(1000)` registra un temporizador y **devuelve el control** al event loop.
-  `Promise.all` espera a que las tres promesas se cumplan; como los temporizadores corren a la vez, el total es
-  ~1 s. Si en vez de esperar hicieras un cálculo pesado de 1 s (un bucle), bloquearías el único hilo y las tres
-  tareas tardarían 3 s: Node es concurrente en E/S, no paralelo en CPU (para eso, Worker Threads, Módulo 13).
+#### ► LO QUE DEBES RECORDAR
+- Tres diferencias de fondo:
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve java y node.js lado a lado: tipos, errores y concurrencia en tu contexto?
+2. ¿Cómo sabrías que java y node.js lado a lado: tipos, errores y concurrencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar java y node.js lado a lado: tipos, errores y concurrencia?
 
-| Decisión | Java (JDK 25) | Node.js 26 | Trade-off |
-|---|---|---|---|
-| Tipos | estáticos, revisados al compilar | dinámicos; TypeScript los añade en desarrollo | seguridad y refactorización frente a velocidad para empezar |
-| Errores | excepciones tipadas; `catch` por tipo | `Error` genérico, `NaN`, promesas rechazadas | una promesa rechazada sin `catch` puede tumbar el proceso |
-| Concurrencia E/S | hilos virtuales: código secuencial y bloqueante | event loop + `async/await` | Java: código simple; Node: menos memoria por conexión |
-| Concurrencia CPU | varios núcleos con hilos de plataforma | un hilo; Worker Threads o varios procesos | Node necesita escalar con procesos/réplicas |
+</details>
 
-Alternativas en Java antes de los hilos virtuales: *pools* de hilos de tamaño fijo (límite de concurrencia) o
-programación reactiva (Project Reactor, WebFlux): muy eficiente pero más difícil de leer y depurar. En Node, antes
-de `async/await` había *callbacks* anidados (*callback hell*).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Cuándo NO** usar hilos virtuales: para trabajo intensivo de CPU (no ganan nada frente a hilos de plataforma) ni
-como excusa para no limitar la concurrencia contra una base de datos con un *pool* de 10 conexiones: miles de
-hilos esperando la misma conexión no la hacen más rápida. **Cuándo NO** usar Node para un servicio: cálculos
-pesados y sostenidos (procesar video, criptografía masiva) que bloquean el event loop y degradan a todas las
-peticiones.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS (25.0.5)** (los hilos virtuales existen desde JDK 21) y **Node.js 26.13.1 LTS**. Sin
 dependencias; Node usa el `package.json` de `node/` del tema anterior.
 
@@ -605,134 +420,4 @@ if (import.meta.main) {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta los dos programas en tu carpeta de trabajo:
-   ```bash
-   (cd java && java Diferencias.java)
-   (cd node && node diferencias.js)
-   ```
-2. **Provoca el error de tipos en Java:** crea `Suma.java` en una carpeta de práctica (`/tmp` sirve) con este
-   contenido y ejecútalo con `java Suma.java`:
-   ```java
-   public class Suma {
-       static int sumar(int a, int b) { return a + b; }
-       public static void main(String[] args) {
-           System.out.println(sumar("2", 2));
-       }
-   }
-   ```
-3. **Bloquea el event loop a propósito:** en `node/diferencias.js` cambia `await esperar(1000);` por
-   `const fin = Date.now() + 1000; while (Date.now() < fin) {}` y ejecuta `node diferencias.js`. Observa la línea 3.
-   Deshaz el cambio.
-
-**Output esperado** (paso 1):
-
-```text
-1) sumar(2, 2) = 4
-2) número 42 | error: 'cuarenta' no es un número
-3) tres tareas de 1 s en hilos virtuales tardaron menos de 1.5 s: true
-1) sumar(2, 2) = 4 | sumar('2', 2) = 22
-2) número 42 | error: 'cuarenta' no es un número
-3) tres tareas de 1 s con async/await tardaron menos de 1.5 s: true
-```
-
-Paso 2:
-
-```text
-Suma.java:4: error: method sumar in class Suma cannot be applied to given types;
-        System.out.println(sumar("2", 2));
-                           ^
-  required: int,int
-  found:    String,int
-  reason: argument mismatch; String cannot be converted to int
-1 error
-error: compilation failed
-```
-
-Paso 3: la línea 3 de Node pasa a decir `... tardaron menos de 1.5 s: false` (tarda unos 3 s).
-
-**Captura comentada:** Java y Node imprimen casi lo mismo, salvo `sumar('2', 2) = 22`, que solo existe en Node
-porque Java no habría compilado. En el paso 3, la terminal se queda «congelada» unos 3 segundos antes de imprimir
-`false`: el único hilo estuvo ocupado y las tareas se ejecutaron una tras otra.
-
-#### 11. VERIFICACIÓN
-
-```bash
-(cd java && java DiferenciasTest.java)
-(cd node && node --test --test-reporter=spec diferencias.test.js)
-```
-
-Salida real:
-
-```text
-✔ sumar(2, 2) es 4
-✔ convertir('42') da número 42
-✔ convertir('cuarenta') atrapa la excepción
-✔ 3 tareas de 1 s en paralelo tardan menos de 1.5 s (tardaron menos)
-Java: todos los tests pasaron
-✔ sumar(2, 2) es 4 (0.710827ms)
-✔ sumar('2', 2) es '22': JavaScript no revisa tipos (0.254804ms)
-✔ convertir('42') da número 42 (0.097643ms)
-✔ convertir('cuarenta') detecta NaN (0.166912ms)
-✔ 3 tareas de 1 s en paralelo tardan menos de 1.5 s (1002.72407ms)
-ℹ tests 5
-ℹ pass 5
-ℹ fail 0
-```
-
-Para el módulo completo: los comandos de verificación indicados (Java 9 comprobaciones, Node 10 tests y `RESULTADO: OK · Módulo 0.3
-(Java y Node.js lado a lado) verificado`). **Pregunta de comprobación:** con el bucle `while` del paso 3, ¿por
-qué los hilos virtuales de Java seguirían tardando ~1 s si hicieras lo mismo en cada tarea? *(Porque cada tarea
-tiene su propio hilo y la JVM los reparte entre varios núcleos; en Node las tres comparten un único hilo.)*
-
-#### 12. ERROR COMÚN
-
-**Síntoma (Node):** olvidar `await` delante de una función `async`. **Cómo se ve:** el programa imprime
-`Promise { <pending> }` o una línea con `NaN` en lugar de los milisegundos:
-
-```bash
-node -e "import('./node/diferencias.js').then(m => { const ms = m.tresTareasEnParalelo(); console.log(ms, ms < 1500); })"
-```
-
-```text
-Promise { <pending> } false
-```
-
-**Diagnóstico:** una función `async` siempre devuelve una **promesa**, no el valor; si no esperas con `await`
-(o `.then`), trabajas con la caja vacía. Comparar una promesa con un número da `false`. **Arreglo:** añade `await`
-(dentro de una función `async` o en el nivel superior de un módulo ES). En Java, el error equivalente es usar el
-`Future` sin llamar a `get()`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Node.js es de un solo hilo? ¿Cómo atiende miles de conexiones a la vez?»
-
-**Respuesta modelo:** el código JavaScript de la aplicación corre en un solo hilo, pero Node no es «de un solo
-hilo» en total: libuv tiene un *pool* de hilos para algunas operaciones (sistema de archivos, **DNS**, resolución de nombres, cripto) y el
-sistema operativo gestiona los sockets de forma asíncrona (epoll, kqueue). Cuando una operación de E/S está
-pendiente, el hilo principal no espera: registra una continuación y el event loop la ejecuta cuando llega el
-resultado. Por eso maneja muchas conexiones concurrentes con poca memoria, siempre que ninguna tarea bloquee el
-hilo con cálculo pesado. Java logra un efecto similar desde JDK 21 con hilos virtuales, manteniendo código
-secuencial.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Bloquear el event loop** con operaciones síncronas en un servidor Node:
-
-```javascript
-// ✖ Anti-patrón: cada petición lee un archivo grande de forma SÍNCRONA y calcula un hash pesado
-import { readFileSync } from 'node:fs';
-import { pbkdf2Sync } from 'node:crypto';
-http.createServer((req, res) => {
-  const datos = readFileSync('/datos/catalogo-enorme.json');          // bloquea el hilo
-  const hash = pbkdf2Sync(datos, 'sal', 500000, 64, 'sha512');          // bloquea aún más
-  res.end(hash.toString('hex'));
-});
-```
-
-Se ve como funciones terminadas en `Sync` dentro de un manejador de peticiones. En un diagrama de **latencia** (tiempo de respuesta), todas
-las peticiones se ponen en fila detrás de la más lenta: la p99 se dispara aunque la CPU tenga núcleos libres. Usa
-las versiones asíncronas (`fs/promises`, `crypto.pbkdf2`), mueve el cálculo a Worker Threads o a otro servicio. El
-equivalente en Java es fijar (*pinning*) hilos virtuales con bloqueos largos dentro de secciones `synchronized`
-en versiones anteriores a JDK 24.
+</details>

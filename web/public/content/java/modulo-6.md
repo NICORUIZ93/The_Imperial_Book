@@ -3,20 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: NIO.2 — Path y Files · Intermedio · 40 min
 
-**¿Por qué es importante?** Las rutas recibidas desde afuera pueden apuntar a archivos que la aplicación no debería leer.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 1.1: Lee y escribe un archivo pequeño · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por nio.2 — path y files con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender nio.2 — path y files te permite tomar mejores decisiones técnicas.**
 
-El motor debe guardar un comprobante de prueba y luego leerlo.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en nio.2 — path y files como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crea `src/Archivos.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que nio.2 — path y files resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| NIO.2 — Path y Files se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar NIO.2 — Path y Files | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses nio.2 — path y files por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: nio.2 — path y files funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- NIO.2 — Path y Files existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve nio.2 — path y files en tu contexto?
+2. ¿Cómo sabrías que nio.2 — path y files no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar nio.2 — path y files?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,34 +80,10 @@ public class Archivos {
 }
 ```
 
-Desde la carpeta del proyecto ejecuta:
-
 ```bash
 javac -d out src/Archivos.java
 java -cp out Archivos
 ```
-
-**Resultado esperado:** crea `datos/RT-1.txt` e imprime `RT-1;ENTREGADO`.
-
-**Fallo deliberado:** reemplaza `createDirectories` por nada y borra la carpeta `datos`. **Diagnóstico:** no existe el directorio padre; créalo antes de escribir el archivo.
-
-**3. Entiende**
-
-`Path` describe una ruta; `Files` realiza la operación sobre el sistema de archivos.
-
-**4. Cierra**
-
-Guarda el archivo y señala qué llamada creó la carpeta.
-
-#### Subtema 1.2: Rechaza una ruta que sale del directorio · 10 min
-
-**1. Contexto**
-
-Un nombre como `../../secreto.txt` no debe permitir salir de la carpeta de comprobantes.
-
-**2. Hazlo tú**
-
-Crea `src/ComprobanteSeguro.java`:
 
 ```java
 import java.nio.file.Path;
@@ -80,36 +104,10 @@ public class ComprobanteSeguro {
 }
 ```
 
-Compila y ejecuta:
-
 ```bash
 javac -d out src/ComprobanteSeguro.java
 java -cp out ComprobanteSeguro RT-1.txt
 ```
-
-Repite con `../../secreto.txt` como argumento.
-
-**Resultado esperado:** el nombre simple queda dentro de `comprobantes`; el otro se rechaza antes de leer.
-
-**Fallo deliberado:** quita `normalize()`. **Diagnóstico:** segmentos `..` pueden seguir en la ruta y evadir la comparación; normaliza después de resolver.
-
-**3. Entiende**
-
-Valida la ruta resuelta y normalizada, no solo el texto que escribió la persona. En aplicaciones sensibles también considera enlaces simbólicos y permisos del sistema.
-
-**4. Cierra**
-
-Conserva la salida válida y el error de ruta externa.
-
-#### Subtema 1.3: Recorre una carpeta y cierra el stream · 10 min
-
-**1. Contexto**
-
-Un reporte puede necesitar listar comprobantes sin abrirlos todos.
-
-**2. Hazlo tú**
-
-En `src/Listar.java`, recorre `datos` con `Files.list` dentro de try-with-resources e imprime cada nombre:
 
 ```java
 try (var archivos = Files.list(Path.of("datos"))) {
@@ -117,43 +115,74 @@ try (var archivos = Files.list(Path.of("datos"))) {
 }
 ```
 
-Integra el bloque en una clase con `main`, crea dos archivos usando el Tema 1 y ejecuta:
-
 ```bash
 javac -d out src/Listar.java
 java -cp out Listar
 ```
 
-**Resultado esperado:** aparecen los nombres de ambos comprobantes; el stream del directorio queda cerrado.
-
-**Fallo deliberado:** usa `Files.walk` para recorrer una carpeta enorme sin cerrar su stream. **Diagnóstico:** los streams de archivos administran recursos del sistema; envuélvelos en try-with-resources.
-
-**3. Entiende**
-
-`Files.list` y `Files.walk` devuelven streams que deben cerrarse. Para un directorio directo usa `list`; `walk` también visita subdirectorios.
-
-**4. Cierra**
-
-Explica por qué este stream se cierra como un archivo. Fuente oficial: [Path y Files](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html).
-
-**Proyecto integrador:** valida la carpeta de comprobantes y lista los archivos que puede procesar. **Límite:** la comprobación de ruta no sustituye los permisos del sistema operativo. **Práctica:** modifica `ComprobanteSeguro.java` para aceptar un segundo argumento con la carpeta base y confirma que sigue rechazando rutas que escapan de esa carpeta con `../`.
+</details>
 
 ### Tema 2: Serialización con Jackson · Intermedio · 40 min
 
-**Versión:** este tema usa Jackson 2 (`com.fasterxml.jackson`), que aún traen muchas librerías. Spring Boot 4 usa Jackson 3 (`tools.jackson`), con excepciones no comprobadas y otros valores por defecto; las diferencias se practican en [Spring Boot, tema de Jackson 3](/curso/spring-boot/2).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Los servicios intercambian JSON; convertirlo con tipos claros hace más fácil detectar datos inválidos.
+#### ► DE QUÉ TRATA
+Este tema te guía por serialización con jackson con foco en comprensión antes de implementación.
 
-#### Subtema 2.1: Convierte un record a JSON y de vuelta · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender serialización con jackson te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La aplicación debe enviar los datos de una entrega como JSON y reconstruir el tipo al recibirlos.
+#### ► LA ANALOGÍA
+Piensa en serialización con jackson como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que serialización con jackson resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-En la raíz de una carpeta vacía crea este `pom.xml` para que el ejemplo compile sin pasos implícitos. Requiere JDK 25 y Maven:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Serialización con Jackson se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Serialización con Jackson | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses serialización con jackson por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: serialización con jackson funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Serialización con Jackson existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve serialización con jackson en tu contexto?
+2. ¿Cómo sabrías que serialización con jackson no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar serialización con jackson?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -166,8 +195,6 @@ En la raíz de una carpeta vacía crea este `pom.xml` para que el ejemplo compil
   </plugins></build>
 </project>
 ```
-
-Crea `src/main/java/EntregaJson.java`:
 
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -185,33 +212,9 @@ public class EntregaJson {
 }
 ```
 
-Ejecuta:
-
 ```bash
 mvn -q compile exec:java -Dexec.mainClass=EntregaJson
 ```
-
-**Resultado esperado:** aparece el JSON y luego `RT-1 EN_RUTA`.
-
-**Fallo deliberado:** cambia `guia` por `codigo` en el JSON antes de deserializar. **Diagnóstico:** el tipo espera un campo llamado `guia`; verifica el contrato o documenta un alias.
-
-**3. Entiende**
-
-`ObjectMapper` convierte objetos a JSON y JSON a objetos. El record limita los campos que acepta tu código.
-
-**4. Cierra**
-
-Conserva el JSON producido y el objeto reconstruido.
-
-#### Subtema 2.2: Rechaza JSON mal formado · 10 min
-
-**1. Contexto**
-
-Un cuerpo HTTP puede estar truncado o tener comillas sin cerrar.
-
-**2. Hazlo tú**
-
-En `src/main/java/EntregaJson.java` intenta deserializar el texto `{"guia":` y captura `JsonProcessingException` para imprimir `JSON inválido`.
 
 ```java
 try {
@@ -221,33 +224,9 @@ try {
 }
 ```
 
-Vuelve a ejecutar:
-
 ```bash
 mvn -q compile exec:java -Dexec.mainClass=EntregaJson
 ```
-
-**Resultado esperado:** el programa informa el JSON inválido en vez de ocultar la excepción.
-
-**Fallo deliberado:** captura `Exception` y no imprimas ni propagues nada. **Diagnóstico:** el error queda invisible; maneja el error de formato en el límite HTTP y registra el contexto interno necesario.
-
-**3. Entiende**
-
-Un JSON sintácticamente mal formado no se puede convertir. No devuelvas el stack trace al cliente.
-
-**4. Cierra**
-
-Guarda la respuesta para el cuerpo inválido.
-
-#### Subtema 2.3: Decide qué hacer con campos nuevos · 10 min
-
-**1. Contexto**
-
-Una versión nueva del servicio puede agregar un campo que una versión vieja no conoce.
-
-**2. Hazlo tú**
-
-En `src/main/java/EntregaJson.java` prueba `{"guia":"RT-1","estado":"EN_RUTA","zona":"Norte"}` con el record actual. Luego configura `FAIL_ON_UNKNOWN_PROPERTIES` en `false` y repite:
 
 ```java
 mapper.configure(
@@ -255,42 +234,69 @@ mapper.configure(
     false);
 ```
 
-Ejecuta:
-
-```bash
-mvn -q compile exec:java -Dexec.mainClass=EntregaJson
-```
-
-**Resultado esperado:** la primera deserialización rechaza el campo extra; la segunda lo ignora y lee guía y estado.
-
-**Fallo deliberado:** ignora todos los campos desconocidos sin revisar el contrato de la API. **Diagnóstico:** puedes perder una señal de incompatibilidad; decide entre esquema estricto y compatibilidad según el consumidor.
-
-**3. Entiende**
-
-La tolerancia a campos nuevos facilita despliegues graduales, pero también puede esconder errores de nombre. La decisión depende de quién mantiene el contrato.
-
-**4. Cierra**
-
-Anota si el lector de RutaFlow debe ser estricto o tolerante. Fuentes oficiales: [Jackson Databind](https://github.com/FasterXML/jackson-databind) y [release notes 2.22](https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.22).
-
-**Límite:** la versión indicada es Jackson 2.x; Jackson 3 cambia paquetes y coordenadas. No mezcles imports de las dos versiones.
-
-**Proyecto integrador:** el motor serializa cada guía de entrega a JSON para el API y la reconstruye con el mismo record al leer el cuerpo de la solicitud. **Práctica:** modifica `Envio` para agregar un campo `pesoKg` y confirma que la serialización y la deserialización siguen funcionando con el campo nuevo.
+</details>
 
 ### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
 
-**¿Por qué es importante?** Cargar un archivo enorme completo puede agotar la memoria; un recurso del classpath viaja junto al artefacto.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 3.1: Procesa un archivo línea por línea · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por archivos grandes y recursos del classpath con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender archivos grandes y recursos del classpath te permite tomar mejores decisiones técnicas.**
 
-Un reporte diario puede tener cientos de miles de registros. Para contar entregas no necesitas mantener todo el archivo en memoria.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en archivos grandes y recursos del classpath como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crea `src/ContarLineas.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que archivos grandes y recursos del classpath resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Archivos grandes y recursos del classpath se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Archivos grandes y recursos del classpath | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses archivos grandes y recursos del classpath por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: archivos grandes y recursos del classpath funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Archivos grandes y recursos del classpath existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve archivos grandes y recursos del classpath en tu contexto?
+2. ¿Cómo sabrías que archivos grandes y recursos del classpath no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar archivos grandes y recursos del classpath?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.io.BufferedReader;
 import java.nio.file.Files;
@@ -307,34 +313,10 @@ public class ContarLineas {
 }
 ```
 
-Crea `reporte.txt` con varias líneas y ejecuta:
-
 ```bash
 javac -d out src/ContarLineas.java
 java -cp out ContarLineas reporte.txt
 ```
-
-**Resultado esperado:** imprime la cantidad de líneas y no carga una lista con todo el archivo.
-
-**Fallo deliberado:** cambia el código para usar `Files.readAllLines`. **Diagnóstico:** ahora todas las líneas se mantienen en una lista; vuelve a leer una por una para acotar memoria.
-
-**3. Entiende**
-
-`BufferedReader` conserva un buffer y entrega el archivo por partes. `readAllLines` materializa la lista completa.
-
-**4. Cierra**
-
-Registra el número de líneas y el recurso que try-with-resources cerró.
-
-#### Subtema 3.2: Carga un archivo empacado en el JAR · 10 min
-
-**1. Contexto**
-
-La configuración que acompaña al programa debe estar disponible aunque cambie el directorio actual.
-
-**2. Hazlo tú**
-
-Guarda `modo=demo` en `src/main/resources/config.properties`. Crea `src/main/java/ConfigClasspath.java`:
 
 ```java
 import java.io.InputStream;
@@ -353,33 +335,9 @@ public class ConfigClasspath {
 }
 ```
 
-Empaqueta el recurso junto a la clase con Maven y ejecuta:
-
 ```bash
 mvn -q package
 ```
-
-**Resultado esperado:** la salida es `demo` desde el recurso ubicado en el classpath.
-
-**Fallo deliberado:** cambia el nombre por `/config-inexistente.properties`. **Diagnóstico:** `getResourceAsStream` devuelve null si no existe; verifica el nombre y la ubicación bajo resources.
-
-**3. Entiende**
-
-El classpath busca recursos dentro del artefacto; `Path` busca rutas del sistema operativo. No uses ambos como si fueran lo mismo.
-
-**4. Cierra**
-
-Guarda la salida desde la ejecución empaquetada.
-
-#### Subtema 3.3: Elige entre leer todo o transmitir · 10 min
-
-**1. Contexto**
-
-Un archivo de configuración pequeño y un reporte de cientos de miles de filas tienen necesidades distintas.
-
-**2. Hazlo tú**
-
-En `src/ContarLineas.java` ejecuta la versión `BufferedReader` ya creada. Después crea `src/ContarTodo.java` con esta variante completa y corre ambas con el mismo archivo:
 
 ```java
 import java.nio.file.Files;
@@ -392,49 +350,9 @@ public class ContarTodo {
 }
 ```
 
-Compila y ejecuta:
-
 ```bash
 javac -d out src/ContarTodo.java
 java -cp out ContarTodo reporte.txt
 ```
 
-Genera un archivo más grande repitiendo líneas antes de comparar.
-
-**Resultado esperado:** ambas versiones cuentan lo mismo; la lista completa necesita memoria proporcional al archivo, mientras que el lector procesa progresivamente.
-
-**Fallo deliberado:** usa `readAllLines` con el reporte grande y concluye que siempre es más simple. **Diagnóstico:** comprueba el tamaño y memoria disponible; elige la lectura completa solo si el archivo cabe con holgura.
-
-**3. Entiende**
-
-La lectura completa es cómoda para archivos chicos; el streaming mantiene bajo el espacio de trabajo, a cambio de procesar cada fila durante la lectura.
-
-**4. Cierra**
-
-Anota el tamaño del archivo y cuál lectura elegiste. Fuentes oficiales: [BufferedReader](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html) y [recursos de clase](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getResourceAsStream-java.lang.String-.
-
-**Proyecto integrador:** procesa comprobantes grandes línea por línea y empaqueta la configuración con el JAR. **Límite:** usa `readAllLines`/`Files.readString` solo cuando el archivo cabe con holgura en memoria; para reportes de cientos de miles de filas o tamaño desconocido, procesa línea por línea con `BufferedReader` en vez de materializar la lista completa. **Práctica:** modifica `ContarLineas.java` para además contar cuántas líneas contienen la palabra `ENTREGADO`, sin dejar de leer el archivo línea por línea.
-
-## Construcción guiada del capítulo
-
-**Objetivo del laboratorio:** construir una utilidad que lea/escriba JSON desde y hacia disco con manejo robusto de errores.
-
-**Requisitos previos:** Módulos 0-3 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Leer y escribir un archivo de texto con NIO.2 | Ver Tema 1 | `Files.readString`/`writeString` |
-| 2 | Serializar y deserializar un objeto con Jackson | Ver Tema 2 | Verifica que los datos coinciden tras el ciclo completo |
-| 3 | Leer un archivo grande línea por línea | Ver Tema 3 | Sin cargarlo completo en memoria |
-| 4 | Cargar un recurso desde el classpath | Ver Tema 3 | `getResourceAsStream` |
-| 5 | Manejar el caso de archivo inexistente | Ver Módulo 3 | Mensaje de error claro, sin catch vacío |
-
-**Verificación:** el laboratorio se considera exitoso si la serialización y deserialización con Jackson preserva exactamente los datos originales, y si la lectura de un archivo grande no consume memoria proporcional al tamaño completo del archivo.
-
-**Errores comunes y soluciones**
-
-- **Usar `Files.readAllBytes` para archivos potencialmente muy grandes.** Usa un `BufferedReader` línea por línea para archivos grandes.
-- **Confundir un recurso del classpath con un archivo del sistema de archivos.** Usa `getResourceAsStream` para recursos empaquetados en el JAR, `Files` para archivos externos reales.
-- **No manejar el caso de archivo inexistente con un mensaje claro.** Captura la excepción específica y proporciona contexto útil, sin un catch vacío (Módulo 3).
-
----
+</details>

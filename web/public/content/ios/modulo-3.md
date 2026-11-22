@@ -5,13 +5,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: NavigationStack y NavigationPath · Básico · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a navegar programáticamente de la lista de envíos al `DetalleEnvio` (Módulo 2) usando `NavigationPath`, sin depender de que el usuario toque una fila. Prerrequisitos: Módulo 2 completo.
-#### Paso 2 · Contexto y caso real
-Cuando llega una notificación push de "nueva entrega asignada", RutaFlow necesita abrir `DetalleEnvio` directamente desde código, no esperar a que el conductor navegue manualmente hasta ahí.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a navegar programáticamente de la lista de envíos al DetalleEnvio (Módulo 2) usando NavigationPath, sin depender de que el usuario toque una fila. Prerrequisitos: Módulo 2 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a navegar programáticamente de la lista de envíos al DetalleEnvio (Módulo 2) usando NavigationPath, sin depender de que el usuario toque una fila.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `NavigationStack` con `.navigationDestination(for:)` declara qué vista corresponde a cada tipo; `NavigationPath` deja manipular ese stack desde código, como un GPS que salta directamente a un punto de la ruta en vez de seguir letrero por letrero.
 
 **¿Por qué es importante?** Porque `NavigationPath` permite manipular el stack de navegación completo desde código (agregar, resetear), habilitando deep links y flujos complejos que serían difíciles de expresar solo con `NavigationLink` anidados.
@@ -49,8 +58,69 @@ path.append(tarea) // push programático
 
 **Límites y decisión de uso:** La pila de navegación representa destinos, no autorización sobre sus datos. Guarda identidades estables en lugar de objetos vivos y valida una ruta restaurada: el recurso pudo eliminarse o dejar de pertenecer al usuario.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp` (como en los módulos 1 y 2). Crea `AppRutaFlow.swift` con **File ▸ New ▸ File ▸ Swift File** y escribe:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que navigationstack y navigationpath resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| NavigationStack y NavigationPath se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar NavigationStack y NavigationPath | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses navigationstack y navigationpath por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: navigationstack y navigationpath funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- NavigationStack y NavigationPath existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve navigationstack y navigationpath en tu contexto?
+2. ¿Cómo sabrías que navigationstack y navigationpath no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar navigationstack y navigationpath?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+NavigationStack(path: $path) {
+    ListaTareasView()
+        .navigationDestination(for: Tarea.self) { tarea in DetalleTareaView(tarea: tarea) }
+}
+```
+
+```swift
+path.append(tarea) // navega programáticamente, sin depender de NavigationLink anidados
+```
+
+```swift
+NavigationStack(path: $path) {
+    ListaTareasView()
+        .navigationDestination(for: Tarea.self) { tarea in DetalleTareaView(tarea: tarea) }
+}
+path.append(tarea) // push programático
+```
 
 ```swift
 import SwiftUI
@@ -85,41 +155,77 @@ struct AppRutaFlow: View {
 // path.append(Envio(guia: "RF-4471"))
 ```
 
-En el archivo `@main` que generó Xcode (el que contiene `WindowGroup`), cambia `ContentView()` por `AppRutaFlow()`.
-
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: llamar `path.append(Envio(guia: "RF-4471"))` desde cualquier parte del código navega directamente a `DetalleEnvio`, sin que el usuario haya tocado nada en la lista.
-#### Paso 5 · Práctica guiada
-Pista: agregá un segundo tipo `EnvioUrgente` sin declarar su `.navigationDestination(for:)` correspondiente, y hacé `path.append(EnvioUrgente(guia: "RF-9999"))` — ese es el fallo deliberado: SwiftUI no tiene ninguna vista registrada para ese tipo, y la navegación se queda en un estado indefinido en vez de mostrar `DetalleEnvio`.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando el `.navigationDestination(for: EnvioUrgente.self)` correspondiente, y agregá un botón "volver al inicio" que resetee `path` a un `NavigationPath()` vacío desde cualquier profundidad del stack.
-#### Paso 7 · Cierre
-Entregá la navegación programática funcionando del Paso 4, el destino sin registrar del Paso 5, y el reseteo completo del stack del Paso 6; explicá por qué esto sería difícil de lograr con `NavigationLink` anidados puros, sin `NavigationPath`. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
+</details>
 
 ### Tema 2: Sheets, full screen covers y TabView · Básico · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a decidir, para dos flujos reales de RutaFlow, si necesitan un `.sheet()` o un `.fullScreenCover()`, y a darle a cada pestaña su propio historial con `TabView`. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-Confirmar una entrega es una acción rápida y descartable; completar el onboarding de un conductor nuevo (aceptar términos, verificar identidad) es un flujo obligatorio que no debería poder cerrarse deslizando por accidente.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un sheet es abrir un cajón parcialmente sin perder de vista el resto de la habitación; un full screen cover es entrar a una sala separada donde la puerta se cierra completamente — la intensidad de la interrupción debe coincidir con la importancia real de la acción.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Porque elegir sheet o full screen cover comunica al usuario qué tan obligatoria es la acción, y un onboarding crítico presentado como sheet puede descartarse por error sin completarse.
-**Conceptos clave:** dos niveles de intensidad de presentación modal, cada uno apropiado para un tipo distinto de interrupción.
+#### ► DE QUÉ TRATA
+Al finalizar vas a decidir, para dos flujos reales de RutaFlow, si necesitan un .sheet() o un .fullScreenCover(), y a darle a cada pestaña su propio historial con TabView. Prerrequisitos: Tema 1 de este módulo.
 
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a decidir, para dos flujos reales de RutaFlow, si necesitan un .sheet() o un .fullScreenCover(), y a darle a cada pestaña su propio historial con TabView.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en sheets, full screen covers y tabview como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sheets, full screen covers y tabview resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sheets, full screen covers y TabView se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sheets, full screen covers y TabView | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses sheets, full screen covers y tabview por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sheets, full screen covers y tabview funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Sheets, full screen covers y TabView existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sheets, full screen covers y tabview en tu contexto?
+2. ¿Cómo sabrías que sheets, full screen covers y tabview no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sheets, full screen covers y tabview?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 .sheet(isPresented: $mostrarFormulario) { FormularioTareaView() }       // modal parcial, dismissible deslizando
 .fullScreenCover(isPresented: $mostrarOnboarding) { OnboardingView() } // cubre toda la pantalla, ideal para flujos obligatorios
 ```
-
-Un `.sheet()` presenta contenido modal parcial (típicamente deslizable hacia abajo para descartar, dejando visible parte del contexto anterior), apropiado para acciones complementarias o formularios que el usuario puede abandonar fácilmente sin perder su contexto de navegación previo; un `.fullScreenCover()` cubre la pantalla completa sin ningún gesto de descarte trivial disponible por defecto, apropiado para flujos que el desarrollador considera deliberadamente obligatorios o que requieren la atención completa del usuario sin distracción del contexto anterior (un onboarding inicial, un flujo de autenticación crítico).
 
 ```swift
 TabView {
@@ -128,25 +234,11 @@ TabView {
 }
 ```
 
-Anidar un `NavigationStack` independiente dentro de cada pestaña de una `TabView` establece exactamente el mismo patrón de stacks de navegación independientes por sección estudiado en Android (Módulo 3 del track de Android): cada pestaña mantiene su propio historial de navegación, de modo que cambiar de pestaña y regresar preserva el punto exacto donde el usuario quedó en cada una, cumpliendo con la misma expectativa de UX consolidada en apps móviles de ambas plataformas.
-
-**Analogía:** un sheet es como abrir un cajón parcialmente para consultar algo rápido sin perder de vista el resto de la habitación; un full screen cover es como entrar a una sala separada donde la puerta se cierra completamente, apropiada cuando la actividad requiere concentración total sin ninguna distracción del contexto anterior.
-
-**Diagrama:**
-
 ```
 TabView
 ├── Inicio  → NavigationStack propio
 └── Tareas  → NavigationStack propio (independiente del de Inicio)
 ```
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, presenta la confirmación como sheet y conserva el estado al cerrar.
-
-**Límites y decisión de uso:** Una presentación modal no debe ocultar una tarea incompleta sin posibilidad de recuperación. Define qué se guarda al cerrar y prueba cancelación; evita abrir varios modales simultáneos como respuesta a eventos repetidos.
-
-#### Paso 4 · Demostración guiada desde cero
-Sigue en el proyecto del Tema 1 (usa su `ListaEnvios`). Reemplaza el contenido de `ContentView.swift` y, en el archivo `@main`, vuelve a usar `ContentView()` en `WindowGroup`:
 
 ```swift
 import SwiftUI
@@ -198,47 +290,31 @@ struct HistorialEnvios: View {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: la confirmación de entrega aparece como un sheet descartable; el onboarding cubre toda la pantalla sin gesto de descarte trivial; cada pestaña mantiene su propio `NavigationStack`, así que cambiar de "Envíos" a "Historial" y volver preserva el punto exacto donde quedó cada una.
-#### Paso 5 · Práctica guiada
-Pista: cambiá el onboarding obligatorio de `.fullScreenCover` a `.sheet` — ese es el fallo deliberado: ahora el conductor puede deslizar hacia abajo y descartar el onboarding sin completarlo, exactamente la interrupción "liviana" que este flujo NO debería permitir.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `.fullScreenCover`, y navegá a `DetalleEnvio` dentro de la pestaña "Envíos", cambiá a "Historial", y volvé a "Envíos" — confirmá que seguís viendo `DetalleEnvio`, no la lista desde el principio.
-#### Paso 7 · Cierre
-Entregá la elección correcta de sheet/fullScreenCover del Paso 4, el onboarding descartable por error del Paso 5, y el historial de navegación preservado por pestaña del Paso 6; explicá qué comunica cada nivel de presentación modal sobre qué tan obligatoria es la acción. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
+</details>
 
 ### Tema 3: Deep linking y controles de formulario · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a abrir `DetalleEnvio` directamente desde un deep link real (`rutaflow://envio/RF-4471`), validando el formato antes de navegar. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-Cuando el conductor toca una notificación push "nueva entrega asignada: RF-4471", esa URL tiene que aterrizar directamente en `DetalleEnvio` de ese envío específico, no en la pantalla principal esperando navegación manual.
-#### Paso 3 · Teoría, modelo mental y analogía
-`.onOpenURL` es un sistema de recepción que lee la dirección exacta del sobre entrante y lo entrega directamente en la oficina correspondiente, sin dejarlo en recepción general para que alguien lo redirija después.
-**Conceptos clave:** entrada externa mapeada directamente a un punto específico de navegación.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-```swift
-.onOpenURL { url in
-    if let id = extraerID(de: url) { path.append(Tarea(id: id)) }
-}
-```
+#### ► DE QUÉ TRATA
+Al finalizar vas a abrir DetalleEnvio directamente desde un deep link real (rutaflow://envio/RF-4471), validando el formato antes de navegar. Prerrequisitos: Tema 1 de este módulo.
 
-`.onOpenURL` captura una URL entrante (desde una notificación, un link compartido, o un esquema de URL personalizado registrado por la app) y permite reaccionar programáticamente extrayendo la información relevante y navegando directamente al punto correspondiente del `NavigationPath`, el mismo principio de deep linking estudiado en Android (Módulo 3 de ese track) aplicado aquí con las APIs nativas de SwiftUI: una entrada externa lleva al usuario directamente al contenido relevante, en vez de aterrizar en la pantalla principal de la app requiriendo navegación manual adicional.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a abrir DetalleEnvio directamente desde un deep link real (rutaflow://envio/RF-4471), validando el formato antes de navegar.**
 
-`Form`, `Picker`, `DatePicker`, `Toggle` y `Slider` son los controles de entrada estándar de SwiftUI para construir formularios completos de forma declarativa, cada uno vinculado a una propiedad de estado mediante un `Binding` (con el prefijo `$`); `.swipeActions()` agrega acciones reveladas mediante gesto de deslizamiento sobre una fila de una lista (eliminar, marcar como completada), y `.onDelete()` habilita el gesto estándar de eliminación por deslizamiento en modo edición de una `List`, ambos patrones de interacción esperados por convención en apps iOS nativas.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** `.onOpenURL` es como un sistema de recepción de correspondencia que lee automáticamente la dirección exacta escrita en cada sobre entrante y lo entrega directamente en la oficina correspondiente del edificio, en vez de dejarlo en la recepción general para que alguien lo redirija manualmente después.
+#### ► LA ANALOGÍA
+Piensa en deep linking y controles de formulario como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** El deep linking mediante `.onOpenURL` lleva al usuario directamente al contenido relevante desde una entrada externa; los controles estándar de formulario y los gestos de swipe/delete cumplen con las convenciones de interacción esperadas en apps iOS nativas.
-
-**Diagrama: deep link validado antes de navegar**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A["rutaflow://envio/RF-4471"] --> B{"scheme/host válidos?"}
@@ -248,12 +324,57 @@ flowchart TD
     D -->|Sí| E["path.append(Envio(guia:))"]
 ```
 
-En el proyecto del Tema 1, agrega este handler a `AppRutaFlow` en `AppRutaFlow.swift` y vuelve a usar `AppRutaFlow()` en `WindowGroup`. Para que iOS entregue los enlaces `rutaflow://` a tu app, registra el esquema en **Target ▸ Info ▸ URL Types** (URL Schemes: `rutaflow`). Límite de la decisión: no conviene validar el formato de la URL en más de un lugar disperso de la app — centralizá esa validación en el único punto de entrada `.onOpenURL`, antes de que el valor llegue a `NavigationPath`; validar tarde, después de ya haber navegado, no conviene porque la vista de destino ya habría recibido un valor no confiable.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Deep linking y controles de formulario se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
----
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Deep linking y controles de formulario | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-Reemplaza la `struct AppRutaFlow` del Tema 1 por esta versión (el resto del archivo no cambia):
+#### ► CUÁNDO NO USAR ESTO
+No uses deep linking y controles de formulario por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: deep linking y controles de formulario funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Deep linking y controles de formulario existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve deep linking y controles de formulario en tu contexto?
+2. ¿Cómo sabrías que deep linking y controles de formulario no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar deep linking y controles de formulario?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+.onOpenURL { url in
+    if let id = extraerID(de: url) { path.append(Tarea(id: id)) }
+}
+```
+
+```mermaid
+flowchart TD
+    A["rutaflow://envio/RF-4471"] --> B{"scheme/host válidos?"}
+    B -->|No| C["Ignorar (return)"]
+    B -->|Sí| D{"guia.hasPrefix('RF-')?"}
+    D -->|No| C
+    D -->|Sí| E["path.append(Envio(guia:))"]
+```
 
 ```swift
 struct AppRutaFlow: View {
@@ -272,48 +393,8 @@ struct AppRutaFlow: View {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: abrir `rutaflow://envio/RF-4471` navega directamente a `DetalleEnvio(guia: "RF-4471")`, usando el mismo `NavigationPath` del Tema 1.
-#### Paso 5 · Práctica guiada
-Pista: quitá la validación `guia.hasPrefix("RF-")` y probá abrir `rutaflow://envio/<script>` — ese es el fallo deliberado: sin validar el formato de la guía antes de usarla, cualquier contenido arbitrario de una URL maliciosa terminaría navegando a `DetalleEnvio` con un valor que nunca debería tratarse como una guía real.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la validación, y agregá un `Form` con un `Picker` para que el conductor reporte el motivo si no pudo entregar (por ejemplo "destinatario ausente", "dirección incorrecta"), usando `.swipeActions()` en la lista para marcar un envío como "reintentar" sin entrar al detalle.
-
-**Proyecto integrador:** completa en el proyecto vacío de este tema una app de incidencias con `RutaEnvio.swift` para validar y convertir URLs en destinos, `FormularioIncidencia.swift` para exigir un motivo antes de habilitar Guardar y `ContentView.swift` para la lista y el `NavigationStack`. Registra el esquema `rutaflow` en el target y, con la app instalada, ejecuta `xcrun simctl openurl booted 'rutaflow://envio/RF-4471'`: debe abrirse ese detalle. Repite con `rutaflow://envio/NO-VALIDA` y comprueba que permanece la lista; guarda una incidencia y verifica que la guía y el motivo elegido aparecen en el detalle.
-
-#### Paso 7 · Cierre
-Entregá el deep link validado del Paso 4, el formato no validado y su riesgo del Paso 5, y el formulario con swipe actions del Paso 6; explicá por qué una URL entrante nunca debería tratarse como un dato de confianza sin antes validar su forma. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
-**Implicación práctica:** Una URL entrante (deep link) nunca debería tratarse como un dato de confianza; validar su formato antes de navegar evita que contenido arbitrario termine tratado como una guía real.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app con navegación tipo stack, una tab bar y al menos un sheet modal.
-
-**Requisitos previos:** Módulo 2 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Construir un `NavigationStack` de al menos 3 niveles | Ver Tema 1 | Lista → detalle → sub-detalle |
-| 2 | Usar `NavigationPath` para navegar programáticamente | Ver Tema 1 | Sin depender solo de `NavigationLink` |
-| 3 | Presentar un `.sheet()` y un `.fullScreenCover()` | Ver Tema 2 | Explica cuándo usar cada uno |
-| 4 | Construir una `TabView` con 3 pestañas | Ver Tema 2 | Cada una con su propio `NavigationStack` |
-| 5 | Configurar `.onOpenURL` para deep linking | Ver Tema 3 | Navega directamente a la pantalla relevante |
-
-**Verificación:** el laboratorio se considera exitoso si navegar profundamente en una pestaña y cambiar a otra mediante la tab bar preserva ese historial al regresar, y si abrir una URL configurada navega directamente a la pantalla correspondiente sin pasos manuales adicionales.
-
-**Errores comunes y soluciones**
-
-- **Usar un full screen cover para una acción complementaria que el usuario debería poder descartar fácilmente.** Prefiere un sheet para ese caso.
-- **Compartir un único `NavigationStack` entre todas las pestañas de una `TabView`.** Anida uno independiente por pestaña para preservar el historial de cada una.
-- **Olvidar registrar el esquema de URL en el proyecto para que `.onOpenURL` reciba las llamadas.** Configúralo en la configuración del target antes de probar el deep link.
-
----
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, abre el detalle de un envío por deep link y valida el formulario.
+</details>

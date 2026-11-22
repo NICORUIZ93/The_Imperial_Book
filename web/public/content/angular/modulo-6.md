@@ -3,32 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Observable frente a Promise · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con espías reales (`vi.fn()`) y el reloj simulado de Vitest (`vi.useFakeTimers()`), dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscribirse detiene efectivamente la operación en curso).
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con espías reales (vi.fn()) y el reloj simulado de Vitest (vi.useFakeTimers()), dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscrib…
 
-**Conocimiento previo:** Módulo 5 del track de JavaScript (Promesas); RxJS básico.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con espías reales (vi.fn()) y el reloj simulado de Vitest (vi.useFakeTimers()), dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscribirse detiene efectivamente la operación en curso).**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En un buscador en vivo, cancelar una petición en curso cuando el usuario escribe una nueva letra (en vez de dejarla completarse inútilmente) ahorra ancho de banda real y evita que una respuesta obsoleta sobrescriba una más reciente; confirmar con una prueba real que la cancelación efectivamente detiene la lógica productora (no solo ignora su resultado) es la diferencia concreta frente a una Promesa.
+#### ► LA ANALOGÍA
+Piensa en observable frente a promise como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que observable frente a promise resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** múltiples emisiones, cancelación nativa, evaluación perezosa.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Observable frente a Promise se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una Promesa (estudiada en profundidad en el Módulo 5 del track de JavaScript) representa un único valor futuro, resuelto o rechazado exactamente una vez; un Observable de RxJS representa un flujo que puede emitir múltiples valores a lo largo del tiempo (cero, uno, o infinitos valores sucesivos), y que se puede cancelar explícitamente en cualquier momento simplemente desuscribiéndose, una capacidad que las Promesas nativas de JavaScript no ofrecen directamente (una vez creada, una Promesa no puede cancelarse; como mucho, se puede ignorar su resultado, pero la operación subyacente sigue ejecutándose de todas formas, salvo mecanismos externos adicionales como `AbortController`, estudiado en el Módulo 6 del track de JavaScript).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Observable frente a Promise | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Otra diferencia importante es la evaluación perezosa: un Observable no comienza a ejecutar su lógica productora hasta que alguien se suscribe explícitamente a él (`observable.subscribe(...)`); una Promesa, en cambio, comienza a ejecutarse inmediatamente en el momento de su creación, independientemente de si alguien está interesado en su resultado o no. Esta diferencia hace que un mismo Observable pueda suscribirse múltiples veces, potencialmente disparando su lógica productora una vez por cada suscripción independiente (a menos que se use un operador como `shareReplay`, Tema 4, para compartir una única ejecución entre múltiples suscriptores), mientras que una Promesa, al ejecutarse una única vez en su creación, siempre entrega el mismo resultado a cualquier código que la consulte después, sin importar cuántas veces se consulte.
+#### ► CUÁNDO NO USAR ESTO
+No uses observable frente a promise por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Esta capacidad de emitir múltiples valores a lo largo del tiempo es precisamente lo que hace a los Observables la herramienta apropiada para modelar flujos de eventos continuos (clics del usuario, cambios de valor de un input mientras el usuario escribe, mensajes entrantes de un WebSocket), casos donde una Promesa de un único valor simplemente no encaja conceptualmente, siendo esta la razón fundamental por la que Angular sigue apoyándose en RxJS para ciertos casos, en vez de haber sido completamente reemplazado por signals, que están diseñados deliberadamente para el caso más simple de estado síncrono puntual, no para flujos continuos de eventos a lo largo del tiempo.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: observable frente a promise funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Analogía:** una Promesa es como pedir un solo paquete que llegará exactamente una vez, en un momento futuro determinado, sin posibilidad de cancelar el envío una vez iniciado; un Observable es como suscribirse a una revista con entregas periódicas continuas a lo largo del tiempo, que puedes cancelar en cualquier momento (desuscribiéndote) para dejar de recibir más entregas futuras.
+#### ► LO QUE DEBES RECORDAR
+- Observable frente a Promise existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Diagrama:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve observable frente a promise en tu contexto?
+2. ¿Cómo sabrías que observable frente a promise no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar observable frente a promise?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌─────────────────────────────────────────────┐
 │ Promise: UN valor, NO cancelable,            │
@@ -40,17 +76,11 @@ Esta capacidad de emitir múltiples valores a lo largo del tiempo es precisament
 └─────────────────────────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía (o continúa en `demo-forms` del Módulo 5):
-
 ```bash
 npx -y @angular/cli@22 new demo-rxjs --standalone --skip-git --defaults
 cd demo-rxjs
 mkdir -p src/app
 ```
-
-Crea `src/app/observable-vs-promise.ts` con un Observable instrumentado con espías para observar exactamente cuándo se ejecuta su lógica productora y su lógica de limpieza:
 
 ```ts
 // src/app/observable-vs-promise.ts
@@ -107,54 +137,28 @@ describe('Observable es perezoso y cancelable, a diferencia de una Promise', () 
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; el segundo confirma con `receptor` (un espía separado del valor emitido) que desuscribirse ANTES de que el `setTimeout` interno complete impide que `next(42)` llegue jamás — cancelación real, no solo ignorar un resultado que de todas formas se produciría.
-
-**Fallo deliberado:** quita la línea `clearTimeout(id);` de la función de limpieza (dejando solo `alLimpiar();`) y ejecuta de nuevo el segundo test. El test sigue pasando en apariencia, pero agrega esta aserción extra al final: `vi.advanceTimersByTime(1000); expect(receptor).not.toHaveBeenCalled();` con un avance adicional de 1000 ms — FALLA porque, sin `clearTimeout`, el `setTimeout` original sigue vivo y `subscriber.next(42)` se invoca de todas formas después del `unsubscribe()` (aunque el Observable ya no tiene un suscriptor activo escuchando, el temporizador subyacente nunca se canceló realmente) — diagnosticando que la cancelación de RxJS depende completamente de que la función de limpieza del productor libere los recursos reales subyacentes; RxJS no cancela mágicamente un `setTimeout` por sí solo. Restaura `clearTimeout(id);` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un tercer test que confirme que suscribirse DOS veces al mismo Observable invoca `alProducir` dos veces de forma independiente (evaluación perezosa por suscripción, no compartida).
-2. Documenta, en un comentario, qué operador de RxJS (mencionado en el Tema 4) permitiría compartir una única ejecución entre ambas suscripciones en vez de duplicarla.
-3. Compara, con un test equivalente usando una función que devuelve una `Promise`, que la Promesa SÍ ejecuta su lógica productora inmediatamente al crearse, sin necesitar ningún `.then()` para dispararla.
-4. Escribe de memoria (sin mirar) un Observable con lógica de limpieza real y un test que confirme evaluación perezosa y cancelación real. Compara después contra el patrón del Paso 4.
-
-**Pista:** la función de limpieza que devuelve el productor de un `new Observable(...)` es la única responsable de liberar recursos reales (temporizadores, suscripciones a WebSocket, listeners); `unsubscribe()` por sí solo no libera nada automáticamente si esa función no lo hace explícitamente.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método real que detiene una suscripción activa de RxJS:
-
 ```ts
 const suscripcion = observable$.subscribe(receptor);
 suscripcion.____();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un Observable con lógica productora y de limpieza instrumentadas con espías, y un test que confirme evaluación perezosa y cancelación real. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada sin suscriptor) y genuinamente cancelable (la limpieza real detiene el trabajo subyacente), a diferencia de una Promesa. El siguiente tema confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) cómo `switchMap` cancela automáticamente un Observable interno cuando llega un nuevo valor. Fuentes oficiales: [RxJS — Observable](https://rxjs.dev/guide/observable).
-
-**Errores comunes:** asumir que `unsubscribe()` cancela automáticamente cualquier operación asíncrona subyacente sin que el productor implemente su propia función de limpieza; confundir "nadie está escuchando el resultado" con "la operación se detuvo realmente".
-
-**Cuándo no usarlo:** para un único valor asíncrono sin necesidad de cancelación ni de múltiples emisiones (como el resultado de una función `async` simple), una Promesa nativa es más simple y no requiere ningún import de RxJS.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Compara una consulta puntual de guía con la secuencia de cambios del filtro. Demuestra qué suscripción puede cancelarse al salir y qué valor debe mantenerse como estado de pantalla.
+</details>
 
 ### Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con el reloj simulado de Vitest (`vi.useFakeTimers()`) sobre un `Subject` real, que `switchMap` cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condiciones de carrera en un buscador en vivo.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) sobre un Subject real, que switchMap cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condicione…
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) sobre un Subject real, que switchMap cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condiciones de carrera en un buscador en vivo.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En un buscador que dispara una petición por cada letra escrita, si la respuesta de una búsqueda antigua ("ta") llega DESPUÉS que la de una búsqueda más reciente ("tarea"), sin `switchMap` la pantalla terminaría mostrando el resultado obsoleto sobrescribiendo al correcto; confirmar con un test real que solo la respuesta más reciente se propaga previene ese bug de condición de carrera.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** transformación y combinación de flujos, cancelación automática con switchMap.
 
 `debounceTime(300)`, aplicado sobre el flujo de cambios de valor de un input (`valueChanges`), espera 300 milisegundos de inactividad antes de dejar pasar el valor más reciente hacia el resto de la cadena de operadores, exactamente el mismo concepto de debounce estudiado en el Módulo 10 del track de JavaScript, ahora expresado como un operador componible dentro de una cadena de RxJS. `distinctUntilChanged()`, colocado inmediatamente después, filtra valores consecutivos idénticos al anterior, evitando disparar una nueva búsqueda si el usuario borra y vuelve a escribir exactamente el mismo texto sin cambio neto real en el valor.
@@ -192,9 +196,73 @@ resultados = toSignal(
 );
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-switchmap --standalone --skip-git --defaults` y luego `cd demo-switchmap`), crea `src/app/buscador.pipeline.ts`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest en tu contexto?
+2. ¿Cómo sabrías que operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌───────────┐      ┌────────────────┐
+│ 'ta' llega │ ────▶│ peticion A (en │
+└───────────┘      │ curso...)       │
+                    └────────────────┘
+                          │ CANCELADA
+                          ▼
+┌───────────┐      ┌────────────────┐
+│'tarea' llega│────▶│ peticion B      │───▶ solo B se propaga
+└───────────┘      └────────────────┘
+```
+
+```ts
+resultados = toSignal(
+  this.busqueda.valueChanges.pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    switchMap(texto => this.api.buscar(texto)) // cancela la petición anterior automáticamente
+  ),
+  { initialValue: [] }
+);
+```
 
 ```bash
 mkdir -p src/app
@@ -213,8 +281,6 @@ export function crearPipelineBusqueda(entrada$: Subject<string>, api: ApiBusqued
   return entrada$.pipe(switchMap((texto) => api.buscar(texto)));
 }
 ```
-
-Confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) que la respuesta de la primera búsqueda NUNCA llega si una segunda búsqueda se dispara antes de que la primera complete:
 
 ```ts
 // src/app/buscador.pipeline.spec.ts
@@ -249,65 +315,69 @@ describe('switchMap cancela el Observable interno anterior', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el test pasa; `resultados` contiene ÚNICAMENTE `['resultado-tarea']`, nunca `'resultado-ta'` — confirmando que `switchMap` canceló efectivamente el Observable interno de la búsqueda anterior antes de que pudiera emitir su valor.
-
-**Fallo deliberado:** cambia `switchMap` por `mergeMap` en `crearPipelineBusqueda` (mismo import de `rxjs/operators`) y ejecuta de nuevo el test. FALLA porque `resultados` ahora contiene AMBOS resultados (`['resultado-ta']` y `['resultado-tarea']`, en ese orden), ya que `mergeMap` deja ejecutar ambas peticiones internas en paralelo sin cancelar ninguna — diagnosticando en código la diferencia exacta de comportamiento entre ambos operadores que la teoría describe. Restaura `switchMap` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega `debounceTime(300)` y `distinctUntilChanged()` antes del `switchMap` en el pipeline, y ajusta el test para confirmar que emitir el mismo texto dos veces consecutivas no dispara una segunda llamada a `buscar`.
-2. Repite el experimento del fallo deliberado pero con `concatMap` en vez de `mergeMap`, y documenta en un comentario en qué orden llegan ambos resultados con `concatMap` (a diferencia de `mergeMap`).
-3. Escribe un test con `combineLatest` que confirme que cambiar CUALQUIERA de dos Subjects de entrada (`filtro$`, `orden$`) dispara una nueva emisión combinada.
-4. Escribe de memoria (sin mirar) un pipeline con `switchMap` sobre un `Subject`, y un test con reloj simulado (`vi.useFakeTimers()`) que confirme la cancelación del interno anterior. Compara después contra el patrón del Paso 4.
-
-**Pista:** la diferencia entre `switchMap`, `mergeMap`, `concatMap` y `exhaustMap` (Tema 4) es completamente verificable con la misma estructura de test que el Paso 4 — solo cambia el operador y observa qué resultados terminan en el array.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el operador real de RxJS que cancela automáticamente el Observable interno anterior:
-
-```ts
-entrada$.pipe(____((texto) => api.buscar(texto)))
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `switchMap` y un test con reloj simulado (`vi.useFakeTimers()`) que confirme que solo la respuesta más reciente se propaga. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con el reloj simulado de Vitest (`vi.useFakeTimers()`) sobre un `Subject` real, que `switchMap` cancela el Observable interno anterior cuando llega un nuevo valor, resolviendo condiciones de carrera reales. El siguiente tema confirma con un componente real destruido que `takeUntilDestroyed` completa automáticamente una suscripción, evitando la fuga de memoria clásica. Fuentes oficiales: [RxJS — switchMap](https://rxjs.dev/api/operators/switchMap).
-
-**Errores comunes:** usar `mergeMap` donde la semántica correcta es "solo me interesa la respuesta más reciente" (caso de uso de `switchMap`); olvidar `debounceTime`/`distinctUntilChanged` antes de `switchMap`, disparando peticiones innecesarias en cada tecla.
-
-**Cuándo no usarlo:** si CADA emisión debe procesarse completamente sin cancelar ninguna (por ejemplo, enviar múltiples notificaciones independientes que todas deben completarse), `switchMap` es la elección incorrecta — `mergeMap` (Tema 4) es la apropiada.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Combina texto, estado y zona para consultar entregas. Prueba escritura rápida y respuestas invertidas: solo la combinación actual debe aparecer y no deben enviarse consultas por cada tecla.
+</details>
 
 ### Tema 3: Manejo de suscripciones sin fugas de memoria · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con un componente Angular real creado y destruido con `TestBed`, que `takeUntilDestroyed()` completa automáticamente una suscripción cuando el componente se destruye — sin ningún `ngOnDestroy` manual escrito.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con un componente Angular real creado y destruido con TestBed, que takeUntilDestroyed() completa automáticamente una suscripción cuando el componente se destruye — sin ningún ngOnDestroy manual escrito.
 
-**Conocimiento previo:** Módulo 1 de este track (ciclo de vida, `ngOnDestroy`); Tema 1-2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con un componente Angular real creado y destruido con TestBed, que takeUntilDestroyed() completa automáticamente una suscripción cuando el componente se destruye — sin ningún ngOnDestroy manual escrito.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En una aplicación con muchos componentes creándose y destruyéndose durante la navegación normal (Módulo 4), una suscripción manual olvidada mantiene viva una referencia al componente ya destruido, impidiendo que el recolector de basura libere su memoria; confirmar con una prueba real que `takeUntilDestroyed` completa la suscripción exactamente en el momento de la destrucción, sin depender de que un desarrollador recuerde escribir `ngOnDestroy` manualmente, es la garantía concreta que se está verificando.
+#### ► LA ANALOGÍA
+Piensa en manejo de suscripciones sin fugas de memoria como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que manejo de suscripciones sin fugas de memoria resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `async` pipe, `takeUntilDestroyed`, fugas de memoria por suscripciones huérfanas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Manejo de suscripciones sin fugas de memoria se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Suscribirse manualmente a un Observable con `.subscribe(...)` dentro de un componente crea una responsabilidad explícita de desuscribirse eventualmente (típicamente en `ngOnDestroy`, Módulo 1) para evitar una fuga de memoria: si el componente se destruye pero la suscripción sigue activa, el callback de esa suscripción puede seguir ejecutándose (por ejemplo, intentando actualizar una propiedad de un componente que ya no existe visualmente), manteniendo además una referencia activa que impide que el recolector de basura (Módulo 5 del track de JavaScript) libere la memoria del componente ya destruido, un problema que se agrava considerablemente en aplicaciones con muchos componentes creándose y destruyéndose dinámicamente durante la navegación normal del usuario.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Manejo de suscripciones sin fugas de memoria | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-El `async` pipe, usado directamente en la plantilla (`{{ observable$ | async }}` o `@for (item of items$ | async; ...)`), resuelve este problema de forma completamente automática y transparente: se suscribe al Observable cuando el componente se renderiza, y crucialmente se desuscribe automáticamente cuando el componente se destruye, sin ningún código manual de limpieza necesario en `ngOnDestroy`, siendo la razón principal por la que se recomienda preferir el `async` pipe sobre `subscribe()` manual en cualquier caso donde el valor del Observable simplemente necesite mostrarse en la plantilla.
+#### ► CUÁNDO NO USAR ESTO
+No uses manejo de suscripciones sin fugas de memoria por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-`takeUntilDestroyed()`, un operador más reciente diseñado específicamente para casos donde sí se necesita una suscripción manual explícita (por ejemplo, para ejecutar lógica imperativa en respuesta a cada emisión, no solo para mostrar un valor en la plantilla), automatiza la misma limpieza que el `async` pipe ofrece de forma transparente: aplicado dentro del `pipe()` de un Observable, completa automáticamente ese Observable cuando el componente (o servicio, en un contexto de inyección apropiado) se destruye, eliminando la necesidad de gestionar manualmente un `Subject` de destrucción y de llamarlo explícitamente dentro de `ngOnDestroy`, un patrón considerablemente más verboso que se usaba anteriormente para lograr el mismo resultado antes de que `takeUntilDestroyed` existiera como operador dedicado.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: manejo de suscripciones sin fugas de memoria funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Analogía:** una suscripción manual sin desuscripción es como dejar una línea telefónica abierta indefinidamente incluso después de que la persona que la atendía ya se retiró del edificio, siguiendo consumiendo recursos sin que nadie esté realmente escuchando del otro lado; el `async` pipe y `takeUntilDestroyed` son como un sistema que cuelga automáticamente la línea en el momento exacto en que la persona correspondiente se retira, sin requerir que nadie recuerde hacerlo manualmente cada vez.
+#### ► LO QUE DEBES RECORDAR
+- Manejo de suscripciones sin fugas de memoria existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Diagrama — ciclo de vida de la suscripción:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve manejo de suscripciones sin fugas de memoria en tu contexto?
+2. ¿Cómo sabrías que manejo de suscripciones sin fugas de memoria no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar manejo de suscripciones sin fugas de memoria?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌────────────────┐  componente vivo  ┌─────────────────┐
 │ eventos$.next(1) │ ─────────────────▶│ recibidos = [1]  │
@@ -319,20 +389,15 @@ El `async` pipe, usado directamente en la plantilla (`{{ observable$ | async }}`
 └────────────────┘ ─────────────────▶└─────────────────┘
 ```
 
-**Código del ejemplo:**
-
 ```html
 <!-- async pipe: se suscribe Y se desuscribe automáticamente -->
 @for (item of resultados$ | async; track item.id) { <li>{{ item.nombre }}</li> }
 ```
+
 ```ts
 // takeUntilDestroyed: para suscripciones manuales que sí son necesarias
 this.eventos$.pipe(takeUntilDestroyed()).subscribe(evento => this.procesar(evento));
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-cleanup --standalone --skip-git --defaults` y luego `cd demo-cleanup`), crea `src/app/eventos.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -354,8 +419,6 @@ export class EventosComponent {
   }
 }
 ```
-
-Confirma con `TestBed` real (creando y destruyendo el componente) que la suscripción se completa exactamente al destruir:
 
 ```ts
 // src/app/eventos.component.spec.ts
@@ -379,69 +442,69 @@ describe('takeUntilDestroyed completa la suscripcion al destruir el componente',
 });
 ```
 
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** el test pasa; `recibidos` permanece en `[1]` después de `fixture.destroy()`, aunque `eventos$.next(2)` se invoque explícitamente después — la suscripción ya no está activa porque `takeUntilDestroyed()` la completó automáticamente en el momento exacto de la destrucción.
-
-**Fallo deliberado:** quita `.pipe(takeUntilDestroyed())` dejando solo `this.eventos$.subscribe(...)` directo, y ejecuta de nuevo el test. FALLA porque `recibidos` termina en `[1, 2]` en vez de `[1]` — el `2` sí llega, porque sin `takeUntilDestroyed()` nadie completó la suscripción al destruir el componente, reproduciendo exactamente la fuga de memoria que la teoría describe (un callback que sigue ejecutándose sobre un componente ya destruido). Restaura `takeUntilDestroyed()` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Reemplaza la suscripción manual con `takeUntilDestroyed()` por el `async` pipe en un componente con template real, y confirma con un test que el resultado final es equivalente (misma limpieza automática, sin código de suscripción manual).
-2. Documenta, en un comentario, en qué casos el `async` pipe NO es suficiente y `takeUntilDestroyed()` sigue siendo necesario (pista: cuando necesitas ejecutar lógica imperativa en cada emisión, no solo mostrar un valor).
-3. Escribe un test que confirme que `takeUntilDestroyed()` usado dentro de un servicio (no un componente) requiere pasar explícitamente un `DestroyRef` si se invoca fuera del contexto de inyección del constructor.
-4. Escribe de memoria (sin mirar) un componente con una suscripción usando `takeUntilDestroyed()` y un test que confirme la limpieza automática con `fixture.destroy()`. Compara después contra el patrón del Paso 4.
-
-**Pista:** `fixture.destroy()` en un test es el equivalente exacto a que Angular destruya el componente durante una navegación real (Módulo 4) — es la forma correcta de simular el ciclo de vida completo sin necesitar un router real para esta prueba específica.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el operador real de `@angular/core/rxjs-interop` que completa automáticamente un Observable al destruirse el componente:
-
-```ts
-this.eventos$.pipe(____()).subscribe(evento => this.procesar(evento));
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con una suscripción usando `takeUntilDestroyed()` y un test que confirme que deja de recibir eventos tras `fixture.destroy()`. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed()` completa automáticamente una suscripción exactamente al destruirse el componente, sin ningún `ngOnDestroy` manual. El siguiente y último tema confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) cómo `exhaustMap` previene el doble envío de un formulario ignorando clics mientras una petición sigue en curso. Fuentes oficiales: [Angular — takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed).
-
-**Errores comunes:** usar `subscribe()` manual sin `takeUntilDestroyed()` ni `async` pipe, dejando la limpieza a la memoria del desarrollador en vez de al framework; usar `takeUntilDestroyed()` fuera de un contexto de inyección sin pasar explícitamente un `DestroyRef`.
-
-**Cuándo no usarlo:** si el valor del Observable solo necesita mostrarse directamente en el template (sin ninguna lógica imperativa adicional en cada emisión), el `async` pipe es más simple y evita el import adicional de `takeUntilDestroyed`.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Abre y cierra el panel de seguimiento repetidamente. Cuenta suscripciones al flujo de posiciones y demuestra que destruir el componente deja de recibir actualizaciones y libera la escucha.
+</details>
 
 ### Tema 4: Subjects y operadores de aplanamiento avanzados · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con el reloj simulado de Vitest (`vi.useFakeTimers()`) y un espía real sobre la función de envío, que `exhaustMap` ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental de un formulario.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) y un espía real sobre la función de envío, que exhaustMap ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental…
 
-**Conocimiento previo:** Temas 1-2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) y un espía real sobre la función de envío, que exhaustMap ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental de un formulario.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En un formulario de confirmación de entrega, un usuario que hace doble clic accidental en "Enviar" (por ansiedad o por una interfaz lenta) no debería disparar dos peticiones de envío duplicadas; confirmar con un espía real que la función de envío se invoca EXACTAMENTE una vez, incluso ante dos clics rápidos, es la prueba concreta de que el bug de doble envío está prevenido.
+#### ► LA ANALOGÍA
+Piensa en subjects y operadores de aplanamiento avanzados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que subjects y operadores de aplanamiento avanzados resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `Subject`, `BehaviorSubject`, `mergeMap`/`concatMap`/`exhaustMap`, `shareReplay`.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Subjects y operadores de aplanamiento avanzados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un `Subject` es simultáneamente un Observable y un "emisor" activo: a diferencia de un Observable normal creado con una función productora, un `Subject` permite invocar `.next(valor)` externamente para emitir un nuevo valor manualmente hacia cualquier suscriptor actualmente activo, siendo útil como puente entre código imperativo (eventos del DOM, callbacks de terceros) y el mundo declarativo de RxJS. `BehaviorSubject` extiende `Subject` con un valor inicial obligatorio y la propiedad de recordar siempre el último valor emitido, entregándolo inmediatamente a cualquier nuevo suscriptor que se una después de que ya hubo emisiones anteriores (en vez de que ese nuevo suscriptor tenga que esperar a la siguiente emisión futura para recibir algo). `ReplaySubject` extiende esta idea recordando un número configurable de emisiones pasadas (no solo la última), y `AsyncSubject` solo emite el último valor, y únicamente cuando el Subject se completa formalmente, nunca antes.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Subjects y operadores de aplanamiento avanzados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-`mergeMap`, `concatMap` y `exhaustMap` son alternativas a `switchMap` (Tema 2) para el mismo problema general de transformar cada valor emitido en un nuevo Observable interno, pero con estrategias distintas ante emisiones superpuestas: `mergeMap` ejecuta todos los Observables internos en paralelo simultáneamente, sin cancelar ninguno (apropiado cuando cada operación es independiente y todas deben completarse, como enviar múltiples notificaciones simultáneas); `concatMap` ejecuta los Observables internos en estricta secuencia, uno después de que el anterior completa (apropiado cuando el orden de ejecución importa genuinamente, como guardar cambios en un orden específico); `exhaustMap` ignora completamente nuevas emisiones mientras un Observable interno anterior sigue en curso (apropiado para prevenir doble envío accidental de un formulario, ignorando clics adicionales del botón de envío mientras la petición anterior todavía está en proceso).
+#### ► CUÁNDO NO USAR ESTO
+No uses subjects y operadores de aplanamiento avanzados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-`shareReplay()` convierte un Observable "frío" (que ejecuta su lógica productora de forma independiente para cada nueva suscripción) en uno "caliente" que comparte una única ejecución subyacente entre múltiples suscriptores, cacheando además un número configurable de emisiones pasadas para entregarlas inmediatamente a cualquier suscriptor nuevo que llegue después, útil para evitar disparar la misma petición HTTP costosa múltiples veces cuando varios componentes distintos se suscriben independientemente al mismo Observable de datos compartido.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: subjects y operadores de aplanamiento avanzados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Analogía:** `mergeMap` es como atender simultáneamente a todos los clientes que llegan, sin hacer esperar a ninguno por el otro; `concatMap` es como atender a los clientes estrictamente en el orden de llegada, uno completamente después del anterior; `exhaustMap` es como un empleado que, mientras atiende a un cliente, simplemente ignora a cualquier otro que intente interrumpir hasta terminar con el actual. `shareReplay` es como una única presentación grabada que múltiples espectadores pueden ver, compartiendo la misma grabación en vez de que el presentador tenga que repetir la presentación completa para cada espectador individual.
+#### ► LO QUE DEBES RECORDAR
+- Subjects y operadores de aplanamiento avanzados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Diagrama:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve subjects y operadores de aplanamiento avanzados en tu contexto?
+2. ¿Cómo sabrías que subjects y operadores de aplanamiento avanzados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar subjects y operadores de aplanamiento avanzados?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌───────────┬──────────────────────────────────────────────┐
 │ switchMap  │ cancela el anterior (buscadores)              │
@@ -450,10 +513,6 @@ Un `Subject` es simultáneamente un Observable y un "emisor" activo: a diferenci
 │ exhaustMap │ ignora nuevas emisiones (prevenir doble envio)│
 └───────────┴──────────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-exhaustmap --standalone --skip-git --defaults` y luego `cd demo-exhaustmap`), crea `src/app/envio.pipeline.ts`:
 
 ```bash
 mkdir -p src/app
@@ -472,8 +531,6 @@ export function crearPipelineEnvio(click$: Subject<void>, api: ApiEnvio) {
   return click$.pipe(exhaustMap(() => api.enviar()));
 }
 ```
-
-Confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) y un espía real que un segundo clic durante el envío en curso NUNCA dispara una segunda llamada:
 
 ```ts
 // src/app/envio.pipeline.spec.ts
@@ -508,61 +565,8 @@ describe('exhaustMap ignora clics mientras un envio esta en curso', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el test pasa; `enviarSpy` se invocó exactamente UNA vez, a pesar de que `click$.next()` se llamó dos veces — el segundo clic, ocurrido mientras el primer envío seguía en curso, fue completamente ignorado por `exhaustMap`, previniendo el doble envío real.
-
-**Fallo deliberado:** cambia `exhaustMap` por `mergeMap` en `crearPipelineEnvio` y ejecuta de nuevo el test. FALLA porque `enviarSpy` ahora se invocó `2` veces en vez de `1` (`toHaveBeenCalledTimes(1)` falla) — diagnosticando en código el bug real de doble envío que `exhaustMap` existe específicamente para prevenir. Restaura `exhaustMap` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Repite el mismo test pero con `concatMap`, y confirma que en ese caso `enviarSpy` SÍ se invoca dos veces (a diferencia de `exhaustMap`), pero en estricta secuencia una después de la otra.
-2. Crea un `BehaviorSubject` con un valor inicial y confirma con un test que un suscriptor que se une DESPUÉS de la primera emisión recibe inmediatamente el último valor emitido, sin esperar una nueva emisión futura.
-3. Escribe un test con `shareReplay()` que confirme que dos suscriptores independientes al mismo Observable comparten una única ejecución de la lógica productora (usa un espía para contar cuántas veces se invoca).
-4. Escribe de memoria (sin mirar) un pipeline con `exhaustMap` y un test con reloj simulado (`vi.useFakeTimers()`) que confirme que un segundo clic durante un envío en curso se ignora. Compara después contra el patrón del Paso 4.
-
-**Pista:** la diferencia de comportamiento entre `switchMap`, `mergeMap`, `concatMap` y `exhaustMap` es completamente verificable contando cuántas veces se invoca un espía y en qué orden llegan los resultados — no necesitas memorizar la diferencia en abstracto, puedes reproducirla en un test cada vez que la olvides.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el operador real de RxJS que ignora nuevas emisiones mientras el Observable interno anterior sigue en curso:
-
 ```ts
 click$.pipe(____(() => api.enviar()))
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `exhaustMap` y un test con reloj simulado (`vi.useFakeTimers()`) con un espía que confirme exactamente una invocación ante dos clics rápidos. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con un espía real y el reloj simulado de Vitest, que `exhaustMap` previene el doble envío ignorando clics mientras una operación sigue en curso. Con esto cierras el módulo de RxJS: Observable vs Promise (Tema 1), `switchMap` cancela condiciones de carrera (Tema 2), `takeUntilDestroyed` evita fugas de memoria (Tema 3), y los operadores de aplanamiento correctos según la semántica deseada (Tema 4). El siguiente módulo aplica estos flujos a peticiones HTTP reales con `HttpClient` e interceptores. Fuentes oficiales: [RxJS — exhaustMap](https://rxjs.dev/api/operators/exhaustMap).
-
-**Errores comunes:** usar `mergeMap` o `concatMap` para prevenir doble envío (ambos SÍ ejecutan ambas llamadas, solo cambia el orden/paralelismo, no la prevención); asumir que `exhaustMap` "cancela" la nueva emisión en vez de simplemente ignorarla (no la cancela, ni siquiera la procesa).
-
-**Cuándo no usarlo:** si cada emisión debe generar su propio Observable interno sin ser ignorada bajo ninguna circunstancia (por ejemplo, cada clic en "agregar producto al carrito" debe contar, incluso si el anterior sigue procesándose), `exhaustMap` descartaría silenciosamente eventos válidos — `mergeMap` o `concatMap` son las opciones correctas en ese caso.
-
----
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Compara búsquedas reemplazables con confirmaciones que deben controlarse contra doble clic. Prueba cada flujo con peticiones pendientes y explica por qué necesitan operadores de aplanamiento distintos.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir un buscador con debounce y cancelación automática de peticiones previas, y practicar el manejo correcto de suscripciones.
-
-**Requisitos previos:** Módulos 0-5 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear el buscador con debounce | Ver Tema 2 | `debounceTime(300)` + `distinctUntilChanged()` |
-| 2 | Usar `switchMap` para las peticiones | Ver Tema 2 | Verifica que cancela la anterior automáticamente |
-| 3 | Combinar filtro y orden con `combineLatest` | Ver Tema 2 | Recalcula al cambiar cualquiera de las dos fuentes |
-| 4 | Usar el `async` pipe en la plantilla | Ver Tema 3 | Explica por qué evita fugas de memoria |
-| 5 | Convertir el resultado a signal | `toSignal()` | Úsalo en un `computed()` posterior |
-
-**Verificación:** el laboratorio se considera exitoso si el buscador cancela correctamente peticiones anteriores al escribir rápido (verificable en la pestaña Network, viendo peticiones canceladas), y si no hay ninguna fuga de memoria verificable tras destruir y recrear el componente repetidamente.
-
-**Errores comunes y soluciones**
-
-- **Usar `subscribe()` manual sin desuscribirse en `ngOnDestroy`.** Prefiere el `async` pipe, o usa `takeUntilDestroyed()` si necesitas una suscripción manual explícita.
-- **Usar `mergeMap` donde `switchMap` sería lo correcto.** Si solo te interesa la respuesta más reciente (como en un buscador), usa `switchMap` para cancelar automáticamente las anteriores.
-- **Olvidar `distinctUntilChanged()` tras `debounceTime`.** Sin él, valores idénticos consecutivos disparan búsquedas redundantes innecesarias.
-
----
+</details>

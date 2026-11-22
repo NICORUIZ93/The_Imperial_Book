@@ -4,21 +4,72 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Elegir estructuras según las operaciones · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a comparar guardar las tareas de tu gestor en una `list` contra guardarlas en un `dict` indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea. **Prerrequisitos:** Python instalado; comprobá `python3 --version` (o `py --version` en Windows).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El gestor de tareas CLI (proyecto integrador Fundamentos) necesita, desde el primer módulo, responder rápido a "¿existe la tarea con id 42?". Si guardás las tareas en una `list` y buscás por posición, cada eliminación desplaza los índices de todas las tareas que estaban después; un índice que guardaste antes de esa eliminación ya no es confiable, aunque Python no te avise.
+#### ► DE QUÉ TRATA
+Al finalizar vas a comparar guardar las tareas de tu gestor en una list contra guardarlas en un dict indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea. Prerrequisitos:…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una `list` en Python es una secuencia: acceder por posición (`lista[0]`) es O(1), pero buscar un valor exige revisar elementos y en el peor caso es O(n). Un `dict` guarda pares clave-valor en una tabla hash: el acceso por clave es O(1) en promedio y puede degradarse a O(n) en el peor caso, por ejemplo ante muchas colisiones. La diferencia de fondo es qué identifica a una tarea: en el diccionario, la clave (el id) es la identidad lógica de la tarea; en la lista, la posición es solo un lugar físico que se desplaza al insertar o eliminar antes. La analogía es un archivador con carpetas rotuladas —vas directo a la etiqueta que buscás— contra una fila de cajas sin rotular, donde tenés que revisar caja por caja.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a comparar guardar las tareas de tu gestor en una list contra guardarlas en un dict indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea.**
 
-**Conceptos clave:** lista, tupla, conjunto, diccionario, orden, duplicados, clave, acceso, inserción y mutabilidad.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Una estructura de datos organiza valores para facilitar ciertas operaciones. No existe una estructura universalmente mejor. Una lista conserva orden y permite duplicados; un conjunto representa pertenencia sin duplicados; un diccionario relaciona claves únicas con valores; una tupla expresa una agrupación fija que no se modifica.
+#### ► LA ANALOGÍA
+Piensa en elegir estructuras según las operaciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    Q{"¿qué operación domina?"}
+    Q -->|"orden o posición"| LIST["lista"]
+    Q -->|"pertenencia única"| SET["conjunto"]
+    Q -->|"búsqueda por clave"| MAP["diccionario"]
+    Q -->|"grupo fijo"| TUPLE["tupla"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Elegir estructuras según las operaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Elegir estructuras según las operaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses elegir estructuras según las operaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: elegir estructuras según las operaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Elegir estructuras según las operaciones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve elegir estructuras según las operaciones en tu contexto?
+2. ¿Cómo sabrías que elegir estructuras según las operaciones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar elegir estructuras según las operaciones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 productos = [
     {"sku": "A-10", "nombre": "Teclado", "stock": 4},
@@ -29,20 +80,6 @@ por_sku = {producto["sku"]: producto for producto in productos}
 categorias = {"periféricos", "oficina", "periféricos"}
 ```
 
-`productos` sirve para recorrer y conservar un orden. `por_sku` permite expresar “dame el producto cuya clave es A-10” sin revisar conceptualmente todos. `categorias` elimina el duplicado porque la pregunta relevante es pertenencia, no posición.
-
-Antes de elegir, escribe las operaciones dominantes: buscar por SKU, listar en orden, agregar, eliminar y comprobar categorías. La estructura se decide por esas operaciones y por restricciones como memoria u orden estable. Duplicar una vista derivada —lista y diccionario— puede mejorar lectura a cambio de sincronización y memoria; esa es una decisión, no magia gratuita.
-
-**Ejemplo desde cero:** modela cinco contactos. Primero usa una lista y escribe una búsqueda por teléfono. Después crea un diccionario indexado por teléfono y compara claridad. No afirmes que uno “es más rápido” sin explicar tamaño, operación y coste de mantener el índice.
-
-**Analogía:** una lista es una fila numerada, un conjunto es un control de invitados únicos y un diccionario es un archivador con una etiqueta única por carpeta. Cada organización acelera preguntas distintas.
-
-**¿Por qué es importante?** Seleccionar una estructura adecuada suele producir mejoras mayores y código más claro que optimizar instrucciones individuales. Bases de datos e índices generalizan la misma idea.
-
-**Casos de uso reales:** carrito ordenado, permisos únicos, caché por identificador, catálogo por SKU y registro de coordenadas inmutables.
-
-**Diagrama:**
-
 ```mermaid
 flowchart TD
     Q{"¿qué operación domina?"}
@@ -52,18 +89,6 @@ flowchart TD
     Q -->|"grupo fijo"| TUPLE["tupla"]
 ```
 
-#### Profundización · Diseño: Estructura óptima para "búsqueda frecuente, inserción rara"
-
-**Escenario real:** El gestor de tareas mantiene 1000 tareas. Operación común: "¿existe tarea con ID 42?" (búsqueda). Inserción: una vez por día.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Opciones:** Lista (array), diccionario (hash map), árbol ordenado. Compara búsqueda vs inserción.
-2. **Costo:** Lista ordenada: búsqueda O(?), inserción O(?). Diccionario: O(?), O(?).
-3. **Elige:** ¿Qué estructura para tu gestor?, ¿por qué?
-4. **Trade-off:** Si cambias a "inserción frecuente", ¿cambias estructura?
-
-**Escribe tu respuesta:**
 ```
 Lista búsqueda: O(_), inserción: O(_)
 Diccionario búsqueda: O(_), inserción: O(_)
@@ -71,28 +96,12 @@ Elegida para Fundamentos: _________ (¿por qué?)
 Si inserción = 50/seg: cambiarías a _________
 ```
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
-
-> **Respuesta esperada:**
->
-> **Lista:** Búsqueda O(n) / O(log n) si ordenada, inserción O(n).
->
-> **Diccionario:** Búsqueda O(1), inserción O(1) promedio.
->
-> **Fundamentos:** Diccionario `{id: tarea}` porque búsqueda es frecuente y O(1) es crítica.
->
-> **Si 50 inserciones/seg:** Seguiría con diccionario (ambas O(1)). Solo si necesitas orden, usaría árbol.
-
-</details>
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/tareas_estructura.py`:
 ```bash
 mkdir ejemplo-estructuras
 cd ejemplo-estructuras
 mkdir src
 ```
+
 ```python
 tareas = [
     {"id": 1, "descripcion": "comprar leche", "estado": "pendiente"},
@@ -120,69 +129,79 @@ del por_id[1]
 print(tareas[indice_guardado]["descripcion"])
 print(por_id[2]["descripcion"])
 ```
+
 ```bash
 python3 src/tareas_estructura.py
 ```
-En Windows usa `py src/tareas_estructura.py`.
-**Resultado esperado, en orden:** `pagar factura` tres veces, `None` dos veces, `llamar al dentista` y `pagar factura`. Las dos últimas líneas muestran el fallo y la corrección: después de quitar la primera tarea y su entrada del diccionario, el índice guardado `1` apunta a otra tarea, pero la clave `2` sigue identificando la correcta.
 
-#### Paso 5 · Práctica guiada
-Pista: antes de eliminar, anota que el índice guardado `1` y el id `2` encuentran `pagar factura`. Después elimina de ambas estructuras la tarea con id `1` y vuelve a comprobarlos. Explica por qué el índice sigue siendo válido como posición pero dejó de identificar a la misma tarea; la clave del diccionario conserva esa identidad.
-
-#### Paso 6 · Práctica independiente
-Crea `src/medir_busqueda.py` para comparar el último id de una lista con el acceso a la clave en un diccionario. Repite 1.000 veces cada operación; los tiempos absolutos dependen del equipo, así que observa la tendencia y no presentes una ejecución como prueba formal de complejidad.
-```python
-from timeit import timeit
-
-def buscar_por_id_lista(tareas, id_buscado):
-    for tarea in tareas:
-        if tarea["id"] == id_buscado:
-            return tarea
-    return None
-
-for cantidad in (50, 5000):
-    tareas = [
-        {"id": numero, "descripcion": f"tarea {numero}"}
-        for numero in range(1, cantidad + 1)
-    ]
-    por_id = {tarea["id"]: tarea for tarea in tareas}
-    id_buscado = cantidad
-    repeticiones = 1000
-
-    tiempo_lista = timeit(
-        lambda: buscar_por_id_lista(tareas, id_buscado),
-        number=repeticiones,
-    )
-    tiempo_diccionario = timeit(
-        lambda: por_id[id_buscado],
-        number=repeticiones,
-    )
-    print(
-        f"{cantidad} tareas ({repeticiones} búsquedas): "
-        f"lista={tiempo_lista:.6f}s, diccionario={tiempo_diccionario:.6f}s"
-    )
-```
-Ejecuta `python3 src/medir_busqueda.py` (en Windows, `py src/medir_busqueda.py`). El tiempo de búsqueda en la lista debería crecer más al pasar de 50 a 5.000 tareas; el del diccionario suele variar menos. No esperes que los números sean iguales entre equipos ni que cada medición confirme por sí sola el orden O(n) u O(1).
-
-#### Paso 7 · Cierre
-Guarda ambos archivos, reproduce el cambio de identidad aparente en la lista y compara la tendencia del benchmark. Como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista como identidad estable; olvidar mantener sincronizadas la lista y la tabla por id; tratar una medición puntual como demostración de complejidad. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
-**Implicación práctica:** Un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
+</details>
 
 ### Tema 2: Pilas, colas y abstracciones de comportamiento · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con `pop(0)`) es una trampa de rendimiento que no se nota hasta que la cola crece. **Prerrequisitos:** Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El mismo gestor de tareas necesita dos comportamientos nuevos: un "deshacer" que revierta la última acción primero (crear tarea, luego marcarla hecha, luego deshacer debe revertir "marcarla hecha" antes que "crear tarea"), y un "procesar pendientes" que las atienda en el orden exacto en que se agregaron. Son dos abstracciones distintas —pila y cola— aunque ambas puedan implementarse con una lista de Python.
+#### ► DE QUÉ TRATA
+Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con pop(0)) es una trampa de rendimiento que no se nota hasta que la cola crece. Prerrequisitos: Tema 1 de es…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una pila es LIFO: lo último que entra es lo primero que sale; una cola es FIFO: lo primero que entra es lo primero que sale. Esto es un contrato de comportamiento, no una implementación — podés construir ambas con una `list`. Lo que cambia es el costo: `list.append()` y `list.pop()` (sin índice) operan sobre el final de la lista y son O(1), porque Python solo ajusta un puntero; pero `list.pop(0)` o `list.insert(0, x)` operan sobre el principio y son O(n), porque hay que desplazar todos los elementos restantes una posición. `collections.deque` está pensada para operar en O(1) en AMBOS extremos. La analogía: una pila es una torre de platos (sacás el de arriba); una cola bien implementada es una fila donde atender al primero no mueve a nadie más; `list.pop(0)` es esa misma fila pero donde, cada vez que atienden a alguien, el resto tiene que dar un paso al frente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con pop(0)) es una trampa de rendimiento que no se nota hasta que la cola crece.**
 
-**Conceptos clave:** tipo abstracto de datos, pila, cola, LIFO, FIFO, push, pop, enqueue y dequeue.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Una estructura también puede definirse por las operaciones permitidas, no por su implementación concreta. Una **pila** sigue LIFO: el último elemento agregado sale primero. Una **cola** sigue FIFO: el primero en entrar sale primero. Python puede representarlas con listas o `deque`, pero el comportamiento conceptual es independiente del lenguaje.
+#### ► LA ANALOGÍA
+Piensa en pilas, colas y abstracciones de comportamiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    subgraph LIFO["Pila · LIFO"]
+      A1["A"] --> B1["B"] --> C1["C sale primero"]
+    end
+    subgraph FIFO["Cola · FIFO"]
+      A2["A sale primero"] --> B2["B"] --> C2["C"]
+    end
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Pilas, colas y abstracciones de comportamiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Pilas, colas y abstracciones de comportamiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses pilas, colas y abstracciones de comportamiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pilas, colas y abstracciones de comportamiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Pilas, colas y abstracciones de comportamiento existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pilas, colas y abstracciones de comportamiento en tu contexto?
+2. ¿Cómo sabrías que pilas, colas y abstracciones de comportamiento no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pilas, colas y abstracciones de comportamiento?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 from collections import deque
 
@@ -197,18 +216,6 @@ trabajos.append("generar factura 2")
 primero = trabajos.popleft()
 ```
 
-En el historial, `pop` devuelve “editar título”: base de deshacer. En trabajos, `popleft` devuelve la factura 1: orden de llegada. Usar `list.pop(0)` desplaza los elementos restantes y expresa peor una cola; `deque` está diseñada para operar eficientemente en ambos extremos.
-
-Implementa una pila con funciones `apilar`, `desapilar` y `esta_vacia`. Define qué ocurre al desapilar vacía. Ese comportamiento forma parte del contrato. Después utiliza la pila para comprobar paréntesis balanceados: al abrir, apila; al cerrar, verifica y desapila; al final debe quedar vacía.
-
-**Analogía:** una pila es una torre de platos; una cola es la fila de atención. Sacar el plato inferior o atender al último que llegó viola el modelo.
-
-**¿Por qué es importante?** Pilas aparecen en llamadas, navegación y parsing; colas en mensajería, impresión y procesamiento asíncrono. Reconocer el patrón evita diseñar estados confusos.
-
-**Casos de uso reales:** undo/redo, historial del navegador, cola de emails, tareas en background y recorrido de grafos.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     subgraph LIFO["Pila · LIFO"]
@@ -219,18 +226,6 @@ flowchart LR
     end
 ```
 
-#### Profundización · Diseño: Deshacer/Rehacer con pilas vs colas
-
-**Escenario real:** Gestor de tareas con "Deshacer" (Undo): editar una tarea, cambiar su estado, agregar nota. Necesitas poder revertir en orden inverso.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Analiza:** Deshacer = LIFO (last-in-first-out). ¿Es pila o cola?
-2. **Diseña:** Estructura con dos pilas: `pila_undo` y `pila_redo`.
-3. **Escenario:** Usuario: edita → edita → edita → Deshacer → Deshacer → Rehacer. Dibuja estado de pilas.
-4. **Alternativa:** ¿Por qué no usar una cola?, ¿qué perderías?
-
-**Escribe tu respuesta:**
 ```
 Deshacer = _________ (pila/cola)
 Dos pilas: push/pop en undo, cómo se alimenta redo: _________
@@ -238,38 +233,18 @@ Estado tras 2 × Deshacer y 1 × Rehacer: _________ items en undo, _________ en 
 Cola vs pila: Perderías _________ (¿qué?)
 ```
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
-
-> **Respuesta esperada:**
->
-> **Deshacer = Pila** (LIFO: la última acción se revierte primero).
->
-> **Flujo:**
-> - Acción A → push pila_undo, clear pila_redo
-> - Deshacer → pop undo, push redo
-> - Rehacer → pop redo, push undo
->
-> **Dibuja:**
-> ```
+```
 > Tras 3 ediciones: undo=[A,B,C], redo=[]
 > Tras 2 × Deshacer: undo=[A], redo=[C,B]
 > Tras 1 × Rehacer: undo=[A,B], redo=[C]
 > ```
->
-> **Cola:** Invertirías el orden de reversión (FIFO). Deshacer sería mal: "deshacer A primero" en vez de "deshacer C primero".
 
-</details>
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Usa una cola para tareas pendientes y una pila para una demostración de deshacer. Prueba el orden de extracción y explica qué operaciones necesitarían persistencia antes de usarse en el gestor real.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/pila_cola.py`:
 ```bash
 mkdir ejemplo-pila-cola
 cd ejemplo-pila-cola
 mkdir src
 ```
+
 ```python
 import time
 from collections import deque
@@ -297,37 +272,71 @@ tiempo_deque = time.perf_counter() - inicio
 
 print(f"list.pop(0): {tiempo_lista:.4f}s | deque.popleft(): {tiempo_deque:.4f}s")
 ```
-```bash
-python3 src/pila_cola.py
-```
-En Windows usa `py src/pila_cola.py`.
-**Resultado esperado:** `deshacer: crear tarea 2` (deshace la acción más reciente primero), y dos tiempos donde `list.pop(0)` es notablemente más lento que `deque.popleft()` para vaciar las mismas 20 000 tareas. **Fallo deliberado:** usar `list.pop(0)` para una cola no lanza ningún error ni da un resultado incorrecto — el bug es de rendimiento oculto. Vaciar una cola con `list.pop(0)` cuesta O(n²) en total, porque cada `pop(0)` debe desplazar todos los elementos restantes una posición; `deque.popleft()` cuesta O(n) en total porque cada extracción es O(1). Con 20 000 elementos la diferencia ya es medible; en el Paso 6 vas a subir a 100 000 y la vas a ver crecer. Corregí usando `deque` desde el principio cuando la operación dominante sea sacar del frente.
 
-#### Paso 5 · Práctica guiada
-Pista: implementá `deshacer_todo` vaciando la pila con `pop()` hasta que esté vacía, y `procesar_todo` vaciando la cola con `popleft()` hasta que esté vacía; comprobá que llamar una vez de más sobre cualquiera de las dos ya vacías produce `IndexError`, y decidí cómo evitarlo (validar antes de extraer).
-
-#### Paso 6 · Práctica independiente
-Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 100 000 elementos. La brecha entre `list.pop(0)` y `deque.popleft()` debería crecer, porque el costo de desplazar el resto escala con el tamaño de la lista, no es un costo fijo.
-
-#### Paso 7 · Cierre
-Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
-**Implicación práctica:** Elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
+</details>
 
 ### Tema 3: Búsqueda, precondiciones y demostración de corrección · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición. **Prerrequisitos:** Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El gestor de tareas va a necesitar listar tareas por fecha límite y, más adelante, encontrar rápido la que vence en una fecha exacta. Si la lista de tareas está ordenada por fecha, podés usar búsqueda binaria; si no lo está —por ejemplo, porque alguien agregó una tarea nueva al final sin reordenar— la búsqueda binaria no se rompe con un error: devuelve una respuesta incorrecta sin avisar.
+#### ► DE QUÉ TRATA
+Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La búsqueda binaria exige una precondición explícita: la lista tiene que estar ordenada según el mismo criterio que usás para comparar. A cambio, cada paso descarta la mitad del espacio de búsqueda restante — por eso es O(log n) en vez de O(n). Esa garantía depende enteramente de que la precondición se cumpla; si no se cumple, el algoritmo no "se rompe" con una excepción, simplemente deja de ser correcto, y nada en su código te avisa. Un algoritmo se demuestra correcto respecto a un contrato explícito (precondición + poscondición), no porque "funcionó" en un caso de prueba. La analogía: buscar una palabra en un diccionario abriéndolo por la mitad funciona porque está ordenado alfabéticamente; hacer lo mismo con hojas sueltas sin ordenar no te dice nada sobre dónde está la palabra.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición.**
 
-**Conceptos clave:** búsqueda lineal, búsqueda binaria, precondición, invariante, corrección y caso ausente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La búsqueda lineal revisa elementos hasta encontrar el objetivo o terminar. Funciona aunque los datos no estén ordenados.
+#### ► LA ANALOGÍA
+Piensa en búsqueda, precondiciones y demostración de corrección como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    ALL[“2 · 5 · 9 · 12 · 20”] --> MID[“medio = 9”]
+    MID --> RIGHT[“descartar 2 · 5 · 9”] --> FOUND[“encontrar 12”]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Búsqueda, precondiciones y demostración de corrección se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Búsqueda, precondiciones y demostración de corrección | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses búsqueda, precondiciones y demostración de corrección por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: búsqueda, precondiciones y demostración de corrección funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Búsqueda, precondiciones y demostración de corrección existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve búsqueda, precondiciones y demostración de corrección en tu contexto?
+2. ¿Cómo sabrías que búsqueda, precondiciones y demostración de corrección no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar búsqueda, precondiciones y demostración de corrección?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 def buscar_lineal(valores, objetivo):
     for indice, valor in enumerate(valores):
@@ -335,10 +344,6 @@ def buscar_lineal(valores, objetivo):
             return indice
     return -1
 ```
-
-El retorno `-1` expresa ausencia. Prueba objetivo al inicio, medio, final, ausente y lista vacía. El invariante es: antes de cada iteración, el objetivo no está en las posiciones ya examinadas.
-
-La búsqueda binaria descarta la mitad en cada paso, pero exige datos ordenados:
 
 ```python
 def buscar_binaria(valores, objetivo):
@@ -354,36 +359,12 @@ def buscar_binaria(valores, objetivo):
     return -1
 ```
 
-Traza `[2, 5, 9, 12, 20]` buscando `12`. Anota izquierda, derecha y medio. La región posible se reduce sin excluir el objetivo. Probar el algoritmo con una lista desordenada no demuestra que esté roto: viola su precondición. La interfaz o documentación debe hacer esa exigencia visible.
-
-**Error deliberado:** usa `while izquierda < derecha`. Busca un valor que quede como último candidato y observa cómo se omite. El caso de una lista de un elemento detecta rápidamente este error.
-
-**Analogía:** la búsqueda lineal revisa cada página; la binaria abre un diccionario por la mitad y decide en qué mitad continuar, posible solo porque está ordenado.
-
-**¿Por qué es importante?** Un algoritmo no es correcto “porque funcionó una vez”. Debe funcionar para todas las entradas que satisfacen su contrato y terminar en tiempo finito.
-
-**Casos de uso reales:** localizar registros, autocompletado, índices ordenados y diagnóstico de versiones mediante bisección.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     ALL[“2 · 5 · 9 · 12 · 20”] --> MID[“medio = 9”]
     MID --> RIGHT[“descartar 2 · 5 · 9”] --> FOUND[“encontrar 12”]
 ```
 
-#### Profundización · Diseño: Búsqueda binaria con duplicados
-
-**Escenario real:** Lista de tareas completadas ordenadas por timestamp: `[t1, t1, t2, t2, t2, t3]`. Búsqueda binaria clásica devuelve un índice de t2. Necesitas el PRIMERO y el ÚLTIMO de todos los t2.
-
-**Tu tarea (sin mirar solución):**
-
-1. **Precondición:** ¿Qué debe garantizarse sobre la lista?
-2. **Desafío:** Búsqueda binaria estándar encuentra T, pero ¿cómo ubicas primer y último?
-3. **Algoritmo:** Modifica búsqueda para hallar `primer_t2` y `ultimo_t2`.
-4. **Correctitud:** Si hay 0 coincidencias, ¿qué devuelves?
-
-**Escribe tu respuesta:**
 ```
 Precondición: lista _________ (¿ordenada?)
 Algoritmo para primer_t2: búsqueda binaria pero _________
@@ -391,21 +372,7 @@ Algoritmo para ultimo_t2: búsqueda binaria pero _________
 Si 0 coincidencias: devuelve _________ (None, -1, excepción)
 ```
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
-
-> **Respuesta esperada:**
->
-> **Precondición:** Lista **ordenada** (creciente o decreciente).
->
-> **primer_t2:** Busca binaria normal, luego expande hacia izquierda hasta encontrar valor distinto.
->
-> **ultimo_t2:** Busca binaria normal, luego expande hacia derecha hasta valor distinto.
->
-> **Si 0 coincidencias:** Devuelve `(-1, -1)` o lanza `ValueError`.
->
-> **Pseudocódigo:**
-> ```
+```
 > idx = busqueda_binaria(lista, t2)
 > primer = idx; ultimo = idx
 > mientras primer > 0 y lista[primer-1] == t2: primer -= 1
@@ -413,70 +380,79 @@ Si 0 coincidencias: devuelve _________ (None, -1, excepción)
 > return (primer, ultimo)
 > ```
 
-</details>
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Busca una tarea por identificador con precondiciones explícitas. Si usas búsqueda binaria, prueba una colección desordenada y muestra por qué primero debes establecer y conservar el orden.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/busqueda.py`:
 ```bash
 mkdir ejemplo-busqueda
 cd ejemplo-busqueda
 mkdir src
 ```
-```python
-tareas_por_fecha = [
-    {"id": 1, "fecha": "2026-01-05"},
-    {"id": 2, "fecha": "2026-02-10"},
-    {"id": 3, "fecha": "2026-03-01"},
-    {"id": 4, "fecha": "2026-04-20"},
-]
 
-def buscar_binaria_por_fecha(tareas, fecha_objetivo):
-    izquierda, derecha = 0, len(tareas) - 1
-    while izquierda <= derecha:
-        medio = (izquierda + derecha) // 2
-        if tareas[medio]["fecha"] == fecha_objetivo:
-            return tareas[medio]
-        if tareas[medio]["fecha"] < fecha_objetivo:
-            izquierda = medio + 1
-        else:
-            derecha = medio - 1
-    return None
-
-print(buscar_binaria_por_fecha(tareas_por_fecha, "2026-03-01"))
-```
-```bash
-python3 src/busqueda.py
-```
-En Windows usa `py src/busqueda.py`.
-**Resultado esperado:** imprime la tarea con id 3 (`fecha: "2026-03-01"`) porque `tareas_por_fecha` está ordenada de la fecha más antigua a la más reciente — esa es la precondición de `buscar_binaria_por_fecha`. **Fallo deliberado:** desordená la lista a mano (por ejemplo, poné la tarea de id 3 primero) y volvé a buscar la misma fecha `"2026-03-01"`. La función devuelve `None` aunque la tarea EXISTE en la lista — sin ningún error, solo un resultado silenciosamente incorrecto, porque la mitad que descarta en cada paso ya no garantiza nada cuando el orden está roto. Corregí ordenando con `tareas_por_fecha.sort(key=lambda t: t["fecha"])` antes de buscar, o usando búsqueda lineal cuando no puedas garantizar el orden.
-
-#### Paso 5 · Práctica guiada
-Pista: probá con la lista desordenada del Paso 4 buscando una fecha que quedó en la primera posición y otra que quedó en la última — vas a ver que a veces "por suerte" sí la encuentra. Eso es lo más peligroso de violar una precondición: el fallo no es consistente, así que un solo caso de prueba que "funciona" no demuestra nada.
-
-#### Paso 6 · Práctica independiente
-Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes de buscar, y medí con `time.perf_counter()` si `buscar_binaria_por_fecha` sigue siendo más rápida que una búsqueda lineal equivalente a ese tamaño.
-
-#### Paso 7 · Cierre
-Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
-**Implicación práctica:** Un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
+</details>
 
 ### Tema 4: Complejidad, medición, ordenamiento y recursión · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a medir con `time.perf_counter()` cuánto tarda ordenar una lista de tareas con `sorted()` comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece. **Prerrequisitos:** Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A medida que el gestor de tareas acumula historial, vas a necesitar ordenarlo (por fecha, por prioridad) con cierta frecuencia. Python ya trae una función de ordenamiento (`sorted()`) optimizada, pero para entender qué estás ganando al usarla conviene compararla con una implementación propia simple, y medir —no asumir— cuánto cuesta cada una a medida que crece la cantidad de tareas.
+#### ► DE QUÉ TRATA
+Al finalizar vas a medir con time.perf_counter() cuánto tarda ordenar una lista de tareas con sorted() comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece. Prerre…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Big O describe cómo CRECE el trabajo cuando crece la entrada, no cuánto tarda en segundos —eso depende de la máquina—. `sorted()` en Python usa Timsort, un algoritmo híbrido que aprovecha el orden que ya pueda tener la entrada y logra O(n log n). Una implementación ingenua como bubble sort compara cada par de elementos adyacentes en pasadas repetidas sobre toda la lista —dos bucles anidados que dan O(n²)—. La teoría predice que la brecha entre ambas crece sin límite a medida que n crece; medir con `time.perf_counter()` en unos pocos tamaños es la única forma de confirmar esa predicción con números reales, en tu propia máquina.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a medir con time.perf_counter() cuánto tarda ordenar una lista de tareas con sorted() comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece.**
 
-**Conceptos clave:** tamaño de entrada, Big O, tiempo, espacio, O(1), O(log n), O(n), O(n²), ordenamiento y recursión.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Big O describe cómo crece el trabajo cuando crece la entrada; no es un cronómetro. Una búsqueda lineal es O(n): duplicar elementos puede duplicar comparaciones. La binaria es O(log n): duplicar el tamaño añade aproximadamente un paso. Dos bucles anidados sobre la entrada suelen sugerir O(n²).
+#### ► LA ANALOGÍA
+Piensa en complejidad, medición, ordenamiento y recursión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+xychart-beta
+    title "Crecimiento aproximado de operaciones"
+    x-axis "n" [10, 100, 1000]
+    y-axis "operaciones" 0 --> 1000000
+    line "O(n)" [10, 100, 1000]
+    line "O(n²)" [100, 10000, 1000000]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Complejidad, medición, ordenamiento y recursión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Complejidad, medición, ordenamiento y recursión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses complejidad, medición, ordenamiento y recursión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: complejidad, medición, ordenamiento y recursión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Complejidad, medición, ordenamiento y recursión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve complejidad, medición, ordenamiento y recursión en tu contexto?
+2. ¿Cómo sabrías que complejidad, medición, ordenamiento y recursión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar complejidad, medición, ordenamiento y recursión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 def tiene_duplicados_lento(valores):
     for i in range(len(valores)):
@@ -489,12 +465,6 @@ def tiene_duplicados(valores):
     return len(valores) != len(set(valores))
 ```
 
-La segunda solución usa memoria adicional para un conjunto y suele acercarse a O(n). Este intercambio tiempo-espacio debe documentarse. No concluyas solo por cinco elementos; mide tamaños crecientes con `time.perf_counter`, repite y evita incluir entrada/salida en la región medida.
-
-Ordenar permite búsqueda binaria, pero ordenar también cuesta. Si harás una sola búsqueda, quizá no compense; si harás miles, puede hacerlo. El análisis debe considerar el flujo completo.
-
-Recursión significa que una función resuelve un caso mediante una versión más pequeña del mismo problema. Necesita caso base y progreso.
-
 ```python
 def factorial(n):
     if n < 0:
@@ -503,16 +473,6 @@ def factorial(n):
         return 1
     return n * factorial(n - 1)
 ```
-
-Traza `factorial(4)` y dibuja llamadas. El caso base detiene; `n-1` progresa. Sin cualquiera aparece recursión infinita hasta agotar la pila. En Python, un bucle puede ser más apropiado para problemas lineales; recursión brilla en árboles y estructuras naturalmente anidadas.
-
-**Analogía:** Big O compara la forma de crecimiento de rutas, no el modelo del vehículo. Un automóvil lento en una autopista escalable puede superar a uno rápido obligado a visitar cada par de ciudades.
-
-**¿Por qué es importante?** El análisis permite anticipar fallos de escala antes de producción y comunicar decisiones con un vocabulario compartido.
-
-**Casos de uso reales:** detectar duplicados, ordenar reportes, recorrer directorios, buscar en índices y evitar endpoints cuadráticos.
-
-**Diagrama:**
 
 ```mermaid
 xychart-beta
@@ -523,18 +483,6 @@ xychart-beta
     line "O(n²)" [100, 10000, 1000000]
 ```
 
-#### Profundización · Diseño: Punto de inflexión O(n) vs O(n²) con 10M items
-
-**Escenario real:** Gestor de tareas con 10 millones de tareas. Algoritmo A: O(n), Algoritmo B: O(n²). ¿En qué momento B es inaceptable?
-
-**Tu tarea (sin mirar solución):**
-
-1. **Calcula:** 10M × O(n) ¿cuántas operaciones?, ¿cuánto tiempo estimado?
-2. **Calcula:** 10M × O(n²) = ?, ¿es viable en producción?
-3. **Punto de inflexión:** ¿A qué tamaño de N, O(n²) > 10 segundos (timeout)?
-4. **Medición real:** Escribe un script que mida tiempos reales de ambos.
-
-**Escribe tu respuesta:**
 ```
 10M con O(n): _________ operaciones, ~_________ segundos
 10M con O(n²): _________ operaciones, ~_________ segundos (¿viable?)
@@ -542,19 +490,7 @@ Punto de inflexión (timeout 10s): N máximo = _________
 Medición: time.perf_counter() antes/después, imprime diferencia
 ```
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
-
-> **Respuesta esperada:**
->
-> **O(n):** 10M operaciones ≈ 0.01s (10ms) solo bajo el supuesto didáctico de 1 ns por operación; un bucle Python real suele costar más y depende del equipo.
->
-> **O(n²):** (10M)² = (10⁷)² = 10¹⁴ operaciones. Con la misma tasa de 10⁻⁹ s/operación usada arriba: 10¹⁴ × 10⁻⁹ s = 10⁵ segundos ≈ **1.16 días**. Sigue siendo inviable para un gestor interactivo, pero la cifra correcta es días, no siglos.
->
-> **Punto de inflexión bajo ese supuesto:** resolviendo n² × 10⁻⁹ s/op ≈ 10s → N ≈ 100,000 elementos. No es un umbral universal para Python.
->
-> **Script:**
-> ```python
+```python
 > from timeit import timeit
 >
 > def lineal(n):
@@ -576,78 +512,33 @@ Medición: time.perf_counter() antes/después, imprime diferencia
 >     print(f"n={n}: O(n)={tiempo_lineal:.6f}s, O(n²)={tiempo_cuadratico:.6f}s")
 > ```
 
-</details>
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Compara dos estrategias de ordenamiento con tareas equivalentes y tamaños crecientes. Verifica primero que producen el mismo orden y registra condiciones de medición antes de elegir por velocidad.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/medir.py`:
 ```bash
 mkdir ejemplo-complejidad
 cd ejemplo-complejidad
 mkdir src
 ```
-```python
-import time
-import random
 
-def bubble_sort(valores):
-    valores = valores.copy()
-    n = len(valores)
-    for i in range(n):
-        for j in range(n - 1 - i):
-            if valores[j] > valores[j + 1]:
-                valores[j], valores[j + 1] = valores[j + 1], valores[j]
-    return valores
-
-for tamano in (500, 1000, 2000):
-    tareas = [random.random() for _ in range(tamano)]
-    resultado_sorted = sorted(tareas)
-    resultado_bubble = bubble_sort(tareas)
-    if resultado_sorted != resultado_bubble:
-        raise AssertionError("Los algoritmos no producen el mismo orden")
-
-    inicio = time.perf_counter()
-    sorted(tareas)
-    tiempo_sorted = time.perf_counter() - inicio
-
-    inicio = time.perf_counter()
-    bubble_sort(tareas)
-    tiempo_bubble = time.perf_counter() - inicio
-
-    print(f"n={tamano}: sorted()={tiempo_sorted:.5f}s  bubble_sort()={tiempo_bubble:.5f}s")
-```
-```bash
-python3 src/medir.py
-```
-En Windows usa `py src/medir.py`.
-**Resultado esperado:** para n=500, 1000 y 2000, `sorted()` apenas crece, mientras que `bubble_sort()` crece mucho más rápido: al duplicar n, `sorted()` tarda un poco más del doble, pero `bubble_sort()` tarda aproximadamente CUATRO veces más, porque n² duplicado es (2n)² = 4n². **Fallo deliberado:** cambiá `tamano` a `20_000` sin tocar nada más. `bubble_sort()` pasa de tardar milisegundos a tardar varios segundos —la misma función que "andaba bien" con 500 elementos, usada sin medir antes con una entrada 40 veces más grande—. `sorted()` sigue siendo casi instantáneo. Corregí: para listas que pueden crecer, usá `sorted()`/`.sort()` (Timsort) y reservá una implementación manual como `bubble_sort` solo para fines didácticos.
-
-#### Paso 5 · Práctica guiada
-Pista: anotá el cociente `tiempo_bubble / tiempo_sorted` en cada tamaño del Paso 4 — ese cociente debería crecer a medida que n crece, porque O(n²) crece mucho más rápido que O(n log n); si el cociente se mantiene parecido, medí de nuevo con tamaños más separados.
-
-#### Paso 6 · Práctica independiente
-Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de ordenamiento intermedia (por ejemplo insertion sort) para ver dónde queda ubicada respecto a `sorted()` y `bubble_sort()`. Anotá si el orden relativo de las tres (quién es más rápida) se mantiene igual en los tres tamaños.
-
-#### Paso 7 · Cierre
-Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL (dirección web, como la de una página) hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
-**Implicación práctica:** La teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
+</details>
 
 ### Tema 5: Árboles y árboles binarios de búsqueda (BST) · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad) y Módulo 1, Tema 6 (clases, `__init__` y `self`), porque el árbol se escribe con dos clases: `Nodo` y `BST`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-En el gestor de tareas, cuando tienes 10.000 tareas y necesitas encontrar una por su fecha de vencimiento, recorrer una lista entera (O(n)) es lento. Un árbol binario de búsqueda ordenado por fecha encuentra cualquier tarea en unos pocos saltos, el mismo principio que usan los índices de una base de datos (Módulo 4).
+#### ► DE QUÉ TRATA
+Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad) y Módulo 1, Te…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un árbol es una estructura jerárquica: cada nodo tiene hijos. Un **BST** añade una regla de orden: todo lo menor que un nodo va a su izquierda, todo lo mayor a su derecha. Buscar es como adivinar un número entre 1 y 100 preguntando "¿mayor o menor?": cada pregunta descarta la mitad. Por eso la búsqueda es logarítmica mientras el árbol esté equilibrado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n).**
 
-**Analogía:** un BST es como un torneo de eliminación donde en cada ronda descartas la mitad de los candidatos; una lista es como revisar a cada candidato uno por uno hasta el final.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama:**
+#### ► LA ANALOGÍA
+Piensa en árboles y árboles binarios de búsqueda (bst) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A[50] --> B[30]
@@ -658,24 +549,57 @@ graph TD
     C --> G[80]
 ```
 
-**Diagrama interactivo:** [Árbol binario de búsqueda: invariante de orden y por qué degenera](/visuals/temas/foundations/modulo-2-tema-5-bst.html) — versión explorable con temas claro/oscuro y la regla de orden de cada nodo.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Árboles y árboles binarios de búsqueda (BST) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** jerarquía, invariante de orden, búsqueda logarítmica, degeneración y equilibrio.
-**Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Árboles y árboles binarios de búsqueda (BST) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** insertar datos ya ordenados en un BST sin balancear (como `[20, 30, 40, 50, 60, 70, 80]`), lo que lo degenera en una lista enlazada y hace que `buscar` cueste O(n) en vez de O(log n); y asumir que "es un BST" garantiza O(log n) sin verificar si quedó equilibrado.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+#### ► CUÁNDO NO USAR ESTO
+No uses árboles y árboles binarios de búsqueda (bst) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `bst.py` con el contenido de este tema.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: árboles y árboles binarios de búsqueda (bst) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Árboles y árboles binarios de búsqueda (BST) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve árboles y árboles binarios de búsqueda (bst) en tu contexto?
+2. ¿Cómo sabrías que árboles y árboles binarios de búsqueda (bst) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar árboles y árboles binarios de búsqueda (bst)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A[50] --> B[30]
+    A --> C[70]
+    B --> D[20]
+    B --> E[40]
+    C --> F[60]
+    C --> G[80]
+```
+
 ```bash
 mkdir ejemplo
 cd ejemplo
 ```
-
-Crea `bst.py`:
 
 ```python
 class Nodo:
@@ -717,53 +641,77 @@ print("Buscar 60:", arbol.buscar(60), "comparaciones")
 print("Buscar 99:", arbol.buscar(99))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 bst.py
 ```
-En Windows usa `py bst.py`.
 
-**Resultado esperado:** `Buscar 60: 3 comparaciones` (raíz 50 → 70 → 60) y `Buscar 99: -1`. Con 7 nodos, hallar un elemento cuesta a lo sumo 3 pasos, no 7 — ahí se ve el O(log n). **Fallo deliberado:** inserta los valores ya ordenados (`[20, 30, 40, 50, 60, 70, 80]`) y vuelve a buscar 80: ahora cuesta 7 comparaciones, porque el árbol degeneró en una lista. Diagnostica por qué un BST sin equilibrar pierde su ventaja y por qué existen los árboles balanceados (AVL, rojo-negro).
-
-#### Paso 5 · Práctica guiada
-Añade un recorrido en orden (`inorder`) que imprima los valores de menor a mayor. Pista: recorre recursivamente izquierda → nodo → derecha; en un BST eso devuelve los elementos ordenados automáticamente.
-
-#### Paso 6 · Práctica independiente
-Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo hijo. Entrega el árbol antes y después de eliminar, y explica por qué eliminar un nodo con dos hijos es el caso difícil.
-
-#### Paso 7 · Cierre
-Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en **Java**, un lenguaje de programación, o `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
+</details>
 
 ### Tema 6: Tablas hash — búsqueda en tiempo constante · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n). Prerrequisitos: Temas 1-4 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-En el gestor de tareas, buscar una tarea por su ID exacto debería ser instantáneo sin importar cuántas tareas haya. Una tabla hash (lo que en Python es un `dict`) hace justo eso: convierte la clave en una posición directa del arreglo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n).**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una tabla hash usa una **función hash** que transforma una clave en un índice de un arreglo. Como dos claves distintas pueden caer en el mismo índice (**colisión**), se guarda una lista en cada posición (encadenamiento). Mientras las colisiones sean pocas, acceder es O(1).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** es como un guardarropa numerado: en vez de buscar tu abrigo revisando todos, la función hash (tu número de ficha) te lleva directo al casillero. Una colisión es cuando dos personas comparten casillero: hay que mirar los pocos abrigos de ESE casillero, no los de todo el guardarropa.
+#### ► LA ANALOGÍA
+Piensa en tablas hash — búsqueda en tiempo constante como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** función hash, colisión, encadenamiento, factor de carga, O(1) amortizado.
-**Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que tablas hash — búsqueda en tiempo constante resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** usar una capacidad demasiado chica para la tabla (como `capacidad=1`), lo que fuerza a todas las claves a la misma cubeta y degrada `obtener` a O(n); y confundir el O(1) *promedio* con una garantía absoluta, ignorando que un factor de carga alto o una mala función hash lo rompen.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tablas hash — búsqueda en tiempo constante se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `tabla_hash.py` con el contenido de este tema.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tablas hash — búsqueda en tiempo constante | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tablas hash — búsqueda en tiempo constante por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tablas hash — búsqueda en tiempo constante funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Tablas hash — búsqueda en tiempo constante existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tablas hash — búsqueda en tiempo constante en tu contexto?
+2. ¿Cómo sabrías que tablas hash — búsqueda en tiempo constante no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tablas hash — búsqueda en tiempo constante?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo
 cd ejemplo
 ```
-
-Crea `tabla_hash.py`:
 
 ```python
 class TablaHash:
@@ -796,39 +744,31 @@ print("RF-4471 ->", tabla.obtener("RF-4471"))
 print("Distribución:", [len(c) for c in tabla.cubetas])
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 tabla_hash.py
 ```
-En Windows usa `py tabla_hash.py`.
 
-**Resultado esperado:** `RF-4471 -> en ruta` y una distribución donde las dos claves caen en cubetas (idealmente distintas). **Fallo deliberado:** fija `capacidad=1`: todas las claves caen en la única cubeta, y `obtener` vuelve a ser O(n) porque debe recorrer la lista entera. Diagnostica por qué el tamaño de la tabla y una buena función hash son lo que mantiene el O(1); por eso los `dict` reales redimensionan automáticamente cuando se llenan.
-
-#### Paso 5 · Práctica guiada
-Añade un método `eliminar(clave)`. Pista: encuentra la cubeta correcta y quita solo el par con esa clave, sin tocar los demás de la misma cubeta.
-
-#### Paso 6 · Práctica independiente
-Mide cuántas claves caen en cada cubeta al insertar 1000 claves con `capacidad=16` vs `capacidad=256`, y explica la relación entre el "factor de carga" (claves/capacidad) y el rendimiento.
-
-#### Paso 7 · Cierre
-Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado con capacidad 1. **¿Por qué es importante?** las tablas hash son probablemente la estructura más usada en programación real — todo `dict`, `Map`, `HashMap`, caché o índice en memoria es una. Entender colisiones y factor de carga explica por qué a veces un `dict` "se pone lento" y cómo evitarlo. Fuentes: [Hash table (Wikipedia)](https://en.wikipedia.org/wiki/Hash_table).
+</details>
 
 ### Tema 7: Grafos y recorridos BFS/DFS · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema. Prerrequisitos: Temas 2 (pilas/colas) y 5 (árboles) de este módulo.
 
-#### Paso 2 · Contexto y caso real
-En RutaFlow, las ciudades conectadas por carreteras forman un grafo. Encontrar la ruta con menos tramos entre dos ciudades es un BFS; explorar todas las ciudades alcanzables desde un depósito es un DFS. Los grafos modelan redes sociales, dependencias entre tareas, mapas y rutas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un **grafo** son nodos (vértices) conectados por aristas. **BFS** explora por niveles usando una **cola** (primero los vecinos directos, luego los vecinos de los vecinos): encuentra el camino más corto en número de saltos. **DFS** explora yendo lo más profundo posible usando una **pila** (o recursión) antes de retroceder.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** BFS es explorar un laberinto con un equipo que avanza en abanico, cubriendo todo lo cercano antes de alejarse; DFS es una sola persona que sigue un pasillo hasta el final, y si no hay salida, retrocede al último cruce.
+#### ► LA ANALOGÍA
+Piensa en grafos y recorridos bfs/dfs como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
     A[Depósito] --- B[Ciudad B]
@@ -838,22 +778,56 @@ graph LR
     D --- E[Ciudad E]
 ```
 
-**Conceptos clave:** vértices y aristas, lista de adyacencia, BFS con cola, DFS con pila/recursión, marcar visitados.
-**Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Grafos y recorridos BFS/DFS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** recorrer un grafo con ciclos sin marcar los nodos visitados (como en el fallo deliberado), lo que produce un bucle infinito porque, a diferencia de un árbol, un grafo puede volver al mismo nodo; y usar DFS cuando el problema necesita el camino más corto, que es exactamente lo que garantiza BFS por niveles.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Grafos y recorridos BFS/DFS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `grafos.py` con el contenido de este tema.
+#### ► CUÁNDO NO USAR ESTO
+No uses grafos y recorridos bfs/dfs por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: grafos y recorridos bfs/dfs funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Grafos y recorridos BFS/DFS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve grafos y recorridos bfs/dfs en tu contexto?
+2. ¿Cómo sabrías que grafos y recorridos bfs/dfs no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar grafos y recorridos bfs/dfs?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph LR
+    A[Depósito] --- B[Ciudad B]
+    A --- C[Ciudad C]
+    B --- D[Ciudad D]
+    C --- D
+    D --- E[Ciudad E]
+```
+
 ```bash
 mkdir ejemplo
 cd ejemplo
 ```
-
-Crea `grafos.py`:
 
 ```python
 from collections import deque
@@ -891,53 +865,77 @@ print("BFS:", bfs("Deposito"))
 print("DFS:", dfs("Deposito"))
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 grafos.py
 ```
-En Windows usa `py grafos.py`.
 
-**Resultado esperado:** `BFS: ['Deposito', 'B', 'C', 'D', 'E']` (por niveles: primero B y C, luego D, luego E) y `DFS: ['Deposito', 'B', 'D', 'C', 'E']` (baja por un camino antes de retroceder). Observa cómo la **cola** produce exploración por niveles y la **recursión/pila** produce exploración en profundidad. **Fallo deliberado:** quita el conjunto `visitados` del BFS: con el ciclo Depósito↔B↔D↔C↔Depósito el programa entra en bucle infinito. Diagnostica por qué en un grafo (a diferencia de un árbol) SIEMPRE hay que marcar lo visitado.
-
-#### Paso 5 · Práctica guiada
-Modifica `bfs` para que devuelva el camino más corto (lista de nodos) entre dos ciudades, no solo el orden de visita. Pista: guarda de qué nodo llegaste a cada vecino y reconstruye el camino al llegar al destino.
-
-#### Paso 6 · Práctica independiente
-Añade una ciudad aislada (sin aristas) y confirma que no aparece en el recorrido desde el depósito. Luego cuenta cuántos "componentes conectados" tiene el grafo.
-
-#### Paso 7 · Cierre
-Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del fallo deliberado. **¿Por qué es importante?** los grafos y sus recorridos están detrás de los mapas (rutas), las redes sociales (amigos de amigos), los planificadores de tareas (orden de dependencias) y los rastreadores web. BFS para "el más cercano", DFS para "explorar todo" es una decisión que tomarás muchas veces. Fuentes: [Graph traversal (Wikipedia)](https://en.wikipedia.org/wiki/Graph_traversal).
+</details>
 
 ### Tema 8: Programación dinámica — resolver una vez, recordar el resultado · Básico · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal. Prerrequisitos: Tema 4 (recursión y complejidad) de este módulo.
 
-#### Paso 2 · Contexto y caso real
-En RutaFlow, calcular el costo mínimo de una ruta con muchos tramos recalcula los mismos sub-tramos una y otra vez si lo haces ingenuamente. La programación dinámica guarda cada resultado la primera vez que lo calcula, para no repetirlo — la diferencia entre una respuesta instantánea y una que tarda minutos.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La **programación dinámica (DP)** aplica a problemas con dos propiedades: subproblemas que se **solapan** (se repiten) y una solución que se construye desde subproblemas más pequeños. La **memoización** guarda cada resultado ya calculado en un diccionario (una tabla hash, Tema 6) y lo reutiliza.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** es como hacer un examen donde varias preguntas comparten el mismo cálculo intermedio: en vez de rehacerlo cada vez, lo escribes una vez en el margen y lo copias. Fibonacci ingenuo recalcula `fib(5)` miles de veces; con memoización, cada valor se calcula exactamente una vez.
+#### ► LA ANALOGÍA
+Piensa en programación dinámica — resolver una vez, recordar el resultado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** subproblemas solapados, memoización, tabla de resultados, exponencial vs lineal.
-**Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que programación dinámica — resolver una vez, recordar el resultado resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** no reconocer que un problema tiene subproblemas solapados y resolverlo con recursión simple (como `fib_ingenuo`), lo que vuelve exponencial algo que debería ser lineal y cuelga el programa con entradas apenas más grandes; y aplicar memoización a un problema cuyos subproblemas no se repiten, agregando complejidad sin ningún beneficio.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Programación dinámica — resolver una vez, recordar el resultado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `dp.py` con el contenido de este tema.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Programación dinámica — resolver una vez, recordar el resultado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses programación dinámica — resolver una vez, recordar el resultado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: programación dinámica — resolver una vez, recordar el resultado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Programación dinámica — resolver una vez, recordar el resultado existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve programación dinámica — resolver una vez, recordar el resultado en tu contexto?
+2. ¿Cómo sabrías que programación dinámica — resolver una vez, recordar el resultado no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar programación dinámica — resolver una vez, recordar el resultado?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo
 cd ejemplo
 ```
-
-Crea `dp.py`:
 
 ```python
 import time
@@ -965,48 +963,73 @@ for etiqueta, fn in [("ingenuo", fib_ingenuo), ("con DP", fib_dp)]:
     print(f"fib(32) {etiqueta}: {resultado} en {time.perf_counter() - inicio:.3f}s")
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 dp.py
 ```
-En Windows usa `py dp.py`.
 
-**Resultado esperado:** ambos dan `fib(32): 2178309`, pero el ingenuo tarda un tiempo perceptible (décimas de segundo o más) y el de DP es casi instantáneo. **Fallo deliberado:** sube a `fib_ingenuo(45)`: el programa se cuelga segundos o minutos, porque hace miles de millones de llamadas repetidas, mientras `fib_dp(45)` responde al instante. Diagnostica contando (con un contador global) cuántas veces se llama a cada función: ahí ves el crecimiento exponencial frente al lineal.
-
-#### Paso 5 · Práctica guiada
-Añade un contador que cuente cuántas veces se ejecuta el cuerpo de cada versión para `n=20`, y compara los números. Pista: el ingenuo hará miles de llamadas; el de DP, unas 20.
-
-#### Paso 6 · Práctica independiente
-Resuelve con DP el problema de "cuántas formas hay de subir una escalera de n escalones dando pasos de 1 o 2". Entrega la versión memoizada y explica cuáles son los subproblemas que se solapan.
-
-#### Paso 7 · Cierre
-Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y el problema de la escalera. **¿Por qué es importante?** la DP aparece en entrevistas técnicas constantemente y en problemas reales: rutas óptimas, diffs de texto, asignación de recursos, subsecuencias. Reconocer "esto tiene subproblemas repetidos" y aplicar memoización es una de las habilidades que más distingue a un programador que resuelve de uno que solo codifica. Fuentes: [Dynamic programming (Wikipedia)](https://en.wikipedia.org/wiki/Dynamic_programming).
-
-## Construcción guiada del capítulo
+</details>
 
 ### Proyecto 2: gestor de inventario con análisis de rendimiento
 
-Desde una carpeta vacía crea `inventario/` (guarda una copia de la carpeta al cerrar cada etapa, como en el Proyecto 1; Git llega en el Módulo 5) y construye una aplicación de consola que permita agregar, actualizar, listar, buscar y eliminar productos por SKU. Persiste los productos en `inventario.json` usando la biblioteca estándar.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Fases sugeridas (una copia de la carpeta por fase):
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto 2: gestor de inventario con análisis de rendimiento con foco en comprensión antes de implementación.
 
-1. Clase `Producto` (Módulo 1, Tema 6) y lista inicial.
-2. CRUD en memoria con validaciones.
-3. Índice por SKU y justificación escrita.
-4. Guardado/carga JSON con manejo de archivo inexistente o corrupto.
-5. Búsqueda lineal y binaria implementadas manualmente.
-6. Generador de 100, 1 000 y 10 000 productos y medición repetida.
-7. README con tabla de resultados, complejidad esperada y límites.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto 2: gestor de inventario con análisis de rendimiento te permite tomar mejores decisiones técnicas.**
 
-No uses una librería de benchmarking para ocultar el proceso. Aísla la operación, usa el mismo conjunto de consultas y registra entorno. La medición no sustituye el análisis: explica discrepancias por constantes, orden previo, caché o tamaño insuficiente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Verificación:** reiniciar el programa conserva datos; SKU duplicado se rechaza; búsqueda ausente no rompe; JSON corrupto produce mensaje accionable; las mediciones son reproducibles y no afirman causalidad sin evidencia.
+#### ► LA ANALOGÍA
+Piensa en proyecto 2: gestor de inventario con análisis de rendimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Errores comunes y soluciones**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto 2: gestor de inventario con análisis de rendimiento resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-- Elegir diccionario “porque es rápido” sin describir operaciones: escribe requisitos primero.
-- Aplicar binaria a datos desordenados: valida o garantiza la precondición.
-- Medir una sola vez: repite y reporta variabilidad.
-- Confundir O(1) con tiempo cero: significa crecimiento independiente de n en el modelo.
-- Recursión sin progreso: identifica caso base y reducción.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto 2: gestor de inventario con análisis de rendimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto 2: gestor de inventario con análisis de rendimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto 2: gestor de inventario con análisis de rendimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto 2: gestor de inventario con análisis de rendimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto 2: gestor de inventario con análisis de rendimiento existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto 2: gestor de inventario con análisis de rendimiento en tu contexto?
+2. ¿Cómo sabrías que proyecto 2: gestor de inventario con análisis de rendimiento no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto 2: gestor de inventario con análisis de rendimiento?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto 2: gestor de inventario con análisis de rendimiento.
+
+</details>

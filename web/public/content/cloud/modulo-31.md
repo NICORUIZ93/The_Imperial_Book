@@ -3,45 +3,80 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir y probar un `confirmDelivery` de RutaFlow diseñado contra un puerto `DeliveryRepository`, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
-#### Paso 2 · Contexto y caso real
-Si RutaFlow tuviera que migrar su backend de AWS a Azure, la lógica de negocio real —validar el PIN de 6 dígitos, confirmar una entrega una sola vez por `commandId`— no debería cambiar una sola línea; solo debería cambiar qué implementación concreta guarda los datos.
-#### Paso 3 · Teoría, modelo mental y analogía
-Los principios de diseño (puerto + adaptador) son el plano; el SDK de DynamoDB o de Cosmos DB es la herramienta local específica que cada adaptador usa por detrás.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** los principios arquitectónicos son transferibles, las APIs específicas no lo son.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir y probar un confirmDelivery de RutaFlow diseñado contra un puerto DeliveryRepository, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
 
-```
-AWS: API Gateway → Lambda → DynamoDB / SQS / S3, protegido con Cognito, desplegado con CloudFormation
-Azure: Functions → Cosmos DB / Service Bus / Blob Storage local
-GCP: Firestore + Cloud Storage + Pub/Sub local (solo lectura)
-```
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir y probar un confirmDelivery de RutaFlow diseñado contra un puerto DeliveryRepository, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti.**
 
-Construir la misma API "Gestor de Tareas" tres veces, una por proveedor, revela directamente qué conocimiento es genuinamente transferible entre proveedores cloud y qué es específico de cada uno: los principios arquitectónicos fundamentales estudiados a lo largo de todo el track (funciones serverless orientadas a eventos, colas para desacoplar productores y consumidores, bases de datos NoSQL para patrones de acceso simples y conocidos, almacenamiento de objetos para archivos, autenticación delegada a un servicio especializado) se aplican de forma prácticamente idéntica en los tres proveedores, mientras que la sintaxis exacta de cada API, los nombres específicos de cada servicio, y ciertos detalles operativos particulares (cómo se configuran los triggers, el formato exacto de las políticas de permisos) sí difieren considerablemente entre AWS, Azure y GCP.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Esta distinción entre "principios portables" y "sintaxis específica de proveedor" es exactamente el mismo patrón de aprendizaje observado repetidamente a lo largo de toda la Academia: UDF es el mismo principio en Android, iOS, React y Angular aunque cada uno lo exprese con herramientas distintas (StateFlow, Combine, hooks, signals); de la misma forma, "desacoplar productores de consumidores con una cola" es el mismo principio en SQS, Service Bus y Pub/Sub, aunque cada API tenga su propia sintaxis particular de configuración.
+#### ► LA ANALOGÍA
+Piensa en arquitectura multi-nube y portabilidad de conocimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** construir la misma app en tres proveedores cloud es como aprender a conducir vehículos de tres fabricantes distintos: los principios fundamentales de conducción (acelerar, frenar, girar, las reglas de tránsito) son completamente transferibles entre todos ellos, mientras que la ubicación exacta de cada control específico y ciertos detalles operativos particulares de cada fabricante requieren familiarización específica con cada modelo individual.
-
-**¿Por qué es importante?** Lo que aprendiste en AWS aplica directamente en Azure y GCP a nivel de principios arquitectónicos fundamentales (serverless, colas, NoSQL, auth delegada), mientras la sintaxis exacta de cada API y ciertos detalles operativos son fundamentalmente diferentes y requieren aprendizaje específico por proveedor.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["Principio: #quot;desacoplar productor y consumidor con una cola#quot;"] --> A1["PORTABLE"]
     B["Sintaxis: aws sqs send-message vs az servicebus queue send"] --> B1["ESPECÍFICO de cada proveedor"]
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Implementa el mismo caso de guardar y consultar evidencia en dos proveedores locales. Compara errores, permisos y consistencia; conserva adaptadores explícitos donde los contratos no sean equivalentes.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura multi-nube y portabilidad de conocimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Límites y decisión de uso:** Portabilidad de conceptos no significa equivalencia de identidades, errores o consistencia entre proveedores. Introduce adaptadores solo en fronteras útiles y prueba cada contrato; una abstracción que oculta diferencias puede impedir diagnosticar fallos reales.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura multi-nube y portabilidad de conocimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** crea una carpeta vacía, inicializa tu propio proyecto y escribe los tres archivos siguientes. El adaptador en memoria simula la persistencia para hacer visible el contrato; no pretende emular DynamoDB.
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura multi-nube y portabilidad de conocimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura multi-nube y portabilidad de conocimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura multi-nube y portabilidad de conocimiento existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura multi-nube y portabilidad de conocimiento en tu contexto?
+2. ¿Cómo sabrías que arquitectura multi-nube y portabilidad de conocimiento no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura multi-nube y portabilidad de conocimiento?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+AWS: API Gateway → Lambda → DynamoDB / SQS / S3, protegido con Cognito, desplegado con CloudFormation
+Azure: Functions → Cosmos DB / Service Bus / Blob Storage local
+GCP: Firestore + Cloud Storage + Pub/Sub local (solo lectura)
+```
+
+```mermaid
+flowchart LR
+    A["Principio: #quot;desacoplar productor y consumidor con una cola#quot;"] --> A1["PORTABLE"]
+    B["Sintaxis: aws sqs send-message vs az servicebus queue send"] --> B1["ESPECÍFICO de cada proveedor"]
+```
 
 ```bash
 mkdir rutaflow-puertos
@@ -50,8 +85,6 @@ npm init -y
 npm install --save-dev tsx
 mkdir src tests
 ```
-
-Crea `src/confirm-delivery.ts` con el contrato y la lógica de negocio:
 
 ```ts
 export type ConfirmDeliveryCommand = {
@@ -86,8 +119,6 @@ export async function confirmDelivery(
 }
 ```
 
-Crea `src/memory-delivery-repository.ts` con un primer adaptador:
-
 ```ts
 import type {
   ConfirmDeliveryCommand,
@@ -115,8 +146,6 @@ export class MemoryDeliveryRepository implements DeliveryRepository {
   }
 }
 ```
-
-Crea `tests/confirm-delivery.test.ts` para probar validación e idempotencia sin ningún SDK cloud:
 
 ```ts
 import test from 'node:test';
@@ -148,41 +177,27 @@ test('rechaza un PIN inválido antes de escribir', async () => {
 });
 ```
 
-Ejecuta las pruebas del proyecto que acabas de crear:
-
-```bash
-npx tsx --test tests/confirm-delivery.test.ts
-```
-
-Resultado esperado: las dos pruebas pasan. `confirmDelivery(command, repository)` recibe un `DeliveryRepository` (el puerto: `findCommandResult`/`confirm`) como parámetro y no importa `@aws-sdk/client-dynamodb` ni ningún cliente de Azure. La primera prueba también demuestra que repetir `commandId` no duplica la escritura.
-#### Paso 5 · Práctica guiada
-Duplica temporalmente la función como `src/confirm-delivery-acoplado.ts`. En esa copia, importa `MemoryDeliveryRepository`, elimina el parámetro `repository` y crea dentro de la función `const repository = new MemoryDeliveryRepository();`. Ese es el fallo deliberado de diseño: la lógica ya no permite sustituir el adaptador; si esa clase concreta usara DynamoDB, migrar a Azure exigiría reescribir y volver a probar `confirmDelivery` entero. **Pista:** compara las firmas de ambas versiones y busca en la copia qué dependencia concreta impide ejecutar las mismas pruebas con otro adaptador. Conserva el original del Paso 4 sin ese acoplamiento.
-#### Paso 6 · Práctica independiente
-Escribe un segundo adaptador `src/map-delivery-repository.ts` que implemente `DeliveryRepository` con otro `Map` en memoria, esta vez simulando Cosmos DB sin necesitar Azure real. Usa exactamente los mismos dos métodos del puerto y un contador `confirmCalls`; no copies ninguna llamada de un SDK dentro de `confirmDelivery`. En `tests/confirm-delivery.test.ts`, cambia únicamente la importación y la construcción del repositorio para usar tu nueva clase y vuelve a ejecutar `npx tsx --test tests/confirm-delivery.test.ts`. Las mismas dos pruebas deben pasar sin modificar `src/confirm-delivery.ts`.
-#### Paso 7 · Cierre
-Entregá los archivos del puerto, la función y ambas pruebas del Paso 4, la copia acoplada del Paso 5 y el segundo adaptador con la nueva salida de pruebas del Paso 6; explicá qué parte de este diseño es portable entre proveedores y cuál sería específica de cada uno. Siguiente paso: Testcontainers. Errores comunes: abstraer detalles sin necesidad y filtrar tipos del proveedor. Fuente oficial: https://12factor.net/.
+</details>
 
 ### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
-#### Paso 2 · Contexto y caso real
-Una prueba de integración debe detectar diferencias que un mock oculta.
-#### Paso 3 · Teoría, modelo mental y analogía
-Testcontainers levanta una instalación temporal, como un laboratorio desechable.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** motores reales, no simulaciones aproximadas; sin costo para pruebas de integración repetidas.
+#### ► DE QUÉ TRATA
+Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-cloud local se distingue de simulaciones más superficiales de servicios cloud por su filosofía de "real engines, not mocks": cuando se crea una instancia RDS, corre PostgreSQL real (Módulo 13); cuando se crea un cluster ECS, corren contenedores Docker reales (Módulo 14); cuando se invoca Lambda, ejecuta el runtime real correspondiente en un contenedor Docker real, no una simulación aproximada de su comportamiento con lógica propia potencialmente divergente del comportamiento real de AWS; esta fidelidad de emulación, construida internamente sobre GraalVM (una máquina virtual que permite arranque considerablemente más rápido, en el orden de ~24 milisegundos, comparado con el arranque de una JVM tradicional) hace que cloud local sea considerablemente más confiable como entorno de pruebas que emuladores que reimplementan la lógica de cada servicio de forma aproximada y potencialmente divergente del comportamiento real.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás probar contra motores reales desde cero.**
 
-Esta fidelidad hace que cloud local sea especialmente valioso integrado en pipelines de CI/CD: ejecutar pruebas de integración completas contra servicios cloud reales (no solo unit tests con mocks) en cada pull request, sin ningún costo asociado a crear y destruir recursos reales de AWS repetidamente, y con integración directa vía Testcontainers (una librería que gestiona el ciclo de vida de contenedores Docker específicamente para pruebas automatizadas, arrancando y destruyendo cloud local automáticamente alrededor de cada suite de pruebas de integración).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** cloud local es como un simulador de vuelo que usa los mismos sistemas de aviónica reales que un avión genuino, en vez de una recreación aproximada con lógica simplificada propia; usarlo en CI/CD es como poder entrenar con ese simulador de alta fidelidad tantas veces como sea necesario sin el costo ni el riesgo de usar un avión real para cada sesión de entrenamiento repetida.
+#### ► LA ANALOGÍA
+Piensa en arquitectura interna de cloud local y su uso en ci/cd como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** cloud local usa motores reales (PostgreSQL real, Docker real, runtimes reales) en vez de simulaciones aproximadas, ofreciendo pruebas de integración de alta fidelidad sin costo en CI/CD, integrado con Testcontainers para gestionar automáticamente su ciclo de vida alrededor de cada suite de pruebas.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["RDS (cloud local)"] --> A1["PostgreSQL REAL corriendo"]
@@ -190,12 +205,50 @@ flowchart LR
     C["Lambda (cloud local)"] --> C1["runtime REAL en contenedor Docker"]
 ```
 
-Los tres casos siguen el mismo principio: "real engines, not mocks".
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura interna de cloud local y su uso en CI/CD se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Arranca el entorno de entregas como dependencia temporal del job de CI. Espera disponibilidad, ejecuta una prueba y destruye recursos al terminar, incluidos los casos de fallo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura interna de cloud local y su uso en CI/CD | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, escribe el script que un job de CI ejecutaría: arranca un Floci desechable, espera a que responda, hace una prueba y lo destruye siempre, también si la prueba falla.
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura interna de cloud local y su uso en ci/cd por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura interna de cloud local y su uso en ci/cd funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura interna de cloud local y su uso en CI/CD existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura interna de cloud local y su uso en ci/cd en tu contexto?
+2. ¿Cómo sabrías que arquitectura interna de cloud local y su uso en ci/cd no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura interna de cloud local y su uso en ci/cd?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["RDS (cloud local)"] --> A1["PostgreSQL REAL corriendo"]
+    B["ECS (cloud local)"] --> B1["contenedores Docker REALES"]
+    C["Lambda (cloud local)"] --> C1["runtime REAL en contenedor Docker"]
+```
+
 ```bash
 mkdir ejemplo-ci && cd ejemplo-ci
 cat > ci-integracion.sh <<'EOF'
@@ -214,48 +267,75 @@ aws s3 ls | grep -q "ci-evidencias-$$" && echo "prueba de integración: ok"
 EOF
 bash ci-integracion.sh
 ```
-Detén antes cualquier Floci que use el puerto 4566 (`floci stop` o `docker compose stop aws-local`). Resultado esperado: `make_bucket: s3://ci-evidencias-<número>`, `prueba de integración: ok` y, al final, `limpieza: floci-ci-<número> detenido`. El `trap … EXIT` se ejecuta al salir del script por cualquier motivo: si cambias la última línea por `false`, el script termina con código `1` y aun así imprime la línea de limpieza. `docker ps` ya no muestra el contenedor.
-#### Paso 5 · Práctica guiada
-Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Arranca, prueba y destruye un contenedor.
-#### Paso 7 · Cierre
-Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/.
+
+</details>
 
 ### Tema 3: Migración desde otros emuladores, y límites de un emulador · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a levantar Floci con un único `docker-compose.yml` y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS. Prerrequisitos: Módulo 30 completo.
-#### Paso 2 · Contexto y caso real
-El equipo de RutaFlow necesita un único entorno local que cubra AWS, Azure y GCP a la vez para el proyecto multi-nube de este módulo, en vez de levantar LocalStack, Azurite y los emuladores de gcloud por separado con tres configuraciones distintas.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un endpoint unificado es un aeropuerto de entrenamiento con servicios simulados: un solo lugar, una sola configuración, en vez de tres instalaciones separadas con reglas propias.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** un único endpoint unificado multi-servicio, apropiado para desarrollo, no para producción.
+#### ► DE QUÉ TRATA
+Al finalizar vas a levantar Floci con un único docker-compose.yml y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS. Prerrequisitos: Módulo 30 completo.
 
-Migrar desde LocalStack (el emulador de AWS más establecido históricamente), Azurite (el emulador oficial de Azure Storage), o los emuladores individuales de gcloud hacia un único endpoint de cloud local que emula los tres proveedores simplifica la configuración de un entorno de desarrollo que necesita trabajar con múltiples servicios cloud simultáneamente (por ejemplo, el proyecto multi-nube de este mismo módulo), evitando gestionar tres herramientas de emulación completamente separadas con configuraciones, puertos y comportamientos potencialmente inconsistentes entre sí.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a levantar Floci con un único docker-compose.yml y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS.**
 
-La **Migración desde LocalStack** comienza inventariando servicios, endpoints, variables, inicializadores y diferencias de compatibilidad antes de sustituir el contenedor; después se ejecuta la misma suite de integración contra ambos entornos y se documenta cualquier comportamiento distinto.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un límite importante que debe reconocerse explícitamente: cloud local (como cualquier emulador, sin importar su fidelidad) es una herramienta diseñada para desarrollo y pruebas, no un sustituto completo de una prueba final contra la nube real antes de un despliegue a producción; aspectos como límites reales de cuota, latencia de red genuina entre regiones geográficas reales, comportamiento bajo carga a escala de producción real, y ciertas particularidades de servicios gestionados completamente específicas de la infraestructura real de cada proveedor (no replicables ni siquiera por un emulador de alta fidelidad) requieren necesariamente una validación final contra el entorno real antes de considerar cualquier sistema listo para producción. Igualmente, la persistencia de estado entre reinicios de cloud local (para servicios como ECS, CodeBuild, Config) tiene límites específicos documentados que conviene conocer antes de depender de esa persistencia para flujos de trabajo críticos de desarrollo.
+#### ► LA ANALOGÍA
+Piensa en migración desde otros emuladores, y límites de un emulador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** cloud local es como un excelente campo de entrenamiento con equipo real y de alta fidelidad para practicar procedimientos, pero ninguna cantidad de entrenamiento en ese campo sustituye completamente la validación final en las condiciones reales y variables del entorno de producción genuino, con todas sus particularidades y escala que ningún entorno de práctica, por fiel que sea, puede replicar completamente.
-
-**¿Por qué es importante?** Un único endpoint de cloud local simplifica trabajar con múltiples proveedores simultáneamente frente a gestionar herramientas de emulación separadas; sin embargo, ninguna prueba local, sin importar su fidelidad, sustituye una prueba final contra la nube real antes de producción, dado que aspectos como escala, latencia real y cuotas no son replicables completamente por un emulador.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A["LocalStack + Azurite + gcloud emulators (3 herramientas separadas)"] -->|migración| B["cloud local (1 único endpoint, AWS + Azure + GCP)"]
 ```
 
-Pero: cloud local es para desarrollo/pruebas y SIEMPRE requiere validación final contra la nube real antes de producción.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migración desde otros emuladores, y límites de un emulador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Migra una prueba de bucket y cola desde el emulador anterior. Registra endpoints, diferencias observadas y recursos incompatibles; conservar el nombre de un servicio no demuestra equivalencia de comportamiento.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migración desde otros emuladores, y límites de un emulador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `docker-compose.yml` con el contenido de este tema.
+#### ► CUÁNDO NO USAR ESTO
+No uses migración desde otros emuladores, y límites de un emulador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migración desde otros emuladores, y límites de un emulador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migración desde otros emuladores, y límites de un emulador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migración desde otros emuladores, y límites de un emulador en tu contexto?
+2. ¿Cómo sabrías que migración desde otros emuladores, y límites de un emulador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migración desde otros emuladores, y límites de un emulador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    A["LocalStack + Azurite + gcloud emulators (3 herramientas separadas)"] -->|migración| B["cloud local (1 único endpoint, AWS + Azure + GCP)"]
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -265,21 +345,24 @@ docker compose up -d
 eval $(floci env)
 aws s3 mb s3://demo-multi-nube
 ```
-Resultado esperado: el entorno levanta con un único `docker-compose.yml`, y el bucket se crea contra ese mismo endpoint unificado — sin haber configurado LocalStack, Azurite ni gcloud por separado.
-#### Paso 5 · Práctica guiada
-Pista: intentá conectarte de verdad por SFTP contra el servidor Transfer Family del Módulo 30 (`sftp -i /tmp/clave-socio socio-logistico@localhost`) — ese es el fallo deliberado que documenta este Tema: la conexión real falla, porque ese plano de datos específico todavía no está implementado, un límite real del emulador que hay que conocer antes de depender de él.
-#### Paso 6 · Práctica independiente
-Apagá el entorno completo con `docker compose down`, confirmá que los contenedores desaparecieron, y documentá en un README qué servicios de este track NO deberías dar por probados end-to-end solo porque su plano de gestión respondió bien (pista: Transfer Family del Módulo 30, ELB/CloudFront/Route53 del Módulo 22).
-#### Paso 7 · Cierre
-Entregá el entorno unificado levantado del Paso 4, el límite real confirmado del Paso 5, y la lista de servicios con plano de datos pendiente del Paso 6; explicá por qué ninguna cantidad de fidelidad en un emulador sustituye la validación final contra la nube real. Siguiente paso: módulos por lenguaje. Errores comunes: usar emulador en producción y asumir paridad total. Fuente oficial: https://docs.localstack.cloud/.
+
+</details>
 
 ### Tema 4: Testcontainers — pruebas de integración automatizadas · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
-#### Paso 2 · Contexto y caso real
-Cada suite necesita entorno limpio y puertos no predecibles.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás aislar suites de prueba desde cero.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El módulo gestiona ciclo de vida como un técnico que prepara y limpia el laboratorio.
 
 **Conceptos clave:** módulo Testcontainers oficial por lenguaje, ciclo de vida gestionado automáticamente, sin puerto fijo ni contenedor persistente entre suites.
@@ -418,8 +501,168 @@ flowchart TD
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea recursos únicos por prueba de integración y consulta una evidencia recién almacenada. Ejecuta dos pruebas en paralelo y demuestra que no comparten nombres ni dejan recursos tras un fallo.
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, crea `tests/test_aislado.py`: cada prueba usa un bucket con nombre único dentro de un Floci propio de la sesión.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    subgraph SIN["Sin Testcontainers"]
+        S1["CI arranca Floci manualmente"] --> S2["corren las suites"] --> S3["CI apaga Floci manualmente"]
+        S3 -.-> N1["estado compartido entre suites, puerto fijo, arranque/apagado a mano"]
+    end
+    subgraph CON["Con Testcontainers"]
+        A1["Suite A: FlociContainer.start()"] --> A2["prueba"] --> A3["stop() (aislado, puerto aleatorio)"]
+        B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
+    end
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Testcontainers — pruebas de integración automatizadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Testcontainers — pruebas de integración automatizadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses testcontainers — pruebas de integración automatizadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: testcontainers — pruebas de integración automatizadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Testcontainers — pruebas de integración automatizadas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve testcontainers — pruebas de integración automatizadas en tu contexto?
+2. ¿Cómo sabrías que testcontainers — pruebas de integración automatizadas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar testcontainers — pruebas de integración automatizadas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```java
+import io.floci.testcontainers.FlociContainer;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+
+import java.net.URI;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Testcontainers
+class S3IntegrationTest {
+
+    @Container
+    static FlociContainer floci = new FlociContainer();
+
+    @Test
+    void shouldCreateBucket() {
+        S3Client s3 = S3Client.builder()
+                .endpointOverride(URI.create(floci.getEndpoint()))
+                .region(Region.of(floci.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(floci.getAccessKey(), floci.getSecretKey())))
+                .forcePathStyle(true)
+                .build();
+
+        s3.createBucket(b -> b.bucket("my-bucket"));
+
+        assertThat(s3.listBuckets().buckets())
+                .anyMatch(b -> b.name().equals("my-bucket"));
+    }
+}
+```
+
+```typescript
+import { FlociContainer } from "@floci/testcontainers";
+import { S3Client, CreateBucketCommand, ListBucketsCommand } from "@aws-sdk/client-s3";
+
+describe("S3", () => {
+    let floci: FlociContainer;
+
+    beforeAll(async () => {
+        floci = await new FlociContainer().start();
+    });
+
+    afterAll(async () => {
+        await floci.stop();
+    });
+
+    it("should create and list a bucket", async () => {
+        const s3 = new S3Client({
+            endpoint: floci.getEndpoint(),
+            region: floci.getRegion(),
+            credentials: {
+                accessKeyId: floci.getAccessKey(),
+                secretAccessKey: floci.getSecretKey(),
+            },
+            forcePathStyle: true,
+        });
+
+        await s3.send(new CreateBucketCommand({ Bucket: "my-bucket" }));
+
+        const { Buckets } = await s3.send(new ListBucketsCommand({}));
+        expect(Buckets?.some(b => b.Name === "my-bucket")).toBe(true);
+    });
+});
+```
+
+```python
+import pytest
+import boto3
+from floci import FlociContainer
+
+@pytest.fixture(scope="session")
+def floci():
+    with FlociContainer() as container:
+        yield container
+
+@pytest.fixture(scope="session")
+def s3_client(floci):
+    return boto3.client(
+        "s3",
+        endpoint_url=floci.get_endpoint(),
+        region_name=floci.get_region(),
+        aws_access_key_id=floci.get_access_key(),
+        aws_secret_access_key=floci.get_secret_key(),
+    )
+
+def test_create_bucket(s3_client):
+    s3_client.create_bucket(Bucket="my-bucket")
+    buckets = [b["Name"] for b in s3_client.list_buckets()["Buckets"]]
+    assert "my-bucket" in buckets
+```
+
+```mermaid
+flowchart TD
+    subgraph SIN["Sin Testcontainers"]
+        S1["CI arranca Floci manualmente"] --> S2["corren las suites"] --> S3["CI apaga Floci manualmente"]
+        S3 -.-> N1["estado compartido entre suites, puerto fijo, arranque/apagado a mano"]
+    end
+    subgraph CON["Con Testcontainers"]
+        A1["Suite A: FlociContainer.start()"] --> A2["prueba"] --> A3["stop() (aislado, puerto aleatorio)"]
+        B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
+    end
+```
+
 ```python
 import uuid
 
@@ -456,56 +699,35 @@ def test_bucket_nuevo_esta_vacio(s3):
     s3.create_bucket(Bucket=bucket)
     assert s3.list_objects_v2(Bucket=bucket).get("KeyCount") == 0
 ```
+
 ```bash
 mkdir -p ejemplo-isolated-tests/tests && cd ejemplo-isolated-tests
 python3 -m venv .venv && . .venv/bin/activate
 pip install testcontainers-floci==0.4.0 pytest boto3
 python3 -m pytest -q tests/test_aislado.py
 ```
-Resultado esperado: `2 passed`. El segundo test no ve el objeto del primero porque cada uno crea su propio bucket, y el contenedor se destruye al cerrar la sesión de pytest. `FlociContainer` publica Floci en un puerto libre del host que obtienes con `get_endpoint()`; por eso no fijas `4566`.
-#### Paso 5 · Práctica guiada
-Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Ejecuta suites en paralelo y verifica limpieza.
-#### Paso 7 · Cierre
-Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
+
+</details>
 
 ### Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Avanzado · 40 min
 
-**Prerrequisito:** tema «Migración desde otros emuladores…» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** clasificar cada aplicación de un inventario en una de las estrategias de migración (retirar, retener, recomprar, rehospedar, replataformar, refactorizar, reubicar) con preguntas en orden de costo.
+#### ► DE QUÉ TRATA
+Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/migracion. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
 
-**¿Por qué es importante?** Migrar todo «tal cual» parece rápido, pero lleva a la nube los mismos problemas a un precio mayor. Rediseñar todo tarda años. Decidir aplicación por aplicación con un método evita los dos extremos.
+#### ► LA IDEA EN UNA FRASE
+**Usa Python 3.10 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Python 3.10 o superior. Crea la carpeta `academia-labs/cloud/migracion`. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
+#### ► LA ANALOGÍA
+Piensa en migrar a la nube: las 7 r para decidir qué hacer con cada aplicación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-RutaFlow tenía seis sistemas en un centro de datos propio cuyo contrato vencía en un año. El primer plan era rediseñarlos todos para la nube. El análisis mostró que uno ni se usaba, otro tenía un SaaS equivalente y solo uno justificaba refactorizar.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** inventario, estrategias de migración (7 R): retirar, retener, recomprar, rehospedar, reubicar, replataformar, refactorizar; ola de migración.
-
-| Estrategia | Qué haces | Cuándo |
-|---|---|---|
-| **Retirar** (retire) | apagarla | nadie la usa |
-| **Retener** (retain) | dejarla donde está, por ahora | depende de algo local o no es momento |
-| **Recomprar** (repurchase) | cambiarla por un SaaS | hay un producto que hace lo mismo |
-| **Rehospedar** (rehost) | moverla tal cual a máquinas virtuales | quieres salir rápido y el sistema funciona |
-| **Reubicar** (relocate) | mover la plataforma de virtualización completa | tienes VMware y quieres moverlo sin cambiar nada |
-| **Replataformar** (replatform) | cambiar una pieza (la base a un servicio administrado) | ganas operación sin reescribir |
-| **Refactorizar** (refactor) | rediseñar para la nube | cambia seguido y la nube da una ventaja clara |
-
-Se pregunta **en orden de costo**: primero si se puede apagar, después si se puede comprar, y solo al final si vale la pena rediseñar. Las aplicaciones se agrupan en **olas** para migrar de a poco.
-
-**Analogía:** es mudarse de casa: algunas cosas se botan, otras se regalan y se compran nuevas, la mayoría se empaca tal cual, y pocas se rediseñan para la casa nueva. La analogía falla en que en la mudanza todo se mueve el mismo día; aquí se migra por olas.
-
-**Límite de uso:** la decisión depende de datos: uso real, costo de operación y riesgo; el script es un punto de partida para una conversación con los dueños de cada aplicación, no una decisión automática.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     A["¿Se usa?"] -->|no| R1["Retirar"]
@@ -520,9 +742,56 @@ flowchart TB
     E -->|sí| R6["Rehospedar"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/cloud/migracion/siete_r.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses migrar a la nube: las 7 r para decidir qué hacer con cada aplicación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migrar a la nube: las 7 r para decidir qué hacer con cada aplicación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migrar a la nube: las 7 r para decidir qué hacer con cada aplicación en tu contexto?
+2. ¿Cómo sabrías que migrar a la nube: las 7 r para decidir qué hacer con cada aplicación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migrar a la nube: las 7 r para decidir qué hacer con cada aplicación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    A["¿Se usa?"] -->|no| R1["Retirar"]
+    A -->|sí| B["¿Depende de algo local?"]
+    B -->|sí| R2["Retener"]
+    B -->|no| C["¿Hay SaaS equivalente?"]
+    C -->|sí| R3["Recomprar"]
+    C -->|no| D["¿Cambia seguido?"]
+    D -->|sí| R4["Refactorizar"]
+    D -->|no| E["¿SO soportado?"]
+    E -->|no| R5["Replataformar"]
+    E -->|sí| R6["Rehospedar"]
+```
 
 ```python
 from dataclasses import dataclass
@@ -563,18 +832,10 @@ for app in inventario:
     print(f"{app.nombre:<20} -> {decidir(app)}")
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/cloud/migracion
 python3 siete_r.py
 ```
-
-**Explicación por bloques:** `Aplicacion` guarda los datos que deciden la estrategia. `decidir` pregunta en orden de costo: si no se usa, se retira; si depende de hardware local, se retiene; si hay un SaaS, se recompra; si cambia seguido, se refactoriza; si su sistema operativo ya no tiene soporte, se replataforma; si no, se rehospeda. El inventario de ejemplo produce una aplicación por estrategia. La séptima R, reubicar, aplica cuando se mueve una plataforma de virtualización completa y queda fuera de este árbol simple.
-
-![Captura de terminal: seis aplicaciones clasificadas en retirar, retener, recomprar, refactorizar, replataformar y rehospedar](content/figures/cloud/migracion-7r.svg)
-
-**Resultado esperado:**
 
 ```text
 reportes-2015        -> Retirar (retire)
@@ -585,72 +846,27 @@ facturacion          -> Replataformar (replatform): cambiar la base, no el códi
 intranet             -> Rehospedar (rehost): mover tal cual
 ```
 
-**Fallo deliberado:** mueve la pregunta «¿cambia seguido?» al principio de `decidir`. **Error esperado:** `reportes-2015`, que nadie usa, podría terminar marcada para refactorizar si alguien marcó que cambia seguido. **Diagnóstico:** el orden de las preguntas importa: primero se descarta lo que no vale la pena migrar. Vuelve a poner primero «¿se usa?».
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el script y explica la decisión de cada aplicación.
-2. **Variación:** agrega una aplicación propia y predice su estrategia antes de ejecutar.
-3. **Diagnóstico:** reproduce el fallo deliberado cambiando el orden de las preguntas.
-4. **Integración:** agrega la pregunta de reubicar (corre en VMware) en el lugar correcto del árbol.
-5. **Diseño:** agrupa las seis aplicaciones en tres olas de migración y justifica el orden.
-
-**Pista:** si dudas entre rehospedar y refactorizar, pregunta cuántas veces al año cambia esa aplicación.
-
-#### Paso 6 · Práctica independiente
-
-Haz el inventario de cinco sistemas de una organización que conozcas, decide su estrategia con el árbol y estima el esfuerzo de cada uno en semanas.
-
-#### Paso 7 · Cierre
-
-- [ ] Nombras las 7 R y cuándo usar cada una.
-- [ ] El script clasifica las seis aplicaciones.
-- [ ] Reprodujiste el error de orden de preguntas.
-- [ ] Agrupaste las aplicaciones en olas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** refactorizar todo, rehospedar sin revisar costos y no retirar lo que nadie usa. **Siguiente paso:** el tema siguiente trata los sistemas que se quedan en el centro de datos: la nube híbrida.
-
-**Transferencia al proyecto integrador «RutaFlow»:** clasifica los sistemas de RutaFlow con las 7 R y define las olas de migración con su responsable.
-
-**Fuente oficial:** [AWS Prescriptive Guidance — Migration strategies (7 Rs)](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html).
+</details>
 
 ### Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min
 
-**Prerrequisito:** tema «Migrar a la nube: las 7 R» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** conectar una red local con una VPC mediante una VPN sitio a sitio, enrutar solo los rangos necesarios y decidir cuándo una conexión dedicada (Direct Connect) o servicios en el sitio (Outposts) justifican su costo.
-
-**¿Por qué es importante?** Las aplicaciones que se retienen en el centro de datos siguen hablando con las que ya están en la nube. Una conexión mal diseñada expone redes enteras o se vuelve el cuello de botella de todo el sistema.
-
-#### Paso 1 · Objetivo y preparación
-
+#### ► DE QUÉ TRATA
 Usa Terraform con el proveedor AWS. La VPN real necesita un equipo o software VPN del lado local (por ejemplo, strongSwan); puedes practicar el plan y el diseño de rutas sin él.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Usa Terraform con el proveedor AWS.**
 
-La impresora de etiquetas de RutaFlow se quedó en la bodega (estrategia «retener»), pero la API ya está en la nube. La primera conexión abría toda la red de la bodega a la VPC. Al limitar las rutas al servidor de la impresora, el riesgo bajó sin perder la integración.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA ANALOGÍA
+Piensa en nube híbrida: conectar el centro de datos con la nube de forma segura y medible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** nube híbrida, VPN sitio a sitio, puerta de enlace del cliente (CGW), puerta de enlace privada virtual (VGW), túneles redundantes, BGP, Direct Connect, Outposts, solapamiento de rangos IP.
-
-| Opción | Qué es | Úsala cuando |
-|---|---|---|
-| VPN sitio a sitio | túneles cifrados sobre internet | tráfico moderado, inicio rápido, bajo costo |
-| Direct Connect | enlace privado dedicado | mucho tráfico, latencia estable, requisitos de red privada |
-| Outposts / Local Zones | infraestructura del proveedor en tu sitio o cerca | latencia muy baja o datos que no pueden salir del sitio |
-
-Reglas de diseño:
-
-- Los rangos IP de la red local y de la VPC **no pueden solaparse**.
-- Rutea **solo** las subredes que necesitan hablar entre sí.
-- La VPN de AWS crea **dos túneles**: configura los dos para tener redundancia.
-- Mide la latencia y el ancho de banda: una aplicación que hace cien llamadas por pantalla sufre con cualquier enlace.
-
-**Analogía:** la VPN es un túnel privado bajo una autopista pública: tus camiones van protegidos, pero comparten el tráfico de la ciudad. Direct Connect es una carretera propia. La analogía falla en que el túnel tiene dos carriles independientes (los dos túneles) y conviene usar ambos.
-
-**Límite de uso:** la nube híbrida suma complejidad operativa: dos redes, dos equipos, dos formas de monitorear. Úsala como etapa o por una razón concreta (latencia, datos que no pueden salir), no como destino por defecto.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     B["Bodega 192.168.10.0/24<br/>servidor de impresión"] -->|"túnel 1 y túnel 2 (IPsec)"| V["VGW"]
@@ -658,9 +874,49 @@ flowchart LR
     P -. "solo 192.168.10.50/32" .-> B
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Nube híbrida: conectar el centro de datos con la nube de forma segura y medible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `infra/vpn.tf`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Nube híbrida: conectar el centro de datos con la nube de forma segura y medible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses nube híbrida: conectar el centro de datos con la nube de forma segura y medible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: nube híbrida: conectar el centro de datos con la nube de forma segura y medible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Nube híbrida: conectar el centro de datos con la nube de forma segura y medible existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve nube híbrida: conectar el centro de datos con la nube de forma segura y medible en tu contexto?
+2. ¿Cómo sabrías que nube híbrida: conectar el centro de datos con la nube de forma segura y medible no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar nube híbrida: conectar el centro de datos con la nube de forma segura y medible?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    B["Bodega 192.168.10.0/24<br/>servidor de impresión"] -->|"túnel 1 y túnel 2 (IPsec)"| V["VGW"]
+    V --> P["VPC 10.20.0.0/16<br/>API RutaFlow"]
+    P -. "solo 192.168.10.50/32" .-> B
+```
 
 ```hcl
 resource "aws_vpn_gateway" "vgw" {
@@ -693,74 +949,15 @@ resource "aws_route" "hacia_impresion" {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 terraform -chdir=infra plan
 # después del apply, descarga la configuración de los dos túneles para el equipo local:
 aws ec2 describe-vpn-connections --query "VpnConnections[0].VgwTelemetry[].[OutsideIpAddress,Status]" --output table
 ```
 
-**Explicación por bloques:** `aws_vpn_gateway` es el extremo de la VPC; `aws_customer_gateway` describe el equipo de la bodega por su IP pública. `aws_vpn_connection` crea la conexión con dos túneles IPsec y rutas estáticas. En lugar de enrutar toda la red `192.168.10.0/24`, la ruta de la VPN y la de la tabla privada apuntan solo al servidor de impresión (`/32`). El comando final muestra los dos túneles y su estado.
-
-**Resultado esperado:**
-
 ```text
 terraform plan: «Plan: 5 to add» (VGW, CGW, conexión VPN, ruta de la VPN y ruta de la tabla).
 describe-vpn-connections muestra dos filas, una por túnel, con estado UP cuando el equipo local está configurado.
 ```
 
-**Fallo deliberado:** crea la VPC con el rango `192.168.0.0/16`, que se solapa con la bodega. **Error esperado:** las rutas no funcionan como esperas: el tráfico hacia `192.168.10.50` se queda dentro de la VPC (ruta local más específica) y nunca llega a la bodega. **Diagnóstico:** los rangos no pueden solaparse. Planea el direccionamiento de todas las redes antes de conectar.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** planea la VPN y explica cada recurso.
-2. **Variación:** dibuja la tabla de rutas de la VPC y la del equipo local.
-3. **Diagnóstico:** reproduce el fallo deliberado con rangos solapados en el plan.
-4. **Integración:** configura en el equipo local solo un túnel, apaga ese túnel y explica qué pasa con el servicio.
-5. **Diseño:** calcula con el tráfico esperado si la VPN alcanza o si conviene Direct Connect.
-
-**Pista:** antes de conectar dos redes, escribe en una tabla todos sus rangos IP y busca solapamientos.
-
-#### Paso 6 · Práctica independiente
-
-Agrega un grupo de seguridad que permita desde la VPC hacia la impresora solo el puerto de impresión (por ejemplo, 9100) y documenta por qué no se abre todo el tráfico.
-
-#### Paso 7 · Cierre
-
-- [ ] Comparas VPN, Direct Connect y Outposts.
-- [ ] Las rutas permiten solo el servidor necesario.
-- [ ] Reprodujiste el problema de rangos solapados.
-- [ ] Configuras los dos túneles.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** rangos IP solapados, enrutar redes enteras y usar un solo túnel. **Siguiente paso:** el tema «Testcontainers — pruebas de integración» prueba estas integraciones sin depender del enlace real.
-
-**Transferencia al proyecto integrador «RutaFlow»:** conecta la impresora de etiquetas de la bodega de RutaFlow con la API en la nube por VPN, enrutando solo el servidor de impresión.
-
-**Fuente oficial:** [AWS Site-to-Site VPN — How it works](https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html) y [AWS — Hybrid connectivity](https://docs.aws.amazon.com/whitepapers/latest/hybrid-connectivity/hybrid-connectivity.html).
-
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** construir una API completa con los mismos endpoints funcionando en AWS local, Azure local y GCP local.
-
-**Requisitos previos:** Módulos 0-30 completados.
-
-| Paso | Acción | Explicación |
-|---|---|---|
-| 1 | AWS: implementar GET/POST /tareas con Lambda + API Gateway + DynamoDB + SQS + S3 + CloudWatch | Stack completo estudiado en el track |
-| 2 | AWS: agregar autenticación con Cognito y desplegar con CloudFormation | Módulos 15 y 18 |
-| 3 | Azure: implementar la misma API con Functions + Service Bus + Cosmos DB + Blob Storage local | Comparar sintaxis |
-| 4 | GCP: implementar endpoints de solo lectura con Firestore + Cloud Storage + Pub/Sub local | Comparar sintaxis |
-| 5 | Escribir pruebas de integración contra los tres emuladores, y documentar en una tabla qué fue igual y qué fue diferente | Portabilidad de conocimiento |
-
-**Verificación:** el proyecto se considera exitoso si la misma funcionalidad de "Gestor de Tareas" opera correctamente en los tres proveedores locales, si las pruebas de integración pasan contra los tres, y si la tabla comparativa identifica correctamente los principios compartidos frente a las diferencias específicas de sintaxis y API de cada proveedor.
-
-**Errores comunes y soluciones**
-
-- **Asumir que la sintaxis de la API es igual entre proveedores solo porque el principio arquitectónico es el mismo.** Documenta explícitamente las diferencias de sintaxis específicas de cada uno.
-- **Depender únicamente de pruebas contra cloud local sin ninguna validación final contra la nube real antes de producción.** Reconoce los límites de fidelidad de cualquier emulador.
-- **Gestionar LocalStack, Azurite y emuladores de gcloud por separado en vez de un único endpoint unificado.** Simplifica la configuración con cloud local para proyectos multi-nube.
-
----
+</details>

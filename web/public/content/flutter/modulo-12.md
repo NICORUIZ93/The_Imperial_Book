@@ -3,18 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Arquitectura por features y Clean Architecture · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a organizar el proyecto integrador de RutaFlow en `lib/features/envios/` y `lib/features/auth/`, con capas Domain/Data/Presentation dentro de cada feature. Prerrequisitos: módulos 0-11 completos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A lo largo del track construiste piezas sueltas de RutaFlow (widgets, providers, repositorios) en módulos distintos — nadie confirmó todavía que organizarlas en un único proyecto real no termina mezclando responsabilidades por tipo de archivo en vez de por dominio.
+#### ► DE QUÉ TRATA
+Al finalizar vas a organizar el proyecto integrador de RutaFlow en lib/features/envios/ y lib/features/auth/, con capas Domain/Data/Presentation dentro de cada feature. Prerrequisitos: módulos 0-11 completos.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Organizar por feature agrupa todo el código relacionado con una funcionalidad en un único lugar cohesivo; dentro de cada feature, Domain/Data/Presentation establecen un flujo de dependencia unidireccional donde Domain nunca depende de Data ni Presentation.
-**Conceptos clave:** organización por dominio de negocio, no por tipo técnico de archivo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a organizar el proyecto integrador de RutaFlow en lib/features/envios/ y lib/features/auth/, con capas Domain/Data/Presentation dentro de cada feature.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en arquitectura por features y clean architecture como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que arquitectura por features y clean architecture resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura por features y Clean Architecture se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura por features y Clean Architecture | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura por features y clean architecture por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura por features y clean architecture funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura por features y Clean Architecture existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura por features y clean architecture en tu contexto?
+2. ¿Cómo sabrías que arquitectura por features y clean architecture no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura por features y clean architecture?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 lib/
   features/
@@ -28,14 +78,6 @@ lib/
     theme.dart
 ```
 
-Organizar el proyecto por feature (`lib/features/tareas/`, `lib/features/auth/`) en vez de por tipo de archivo (una carpeta única `widgets/` con todos los widgets de la app mezclados, otra `models/` con todos los modelos mezclados) agrupa todo el código relacionado con una funcionalidad específica en un único lugar cohesivo, facilitando enormemente que un desarrollador entienda o modifique una feature completa sin necesidad de saltar entre carpetas dispersas por todo el proyecto que agrupan archivos por su naturaleza técnica en vez de por su propósito de negocio.
-
-Dentro de cada feature, las capas de Clean Architecture (`domain/` con modelos y lógica de negocio pura sin dependencias externas, `data/` con la implementación concreta de repositorios que sí dependen de `dio` y Hive, `presentation/` con los widgets y providers que consumen esas capas inferiores) establecen un flujo de dependencia estricto y unidireccional: la capa `presentation` depende de `domain`, y `data` implementa las interfaces definidas en `domain`, pero `domain` nunca depende de `data` ni de `presentation` directamente, permitiendo que la lógica de negocio central permanezca completamente aislada y testeable sin ninguna dependencia de frameworks externos o detalles de infraestructura específicos.
-
-**Analogía:** organizar por features es como organizar un edificio de oficinas por departamento funcional completo (cada departamento con su propia recepción, archivo y sala de reuniones) en vez de agrupar todas las recepciones de todos los departamentos en un piso, todos los archivos en otro piso distinto: la primera organización mantiene junto todo lo relacionado con un mismo propósito de negocio, facilitando encontrar y modificar cualquier cosa relacionada con ese departamento específico sin recorrer todo el edificio.
-
-**Diagrama:**
-
 ```
 lib/features/tareas/
   domain/         ← modelos y lógica pura, SIN dependencias externas
@@ -43,11 +85,6 @@ lib/features/tareas/
   presentation/   ← widgets + providers, depende de domain
 ```
 
-**Límites y decisión de uso:** Separar capas tiene coste de navegación y adaptación de modelos. Para una vista puramente local bastan responsabilidades claras; extrae casos de uso y repositorios cuando haya reglas o dependencias que necesites probar y sustituir por separado.
-
-**¿Por qué es importante?** Organizar por feature agrupa código relacionado por propósito de negocio; Clean Architecture con capas Domain/Data/Presentation mantiene la lógica de negocio central aislada y testeable.
-
-#### Paso 4 · Demostración guiada desde cero
 ```text
 lib/
   features/
@@ -61,35 +98,29 @@ lib/
     theme.dart
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: recorriendo el código fuente carpeta por carpeta, ningún archivo en `domain/` importa nada de `data/` ni `presentation/`; `data/` implementa las interfaces definidas en `domain/`, y `presentation/` consume `domain/` sin conocer detalles de `dio` o Hive directamente.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá una llamada directa a `Dio()` dentro de un widget en `presentation/`, sin pasar por el repositorio de `data/` — ese es el fallo deliberado: ese widget específico ahora depende directamente de una librería de infraestructura, rompiendo el flujo unidireccional que el resto del proyecto respeta, y testearlo sin red real se vuelve mucho más difícil.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo esa llamada al repositorio correspondiente en `data/`, y recorré el resto del proyecto buscando otras violaciones similares de capas.
-
-#### Paso 7 · Cierre
-Entregá la estructura por feature del Paso 4, la violación de capas provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todo el track en un único proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: estudia cómo unir todos los módulos del track en el flujo completo. Errores comunes: organizar el proyecto por tipo de archivo en vez de por feature, permitir que `domain/` dependa de `data/` o `presentation/`, y que un widget acceda directamente a una librería de infraestructura sin pasar por el repositorio. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
+</details>
 
 ### Tema 2: Uniendo los módulos del track · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a conectar `envioRepositoryProvider` (Riverpod), el estado explícito de `AsyncValue`, y la persistencia offline-first en una sola pantalla `ListaEnviosScreen` completa. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Nadie confirmó todavía que la navegación con go_router (Módulo 3), la gestión de estado con Riverpod (Módulo 4), el networking con dio (Módulo 5), y la persistencia offline con Hive (Módulo 6) efectivamente funcionan juntos como un sistema coherente.
+#### ► DE QUÉ TRATA
+Al finalizar vas a conectar envioRepositoryProvider (Riverpod), el estado explícito de AsyncValue, y la persistencia offline-first en una sola pantalla ListaEnviosScreen completa. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a conectar envioRepositoryProvider (Riverpod), el estado explícito de AsyncValue, y la persistencia offline-first en una sola pantalla ListaEnviosScreen completa.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `AsyncValue.when(data:, loading:, error:)` maneja exhaustivamente los tres estados posibles de una operación asíncrona directamente en la UI.
 **Conceptos clave:** cada concepto estudiado por separado encaja como parte de un sistema mayor.
 
@@ -142,108 +173,129 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `ListaEnviosScreen` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart` y `envioRepositoryProvider` en `lib/features/deliveries/domain/delivery_providers.dart`.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-class Envio {
-  const Envio(this.guia, this.estado);
-  final String guia;
-  final String estado;
-}
-
-class EnvioRepository {
-  Future<List<Envio>> obtenerEnvios() async {
-    await Future<void>.delayed(const Duration(seconds: 1)); // simula la lectura de la caché
-    return const [Envio('RF-4471', 'En ruta'), Envio('RF-5002', 'Entregado')];
-  }
-}
-
-final envioRepositoryProvider = Provider((ref) => EnvioRepository());
-
-final enviosProvider = FutureProvider<List<Envio>>((ref) async {
-  final repo = ref.watch(envioRepositoryProvider);
-  return repo.obtenerEnvios(); // lee de caché local, sincroniza en background
-});
-
-void main() => runApp(const ProviderScope(child: MaterialApp(home: Scaffold(body: ListaEnviosScreen()))));
-
-class ListaEnviosScreen extends ConsumerWidget {
-  const ListaEnviosScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enviosAsync = ref.watch(enviosProvider);
-    return enviosAsync.when(
-      data: (envios) => ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text('Error: $e'),
-    );
-  }
-}
-
-class TarjetaEnvio extends StatelessWidget {
-  const TarjetaEnvio({required this.envio, super.key});
-  final Envio envio;
-
-  @override
-  Widget build(BuildContext context) => ListTile(title: Text(envio.guia), subtitle: Text(envio.estado));
-}
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["ListaEnviosScreen"] --> B["go_router (M3): navegación"]
+    A --> C["Riverpod (M4): enviosProvider"]
+    C --> D["dio (M5): obtenerEnvios()"]
+    D --> E["Hive (M6): caché local"]
+    A --> F["AsyncValue.when: data/loading/error"]
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Uniendo los módulos del track se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter pub add flutter_riverpod
-flutter run
-```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Uniendo los módulos del track | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Resultado esperado: `ListaEnviosScreen` muestra el spinner mientras carga, la lista real cuando los datos llegan, o un mensaje de error si falla — los tres casos posibles manejados explícitamente, sin ningún estado ambiguo.
+#### ► CUÁNDO NO USAR ESTO
+No uses uniendo los módulos del track por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá `.when(...)` por `.maybeWhen(data: ..., orElse: () => Text('Cargando...'))` sin un caso `error` propio — ese es el fallo deliberado: ahora un error real de red muestra el mismo mensaje genérico "Cargando..." que el estado de carga normal, porque `orElse` oculta la diferencia entre ambos casos que `.when` exhaustivo habría forzado a distinguir.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: uniendo los módulos del track funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `.when(...)` con un caso `error` explícito con un mensaje específico de RutaFlow, y agregá un botón de "reintentar" que invalide `enviosProvider` dentro de ese caso de error.
+#### ► LO QUE DEBES RECORDAR
+- Uniendo los módulos del track existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-#### Paso 7 · Cierre
-Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cierra el proyecto integrador reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/how_to/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
-**Implicación práctica:** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado se combinan naturalmente en un sistema coherente.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve uniendo los módulos del track en tu contexto?
+2. ¿Cómo sabrías que uniendo los módulos del track no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar uniendo los módulos del track?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+Al finalizar vas a conectar `envioRepositoryProvider` (Riverpod), el estado explícito de `AsyncValue`, y la persistencia offline-first en una sola pantalla `ListaEnviosScreen` completa. Prerrequisitos: Tema 1 de este módulo.
+
+</details>
 
 ### Tema 3: Retrospectiva del proyecto integrador · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Llevas doce módulos construyendo RutaFlow en Flutter — nadie te pidió todavía que articules qué de esa experiencia es específico de que Flutter dibuje sus propios widgets con su propio motor (Impeller), y qué es un principio universal de UI declarativa. Los módulos 13 a 22 profundizan en producción y temas avanzados.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Flutter logra apariencia y rendimiento consistentes en ambas plataformas renderizando con su propio motor gráfico, en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio.
-**Conceptos clave:** una sola base de código, apariencia y rendimiento consistentes, el costo de un ecosistema propio.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia.**
 
-Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Impeller, el motor por defecto en iOS —donde es el único— y en Android API 29+; en web Flutter todavía usa Skia), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El costo de esta consistencia es aprender un ecosistema de widgets completamente propio de Flutter, distinto tanto de las tecnologías web (HTML/CSS/JavaScript) como de cada plataforma nativa (UIKit/SwiftUI en iOS, Views/Compose en Android): un desarrollador que ya domina Compose o SwiftUI reconocerá los mismos principios conceptuales de UI declarativa (estado como fuente de verdad, composición de widgets, reconstrucción en respuesta a cambios), pero necesitará aprender la sintaxis y las convenciones específicas del ecosistema de widgets propio de Flutter para aplicarlos efectivamente.
+#### ► LA ANALOGÍA
+Piensa en retrospectiva del proyecto integrador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** Flutter es como un sistema de construcción modular propio que garantiza resultados idénticos sin importar en qué terreno geográfico se construya (renderizado propio consistente), a diferencia de adaptar los materiales de construcción disponibles localmente en cada región (envolver componentes nativos), a cambio de que los constructores deban aprender ese sistema modular específico en vez de reutilizar directamente sus conocimientos previos de construcción tradicional de cada región.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["Retrospectiva de RutaFlow"] --> B["Específico de Flutter:\nmotor Impeller propio"]
+    A --> C["Principio universal:\nUI como función del estado"]
+    C --> D["SwiftUI (iOS)"]
+    C --> E["Compose (Android/KMP)"]
+```
 
-**¿Por qué es importante?** Flutter logra apariencia y rendimiento consistentes en ambas plataformas gracias a renderizar con su propio motor gráfico en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio distinto de la web y de cada plataforma nativa.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Retrospectiva del proyecto integrador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Diagrama:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Retrospectiva del proyecto integrador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses retrospectiva del proyecto integrador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: retrospectiva del proyecto integrador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Retrospectiva del proyecto integrador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve retrospectiva del proyecto integrador en tu contexto?
+2. ¿Cómo sabrías que retrospectiva del proyecto integrador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar retrospectiva del proyecto integrador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Flutter = una base de código Dart
         + motor gráfico propio (Impeller en móvil)
         + widgets propios (NO wrappers de componentes nativos)
         = apariencia y rendimiento consistentes en Android e iOS
 ```
-
-**Diagrama: específico de Flutter vs principio universal**
 
 ```mermaid
 flowchart LR
@@ -253,11 +305,6 @@ flowchart LR
     C --> E["Compose (Android/KMP)"]
 ```
 
-En el proyecto integrador RutaFlow, escribe esta retrospectiva comparando tu archivo `lib/features/deliveries/presentation/delivery_list_screen.dart` (Flutter) contra una pantalla equivalente que hayas creado en `iosApp/ContentView.swift` (SwiftUI) u otro track completado.
-
----
-
-#### Paso 4 · Demostración guiada desde cero
 ```text
 Decisión: TarjetaEnvio se ve y se comporta idéntica en Android e iOS,
 porque Flutter la dibuja con Impeller, no con componentes nativos de cada
@@ -271,60 +318,33 @@ Principio universal: declarar la UI como función del estado actual
 renderizado final, mientras SwiftUI/Compose delegan en el sistema nativo.
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: tu retrospectiva separa explícitamente qué parte depende del motor de renderizado propio de Flutter de qué parte es un principio de UI declarativa que reconocerías en cualquiera de los tres.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí la retrospectiva afirmando que "Flutter es mejor porque su UI se ve siempre igual" sin mencionar el costo real de esa decisión — ese es el fallo deliberado: es una afirmación incompleta que ignora que ese mismo motor propio es exactamente la razón por la que Flutter no se integra automáticamente con cada actualización visual nueva de los widgets nativos, a diferencia de SwiftUI/Compose, que sí heredan esos cambios directamente del sistema.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la afirmación para incluir ese costo explícitamente, presentando la decisión de Flutter como un trade-off real, no una ventaja incondicional.
-
-#### Paso 7 · Cierre
-Entregá la retrospectiva del Paso 4, la afirmación incompleta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en Flutter que repetirías igual en otra plataforma aunque el motor de renderizado cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: presentar una decisión de plataforma como ventaja incondicional sin mencionar su costo real, confundir una ventaja de consistencia visual con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://docs.flutter.dev/resources/architectural-overview y https://docs.flutter.dev/platform-integration.
-**Implicación práctica:** Flutter logra apariencia y rendimiento consistentes gracias a su motor gráfico propio, a costa de requerir un ecosistema de widgets propio y no heredar automáticamente actualizaciones visuales nativas.
+</details>
 
 ### Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 45 min
 
-**Prerrequisito:** tema «Arquitectura por features y Clean Architecture» de este módulo y «Riverpod» (módulo 4).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** organizar una feature con las cuatro piezas de la guía oficial de Flutter: un service que habla con la API, un repository que es la fuente de verdad, un view model que expone estado y comandos, y una view que solo dibuja.
+#### ► DE QUÉ TRATA
+Usa Flutter 3.24 o superior. Crea la carpeta lib/features/envios/ con subcarpetas data/services, data/repositories y ui/. El ejemplo usa ChangeNotifier para no depender de paquetes.
 
-**¿Por qué es importante?** Cuando el widget llama a la API, transforma datos y maneja errores, no se puede probar ni reutilizar. La guía de arquitectura de Flutter propone responsabilidades claras que se prueban por separado.
+#### ► LA IDEA EN UNA FRASE
+**Usa Flutter 3.24 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Flutter 3.24 o superior. Crea la carpeta `lib/features/envios/` con subcarpetas `data/services`, `data/repositories` y `ui/`. El ejemplo usa `ChangeNotifier` para no depender de paquetes.
+#### ► LA ANALOGÍA
+Piensa en arquitectura recomendada de flutter: views, view models, repositories y services como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-La pantalla de envíos de RutaFlow tenía 600 líneas: llamaba a Dio, convertía JSON, guardaba en caché y mostraba errores. Un cambio en el formato de la API rompió tres pantallas. Al separar en capas, el cambio quedó en un solo archivo.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** view, view model, comando, repository (fuente de verdad), service, flujo de datos unidireccional, inyección de dependencias.
-
-| Pieza | Responsabilidad | Sabe de |
-|---|---|---|
-| **Service** | habla con una sola fuente externa (API, plugin) y devuelve datos crudos | HTTP, JSON |
-| **Repository** | fuente de verdad de un tipo de dato: combina services, cachea, reintenta y devuelve modelos de dominio | services |
-| **View model** | prepara el estado de una pantalla y expone **comandos** (acciones) | repositories |
-| **View** | dibuja el estado y llama comandos | su view model |
-
-Los datos fluyen en una dirección: el repository entrega datos al view model, el view model notifica a la view, y la view envía eventos al view model. Cada pieza recibe sus dependencias por constructor, así que en las pruebas pasas versiones falsas.
-
-**Analogía:** es un restaurante: el service es el proveedor, el repository la despensa (sabe qué hay y qué falta), el view model el cocinero que arma el plato y la view el mesero que lo sirve. La analogía falla en que el mesero tampoco cocina nada: solo lleva y trae.
-
-**Límite de uso:** en una pantalla trivial, cuatro piezas son demasiadas: empieza con view y view model y agrega repository cuando haya caché o varias fuentes. No pongas lógica de pantalla en el repository.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     V["EnviosView"] -->|"comando cargar()"| VM["EnviosViewModel"]
@@ -333,9 +353,50 @@ flowchart LR
     R --> S["EnviosApiService<br/>HTTP"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura recomendada de Flutter: views, view models, repositories y services se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `lib/features/envios/data/services/envios_api_service.dart`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura recomendada de Flutter: views, view models, repositories y services | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura recomendada de flutter: views, view models, repositories y services por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura recomendada de flutter: views, view models, repositories y services funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura recomendada de Flutter: views, view models, repositories y services existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura recomendada de flutter: views, view models, repositories y services en tu contexto?
+2. ¿Cómo sabrías que arquitectura recomendada de flutter: views, view models, repositories y services no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura recomendada de flutter: views, view models, repositories y services?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    V["EnviosView"] -->|"comando cargar()"| VM["EnviosViewModel"]
+    VM -->|"notifyListeners"| V
+    VM --> R["EnviosRepository<br/>fuente de verdad"]
+    R --> S["EnviosApiService<br/>HTTP"]
+```
 
 ```dart
 class EnviosApiService {
@@ -349,8 +410,6 @@ class EnviosApiService {
   }
 }
 ```
-
-Archivo `lib/features/envios/data/repositories/envios_repository.dart`:
 
 ```dart
 import '../services/envios_api_service.dart';
@@ -375,8 +434,6 @@ class EnviosRepository {
   }
 }
 ```
-
-Archivo `lib/features/envios/ui/envios_view_model.dart`:
 
 ```dart
 import 'package:flutter/foundation.dart';
@@ -406,8 +463,6 @@ class EnviosViewModel extends ChangeNotifier {
 }
 ```
 
-Archivo `lib/features/envios/ui/envios_view.dart`:
-
 ```dart
 import 'package:flutter/material.dart';
 import 'envios_view_model.dart';
@@ -432,8 +487,6 @@ class EnviosView extends StatelessWidget {
 }
 ```
 
-Archivo `test/envios_view_model_test.dart`:
-
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rutaflow/features/envios/data/repositories/envios_repository.dart';
@@ -455,69 +508,4 @@ void main() {
 }
 ```
 
-Ejecútalo:
-
-```bash
-flutter test test/envios_view_model_test.dart
-```
-
-**Explicación por bloques:** El service solo devuelve JSON. El repository lo convierte en `Envio`, guarda una caché y filtra los pendientes: es el único que sabe de dónde vienen los datos. El view model expone el estado de la pantalla (lista, cargando, error) y el comando `cargar`. La view no tiene lógica: escucha al view model con `ListenableBuilder` y llama el comando para reintentar. La prueba arma la cadena con una API falsa, sin widgets ni red.
-
-**Resultado esperado:**
-
-```text
-00:01 +1: All tests passed!
-```
-
-**Fallo deliberado:** mueve la llamada `EnviosApiService().obtener()` directo al `build` de la view con un `FutureBuilder`. **Error esperado:** la prueba del view model ya no cubre la carga, y cada reconstrucción de la view vuelve a llamar a la API. **Diagnóstico:** la view tomó responsabilidades del repository. Devuelve la llamada al view model.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta la prueba y luego la pantalla con el service simulado.
-2. **Variación:** haz que el service lance una excepción y comprueba que la view muestra «Reintentar».
-3. **Diagnóstico:** reproduce el fallo deliberado con `FutureBuilder` en la view.
-4. **Integración:** agrega un comando `marcarEntregado(codigo)` que pase por el repository e invalide la caché.
-5. **Diseño:** dibuja las cuatro piezas de la feature de rutas de RutaFlow y qué paquete usa cada una.
-
-**Pista:** si una prueba necesita widgets para probar una regla, esa regla está en la capa equivocada.
-
-#### Paso 6 · Práctica independiente
-
-Reemplaza `ChangeNotifier` por un `Notifier` de Riverpod en el view model y conserva el repository y el service sin cambios. Explica qué capas no se tocaron y por qué.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas la responsabilidad de cada una de las cuatro piezas.
-- [ ] La prueba del view model pasa con una API falsa.
-- [ ] Reprodujiste la mezcla de capas con `FutureBuilder`.
-- [ ] Sabes cuándo cuatro piezas son demasiadas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** llamar a la API desde la view, poner lógica de pantalla en el repository y crear repositories vacíos que solo reenvían. **Siguiente paso:** el tema «Uniendo los módulos del track» aplica esta estructura a todas las features.
-
-**Transferencia al proyecto integrador «RutaFlow»:** reorganiza la feature de envíos de RutaFlow en service, repository, view model y view, con pruebas del view model.
-
-**Fuente oficial:** [Flutter — Guide to app architecture](https://docs.flutter.dev/app-architecture/guide) y [Flutter — Architecture recommendations](https://docs.flutter.dev/app-architecture/recommendations).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app Flutter con datos reales, persistencia offline y tests, corriendo en Android e iOS.
-
-**Requisitos previos:** Módulos 0-11 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Organizar el proyecto por features | Ver Tema 1 | `lib/features/tareas/`, `lib/features/auth/` |
-| 2 | Implementar gestión de estado completa | Ver Tema 2 | Riverpod o Bloc, sin `setState` disperso |
-| 3 | Implementar persistencia offline-first | Ver Módulo 6 | Sincronizada con una API real |
-| 4 | Escribir widget tests de las 2 pantallas más críticas | Ver Módulo 9 | Verificación de comportamiento clave |
-| 5 | Generar los builds de release | Ver Módulo 11 | Android e iOS |
-
-**Verificación:** el proyecto se considera exitoso si la app funciona correctamente sin conexión (mostrando el último caché sincronizado), si toda la gestión de estado pasa por Riverpod o Bloc sin `setState` disperso fuera de casos puramente locales, y si los widget tests de las pantallas críticas pasan consistentemente.
-
-**Errores comunes y soluciones**
-
-- **Organizar el proyecto por tipo de archivo en vez de por feature en una app de tamaño real.** Dificulta el mantenimiento; organiza por feature con Clean Architecture interna.
-- **Dejar `setState` disperso en features que ya deberían usar Riverpod/Bloc de forma consistente.** Migra toda la gestión de estado compartido al enfoque elegido.
-- **Omitir tests de las pantallas más críticas confiando solo en pruebas manuales.** Los widget tests dan confianza repetible antes de cada release.
-
----
+</details>

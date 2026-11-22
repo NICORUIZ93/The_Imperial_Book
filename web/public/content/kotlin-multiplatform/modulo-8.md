@@ -3,23 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: El framework generado para iOS · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a identificar la estructura que debe tener el framework `Shared` para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: el apartado «Antes de comenzar» del módulo 0 y, para generar el binario real, JDK 25, el Gradle Wrapper del proyecto y macOS con Xcode.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo iOS de RutaFlow necesita consumir la lógica de dominio compartida (`Tarea`, casos de uso) desde SwiftUI. No quiere un puente entre procesos ni una capa de interpretación: quiere un framework nativo que se importe con `import Shared`. El problema aparece cuando una clase que el equipo Kotlin cree pública no está en la cabecera generada y Swift simplemente no la ve, sin un error de compilación que explique por qué.
+#### ► DE QUÉ TRATA
+Al finalizar vas a identificar la estructura que debe tener el framework Shared para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: el apartado «Antes de comenzar» del módulo 0 y, para generar el binario real, JDK 25…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Kotlin/Native compila el módulo compartido a un binario nativo para cada target de iOS: simulador Intel (`iosX64`), simulador Apple Silicon (`iosSimulatorArm64`) y dispositivo (`iosArm64`). El bloque `binaries.framework { baseName = "Shared" }` produce `Shared.framework`, con una cabecera umbrella, un modulemap y metadatos en `Info.plist`. Swift lo importa como cualquier framework de terceros.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a identificar la estructura que debe tener el framework Shared para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode.**
 
-Solo los símbolos públicos cruzan la frontera. Una clase `internal` compila sin error, pero no se exporta a la cabecera; para Swift no existe. El modulemap declara qué cabeceras forman el módulo y la umbrella header agrupa los símbolos públicos. Si una cabecera queda fuera del modulemap, el código puede compilar en Kotlin y aun así ser invisible en Xcode.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Generar un framework por target tiene sentido cuando hay una app iOS que lo consume. Si el proyecto es solo Android, agregar targets iOS aumenta el tiempo de build sin un consumidor real. La distribución posterior se resuelve con Swift Package Manager o un XCFramework que agrupe los targets.
+#### ► LA ANALOGÍA
+Piensa en el framework generado para ios como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** Kotlin/Native, target, framework, `baseName`, cabecera umbrella, modulemap, símbolo público, `internal` y XCFramework.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     KT["commonMain (Kotlin)"] --> NAT["Kotlin/Native"]
@@ -31,21 +34,58 @@ flowchart LR
     KT -. "internal no se exporta" .-> SWIFT
 ```
 
-**Analogía:** el framework es un componente terminado y empaquetado según el estándar local; si una pieza no se incluye en la caja, el instalador no puede verla aunque exista en la fábrica.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El framework generado para iOS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**¿Por qué es importante?** Porque la diferencia entre “compila en Kotlin” y “Swift puede usarlo” depende de la exportación de símbolos y de la estructura del framework, no solo de que el build termine sin errores.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El framework generado para iOS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Límite de uso:** este tema no enseña a firmar ni a publicar el framework; se limita a su estructura y a la visibilidad de símbolos.
+#### ► CUÁNDO NO USAR ESTO
+No uses el framework generado para ios por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** crea un directorio de trabajo nuevo con la estructura mínima de un framework y un verificador. Los archivos representan lo que el build debe producir; no reemplazan la compilación real.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el framework generado para ios funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El framework generado para iOS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el framework generado para ios en tu contexto?
+2. ¿Cómo sabrías que el framework generado para ios no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el framework generado para ios?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    KT["commonMain (Kotlin)"] --> NAT["Kotlin/Native"]
+    NAT --> SIM["iosSimulatorArm64"]
+    NAT --> DEV["iosArm64"]
+    SIM --> FW["Shared.framework"]
+    DEV --> FW
+    FW --> SWIFT["import Shared en Xcode"]
+    KT -. "internal no se exporta" .-> SWIFT
+```
 
 ```bash
 mkdir ejemplo && cd ejemplo
 mkdir -p Shared.framework/Headers Shared.framework/Modules
 ```
-
-Crea `Shared.framework/Info.plist` con el tipo de paquete y el identificador:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -59,16 +99,12 @@ Crea `Shared.framework/Info.plist` con el tipo de paquete y el identificador:
 </plist>
 ```
 
-Crea `Shared.framework/Modules/module.modulemap` con la cabecera umbrella:
-
 ```text
 framework module Shared {
   umbrella header "Shared.h"
   export *
 }
 ```
-
-Crea `Shared.framework/Headers/Shared.h` con una clase pública:
 
 ```objc
 #import <Foundation/Foundation.h>
@@ -77,8 +113,6 @@ Crea `Shared.framework/Headers/Shared.h` con una clase pública:
 @property (nonatomic, copy) NSString *titulo;
 @end
 ```
-
-Crea `verificar_framework.py` para comprobar el paquete, el modulemap, las cabeceras exportadas y la clase pública:
 
 ```python
 import plistlib
@@ -110,79 +144,73 @@ print("clase pública: SharedTarea")
 print(f"cabeceras exportadas: {len(exportadas)}")
 ```
 
-**Ejecuta el ejemplo:**
-
-```bash
-cd ejemplo
-python3 verificar_framework.py
-```
-
-Resultado esperado:
-
-```text
-framework: Shared.framework
-paquete: FMWK
-modulemap: umbrella header "Shared.h"
-clase pública: SharedTarea
-cabeceras exportadas: 1
-```
-
-El script explica cada requisito: tipo de paquete, umbrella header, cabeceras incluidas en el modulemap y símbolo público esperado.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `Shared.framework/Headers/Interna.h` con `@interface SharedTareaInterna` y no la incluyas en el modulemap; ese es el fallo deliberado: el verificador termina con `fallo: cabeceras no exportadas: Interna.h`, porque una cabecera fuera del modulemap no forma parte del módulo que Swift importa.
-
-#### Paso 6 · Práctica independiente
-Eliminá `Interna.h` y, si tenés Gradle y Xcode disponibles, generá el framework real con `./gradlew linkDebugFrameworkIosSimulatorArm64` y apuntá el verificador a `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`. Si no tenés el toolchain, documentá esa limitación y compará la estructura generada con la del ejercicio. Luego agregá `iosArm64` y explicá por qué produce un binario separado para dispositivo. Conectá el resultado con el proyecto integrador: la app iOS consume `Shared.framework` sin saber que se originó en Kotlin.
-
-#### Paso 7 · Cierre
-Entregá la salida del Paso 4, el fallo de exportación del Paso 5 y la configuración de targets del Paso 6; explicá por qué una clase `internal` compila pero no existe para Swift. Siguiente paso: mapear los tipos Kotlin hacia Swift en el Tema 2. Errores comunes: declarar `internal` una clase que Swift necesita, olvidar el target de dispositivo y asumir que un build exitoso implica que todos los símbolos se exportaron. **Fuentes oficiales:** https://kotlinlang.org/docs/multiplatform/multiplatform-ios-integration-overview.html y https://kotlinlang.org/docs/native-objc-interop.html.
+</details>
 
 ### Tema 2: Mapeo de tipos Kotlin ↔ Swift · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a exponer una `sealed class` de Kotlin hacia Swift y vas a confirmar que Swift NO verifica automáticamente la exhaustividad de un `switch` sobre ella, a diferencia de un `when` en Kotlin. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un desarrollador Swift maneja `Resultado<Tarea>` con un `switch` que cubre `Exito` y `Error`; meses después, el equipo Kotlin agrega un tercer caso `Cargando` a la sealed class compartida, y nadie en el equipo Swift se entera hasta que un usuario reporta que la app no muestra nada en ese estado.
+#### ► DE QUÉ TRATA
+Al finalizar vas a exponer una sealed class de Kotlin hacia Swift y vas a confirmar que Swift NO verifica automáticamente la exhaustividad de un switch sobre ella, a diferencia de un when en Kotlin. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Los tipos básicos de Kotlin se mapean directamente a sus equivalentes en Swift (`String`→`String`, `Int`→`Int32`); una `sealed class` se expone hacia Swift como una jerarquía de clases regular, manejable con `switch`, pero Swift no tiene el conocimiento especial de que proviene de un conjunto cerrado garantizado — no avisa si falta una rama. La analogía: una traducción directa para conceptos simples, pero una adaptación estructural que pierde una garantía del idioma de origen para conceptos más elaborados.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a exponer una sealed class de Kotlin hacia Swift y vas a confirmar que Swift NO verifica automáticamente la exhaustividad de un switch sobre ella, a diferencia de un when en Kotlin.**
 
-**Conceptos clave:** correspondencia directa de tipos básicos, sealed class como jerarquía manejable con switch.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Documentar este mapeo de tipos es indispensable para el proyecto integrador (app KMP completa, Módulo 11): cada `data class` y `sealed class` del dominio compartido (`Tarea`, `Resultado<T>`) cruzará esta misma frontera hacia las vistas SwiftUI de la app iOS.
+#### ► LA ANALOGÍA
+Piensa en mapeo de tipos kotlin ↔ swift como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Cuándo no usarlo:** documentar manualmente cada mapeo de tipos como aquí es razonable para un dominio compartido pequeño; con muchas sealed classes, confiar solo en la disciplina del equipo para no olvidar una rama del `switch` en Swift no escala — en ese caso conviene una prueba que falle explícitamente si Kotlin agrega una variante nueva sin que Swift la maneje.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mapeo de tipos kotlin ↔ swift resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Los tipos básicos de Kotlin se mapean directamente a sus equivalentes naturales en Swift (`String` a `String`, `Int`/`Long` a `Int32`/`Int64`), y una `data class` de Kotlin se expone hacia Swift como una clase con propiedades equivalentes accesibles de forma natural (`import Shared; let usuario = SharedUsuario(nombre: "Ana", edad: 28)`, con el prefijo `Shared` en el nombre reflejando el `baseName` configurado en el framework, Tema 1). Una `sealed class` de Kotlin (Módulo 1) se expone hacia Swift como una jerarquía de clases regular, manejable con un `switch` de Swift de forma conceptualmente análoga al `when` exhaustivo de Kotlin, aunque Swift no verifica automáticamente la exhaustividad completa contra el conjunto cerrado original de Kotlin de la misma forma estricta en que Kotlin sí la verifica, dado que desde la perspectiva de Swift esa jerarquía es simplemente una jerarquía de clases regular sin el conocimiento especial de que proviene de una sealed class con un conjunto cerrado garantizado.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mapeo de tipos Kotlin ↔ Swift se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** el mapeo de tipos es como una traducción directa palabra por palabra para conceptos simples (números, texto), pero que requiere una adaptación estructural más cuidadosa para conceptos más elaborados (una sealed class), donde el idioma de destino (Swift) representa la misma idea con una estructura gramatical distinta que se comporta de forma similar pero no idéntica en cuanto a garantías del compilador.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mapeo de tipos Kotlin ↔ Swift | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**¿Por qué es importante?** Los tipos básicos se mapean directamente entre Kotlin y Swift; las sealed classes se exponen como jerarquías de clases regulares manejables con switch, aunque sin la misma garantía estricta de exhaustividad verificada que Kotlin ofrece nativamente.
+#### ► CUÁNDO NO USAR ESTO
+No uses mapeo de tipos kotlin ↔ swift por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Casos de uso reales:**
-- Consumir `Tarea` (Módulo 4) directamente desde una vista SwiftUI (Módulo 1 del track iOS) como si fuera un struct nativo de Swift.
-- Manejar `Resultado<T>` (Módulo 5) con un `switch` en Swift, replicando el mismo manejo exhaustivo que `when` hace en Kotlin.
-- Documentar explícitamente en el equipo qué sealed classes existen, ya que Swift no avisará si falta una rama en el `switch`.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mapeo de tipos kotlin ↔ swift funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Diagrama:**
+#### ► LO QUE DEBES RECORDAR
+- Mapeo de tipos Kotlin ↔ Swift existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-| Kotlin | Swift |
-|---|---|
-| `String` | `String` |
-| `Int`, `Long` | `Int32`, `Int64` |
-| `data class` | `class` con propiedades equivalentes |
-| `sealed class` | jerarquía de clases, manejable con `switch` |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mapeo de tipos kotlin ↔ swift en tu contexto?
+2. ¿Cómo sabrías que mapeo de tipos kotlin ↔ swift no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mapeo de tipos kotlin ↔ swift?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 import Shared
 let usuario = SharedUsuario(nombre: "Ana", edad: 28)
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-En el proyecto iOS conectado a `Shared`, guarda el consumidor en `iosApp/iosApp/ResultadoViewModel.swift`. Inserta el `switch` dentro del método que recibe `resultado`; `mostrar` y `mostrarError` son las funciones de presentación de tu aplicación. Compila y ejecuta el target iOS desde Xcode, probando una instancia de cada subtipo exportado.
 
 ```swift
 import Shared
@@ -193,34 +221,27 @@ default: break
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: el `switch` compila y maneja ambos casos conocidos (`Exito`, `Error`) correctamente, con un `default` necesario porque Swift trata esto como una jerarquía de clases abierta, no como un conjunto cerrado verificado.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá un tercer caso `Cargando` a la `sealed class Resultado` en Kotlin (`commonMain`), recompilá el framework, pero NO toques el `switch` de Swift del Paso 4. Ese es el fallo deliberado: el proyecto Swift compila exitosamente sin ningún error ni advertencia, y en tiempo de ejecución el caso `Cargando` cae silenciosamente en la rama `default: break`, sin ningún indicio de que un estado completo quedó sin manejar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 documentando explícitamente (en un comentario o test) la lista completa de casos de `Resultado` que el equipo Swift debe revisar manualmente cada vez que el framework se actualiza, y agregá el manejo real de `Cargando` al `switch`.
-
-#### Paso 7 · Cierre
-Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/.
-**Implicación práctica:** La exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
+</details>
 
 ### Tema 3: Coroutines desde Swift, y distribución del framework · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a invocar una función `suspend` de Kotlin desde Swift mediante el callback que Kotlin/Native genera automáticamente, y vas a decidir entre CocoaPods y Swift Package Manager para distribuir el framework. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una función `suspend obtenerTareas()` de Kotlin no tiene un equivalente sintáctico directo en todas las versiones de Swift — el equipo iOS necesita saber exactamente cómo invocarla sin asumir que `await` funciona igual de ambos lados de la frontera.
+#### ► DE QUÉ TRATA
+Al finalizar vas a invocar una función suspend de Kotlin desde Swift mediante el callback que Kotlin/Native genera automáticamente, y vas a decidir entre CocoaPods y Swift Package Manager para distribuir el framework. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a invocar una función suspend de Kotlin desde Swift mediante el callback que Kotlin/Native genera automáticamente, y vas a decidir entre CocoaPods y Swift Package Manager para distribuir el framework.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Kotlin/Native exporta funciones suspend mediante completion handlers; desde Swift 5.5 también pueden importarse como funciones async. Para recibir errores de negocio en Swift, la función Kotlin debe declarar las excepciones con `@Throws`. La analogía: traducir "esperá aquí hasta que el resultado esté listo" hacia "cuando el resultado esté listo, ejecutá esta acción específica" — mismo efecto final, sintaxis distinta según las capacidades del idioma destino.
 
 **Conceptos clave:** funciones suspend expuestas como callback, CocoaPods frente a SPM.
@@ -251,8 +272,57 @@ sharedRepository.obtenerTareas { tareas, error in
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Adapta la consulta suspend para el consumidor Swift y cubre éxito, error y cancelación. Una prueba iOS debe terminar también en el camino de error, sin dejar una continuación pendiente.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
-#### Paso 4 · Demostración guiada desde cero
-Este ejemplo es acumulativo: usa el framework `Shared` enlazado al target iOS de los temas anteriores. Crea `shared/src/commonMain/kotlin/TareasRepository.kt`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que coroutines desde swift, y distribución del framework resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Coroutines desde Swift, y distribución del framework se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Coroutines desde Swift, y distribución del framework | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses coroutines desde swift, y distribución del framework por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: coroutines desde swift, y distribución del framework funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Coroutines desde Swift, y distribución del framework existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve coroutines desde swift, y distribución del framework en tu contexto?
+2. ¿Cómo sabrías que coroutines desde swift, y distribución del framework no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar coroutines desde swift, y distribución del framework?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+sharedRepository.obtenerTareas { tareas, error in
+    if let tareas = tareas { mostrar(tareas) }
+}
+```
+
 ```kotlin
 class TareasException(message: String) : Exception(message)
 
@@ -265,16 +335,10 @@ class TareasRepository {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-La anotación forma parte del contrato exportado: las excepciones declaradas llegan como NSError; otras excepciones no controladas pueden terminar el proceso. Una función suspend sin `@Throws` solo propaga CancellationException por esta vía. No uses una excepción no declarada para simular el error.
-
-Crea `iosApp/iosApp/TareasAdapter.swift`:
 ```swift
 import Foundation
 import Shared
@@ -295,9 +359,7 @@ func cargarTareas(_ repository: TareasRepository, simularFallo: Bool) async thro
     }
 }
 ```
-El resultado Kotlin es no nulo; un resultado nulo sin error se trata defensivamente como incumplimiento del contrato. Cada rama resuelve la continuation una vez. Swift 5.5+ puede importar también la función suspend como async; aquí el wrapper muestra explícitamente la adaptación del callback. La cancelación de una Task Swift no cancela por sí sola el trabajo Kotlin mediante este wrapper.
 
-En el target de pruebas iOS crea `TareasAdapterTests.swift` (sustituye `iosApp` por el módulo real de tu target):
 ```swift
 import Testing
 import Shared
@@ -315,36 +377,24 @@ import Shared
     }
 }
 ```
-Reconstruye Shared y ejecuta Product → Test en Xcode. **Resultado esperado:** ambas ramas pasan, sin espera indefinida ni terminación por excepción no declarada. Fuente oficial: https://kotlinlang.org/docs/native-objc-interop.html.
 
-#### Paso 5 · Práctica guiada
-Pista: envolvé ese callback en una función `async` propia de Swift usando `withCheckedThrowingContinuation`, pero olvidá llamar a `continuation.resume(...)` en la rama donde `error` no es nulo. Ese es el fallo deliberado: si la función Kotlin original falla con un error, tu wrapper `async` de Swift queda esperando para siempre (la `Task` nunca termina), porque ninguna rama de tu callback invocó `resume` para ese caso.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando `continuation.resume(throwing: error)` en la rama de error, y agregá un test que fuerce explícitamente el camino de error (simulando que `obtenerTareas` falla) confirmando que tu wrapper `async` relanza la excepción en vez de colgarse indefinidamente.
-
-#### Paso 7 · Cierre
-Entregá el callback consumido del Paso 4, la `Task` colgada por falta de `resume` en la rama de error del Paso 5, y el wrapper corregido con su test del Paso 6; explicá por qué un wrapper `async` sobre un callback debe cubrir EXPLÍCITAMENTE ambas ramas (éxito y error), no solo la feliz. Con esto cerrás la interoperabilidad con iOS de este track. Errores comunes: asumir que Swift maneja las funciones suspend igual que Kotlin sin ninguna adaptación; escribir un wrapper `async`/`withCheckedThrowingContinuation` que no cubre la rama de error, dejando la `Task` colgada indefinidamente ante un fallo. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/withcheckedthrowingcontinuation(function:_:).
-**Implicación práctica:** Un wrapper `async` sobre un callback Kotlin debe resolver la continuation en AMBAS ramas (éxito y error); omitir la rama de error deja la `Task` de Swift colgada indefinidamente ante un fallo real.
+</details>
 
 ### Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min
 
-**Prerrequisito:** temas «El framework generado para iOS» y «Mapeo de tipos Kotlin ↔ Swift» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** mostrar una pantalla de Compose dentro de una app SwiftUI con `ComposeUIViewController` y `UIViewControllerRepresentable`, y mostrar una vista nativa de UIKit (un mapa) dentro de Compose con `UIKitView`.
+#### ► DE QUÉ TRATA
+Usa un proyecto KMP con Compose Multiplatform y la app iosApp de SwiftUI que genera el asistente. Necesitas macOS con Xcode.
 
-**¿Por qué es importante?** Pocas apps se escriben de cero en Compose Multiplatform. Lo normal es mezclar: pantallas compartidas dentro de una app SwiftUI, y componentes nativos (mapas, cámara) dentro de pantallas compartidas.
+#### ► LA IDEA EN UNA FRASE
+**Usa un proyecto KMP con Compose Multiplatform y la app iosApp de SwiftUI que genera el asistente.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa un proyecto KMP con Compose Multiplatform y la app `iosApp` de SwiftUI que genera el asistente. Necesitas macOS con Xcode.
-
-#### Paso 2 · Contexto y caso real
-
-El equipo de iOS de RutaFlow ya tenía la app en SwiftUI. Querían reutilizar la pantalla de resumen del día hecha en Compose, pero el mapa debía seguir siendo MapKit, que los conductores de iPhone conocen.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `ComposeUIViewController`, `UIViewControllerRepresentable`, `UIKitView`, `MKMapView`, ciclo de vida, `iosMain`.
 
 **Compose dentro de SwiftUI:**
@@ -369,9 +419,59 @@ flowchart TB
     C --> U["UIKitView: MKMapView"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `composeApp/src/iosMain/kotlin/co/rutaflow/ios/ResumenViewController.kt`:
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    S["SwiftUI: ContentView"] --> R["ResumenView: UIViewControllerRepresentable"]
+    R --> C["ComposeUIViewController<br/>PantallaResumen (Kotlin)"]
+    C --> U["UIKitView: MKMapView"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses compose multiplatform dentro de swiftui y vistas uikit dentro de compose por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: compose multiplatform dentro de swiftui y vistas uikit dentro de compose funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve compose multiplatform dentro de swiftui y vistas uikit dentro de compose en tu contexto?
+2. ¿Cómo sabrías que compose multiplatform dentro de swiftui y vistas uikit dentro de compose no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar compose multiplatform dentro de swiftui y vistas uikit dentro de compose?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    S["SwiftUI: ContentView"] --> R["ResumenView: UIViewControllerRepresentable"]
+    R --> C["ComposeUIViewController<br/>PantallaResumen (Kotlin)"]
+    C --> U["UIKitView: MKMapView"]
+```
 
 ```kotlin
 package co.rutaflow.ios
@@ -406,8 +506,6 @@ fun ResumenViewController(pendientes: Int) = ComposeUIViewController {
 }
 ```
 
-Archivo `iosApp/iosApp/ResumenView.swift`:
-
 ```swift
 import SwiftUI
 import ComposeApp // framework generado por KMP
@@ -431,70 +529,14 @@ struct ContentView: View {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode   # lo llama Xcode en el build
 open iosApp/iosApp.xcodeproj   # ejecuta con ⌘R en un simulador
 ```
-
-**Explicación por bloques:** En `iosMain`, `ResumenViewController` devuelve un controlador de UIKit con Compose adentro. Dentro de Compose, `UIKitView` crea un `MKMapView` una sola vez en `factory` y centra la región en `update`. En Swift, el framework se importa como `ComposeApp`; las funciones de nivel superior de Kotlin quedan en una clase con el nombre del archivo y sufijo `Kt`. `ResumenView` adapta el controlador a SwiftUI y `ContentView` lo pone dentro de un `NavigationStack` nativo con su título.
-
-**Resultado esperado:**
 
 ```text
 La app de SwiftUI muestra la barra de navegación nativa «Resumen», el texto «Te quedan 3 entregas» dibujado por Compose y debajo un mapa de MapKit centrado en Bogotá.
 El mapa responde a gestos de zoom y arrastre como cualquier mapa nativo.
 ```
 
-**Fallo deliberado:** crea el `MKMapView` dentro de `update` en lugar de `factory`. **Error esperado:** el mapa parpadea y pierde el zoom del usuario en cada recomposición. **Diagnóstico:** `factory` crea la vista una vez; `update` solo debe cambiar propiedades. Si creas la vista en `update`, se reemplaza cada vez.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta en el simulador y prueba los gestos del mapa.
-2. **Variación:** pasa un número distinto de pendientes desde SwiftUI y comprueba el texto.
-3. **Diagnóstico:** reproduce el fallo deliberado creando el mapa en `update`.
-4. **Integración:** agrega un marcador `MKPointAnnotation` en `factory` y muévelo en `update` según un parámetro.
-5. **Diseño:** decide qué pantallas de RutaFlow serían Compose dentro de SwiftUI y qué componentes seguirían nativos.
-
-**Pista:** si Swift no encuentra la función de Kotlin, busca la clase `NombreDeArchivoKt` en el framework generado.
-
-#### Paso 6 · Práctica independiente
-
-Haz el camino contrario completo: una vista de SwiftUI dentro de Compose, envolviendo un `UIHostingController` en `UIKitViewController`.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas las dos direcciones de integración.
-- [ ] La pantalla Compose aparece dentro de SwiftUI con el mapa nativo.
-- [ ] Reprodujiste el parpadeo al crear la vista en `update`.
-- [ ] Sabes el costo de anidar sistemas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear vistas nativas en `update`, anidar muchas vistas UIKit en listas y olvidar el sufijo `Kt` al llamar desde Swift. **Siguiente paso:** el tema «Coroutines desde Swift, y distribución del framework» conecta estados de Kotlin con SwiftUI.
-
-**Transferencia al proyecto integrador «RutaFlow»:** muestra la pantalla de resumen de RutaFlow (Compose) dentro de la app SwiftUI, con el mapa de MapKit embebido.
-
-**Fuente oficial:** [Kotlin — Integration with the SwiftUI framework](https://kotlinlang.org/docs/multiplatform/compose-swiftui-integration.html) y [Kotlin — Integration with the UIKit framework](https://kotlinlang.org/docs/multiplatform/compose-uikit-integration.html).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app SwiftUI que consume el módulo compartido KMP a través del framework generado.
-
-**Requisitos previos:** Módulos 0-7 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Generar el `.framework` y agregarlo a un proyecto Xcode | Ver Tema 1 | Verifica la importación |
-| 2 | Llamar a una función Kotlin desde Swift | Ver Tema 2 | Verifica el tipo resultante |
-| 3 | Llamar a una función suspend desde Swift | Ver Tema 3 | Con su callback/async equivalente |
-| 4 | Configurar la distribución con Swift Package Manager | Ver Tema 3 | En vez de CocoaPods |
-
-**Verificación:** el laboratorio se considera exitoso si la app SwiftUI consume correctamente los datos y la lógica del módulo compartido, incluyendo al menos una función suspend invocada correctamente desde Swift.
-
-**Errores comunes y soluciones**
-
-- **Asumir que Swift maneja las funciones suspend igual que Kotlin de forma nativa sin ninguna adaptación.** Verifica la forma específica (callback o async/await) según la versión de las librerías usadas.
-- **Usar CocoaPods por defecto sin evaluar Swift Package Manager.** SPM es la alternativa moderna recomendada, con mejor integración nativa y mantenimiento activo.
-- **Esperar verificación de exhaustividad idéntica en Swift para una sealed class de Kotlin.** Swift la trata como una jerarquía de clases regular, sin esa garantía estricta.
-
----
+</details>

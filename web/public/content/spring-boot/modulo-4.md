@@ -8,25 +8,74 @@ Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2
 
 ## Aprende construyendo
 
+
 ### Tema 1: Entidades y repositorios derivados · Intermedio · 30 min
 
-Al terminar, podrás probar que una entidad se guarda y se recupera, escribir un método de búsqueda a partir de propiedades reales y reconocer cuándo una consulta JPQL queda más clara. El tema usa `Tarea(titulo, prioridad, ubicacionInterna)` que ya existe en `academia-spring`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Una consulta mal nombrada puede impedir que el servicio arranque; probar con datos reales permite localizar el error antes de conectar la API con otros servicios.
+#### ► DE QUÉ TRATA
+Este tema te guía por entidades y repositorios derivados con foco en comprensión antes de implementación.
 
-Prerrequisitos: Temas 1–6 del módulo 2. En particular, existe `TareaRepository extends JpaRepository<Tarea, Long>`, H2 está configurado y el proyecto incluye `spring-boot-starter-data-jpa-test`.
+#### ► LA IDEA EN UNA FRASE
+**Entender entidades y repositorios derivados te permite tomar mejores decisiones técnicas.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en entidades y repositorios derivados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["Tarea en Java"] -->|saveAndFlush| B[("H2 de prueba")]
   B -->|findById / consulta| C["Resultado comprobado por el test"]
 ```
 
-#### Subtema 1.1 · Guardar y recuperar una entidad · 8 min
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Entidades y repositorios derivados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Contexto:** Antes de filtrar una lista, comprueba el viaje más pequeño: Java guarda una tarea, la base asigna su ID y luego el repositorio la busca. Así separas un problema de persistencia de un problema de consulta.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Entidades y repositorios derivados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Hazlo tú:** En `academia-spring`, agrega a `<dependencies>` de `pom.xml` el starter del slice JPA de Boot 4, si todavía no existe:
+#### ► CUÁNDO NO USAR ESTO
+No uses entidades y repositorios derivados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: entidades y repositorios derivados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Entidades y repositorios derivados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve entidades y repositorios derivados en tu contexto?
+2. ¿Cómo sabrías que entidades y repositorios derivados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar entidades y repositorios derivados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["Tarea en Java"] -->|saveAndFlush| B[("H2 de prueba")]
+  B -->|findById / consulta| C["Resultado comprobado por el test"]
+```
 
 ```xml
 <dependency>
@@ -35,8 +84,6 @@ flowchart LR
     <scope>test</scope>
 </dependency>
 ```
-
-No basta con el starter general de pruebas para disponer de todos los slices modulares. Crea `src/test/java/com/example/demo/TareaRepositoryTest.java`:
 
 ```java
 package com.example.demo;
@@ -64,25 +111,9 @@ class TareaRepositoryTest {
 }
 ```
 
-Desde la raíz del proyecto, ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=TareaRepositoryTest test
 ```
-
-**Salida esperada:** el comando termina con código 0 y Maven informa `BUILD SUCCESS`. El test obliga a escribir y leer en H2; `saveAndFlush` envía el cambio antes de buscarlo.
-
-**Fallo deliberado y diagnóstico:** cambia `isEqualTo(2)` por `isEqualTo(9)` y repite el comando. El test falla con una comparación esperada 9 frente a actual 2. Eso indica que la lectura sí ocurrió y que el valor esperado del test es incorrecto. Restáuralo a 2.
-
-**Entiende:** `@DataJpaTest` (en Boot 4 se importa desde `org.springframework.boot.data.jpa.test.autoconfigure`) prepara las piezas de persistencia y una base de prueba; no arranca toda la API. `JpaRepository` ya aporta `saveAndFlush` y `findById`. El ID se genera al guardar, por eso se consulta con `guardada.getId()`. La [guía oficial de pruebas de Spring Boot](https://docs.spring.io/spring-boot/4.1/reference/testing/spring-boot-applications.html) confirma que este slice busca entidades, configura repositorios JPA y usa una base embebida disponible.
-
-**Cierra:** conserva el test verde. Puedes mostrar el ID generado y los dos valores leídos; eso es evidencia de ida y vuelta, no solo de que el proyecto compila.
-
-#### Subtema 1.2 · Filtrar con el nombre del método · 10 min
-
-**Contexto:** La API ya guarda `prioridad`. El listado necesita devolver tareas cuya prioridad sea al menos el mínimo recibido, sin escribir una consulta para una comparación sencilla.
-
-**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, agrega el método señalado:
 
 ```java
 package com.example.demo;
@@ -94,8 +125,6 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
 }
 ```
-
-En `src/test/java/com/example/demo/TareaRepositoryTest.java`, conserva el test de guardado e imports del subtema anterior. Añade este método antes de la llave final de la clase:
 
 ```java
 @Test
@@ -112,91 +141,27 @@ void filtraPrioridadMinimaIncluyendoElLimite() {
 }
 ```
 
-Ejecuta desde la raíz del proyecto:
-
-```bash
-./mvnw -q -Dtest=TareaRepositoryTest test
-```
-
-**Salida esperada:** `BUILD SUCCESS`; aparecen Caja y Pallet, pero no Sobre. El sufijo `GreaterThanEqual` incluye el valor límite 2.
-
-**Fallo deliberado y diagnóstico:** cambia `findByPrioridadGreaterThanEqual` a `findByPrioridGreaterThanEqual` en la interfaz y cambia igual la llamada en el test para que el código compile. Al arrancar, Spring muestra `PropertyReferenceException` porque no encuentra `priorid` en `Tarea` y sugiere `prioridad`. La consulta se valida desde el nombre de propiedad; restaura ambas apariciones y ejecuta otra vez.
-
-**Entiende:** Spring Data separa `findBy` del nombre de la propiedad y del operador. La forma de la consulta se lee así:
-
-```text
-findBy | Prioridad | GreaterThanEqual
-buscar | campo    | mayor o igual
-```
-
-El nombre debe corresponder al atributo Java (`prioridad`), no al nombre de columna ni al nombre que llega en JSON. La lista se escribe con `List<Tarea>` porque el filtro puede devolver varias filas.
-
-**Cierra:** entrega el test verde y señala cuál resultado prueba que el límite es inclusivo. La referencia oficial lista los operadores y explica cómo Spring Data interpreta nombres de métodos: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
-
-#### Subtema 1.3 · Escribir JPQL cuando ayuda a leer · 10 min
-
-**Contexto:** El nombre derivado anterior es corto y claro. Cuando la consulta requiere una condición expresada con más detalle, puedes escribir JPQL; JPQL usa nombres de entidades y atributos Java, no nombres directos de tablas y columnas.
-
-**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, declara ambos caminos para comparar sus resultados:
-
-```java
-package com.example.demo;
-
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-public interface TareaRepository extends JpaRepository<Tarea, Long> {
-    List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
-
-    @Query("select t from Tarea t where t.prioridad >= :minimo")
-    List<Tarea> buscarPrioridadMinima(@Param("minimo") int minimo);
-}
-```
-
-Dentro de `TareaRepositoryTest`, añade este método antes de la última llave:
-
-```java
-@Test
-void jpqlYMetodoDerivadoDevuelvenLasMismasTareas() {
-    tareas.save(new Tarea("Sobre", 1, "A"));
-    tareas.save(new Tarea("Caja", 2, "B"));
-    tareas.save(new Tarea("Pallet", 3, "C"));
-    tareas.flush();
-
-    var derivado = tareas.findByPrioridadGreaterThanEqual(2);
-    var jpql = tareas.buscarPrioridadMinima(2);
-
-    assertThat(jpql).extracting(Tarea::getTitulo)
-        .containsExactlyInAnyOrderElementsOf(
-            derivado.stream().map(Tarea::getTitulo).toList()
-        );
-}
-```
-
-Ejecuta desde la raíz del proyecto:
-
-```bash
-./mvnw -q -Dtest=TareaRepositoryTest test
-```
-
-**Salida esperada:** `BUILD SUCCESS`; las dos consultas encuentran las mismas tareas. Si agregas este método al test existente, conserva los imports de la prueba anterior.
-
-**Fallo deliberado y diagnóstico:** escribe `t.priorid` en la cadena de `@Query` y ejecuta el test. Spring no reconoce ese atributo JPQL y el contexto falla al crear el repositorio con `QueryCreationException: Query validation failed`. El nombre válido es `prioridad`, como en la propiedad Java. Corrígelo y vuelve a ejecutar.
-
-**Entiende:** JPQL consulta entidades (`Tarea t`) y sus propiedades (`t.prioridad`); el proveedor JPA lo traduce a SQL para la base configurada. `@Param` conecta el marcador `:minimo` con el argumento Java. Prefiere un método derivado cuando se entiende de un vistazo; usa `@Query` cuando el nombre se vuelve difícil de leer o necesitas expresar una forma que la convención no cubre. Ninguno da control total del SQL físico: JPQL y SQL son lenguajes distintos.
-
-**Cierra:** conserva las dos pruebas y explica con un ejemplo cuándo elegirías cada versión. Para pasar a una relación entre entidades, revisa el siguiente tema sobre N+1. Referencia oficial: [Spring Data JPA — declarar consultas](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
-
-La entidad y el repositorio de esta práctica continúan en el proyecto integrador del track. La estructura atómica describe actividades verificables; no certifica por sí sola dominio profesional.
+</details>
 
 ### Tema 2: El problema N+1 y su corrección · Intermedio · 35 min
 
-En este tema añadimos `Cliente` y `Pedido` al proyecto `academia-spring` ya existente. Así probamos una relación propia sin alterar la entidad `Tarea` que usa el mapper del API.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Una página que carga clientes y luego consulta los pedidos de cada uno puede hacer muchas llamadas a la base. Con pocos datos parece rápida; al crecer la lista, cada consulta adicional añade demora.
+#### ► DE QUÉ TRATA
+Este tema te guía por el problema n+1 y su corrección con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender el problema n+1 y su corrección te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en el problema n+1 y su corrección como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["findAll: 1 consulta"] --> B["cada colección pedidos: 1 consulta"]
@@ -204,13 +169,49 @@ flowchart LR
   D["LEFT JOIN FETCH"] --> E["clientes y pedidos: 1 consulta"]
 ```
 
-#### Subtema 2.1 · Relacionar clientes y pedidos y medir · 12 min
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El problema N+1 y su corrección se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Contexto:** Una ficha de cliente muestra sus pedidos. La relación debe decir quién es el dueño de la referencia y permitir contar las consultas reales sin confundirlas con las escrituras de datos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El problema N+1 y su corrección | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Hazlo tú:** En `academia-spring`, crea estos archivos en `src/main/java/com/example/demo/`.
+#### ► CUÁNDO NO USAR ESTO
+No uses el problema n+1 y su corrección por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-`Cliente.java`:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el problema n+1 y su corrección funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El problema N+1 y su corrección existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el problema n+1 y su corrección en tu contexto?
+2. ¿Cómo sabrías que el problema n+1 y su corrección no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el problema n+1 y su corrección?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["findAll: 1 consulta"] --> B["cada colección pedidos: 1 consulta"]
+  B --> C["3 clientes: 1 + 3 = 4"]
+  D["LEFT JOIN FETCH"] --> E["clientes y pedidos: 1 consulta"]
+```
 
 ```java
 package com.example.demo;
@@ -246,8 +247,6 @@ public class Cliente {
     }
 }
 ```
-
-`Pedido.java`:
 
 ```java
 package com.example.demo;
@@ -285,8 +284,6 @@ public class Pedido {
 }
 ```
 
-Crea los repositorios `ClienteRepository.java` y `PedidoRepository.java` en la misma carpeta:
-
 ```java
 package com.example.demo;
 
@@ -307,8 +304,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {}
 ```
-
-Crea `src/test/java/com/example/demo/NMasUnoTest.java`:
 
 ```java
 package com.example.demo;
@@ -352,163 +347,72 @@ class NMasUnoTest {
 }
 ```
 
-Desde la raíz, ejecuta:
-
-```bash
-./mvnw -q -Dtest=NMasUnoTest test
-```
-
-**Resultado esperado:** `BUILD SUCCESS`; la aserción muestra cuatro sentencias preparadas: una para `buscarSinPedidos()` y tres para cargar las colecciones. El contador se limpia después de guardar y vaciar el contexto.
-
-**Fallo deliberado y diagnóstico:** cambia `mappedBy = "cliente"` por `mappedBy = "clientee"` en `Cliente.java`. El contexto de persistencia falla al iniciar porque el nombre no coincide con ningún atributo de `Pedido`. Restaura `cliente`.
-
-**Entiende:** `Pedido.cliente` guarda la clave foránea `cliente_id`; `Cliente.pedidos` es el lado inverso y `mappedBy` nombra el atributo dueño. `LAZY` significa que la colección se busca al accederla. `getPrepareStatementCount()` mide sentencias SQL preparadas, incluidas las consultas de carga perezosa; `getQueryExecutionCount()` no es el contador que queremos para estas consultas de colección.
-
-**Cierra:** registra el número 4 y explica qué sentencia corresponde al `+1` y cuáles a las tres colecciones.
-
-#### Subtema 2.2 · Cargar la relación con `JOIN FETCH` · 10 min
-
-**Contexto:** Ya mediste la repetición. Ahora cambia la consulta que carga la página para pedir clientes y pedidos juntos cuando sabes que mostrarás ambos.
-
-**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` con la versión completa:
-
-```java
-package com.example.demo;
-
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    @Query("select c from Cliente c")
-    List<Cliente> buscarSinPedidos();
-
-    @Query("select distinct c from Cliente c left join fetch c.pedidos")
-    List<Cliente> buscarTodosConPedidos();
-}
-```
-
-En `src/test/java/com/example/demo/NMasUnoTest.java`, añade este método dentro de la clase:
-
-```java
-@Test
-void joinFetchCargaLosPedidosEnLaConsultaPrincipal() {
-    crearTresClientesConPedido();
-    Statistics stats = sessionFactory.getStatistics();
-    stats.clear();
-
-    for (Cliente cliente : clientes.buscarTodosConPedidos()) {
-        assertThat(cliente.getPedidos()).hasSize(1);
-    }
-
-    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
-}
-```
-
-Ejecuta desde la raíz:
-
-```bash
-./mvnw -q -Dtest=NMasUnoTest test
-```
-
-**Resultado esperado:** los dos tests pasan; el recorrido normal preparó 4 sentencias y el método con `left join fetch` preparó 1.
-
-**Fallo deliberado y diagnóstico:** quita la palabra `fetch` y deja `left join c.pedidos`. Ejecuta el test: la relación no se inicializa junto con el cliente y la medición vuelve a mostrar 4 sentencias. Restaura `fetch`.
-
-**Entiende:** `join fetch` le pide a JPA que traiga el atributo relacionado en la consulta que devuelve el cliente. `left` conserva también clientes que todavía no tienen pedidos. `distinct` expresa que cada cliente debe aparecer una vez en el resultado aunque tenga varios pedidos.
-
-**Cierra:** entrega las mediciones 4 y 1. La guía de Hibernate explica el [fetch join y las asociaciones](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins).
-
-#### Subtema 2.3 · Elegir `@EntityGraph` y revisar el límite · 10 min
-
-**Contexto:** Puedes declarar qué relación se carga sin escribir el `JOIN` en una cadena JPQL. Compara esa opción cuando la consulta de repositorio ya tiene un nombre que quieres conservar.
-
-**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` por la versión completa que conserva las consultas anteriores y aplica `@EntityGraph` al `findAll()` heredado:
-
-```java
-package com.example.demo;
-
-import java.util.List;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    @Query("select c from Cliente c")
-    List<Cliente> buscarSinPedidos();
-
-    @Query("select distinct c from Cliente c left join fetch c.pedidos")
-    List<Cliente> buscarTodosConPedidos();
-
-    @Override
-    @EntityGraph(attributePaths = "pedidos")
-    List<Cliente> findAll();
-}
-```
-
-En `NMasUnoTest.java`, añade:
-
-```java
-@Test
-void entityGraphCargaLosPedidosEnLaConsulta() {
-    crearTresClientesConPedido();
-    Statistics stats = sessionFactory.getStatistics();
-    stats.clear();
-
-    for (Cliente cliente : clientes.findAll()) {
-        assertThat(cliente.getPedidos()).hasSize(1);
-    }
-
-    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
-}
-```
-
-Ejecuta desde la raíz:
-
-```bash
-./mvnw -q -Dtest=NMasUnoTest test
-```
-
-**Resultado esperado:** pasan los tres tests. El fetch plan explícito de `@EntityGraph` evita las tres lecturas posteriores para esta relación.
-
-**Fallo deliberado y diagnóstico:** cambia `attributePaths = "pedidos"` por `attributePaths = "pedido"`. El test falla al ejecutar `findAll()` con `Unable to locate Attribute... [pedido] on... Cliente`; `pedido` no coincide con la propiedad `pedidos`. Restaura el plural.
-
-**Entiende:** `JOIN FETCH` deja visible la forma JPQL; `@EntityGraph` declara atributos a cargar en el método. Ambos resuelven este acceso concreto. Una colección grande puede multiplicar filas y `JOIN FETCH` de colección junto con paginación requiere cuidado; mide el caso real y evita cargar relaciones que la pantalla no usa. [Spring Data JPA — `@EntityGraph`](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html).
-
-**Cierra:** guarda los tres resultados de la prueba y explica por qué no cambiarías todo a `EAGER`. **Práctica:** en `crearTresClientesConPedido()` cambia el límite del bucle a 4 y ajusta la prueba perezosa a `5L`; ambas pruebas con carga previa deben seguir en `1L`. Ejecuta `./mvnw -q -Dtest=NMasUnoTest test` y luego restaura el límite y la aserción. Integra `Cliente` y `Pedido` al backend acumulativo y lleva la medición al proyecto integrador cuando uses una lista real. El tema siguiente versiona el esquema para que estas dos tablas tengan cambios reproducibles.
+</details>
 
 ### Tema 3: Más allá del N+1: el límite de LAZY y páginas DTO · Intermedio · 40 min
-**Meta:** reproducir el límite de una asociación `LAZY` cuando el contexto de persistencia ya se cerró y resolver la pantalla de resumen con una página DTO que selecciona solo dos campos.
 
-**¿Por qué es importante?** El Tema 2 corrigió el N+1 con `JOIN FETCH`/`@EntityGraph`. Falta el otro extremo: qué pasa cuando la respuesta HTTP toca una relación que nunca se cargó, y cómo paginar sin traer entidades completas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Tema 2 de este módulo y [Java M16 T1–T2](/curso/java/16) (lado propietario, `LAZY`/`EAGER` y conteo de N+1 con el mismo laboratorio `java-jpa-lab`, sin Spring). Este tema no repite esas prácticas.
+#### ► DE QUÉ TRATA
+Este tema te guía por más allá del n+1: el límite de lazy y páginas dto con foco en comprensión antes de implementación.
 
-**Evidencia final:** la prueba que espera `LazyInitializationException` al cerrar el `EntityManager` y una página de resumen con dos campos, su total y la señal de página siguiente.
+#### ► LA IDEA EN UNA FRASE
+**Entender más allá del n+1: el límite de lazy y páginas dto te permite tomar mejores decisiones técnicas.**
 
-#### Subtema 3.1 · Reconoce el límite de LAZY y EAGER · 8 min
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Contexto:** Una relación `LAZY` puede consultarse mientras el contexto de persistencia sigue abierto. Si entregas una entidad con una asociación sin cargar y cierras ese contexto, ya no hay sesión que pueda buscarla.
+#### ► LA ANALOGÍA
+Piensa en más allá del n+1: el límite de lazy y páginas dto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Hazlo tú:** Observa PedidoJpaLabTest.java y. Ejecuta la prueba que escribe en un contexto, vuelve a leer en otro y cierra el segundo antes de tocar el cliente:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que más allá del n+1: el límite de lazy y páginas dto resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Más allá del N+1: el límite de LAZY y páginas DTO se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Más allá del N+1: el límite de LAZY y páginas DTO | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses más allá del n+1: el límite de lazy y páginas dto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: más allá del n+1: el límite de lazy y páginas dto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Más allá del N+1: el límite de LAZY y páginas DTO existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve más allá del n+1: el límite de lazy y páginas dto en tu contexto?
+2. ¿Cómo sabrías que más allá del n+1: el límite de lazy y páginas dto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar más allá del n+1: el límite de lazy y páginas dto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw -Dtest=PedidoJpaLabTest#accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro test
 ```
-
-**Resultado esperado:** el test espera `LazyInitializationException` al leer `pedido.getCliente().getNombre()` después de cerrar el EntityManager.
-
-**Fallo deliberado:** Mueve la lectura de `getNombre()` antes de `lectura.close()`. La prueba deja de recibir la excepción; devuelve el acceso a después del cierre. **Diagnóstico:** el proxy sí pudo cargar la asociación mientras el EntityManager seguía abierto.
-
-**Entiende:** JPA define `EAGER` como requisito de carga inmediata y `LAZY` como sugerencia que el proveedor puede cumplir. `ManyToOne` es EAGER por defecto; en este modelo se pidió LAZY. No soluciones el error cargando todo EAGER: crea una consulta o DTO para el caso de uso y construye la respuesta dentro de la transacción.
-
-**Cierra:** Di en qué línea termina la sesión y qué dato debe salir ya preparado para la respuesta HTTP.
-
-#### Subtema 3.2 · Pagina una vista pequeña con DTO · 10 min
-
-**Contexto:** El resumen de pedidos solo presenta referencia y nombre. Cargar entidades completas y sus relaciones trae datos que la fila no muestra.
-
-**Hazlo tú:** El laboratorio contiene `PedidoResumen`, un `record` con esos dos campos, y este método en `PedidoRepository`:
 
 ```java
 @Query("select new academia.pedidos.PedidoResumen(p.referencia, p.cliente.nombre) "
@@ -516,28 +420,31 @@ Ejecuta desde la raíz:
 Page<PedidoResumen> listarResumenes(Pageable pageable);
 ```
 
-Ejecuta la prueba que solicita dos elementos de una página de tres:
-
 ```bash
 ./mvnw -Dtest=PedidoJpaLabTest#paginaResumenConSoloLasColumnasQueNecesitaLaLista test
 ```
 
-**Resultado esperado:** la página contiene dos pares referencia/nombre, declara tres resultados totales y señala que hay otra página. Hibernate emite la consulta de datos y una consulta de conteo.
-
-**Fallo deliberado:** Cambia `p.cliente.nombre` por `p.cliente.apellido` en el JPQL. La consulta falla porque `Cliente` no tiene ese atributo. **Diagnóstico:** Hibernate no puede resolver `apellido` en `Cliente`. Restaura `nombre`.
-
-**Entiende:** Un DTO devuelve solo lo que consume la pantalla. `Page` también suele requerir contar resultados; si ese conteo pesa, evalúa `Slice` o una estrategia específica. Una página DTO evita paginar una colección cargada con `JOIN FETCH` y reduce columnas, pero mide el plan con datos representativos.
-
-**Cierra:** En el proyecto integrador de RutaFlow, define una consulta resumida paginada y otra de detalle. Adjunta SQL, tamaño de página y campos elegidos. No presentes los conteos de H2 como una medición de producción.
-
-**Fuentes primarias:** [Jakarta Persistence 3.2: `@ManyToOne` y estrategias de carga](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html); [Spring Data JPA: proyecciones](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html).
+</details>
 
 ### Tema 4: Migraciones con Flyway · Intermedio · 30 min
 
-Al cerrar este tema, el mismo backend `academia-spring` crea las tablas desde archivos SQL versionados y Hibernate solo confirma que el modelo Java coincide con ese esquema.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Si cada ambiente crea o modifica tablas de forma distinta, un cambio puede funcionar localmente y fallar al desplegar. Una migración versionada deja visible qué cambió y en qué orden se aplicó.
+#### ► DE QUÉ TRATA
+Este tema te guía por migraciones con flyway con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender migraciones con flyway te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en migraciones con flyway como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["V1: tablas de la API"] --> B["Flyway registra V1"]
@@ -545,11 +452,49 @@ flowchart LR
   C --> D["V2: índice nuevo"]
 ```
 
-#### Subtema 4.1 · Crear el esquema con V1 · 12 min
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migraciones con Flyway se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Contexto:** `academia-spring` ya tiene las entidades `Tarea`, `Cliente` y `Pedido`. Ahora el repositorio debe poder recrear sus tres tablas al partir de una base vacía.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migraciones con Flyway | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Hazlo tú:** En `pom.xml`, añade a `<dependencies>` el starter administrado por Spring Boot:
+#### ► CUÁNDO NO USAR ESTO
+No uses migraciones con flyway por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migraciones con flyway funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migraciones con Flyway existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migraciones con flyway en tu contexto?
+2. ¿Cómo sabrías que migraciones con flyway no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migraciones con flyway?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["V1: tablas de la API"] --> B["Flyway registra V1"]
+  B --> C["Hibernate valida entidades"]
+  C --> D["V2: índice nuevo"]
+```
 
 ```xml
 <dependency>
@@ -558,16 +503,12 @@ flowchart LR
 </dependency>
 ```
 
-En `src/main/resources/application.yml`, reemplaza `create-drop` por `validate`:
-
 ```yaml
 spring:
   jpa:
     hibernate:
       ddl-auto: validate
 ```
-
-Crea `src/main/resources/db/migration/V1__crear_esquema_inicial.sql`:
 
 ```sql
 CREATE TABLE tareas (
@@ -590,8 +531,6 @@ CREATE TABLE pedidos (
     CONSTRAINT fk_pedidos_clientes FOREIGN KEY (cliente_id) REFERENCES clientes (id)
 );
 ```
-
-Crea `src/test/java/com/example/demo/MigracionesTest.java`:
 
 ```java
 package com.example.demo;
@@ -624,114 +563,31 @@ class MigracionesTest {
 }
 ```
 
-Desde la raíz del proyecto ejecuta:
-
 ```bash
 ./mvnw -q clean test
 ```
 
-**Resultado esperado:** `BUILD SUCCESS`. Flyway crea las tablas antes de que Hibernate valide las tres entidades; el test también guarda y vuelve a buscar una tarea.
-
-**Fallo deliberado y diagnóstico:** cambia `ubicacion_interna VARCHAR(255)` por `ubicacion_extra VARCHAR(255)` en V1 y vuelve a ejecutar `./mvnw -q clean test`. Hibernate falla con `Schema validation: missing column [ubicacion_interna] in table [tareas]`: el nombre del SQL ya no coincide con el atributo de la entidad. Restaura `ubicacion_interna`.
-
-**Entiende:** `spring-boot-starter-flyway` ejecuta migraciones al iniciar; H2 en memoria es compatible con este starter. `V1__crear_esquema_inicial.sql` significa versión 1, separador doble guion bajo y descripción. Hibernate no cambia el esquema con `validate`; solo compara el mapeo con lo que Flyway creó. **Límite:** esta prueba ejecuta el SQL en H2; antes de desplegarlo, comprueba también la migración contra el motor de base de datos del ambiente final. [Spring Boot — inicialización con Flyway](https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html).
-
-**Cierra:** deja el test verde y conserva V1 como la definición revisable de las tablas actuales. La documentación de Flyway explica que las migraciones versionadas se aplican una vez y se registran en su tabla de historial: [Flyway — Versioned migrations](https://documentation.red-gate.com/fd/versioned-migrations-273973333.html).
-
-#### Subtema 4.2 · Aplicar un cambio nuevo con V2 · 10 min
-
-**Contexto:** El equipo quiere buscar por prioridad con frecuencia. Agregar un índice cambia el esquema aunque no cambie el JSON ni los campos Java.
-
-**Hazlo tú:** Crea `src/main/resources/db/migration/V2__indice_prioridad_tareas.sql`:
-
-```sql
-CREATE INDEX idx_tareas_prioridad ON tareas(prioridad);
-```
-
-En `MigracionesTest.java`, añade este método dentro de la clase:
-
-```java
-@Test
-void flywayAplicoV1YV2EnOrden() {
-    assertThat(flyway.info().applied())
-        .extracting(migration -> migration.getVersion().getVersion())
-        .contains("1", "2");
-    assertThat(flyway.info().current().getVersion().getVersion()).isEqualTo("2");
-}
-```
-
-Ejecuta desde la raíz:
-
-```bash
-./mvnw -q clean test
-```
-
-**Resultado esperado:** pasan las pruebas anteriores y la nueva; `Flyway.info()` muestra V1 y V2 como aplicadas, con V2 como versión actual.
-
-**Fallo deliberado y diagnóstico:** en V2 cambia `tareas` por `tareaas` y ejecuta el comando. H2 informa `Table "TAREAAS" not found`; el nombre no coincide con el creado en V1. Restaura `tareas` y vuelve a ejecutar.
-
-**Entiende:** el índice acelera ciertos filtros a cambio de espacio y trabajo adicional al insertar o cambiar filas. La migración tiene una versión nueva; Flyway registra cada aplicación en `flyway_schema_history`. `clean test` parte de `target` limpio, lo que también retira recursos de migración eliminados durante este laboratorio.
-
-**Cierra:** guarda la prueba que muestra V1 y V2. Anota que este índice es una hipótesis que debe medirse con consultas y volumen representativos antes de llevarlo a producción.
-
-#### Subtema 4.3 · Diagnosticar versiones repetidas · 8 min
-
-**Contexto:** Dos ramas pueden agregar por accidente archivos con la misma versión. Detecta ese choque antes de desplegar.
-
-**Hazlo tú:** Crea temporalmente `src/main/resources/db/migration/V2__otra.sql`:
-
-```sql
-SELECT 1;
-```
-
-Ejecuta:
-
-```bash
-./mvnw -q clean test
-```
-
-**Resultado esperado:** el arranque falla con `Found more than one migration with version 2`. Flyway ve dos archivos V2, aunque uno solo tenga `SELECT 1`.
-
-**Fallo deliberado y diagnóstico:** el duplicado anterior es el fallo. Diagnostícalo listando `src/main/resources/db/migration/`; deben verse V1 y una sola V2. Borra `V2__otra.sql` y ejecuta otra vez `./mvnw -q clean test`.
-
-**Entiende:** una migración versionada se aplica una vez y su contenido queda vinculado a un checksum. No edites una migración que ya compartiste o desplegaste; prepara `V3__...sql` para un cambio posterior. Así el historial sigue explicando qué esquema recibió cada versión. [Flyway — historial y validación](https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table).
-
-**Cierra:** conserva una ejecución verde tras quitar el duplicado y explica por qué el próximo cambio debe ser V3. Este backend acumulativo ya combina DTO/API, JPA, medición N+1 y esquema versionado para el proyecto integrador.
+</details>
 
 ### Tema 5: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min
 
-**Prerrequisito:** tema «Entidades y repositorios derivados» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** guardar un envío con sus paradas como un solo documento, consultarlo con métodos derivados y una agregación simple, y decidir cuándo un modelo de documentos encaja mejor que uno relacional.
+#### ► DE QUÉ TRATA
+Usa Spring Boot 4.1.2 y JDK 25 en academia-spring (paquete com.example.demo), agrega spring-boot-starter-data-mongodb y usa Docker para levantar MongoDB: docker run -d --name mongo -p 27017:27017 mongo:8.
 
-**¿Por qué es importante?** Algunos datos se leen siempre juntos: un envío con su historial de posiciones. En una base relacional eso son varias tablas y uniones; en MongoDB es un documento. Elegir bien el modelo simplifica el código y las consultas.
+#### ► LA IDEA EN UNA FRASE
+**Usa Spring Boot 4.1.2 y JDK 25 en academia-spring (paquete com.example.demo), agrega spring-boot-starter-data-mongodb y usa Docker para levantar MongoDB: docker run -d --name mongo -p 27017:27017 mongo:8.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Spring Boot 4.1.2 y JDK 25 en `academia-spring` (paquete `com.example.demo`), agrega `spring-boot-starter-data-mongodb` y usa Docker para levantar MongoDB: `docker run -d --name mongo -p 27017:27017 mongo:8`.
+#### ► LA ANALOGÍA
+Piensa en spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El historial de eventos de cada envío de RutaFlow (creado, en bodega, en ruta, entregado) crecía en una tabla de millones de filas unida al envío. La pantalla de seguimiento hacía tres consultas. Con un documento por envío que contiene su historial, basta una lectura.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** documento, colección, `@Document`, `@Id`, documento embebido, `MongoRepository`, consulta derivada, agregación.
-
-MongoDB guarda **documentos** (parecidos a JSON) en **colecciones**. Un documento puede contener listas y objetos **embebidos**, así que un envío y sus eventos viajan juntos.
-
-Spring Data MongoDB funciona como Spring Data JPA: anotas la clase con `@Document`, creas una interfaz que extiende `MongoRepository` y los **métodos derivados** (`findByEstado`) se convierten en consultas.
-
-| Encaja con documentos | Encaja con relacional |
-|---|---|
-| datos que se leen juntos (envío + historial) | datos compartidos entre muchas entidades |
-| estructura que cambia entre registros | transacciones entre muchas tablas |
-| lectura rápida por clave | reportes con muchas uniones |
-
-**Analogía:** un documento es una carpeta física con todo el expediente del envío adentro; una base relacional es un archivador donde cada tipo de papel va en su cajón y se juntan al consultar. La analogía falla en que, si muchos expedientes comparten el mismo papel, copiarlo en cada carpeta vuelve difícil mantenerlo al día.
-
-**Límite de uso:** un documento tiene un límite de 16 MB: no embebas listas que crecen sin fin (todas las posiciones GPS de un año). No uses MongoDB para datos con muchas relaciones y reportes complejos solo porque «no tiene esquema».
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph D["documento envios: ENV-42"]
@@ -741,9 +597,51 @@ flowchart LR
     R["EnvioRepository.findByEstado"] --> D
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-spring/src/main/java/com/example/demo/envios/Envio.java` (dentro de `com.example.demo`, para que el escaneo lo encuentre):
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos en tu contexto?
+2. ¿Cómo sabrías que spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar spring data mongodb: documentos, consultas derivadas y cuándo elegir un modelo de documentos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph D["documento envios: ENV-42"]
+      C["codigo, estado, ciudad"]
+      H["eventos: [creado, en_bodega, en_ruta]"]
+    end
+    R["EnvioRepository.findByEstado"] --> D
+```
 
 ```java
 package com.example.demo.envios;
@@ -758,8 +656,6 @@ public record Envio(@Id String codigo, String estado, String ciudad, List<Evento
     public record Evento(String tipo, Instant cuando) {} // embebido: viaja con el envío
 }
 ```
-
-Archivo `academia-spring/src/main/java/com/example/demo/envios/EnvioRepository.java`:
 
 ```java
 package com.example.demo.envios;
@@ -777,8 +673,6 @@ public interface EnvioRepository extends MongoRepository<Envio, String> {
     record ConteoPorEstado(String id, long total) {}
 }
 ```
-
-Archivo `academia-spring/src/main/java/com/example/demo/envios/CargaInicial.java`:
 
 ```java
 package com.example.demo.envios;
@@ -806,14 +700,10 @@ class CargaInicial implements CommandLineRunner {
 }
 ```
 
-Archivo `academia-spring/src/main/resources/application.properties`:
-
 ```properties
 # Desde Spring Boot 4.0 la conexión usa el prefijo spring.mongodb (antes spring.data.mongodb)
 spring.mongodb.uri=mongodb://localhost:27017/rutaflow
 ```
-
-Ejecútalo:
 
 ```bash
 docker run -d --name mongo -p 27017:27017 mongo:8
@@ -821,57 +711,4 @@ docker run -d --name mongo -p 27017:27017 mongo:8
 docker exec mongo mongosh rutaflow --quiet --eval 'db.envios.findOne({_id: "ENV-42"})'
 ```
 
-**Explicación por bloques:** `Envio` es un record con `@Document`: el código es el `_id` y la lista de eventos se guarda dentro del mismo documento. `EnvioRepository` declara una consulta derivada por estado y ciudad y una agregación que agrupa por estado y cuenta. `CargaInicial` limpia la colección, guarda tres envíos e imprime los resultados. Con `mongosh` ves el documento tal como quedó, con los eventos adentro.
-
-**Resultado esperado:**
-
-```text
-En ruta en Bogotá: 1
-ENTREGADO: 1
-EN_RUTA: 2
-mongosh muestra { _id: 'ENV-42', estado: 'EN_RUTA', ciudad: 'bogota', eventos: [ { tipo: 'CREADO', ... } ], _class: ... }
-```
-
-**Fallo deliberado:** detén el contenedor con `docker stop mongo` y arranca la aplicación. **Error esperado:** después de unos 30 segundos, `MongoTimeoutException: Timed out after 30000 ms while waiting to connect`. **Diagnóstico:** el driver espera a que el servidor esté disponible antes de fallar. Levanta MongoDB o baja `serverSelectionTimeoutMS` en la URI para fallar más rápido en desarrollo.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta la carga y comprueba el documento en `mongosh`.
-2. **Variación:** agrega `findByEventosTipo(String tipo)` y busca envíos con evento `CREADO`.
-3. **Diagnóstico:** reproduce el fallo deliberado y ajusta el tiempo de espera.
-4. **Integración:** crea un índice en `estado` y `ciudad` con `@CompoundIndex` y revisa `explain()` en `mongosh`.
-5. **Diseño:** decide qué datos de RutaFlow pondrías en MongoDB y cuáles en PostgreSQL, con la tabla de criterios.
-
-**Pista:** si una lista dentro del documento crece sin límite, sácala a otra colección.
-
-#### Paso 6 · Práctica independiente
-
-Escribe una prueba con Testcontainers (`MongoDBContainer`) que guarde un envío con dos eventos y compruebe la consulta derivada y la agregación.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué es un documento embebido y cuándo conviene.
-- [ ] La carga imprime los conteos esperados.
-- [ ] Reprodujiste el tiempo de espera de conexión.
-- [ ] Decides entre documentos y relacional con criterios.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** embeber listas que crecen sin fin, usar documentos para datos muy relacionados y no crear índices para las consultas frecuentes. **Siguiente paso:** el tema «El problema N+1 y su corrección» muestra el costo equivalente en el mundo relacional.
-
-**Transferencia al proyecto integrador «RutaFlow»:** guarda el historial de eventos de cada envío de RutaFlow como documento en MongoDB y mantén las tarifas y clientes en PostgreSQL.
-
-**Fuente oficial:** [Spring Data MongoDB — Reference](https://docs.spring.io/spring-data/mongodb/reference/) y [MongoDB — Data Modeling](https://www.mongodb.com/docs/manual/data-modeling/).
-
-## Laboratorio práctico
-
-**Objetivo:** llevar el backend acumulativo desde la entidad hasta un esquema reproducible y medir un acceso relacionado.
-
-| Paso | Evidencia que guardas | Resultado |
-|---|---|---|
-| 1 | `TareaRepositoryTest` y consultas del Tema 1 | ida y vuelta, filtro derivado y JPQL pasan |
-| 2 | `NMasUnoTest` | 4 sentencias perezosas frente a 1 con `JOIN FETCH` o `@EntityGraph` |
-| 3 | V1 y V2 en `src/main/resources/db/migration/` | Flyway registra ambas y Hibernate valida el mapeo |
-| 4 | `./mvnw -q clean test` | suite verde desde un `target` limpio |
-
-No uses el número de sentencias de tres filas como un benchmark de producción; aquí demuestra dónde aparecen las consultas y cómo comparar las dos estrategias.
-
----
+</details>

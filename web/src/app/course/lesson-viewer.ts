@@ -739,6 +739,7 @@ export class LessonViewerComponent implements OnDestroy {
   private enhanceEducationalContent(container: HTMLElement): void {
     this.groupLessonSections(container);
     this.addSectionGuides(container);
+    this.enhanceEditorialLayers(container);
 
     // Numeración "§ capítulo.tema" (como un libro de texto real) en vez del
     // prefijo "Tema N:" suelto — el número se calcula, no se escribe a mano
@@ -985,6 +986,25 @@ export class LessonViewerComponent implements OnDestroy {
   private enhanceTextbookBlocks(container: HTMLElement): void {
     this.wrapLabeledBlocks(container, /^Checkpoint\s+[\d.]+/i, 'checkpoint', section => this.decorateCheckpoint(section));
     this.wrapLabeledBlocks(container, /^Problema resuelto\s+[\d.]+/i, 'sample-problem', section => this.decorateSampleProblem(section));
+  }
+
+  private enhanceEditorialLayers(container: HTMLElement): void {
+    container.querySelectorAll('details').forEach(details => {
+      const summary = details.querySelector('summary');
+      const text = summary?.textContent?.trim().toLowerCase() ?? '';
+      if (text.includes('capa 1') && text.includes('lectura')) {
+        details.classList.add('editorial-layer', 'editorial-layer-reading');
+        details.open = true;
+      } else if (text.includes('capa 2') && text.includes('construcción') || text.includes('construccion')) {
+        details.classList.add('editorial-layer', 'editorial-layer-build');
+        details.open = false;
+      }
+    });
+    container.querySelectorAll('.editorial-layer-reading h4, .editorial-layer-build h4').forEach(h => {
+      const el = h as HTMLElement;
+      const t = el.textContent?.trim() ?? '';
+      if (t.startsWith('►')) el.classList.add('editorial-marker');
+    });
   }
 
   private wrapLabeledBlocks(container: HTMLElement, pattern: RegExp, className: string, decorate: (section: HTMLElement) => void): void {

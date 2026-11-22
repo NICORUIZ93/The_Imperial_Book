@@ -11,138 +11,68 @@ Con impedancias en Laplace, un circuito se resuelve como si solo tuviera resiste
 
 ## Aprende construyendo
 
+
 ### Tema 1: Impedancias de resistencia, bobina y condensador en s · Intermedio · 45 min
 
-**¿Por qué es importante?** Con impedancias resuelves un circuito como si solo tuviera resistencias; es el atajo que faltó en el punto 2 del Parcial 1.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por impedancias de resistencia, bobina y condensador en s con foco en comprensión antes de implementación.
 
-> **Idea clave.** En Laplace, el voltaje sobre un componente es su impedancia por la corriente: \(V = Z\,I\). Es la ley de Ohm generalizada.
+#### ► LA IDEA EN UNA FRASE
+**Entender impedancias de resistencia, bobina y condensador en s te permite tomar mejores decisiones técnicas.**
 
-| Componente | Ecuación en el tiempo | Impedancia \(Z(s)\) |
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en impedancias de resistencia, bobina y condensador en s como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que impedancias de resistencia, bobina y condensador en s resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Resistencia | \(v = Ri\) | \(R\) |
-| Condensador | \(i = C\dfrac{dv}{dt}\) | \(\dfrac{1}{sC}\) |
-| Bobina | \(v = L\dfrac{di}{dt}\) | \(sL\) |
+| Impedancias de resistencia, bobina y condensador en s se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Demostración de las impedancias
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Impedancias de resistencia, bobina y condensador en s | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Resistencia: \(v = Ri \Rightarrow V = RI\), así que \(Z = V/I = R\).
-2. Condensador: \(i = C\,\dfrac{dv}{dt}\). Con condiciones iniciales cero, la derivada se vuelve \(s\): \(I = sCV\), entonces \(Z = \dfrac{V}{I} = \dfrac{1}{sC}\).
-3. Bobina: \(v = L\,\dfrac{di}{dt} \Rightarrow V = sLI\), así que \(Z = sL\).
-4. Serie: misma corriente, los voltajes se suman: \(V = (Z_1+Z_2)I\). Paralelo: mismo voltaje, las corrientes se suman: \(I = V/Z_1 + V/Z_2\), así que \(\dfrac1Z = \dfrac{1}{Z_1}+\dfrac{1}{Z_2}\). Son las mismas leyes de Kirchhoff que con resistencias.
+#### ► CUÁNDO NO USAR ESTO
+No uses impedancias de resistencia, bobina y condensador en s por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-∎
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: impedancias de resistencia, bobina y condensador en s funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- Serie: se suman
-  
-  \[R + \frac{1}{sC} = \frac{sRC+1}{sC}\]
-  
-  
-- Paralelo: producto sobre suma
-  
-  \[R\parallel\frac{1}{sC} = \frac{R}{1+sRC}\]
-  
-  
+#### ► LO QUE DEBES RECORDAR
+- Impedancias de resistencia, bobina y condensador en s existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-> **Truco del paralelo:** es más fácil sumar admitancias: \(\dfrac{1}{Z} = \dfrac{1}{R} + sC = \dfrac{1+sRC}{R}\), y luego invertir.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve impedancias de resistencia, bobina y condensador en s en tu contexto?
+2. ¿Cómo sabrías que impedancias de resistencia, bobina y condensador en s no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar impedancias de resistencia, bobina y condensador en s?
 
-#### Ejemplo 1 · Combinar impedancias · *Básico*
+</details>
 
-**Enunciado.** \(R = 2\) Ω y \(C = 0{,}5\) F. Halla la impedancia en serie y en paralelo.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-1. \(Z_C = \dfrac{1}{sC} = \dfrac{1}{0{,}5s} = \dfrac2s\).
-
-   **¿Por qué?** Tabla de impedancias.
-
-2. Serie: \(Z = 2 + \dfrac2s = \dfrac{2s+2}{s}\).
-
-   **¿Por qué?** En serie se suman, como resistencias.
-
-3. Paralelo: \(\dfrac1Z = \dfrac12 + \dfrac{s}{2} = \dfrac{1+s}{2}\), así que \(Z = \dfrac{2}{s+1}\).
-
-   **¿Por qué?** En paralelo se suman los inversos (admitancias) y al final se invierte.
-
-**Resultado:** Serie \(\dfrac{2(s+1)}{s}\); paralelo \(\dfrac{2}{s+1}\)
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Impedancia de una resistencia de 2 kΩ en serie con una bobina de 0,5 H · *Básico*
-
-**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una resistencia de 2 kΩ en serie con una bobina de 0,5 H.
-
-1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
-
-   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
-
-2. En serie las impedancias se suman.
-
-   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
-
-**Resultado.** \(Z(s) = \frac{s}{2} + 2000\).
-
-#### Ejemplo 3 · Impedancia de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF · *Intermedio*
-
-**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una resistencia de 1 kΩ en paralelo con un capacitor de 1 µF.
-
-1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
-
-   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
-
-2. En paralelo: \(Z = \dfrac{Z_1Z_2}{Z_1+Z_2}\).
-
-   **¿Por qué?** Igual que resistencias en paralelo.
-
-**Resultado.** \(Z(s) = \frac{1000000}{s + 1000}\).
-
-#### Ejemplo 4 · Impedancia de un capacitor de 10 µF en serie con una resistencia de 100 Ω · *Básico*
-
-**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de un capacitor de 10 µF en serie con una resistencia de 100 Ω.
-
-1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
-
-   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
-
-2. En serie las impedancias se suman.
-
-   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
-
-**Resultado.** \(Z(s) = 100 + \frac{100000}{s}\).
-
-#### Ejemplo 5 · Impedancia de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF) · *Intermedio*
-
-**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de R, L y C en serie (R = 10 Ω, L = 0,1 H, C = 1 mF).
-
-1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
-
-   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
-
-2. En serie las impedancias se suman.
-
-   **¿Por qué?** Por los elementos circula la misma corriente y los voltajes se suman.
-
-**Resultado.** \(Z(s) = \frac{s}{10} + 10 + \frac{1000}{s}\).
-
-#### Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*
-
-**Enunciado.** Halla la impedancia equivalente \(Z(s)\) de una bobina de 1 H en paralelo con un capacitor de 0,25 F.
-
-1. Cada elemento: \(Z_R = R\), \(Z_L = Ls\), \(Z_C = \dfrac{1}{Cs}\).
-
-   **¿Por qué?** Salen de transformar \(v = Ri\), \(v = L\,di/dt\) e \(i = C\,dv/dt\) con condiciones iniciales cero.
-
-2. En paralelo: \(Z = \dfrac{Z_1Z_2}{Z_1+Z_2}\).
-
-   **¿Por qué?** Igual que resistencias en paralelo.
-
-**Resultado.** \(Z(s) = \frac{4 s}{s^{2} + 4}\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (R en serie con L).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols
@@ -153,130 +83,73 @@ Z = R + L * s
 print("Z(s):", Z)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `Z(s): 0.5*s + 2000`, igual a \(\dfrac{s}{2}+2000\) del Ejemplo 2.
-
-#### Practica
-
-usa sympy (`from sympy import symbols, simplify, Rational`) para construir \(Z = \dfrac{R \cdot Z_C}{R+Z_C}\) con \(R=1000\), \(C=\)`Rational(1, 1000000)` y confirma el resultado del Ejemplo 3: \(\dfrac{1000000}{s+1000}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la tabla de impedancias asume condiciones iniciales cero; un capacitor con carga inicial o una bobina con corriente inicial aportan una fuente extra en serie que esta fórmula no incluye.
+</details>
 
 ### Tema 2: Circuitos pasivos: divisor de voltaje · Intermedio · 45 min
 
-**¿Por qué es importante?** El divisor de voltaje en Laplace da la función de transferencia de los circuitos RC y RLC en una línea.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por circuitos pasivos: divisor de voltaje con foco en comprensión antes de implementación.
 
-\[\frac{V_o}{V_i} = \frac{Z_{\text{salida}}}{Z_{\text{total}}}\]
+#### ► LA IDEA EN UNA FRASE
+**Entender circuitos pasivos: divisor de voltaje te permite tomar mejores decisiones técnicas.**
 
-#### Demostración del divisor
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida es \(V_o = Z_{salida}I = Z_{salida}\dfrac{V_i}{Z_{total}}\).
+#### ► LA ANALOGÍA
+Piensa en circuitos pasivos: divisor de voltaje como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-∎
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que circuitos pasivos: divisor de voltaje resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Ejemplo 1 · RC pasa-bajas · *Básico*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Circuitos pasivos: divisor de voltaje se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Enunciado.** \(R = 10\) kΩ en serie, \(C = 100\) µF a tierra, salida en \(C\).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Circuitos pasivos: divisor de voltaje | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Divisor: \(\dfrac{V_o}{V_i} = \dfrac{Z_C}{R + Z_C} = \dfrac{1/(sC)}{R + 1/(sC)}\).
+#### ► CUÁNDO NO USAR ESTO
+No uses circuitos pasivos: divisor de voltaje por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** La salida está sobre \(C\), y \(R\) y \(C\) están en serie.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: circuitos pasivos: divisor de voltaje funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-2. Multiplica arriba y abajo por \(sC\): \(\dfrac{1}{RCs+1}\).
+#### ► LO QUE DEBES RECORDAR
+- Circuitos pasivos: divisor de voltaje existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Quita la fracción interna.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve circuitos pasivos: divisor de voltaje en tu contexto?
+2. ¿Cómo sabrías que circuitos pasivos: divisor de voltaje no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar circuitos pasivos: divisor de voltaje?
 
-3. \(RC = 10^4\cdot10^{-4} = 1\) s.
+</details>
 
-   **¿Por qué?** \(\mu = 10^{-6}\), así que \(100\,\mu\text{F} = 10^{-4}\) F.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Resultado:** \(G = \dfrac{1}{s+1}\): primer orden con \(\tau = 1\) s
-
-#### Ejemplo 2 · RC pasa-altas · *Básico*
-
-> **Qué cambia respecto al anterior:** Cambia dónde se toma la salida.
-
-**Enunciado.** Mismo circuito, salida en \(R\).
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{R}{R + 1/(sC)}\).
-
-   **¿Por qué?** Ahora la salida está sobre \(R\).
-
-2. Por \(sC\): \(\dfrac{RCs}{RCs+1}\).
-
-   **¿Por qué?** Mismo paso.
-
-**Resultado:** \(G = \dfrac{s}{s+1}\): \(G(0) = 0\), bloquea la continua
-
-#### Ejemplo 3 · RLC serie · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Se agrega una bobina: aparece \(s^2\).
-
-**Enunciado.** \(L = 1\) H, \(R = 2\) Ω, \(C = 0{,}2\) F en serie; salida en \(C\).
-
-1. \(Z_{total} = sL + R + \dfrac{1}{sC}\), \(Z_{salida} = \dfrac{1}{sC}\).
-
-   **¿Por qué?** Tres elementos en serie.
-
-2. Divisor y multiplica por \(sC\): \(\dfrac{1}{LCs^2 + RCs + 1}\).
-
-   **¿Por qué?** Cada término de abajo se multiplica por \(sC\).
-
-3. Valores: \(LC = 0{,}2\), \(RC = 0{,}4\): \(\dfrac{1}{0{,}2s^2+0{,}4s+1}\).
-
-   **¿Por qué?** Reemplazo.
-
-4. Divide arriba y abajo por 0,2: \(\dfrac{5}{s^2+2s+5}\).
-
-   **¿Por qué?** Para que el coeficiente de \(s^2\) sea 1 (forma estándar del módulo 12).
-
-**Resultado:** \(G = \dfrac{5}{s^2+2s+5}\): segundo orden, polos \(-1\pm2j\)
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 4 · Divisor de voltaje: RC pasa bajas (R = 10 kΩ, C = 10 µF) · *Básico*
-
-**Enunciado.** Halla \(V_o(s)/V_i(s)\).
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
-
-   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
-
-**Resultado.** \(G(s) = \frac{1}{\frac{s}{10} + 1}\); ganancia DC \(1\).
-
-#### Ejemplo 5 · Divisor de voltaje: RC pasa altas (R = 1 kΩ, C = 1 mF) · *Intermedio*
-
-**Enunciado.** Halla \(V_o(s)/V_i(s)\).
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
-
-   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
-
-**Resultado.** \(G(s) = \frac{s}{s + 1}\); ganancia DC \(0\).
-
-#### Ejemplo 6 · Divisor de voltaje: RLC con salida en el capacitor (R = 2 Ω, L = 1 H, C = 0,5 F) · *Intermedio*
-
-**Enunciado.** Halla \(V_o(s)/V_i(s)\).
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{Z_{\text{salida}}}{Z_{\text{total}}}\).
-
-   **¿Por qué?** Es el divisor de voltaje de siempre, pero con impedancias.
-
-**Resultado.** \(G(s) = \frac{2}{s^{2} + 2 s + 2}\); ganancia DC \(1\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (RC pasa-bajas).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, simplify, Rational
@@ -288,184 +161,70 @@ G = simplify((1 / (C * s)) / (R + 1 / (C * s)))
 print("G(s):", G)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `G(s): 1/(s + 1)`, igual al Ejemplo 1 (\(\tau=1\) s).
-
-#### Practica
-
-cambia a la red RLC del Ejemplo 3 (\(L=1\), \(R=2\), \(C=\)`Rational(1, 5)`) construyendo \(Z_{total}=Ls+R+1/(Cs)\) y \(Z_{salida}=1/(Cs)\); confirma que da \(\dfrac{5}{s^2+2s+5}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** el divisor de voltaje asume que no se extrae corriente en la salida (carga de impedancia infinita); si conectas una carga comparable a \(Z_{salida}\), hay que incluirla en el cálculo o el resultado deja de ser válido.
+</details>
 
 ### Tema 3: El op-amp inversor · Intermedio · 45 min
 
-**¿Por qué es importante?** Los controladores P, I, D, PI y PD se construyen con op-amps; saber leer el circuito te dice qué acción implementa.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por el op-amp inversor con foco en comprensión antes de implementación.
 
-Con la entrada \(+\) a tierra, el op-amp ideal cumple dos reglas:
+#### ► LA IDEA EN UNA FRASE
+**Entender el op-amp inversor te permite tomar mejores decisiones técnicas.**
 
-1. La entrada \(-\) también queda a 0 V (**tierra virtual**).
-2. No entra corriente a las entradas del op-amp.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Entonces la corriente que llega por \(Z_i\) es la misma que sale por \(Z_f\): \(\dfrac{V_i - 0}{Z_i} = \dfrac{0 - V_o}{Z_f}\). Despejando:
+#### ► LA ANALOGÍA
+Piensa en el op-amp inversor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-\[\frac{V_o(s)}{V_i(s)} = -\frac{Z_f(s)}{Z_i(s)}\]
-
-*\(Z_i\): entre la entrada y la pata −. \(Z_f\): entre la pata − y la salida.*
-
-#### Demostración del inversor (con ganancia finita A)
-
-1. Un op-amp real amplifica la diferencia de sus entradas: \(V_o = A(V_+ - V_-) = -AV_-\), porque \(V_+ = 0\). Así que \(V_- = -V_o/A\).
-2. No entra corriente al op-amp (impedancia de entrada muy alta): la corriente por \(Z_i\) es igual a la corriente por \(Z_f\): \(\dfrac{V_i - V_-}{Z_i} = \dfrac{V_- - V_o}{Z_f}\).
-3. Reemplaza \(V_-\) y despeja: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\cdot\dfrac{1}{1 + \frac{1}{A}\left(1+\frac{Z_f}{Z_i}\right)}\).
-4. En un op-amp real \(A \approx 10^5\) o más, así que el segundo factor vale prácticamente 1, y \(V_- \approx 0\): la **tierra virtual**.
-
-∎
-
+#### ► CÓMO FUNCIONA
 ![Op-amp inversor con Zi a la entrada y Zf de realimentación](content/figures/control-1/opamp-inversor.svg)
 
-*Inversor: la pata − queda a 0 V (tierra virtual), así que la ganancia solo depende de \(Z_f/Z_i\).*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El op-amp inversor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Configuraciones típicas
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El op-amp inversor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-| \(Z_i\) | \(Z_f\) | \(V_o/V_i\) | Acción |
-|---|---|---|---|
-| \(R_1\) | \(R_2\) | \(-\dfrac{R_2}{R_1}\) | Proporcional (P) |
-| \(R\) | \(C\) | \(-\dfrac{1}{RCs}\) | Integral (I) |
-| \(C\) | \(R\) | \(-RCs\) | Derivativa (D) |
-| \(R_1\) | \(R_2\) en serie con \(C\) | \(-\dfrac{R_2Cs+1}{R_1Cs}\) | PI |
-| \(R_1\parallel C\) | \(R_2\) | \(-\dfrac{R_2}{R_1}(R_1Cs+1)\) | PD |
-| \(R_1\) | \(R_2\parallel C\) | \(-\dfrac{R_2/R_1}{R_2Cs+1}\) | Primer orden (filtro) |
+#### ► CUÁNDO NO USAR ESTO
+No uses el op-amp inversor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Procedimiento para cualquier circuito con op-amps**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el op-amp inversor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-1. Separa el circuito en etapas: cada op-amp es una etapa.
-2. En cada etapa identifica \(Z_i\) y \(Z_f\).
-3. Escribe cada una con \(R\) y \(\dfrac{1}{sC}\) y simplifícala a **una sola fracción**.
-4. Aplica \(G_k = -Z_f/Z_i\). Dividir por una fracción es multiplicar por su inversa.
-5. Multiplica las etapas: \(G = G_1 G_2\cdots\). Dos signos menos se cancelan.
+#### ► LO QUE DEBES RECORDAR
+- El op-amp inversor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-#### Ejemplo 1 · Proporcional e integrador · *Básico*
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el op-amp inversor en tu contexto?
+2. ¿Cómo sabrías que el op-amp inversor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el op-amp inversor?
 
-**Enunciado.** (a) \(Z_i = 10\) kΩ, \(Z_f = 47\) kΩ. (b) \(Z_i = 100\) kΩ, \(Z_f = 10\) µF.
+</details>
 
-1. (a) \(-\dfrac{Z_f}{Z_i} = -\dfrac{47}{10} = -4{,}7\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** Fórmula del inversor. Solo resistencias: ganancia constante.
-
-2. (b) \(Z_f = \dfrac{1}{sC}\): \(-\dfrac{1/(sC)}{R} = -\dfrac{1}{RCs}\). \(RC = 10^5\cdot10^{-5} = 1\).
-
-   **¿Por qué?** Con un condensador en la realimentación aparece \(1/s\): integra.
-
-**Resultado:** (a) \(-4{,}7\) (P); (b) \(-\dfrac1s\) (I)
-
-#### Ejemplo 2 · PI · *Intermedio*
-
-> **Qué cambia respecto al anterior:** \(Z_f\) es ahora una combinación R+C.
-
-**Enunciado.** \(Z_i = R_1 = 10\) kΩ; \(Z_f = R_2 = 100\) kΩ en serie con \(C = 10\) µF.
-
-1. \(Z_f = R_2 + \dfrac{1}{sC} = \dfrac{R_2Cs+1}{sC}\).
-
-   **¿Por qué?** Serie: se suman. Se pasa a una sola fracción.
-
-2. \(G = -\dfrac{Z_f}{Z_i} = -\dfrac{R_2Cs+1}{sC}\cdot\dfrac{1}{R_1} = -\dfrac{R_2Cs+1}{R_1Cs}\).
-
-   **¿Por qué?** Dividir por \(R_1\) es multiplicar por \(1/R_1\).
-
-3. \(R_2C = 1\), \(R_1C = 0{,}1\): \(-\dfrac{s+1}{0{,}1s} = -10 - \dfrac{10}{s}\).
-
-   **¿Por qué?** Al separar se ve un término constante (P) más uno con \(1/s\) (I).
-
-**Resultado:** PI con \(K_p = 10\) y \(K_i = 10\)
-
-#### Ejemplo 3 · Paralelo a la entrada · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Ahora es \(Z_i\) la que tiene dos componentes.
-
-**Enunciado.** \(Z_i = R_1\parallel C_1\), \(Z_f = C_2\).
-
-1. \(Z_i = \dfrac{R_1}{1+sR_1C_1}\) (paralelo), \(Z_f = \dfrac{1}{sC_2}\).
-
-   **¿Por qué?** Ejemplo 1.
-
-2. \(G = -\dfrac{1}{sC_2}\cdot\dfrac{1+sR_1C_1}{R_1} = -\dfrac{1+sR_1C_1}{sR_1C_2}\).
-
-   **¿Por qué?** Dividir por \(Z_i\) es multiplicar por su inversa.
-
-**Resultado:** \(-\left[\dfrac{C_1}{C_2} + \dfrac{1}{sR_1C_2}\right]\): un PI. Es la etapa 1 del Parcial 1
-
-#### Ejemplo 4 · Dos etapas en cascada · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** Hay dos op-amps: se multiplican.
-
-**Enunciado.** Etapa 1: \(Z_i = 10\) kΩ, \(Z_f = 20\) kΩ \(\parallel\) 50 µF. Etapa 2: inversor con \(R_3 = R_4\).
-
-1. \(Z_f = \dfrac{R_2}{1+sR_2C}\); \(R_2C = 2\cdot10^4\cdot5\cdot10^{-5} = 1\): \(Z_f = \dfrac{20\,000}{s+1}\).
-
-   **¿Por qué?** Paralelo R‖C.
-
-2. \(G_1 = -\dfrac{20\,000}{10\,000(s+1)} = -\dfrac{2}{s+1}\).
-
-   **¿Por qué?** Inversor.
-
-3. \(G_2 = -1\). \(G = G_1G_2 = \dfrac{2}{s+1}\).
-
-   **¿Por qué?** Las etapas se multiplican y los dos signos menos se cancelan.
-
-**Resultado:** \(\dfrac{2}{s+1}\): primer orden sin inversión
-
-#### Errores comunes
-
-- Trabajar con derivadas en el tiempo en vez de impedancias: es más largo y fácil de equivocar.
-- Sumar impedancias en paralelo como si estuvieran en serie.
-- Olvidar el signo menos de cada etapa inversora.
-- Dejar fracciones dentro de fracciones sin simplificar.
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 5 · Controlador PI con op-amp inversor · *Intermedio*
-
-**Enunciado.** Con \(Z_i = R_1\) y \(Z_f = R_2 + \tfrac{1}{Cs}\), halla \(V_o/V_i\).
-
-1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
-
-   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
-
-**Resultado.** \(-\dfrac{R_2}{R_1} - \dfrac{1}{R_1Cs}\): proporcional + integral. El signo menos se corrige con un segundo inversor de ganancia −1.
-
-#### Ejemplo 6 · Controlador PD con op-amp inversor · *Intermedio*
-
-**Enunciado.** Con \(Z_i = R_1 \parallel \tfrac{1}{Cs}\) y \(Z_f = R_2\), halla \(V_o/V_i\).
-
-1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
-
-   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
-
-**Resultado.** \(-\dfrac{R_2}{R_1} - R_2Cs\): proporcional + derivativo. El signo menos se corrige con un segundo inversor de ganancia −1.
-
-#### Ejemplo 7 · Controlador Integrador con op-amp inversor · *Básico*
-
-**Enunciado.** Con \(Z_i = R\) y \(Z_f = \tfrac{1}{Cs}\), halla \(V_o/V_i\).
-
-1. Inversor: \(\dfrac{V_o}{V_i} = -\dfrac{Z_f}{Z_i}\).
-
-   **¿Por qué?** La entrada inversora es tierra virtual y no entra corriente al op-amp: la corriente de \(Z_i\) pasa toda por \(Z_f\).
-
-**Resultado.** \(-\dfrac{1}{RCs}\): integral pura. El signo menos se corrige con un segundo inversor de ganancia −1.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (controlador PI).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, simplify, Rational, apart
@@ -478,51 +237,8 @@ G = simplify(-Zf / R1)
 print("G(s):", apart(G))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** algo equivalente a `-10 - 10/s`, igual al Ejemplo 2 (\(K_p=10\), \(K_i=10\)).
-
-#### Practica
-
-cambia a \(Z_i=C\), \(Z_f=R\) con \(R=1\,000\,000\) y \(C=\)`Rational(1, 1000000)` (práctica 2 de esta sección) y confirma que da \(-s\): un derivador puro. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la fórmula \(-Z_f/Z_i\) asume un op-amp ideal (ganancia infinita, sin corriente de entrada); con ganancia finita \(A\) aparece el factor de corrección demostrado arriba, y a frecuencias cercanas al ancho de banda del op-amp real el inversor deja de comportarse como el modelo ideal.
-
-#### Práctica para resolver sola o solo
-
-- **1.**RL: \(V_i\), \(L\) en serie, salida en \(R\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\dfrac{R}{sL+R} = \dfrac{R/L}{s+R/L}\).
-  
-  </details>
-
-- **2.**Op-amp con \(Z_i = C\) y \(Z_f = R\), \(R = 1\) MΩ, \(C = 1\) µF.
-  
-  <details><summary>Respuesta</summary>
-  
-  \(-RCs = -s\): derivador.
-  
-  </details>
-
-- **3.**Op-amp con \(Z_i = R_1\parallel C\) y \(Z_f = R_2\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(-\dfrac{R_2(1+sR_1C)}{R_1}\): un PD.
-  
-  </details>
-
-- **4.**RLC serie con \(L = 0{,}5\) H, \(R = 3\) Ω, \(C = 0{,}1\) F, salida en \(C\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\dfrac{1}{0{,}05s^2+0{,}3s+1} = \dfrac{20}{s^2+6s+20}\).
-  
-  </details>
-
+</details>

@@ -5,202 +5,141 @@
 
 Cada tema verifica su garantía con navegación real (`RouterTestingHarness` oficial de Angular): el orden real del array de rutas, la invocación directa de un guard como función pura, un espía real confirmando que `loadComponent` no descarga hasta navegar, y el input binding real de parámetros de ruta.
 
+
 ### Tema 1: Router config con rutas standalone · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con navegación real vía RouterTestingHarness, que el orden del array Routes determina qué ruta se activa: una ruta comodín colocada antes de una ruta específica la intercepta indebidamente, un bug real y reproducible, no solo una regla teórica.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con navegación real vía RouterTestingHarness, que el orden del array Routes determina qué ruta se activa: una ruta comodín colocada antes de una ruta específica la intercepta indebidamente, un bug real y reproducible, no solo una regla teórica.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en router config con rutas standalone como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que router config con rutas standalone resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Router config con rutas standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Router config con rutas standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses router config con rutas standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: router config con rutas standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Router config con rutas standalone existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve router config con rutas standalone en tu contexto?
+2. ¿Cómo sabrías que router config con rutas standalone no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar router config con rutas standalone?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
 Al finalizar podrás confirmar, con navegación real vía `RouterTestingHarness`, que el orden del array `Routes` determina qué ruta se activa: una ruta comodín `**` colocada antes de una ruta específica la intercepta indebidamente, un bug real y reproducible, no solo una regla teórica.
 
 **Conocimiento previo:** Módulo 3 de este track (inyección de dependencias); Módulo 8 (standalone y `provideRouter`).
 
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** En una app de entregas que separa inicio, detalle y administración, el orden de evaluación de rutas es un contrato real del router: una ruta comodín mal ubicada intercepta silenciosamente URLs válidas, un bug verificable con navegación real, no solo con inspección visual del array.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `Routes`, `provideRouter`, configuración declarativa de navegación.
-
-La configuración de rutas en Angular moderno se declara como un array plano de objetos `Routes` (`export const routes: Routes = [...]`), cada uno asociando un `path` (el segmento de URL) con un `component` a renderizar (o, para lazy loading, una función `loadComponent`, Tema 3), y se registra en la aplicación mediante `provideRouter(routes)` dentro del array de `providers` de la configuración de la aplicación (`app.config.ts`), reemplazando el antiguo patrón de `RouterModule.forRoot(routes)` que requería un `NgModule` dedicado exclusivamente al routing.
-
-Cada ruta puede además declarar `canActivate` (un array de guards que deben aprobar el acceso antes de activar la ruta, Tema 2), y una ruta con `path: "**"` (comodín que coincide con cualquier URL no capturada por ninguna ruta anterior) combinada con `redirectTo` gestiona el caso de una URL no reconocida, redirigiendo típicamente hacia una página de inicio o una vista de error 404 dedicada. El orden de las rutas en el array importa: Angular evalúa las rutas en el orden declarado, activando la primera que coincida con la URL actual, por lo que la ruta comodín `**` debe declararse siempre al final del array, después de todas las rutas específicas, para no interceptar accidentalmente URLs que sí deberían coincidir con una ruta más específica declarada después de ella.
-
-Esta configuración declarativa centralizada de todas las rutas de la aplicación en un único array (o en varios arrays organizados por feature, combinados mediante rutas hijas anidadas) proporciona una visión completa y auditable de toda la navegación posible de la aplicación en un solo lugar, facilitando razonar sobre qué vistas existen, cuáles están protegidas, y cuáles se cargan de forma perezosa, sin necesidad de rastrear esa información dispersa entre múltiples archivos de configuración de módulos como en el patrón histórico anterior a la adopción de standalone.
-
-**Analogía:** la configuración de rutas es como el índice completo y centralizado de un edificio de oficinas, listando cada oficina disponible (cada ruta), quién tiene permiso de entrar a cada una (guards), y cuáles solo se abren y se acondicionan bajo demanda cuando alguien realmente solicita visitarlas (lazy loading), en vez de mantener todas las oficinas completamente acondicionadas y listas desde el primer momento aunque nadie las visite nunca.
-
-**Diagrama — orden de evaluación del array `Routes`:**
-
-```
-URL entrante: /tareas
-     │
-     ▼
-┌─────────────────────┐   NO coincide   ┌──────────────────────┐
-│ 1. path: ''          │ ──────────────▶ │ 2. path: 'tareas'     │
-└─────────────────────┘                  └──────────────────────┘
-                                                    │ SÍ coincide
-                                                    ▼
-                                          ┌──────────────────────┐
-                                          │ se activa TareasComp. │
-                                          └──────────────────────┘
-                                          (3. path:'**' NUNCA se evalúa
-                                           porque ya hubo coincidencia)
-```
-
-**Código del ejemplo:**
-
-```ts
-export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'tareas', loadComponent: () => import('./tareas/lista').then(m => m.Lista) },
-  { path: 'tareas/:id', loadComponent: () => import('./tareas/detalle').then(m => m.Detalle) },
-  { path: 'admin', loadComponent: () => import('./admin/panel').then(m => m.Panel), canActivate: [authGuard] },
-  { path: '**', redirectTo: '' }, // siempre al final
-];
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía:
-
-```bash
-mkdir demo-routing
-cd demo-routing
-npx -y @angular/cli@22 new . --standalone --style=css --routing=true --skip-git --defaults
-```
-
-Crea `src/app/rutas-demo.ts` con dos configuraciones: una correcta (comodín al final) y una incorrecta (comodín primero):
-
-```bash
-mkdir -p src/app
-```
-
-```ts
-// src/app/rutas-demo.ts
-import { Routes, provideRouter } from '@angular/router';
-import { Component } from '@angular/core';
-
-@Component({ selector: 'app-inicio', standalone: true, template: 'Inicio' })
-export class InicioComponent {}
-
-@Component({ selector: 'app-tareas', standalone: true, template: 'Lista de tareas' })
-export class TareasComponent {}
-
-@Component({ selector: 'app-404', standalone: true, template: 'No encontrado' })
-export class NoEncontradoComponent {}
-
-export const rutasCorrectas: Routes = [
-  { path: '', component: InicioComponent },
-  { path: 'tareas', component: TareasComponent },
-  { path: '**', component: NoEncontradoComponent }, // AL FINAL, correcto
-];
-
-export const rutasIncorrectas: Routes = [
-  { path: '**', component: NoEncontradoComponent }, // ANTES de las especificas, incorrecto
-  { path: '', component: InicioComponent },
-  { path: 'tareas', component: TareasComponent },
-];
-```
-
-Confirma con navegación real (`RouterTestingHarness`, la utilidad oficial de test de router de Angular) que el orden del array determina realmente qué ruta se activa:
-
-```ts
-// src/app/rutas-demo.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter } from '@angular/router';
-import { rutasCorrectas, rutasIncorrectas } from './rutas-demo';
-
-describe('Orden real del array Routes', () => {
-  it('con el comodin al final, /tareas SI activa TareasComponent', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter(rutasCorrectas)] });
-    const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/tareas');
-
-    expect(harness.routeNativeElement?.textContent).toContain('Lista de tareas');
-  });
-
-  it('con el comodin PRIMERO, /tareas es interceptada por el comodin (bug real)', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter(rutasIncorrectas)] });
-    const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/tareas');
-
-    expect(harness.routeNativeElement?.textContent).toContain('No encontrado'); // NO llega a TareasComponent
-  });
-});
-```
-
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** ambos tests pasan; el primero confirma navegación REAL exitosa a `/tareas` con el comodín correctamente al final; el segundo confirma, con la MISMA navegación real, que colocar `**` primero intercepta indebidamente la URL `/tareas`, mostrando "No encontrado" en vez del componente correcto — el bug real y reproducible, no solo una advertencia teórica.
-
-**Fallo deliberado:** en `rutasCorrectas`, mueve `{ path: '**', component: NoEncontradoComponent }` al principio del array (rompiendo el orden correcto) y ejecuta de nuevo el primer test. FALLA porque ahora `/tareas` también es interceptada por el comodín — diagnostica confirmando, con el mismo patrón exacto del segundo test, que el orden del array `Routes` es un contrato real de evaluación secuencial, no un detalle estético. Restaura el comodín al final antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega una tercera ruta específica y confirma con `RouterTestingHarness` que también navega correctamente con el comodín al final.
-2. Documenta, en un comentario, por qué Angular evalúa las rutas en el orden EXACTO del array, en vez de buscar automáticamente la coincidencia "más específica" entre todas las rutas declaradas.
-3. Escribe un test que confirme que una URL genuinamente inexistente (por ejemplo, `/ruta-que-no-existe`) SÍ es capturada correctamente por el comodín en `rutasCorrectas`.
-4. Escribe de memoria (sin mirar) dos configuraciones de `Routes` (comodín al final vs al principio) y dos tests con `RouterTestingHarness` que confirmen el contraste real. Compara después contra el patrón del Paso 4.
-
-**Pista:** `RouterTestingHarness.create()` seguido de `navigateByUrl(...)` ejecuta una navegación REAL del router de Angular — a diferencia de inspeccionar visualmente el array de rutas, esta prueba confirma el comportamiento real de resolución, incluyendo casos donde el orden produce resultados contraintuitivos.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el patrón de ruta que actúa como comodín, capturando cualquier URL no reconocida por rutas anteriores:
-
-```ts
-{ path: '____', redirectTo: '' }
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos configuraciones de `Routes` (correcta e incorrecta según el orden del comodín) y un test con `RouterTestingHarness` que confirme el contraste real. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con navegación real del router de Angular, que el orden del array `Routes` determina exactamente qué ruta se activa, y que un comodín mal ubicado produce un bug real y reproducible. El siguiente tema confirma, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que describe su prosa. Fuentes oficiales: [Angular — Routing](https://angular.dev/guide/routing), [Angular — Common router tasks](https://angular.dev/guide/routing/common-router-tasks).
-
-**Errores comunes:** colocar la ruta comodín `**` antes de rutas específicas, interceptando URLs que deberían coincidir con una ruta más específica; asumir que Angular reordena automáticamente las rutas por especificidad, cuando en realidad respeta estrictamente el orden declarado.
-
-**Cuándo no usarlo:** para una aplicación con una única ruta (sin necesidad de un mapa de navegación completo), la preocupación por el orden del array `Routes` no tiene ningún caso real que prevenir.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Define rutas para lista, detalle y asignación de entregas. Abre directamente una URL de detalle y comprueba que una guía inexistente presenta recuperación hacia la lista.
+</details>
 
 ### Tema 2: Guards funcionales · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, invocando un guard funcional DIRECTAMENTE como una función pura (sin `TestBed.createComponent` ni navegación completa), la ventaja real de testabilidad que distingue a los guards funcionales de los guards de clase históricos.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, invocando un guard funcional DIRECTAMENTE como una función pura (sin TestBed.createComponent ni navegación completa), la ventaja real de testabilidad que distingue a los guards funcionales de los guards de clase históricos.
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 3 de este track (`inject()` y contexto de inyección).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, invocando un guard funcional DIRECTAMENTE como una función pura (sin TestBed.createComponent ni navegación completa), la ventaja real de testabilidad que distingue a los guards funcionales de los guards de clase históricos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En una app de entregas, verificar que `authGuard` bloquea correctamente el acceso sin sesión no debería requerir levantar un router completo ni renderizar componentes; invocar el guard directamente como función, con un `AuthService` real inyectado vía `TestBed.runInInjectionContext`, es la prueba más simple y rápida posible.
+#### ► LA ANALOGÍA
+Piensa en guards funcionales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que guards funcionales resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `CanActivateFn`, protección de rutas, testabilidad.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Guards funcionales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un guard funcional es simplemente una función que Angular invoca antes de activar una ruta, devolviendo `true` (permite la navegación), `false` (la bloquea) o una `UrlTree` (redirige hacia otra ruta en vez de bloquear silenciosamente, la opción más amigable para el usuario, que en vez de simplemente denegar el acceso lo redirige hacia una ubicación más apropiada, como una página de login).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Guards funcionales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses guards funcionales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: guards funcionales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Guards funcionales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve guards funcionales en tu contexto?
+2. ¿Cómo sabrías que guards funcionales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar guards funcionales?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```typescript
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   return auth.estaAutenticado() ? true : inject(Router).parseUrl("/login");
 };
 ```
-
-Este guard ilustra el patrón: usa `inject()` (Módulo 3) directamente dentro de la función, sin necesitar ninguna clase ni constructor, precisamente el contexto funcional donde `inject()` es indispensable.
-
-Esta forma funcional reemplaza el patrón histórico de guards implementados como clases que implementan una interfaz específica (`CanActivate`), y ofrece una ventaja concreta de testabilidad: probar un guard funcional es simplemente invocar la función directamente con argumentos simulados y verificar su valor de retorno, sin necesidad de instanciar una clase completa mediante `TestBed` ni de simular su ciclo de vida de inyección de dependencias como clase, una prueba unitaria considerablemente más simple y directa (en el espíritu del Módulo 9 del track de JavaScript, donde funciones puras y simples son más fáciles de probar que estructuras con estado y dependencias complejas).
-
-Encadenar múltiples guards en el array `canActivate` de una misma ruta (`canActivate: [authGuard, permisosGuard]`) permite componer verificaciones independientes: Angular evalúa cada guard en orden, y la navegación solo procede si todos aprueban; si cualquiera de ellos devuelve `false` o una `UrlTree`, la navegación se detiene (o se redirige) en ese punto, sin evaluar los guards restantes de la lista, un patrón de composición similar en espíritu al middleware de Express estudiado en el Módulo 4 del track de **Node.js** (entorno para ejecutar JavaScript en el servidor).
-
-**Analogía:** un guard funcional es como un control de acceso independiente y simple en la entrada de una sala específica, que verifica una condición puntual (¿tiene la credencial correcta?) y decide si permite el paso, lo deniega, o redirige hacia otra sala más apropiada; ser una simple función (no una clase compleja) lo hace tan fácil de probar como verificar el resultado de cualquier función pura ante distintas entradas simuladas.
-
-**Diagrama — decisión del guard:**
 
 ```
 navegación → /admin
@@ -215,10 +154,6 @@ navegación → /admin
 │ ruta activada  │
 └───────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-routing` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-guards --standalone --skip-git --defaults` y luego `cd demo-guards`), crea `src/app/auth.guard.ts`:
 
 ```bash
 mkdir -p src/app
@@ -242,8 +177,6 @@ export const authGuard: CanActivateFn = () => {
   return auth.estaAutenticado() ? true : router.parseUrl('/login');
 };
 ```
-
-Confirma la ventaja real de testabilidad: invoca `authGuard` DIRECTAMENTE como función, sin ningún componente ni navegación completa, usando `TestBed.runInInjectionContext` para proveerle el contexto de inyección que necesita:
 
 ```ts
 // src/app/auth.guard.spec.ts
@@ -276,65 +209,69 @@ describe('authGuard invocado directamente como funcion pura (sin componente ni r
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; invocar `authGuard(...)` DIRECTAMENTE (sin `TestBed.createComponent`, sin `RouterTestingHarness`, sin renderizar ninguna vista) es suficiente para verificar su comportamiento completo — la ventaja real de testabilidad que la prosa describe, demostrada en código: menos infraestructura de test que un guard de clase equivalente hubiera requerido.
-
-**Fallo deliberado:** cambia `return auth.estaAutenticado() ? true : router.parseUrl('/login');` por `return true;` (el mismo bug de seguridad simulado en el Tema 1 del Módulo 13) y ejecuta de nuevo el primer test. FALLA porque `resultado` ahora es `true` en vez de una `UrlTree` — diagnostica confirmando que la prueba directa del guard detecta el mismo fallo de seguridad real que una prueba de navegación completa detectaría, con considerablemente menos código de configuración. Restaura la verificación real antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un segundo guard (`permisosGuard`) y confirma, invocándolo directamente, que ambos guards pueden probarse de forma completamente aislada entre sí.
-2. Documenta, en un comentario, cuántas líneas de configuración de test ahorra invocar el guard directamente frente al patrón de `RouterTestingHarness` usado en el Tema 1 para probar el mismo comportamiento a través de navegación real.
-3. Escribe un test que confirme el encadenamiento de guards: si `authGuard` devuelve una `UrlTree`, un segundo guard en la misma ruta nunca debería evaluarse (documenta esta garantía, ya que Angular la aplica internamente en el router real).
-4. Escribe de memoria (sin mirar) un guard funcional y un test que lo invoque directamente con `TestBed.runInInjectionContext`. Compara después contra el patrón del Paso 4.
-
-**Pista:** invocar un guard directamente como función es apropiado para probar SU lógica interna de forma aislada; usar `RouterTestingHarness` (Tema 1) sigue siendo necesario para confirmar que el guard está correctamente CONECTADO a la ruta real — ambos niveles de prueba son complementarios, no sustitutos uno del otro.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método real de `TestBed` que provee un contexto de inyección explícito para invocar `inject()` fuera de un componente:
-
-```ts
-const resultado = TestBed.____(injector, () => authGuard({} as any, {} as any));
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un guard funcional y un test que lo invoque directamente, confirmando tanto el bloqueo como el permiso. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, invocando un guard funcional directamente como función pura, la ventaja real de testabilidad que distingue a los guards funcionales de las clases guard históricas. El siguiente tema confirma con un espía real que `loadComponent` no descarga su chunk hasta que la navegación efectivamente ocurre. Fuentes oficiales: [Angular — Router guards](https://angular.dev/guide/routing/common-router-tasks#preventing-unauthorized-access).
-
-**Errores comunes:** probar un guard funcional únicamente a través de navegación completa (`RouterTestingHarness`), perdiendo la ventaja real de una prueba unitaria directa y más rápida; olvidar que `inject()` dentro de un guard requiere un contexto de inyección, incluso al invocarlo directamente en un test.
-
-**Cuándo no usarlo:** para un guard extremadamente simple sin ninguna dependencia inyectada (por ejemplo, uno que siempre devuelve `true`), la inversión de escribir un test dedicado puede no aportar ningún valor real de verificación.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Impide entrar al panel operativo sin sesión mediante un guard funcional. Prueba también una petición directa a la API: la autorización debe mantenerse aunque el navegador omita el guard.
+</details>
 
 ### Tema 3: Lazy loading con loadComponent · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con un espía real envolviendo la función de importación dinámica, que `loadComponent` NO descarga su chunk hasta que la navegación hacia esa ruta específica efectivamente ocurre — el equivalente automatizable a inspeccionar la pestaña Network del navegador.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con un espía real envolviendo la función de importación dinámica, que loadComponent NO descarga su chunk hasta que la navegación hacia esa ruta específica efectivamente ocurre — el equivalente automatizable a inspeccionar la pestaña Network del nave…
 
-**Conocimiento previo:** Temas 1-2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con un espía real envolviendo la función de importación dinámica, que loadComponent NO descarga su chunk hasta que la navegación hacia esa ruta específica efectivamente ocurre — el equivalente automatizable a inspeccionar la pestaña Network del navegador.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En una app de entregas con un panel de administración usado solo por un subconjunto de usuarios, confirmar automáticamente (en un test, no solo revisando DevTools manualmente) que ese código NUNCA se descarga para usuarios que no navegan hacia `/admin` es la única forma confiable de prevenir una regresión futura donde alguien accidentalmente vuelve esa ruta "eager" de nuevo.
+#### ► LA ANALOGÍA
+Piensa en lazy loading con loadcomponent como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que lazy loading con loadcomponent resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** carga bajo demanda de rutas, `import()` dinámico, reducción del bundle inicial.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Lazy loading con loadComponent se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`loadComponent: () => import("./tareas/lista").then(m => m.Lista)` usa `import()` dinámico (estudiado en profundidad en el Módulo 7 del track de JavaScript) para cargar el componente correspondiente a una ruta específica únicamente cuando el usuario navega efectivamente hacia esa ruta, en vez de incluir el código de todas las rutas posibles de la aplicación en el bundle inicial que se descarga al cargar la aplicación por primera vez. Verificar en la pestaña Network de las herramientas de desarrollador que el chunk correspondiente a una ruta con `loadComponent` solo se descarga en el momento exacto de navegar hacia ella (no antes, durante la carga inicial de la aplicación) confirma directamente que el lazy loading está funcionando como se espera.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Lazy loading con loadComponent | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Esta técnica tiene un impacto directo y medible en el tiempo de carga inicial percibido por el usuario, especialmente en aplicaciones con muchas rutas o con funcionalidades específicas (como un panel de administración usado solo por un subconjunto reducido de usuarios) que no todos los usuarios necesitan cargar en cada visita: un usuario que solo navega a la página de inicio de una aplicación con `loadComponent` en sus demás rutas nunca descarga el código de esas otras rutas durante esa sesión específica, reduciendo tanto el tiempo de descarga inicial como el tiempo de parseo y ejecución de JavaScript que el navegador debe realizar antes de que la aplicación se vuelva interactiva.
+#### ► CUÁNDO NO USAR ESTO
+No uses lazy loading con loadcomponent por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Combinar lazy loading de rutas con guards (Tema 2) en la misma ruta es perfectamente natural: `{path: "admin", loadComponent: ..., canActivate: [authGuard]}` evalúa primero el guard, y solo si aprueba la navegación, procede a descargar y renderizar el chunk correspondiente, evitando incluso el coste de descarga de un componente al que, de todas formas, el usuario no tendría acceso a ver si el guard lo hubiera rechazado.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: lazy loading con loadcomponent funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Analogía:** el lazy loading de rutas es como un servicio de streaming que descarga cada episodio de una serie únicamente cuando el espectador decide reproducirlo, en vez de descargar la temporada completa de antemano sin saber con certeza qué episodios específicos el espectador realmente llegará a ver.
+#### ► LO QUE DEBES RECORDAR
+- Lazy loading con loadComponent existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Diagrama — descarga bajo demanda:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve lazy loading con loadcomponent en tu contexto?
+2. ¿Cómo sabrías que lazy loading con loadcomponent no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar lazy loading con loadcomponent?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 carga inicial de la app
       │
@@ -346,16 +283,10 @@ carga inicial de la app
                                                           └───────────────────┘
 ```
 
-**Código del ejemplo:**
-
 ```ts
 { path: 'tareas', loadComponent: () => import('./tareas/lista').then(m => m.Lista) }
 // verificar en DevTools → Network: el chunk de "lista" solo se descarga al navegar a /tareas
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-lazy --standalone --skip-git --defaults` y luego `cd demo-lazy`), crea `src/app/lazy-demo.ts` con un componente lazy y un espía que envuelve la función de importación dinámica, para confirmar programáticamente (sin depender de leer la pestaña Network a simple vista) exactamente cuándo Angular la invoca:
 
 ```bash
 mkdir -p src/app
@@ -411,53 +342,23 @@ describe('loadComponent invoca el import dinamico solo al navegar', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el test pasa; el espía confirma con evidencia programática (no solo inspección visual de DevTools) que `cargarAdmin` permanece sin invocar tanto antes de cualquier navegación como después de navegar a `/` (la ruta no-lazy), y se invoca exactamente una vez al navegar efectivamente a `/admin` — el chunk se descarga en el momento preciso que la teoría describe, no antes.
-
-**Fallo deliberado:** cambia `{ path: 'admin', loadComponent: cargarAdmin }` por `{ path: 'admin', component: AdminLazyComponent }` (eager, sin lazy loading) y ajusta el test para reflejar ese cambio de API; si mantienes la aserción `expect(factorySpy).not.toHaveBeenCalled()` tras crear las rutas con un componente ya importado de forma estática (no perezosa), verás que la premisa completa del test deja de tener sentido porque ya no existe ningún factory que invocar bajo demanda — diagnosticando que la ausencia de un `loadComponent` real elimina la garantía de carga diferida que el test verifica. Restaura `loadComponent` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega una tercera ruta lazy y confirma con un segundo espía independiente que cada `loadComponent` se invoca solo cuando su ruta específica es visitada, y no cuando se visita otra ruta lazy distinta.
-2. Combina esta ruta lazy con `authGuard` (Tema 2) en la misma configuración y confirma con el espía que, si el guard redirige, el factory de `loadComponent` NUNCA se invoca (el chunk no se descarga si el guard ya bloqueó el acceso).
-3. Documenta, comparando con el Tema 1, por qué `RouterTestingHarness` (y no invocar una función directamente, como en el Tema 2) es la herramienta correcta aquí: `loadComponent` solo se activa como parte de una navegación real resuelta por el router.
-4. Escribe de memoria (sin mirar) un espía que envuelva un factory de `loadComponent` y un test con `RouterTestingHarness` que confirme que se invoca exactamente una vez al navegar. Compara después contra el patrón del Paso 4.
-
-**Pista:** un espía que envuelve la función factory de `loadComponent` es la forma más precisa de contar invocaciones exactas; inspeccionar la pestaña Network del navegador manualmente confirma lo mismo mucho más lentamente y sin quedar registrado como una prueba automatizada repetible.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el nombre real de la función de Vitest usada para crear una función espía:
-
-```ts
-const factorySpy = vi.____(() => Promise.resolve({ AdminLazyComponent }));
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una ruta con `loadComponent` envuelta en un espía y un test con `RouterTestingHarness` que confirme que el chunk no se descarga antes de navegar. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con un espía real sobre la función de importación dinámica, que `loadComponent` respeta estrictamente la carga bajo demanda. El siguiente tema confirma, con `RouterTestingHarness`, cómo Angular llena automáticamente un `input()` de componente a partir de un parámetro de ruta. Fuentes oficiales: [Angular — Lazy loading](https://angular.dev/guide/routing/common-router-tasks#lazy-loading).
-
-**Errores comunes:** confiar únicamente en la inspección manual de la pestaña Network para verificar lazy loading, sin ninguna prueba automatizada que detecte una regresión futura; olvidar que combinar un guard con `loadComponent` en la misma ruta evita también el coste de descarga cuando el guard rechaza el acceso.
-
-**Cuándo no usarlo:** para una ruta que la enorme mayoría de usuarios visita en cada sesión (como la página de inicio), forzar `loadComponent` puede añadir una espera de red innecesaria en el camino crítico en vez de aportar un beneficio real de rendimiento.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Carga la pantalla de administración bajo demanda. Inspecciona la red al abrir únicamente seguimiento y verifica que ese recorrido no descarga el componente administrativo.
+</details>
 
 ### Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, navegando con `RouterTestingHarness` hacia una URL con un parámetro dinámico, que Angular llena automáticamente un `input()` del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a `ActivatedRoute`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, navegando con RouterTestingHarness hacia una URL con un parámetro dinámico, que Angular llena automáticamente un input() del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a ActivatedRoute.
 
-**Conocimiento previo:** Tema 1 de este módulo (`RouterTestingHarness`); Módulo 1 de este track (`input()`).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, navegando con RouterTestingHarness hacia una URL con un parámetro dinámico, que Angular llena automáticamente un input() del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a ActivatedRoute.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En una app de entregas, la vista de detalle de un pedido (`/pedidos/42`) necesita el `42` para saber qué pedido mostrar; confirmar con una prueba real que ese valor efectivamente llega al componente como `input()` (y no solo confiar en que "debería funcionar") previene una regresión silenciosa si alguien cambia el nombre del parámetro de ruta sin actualizar el componente correspondiente.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** input binding de rutas, `ActivatedRoute`, `CanDeactivateFn`, `ResolveFn`.
 
 Los parámetros de ruta dinámicos (`:id` en `path: "tareas/:id"`) pueden leerse de dos formas: la forma clásica inyecta `ActivatedRoute` y suscribe (o convierte con `toSignal`, Módulo 6) al observable `paramMap`; la forma moderna y más concisa usa "input binding de rutas", donde simplemente declarar `id = input<string>();` en el componente hace que Angular llene automáticamente ese input con el valor del parámetro de ruta `:id` correspondiente, sin ninguna suscripción manual necesaria, una integración directa entre el sistema de routing y el modelo de inputs basados en signals estudiado en el Módulo 1.
@@ -489,133 +390,123 @@ export class Detalle {
 }
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-params --standalone --skip-git --defaults` y luego `cd demo-params`), crea `src/app/param-demo.ts` con un componente que declara `id` como `input()`, y navega hacia él con `RouterTestingHarness` para confirmar que Angular lo llena automáticamente:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que parámetros de ruta, query params y capacidades avanzadas de routing resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-```bash
-mkdir -p src/app
-```
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Parámetros de ruta, query params y capacidades avanzadas de routing se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```ts
-// src/app/param-demo.ts
-import { Component, input } from '@angular/core';
-import { Routes } from '@angular/router';
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Parámetros de ruta, query params y capacidades avanzadas de routing | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-@Component({ selector: 'app-pedido-detalle', standalone: true, template: 'Pedido {{ id() }}' })
-export class PedidoDetalleComponent {
-  id = input<string>();
-}
+#### ► CUÁNDO NO USAR ESTO
+No uses parámetros de ruta, query params y capacidades avanzadas de routing por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-export const rutasConParametro: Routes = [
-  { path: 'pedidos/:id', component: PedidoDetalleComponent },
-];
-```
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: parámetros de ruta, query params y capacidades avanzadas de routing funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-```ts
-// src/app/param-demo.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { rutasConParametro } from './param-demo';
+#### ► LO QUE DEBES RECORDAR
+- Parámetros de ruta, query params y capacidades avanzadas de routing existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-describe('input binding de rutas llena automaticamente el input del componente', () => {
-  it('el input id() recibe el valor real del parametro :id de la URL', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideRouter(rutasConParametro, withComponentInputBinding())],
-    });
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve parámetros de ruta, query params y capacidades avanzadas de routing en tu contexto?
+2. ¿Cómo sabrías que parámetros de ruta, query params y capacidades avanzadas de routing no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar parámetros de ruta, query params y capacidades avanzadas de routing?
 
-    const harness = await RouterTestingHarness.create();
-    await harness.navigateByUrl('/pedidos/42');
+</details>
 
-    expect(harness.routeNativeElement?.textContent).toContain('Pedido 42');
-  });
-});
-```
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-```bash
-npx ng test --watch=false
-```
+#### Objetivo observable
+Al finalizar podrás confirmar, navegando con `RouterTestingHarness` hacia una URL con un parámetro dinámico, que Angular llena automáticamente un `input()` del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a `ActivatedRoute`.
 
-**Resultado esperado:** el test pasa; el texto renderizado contiene "Pedido 42", confirmando que Angular tomó el segmento `42` de la URL y lo asignó automáticamente al `input()` `id`, sin que el componente haya escrito ninguna suscripción manual a `ActivatedRoute.paramMap`.
+**Conocimiento previo:** Tema 1 de este módulo (`RouterTestingHarness`); Módulo 1 de este track (`input()`).
 
-**Fallo deliberado:** elimina `withComponentInputBinding()` de `provideRouter(rutasConParametro, withComponentInputBinding())`, dejando solo `provideRouter(rutasConParametro)`, y ejecuta de nuevo el test. FALLA porque `harness.routeNativeElement?.textContent` ahora contiene "Pedido " sin el `42` (el input nunca se llena) — diagnosticando que el input binding de rutas NO es un comportamiento automático de `input()` por sí solo, sino una característica que debe activarse explícitamente con `withComponentInputBinding()` al configurar el router. Restaura la característica antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un segundo parámetro de ruta (por ejemplo `:seccion` en `pedidos/:id/:seccion`) y confirma con el mismo patrón que ambos inputs se llenan correctamente de forma independiente.
-2. Sincroniza un query param (`?estado=pendiente`) con un signal del componente usando `ActivatedRoute.queryParamMap`, y confirma con `RouterTestingHarness` que navegar con ese query param actualiza el signal correspondiente.
-3. Escribe un `CanDeactivateFn` real que bloquee la navegación fuera de una ruta si un signal `hayCambiosSinGuardar` está en `true`, y confírmalo navegando con `RouterTestingHarness` antes y después de cambiar ese signal.
-4. Escribe de memoria (sin mirar) un componente con un `input()` de ruta y un test con `RouterTestingHarness` y `withComponentInputBinding()` que confirme que se llena correctamente. Compara después contra el patrón del Paso 4.
-
-**Pista:** `withComponentInputBinding()` es una característica que se activa explícitamente en `provideRouter(...)`, no un comportamiento implícito de `input()` — si un input de ruta llega vacío en una app real, esta es la primera causa a revisar.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la función real de `@angular/router` que activa el llenado automático de inputs desde parámetros de ruta:
-
-```ts
-provideRouter(rutasConParametro, ____())
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una ruta con parámetro `:id`, un componente con `id = input<string>()`, y un test con `RouterTestingHarness` que confirme el valor recibido. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, navegando con `RouterTestingHarness` hacia una URL con parámetro dinámico, que Angular llena automáticamente un `input()` de componente a partir de esa URL, siempre que `withComponentInputBinding()` esté activo. Con esto cierras el módulo de routing: dominas configuración de rutas (Tema 1), guards funcionales probados directamente (Tema 2), lazy loading verificado con espías (Tema 3) y parámetros de ruta confirmados con input binding (Tema 4). El siguiente módulo aplica estos fundamentos a formularios reactivos. Fuentes oficiales: [Angular — Route parameters](https://angular.dev/guide/routing/common-router-tasks#activated-route).
-
-**Errores comunes:** olvidar `withComponentInputBinding()` y asumir que el input simplemente no se está declarando bien; confundir un parámetro de ruta (identifica el recurso) con un query param (modifica cómo se muestra ese recurso, sin cambiar cuál es).
-
-**Cuándo no usarlo:** para datos que deben estar disponibles ANTES de que el componente se active (evitando mostrar un estado de carga inicial), `ResolveFn` es más apropiado que leer un input de ruta ya dentro del componente activado.
-
----
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Guarda filtros en query params y el identificador en la ruta del detalle. Comparte la URL, recárgala y confirma que restaura la búsqueda sin confundir parámetros de navegación con permisos.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una aplicación con al menos 4 rutas, incluyendo una protegida por guard funcional y una cargada de forma perezosa, con parámetros de ruta y query params sincronizados.
-
-**Requisitos previos:** Módulos 0-3 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Definir al menos 4 rutas | home, lista, detalle/:id, 404 con redirectTo | Verifica el orden correcto del array |
-| 2 | Cargar una ruta de forma perezosa | `loadComponent` | Verifica en Network que solo se descarga al navegar |
-| 3 | Implementar un guard funcional | Ver Tema 2 | Bloquea el acceso si no hay "sesión" simulada |
-| 4 | Leer un parámetro de ruta | Input binding de rutas | Úsalo para cargar el detalle correspondiente |
-| 5 | Sincronizar un query param con un signal | `?estado=pendiente` | Verifica persistencia ante recarga de página |
-
-**Verificación:** el laboratorio se considera exitoso si las 4 rutas navegan correctamente, si la ruta protegida redirige apropiadamente sin sesión simulada, y si el chunk de la ruta perezosa se confirma descargado solo al navegar hacia ella.
-
-**Errores comunes y soluciones**
-
-- **Colocar la ruta comodín `**` antes de rutas específicas.** Siempre debe ir al final del array, o interceptará URLs que deberían coincidir con rutas más específicas.
-- **Bloquear silenciosamente con `false` en vez de redirigir con una `UrlTree`.** Prefiere redirigir hacia una ubicación útil (como `/login`) para una mejor experiencia de usuario.
-- **Confundir parámetros de ruta con query params.** Los parámetros de ruta identifican qué recurso se muestra; los query params modifican cómo se muestra, sin cambiar qué componente se activa.
-
----
-
-
-## Laboratorio de transferencia
+</details>
 
 ### Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida. **Prerrequisitos:** componentes standalone, signals, eventos y Router. Node compatible con Angular 21 y npm. Es un ejemplo independiente desde un proyecto nuevo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-En el proyecto integrador, un operador escribe una observación sobre una entrega. Un clic accidental en otra ruta no debe borrar el trabajo sin permitirle decidir. **¿Por qué es importante?** El guard de salida resuelve una necesidad de continuidad; no es un mecanismo de seguridad del backend.
+#### ► DE QUÉ TRATA
+Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida. Prerrequisitos: componentes standalone, signals, eventos y Router. Node compatible con Angular 21 y npm. Es un ejemplo independiente desde un proyecto nuevo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`CanDeactivate` recibe el componente que está a punto de abandonarse. Puede permitir o cancelar la navegación. Un estado «sucio» indica que el texto actual difiere de la última versión guardada. **Analogía:** antes de retirar una hoja de la mesa, preguntas si hay cambios pendientes. El límite es que una ruta no es una copia de seguridad: cerrar la pestaña o terminar el proceso requiere otra estrategia.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida.**
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en candeactivate: proteger un borrador sin confundir navegación con autorización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que candeactivate: proteger un borrador sin confundir navegación con autorización resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CanDeactivate: proteger un borrador sin confundir navegación con autorización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CanDeactivate: proteger un borrador sin confundir navegación con autorización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses candeactivate: proteger un borrador sin confundir navegación con autorización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: candeactivate: proteger un borrador sin confundir navegación con autorización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- CanDeactivate: proteger un borrador sin confundir navegación con autorización existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve candeactivate: proteger un borrador sin confundir navegación con autorización en tu contexto?
+2. ¿Cómo sabrías que candeactivate: proteger un borrador sin confundir navegación con autorización no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar candeactivate: proteger un borrador sin confundir navegación con autorización?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 npx @angular/cli@21 new borrador-demo --standalone --routing --style=css --skip-tests --skip-git --defaults
 cd borrador-demo
 ```
-Reemplaza `src/main.ts` por este archivo completo:
+
 ```typescript
 import { Component, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -647,40 +538,28 @@ bootstrapApplication(App, { providers: [provideRouter([
   { path: 'salir', component: Listado }
 ])] }).catch(console.error);
 ```
+
 ```bash
 npm start
 ```
-Abre `http://localhost:4200`. **Resultado esperado:** escribe una nota, pulsa «Ir al listado» y cancela: sigues en el editor con el texto. Acepta la siguiente salida: llegas al listado. Explica cada bloque: el componente mantiene dos snapshots, el guard compara y el router consulta la decisión. El botón guarda solo en memoria de esta sesión, sin fingir persistencia remota.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia la condición por `true`. Navega con cambios: no aparece la pregunta. **Pista:** la autorización de salida depende de comparar texto actual y guardado, no de que el componente exista. Restaura y prueba guardar antes de salir: ya no pregunta.
-
-#### Paso 6 · Práctica independiente
-Añade un botón «Descartar cambios» que restaure `text` desde `saved`. Comprueba escribir, guardar, volver a editar, descartar y salir. No debe mostrar aviso después de descartar.
-
-#### Paso 7 · Cierre
-El siguiente paso es persistir borradores y gestionar errores del guardado real. **Errores comunes:** llamar «guardado» a texto no confirmado por el servidor, usar el guard como autorización y suponer que cubre cierre de pestaña. **Límites y decisión de uso:** este diálogo nativo es una demostración mínima; una UI personalizada necesita foco, teclado y semántica correctos.
-
-**Fuente oficial:** [Angular route guards](https://angular.dev/guide/routing/route-guards).
+</details>
 
 ### Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min
 
-**Prerrequisito:** temas «Guards funcionales» y «Parámetros de ruta, query params y capacidades» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** cargar los datos de una ruta con un `ResolveFn` antes de activar el componente, recibirlos como `input()` y redirigir con `RedirectCommand` si no existen.
+#### ► DE QUÉ TRATA
+Usa un proyecto Angular 18 o superior (ng new academia-ng --routing). Crea la carpeta src/app/envios. El ejemplo usa un servicio en memoria para no depender de un backend.
 
-**¿Por qué es importante?** Si el componente carga sus datos después de mostrarse, el usuario ve un parpadeo de pantalla vacía y cada componente repite la lógica de «no encontrado». Un resolver centraliza esa carga en la ruta.
+#### ► LA IDEA EN UNA FRASE
+**Usa un proyecto Angular 18 o superior (ng new academia-ng --routing).**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa un proyecto Angular 18 o superior (`ng new academia-ng --routing`). Crea la carpeta `src/app/envios`. El ejemplo usa un servicio en memoria para no depender de un backend.
-
-#### Paso 2 · Contexto y caso real
-
-En RutaFlow, la pantalla «Detalle de envío» se abre desde un enlace con el código del envío. Si el código no existe, antes se mostraba una tarjeta vacía con errores en consola. Ahora la ruta resuelve el envío primero y, si no existe, lleva a «No encontrado».
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `ResolveFn`, `resolve` en la ruta, `withComponentInputBinding`, `RedirectCommand`, navegación cancelada.
 
 Un **resolver** es una función que el router ejecuta **antes** de activar la ruta. Puede devolver un valor, una promesa o un observable. Cuando termina, el router guarda el resultado en los datos de la ruta con la clave que elegiste.
@@ -708,9 +587,69 @@ sequenceDiagram
     R->>C: activa con input envio
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `src/app/envios/envios.service.ts`:
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant R as Router
+    participant F as envioResolver
+    participant C as DetalleEnvio
+    U->>R: navega a /envios/ENV-42
+    R->>F: ejecuta el resolver
+    F-->>R: Envio o RedirectCommand
+    R->>C: activa con input envio
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Resolvers funcionales: datos listos antes de mostrar la ruta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Resolvers funcionales: datos listos antes de mostrar la ruta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses resolvers funcionales: datos listos antes de mostrar la ruta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: resolvers funcionales: datos listos antes de mostrar la ruta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Resolvers funcionales: datos listos antes de mostrar la ruta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve resolvers funcionales: datos listos antes de mostrar la ruta en tu contexto?
+2. ¿Cómo sabrías que resolvers funcionales: datos listos antes de mostrar la ruta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar resolvers funcionales: datos listos antes de mostrar la ruta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant R as Router
+    participant F as envioResolver
+    participant C as DetalleEnvio
+    U->>R: navega a /envios/ENV-42
+    R->>F: ejecuta el resolver
+    F-->>R: Envio o RedirectCommand
+    R->>C: activa con input envio
+```
 
 ```ts
 import { Injectable } from '@angular/core';
@@ -727,8 +666,6 @@ export class EnviosService {
 }
 ```
 
-Archivo `src/app/envios/envio.resolver.ts`:
-
 ```ts
 import { inject } from '@angular/core';
 import { RedirectCommand, ResolveFn, Router } from '@angular/router';
@@ -744,8 +681,6 @@ export const envioResolver: ResolveFn<Envio> = (route) => {
 };
 ```
 
-Archivo `src/app/envios/detalle-envio.ts`:
-
 ```ts
 import { Component, input } from '@angular/core';
 import { Envio } from './envios.service';
@@ -759,8 +694,6 @@ export class DetalleEnvio {
 }
 ```
 
-Archivo `src/app/app.routes.ts`:
-
 ```ts
 import { Routes } from '@angular/router';
 import { DetalleEnvio } from './envios/detalle-envio';
@@ -773,48 +706,9 @@ export const routes: Routes = [
 // En app.config.ts: provideRouter(routes, withComponentInputBinding())
 ```
 
-Ejecútalo:
-
 ```bash
 ng serve
 # abre http://localhost:4200/envios/ENV-42 y luego /envios/ENV-99
 ```
 
-**Explicación por bloques:** `EnviosService` simula una API con 300 ms de demora y devuelve `null` si no encuentra el código. `envioResolver` lee el parámetro `codigo`, pide el envío y, si es `null`, devuelve un `RedirectCommand` hacia `/no-encontrado`. En la ruta, `resolve: { envio: envioResolver }` guarda el resultado con la clave `envio`. Gracias a `withComponentInputBinding()`, esa clave llega al `input.required` del componente, que ya nunca recibe un valor vacío.
-
-**Resultado esperado:**
-
-```text
-/envios/ENV-42 -> la página muestra «ENV-42» y «Calle 26 · EN_RUTA» después de unos 300 ms, sin parpadeo vacío.
-/envios/ENV-99 -> la URL cambia a /no-encontrado y no aparece el detalle.
-```
-
-**Fallo deliberado:** quita `withComponentInputBinding()` de `provideRouter`. **Error esperado:** en consola, `NG0950: Input "envio" is required but no value is available yet`. **Diagnóstico:** el router guardó el dato, pero no lo conecta con los inputs del componente. Vuelve a agregar la función o lee el dato con `inject(ActivatedRoute).data`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** navega a `ENV-42` y a `ENV-99` y describe qué pasa en cada caso.
-2. **Variación:** cambia la demora a 3000 ms y observa que la navegación espera; agrega un indicador global con `router.events` y `NavigationStart`/`NavigationEnd`.
-3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje `NG0950`.
-4. **Integración:** agrega una prueba con `RouterTestingHarness` que navegue a `/envios/ENV-99` y compruebe la URL final.
-5. **Diseño:** decide si la lista de envíos en vivo debería usar resolver o `httpResource`, y justifica.
-
-**Pista:** si el componente recibe `undefined`, revisa la clave en `resolve` y el nombre del `input`: deben coincidir.
-
-#### Paso 6 · Práctica independiente
-
-Crea un resolver `conductorResolver` para `/conductores/:id` que devuelva el conductor o redirija a `/conductores` con un query param `aviso=no-existe`, y muestra ese aviso en la lista.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas en qué momento corre un resolver.
-- [ ] ENV-42 muestra el detalle y ENV-99 redirige.
-- [ ] Reprodujiste `NG0950` y lo corregiste.
-- [ ] Sabes cuándo no conviene un resolver.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar resolvers para cargas lentas sin indicador, olvidar `withComponentInputBinding` y lanzar errores en el resolver en lugar de redirigir. **Siguiente paso:** el tema «CanDeactivate» protege la salida de una pantalla, el lado opuesto de la navegación.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, resuelve el envío de `/envios/:codigo` con un resolver y centraliza el «no encontrado» en una sola ruta.
-
-**Fuente oficial:** [Angular — Data resolvers](https://angular.dev/guide/routing/data-resolvers) y [Angular — ResolveFn](https://angular.dev/api/router/ResolveFn).
-
+</details>

@@ -104,6 +104,18 @@
         "fragment": "tema-4-la-calidad-se-opera-por-dispositivo-y-version"
       },
       {
+        "title": "Android 17: privacidad, compatibilidad y dispositivos grandes",
+        "fragment": "android-17-privacidad-compatibilidad-y-dispositivos-grandes"
+      },
+      {
+        "title": "Proyecto: app resistente a dispositivo, red y release",
+        "fragment": "proyecto-app-resistente-a-dispositivo-red-y-release"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+      },
+      {
         "title": "Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado",
         "fragment": "tema-5-del-dispositivo-al-diagnostico-soc-memoria-limites-termicos-y-arranque-verificado"
       }
@@ -170,6 +182,10 @@
       {
         "title": "Bluetooth LE: buscar y leer una báscula del vehículo",
         "fragment": "tema-9-bluetooth-le-buscar-y-leer-una-bascula-del-vehiculo"
+      },
+      {
+        "title": "Proyecto 15: la app del repartidor se integra con el sistema",
+        "fragment": "proyecto-15-la-app-del-repartidor-se-integra-con-el-sistema"
       }
     ],
     "16": [
@@ -374,6 +390,22 @@
   "angular": {
     "0": [
       {
+        "title": "Windows",
+        "fragment": "windows"
+      },
+      {
+        "title": "macOS",
+        "fragment": "macos"
+      },
+      {
+        "title": "Linux (Ubuntu/Debian)",
+        "fragment": "linux-ubuntu-debian"
+      },
+      {
+        "title": "Tu primer proyecto verificable",
+        "fragment": "tu-primer-proyecto-verificable"
+      },
+      {
         "title": "El CLI ya no genera NgModules",
         "fragment": "tema-1-el-cli-ya-no-genera-ngmodules"
       },
@@ -520,6 +552,18 @@
       {
         "title": "CSP con nonce y Trusted Types en Angular",
         "fragment": "tema-6-csp-con-nonce-y-trusted-types-en-angular"
+      },
+      {
+        "title": "Angular v22 y adopción según estabilidad",
+        "fragment": "angular-v22-y-adopcion-segun-estabilidad"
+      },
+      {
+        "title": "Proyecto: auditoría integral de la aplicación standalone",
+        "fragment": "proyecto-auditoria-integral-de-la-aplicacion-standalone"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "15": [
@@ -774,6 +818,22 @@
       {
         "title": "Docker Compose — servicios, redes y volúmenes",
         "fragment": "tema-5-docker-compose-servicios-redes-y-volumenes"
+      },
+      {
+        "title": "Laboratorio 1.1 — Comandos esenciales con una imagen de prueba",
+        "fragment": "laboratorio-1-1-comandos-esenciales-con-una-imagen-de-prueba"
+      },
+      {
+        "title": "Laboratorio 1.2 — Instalar floci-cli y levantar Floci",
+        "fragment": "laboratorio-1-2-instalar-floci-cli-y-levantar-floci"
+      },
+      {
+        "title": "Laboratorio 1.3 — Probar la AWS CLI contra Floci",
+        "fragment": "laboratorio-1-3-probar-la-aws-cli-contra-floci"
+      },
+      {
+        "title": "Laboratorio 1.4 — Usar StackPort y Floci UI",
+        "fragment": "laboratorio-1-4-usar-stackport-y-floci-ui"
       }
     ],
     "10": [
@@ -944,6 +1004,30 @@
       {
         "title": "Políticas de bucket, ACL y URLs pre-firmadas",
         "fragment": "tema-5-politicas-de-bucket-acl-y-urls-pre-firmadas"
+      },
+      {
+        "title": "Antes de escribir código: crea tu propio proyecto",
+        "fragment": "antes-de-escribir-codigo-crea-tu-propio-proyecto"
+      },
+      {
+        "title": "Opción A — JavaScript con AWS SDK v3",
+        "fragment": "opcion-a-javascript-con-aws-sdk-v3"
+      },
+      {
+        "title": "Opción B — Python con boto3",
+        "fragment": "opcion-b-python-con-boto3"
+      },
+      {
+        "title": "Provoca un fallo útil antes de continuar",
+        "fragment": "provoca-un-fallo-util-antes-de-continuar"
+      },
+      {
+        "title": "Parte 1 — Operaciones CRUD básicas",
+        "fragment": "parte-1-operaciones-crud-basicas"
+      },
+      {
+        "title": "Parte 2 — Versionado",
+        "fragment": "parte-2-versionado"
       }
     ],
     "20": [
@@ -988,6 +1072,14 @@
       {
         "title": "VPC y redes — subredes, security groups y el flujo del tráfico",
         "fragment": "tema-6-vpc-y-redes-subredes-security-groups-y-el-flujo-del-trafico"
+      },
+      {
+        "title": "Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS",
+        "fragment": "laboratorio-21-1-lanzar-una-instancia-ec2-con-acceso-ssh-e-imds"
+      },
+      {
+        "title": "Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo",
+        "fragment": "laboratorio-21-2-auto-scaling-group-con-reconciliador-en-vivo"
       }
     ],
     "22": [
@@ -1014,6 +1106,14 @@
       {
         "title": "WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde",
         "fragment": "tema-6-waf-y-proteccion-ddos-limitar-peticiones-y-bloquear-ataques-comunes-en-el-borde"
+      },
+      {
+        "title": "Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta",
+        "fragment": "laboratorio-22-1-application-load-balancer-con-enrutamiento-por-ruta"
+      },
+      {
+        "title": "Laboratorio 22.2 — Certificado, distribución CDN y zona DNS",
+        "fragment": "laboratorio-22-2-certificado-distribucion-cdn-y-zona-dns"
       }
     ],
     "23": [
@@ -1032,6 +1132,14 @@
       {
         "title": "Autenticación IAM para el plano de datos de ElastiCache",
         "fragment": "tema-4-autenticacion-iam-para-el-plano-de-datos-de-elasticache"
+      },
+      {
+        "title": "Laboratorio 23.1 — Clúster ElastiCache con cache-aside",
+        "fragment": "laboratorio-23-1-cluster-elasticache-con-cache-aside"
+      },
+      {
+        "title": "Laboratorio 23.2 — Usuario con autenticación IAM",
+        "fragment": "laboratorio-23-2-usuario-con-autenticacion-iam"
       }
     ],
     "24": [
@@ -1054,6 +1162,14 @@
       {
         "title": "Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB",
         "fragment": "tema-5-despliegue-blue-green-de-ecs-cambio-de-trafico-por-listener-elb"
+      },
+      {
+        "title": "Laboratorio 24.1 — Compilación real con CodeBuild",
+        "fragment": "laboratorio-24-1-compilacion-real-con-codebuild"
+      },
+      {
+        "title": "Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy",
+        "fragment": "laboratorio-24-2-despliegue-canary-de-lambda-con-codedeploy"
       }
     ],
     "25": [
@@ -1078,6 +1194,14 @@
         "fragment": "tema-5-el-ciclo-de-vida-de-un-trabajo-de-respaldo"
       },
       {
+        "title": "Laboratorio 25.1 — Configuración dinámica con AppConfig",
+        "fragment": "laboratorio-25-1-configuracion-dinamica-con-appconfig"
+      },
+      {
+        "title": "Laboratorio 25.2 — Plan de respaldo para DynamoDB",
+        "fragment": "laboratorio-25-2-plan-de-respaldo-para-dynamodb"
+      },
+      {
         "title": "Simulacro de restauración: comprobar contenido, no solo la existencia del backup",
         "fragment": "tema-6-simulacro-de-restauracion-comprobar-contenido-no-solo-la-existencia-del-backup"
       }
@@ -1098,6 +1222,14 @@
       {
         "title": "Cuándo usar Pipes frente a reglas EventBridge o Step Functions",
         "fragment": "tema-4-cuando-usar-pipes-frente-a-reglas-eventbridge-o-step-functions"
+      },
+      {
+        "title": "Laboratorio 26.1 — Entrega automática con Firehose",
+        "fragment": "laboratorio-26-1-entrega-automatica-con-firehose"
+      },
+      {
+        "title": "Laboratorio 26.2 — Pipe de SQS a Lambda sin código intermedio",
+        "fragment": "laboratorio-26-2-pipe-de-sqs-a-lambda-sin-codigo-intermedio"
       }
     ],
     "27": [
@@ -1116,6 +1248,14 @@
       {
         "title": "El simulador de buzones y el punto de inspección local",
         "fragment": "tema-4-el-simulador-de-buzones-y-el-punto-de-inspeccion-local"
+      },
+      {
+        "title": "Laboratorio 27.1 — API GraphQL con resolver local",
+        "fragment": "laboratorio-27-1-api-graphql-con-resolver-local"
+      },
+      {
+        "title": "Laboratorio 27.2 — Simulador de entrega, rebote y queja con SES",
+        "fragment": "laboratorio-27-2-simulador-de-entrega-rebote-y-queja-con-ses"
       }
     ],
     "28": [
@@ -1138,6 +1278,14 @@
       {
         "title": "Datos de series temporales: escritura por tiempo, reducción de resolución y retención",
         "fragment": "tema-5-datos-de-series-temporales-escritura-por-tiempo-reduccion-de-resolucion-y-retencion"
+      },
+      {
+        "title": "Laboratorio 28.1 — Grafo de relaciones con Neptune",
+        "fragment": "laboratorio-28-1-grafo-de-relaciones-con-neptune"
+      },
+      {
+        "title": "Laboratorio 28.2 — Búsqueda de texto completo con OpenSearch",
+        "fragment": "laboratorio-28-2-busqueda-de-texto-completo-con-opensearch"
       }
     ],
     "29": [
@@ -1160,6 +1308,14 @@
       {
         "title": "STS en profundidad — identidad temporal y aislamiento multi-cuenta",
         "fragment": "tema-5-sts-en-profundidad-identidad-temporal-y-aislamiento-multi-cuenta"
+      },
+      {
+        "title": "Laboratorio 29.1 — Costo sintetizado y exportación FOCUS",
+        "fragment": "laboratorio-29-1-costo-sintetizado-y-exportacion-focus"
+      },
+      {
+        "title": "Laboratorio 29.2 — Descubrimiento centralizado por etiqueta",
+        "fragment": "laboratorio-29-2-descubrimiento-centralizado-por-etiqueta"
       }
     ],
     "3": [
@@ -1178,6 +1334,14 @@
       {
         "title": "Colas FIFO vs Standard",
         "fragment": "tema-4-colas-fifo-vs-standard"
+      },
+      {
+        "title": "Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ",
+        "fragment": "laboratorio-3-1-ciclo-completo-con-cola-standard-y-dlq"
+      },
+      {
+        "title": "Laboratorio 3.2 — Cola FIFO con MessageGroupId",
+        "fragment": "laboratorio-3-2-cola-fifo-con-messagegroupid"
       }
     ],
     "30": [
@@ -1196,6 +1360,10 @@
       {
         "title": "Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente",
         "fragment": "tema-4-los-limites-de-la-fase-1-plano-de-gestion-completo-plano-de-datos-pendiente"
+      },
+      {
+        "title": "Laboratorio 30.1 — Servidor, usuario y clave SSH",
+        "fragment": "laboratorio-30-1-servidor-usuario-y-clave-ssh"
       }
     ],
     "31": [
@@ -1248,6 +1416,14 @@
       {
         "title": "Residencia y soberanía de datos: que los datos personales vivan donde la ley permite",
         "fragment": "tema-6-residencia-y-soberania-de-datos-que-los-datos-personales-vivan-donde-la-ley-permite"
+      },
+      {
+        "title": "Nube de evolución continua y vigilancia de retiros",
+        "fragment": "nube-de-evolucion-continua-y-vigilancia-de-retiros"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "33": [
@@ -1350,6 +1526,14 @@
       {
         "title": "Query vs Scan",
         "fragment": "tema-6-query-vs-scan"
+      },
+      {
+        "title": "Laboratorio 4.1 — CRUD completo",
+        "fragment": "laboratorio-4-1-crud-completo"
+      },
+      {
+        "title": "Laboratorio 4.2 — Query vs Scan",
+        "fragment": "laboratorio-4-2-query-vs-scan"
       }
     ],
     "5": [
@@ -1380,6 +1564,30 @@
       {
         "title": "Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte",
         "fragment": "tema-7-deprecaciones-en-la-nube-encontrar-a-tiempo-runtimes-y-versiones-que-dejan-de-tener-soporte"
+      },
+      {
+        "title": "Laboratorio 5.1 — Desplegar e invocar",
+        "fragment": "laboratorio-5-1-desplegar-e-invocar"
+      },
+      {
+        "title": "Laboratorio 5.2 — Actualizar código y configuración",
+        "fragment": "laboratorio-5-2-actualizar-codigo-y-configuracion"
+      },
+      {
+        "title": "El Problema",
+        "fragment": "el-problema"
+      },
+      {
+        "title": "Tu Tarea",
+        "fragment": "tu-tarea"
+      },
+      {
+        "title": "Solución Esperada",
+        "fragment": "solucion-esperada"
+      },
+      {
+        "title": "Por Qué Importa",
+        "fragment": "por-que-importa"
       }
     ],
     "6": [
@@ -1402,6 +1610,10 @@
       {
         "title": "Despliegue y variables de stage",
         "fragment": "tema-5-despliegue-y-variables-de-stage"
+      },
+      {
+        "title": "Laboratorio 6.1 — Construir y desplegar el endpoint",
+        "fragment": "laboratorio-6-1-construir-y-desplegar-el-endpoint"
       }
     ],
     "7": [
@@ -1438,6 +1650,14 @@
       {
         "title": "Comparativa AWS vs Azure vs GCP por categoría de servicio",
         "fragment": "tema-3-comparativa-aws-vs-azure-vs-gcp-por-categoria-de-servicio"
+      },
+      {
+        "title": "Laboratorio 8.1 — Azure: Blob Storage y Queue Storage",
+        "fragment": "laboratorio-8-1-azure-blob-storage-y-queue-storage"
+      },
+      {
+        "title": "Laboratorio 8.2 — GCP: Cloud Storage y Pub/Sub",
+        "fragment": "laboratorio-8-2-gcp-cloud-storage-y-pub-sub"
       }
     ],
     "9": [
@@ -1460,6 +1680,46 @@
       {
         "title": "Documentación de la API y guía de despliegue",
         "fragment": "tema-5-documentacion-de-la-api-y-guia-de-despliegue"
+      },
+      {
+        "title": "Requisitos funcionales",
+        "fragment": "requisitos-funcionales"
+      },
+      {
+        "title": "Requisitos técnicos",
+        "fragment": "requisitos-tecnicos"
+      },
+      {
+        "title": "Entregables",
+        "fragment": "entregables"
+      },
+      {
+        "title": "Docker",
+        "fragment": "docker"
+      },
+      {
+        "title": "S3",
+        "fragment": "s3"
+      },
+      {
+        "title": "SQS",
+        "fragment": "sqs"
+      },
+      {
+        "title": "DynamoDB",
+        "fragment": "dynamodb"
+      },
+      {
+        "title": "Lambda",
+        "fragment": "lambda"
+      },
+      {
+        "title": "API Gateway",
+        "fragment": "api-gateway"
+      },
+      {
+        "title": "IAM",
+        "fragment": "iam"
       }
     ]
   },
@@ -1948,6 +2208,18 @@
   "devops": {
     "0": [
       {
+        "title": "Windows",
+        "fragment": "windows"
+      },
+      {
+        "title": "macOS",
+        "fragment": "macos"
+      },
+      {
+        "title": "Linux (Ubuntu/Debian)",
+        "fragment": "linux-ubuntu-debian"
+      },
+      {
         "title": "Sistema de archivos y permisos (chmod/chown)",
         "fragment": "tema-1-sistema-de-archivos-y-permisos-chmod-chown"
       },
@@ -2130,6 +2402,14 @@
       {
         "title": "Una plataforma interna es un producto con límites",
         "fragment": "tema-4-una-plataforma-interna-es-un-producto-con-limites"
+      },
+      {
+        "title": "Kubernetes 1.36, OpenTelemetry 1.59 y herramientas con ciclo propio",
+        "fragment": "kubernetes-1-36-opentelemetry-1-59-y-herramientas-con-ciclo-propio"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "15": [
@@ -2672,6 +2952,14 @@
       {
         "title": "Producción exige protocolo, telemetría y contención",
         "fragment": "tema-4-produccion-exige-protocolo-telemetria-y-contencion"
+      },
+      {
+        "title": "Versiones y migraciones controladas",
+        "fragment": "versiones-y-migraciones-controladas"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "14": [
@@ -3076,6 +3364,10 @@
   "foundations": {
     "0": [
       {
+        "title": "Instala y comprueba",
+        "fragment": "instala-y-comprueba"
+      },
+      {
         "title": "Computador, sistema operativo, programa y proceso",
         "fragment": "tema-1-computador-sistema-operativo-programa-y-proceso"
       },
@@ -3128,6 +3420,10 @@
       {
         "title": "Herencia, composición y clases abstractas con `abc`",
         "fragment": "tema-7-herencia-composicion-y-clases-abstractas-con-abc"
+      },
+      {
+        "title": "Proyecto 1: calculadora de presupuesto desde carpeta vacía",
+        "fragment": "proyecto-1-calculadora-de-presupuesto-desde-carpeta-vacia"
       }
     ],
     "10": [
@@ -3150,6 +3446,10 @@
       {
         "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
         "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
+      },
+      {
+        "title": "Proyecto 10: inventario distribuido mínimo y observable",
+        "fragment": "proyecto-10-inventario-distribuido-minimo-y-observable"
       },
       {
         "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
@@ -3206,6 +3506,10 @@
       {
         "title": "Problemas intratables: P, NP y heurísticas",
         "fragment": "tema-5-problemas-intratables-p-np-y-heuristicas"
+      },
+      {
+        "title": "Proyecto 12: planificador de entregas de RutaFlow",
+        "fragment": "proyecto-12-planificador-de-entregas-de-rutaflow"
       }
     ],
     "13": [
@@ -3240,6 +3544,10 @@
       {
         "title": "Flyweight: compartir estado para ahorrar memoria",
         "fragment": "tema-8-flyweight-compartir-estado-para-ahorrar-memoria"
+      },
+      {
+        "title": "Proyecto 13: núcleo de envíos con patrones",
+        "fragment": "proyecto-13-nucleo-de-envios-con-patrones"
       }
     ],
     "14": [
@@ -3258,6 +3566,10 @@
       {
         "title": "Pruebas limpias: F.I.R.S.T. y un concepto por prueba",
         "fragment": "tema-4-pruebas-limpias-f-i-r-s-t-y-un-concepto-por-prueba"
+      },
+      {
+        "title": "Proyecto 14: rescate de código heredado",
+        "fragment": "proyecto-14-rescate-de-codigo-heredado"
       }
     ],
     "2": [
@@ -3292,6 +3604,10 @@
       {
         "title": "Programación dinámica — resolver una vez, recordar el resultado",
         "fragment": "tema-8-programacion-dinamica-resolver-una-vez-recordar-el-resultado"
+      },
+      {
+        "title": "Proyecto 2: gestor de inventario con análisis de rendimiento",
+        "fragment": "proyecto-2-gestor-de-inventario-con-analisis-de-rendimiento"
       }
     ],
     "3": [
@@ -3310,6 +3626,10 @@
       {
         "title": "CSS, layout responsive y accesibilidad verificable",
         "fragment": "tema-4-css-layout-responsive-y-accesibilidad-verificable"
+      },
+      {
+        "title": "Proyecto 3: sitio profesional accesible desde carpeta vacía",
+        "fragment": "proyecto-3-sitio-profesional-accesible-desde-carpeta-vacia"
       },
       {
         "title": "Proyecto integrador — sitio de seguimiento accesible",
@@ -3344,6 +3664,10 @@
       {
         "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
         "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
+      },
+      {
+        "title": "Proyecto 4: migrar el inventario JSON a SQLite",
+        "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
       }
     ],
     "5": [
@@ -3362,6 +3686,10 @@
       {
         "title": "Calidad estática, revisión e integración continua",
         "fragment": "tema-4-calidad-estatica-revision-e-integracion-continua"
+      },
+      {
+        "title": "Proyecto 5: convertir el inventario en un repositorio confiable",
+        "fragment": "proyecto-5-convertir-el-inventario-en-un-repositorio-confiable"
       }
     ],
     "6": [
@@ -3404,6 +3732,18 @@
         "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
       },
       {
+        "title": "Contexto",
+        "fragment": "contexto"
+      },
+      {
+        "title": "Decisión",
+        "fragment": "decision"
+      },
+      {
+        "title": "Consecuencias",
+        "fragment": "consecuencias"
+      },
+      {
         "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
         "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
       },
@@ -3436,6 +3776,10 @@
       {
         "title": "Problemas clásicos de concurrencia: filósofos y lectores-escritores",
         "fragment": "tema-5-problemas-clasicos-de-concurrencia-filosofos-y-lectores-escritores"
+      },
+      {
+        "title": "Proyecto 8 — Inventario operable en un contenedor",
+        "fragment": "proyecto-8-inventario-operable-en-un-contenedor"
       }
     ],
     "9": [
@@ -3454,11 +3798,23 @@
       {
         "title": "Probabilidad y evidencia para decisiones técnicas",
         "fragment": "tema-4-probabilidad-y-evidencia-para-decisiones-tecnicas"
+      },
+      {
+        "title": "Proyecto 9: cuaderno de propiedades, grafos y evidencia",
+        "fragment": "proyecto-9-cuaderno-de-propiedades-grafos-y-evidencia"
       }
     ]
   },
   "ios": {
     "0": [
+      {
+        "title": "macOS: entorno completo recomendado",
+        "fragment": "macos-entorno-completo-recomendado"
+      },
+      {
+        "title": "Windows y Linux: etapa de fundamentos",
+        "fragment": "windows-y-linux-etapa-de-fundamentos"
+      },
       {
         "title": "Optionals y unwrapping seguro",
         "fragment": "tema-1-optionals-y-unwrapping-seguro"
@@ -3588,6 +3944,14 @@
       {
         "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
         "fragment": "tema-10-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
+      },
+      {
+        "title": "Swift 6.2 y actualizaciones SwiftUI de 2026",
+        "fragment": "swift-6-2-y-actualizaciones-swiftui-de-2026"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "14": [
@@ -3886,6 +4250,26 @@
       {
         "title": "Patrones estructurales para conectar piezas existentes",
         "fragment": "tema-6-patrones-estructurales-para-conectar-piezas-existentes"
+      },
+      {
+        "title": "Objetivo y preparación",
+        "fragment": "objetivo-y-preparacion"
+      },
+      {
+        "title": "Strategy: elegir una política sin cambiar al consumidor",
+        "fragment": "strategy-elegir-una-politica-sin-cambiar-al-consumidor"
+      },
+      {
+        "title": "Singleton: identidad única y dependencia explícita",
+        "fragment": "singleton-identidad-unica-y-dependencia-explicita"
+      },
+      {
+        "title": "Observer: alta, notificación y baja",
+        "fragment": "observer-alta-notificacion-y-baja"
+      },
+      {
+        "title": "Diseño y evidencia",
+        "fragment": "diseno-y-evidencia"
       }
     ],
     "13": [
@@ -3926,6 +4310,18 @@
       {
         "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
         "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
+      },
+      {
+        "title": "Java LTS frente a entregas semestrales",
+        "fragment": "java-lts-frente-a-entregas-semestrales"
+      },
+      {
+        "title": "Proyecto: endurecimiento medible del procesador concurrente",
+        "fragment": "proyecto-endurecimiento-medible-del-procesador-concurrente"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "15": [
@@ -3955,6 +4351,10 @@
       }
     ],
     "16": [
+      {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
       {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
@@ -3990,6 +4390,10 @@
     ],
     "17": [
       {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
+      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },
@@ -3999,6 +4403,10 @@
       }
     ],
     "18": [
+      {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
       {
         "title": "HttpClient, REST, timeouts y fallos",
         "fragment": "tema-1-httpclient-rest-timeouts-y-fallos"
@@ -4048,6 +4456,10 @@
       {
         "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
         "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
+      },
+      {
+        "title": "Proyecto 19: utilidades de producción para el motor de asignación",
+        "fragment": "proyecto-19-utilidades-de-produccion-para-el-motor-de-asignacion"
       }
     ],
     "2": [
@@ -4074,6 +4486,10 @@
       {
         "title": "Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue`",
         "fragment": "tema-6-colas-y-pilas-queue-deque-arraydeque-y-priorityqueue"
+      },
+      {
+        "title": "Incremento del proyecto: preparar guías asignables",
+        "fragment": "incremento-del-proyecto-preparar-guias-asignables"
       }
     ],
     "20": [
@@ -4178,6 +4594,10 @@
       {
         "title": "Excepciones personalizadas y no tragar excepciones",
         "fragment": "tema-3-excepciones-personalizadas-y-no-tragar-excepciones"
+      },
+      {
+        "title": "Incremento del proyecto: leer guías y respetar capacidad",
+        "fragment": "incremento-del-proyecto-leer-guias-y-respetar-capacidad"
       }
     ],
     "4": [
@@ -4362,6 +4782,10 @@
       {
         "title": "Core Web Vitals",
         "fragment": "tema-5-core-web-vitals"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "11": [
@@ -4388,6 +4812,10 @@
       {
         "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
         "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "12": [
@@ -4406,6 +4834,10 @@
       {
         "title": "Conectando todo — el patrón completo de una SPA",
         "fragment": "tema-4-conectando-todo-el-patron-completo-de-una-spa"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "13": [
@@ -4424,6 +4856,22 @@
       {
         "title": "Compatibilidad, idioma y tiempo son requisitos de datos",
         "fragment": "tema-4-compatibilidad-idioma-y-tiempo-son-requisitos-de-datos"
+      },
+      {
+        "title": "ECMAScript vivo, propuestas y fechas modernas",
+        "fragment": "ecmascript-vivo-propuestas-y-fechas-modernas"
+      },
+      {
+        "title": "Proyecto de endurecimiento de la SPA",
+        "fragment": "proyecto-de-endurecimiento-de-la-spa"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "14": [
@@ -4608,6 +5056,10 @@
       {
         "title": "Streams web: leer una respuesta de fetch por partes",
         "fragment": "tema-7-streams-web-leer-una-respuesta-de-fetch-por-partes"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "7": [
@@ -4642,6 +5094,10 @@
       {
         "title": "Cadena de suministro npm: lockfile, integridad y paquetes alterados",
         "fragment": "tema-8-cadena-de-suministro-npm-lockfile-integridad-y-paquetes-alterados"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "8": [
@@ -4672,6 +5128,10 @@
       {
         "title": "requestAnimationFrame y requestIdleCallback",
         "fragment": "tema-7-requestanimationframe-y-requestidlecallback"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "9": [
@@ -4690,11 +5150,19 @@
       {
         "title": "Mockear fetch",
         "fragment": "tema-4-mockear-fetch"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ]
   },
   "kotlin-multiplatform": {
     "0": [
+      {
+        "title": "Paso 0 · Crea el proyecto `academia-kmp`",
+        "fragment": "paso-0-crea-el-proyecto-academia-kmp"
+      },
       {
         "title": "Null safety real",
         "fragment": "tema-1-null-safety-real"
@@ -4778,6 +5246,18 @@
       {
         "title": "Un fallo compartido necesita símbolos y contexto de ambas plataformas",
         "fragment": "tema-4-un-fallo-compartido-necesita-simbolos-y-contexto-de-ambas-plataformas"
+      },
+      {
+        "title": "Kotlin 2.4 y estado real de cada target",
+        "fragment": "kotlin-2-4-y-estado-real-de-cada-target"
+      },
+      {
+        "title": "Proyecto: SDK compartido estable y operable",
+        "fragment": "proyecto-sdk-compartido-estable-y-operable"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "13": [
@@ -5828,6 +6308,10 @@
       {
         "title": "Event-driven architecture y non-blocking I/O",
         "fragment": "tema-4-event-driven-architecture-y-non-blocking-i-o"
+      },
+      {
+        "title": "Proyecto 0: runtime observable de entregas",
+        "fragment": "proyecto-0-runtime-observable-de-entregas"
       }
     ],
     "1": [
@@ -5854,6 +6338,34 @@
       {
         "title": "Publicar y versionar un paquete npm (público o privado)",
         "fragment": "tema-6-publicar-y-versionar-un-paquete-npm-publico-o-privado"
+      },
+      {
+        "title": "1. Inicializa el workspace y sus hooks",
+        "fragment": "1-inicializa-el-workspace-y-sus-hooks"
+      },
+      {
+        "title": "2. Crea el dominio compartido",
+        "fragment": "2-crea-el-dominio-compartido"
+      },
+      {
+        "title": "3. Crea la API consumidora y clasifica dependencias",
+        "fragment": "3-crea-la-api-consumidora-y-clasifica-dependencias"
+      },
+      {
+        "title": "4. Comprueba el enlace y modifica un rango",
+        "fragment": "4-comprueba-el-enlace-y-modifica-un-rango"
+      },
+      {
+        "title": "5. Verifica la instalación reproducible",
+        "fragment": "5-verifica-la-instalacion-reproducible"
+      },
+      {
+        "title": "6. Comprueba el límite de los scripts automáticos",
+        "fragment": "6-comprueba-el-limite-de-los-scripts-automaticos"
+      },
+      {
+        "title": "Verificación y entrega",
+        "fragment": "verificacion-y-entrega"
       }
     ],
     "10": [
@@ -5924,6 +6436,10 @@
       {
         "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
         "fragment": "tema-6-proximos-pasos-microservicios-colas-de-mensajes-y-typescript"
+      },
+      {
+        "title": "Proyecto 12: API operativa de entregas",
+        "fragment": "proyecto-12-api-operativa-de-entregas"
       }
     ],
     "13": [
@@ -5946,6 +6462,10 @@
       {
         "title": "Webhooks verificables y recuperación por reconciliación",
         "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
+      },
+      {
+        "title": "Proyecto: API contractual con efectos recuperables",
+        "fragment": "proyecto-api-contractual-con-efectos-recuperables"
       }
     ],
     "2": [
@@ -6002,6 +6522,10 @@
       {
         "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
         "fragment": "tema-7-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+      },
+      {
+        "title": "Proyecto 3: API HTTP nativa de tareas",
+        "fragment": "proyecto-3-api-http-nativa-de-tareas"
       }
     ],
     "4": [
@@ -6028,6 +6552,10 @@
       {
         "title": "Subida de archivos — multipart y validación segura",
         "fragment": "tema-6-subida-de-archivos-multipart-y-validacion-segura"
+      },
+      {
+        "title": "Proyecto 4: API operativa de entregas",
+        "fragment": "proyecto-4-api-operativa-de-entregas"
       }
     ],
     "5": [
@@ -6072,6 +6600,10 @@
       {
         "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
         "fragment": "tema-6-flujo-de-login-completo-de-api-auth-login-a-una-ruta-protegida"
+      },
+      {
+        "title": "Proyecto 6: API operativa de entregas",
+        "fragment": "proyecto-6-api-operativa-de-entregas"
       }
     ],
     "7": [
@@ -6102,6 +6634,34 @@
       {
         "title": "Alternativas de testing y debugging",
         "fragment": "tema-7-alternativas-de-testing-y-debugging"
+      },
+      {
+        "title": "Proyecto y configuración",
+        "fragment": "proyecto-y-configuracion"
+      },
+      {
+        "title": "Aplicación y persistencia",
+        "fragment": "aplicacion-y-persistencia"
+      },
+      {
+        "title": "Integración HTTP con PostgreSQL efímero",
+        "fragment": "integracion-http-con-postgresql-efimero"
+      },
+      {
+        "title": "Prueba del servicio externo sin red",
+        "fragment": "prueba-del-servicio-externo-sin-red"
+      },
+      {
+        "title": "Prueba nativa y comprobación de descubrimiento",
+        "fragment": "prueba-nativa-y-comprobacion-de-descubrimiento"
+      },
+      {
+        "title": "Ejecución, fallo diagnosticado y CI",
+        "fragment": "ejecucion-fallo-diagnosticado-y-ci"
+      },
+      {
+        "title": "Ejercicio independiente y salida",
+        "fragment": "ejercicio-independiente-y-salida"
       }
     ],
     "8": [
@@ -6124,6 +6684,30 @@
       {
         "title": "PM2, memory leaks y heap snapshots",
         "fragment": "tema-5-pm2-memory-leaks-y-heap-snapshots"
+      },
+      {
+        "title": "1. Crea el proyecto y Redis",
+        "fragment": "1-crea-el-proyecto-y-redis"
+      },
+      {
+        "title": "2. Implementa el cálculo CPU-bound",
+        "fragment": "2-implementa-el-calculo-cpu-bound"
+      },
+      {
+        "title": "3. Implementa cluster, límite de Workers y productor",
+        "fragment": "3-implementa-cluster-limite-de-workers-y-productor"
+      },
+      {
+        "title": "4. Implementa el consumidor con reintento y cierre",
+        "fragment": "4-implementa-el-consumidor-con-reintento-y-cierre"
+      },
+      {
+        "title": "5. Ejecuta y observa",
+        "fragment": "5-ejecuta-y-observa"
+      },
+      {
+        "title": "6. Verificación y cierre",
+        "fragment": "6-verificacion-y-cierre"
       }
     ],
     "9": [
@@ -6155,6 +6739,14 @@
   },
   "react": {
     "0": [
+      {
+        "title": "Crea tu primera aplicación",
+        "fragment": "crea-tu-primera-aplicacion"
+      },
+      {
+        "title": "Prepara las pruebas (una sola vez)",
+        "fragment": "prepara-las-pruebas-una-sola-vez"
+      },
       {
         "title": "JSX es azúcar sintáctica sobre createElement",
         "fragment": "tema-1-jsx-es-azucar-sintactica-sobre-createelement"
@@ -6264,6 +6856,18 @@
       {
         "title": "Migrar a React 19: codemods, cambios que rompen y verificación",
         "fragment": "tema-5-migrar-a-react-19-codemods-cambios-que-rompen-y-verificacion"
+      },
+      {
+        "title": "React 19.2, Compiler y seguridad de Server Components",
+        "fragment": "react-19-2-compiler-y-seguridad-de-server-components"
+      },
+      {
+        "title": "Proyecto: auditoría resiliente de la SPA y su versión Next.js",
+        "fragment": "proyecto-auditoria-resiliente-de-la-spa-y-su-version-next-js"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "14": [
@@ -6443,6 +7047,10 @@
   },
   "rutaflow": {
     "0": [
+      {
+        "title": "Si la instalación falla, no continúes a ciegas",
+        "fragment": "si-la-instalacion-falla-no-continues-a-ciegas"
+      },
       {
         "title": "El proceso logístico como sistema",
         "fragment": "tema-1-el-proceso-logistico-como-sistema"
@@ -6678,6 +7286,10 @@
     ],
     "12": [
       {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
+      {
         "title": "Job, Step, Tasklet y chunk processing",
         "fragment": "tema-1-job-step-tasklet-y-chunk-processing"
       },
@@ -6687,6 +7299,38 @@
       }
     ],
     "13": [
+      {
+        "title": "1. Comprueba el entorno antes de generar archivos",
+        "fragment": "1-comprueba-el-entorno-antes-de-generar-archivos"
+      },
+      {
+        "title": "2. Genera el proyecto con Spring Initializr",
+        "fragment": "2-genera-el-proyecto-con-spring-initializr"
+      },
+      {
+        "title": "3. Crea una estructura pequeña y explícita",
+        "fragment": "3-crea-una-estructura-pequena-y-explicita"
+      },
+      {
+        "title": "4. Configura una base reactiva local",
+        "fragment": "4-configura-una-base-reactiva-local"
+      },
+      {
+        "title": "5. Implementa el modelo y el repositorio",
+        "fragment": "5-implementa-el-modelo-y-el-repositorio"
+      },
+      {
+        "title": "6. Expón endpoints sin llamar subscribe()",
+        "fragment": "6-expon-endpoints-sin-llamar-subscribe"
+      },
+      {
+        "title": "7. Ejecuta y observa un resultado concreto",
+        "fragment": "7-ejecuta-y-observa-un-resultado-concreto"
+      },
+      {
+        "title": "8. Provoca tres fallos antes de continuar",
+        "fragment": "8-provoca-tres-fallos-antes-de-continuar"
+      },
       {
         "title": "Mono y Flux",
         "fragment": "tema-1-mono-y-flux"
@@ -6838,9 +7482,17 @@
       {
         "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
         "fragment": "tema-7-compensacion-que-falla-conservar-trabajo-pendiente-y-reintentar-sin-duplicar"
+      },
+      {
+        "title": "Proyecto: microservicio comprobado bajo fallos",
+        "fragment": "proyecto-microservicio-comprobado-bajo-fallos"
       }
     ],
     "18": [
+      {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
       {
         "title": "SecurityFilterChain y autorización",
         "fragment": "tema-1-securityfilterchain-y-autorizacion"
@@ -6945,6 +7597,10 @@
       }
     ],
     "3": [
+      {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
       {
         "title": "DataSource, JdbcTemplate y DAO",
         "fragment": "tema-1-datasource-jdbctemplate-y-dao"
@@ -7060,6 +7716,10 @@
     ],
     "8": [
       {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
+      {
         "title": "Scheduling y tareas periódicas",
         "fragment": "tema-1-scheduling-y-tareas-periodicas"
       },
@@ -7093,6 +7753,10 @@
       }
     ],
     "9": [
+      {
+        "title": "Dos ejemplos: primero visible, luego real",
+        "fragment": "dos-ejemplos-primero-visible-luego-real"
+      },
       {
         "title": "@Async y ejecutores: trabajo en segundo plano con límites",
         "fragment": "tema-1-async-y-ejecutores-trabajo-en-segundo-plano-con-limites"

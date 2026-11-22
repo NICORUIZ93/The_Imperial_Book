@@ -5,28 +5,26 @@ Cada tema de este módulo se practica hasta que la sintaxis sale sin pensarla, c
 
 ## Aprende construyendo
 
+
 ### Tema 1: Funciones de orden superior · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás declarar una función que recibe otra función como parámetro, y usar la sintaxis de lambda final de Kotlin para invocarla de forma idiomática.
 
-**Conocimiento previo:** Módulo 0 completo (null safety, data class, when, destructuring).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás declarar una función que recibe otra función como parámetro, y usar la sintaxis de lambda final de Kotlin para invocarla de forma idiomática.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Los callbacks `onClick`/`onValueChange` en Jetpack Compose (Módulo 2 del track Android), o una estrategia de reintento configurable al llamar una API, dependen de pasar comportamiento como parámetro sin que la función receptora conozca de antemano qué hará ese comportamiento.
+#### ► LA ANALOGÍA
+Piensa en funciones de orden superior como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** funciones como parámetros, sintaxis de lambda al final, firma de tipo de función.
-
-`fun procesarLista(lista: List<Int>, accion: (Int) -> Unit) { lista.forEach { accion(it) } }` declara una función de orden superior que recibe `accion: (Int) -> Unit` como parámetro. `procesarLista(listOf(1, 2, 3)) { numero -> println(numero * 2) }` demuestra que si el último parámetro es una lambda, puede escribirse fuera de los paréntesis. La firma de tipo `(Int) -> Unit` es verificada por el compilador: pasar una función con firma incompatible es un error de compilación.
-
-**Analogía:** una función de orden superior es una máquina de procesamiento genérica que acepta una herramienta intercambiable, sin saber de antemano cuál, solo que debe encajar en la ranura esperada (la firma de tipo).
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["procesarLista(lista, accion)"] --> B["lista.forEach { accion(it) }"]
@@ -34,9 +32,49 @@ flowchart LR
   B --> D[cada elemento pasa por la función recibida]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Funciones de orden superior se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/OrdenSuperior.kt` con este contenido:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Funciones de orden superior | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses funciones de orden superior por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: funciones de orden superior funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Funciones de orden superior existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve funciones de orden superior en tu contexto?
+2. ¿Cómo sabrías que funciones de orden superior no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar funciones de orden superior?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["procesarLista(lista, accion)"] --> B["lista.forEach { accion(it) }"]
+  C["accion: (Int) -> Unit"] --> A
+  B --> D[cada elemento pasa por la función recibida]
+```
 
 ```kotlin
 package com.academia.kmp
@@ -46,17 +84,11 @@ fun procesarLista(lista: List<Int>, accion: (Int) -> Unit) {
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
 ./gradlew :shared:assemble
 ```
-
-**Explicación línea por línea:** `accion: (Int) -> Unit` documenta que el parámetro es una función que recibe un `Int` y no devuelve nada relevante; `lista.forEach { accion(it) }` invoca esa función recibida sobre cada elemento, sin que `procesarLista` sepa qué hace `accion` internamente.
-
-Escribe un test que pase dos comportamientos distintos sin modificar `procesarLista`, en `shared/src/commonTest/kotlin/com/academia/kmp/OrdenSuperiorTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -81,70 +113,80 @@ class OrdenSuperiorTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
 
-**Resultado esperado:** las dos pruebas pasan en verde, confirmando que la misma función `procesarLista` produce comportamientos completamente distintos según la función recibida, sin ninguna modificación a `procesarLista` en sí.
-
-**Fallo deliberado:** intenta pasar `accion: (String) -> Unit` en Kotlin donde se espera `(Int) -> Unit` (por ejemplo, `procesarLista(listOf(1,2,3)) { texto: String -> println(texto) }`). `./gradlew :shared:assemble` rechaza el código inmediatamente en tiempo de COMPILACIÓN porque la firma de tipo no coincide — diagnostica confirmando que la verificación de tipos de funciones de orden superior ocurre antes de ejecutar una sola línea, a diferencia de lenguajes con tipado dinámico donde el mismo error solo aparecería al ejecutar el código con ese argumento incompatible.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. `fun aplicarATodos(lista: List<Int>, f: (Int) -> Int): List<Int> = lista.map(f)` — usa `map` en vez de `forEach` para transformar y devolver.
-2. `procesarLista(listOf(4, 5, 6)) { n -> println(n + 10) }` — el mismo patrón, otra operación.
-3. Declara `fun repetir(veces: Int, accion: () -> Unit)` (sin parámetros) y llama a `repetir(3) { println("hola") }`.
-4. Escribe de memoria (sin mirar) una función de orden superior con una firma `(Double) -> Boolean`.
-
-**Pista:** identifica primero cuántos parámetros recibe la función que vas a pasar y qué devuelve, antes de escribir la firma de tipo completa entre paréntesis.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que `transformar` reciba una función y la aplique al valor:
-
 ```kotlin
 fun transformar(valor: Int, f: ____ -> Int): Int = f(valor)
 val resultado = transformar(5) { it * 3 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de orden superior que reciba una lista de `String` y una función `(String) -> Boolean`, devolviendo cuántos elementos cumplen esa condición. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya declaras funciones que reciben comportamiento como parámetro, usas la sintaxis de lambda final, y confirmas que el compilador verifica la firma de tipo antes de ejecutar nada. El siguiente tema usa scope functions, frecuentemente combinadas con lambdas pasadas como parámetro. Fuente oficial: [Kotlin docs — Higher-order functions and lambdas](https://kotlinlang.org/docs/lambdas.html).
-
-**Errores comunes:** olvidar que si la lambda es el único parámetro, los paréntesis vacíos son opcionales (`repetir(3) { ... }`, no `repetir(3) () { ... }`); declarar la firma de tipo con el orden de parámetros invertido respecto a como realmente se invoca la función.
-
-**Cuándo no usarlo:** para una operación que siempre hace exactamente lo mismo sin ninguna variación posible, una función de orden superior agrega una capa de indirección innecesaria; resérvala para comportamiento genuinamente configurable por quien la invoca.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Inyecta la regla de ordenamiento de entregas como función en un caso de uso. Prueba prioridad y distancia con entradas iguales, conservando un resultado determinista para empates.
+</details>
 
 ### Tema 2: Scope functions · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás elegir entre `let`, `run`, `apply` y `also` según qué necesites devolver (el receptor original o el resultado de un bloque) y cómo referenciar el receptor (`this` o `it`).
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir entre let, run, apply y also según qué necesites devolver (el receptor original o el resultado de un bloque) y cómo referenciar el receptor (this o it).
 
-**Conocimiento previo:** Tema 1 de este módulo; null safety (Módulo 0, Tema 1).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás elegir entre let, run, apply y also según qué necesites devolver (el receptor original o el resultado de un bloque) y cómo referenciar el receptor (this o it).**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Configurar un cliente HTTP con varios parámetros, ejecutar lógica solo si un valor nullable de una API existe, o registrar una traza sin alterar un objeto en una cadena de llamadas, son casos cotidianos donde cada scope function resuelve un propósito específico distinto.
+#### ► LA ANALOGÍA
+Piensa en scope functions como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que scope functions resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `let` (ejecuta si no-null, devuelve resultado del bloque), `apply` (configura, devuelve el receptor), `run` (ejecuta bloque, devuelve resultado), `also` (efecto secundario, devuelve el receptor).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Scope functions se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`usuario?.let { u -> println("Hola ${u.nombre}") }` ejecuta el bloque solo si `usuario` no es `null`. `val config = Config().apply { timeout = 30; reintentos = 3 }` configura y devuelve el mismo objeto configurado. `val resultado = obtenerDatos().run { procesar(this) }` ejecuta un bloque y devuelve el resultado de ESE bloque, no el objeto original. `also` es similar a `apply` (devuelve el receptor) pero recibe el receptor como `it` explícito, apropiado para logging (`objeto.also { println("Creado: $it") }`).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Scope functions | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** `apply` es personalizar un producto y quedarte con el mismo producto personalizado; `run` es consultar algo del producto y quedarte con la respuesta, no el producto; `let` es actuar sobre un objeto solo si existe; `also` es anotar algo de paso sin alterarlo.
+#### ► CUÁNDO NO USAR ESTO
+No uses scope functions por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: scope functions funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Scope functions existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve scope functions en tu contexto?
+2. ¿Cómo sabrías que scope functions no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar scope functions?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌──────────────┬───────────────────────┬───────────────────────────────┐
 │              │ devuelve el RECEPTOR   │ devuelve el RESULTADO del bloque │
@@ -153,10 +195,6 @@ Al finalizar podrás elegir entre `let`, `run`, `apply` y `also` según qué nec
 │ it explícito   │        also          │              let                │
 └──────────────┴───────────────────────┴───────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/ScopeFunctions.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -171,17 +209,11 @@ fun construirConfig(): Config = Config().apply {
 fun saludarSiExiste(nombre: String?): String? = nombre?.let { n -> "Hola, $n" }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
 ./gradlew :shared:assemble
 ```
-
-**Explicación línea por línea:** `Config().apply { timeout = 30; reintentos = 3 }` configura el objeto recién creado dentro del bloque (usando `this` implícito) y devuelve ESE MISMO objeto como resultado de toda la expresión; `nombre?.let { n -> "Hola, $n" }` ejecuta el bloque solo si `nombre` no es `null`, devolviendo el resultado del bloque (el saludo) en vez del `nombre` original.
-
-Escribe un test que confirme qué devuelve cada scope function, en `shared/src/commonTest/kotlin/com/academia/kmp/ScopeFunctionsTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -210,63 +242,81 @@ class ScopeFunctionsTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
 
-**Resultado esperado:** las tres pruebas pasan en verde: `construirConfig()` devuelve el mismo objeto `Config` configurado (`timeout = 30, reintentos = 3`); `saludarSiExiste("Nico")` devuelve `"Hola, Nico"` (el resultado del bloque, no el `Config`); `saludarSiExiste(null)` devuelve `null` sin ejecutar el bloque.
-
-**Fallo deliberado:** cambia `construirConfig` para usar `run` en vez de `apply` (`Config().run { timeout = 30; reintentos = 3 }`). `./gradlew :shared:assemble` falla, porque el bloque de `run` termina con dos asignaciones (`reintentos = 3`) que no producen ningún valor de tipo `Config` — el tipo de retorno de `run` es el resultado del bloque (`Unit` en este caso), no el receptor, así que `construirConfig(): Config` deja de coincidir con lo que la expresión devuelve — diagnostica confirmando que confundir qué devuelve cada scope function (`apply`/`also` el receptor; `run`/`let` el resultado del bloque) rompe el tipo de retorno esperado, un error que el compilador atrapa inmediatamente.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. `Config().apply { timeout = 5 }` — confirma que el resultado es un `Config`, no un `Unit`.
-2. `usuario?.let { it.nombre.uppercase() }` — confirma que el resultado es un `String?`, no un `Usuario?`.
-3. `objeto.also { println("log: $it") }` — confirma que el resultado sigue siendo `objeto`, no lo que imprime `println`.
-4. Escribe de memoria (sin mirar) un uso de `run` que reciba un objeto y devuelva un `Boolean` calculado a partir de él.
-
-**Pista:** para saber qué devuelve cada scope function, pregúntate: ¿necesito seguir usando el objeto original después, o necesito el resultado de una operación sobre él?
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que la función se ejecute solo si `direccion` no es `null`:
-
 ```kotlin
 val texto: String? = direccion ____ { d -> "Envía a: $d" }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un ejemplo de `apply` y un ejemplo de `let` sobre el mismo tipo de objeto, explicando en una frase qué diferencia sus resultados. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya distingues las cuatro scope functions según qué devuelven y cómo referencian el receptor, confirmando con el compilador real qué ocurre al confundir `apply` con `run`. El siguiente tema modela estados exhaustivos con sealed classes, frecuentemente construidos dentro de un `apply`. Fuente oficial: [Kotlin docs — Scope functions](https://kotlinlang.org/docs/scope-functions.html).
-
-**Errores comunes:** usar `apply` cuando en realidad se necesita el resultado de una transformación (debería ser `run` o `let`); anidar múltiples scope functions sin necesidad, dificultando saber a qué objeto se refiere `it`/`this` en cada nivel.
-
-**Cuándo no usarlo:** para una única línea de asignación simple (`val x = 5`), envolverla en una scope function agrega indirección sin beneficio; resérvalas para configuración de múltiples propiedades, manejo de nulls, o efectos secundarios explícitos.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Configura el cliente y transforma una entrega con funciones de alcance legibles. Prueba el valor devuelto por cada operación para evitar retornar accidentalmente el objeto de configuración en lugar del resultado.
+</details>
 
 ### Tema 3: Sealed classes y colecciones funcionales · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás modelar un conjunto cerrado de estados con sealed class, y encadenar `filter`/`map`/`fold` para transformar una colección de forma declarativa.
+#### ► DE QUÉ TRATA
+Al finalizar podrás modelar un conjunto cerrado de estados con sealed class, y encadenar filter/map/fold para transformar una colección de forma declarativa.
 
-**Conocimiento previo:** when como expresión (Módulo 0, Tema 3); Tema 1 de este módulo (funciones de orden superior, base de `filter`/`map`).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás modelar un conjunto cerrado de estados con sealed class, y encadenar filter/map/fold para transformar una colección de forma declarativa.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Modelar el estado de una pantalla completa (cargando/éxito/error) en apps Android o Compose Multiplatform (Módulo 7), o filtrar y transformar una respuesta de API antes de mostrarla, son casos donde sealed classes y colecciones funcionales se combinan constantemente.
+#### ► LA ANALOGÍA
+Piensa en sealed classes y colecciones funcionales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A[personas] -->|filter edad>=18| B[adultos]
+  B -->|map nombre| C[nombres]
+  D[pedidos] -->|fold suma| E[total acumulado]
+```
 
-**Conceptos clave:** sealed class (conjunto cerrado de subtipos), `filter`/`map` encadenados, `fold` para acumular.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sealed classes y colecciones funcionales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sealed classes y colecciones funcionales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses sealed classes y colecciones funcionales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sealed classes y colecciones funcionales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Sealed classes y colecciones funcionales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sealed classes y colecciones funcionales en tu contexto?
+2. ¿Cómo sabrías que sealed classes y colecciones funcionales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sealed classes y colecciones funcionales?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 sealed class EstadoUI {
     object Cargando : EstadoUI()
@@ -275,23 +325,13 @@ sealed class EstadoUI {
 }
 ```
 
-Esta sealed class modela el conjunto completo de estados posibles — el mismo `EstadoUI` declarado en el Módulo 0, Tema 3, reutilizado aquí sin redeclararlo de forma distinta (más adelante, Módulo 4 en adelante, el mismo patrón se aplica con `List<Tarea>` una vez que `Tarea` existe como modelo de dominio).
-
 ```kotlin
 val nombres = personas.filter { it.edad >= 18 }.map { it.nombre }
 ```
 
-Esta línea encadena transformaciones: filtrar primero, transformar después.
-
 ```kotlin
 val total = pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }
 ```
-
-`fold` acumula un resultado combinando cada elemento con un valor inicial explícito.
-
-**Analogía:** una sealed class para modelar estados es un semáforo con exactamente tres estados conocidos de antemano; encadenar `filter`+`map` es una línea de producción donde primero se descartan piezas que no cumplen un criterio y luego se transforman las restantes.
-
-**Diagrama:**
 
 ```mermaid
 flowchart LR
@@ -299,10 +339,6 @@ flowchart LR
   B -->|map nombre| C[nombres]
   D[pedidos] -->|fold suma| E[total acumulado]
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/EstadoYColecciones.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -317,104 +353,75 @@ fun totalPedidos(pedidos: List<Pedido>): Double =
     pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
 ./gradlew :shared:assemble
 ```
 
-**Explicación línea por línea:** `personas.filter { it.edad >= 18 }` produce una nueva lista solo con adultos; `.map { it.nombre }` transforma esa lista filtrada extrayendo solo el nombre; `pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }` recorre cada pedido acumulando su monto sobre el valor inicial `0.0`.
-
-Escribe un test que confirme el resultado de cada operación encadenada, en `shared/src/commonTest/kotlin/com/academia/kmp/EstadoYColeccionesTest.kt`:
-
-```kotlin
-package com.academia.kmp
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class EstadoYColeccionesTest {
-    private val personas = listOf(Persona("Ana", 25), Persona("Leo", 15), Persona("Sofía", 30))
-    private val pedidos = listOf(Pedido(19.99), Pedido(5.50), Pedido(100.0))
-
-    @Test
-    fun filtraYExtraeSoloLosNombresDeAdultos() {
-        assertEquals(listOf("Ana", "Sofía"), nombresAdultos(personas))
-    }
-
-    @Test
-    fun acumulaElTotalDeLosPedidos() {
-        assertEquals(125.49, totalPedidos(pedidos), 0.001)
-    }
-}
-```
-
-Ejecuta el test real con Gradle:
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-**Resultado esperado:** las dos pruebas pasan en verde: `nombresAdultos` devuelve `["Ana", "Sofía"]` (excluyendo a Leo, de 15 años); `totalPedidos` devuelve `125.49`, la suma acumulada de los tres montos.
-
-**Fallo deliberado:** invierte el orden a `map` antes de `filter` (`personas.map { it.nombre }.filter { it.edad >= 18 }`). `./gradlew :shared:assemble` falla en tiempo de COMPILACIÓN con `Unresolved reference: edad`, porque tras el `map`, el tipo de la lista pasó de `List<Persona>` a `List<String>`, y `String` no tiene una propiedad `edad` — diagnostica confirmando que el ORDEN de las operaciones encadenadas importa: una vez que `map` descarta información (aquí, transformando `Persona` en solo su nombre), esa información ya no está disponible para un `filter` posterior; filtra siempre antes de transformar si la transformación descarta datos que el filtro necesita.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. `numeros.filter { it % 2 == 0 }.map { it * it }` — filtra pares, eleva al cuadrado.
-2. `palabras.filter { it.length > 3 }.map { it.uppercase() }` — filtra por longitud, transforma mayúsculas.
-3. `productos.fold(0) { acumulado, p -> acumulado + p.cantidad }` — acumula una suma de enteros.
-4. Escribe de memoria (sin mirar) un `filter`+`map` encadenado sobre una lista de tu elección, seguido de un `fold` sobre el resultado.
-
-**Pista:** dibuja mentalmente cada paso como una lista nueva completa antes de encadenar el siguiente; nunca asumas que una operación posterior puede "ver" datos que una anterior ya descartó.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena los espacios para filtrar tareas completadas y sumar sus prioridades:
-
-```kotlin
-val completadas = tareas.____ { it.completada }
-val sumaPrioridades = completadas.____(0) { acumulado, t -> acumulado + t.prioridad }
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una sealed class de tres estados y un `when` exhaustivo que la maneje, seguido de un `filter`+`map` sobre una lista relacionada. Compara después contra los patrones de este módulo y del Módulo 0.
-
-#### Paso 7 · Cierre
-
-Ya modelas estados exhaustivos con sealed classes y encadenas `filter`/`map`/`fold` respetando el orden en que cada operación consume o descarta datos. El siguiente tema extiende las lambdas hacia funciones con receptor, la base de los DSL que verás en Gradle y Compose. Fuente oficial: [Kotlin docs — Collection operations](https://kotlinlang.org/docs/collection-operations.html).
-
-**Errores comunes:** encadenar `map` antes de `filter` cuando el `map` descarta información que el `filter` necesita; usar `fold` sin un valor inicial explícito compatible con el tipo acumulado, produciendo un error de tipos.
-
-**Cuándo no usarlo:** para una colección con miles de elementos donde el rendimiento es crítico y se encadenan muchas operaciones, cada `filter`/`map` intermedio crea una lista nueva; considera `asSequence()` para evaluación perezosa en ese caso específico, en vez de encadenar directamente sobre `List`.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Expresa estados de sincronización mediante una jerarquía sellada y transforma la cola sin mutarla. Las pruebas compartidas deben cubrir pendiente, confirmado y rechazado explícitamente.
+</details>
 
 ### Tema 4: Lambdas con receptor y builders tipo DSL · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás escribir una función que reciba una lambda con receptor (`T.() -> Unit`), y explicar por qué esta capacidad es la base de los DSL que usarás en Gradle y Compose Multiplatform.
+#### ► DE QUÉ TRATA
+Al finalizar podrás escribir una función que reciba una lambda con receptor (T.() -> Unit), y explicar por qué esta capacidad es la base de los DSL que usarás en Gradle y Compose Multiplatform.
 
-**Conocimiento previo:** Tema 2 de este módulo (`apply`, que ya usa lambda con receptor internamente); Tema 1 de este módulo (funciones de orden superior).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás escribir una función que reciba una lambda con receptor (T.() -> Unit), y explicar por qué esta capacidad es la base de los DSL que usarás en Gradle y Compose Multiplatform.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** La sintaxis de `build.gradle.kts` (`dependencies { implementation("...") }`) y de Compose (`Column { Text("hola"); Button { ... } }`, Módulo 7 de este track) no son características especiales del lenguaje: son funciones ordinarias que reciben una lambda con receptor, la misma capacidad que vas a construir aquí desde cero.
+#### ► LA ANALOGÍA
+Piensa en lambdas con receptor y builders tipo dsl como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que lambdas con receptor y builders tipo dsl resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** lambda con receptor (`T.() -> Unit`), `this` implícito dentro del bloque, DSL (Domain Specific Language).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Lambdas con receptor y builders tipo DSL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una lambda normal (`(T) -> Unit`) recibe el objeto como parámetro (`it`); una lambda CON RECEPTOR (`T.() -> Unit`) hace que el objeto sea el receptor implícito (`this`) dentro del bloque, permitiendo llamar a sus miembros directamente sin prefijo. `apply` (Tema 2) ya usa esto: `Config().apply { timeout = 30 }` funciona porque `apply` recibe `T.() -> Unit`, no `(T) -> Unit`. Esta capacidad, combinada con funciones que construyen objetos anidados, es la base de cualquier DSL de Kotlin.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Lambdas con receptor y builders tipo DSL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** una lambda normal te entrega el objeto para que lo uses explícitamente (`it.nombre`); una lambda con receptor te "transporta dentro" del objeto, como si estuvieras parado adentro de él, pudiendo referirte a sus propiedades directamente sin decir de quién son.
+#### ► CUÁNDO NO USAR ESTO
+No uses lambdas con receptor y builders tipo dsl por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: lambdas con receptor y builders tipo dsl funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Lambdas con receptor y builders tipo DSL existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve lambdas con receptor y builders tipo dsl en tu contexto?
+2. ¿Cómo sabrías que lambdas con receptor y builders tipo dsl no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar lambdas con receptor y builders tipo dsl?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── lambda normal ──────────────────────────────────────────┐
 │  (persona) -> println(persona.nombre)   -- "it." explícito │
@@ -423,10 +430,6 @@ Una lambda normal (`(T) -> Unit`) recibe el objeto como parámetro (`it`); una l
 │  Persona.() -> println(nombre)   -- "this." implícito, se omite │
 └─────────────────────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/DslBuilder.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -444,17 +447,11 @@ fun ruta(bloque: RutaBuilder.() -> Unit): List<String> {
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
 ./gradlew :shared:assemble
 ```
-
-**Explicación línea por línea:** `bloque: RutaBuilder.() -> Unit` declara que `bloque` es una función que, al ejecutarse, tiene `RutaBuilder` como receptor implícito (`this`); `builder.bloque()` ejecuta ese bloque usando `builder` como el `this` dentro de él; dentro de `ruta { parada("Depósito central") }`, `parada(...)` se resuelve como `builder.parada(...)` sin necesitar el prefijo, porque `this` dentro del bloque ES `builder`.
-
-Escribe un test que construya una ruta usando la sintaxis sin prefijo, en `shared/src/commonTest/kotlin/com/academia/kmp/DslBuilderTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -475,30 +472,11 @@ class DslBuilderTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
-
-**Resultado esperado:** la prueba pasa en verde, confirmando que `parada(...)` se escribe SIN ningún prefijo dentro del bloque de `ruta { ... }` — la lambda con receptor hace que `parada` se resuelva como `builder.parada(...)` automáticamente, la capacidad que hace que los DSL de Kotlin luzcan como si fueran una extensión del lenguaje en vez de llamadas a función ordinarias.
-
-**Fallo deliberado:** cambia la firma de `ruta` de `bloque: RutaBuilder.() -> Unit` a `bloque: (RutaBuilder) -> Unit` (lambda normal, sin receptor) sin cambiar el resto. `./gradlew :shared:assemble` falla, porque dentro de una lambda normal no existe un `this` implícito de tipo `RutaBuilder` — el test tendría que reescribirse como `ruta { it.parada("Depósito central") }`, con el receptor explícito — diagnostica confirmando que la diferencia entre `T.() -> Unit` y `(T) -> Unit` no es cosmética: determina si el código dentro del bloque puede omitir el receptor o debe nombrarlo explícitamente en cada llamada.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Cambia `parada("Cliente C")` dentro de `miRuta` y confirma que la lista construida incluye el nuevo elemento.
-2. Agrega un segundo método a `RutaBuilder` (`fun prioridad(nivel: Int)`) y llámalo dentro del mismo bloque `ruta { ... }` sin prefijo.
-3. Declara un `PersonaBuilder` con `nombre` y `edad`, y una función `persona(bloque: PersonaBuilder.() -> Unit): Persona`.
-4. Escribe de memoria (sin mirar) una función con lambda con receptor sobre un tipo de tu elección, con al menos dos métodos configurables dentro del bloque.
-
-**Pista:** para saber si necesitas `T.() -> Unit` o `(T) -> Unit`, pregúntate si quieres escribir los métodos del bloque CON o SIN el prefijo del objeto.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que `configurar` reciba una lambda con receptor sobre `Ajustes`:
 
 ```kotlin
 class Ajustes { var modoOscuro = false; var idioma = "es" }
@@ -510,55 +488,27 @@ fun configurar(bloque: Ajustes.____ Unit): Ajustes {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un builder simple (una clase con dos propiedades configurables) y una función que reciba una lambda con receptor sobre ese builder. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya distingues una lambda con receptor de una lambda normal, y construyes una función tipo DSL donde el bloque interno omite el prefijo del receptor. Esto cierra el módulo de programación funcional; el siguiente módulo usa coroutines y Flow, donde varias funciones (`launch { }`, `flow { }`) también reciben lambdas con receptor sobre su scope correspondiente. Fuente oficial: [Kotlin docs — Function literals with receiver](https://kotlinlang.org/docs/lambdas.html#function-literals-with-receiver).
-
-**Errores comunes:** confundir cuándo se necesita `T.()` (receptor implícito, sin prefijo) frente a `(T)` (parámetro explícito, con prefijo); anidar builders con receptores del mismo nombre de método, generando ambigüedad sobre a qué nivel de `this` se refiere una llamada.
-
-**Cuándo no usarlo:** para una función que solo necesita leer datos de un objeto sin ninguna intención de ofrecer una sintaxis tipo DSL, una lambda normal (`(T) -> Unit`) es más clara porque hace explícito de qué objeto proviene cada llamada; resérvalo para builders donde la fluidez sintáctica es el objetivo deliberado.
-
----
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Crea un builder pequeño para datos de entrega usados en pruebas. Valida que no permita una guía sin identificador y compara su legibilidad con constructores explícitos antes de añadir más DSL.
+</details>
 
 ### Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min
 
-**Prerrequisito:** tema «Sealed classes y colecciones funcionales» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** escribir una clase genérica `Resultado<out T>` covariante, una función con restricción `T : Comparable<T>` y una función `inline` con `reified` que filtra por tipo en `commonMain`.
+#### ► DE QUÉ TRATA
+Usa un proyecto KMP (por ejemplo, creado con el asistente de kmp.jetbrains.com) y escribe en shared/src/commonMain/kotlin/co/rutaflow/genericos/. Las pruebas van en commonTest.
 
-**¿Por qué es importante?** El código compartido de KMP vive de tipos genéricos: repositorios, resultados de red, cachés. Sin entender la varianza aparecen errores como «Type mismatch: inferred type is Resultado<Envio> but Resultado<Any> was expected» que parecen absurdos.
+#### ► LA IDEA EN UNA FRASE
+**Usa un proyecto KMP (por ejemplo, creado con el asistente de kmp.jetbrains.com) y escribe en shared/src/commonMain/kotlin/co/rutaflow/genericos/.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa un proyecto KMP (por ejemplo, creado con el asistente de kmp.jetbrains.com) y escribe en `shared/src/commonMain/kotlin/co/rutaflow/genericos/`. Las pruebas van en `commonTest`.
+#### ► LA ANALOGÍA
+Piensa en genéricos en kotlin: varianza con in y out, restricciones y reified como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El módulo compartido de RutaFlow tenía `Resultado<T>` sin varianza. Una función que aceptaba `Resultado<Any>` no podía recibir `Resultado<Envio>`, y el equipo lo resolvía con conversiones forzadas (`as`) que luego fallaban en ejecución.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** parámetro de tipo, covarianza (`out`), contravarianza (`in`), invarianza, restricción (`where`, `T : Comparable<T>`), `reified`, borrado de tipos.
-
-Por defecto, un genérico es **invariante**: `Caja<Envio>` no es un `Caja<Any>`, aunque `Envio` sea un `Any`.
-
-| Modificador | Significa | Ejemplo | Regla |
-|---|---|---|---|
-| `out T` | solo **produce** T | `Resultado<out T>`, `List<out E>` | `Resultado<Envio>` sirve donde se pide `Resultado<Any>` |
-| `in T` | solo **consume** T | `Comparator<in T>` | un comparador de `Any` sirve para `Envio` |
-
-Una **restricción** limita los tipos aceptados: `fun <T : Comparable<T>> mayor(a: T, b: T)`.
-
-En la JVM, los tipos genéricos se **borran** en ejecución: no puedes preguntar `x is T`. Con una función **`inline`** y **`reified T`**, el compilador copia el tipo real en cada llamada y sí puedes usar `is T` o `T::class`. Funciona igual en todos los targets de KMP.
-
-**Analogía:** `out` es una máquina expendedora: solo entrega productos, así que una de «envíos» sirve donde piden «cosas». `in` es un buzón: solo recibe, así que uno que acepta «cualquier cosa» sirve para recibir envíos. La analogía falla en que el compilador revisa cada uso: si intentas meter algo en una máquina `out`, no compila.
-
-**Límite de uso:** no marques `out` un tipo que también recibe T como parámetro: el compilador lo prohíbe por seguridad. `reified` solo existe en funciones `inline`; no lo uses en funciones grandes, porque se copian en cada llamada.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     E["Resultado<Envio>"] -->|"out T: se acepta"| A["Resultado<Any>"]
@@ -566,9 +516,49 @@ flowchart LR
     R["inline fun <reified T>"] --> I["is T en ejecución"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Genéricos en Kotlin: varianza con in y out, restricciones y reified se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `shared/src/commonMain/kotlin/co/rutaflow/genericos/Genericos.kt`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Genéricos en Kotlin: varianza con in y out, restricciones y reified | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses genéricos en kotlin: varianza con in y out, restricciones y reified por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: genéricos en kotlin: varianza con in y out, restricciones y reified funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Genéricos en Kotlin: varianza con in y out, restricciones y reified existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve genéricos en kotlin: varianza con in y out, restricciones y reified en tu contexto?
+2. ¿Cómo sabrías que genéricos en kotlin: varianza con in y out, restricciones y reified no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar genéricos en kotlin: varianza con in y out, restricciones y reified?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    E["Resultado<Envio>"] -->|"out T: se acepta"| A["Resultado<Any>"]
+    C["Comparator<Any>"] -->|"in T: se acepta"| CE["Comparator<Envio>"]
+    R["inline fun <reified T>"] --> I["is T en ejecución"]
+```
 
 ```kotlin
 package co.rutaflow.genericos
@@ -591,8 +581,6 @@ fun <T : Comparable<T>> mayor(a: T, b: T): T = if (a >= b) a else b  // restricc
 
 inline fun <reified T> List<Any>.soloDe(): List<T> = filter { it is T }.map { it as T } // reified
 ```
-
-Archivo `shared/src/commonTest/kotlin/co/rutaflow/genericos/GenericosTest.kt`:
 
 ```kotlin
 package co.rutaflow.genericos
@@ -618,15 +606,9 @@ class GenericosTest {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 ./gradlew :shared:allTests
 ```
-
-**Explicación por bloques:** `Resultado<out T>` solo devuelve T, así que es covariante y `describir` (que pide `Resultado<Any>`) acepta un `Resultado<Envio>`. `Fallo` extiende `Resultado<Nothing>`: como `Nothing` es subtipo de todo, un fallo sirve como resultado de cualquier tipo. `mayor` solo acepta tipos comparables consigo mismos. `soloDe` es `inline` con `reified`, así que `it is T` funciona aunque los genéricos se borren. Las tres pruebas corren en todos los targets con `allTests`.
-
-**Resultado esperado:**
 
 ```text
 > Task :shared:jvmTest
@@ -635,57 +617,4 @@ BUILD SUCCESSFUL
 (3 pruebas aprobadas por target en shared/build/reports/tests)
 ```
 
-**Fallo deliberado:** quita `out` de `sealed interface Resultado<out T>`. **Error esperado:** `Type mismatch: inferred type is Resultado<Envio> but Resultado<Any> was expected` en la prueba de covarianza. **Diagnóstico:** sin `out`, el tipo es invariante. Como `Resultado` solo produce T, `out` es correcto y seguro.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta las pruebas y abre el reporte de un target.
-2. **Variación:** agrega a `Resultado` un método `fun <R> map(f: (T) -> R): Resultado<R>` y pruébalo.
-3. **Diagnóstico:** reproduce el fallo deliberado quitando `out`.
-4. **Integración:** escribe `fun interface Validador<in T> { fun valido(x: T): Boolean }` y usa un `Validador<Any>` donde se pide uno de `Envio`.
-5. **Diseño:** revisa los genéricos del módulo compartido de RutaFlow y marca cuáles deberían ser `out` o `in`.
-
-**Pista:** pregunta si el tipo solo sale (`out`), solo entra (`in`) o las dos cosas (invariante).
-
-#### Paso 6 · Práctica independiente
-
-Escribe una caché genérica `class Cache<K, V>` en `commonMain` con `obtener(K): V?` y `guardar(K, V)`, y explica por qué no puede ser covariante en V.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas covarianza y contravarianza con un ejemplo de RutaFlow.
-- [ ] Las tres pruebas pasan en todos los targets.
-- [ ] Reprodujiste el error de invarianza.
-- [ ] Sabes cuándo usar `reified`.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** forzar tipos con `as` en lugar de declarar varianza, marcar `out` un tipo que también consume y abusar de `inline` con funciones grandes. **Siguiente paso:** el tema «Lambdas con receptor y builders tipo DSL» combina genéricos con funciones de extensión.
-
-**Transferencia al proyecto integrador «RutaFlow»:** declara `Resultado<out T>` en el módulo compartido de RutaFlow y elimina los `as` del código de red.
-
-**Fuente oficial:** [Kotlin — Generics: in, out, where](https://kotlinlang.org/docs/generics.html) y [Kotlin — Inline functions: reified type parameters](https://kotlinlang.org/docs/inline-functions.html#reified-type-parameters).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** modelar un estado de UI (loading/success/error) con sealed classes manejado exhaustivamente, y construir un builder tipo DSL simple.
-
-**Requisitos previos:** Módulo 0 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Escribir una función de orden superior | Ver Tema 1 | Recibe una lambda y la aplica a cada elemento |
-| 2 | Usar `let` para una variable nullable | Ver Tema 2 | Sin un `if` explícito |
-| 3 | Usar `apply` para configurar un objeto | Ver Tema 2 | En una sola expresión |
-| 4 | Modelar `EstadoUI` con sealed class | Ver Tema 3 | Maneja todos los casos con `when` exhaustivo |
-| 5 | Encadenar `map`/`filter`/`fold` | Ver Tema 3 | En una sola expresión |
-| 6 | Escribir una función con lambda con receptor | Ver Tema 4 | Un builder simple tipo DSL |
-
-**Verificación:** el laboratorio se considera exitoso si el `when` sobre `EstadoUI` compila sin rama `else` y sigue siendo exhaustivo, si puedes explicar la diferencia práctica entre las cuatro scope functions con un ejemplo propio de cada una, y si reproduces de memoria al menos uno de los cuatro patrones sin ver el ejemplo original.
-
-**Errores comunes y soluciones**
-
-- **Confundir cuándo usar `apply` frente a `run`.** `apply` devuelve el receptor original; `run` devuelve el resultado del bloque.
-- **Agregar una rama `else` innecesaria a un `when` exhaustivo sobre sealed class.** Omítela para que el compilador verifique exhaustividad real.
-- **Escribir un bucle manual en vez de `map`/`filter`/`fold`.** Prefiere las operaciones funcionales encadenadas para mayor legibilidad declarativa.
-- **Confundir `T.() -> Unit` con `(T) -> Unit`.** El primero omite el prefijo del receptor dentro del bloque; el segundo lo requiere explícitamente.
-
----
+</details>

@@ -4,10 +4,68 @@
 
 Este capítulo no presupone que ya tienes una aplicación reactiva. Crearás `demo-reactive`, una API mínima que guarda entregas en H2 mediante R2DBC y expone un flujo HTTP. Primero harás funcionar una vertical pequeña; después introducirás `WebClient` y compararás el resultado con MVC.
 
+
 ### 1. Comprueba el entorno antes de generar archivos
 
-Necesitas JDK 25, Git y una herramienta para descomprimir. Maven no se instala globalmente porque el proyecto incluirá Maven Wrapper.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 1. comprueba el entorno antes de generar archivos con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 1. comprueba el entorno antes de generar archivos te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 1. comprueba el entorno antes de generar archivos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 1. comprueba el entorno antes de generar archivos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 1. Comprueba el entorno antes de generar archivos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 1. Comprueba el entorno antes de generar archivos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 1. comprueba el entorno antes de generar archivos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 1. comprueba el entorno antes de generar archivos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 1. Comprueba el entorno antes de generar archivos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 1. comprueba el entorno antes de generar archivos en tu contexto?
+2. ¿Cómo sabrías que 1. comprueba el entorno antes de generar archivos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 1. comprueba el entorno antes de generar archivos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 java --version
 javac --version
@@ -15,12 +73,69 @@ git --version
 curl --version
 ```
 
-`java` y `javac` deben mostrar la misma familia de versión. Si `java` existe pero `javac` no, instalaste únicamente un entorno de ejecución o tu `PATH` apunta a una instalación incompleta. Corrige esto antes de descargar Spring.
+</details>
 
 ### 2. Genera el proyecto con Spring Initializr
 
-En macOS, Linux o WSL:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 2. genera el proyecto con spring initializr con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 2. genera el proyecto con spring initializr te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 2. genera el proyecto con spring initializr como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 2. genera el proyecto con spring initializr resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 2. Genera el proyecto con Spring Initializr se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 2. Genera el proyecto con Spring Initializr | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 2. genera el proyecto con spring initializr por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 2. genera el proyecto con spring initializr funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 2. Genera el proyecto con Spring Initializr existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 2. genera el proyecto con spring initializr en tu contexto?
+2. ¿Cómo sabrías que 2. genera el proyecto con spring initializr no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 2. genera el proyecto con spring initializr?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir -p academia-labs && cd academia-labs
 
@@ -40,18 +155,73 @@ cd demo-reactive
 ./mvnw test
 ```
 
-En Windows PowerShell puedes crear el mismo proyecto desde [start.spring.io](https://start.spring.io/) seleccionando Maven, Java, JDK 25 y las dependencias **Spring Reactive Web**, **Spring Data R2DBC**, **H2 Database** y **Validation**. Descomprime el ZIP, abre PowerShell dentro de la carpeta y ejecuta:
-
 ```powershell
 .\mvnw.cmd test
 ```
 
-**Resultado esperado:** Maven termina con `BUILD SUCCESS`. Si aparece `UnsupportedClassVersionError`, el wrapper está usando otro JDK; revisa `$Env:JAVA_HOME` en PowerShell o `echo $JAVA_HOME` en macOS/Linux.
+</details>
 
 ### 3. Crea una estructura pequeña y explícita
 
-Dentro de `src/main/java/io/academia/` crea:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 3. crea una estructura pequeña y explícita con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 3. crea una estructura pequeña y explícita te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 3. crea una estructura pequeña y explícita como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 3. crea una estructura pequeña y explícita resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 3. Crea una estructura pequeña y explícita se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 3. Crea una estructura pequeña y explícita | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 3. crea una estructura pequeña y explícita por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 3. crea una estructura pequeña y explícita funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 3. Crea una estructura pequeña y explícita existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 3. crea una estructura pequeña y explícita en tu contexto?
+2. ¿Cómo sabrías que 3. crea una estructura pequeña y explícita no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 3. crea una estructura pequeña y explícita?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```text
 demo-reactive/
 ├─ pom.xml
@@ -68,12 +238,69 @@ demo-reactive/
    └─ DeliveryControllerTest.java
 ```
 
-La carpeta `delivery` agrupa una capacidad del dominio. Evita crear carpetas globales llamadas `controllers`, `services` y `repositories` para toda la aplicación: cuando el proyecto crece, obligan a saltar entre directorios para comprender una sola funcionalidad.
+</details>
 
 ### 4. Configura una base reactiva local
 
-Guarda `src/main/resources/application.yml`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 4. configura una base reactiva local con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 4. configura una base reactiva local te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 4. configura una base reactiva local como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 4. configura una base reactiva local resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 4. Configura una base reactiva local se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 4. Configura una base reactiva local | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 4. configura una base reactiva local por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 4. configura una base reactiva local funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 4. Configura una base reactiva local existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 4. configura una base reactiva local en tu contexto?
+2. ¿Cómo sabrías que 4. configura una base reactiva local no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 4. configura una base reactiva local?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```yaml
 spring:
   application:
@@ -89,8 +316,6 @@ server:
   port: 8080
 ```
 
-Guarda `src/main/resources/schema.sql`:
-
 ```sql
 CREATE TABLE IF NOT EXISTS delivery (
   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
@@ -99,12 +324,69 @@ CREATE TABLE IF NOT EXISTS delivery (
 );
 ```
 
-H2 permite aprender el flujo sin instalar PostgreSQL. No lo confundas con producción: antes de desplegar debes repetir las pruebas contra el motor y driver R2DBC reales.
+</details>
 
 ### 5. Implementa el modelo y el repositorio
 
-`src/main/java/io/academia/delivery/Delivery.java`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 5. implementa el modelo y el repositorio con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 5. implementa el modelo y el repositorio te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 5. implementa el modelo y el repositorio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 5. implementa el modelo y el repositorio resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 5. Implementa el modelo y el repositorio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 5. Implementa el modelo y el repositorio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 5. implementa el modelo y el repositorio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 5. implementa el modelo y el repositorio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 5. Implementa el modelo y el repositorio existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 5. implementa el modelo y el repositorio en tu contexto?
+2. ¿Cómo sabrías que 5. implementa el modelo y el repositorio no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 5. implementa el modelo y el repositorio?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 package io.academia.delivery;
 
@@ -119,8 +401,6 @@ public record Delivery(
 ) {}
 ```
 
-`src/main/java/io/academia/delivery/DeliveryRepository.java`:
-
 ```java
 package io.academia.delivery;
 
@@ -134,12 +414,69 @@ public interface DeliveryRepository
 }
 ```
 
-`ReactiveCrudRepository` devuelve `Mono` y `Flux`; no oculta JDBC bloqueante detrás de esos tipos. Spring Boot configura el `ConnectionFactory` R2DBC a partir de `spring.r2dbc.*`, siguiendo el modelo documentado oficialmente por Spring Boot.
+</details>
 
 ### 6. Expón endpoints sin llamar subscribe()
 
-`src/main/java/io/academia/delivery/DeliveryController.java`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 6. expón endpoints sin llamar subscribe() con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 6. expón endpoints sin llamar subscribe() te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 6. expón endpoints sin llamar subscribe() como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 6. expón endpoints sin llamar subscribe() resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 6. Expón endpoints sin llamar subscribe() se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 6. Expón endpoints sin llamar subscribe() | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 6. expón endpoints sin llamar subscribe() por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 6. expón endpoints sin llamar subscribe() funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 6. Expón endpoints sin llamar subscribe() existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 6. expón endpoints sin llamar subscribe() en tu contexto?
+2. ¿Cómo sabrías que 6. expón endpoints sin llamar subscribe() no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 6. expón endpoints sin llamar subscribe()?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 package io.academia.delivery;
 
@@ -176,15 +513,72 @@ public final class DeliveryController {
 }
 ```
 
-No llames `subscribe()` dentro del controller. Al devolver el `Publisher`, WebFlux controla la suscripción, cancelación y escritura de la respuesta HTTP. Suscribirte manualmente separaría el trabajo de la respuesta y dificultaría propagar errores.
+</details>
 
 ### 7. Ejecuta y observa un resultado concreto
 
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por 7. ejecuta y observa un resultado concreto con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 7. ejecuta y observa un resultado concreto te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 7. ejecuta y observa un resultado concreto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 7. ejecuta y observa un resultado concreto resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 7. Ejecuta y observa un resultado concreto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 7. Ejecuta y observa un resultado concreto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 7. ejecuta y observa un resultado concreto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 7. ejecuta y observa un resultado concreto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 7. Ejecuta y observa un resultado concreto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 7. ejecuta y observa un resultado concreto en tu contexto?
+2. ¿Cómo sabrías que 7. ejecuta y observa un resultado concreto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 7. ejecuta y observa un resultado concreto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw spring-boot:run
 ```
-
-En otra terminal:
 
 ```bash
 curl -i -X POST http://localhost:8080/deliveries \
@@ -195,383 +589,378 @@ curl -i http://localhost:8080/deliveries/RF-001
 curl -i http://localhost:8080/deliveries
 ```
 
-Debes observar `201 Created` al crear, un objeto con estado `CREATED` al consultar y un arreglo con una entrega al listar. Si recibes `404`, verifica la ruta y que el proceso continúe ejecutándose. Si recibes `500`, lee desde la primera excepción `Caused by` en la terminal; no corrijas al azar la última línea del stack trace.
+</details>
 
 ### 8. Provoca tres fallos antes de continuar
 
-1. Envía dos veces `RF-001`: la restricción `UNIQUE` debe producir un error. El siguiente incremento será traducirlo a `409 Conflict`.
-2. Cambia temporalmente la URL R2DBC por una inválida: la aplicación debe fallar de forma visible, no devolver una lista vacía engañosa.
-3. Añade `Thread.sleep(3000)` dentro de `findAll()`, ejecuta varias peticiones y observa por qué bloquear el event loop degrada todas las conexiones. Retira el bloqueo y conserva la explicación en README.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Con esto tienes un proyecto mínimo reproducible. Ahora sí tiene sentido estudiar con detalle `Mono`, `Flux`, `WebClient`, backpressure y las decisiones frente a MVC.
+#### ► DE QUÉ TRATA
+Este tema te guía por 8. provoca tres fallos antes de continuar con foco en comprensión antes de implementación.
 
-## Aprende construyendo
+#### ► LA IDEA EN UNA FRASE
+**Entender 8. provoca tres fallos antes de continuar te permite tomar mejores decisiones técnicas.**
 
-Cada tema usa una prueba acorde con lo que enseña: `StepVerifier` verifica las señales de los publishers; un servidor HTTP de prueba se usa en las llamadas salientes. Continúa sobre `demo-reactive`, el proyecto construido en la sección anterior.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 8. provoca tres fallos antes de continuar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 8. provoca tres fallos antes de continuar resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 8. Provoca tres fallos antes de continuar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 8. Provoca tres fallos antes de continuar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 8. provoca tres fallos antes de continuar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 8. provoca tres fallos antes de continuar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 8. Provoca tres fallos antes de continuar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 8. provoca tres fallos antes de continuar en tu contexto?
+2. ¿Cómo sabrías que 8. provoca tres fallos antes de continuar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 8. provoca tres fallos antes de continuar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar 8. provoca tres fallos antes de continuar.
+
+</details>
 
 ### Tema 1: Mono y Flux · Intermedio · 40 min
 
-Este tema conecta el repositorio del proyecto `demo-reactive` con los tipos de Reactor. El laboratorio aislado comprueba sus señales sin base de datos ni servidor externo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 1.1 · Elegir entre un resultado y una secuencia · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por mono y flux con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender mono y flux te permite tomar mejores decisiones técnicas.**
 
-Buscar una guía devuelve cero o una entrega. Listar guías puede devolver muchas. `Mono<T>` modela cero o un elemento; `Flux<T>`, cero o más.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en mono y flux como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Desde el código de este tema, abre `src/main/java/academia/rutaflow/reactor/EntregaFlows.java` y `src/test/java/academia/rutaflow/reactor/MonoFluxTest.java`. Ejecuta:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mono y flux resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mono y Flux se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mono y Flux | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses mono y flux por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mono y flux funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Mono y Flux existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mono y flux en tu contexto?
+2. ¿Cómo sabrías que mono y flux no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mono y flux?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw -Dtest=MonoFluxTest#monoEntregaCeroOUnaGuia test
 ```
-
-**Resultado esperado:** El `Mono` del código `RF-1200` emite una guía y completa. La búsqueda de `1200` completa sin emitir valor.
-
-**Fallo deliberado:** Cambia la expectativa `Guía RF-1200` por `Guía RF-1201`. **Diagnóstico:** `StepVerifier` muestra el valor esperado y el valor recibido; revisa el código que pasó el test. Restáurala.
-
-**3. Entiende**
-
-`Mono` y `Flux` son publishers: describen señales que recibirá un suscriptor. `Mono` puede emitir un valor o ninguno; ambos casos terminan con `onComplete`. Si falla, termina con `onError`. `Flux` puede emitir varios valores antes de terminar.
-
-**4. Cierra**
-
-Completa la tabla en tus notas: `findByTrackingCode` → `Mono<Delivery>`; `findAll` → `Flux<Delivery>`. Explica qué significa que la búsqueda no encuentre nada.
-
-#### Subtema 1.2 · Diferenciar vacío, valor y error · 10 min
-
-**1. Contexto**
-
-Una consulta sin coincidencias no es lo mismo que una consulta que falló. El cliente debe poder tratar “no existe” y “ocurrió un error” de maneras distintas.
-
-**2. Hazlo tú**
-
-En `MonoFluxTest.java`, ejecuta:
 
 ```bash
 ./mvnw -Dtest=MonoFluxTest#errorEsUnaSenalDistintaDeCompletarVacio test
 ```
 
-**Resultado esperado:** `expectErrorMessage` recibe `código inválido`; el test del subtema anterior verifica un `Mono` vacío con `verifyComplete`.
-
-**Fallo deliberado:** Sustituye `expectErrorMessage("código inválido")` por `verifyComplete()`. **Diagnóstico:** el publisher terminó con `onError`, no con `onComplete`; StepVerifier reporta que esperaba completar sin error. Restablece la aserción del error.
-
-**3. Entiende**
-
-Las tres salidas son diferentes: valor seguido de completar, completar sin valor y error. No conviertas un error de base de datos en “sin resultados”; ocultaría un fallo operativo como si la búsqueda hubiese salido bien.
-
-**4. Cierra**
-
-Escribe qué señal devolverías para un código inexistente y cuál ante una conexión perdida a la base de datos. Explica la diferencia.
-
-#### Subtema 1.3 · Ver cuándo se calcula un valor · 10 min
-
-**1. Contexto**
-
-Un publisher puede capturar un valor al crearse o calcularlo en cada suscripción. La diferencia importa si el origen consulta un servicio, lee el reloj o incrementa un contador.
-
-**2. Hazlo tú**
-
-Lee `siguienteNumero` en `EntregaFlows.java` y ejecuta:
-
 ```bash
 ./mvnw -Dtest=MonoFluxTest#deferEjecutaElCalculoUnaVezPorSuscripcion test
 ```
-
-**Resultado esperado:** Antes de suscribirse el contador vale 0. Dos suscripciones separadas reciben 1 y 2.
-
-**Fallo deliberado:** Cambia `Mono.defer(() -> Mono.just(contador.incrementAndGet()))` por `Mono.just(contador.incrementAndGet())`. **Diagnóstico:** el contador aumenta al construir el publisher, antes de `StepVerifier`; restaura `defer`.
-
-**3. Entiende**
-
-La expresión que se pasa a `Mono.just(valor)` se evalúa al construir el publisher; `just` conserva ese valor para emitirlo cuando se suscriben. `defer` crea el publisher al suscribirse, por eso el cálculo de este ejemplo se repite en cada suscripción. No concluyas que toda fuente es “perezosa” sin mirar cómo se creó.
-
-**4. Cierra**
-
-Di cuándo escogerías `just` y cuándo `defer` o `fromSupplier`. Nombra qué observaste antes y después de suscribirte.
-
-#### Subtema 1.4 · Pedir una secuencia por partes · 10 min
-
-**1. Contexto**
-
-Un listado puede tener más elementos de los que el consumidor quiere procesar de inmediato. Reactive Streams permite que el suscriptor pida cuántos elementos está listo para recibir.
-
-**2. Hazlo tú**
-
-En `MonoFluxTest.java`, revisa `fluxRespetaLaDemandaYEmiteEnOrden` y ejecútalo:
 
 ```bash
 ./mvnw -Dtest=MonoFluxTest#fluxRespetaLaDemandaYEmiteEnOrden test
 ```
 
-**Resultado esperado:** El test inicia con demanda cero. Cada `thenRequest(1)` permite observar el siguiente código, en orden, hasta que la secuencia completa.
-
-**Fallo deliberado:** Cambia el primer `thenRequest(1)` a `thenRequest(2)`. **Diagnóstico:** `expectNoEvent` debe detectar que llegó `RF-1201` antes del segundo pedido; el publisher respondió a una demanda de dos. Restaura el valor `1`.
-
-**3. Entiende**
-
-La demanda es cuántos elementos puede recibir el suscriptor en ese momento. Este `Flux.fromIterable` es finito y local; pedir un elemento a la vez demuestra el protocolo, pero no mide una base de datos, red ni el rendimiento de una aplicación.
-
-**4. Cierra**
-
-Entrega la salida de los cuatro tests y explica con tus palabras la diferencia entre `Mono` y `Flux`, una finalización vacía y un error. Siguiente: componer `Mono` de respuestas HTTP con `WebClient`.
-
-**Fuentes oficiales:** [Reactor: introducción y suscripción](https://projectreactor.io/docs/core/release/reference/reactiveProgramming.html), [Reactor: hot y cold publishers](https://projectreactor.io/docs/core/release/reference/advancedFeatures/reactor-hotCold.html), [Reactor: pruebas con StepVerifier](https://projectreactor.io/docs/core/release/reference/testing.html).
-
-**¿Por qué es importante?** Elegir y probar el tipo de publisher ayuda a conservar la diferencia entre ausencia de datos, secuencias y errores sin bloquear la respuesta.
-
-**Aplicación y decisión:** En el proyecto integrador, usa Mono para una respuesta y Flux para una secuencia solo cuando la cadena pueda conservar su contrato de demanda. El límite es explícito: un repositorio bloqueante sigue bloqueando aunque se envuelva en Mono; la prueba Reactor no demuestra rendimiento de producción.
+</details>
 
 ### Tema 2: WebClient y composición no bloqueante · Avanzado · 40 min
 
-Este tema consulta ubicación y luego tarifa: la segunda petición necesita la respuesta de la primera. El laboratorio usa un servidor HTTP local para que puedas ver ambas solicitudes.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 2.1 · Configurar WebClient para un servicio externo · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por webclient y composición no bloqueante con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender webclient y composición no bloqueante te permite tomar mejores decisiones técnicas.**
 
-Una aplicación reactiva necesita la dirección del servicio externo desde configuración, no escrita dentro del método. Spring Boot crea un `WebClient.Builder` para inyectarlo.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en webclient y composición no bloqueante como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Desde el código de este tema, abre `src/main/java/academia/rutaflow/webclient/TarifaClient.java`. Observa el constructor: recibe el builder y el valor `tarifa.base-url`, que se convierte en la URL base.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que webclient y composición no bloqueante resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Ejecuta la prueba que crea el cliente contra un servidor local:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| WebClient y composición no bloqueante se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar WebClient y composición no bloqueante | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses webclient y composición no bloqueante por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: webclient y composición no bloqueante funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- WebClient y composición no bloqueante existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve webclient y composición no bloqueante en tu contexto?
+2. ¿Cómo sabrías que webclient y composición no bloqueante no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar webclient y composición no bloqueante?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
 ```
 
-**Resultado esperado:** El cliente se construye con la dirección asignada por MockWebServer y el test termina sin conectarse a una API de Internet.
-
-**Fallo deliberado:** En una copia cambia `builder.baseUrl(baseUrl).build()` por `builder.baseUrl(baseUrl + "/incorrecto").build()`. **Diagnóstico:** el servidor recibe una ruta con el prefijo equivocado y las aserciones de `getTarget()` fallan. Restaura la URL base recibida.
-
-**3. Entiende**
-
-`WebClient.Builder` configura el cliente. `baseUrl` da una raíz común. En producción define `tarifa.base-url` en la configuración de Spring; el test construye la clase con una URL local para evitar depender de servicios externos.
-
-**4. Cierra**
-
-Señala qué objeto configura Spring y de dónde viene la dirección. No confundas la URL de test con la dirección que usaría producción.
-
-#### Subtema 2.2 · Encadenar dos llamadas dependientes · 10 min
-
-**1. Contexto**
-
-La tarifa depende de la zona. Primero se consulta ubicación por código de envío; después se consulta la tarifa con el campo `zone` recibido.
-
-**2. Hazlo tú**
-
-Lee `calcularTarifaCompleta` en `TarifaClient.java` y el test `composesLocationAndTariffRequestsInOrder`. Ejecútalo:
-
 ```bash
 ./mvnw -Dtest=TarifaClientTest#composesLocationAndTariffRequestsInOrder test
 ```
-
-**Resultado esperado:** El test recibe `15.5`; MockWebServer registra primero `/ubicacion/RF-001` y luego `/tarifa?zona=zona-sur`.
-
-**Fallo deliberado:** En una copia cambia `flatMap` por `map`. **Diagnóstico:** el resultado pasa a ser `Mono<Mono<Double>>`; el método espera `Mono<Double>` y ya no compila. `flatMap` une el resultado reactivo que devuelve la segunda llamada. Restaura `flatMap`.
-
-**3. Entiende**
-
-`map` transforma el valor a otro valor. `flatMap` transforma el valor a otro `Publisher` y aplana el resultado. La segunda petición se inicia cuando llega la zona; por eso estas dos llamadas son secuenciales y dependientes.
-
-**4. Cierra**
-
-Dibuja `código → ubicación → zona → tarifa`. Explica qué tipo devuelve cada método y por qué aquí `map` no sirve.
-
-#### Subtema 2.3 · Dejar que el estado HTTP llegue como error reactivo · 10 min
-
-**1. Contexto**
-
-Un servicio externo puede responder `503` en vez de un cuerpo válido. `retrieve()` convierte por defecto las respuestas 4xx/5xx en un error del flujo, para que el consumidor pueda manejarlo.
-
-**2. Hazlo tú**
-
-En `TarifaClientTest.java`, ejecuta `httpServerErrorArrivesAsReactiveError`:
 
 ```bash
 ./mvnw -Dtest=TarifaClientTest#httpServerErrorArrivesAsReactiveError test
 ```
 
-**Resultado esperado:** MockWebServer recibe la primera petición y responde `503`; StepVerifier observa `WebClientResponseException` en el `Mono` compuesto.
-
-**Fallo deliberado:** Cambia el estado de respuesta de `503` a `200` sin agregar un cuerpo JSON. **Diagnóstico:** `retrieve()` ya no produce un error por estado HTTP; el body vacío completa sin tarifa y la expectativa `expectError` falla. Restaura `503`.
-
-**3. Entiende**
-
-La respuesta HTTP no se convierte automáticamente en una tarifa. `retrieve()` valida el estado y `bodyToMono` decodifica el cuerpo al tipo pedido. Más adelante puedes usar `onStatus` para transformar errores externos en excepciones propias.
-
-**4. Cierra**
-
-Nombra el código HTTP que causó el error y la excepción que vio el test. Explica por qué no se recibió una tarifa numérica.
-
-#### Subtema 2.4 · Poner un límite a la espera · 10 min
-
-**1. Contexto**
-
-Una llamada externa puede tardar demasiado. Un timeout da por terminada la espera y cancela la suscripción al flujo; no garantiza que el servidor remoto deshaga un trabajo que ya empezó.
-
-**2. Hazlo tú**
-
-Revisa `calcularTarifaConPlazo` y `timeoutCancelsAResponseThatArrivesTooLate`. Ejecuta:
-
 ```bash
 ./mvnw -Dtest=TarifaClientTest#timeoutCancelsAResponseThatArrivesTooLate test
 ```
 
-**Resultado esperado:** La primera respuesta llega; la segunda se retrasa 300 ms. El límite de 80 ms termina el `Mono` con `TimeoutException` antes de la respuesta.
-
-**Fallo deliberado:** En una copia elimina `.timeout(timeout)` y vuelve a ejecutar el test. **Diagnóstico:** sin el límite, el publisher recibe el número cuando termina el retraso en vez de emitir `TimeoutException`. Restaura `.timeout(timeout)`.
-
-**3. Entiende**
-
-El timeout limita el tiempo que esta composición espera. En un sistema real elige el valor según el plazo de negocio, configura timeouts también en el conector HTTP y decide si reintentar. Reintentar una operación no idempotente puede duplicar efectos.
-
-**4. Cierra**
-
-Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Luego compara con una API real: el test no mide la latencia ni disponibilidad de un proveedor externo.
-
-**Fuentes oficiales:** [Spring WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html), [clientes REST de Spring Framework 7](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html), [MockWebServer de OkHttp](https://github.com/square/okhttp/tree/master/mockwebserver).
-
-**¿Por qué es importante?** La composición evita bloquear durante la espera de red, y manejar error y timeout impide que una dependencia lenta o caída deje la operación sin límite.
-
-**Aplicación y decisión:** En el proyecto integrador, fija un timeout de la dependencia y comprueba el cuerpo de error del cliente HTTP. No mezcles block con el event loop; conservar composición no elimina la necesidad de límites de conexión y tratamiento de error.
+</details>
 
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min
 
-Este tema cierra la decisión con tres piezas ejecutables: una ruta que intenta bloquear el event loop, una consulta R2DBC real contra H2 y la forma de aislar una llamada bloqueante inevitable.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 3.1 · Elegir el modelo por las dependencias · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por cuándo webflux vale la complejidad, y r2dbc con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender cuándo webflux vale la complejidad, y r2dbc te permite tomar mejores decisiones técnicas.**
 
-MVC y WebFlux sirven para construir APIs; la elección depende del tipo de I/O, streaming y carga esperada. WebFlux no vuelve más rápida automáticamente una base de datos ni una operación bloqueante.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en cuándo webflux vale la complejidad, y r2dbc como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Observa README.md y compara estas combinaciones:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cuándo webflux vale la complejidad, y r2dbc resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-| Caso | Opción inicial | Qué confirmar |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| CRUD con JDBC/JPA y dependencias síncronas | Spring MVC | complejidad operativa y latencia suficiente |
-| I/O bloqueante con muchas esperas concurrentes | MVC con virtual threads o WebFlux con aislamiento | conexiones DB, pools y límites del cliente |
-| HTTP y SQL reactivos, streaming o alta concurrencia I/O | WebFlux + WebClient + R2DBC | que las dependencias y el equipo soporten Reactor |
+| Cuándo WebFlux vale la complejidad, y R2DBC se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Resultado esperado:** Para cada fila puedes nombrar una medida que comprobarías: p95 de latencia, peticiones en vuelo, uso de threads, CPU o saturación del pool de conexiones.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cuándo WebFlux vale la complejidad, y R2DBC | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Fallo deliberado:** Recomienda WebFlux solo porque una API tiene muchas rutas. **Diagnóstico:** la cantidad de endpoints no describe concurrencia, tiempo de espera ni dependencias; pide esos datos antes de elegir.
+#### ► CUÁNDO NO USAR ESTO
+No uses cuándo webflux vale la complejidad, y r2dbc por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**3. Entiende**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cuándo webflux vale la complejidad, y r2dbc funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-WebFlux puede atender muchas esperas de I/O con menos threads dedicados, si el recorrido conserva operaciones no bloqueantes. MVC es más directo para código síncrono. En Java 21+, Spring Boot puede habilitar virtual threads para ciertos servidores Servlet; eso hace más barato esperar con threads, pero no amplía el límite de conexiones de la base de datos ni vuelve JDBC reactivo.
+#### ► LO QUE DEBES RECORDAR
+- Cuándo WebFlux vale la complejidad, y R2DBC existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**4. Cierra**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cuándo webflux vale la complejidad, y r2dbc en tu contexto?
+2. ¿Cómo sabrías que cuándo webflux vale la complejidad, y r2dbc no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cuándo webflux vale la complejidad, y r2dbc?
 
-Escribe el patrón de llamadas a base de datos y APIs externas de tu proyecto, y marca cuáles son bloqueantes. La elección queda pendiente hasta tener carga y latencias observadas.
+</details>
 
-#### Subtema 3.2 · Ver el bloqueo que Reactor sí puede detectar · 10 min
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**1. Contexto**
-
-Reactor rechaza operaciones `block()` en threads marcados como no bloqueables, como los del event loop. Un valor inmediato puede resolverse sin esperar; para observar el error, el publisher debe esperar una señal.
-
-**2. Hazlo tú**
-
-Abre `src/main/java/academia/rutaflow/decision/DeliveryController.java` en el código de este tema. Ejecuta la prueba HTTP:
-
+#### Código y verificación
 ```bash
 ./mvnw -Dtest=DecisionApplicationTest#blockInsideNettyEventLoopIsRejected test
 ```
-
-**Resultado esperado:** `/demo/block` responde 500 porque `Mono.delay(...).block()` intenta esperar en el thread que atiende WebFlux.
-
-**Fallo deliberado:** Sustituye `Mono.delay(Duration.ofMillis(10)).block()` por `Mono.just("dato").block()` y ejecuta la prueba. **Diagnóstico:** un `Mono.just` puede devolver el valor escalar inmediatamente; esa ruta no demuestra un bloqueo real y el test recibe 200. Restaura la espera con `Mono.delay`.
-
-**3. Entiende**
-
-El error `block()/blockFirst()/blockLast() are blocking` se detecta en threads de Reactor marcados como no bloqueables. No es un detector universal de todo código lento: una llamada JDBC directa puede bloquear sin lanzar esta excepción y aun así frenar el event loop.
-
-**4. Cierra**
-
-Explica qué hace esperar a `Mono.delay` y por qué la versión con `Mono.just` no prueba la misma condición.
-
-#### Subtema 3.3 · Mantener la consulta SQL reactiva con R2DBC · 10 min
-
-**1. Contexto**
-
-Devolver `Mono` desde un método no vuelve reactiva una consulta JDBC. Para SQL no bloqueante necesitas un driver R2DBC y una API como `DatabaseClient` o un repositorio reactivo.
-
-**2. Hazlo tú**
-
-Abre `src/main/java/academia/rutaflow/decision/DeliveryRepository.java` y `src/main/resources/application.yml`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=DecisionApplicationTest#r2dbcReadsAnExistingDelivery test
 ```
 
-**Resultado esperado:** El endpoint `/deliveries/RF-001` devuelve `200` con estado `IN_ROUTE`; la consulta usa `DatabaseClient` y el driver H2 R2DBC en memoria.
-
-**Fallo deliberado:** Cambia el parámetro nombrado `:code` de la consulta a `:trackingCode` sin cambiar `.bind("code", trackingCode)`. **Diagnóstico:** el nombre del parámetro SQL ya no coincide con el valor enlazado y la prueba deja de recibir la entrega. Restaura `:code`.
-
-**3. Entiende**
-
-R2DBC expone operaciones de base de datos con publishers. El driver H2 sirve para validar el ejercicio, no reemplaza pruebas contra PostgreSQL/MySQL, sus límites de conexiones, transacciones o comportamiento de producción. No uses un repositorio JDBC y lo envuelvas en `Mono` para afirmar que la ruta dejó de bloquear.
-
-**4. Cierra**
-
-Anota el starter, driver y URL R2DBC. Explica qué cambiaría al probar el motor de datos real.
-
-#### Subtema 3.4 · Aislar una operación bloqueante que aún no puedes reemplazar · 10 min
-
-**1. Contexto**
-
-A veces una librería heredada solo ofrece una llamada síncrona. Mientras preparas su reemplazo, ejecútala fuera del event loop y no llames `.block()` dentro del controller.
-
-**2. Hazlo tú**
-
-Revisa `isolateBlockingCall` en `DeliveryController.java` y ejecuta:
-
 ```bash
 ./mvnw -Dtest=DecisionApplicationTest#unavoidableBlockingCallCanBeIsolatedOnBoundedElastic test
 ```
-
-El patrón es:
 
 ```java
 Mono.fromCallable(() -> clienteBloqueante.consultar(codigo))
     .subscribeOn(Schedulers.boundedElastic());
 ```
 
-**Resultado esperado:** `/demo/legacy` devuelve el nombre de un thread `boundedElastic`. El código duerme 25 ms para representar una dependencia síncrona; no es una medición de rendimiento.
-
-**Fallo deliberado:** En una copia quita `.subscribeOn(Schedulers.boundedElastic())`. **Diagnóstico:** la prueba deja de recibir un nombre que empieza por `boundedElastic-`; el callable volvió al event loop. Restaura `subscribeOn`.
-
-**3. Entiende**
-
-`fromCallable` retrasa la llamada hasta la suscripción. `subscribeOn(boundedElastic())` mueve la suscripción y la operación al scheduler pensado para esperas bloqueantes acotadas. No uses `publishOn(...).block()`; el `.block()` sigue siendo una espera sincrónica del thread que lo ejecuta. La solución preferida a largo plazo es una API reactiva compatible, como R2DBC para SQL.
-
-**4. Cierra**
-
-Entrega las pruebas de HTTP y R2DBC en verde. Para una elección real, compara MVC/WebFlux con la misma carga y mide p95, conexiones activas, threads, CPU y errores; esta suite funcional no mide capacidad.
-
-**Fuentes oficiales:** [Reactor: envolver llamadas bloqueantes con boundedElastic](https://projectreactor.io/docs/core/release/reference/faq.html#faq.wrap-blocking), [Spring Boot: R2DBC y DatabaseClient](https://docs.spring.io/spring-boot/reference/data/sql.html), [Spring Framework: acceso R2DBC](https://docs.spring.io/spring-framework/reference/data-access/r2dbc.html), [Spring Boot: virtual threads](https://docs.spring.io/spring-boot/reference/features/spring-application.html).
-
-**¿Por qué es importante?** El modelo reactivo solo aporta si la espera bloqueante no vuelve a ocupar el event loop y los límites reales del sistema permiten aprovecharlo.
-
----
-
-**Aplicación y decisión:** En el proyecto integrador, compara una vertical MVC/JDBC y otra WebFlux/R2DBC con carga equivalente antes de elegir. La diferencia de modelo de programación no acredita más throughput; el laboratorio demuestra persistencia reactiva local y debe medirse aparte.
+</details>
 
 ### Tema 4: Backpressure real en WebFlux con reactor-test · Avanzado · 35 min
 
-**Objetivo observable:** usar `StepVerifier` para pedir elementos por tandas y comprobar los valores emitidos y las solicitudes que llegan al origen.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Si el consumidor va más lento que el productor, Reactive Streams deja que solicite la cantidad que puede procesar. Los operadores pueden guardar elementos o cambiar las tandas de demanda; por eso la posición donde medimos importa.
+#### ► DE QUÉ TRATA
+Este tema te guía por backpressure real en webflux con reactor-test con foco en comprensión antes de implementación.
 
-**Antes de empezar:** conocer `Flux` y una prueba básica de `StepVerifier` (Módulo 13). Continúa en el ejemplo existente `spring-reactor-rutaflow`, que ya incluye `reactor-test`.
+#### ► LA IDEA EN UNA FRASE
+**Entender backpressure real en webflux con reactor-test te permite tomar mejores decisiones técnicas.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en backpressure real en webflux con reactor-test como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  participant T as Test StepVerifier
+  participant F as Flux.range
+  T->>F: demanda inicial 0
+  T->>F: request(3)
+  F-->>T: valores 1, 2, 3
+  T->>F: request(7)
+  F-->>T: valores 4 a 10
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Backpressure real en WebFlux con reactor-test se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Backpressure real en WebFlux con reactor-test | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses backpressure real en webflux con reactor-test por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: backpressure real en webflux con reactor-test funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Backpressure real en WebFlux con reactor-test existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve backpressure real en webflux con reactor-test en tu contexto?
+2. ¿Cómo sabrías que backpressure real en webflux con reactor-test no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar backpressure real en webflux con reactor-test?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw -q -Dtest=BackpressureDemandTest test
 ```
@@ -587,31 +976,9 @@ sequenceDiagram
   F-->>T: valores 4 a 10
 ```
 
-#### Subtema 4.1: Empieza con cero solicitudes · 8 min
-
-**Contexto:** `Flux.range(1, 10)` produce diez enteros. Para ver cuándo llegan, `StepVerifier` puede suscribirse con una demanda inicial de cero.
-
-**Hazlo tú:** Abre `src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Encuentra `StepVerifier.create(source, 0)` y la lista `received`. Corre el comando del laboratorio.
-
-Para comprobar «Empieza con cero solicitudes», observa el código de este tema. Desde el código de este tema repite la comprobación:
-
 ```bash
 ./mvnw -q test
 ```
-
-**Resultado esperado:** El test confirma que la lista sigue vacía justo después de la suscripción; los valores aparecen solo después de `thenRequest`.
-
-**Fallo deliberado:** Cambia `create(source, 0)` por `create(source)`. **Diagnóstico:** Ejecuta `emiteTresYDespuesSieteSoloCuandoElSuscriptorLosSolicita`: llegan los diez valores antes de la comprobación de lista vacía. Restaura `0`.
-
-**Entiende:** La demanda es un pedido de elementos, como pedir tres piezas de una línea de armado. El productor no debe enviar más valores que los pedidos por esa suscripción.
-
-**Cierra:** Describe qué cambio observable produjo quitar la demanda inicial controlada.
-
-#### Subtema 4.2: Solicita tres y luego siete · 8 min
-
-**Contexto:** La prueba observa tanto lo recibido como las llamadas de demanda al `Flux`.
-
-**Hazlo tú:** Lee el tramo del test y predice qué valores aparecen tras cada pedido:
 
 ```java
 StepVerifier.create(source, 0)
@@ -622,72 +989,12 @@ StepVerifier.create(source, 0)
 assertThat(upstreamRequests).containsExactly(3L, 7L);
 ```
 
-Ejecuta la prueba y compara tu predicción con `upstreamRequests`.
-
-Para comprobar «Solicita tres y luego siete», observa el código de este tema. Desde el código de este tema repite la comprobación:
+```bash
+./mvnw -q test
+```
 
 ```bash
 ./mvnw -q test
 ```
 
-**Resultado esperado:** El consumidor ve los diez valores en orden en dos grupos, y `doOnRequest` registra exactamente `3` y `7` en ese punto del flujo.
-
-**Fallo deliberado:** Cambia el segundo `.thenRequest(7)` a `.thenRequest(6)`. `verifyComplete` falla porque queda un elemento sin solicitar. **Diagnóstico:** Restaura la cantidad y corre la prueba verde.
-
-**Entiende:** `thenRequest(n)` aumenta la demanda acumulada; no reinicia el pedido anterior. `doOnRequest` registra la solicitud que llega a esa ubicación del publisher.
-
-**Cierra:** Guarda el resultado JUnit y los dos valores registrados por la lista.
-
-#### Subtema 4.3: Mira la demanda sin límite · 8 min
-
-**Contexto:** Si no configuras demanda inicial, `StepVerifier.create(source)` solicita demanda ilimitada para recorrer la secuencia y terminarla.
-
-**Hazlo tú:** Ejecuta `stepVerifierSinParametroInicialSolicitaDemandaIlimitada` y lee la lista capturada por `doOnRequest`.
-
-Para comprobar «Mira la demanda sin límite», observa el código de este tema. Desde el código de este tema repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** El test registra `Long.MAX_VALUE`, que Reactor puede tratar como demanda efectivamente ilimitada, y consume los tres valores finitos.
-
-**Fallo deliberado:** Cambia `StepVerifier.create(source)` en ese test por `StepVerifier.create(source, 0).thenRequest(3)`. **Diagnóstico:** La aserción de demanda ilimitada falla porque el origen vio `3`, no `Long.MAX_VALUE`. Restaura el valor por defecto y corre la suite.
-
-**Entiende:**Límite:** esta prueba mide `Flux.range`, no demuestra por sí sola cuánto almacena cada operador ni que un endpoint WebFlux vaya a soportar cualquier carga. `flatMap`, `buffer` y otros operadores pueden cambiar la demanda hacia arriba.
-
-**Cierra:** Explica por qué “usa WebFlux” no equivale a “memoria ilimitada protegida”.
-
-#### Subtema 4.4: Observa cómo `limitRate` cambia las tandas · 10 min
-
-**Contexto:** El consumidor sigue viendo lo que solicitó, pero `limitRate` agrupa las peticiones que llegan al origen.
-
-**Hazlo tú:** En `limitRateAgrupaLoQueSolicitaAlOrigen`, encuentra `.limitRate(4, 0)` y revisa dónde se puso `doOnRequest`:
-
-```java
-Flux<Integer> source = Flux.range(1, 10)
-    .doOnRequest(upstreamRequests::add)
-    .limitRate(4, 0);
-```
-
-Ejecuta `./mvnw -q -Dtest=BackpressureDemandTest test`.
-
-**Resultado esperado:** StepVerifier conserva los valores y su orden; la lista del origen registra tandas `4`, `4`, `4`, incluida la solicitud final de dos elementos que Reactor completa al tamaño de tanda configurado.
-
-**Fallo deliberado:** Cambia temporalmente el tamaño a `2` y corre el test: la expectativa deja de coincidir; `doOnRequest` observó `[2, 2, 2, 2, 2, 2]` en vez de `[4, 4, 4]`. **Diagnóstico:** Restaura el `4` original y confirma los tests verdes.
-
-**Entiende:** Los operadores pueden transformar demanda entre suscriptor y origen. Para evaluar el proyecto integrador, coloca la medición en el límite que quieres comprender y prueba con el operador real de tu cadena.
-
-**Cierra:** Evidencia: reporte verde de `BackpressureDemandTest`, captura de demandas `3/7` y `4/4/4`, y explicación del cambio con `limitRate`.
-
-**Transferencia al proyecto integrador:** si una ruta WebFlux procesa un flujo grande, prueba la cadena real con demanda limitada y revisa operadores que almacenan o solicitan elementos por adelantado; no uses este ejemplo como prueba de carga del servicio.
-
-**Fuentes oficiales:** [Project Reactor: testing](https://projectreactor.io/docs/core/release/reference/testing.html), [Project Reactor: backpressure y operadores](https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html) y [Reactive Streams: reglas de demanda](https://github.com/reactive-streams/reactive-streams-jvm).
-
-## Laboratorio del módulo
-
-Usa los tres laboratorios enlazados desde sus temas: `spring-reactor-rutaflow`, `spring-webclient-rutaflow` y `spring-webflux-decision-rutaflow`. Prueban publishers, llamadas HTTP y R2DBC local, respectivamente.
-
-**Evidencia:** entrega las suites dirigidas de cada laboratorio y una breve decisión MVC/WebFlux con dependencias identificadas. Para decir cuál soporta más carga, ejecuta un benchmark separado con la misma máquina, base de datos, conexiones y concurrencia, y registra latencia p95/p99, CPU, threads, conexiones activas y errores. Las pruebas funcionales de este módulo no certifican rendimiento ni preparación profesional.
-
-**Cierre del módulo:** el siguiente módulo trata arquitectura hexagonal. Lleva el criterio de mantener I/O dentro de adaptadores y evita elegir una tecnología sin una medida del problema que resuelve.
+</details>

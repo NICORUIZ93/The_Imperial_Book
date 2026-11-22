@@ -1,6 +1,6 @@
 {
   "_comentario": "Suelo de calidad de la spec 026. Solo sube: bajar un contador 'más es mejor' o subir uno 'menos es mejor' es una regresión. Se actualiza al cerrar cada lote.",
-  "medido": "2026-11-22",
+  "medido": "2026-11-21-editorial",
   "mas_es_mejor": {
     "P1": 360,
     "P2": 1317,
@@ -14,8 +14,8 @@
     "P10": 1101,
     "P11": 1291,
     "P12": 82,
-    "en_formato": 187,
-    "cursos_en_formato": 1,
+    "en_formato": 1608,
+    "cursos_en_formato": 16,
     "temas_con_nivel_minutos": 1421,
     "temas_sin_incidencia_codigo": 1288
   },

@@ -5,19 +5,26 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
+
 ### Tema 1: createContext y useContext · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear `SesionContext` para compartir el operador autenticado de RutaFlow con cualquier componente del árbol, sin pasarlo por props en cada nivel intermedio. Prerrequisitos: Módulo 3 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`PanelEnvios`, `BarraSuperior` y `ModalConfirmacion` necesitan saber quién es el operador actual (su nombre, su zona asignada) — pasarlo como prop desde el componente raíz exigiría reenviarlo manualmente a través de cada componente intermedio que no usa ese dato para nada propio.
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear SesionContext para compartir el operador autenticado de RutaFlow con cualquier componente del árbol, sin pasarlo por props en cada nivel intermedio. Prerrequisitos: Módulo 3 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`createContext` define un canal; un `Provider` establece el valor para un subárbol; cualquier descendiente lee ese valor con `useContext` sin que los intermedios lo conozcan — un anuncio por altavoz que llega directo, sin que cada piso tenga que repetirlo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear SesionContext para compartir el operador autenticado de RutaFlow con cualquier componente del árbol, sin pasarlo por props en cada nivel intermedio.**
 
-**Diagrama: Context API evita prop drilling**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en createcontext y usecontext como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["App<br/>operador = Ana"]
@@ -41,17 +48,65 @@ graph TD
     style H fill:#4caf50
 ```
 
-**Conceptos clave:** proveedor y consumidor, evitar prop drilling.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| createContext y useContext se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`createContext({ tema: 'claro', setTema: () => {} })` crea un objeto Context con un valor por defecto (con la misma forma que el valor real, para que quien lo lea sin Provider no reciba un tipo distinto), que luego se provee a un subárbol completo de componentes mediante un componente `Provider` (`<ThemeContext.Provider value={{ tema, setTema }}>`) envolviendo esa parte de la aplicación; cualquier componente descendiente de ese Provider, sin importar cuántos niveles de anidamiento existan entre ambos, puede leer ese valor directamente con `useContext(ThemeContext)`, sin que ningún componente intermedio entre el Provider y el consumidor final necesite recibir, conocer, ni reenviar manualmente ese valor a través de sus propias props.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar createContext y useContext | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Esto resuelve directamente el problema conocido como "prop drilling": sin Context, compartir un valor entre un componente ancestro y otro descendiente lejano en el árbol requeriría pasar ese valor explícitamente como prop a través de cada componente intermedio en el camino entre ambos, incluso si esos componentes intermedios no usan ese valor para nada propio, simplemente lo reenvían hacia abajo — un acoplamiento innecesario que hace que cambiar la forma de ese valor compartido, o insertar un nuevo componente intermedio en el árbol, requiera modificar potencialmente muchos componentes que no tienen ninguna relación conceptual real con ese dato compartido, más allá de estar geográficamente ubicados entre el proveedor y el consumidor final.
+#### ► CUÁNDO NO USAR ESTO
+No uses createcontext y usecontext por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** Context es como un anuncio por altavoz que llega directamente a cualquier persona dentro de un edificio específico, sin necesidad de que cada persona en cada piso intermedio tenga que repetir manualmente el mensaje al piso siguiente para que finalmente llegue a su destinatario real.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: createcontext y usecontext funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**¿Por qué es importante?** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, evitando el acoplamiento innecesario del prop drilling.
+#### ► LO QUE DEBES RECORDAR
+- createContext y useContext existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Código del ejemplo:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve createcontext y usecontext en tu contexto?
+2. ¿Cómo sabrías que createcontext y usecontext no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar createcontext y usecontext?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["App<br/>operador = Ana"]
+    
+    B["SIN Context:<br/>Prop Drilling"]
+    C["CON Context:<br/>useContext"]
+    
+    A -->|Debe pasar| B
+    A -->|Encierra con Provider| C
+    
+    B -->|App| D["PanelEnvios<br/>recibe operador"]
+    D -->|reenvía| E["BarraSuperior<br/>recibe operador"]
+    E -->|reenvía| F["NombreOperador<br/>usa operador"]
+    
+    C -->|BarraSuperior<br/>useContext| G["Lee operador<br/>sin props"]
+    C -->|NombreOperador<br/>useContext| H["Lee operador<br/>sin props"]
+    
+    style B fill:#ffebee
+    style C fill:#e8f5e9
+    style G fill:#4caf50
+    style H fill:#4caf50
+```
 
 ```jsx
 const ThemeContext = createContext({ tema: 'claro', setTema: () => {} });
@@ -71,8 +126,6 @@ function BotonToggle() {
 }
 ```
 
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { createContext, useContext, useState } from 'react';
 
@@ -103,53 +156,78 @@ function BarraSuperior() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — `PanelEnvios`, entre ambos, no necesitó recibir ni reenviar esa prop. En React 19 también puedes escribir `<SesionContext value={...}>` sin `.Provider`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-#### Paso 5 · Práctica guiada
-Pista: renderiza `BarraSuperior` en una parte del árbol que queda fuera de `SesionContext.Provider` (por ejemplo, un modal montado vía portal directamente en el `<body>`, sin envolverlo con el Provider) — ese es el fallo deliberado: `useContext(SesionContext)` devuelve `null`, y leer `operador.nombre` lanza un error en tiempo de ejecución porque `operador` es `null`.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y agrega una validación explícita en `BarraSuperior` que muestre un mensaje claro de error de configuración si el contexto llega como `null`, en vez de crashear con un error críptico. Envuelve el modal de confirmación del proyecto integrador RutaFlow con el proveedor de sesión y documenta el error de contexto ausente.
-
-#### Paso 7 · Cierre
-Entrega el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explica por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
-**Implicación práctica:** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, pero solo funciona dentro del subárbol efectivamente envuelto por su Provider.
+</details>
 
 ### Tema 2: Cuándo Context es suficiente y cuándo no · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a medir cuántos componentes se re-renderizan cuando `SesionContext` cambia, y a decidir si ese costo es aceptable para el caso de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Alguien propuso meter también el texto del filtro de búsqueda de envíos (que cambia en cada tecla) dentro de `SesionContext`, junto al operador, "ya que está, para no crear otro Context".
+#### ► DE QUÉ TRATA
+Al finalizar vas a medir cuántos componentes se re-renderizan cuando SesionContext cambia, y a decidir si ese costo es aceptable para el caso de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Cada cambio en el valor de un Context re-renderiza todos sus consumidores, sin distinción granular — aceptable para valores que cambian poco (operador, tema), problemático para valores que cambian mucho (una tecla por vez).
-**Conceptos clave:** frecuencia de cambio del valor, re-renders de todos los consumidores.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a medir cuántos componentes se re-renderizan cuando SesionContext cambia, y a decidir si ese costo es aceptable para el caso de RutaFlow.**
 
-Context resuelve bien el caso de valores que cambian con poca frecuencia relativa (el tema visual de la aplicación, el idioma seleccionado, la identidad del usuario autenticado) y que necesitan leerse desde muchos lugares distintos y potencialmente lejanos del árbol de componentes, dado que el costo de un re-render ocasional de todos los consumidores de ese Context (cada vez que el valor provisto cambia, absolutamente todos los componentes que consumen ese Context con `useContext` se re-renderizan, sin distinción de granularidad más fina) es perfectamente aceptable cuando esos cambios son infrecuentes.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Ese mismo comportamiento se vuelve problemático cuando el valor compartido cambia con mucha frecuencia (por ejemplo, el valor de un input que cambia en cada tecla) y es consumido por muchos componentes distintos: cada cambio re-renderizaría absolutamente todos esos consumidores, incluso aquellos que, en la práctica, solo necesitarían actualizarse ante una porción específica y más granular de ese cambio, no ante cualquier cambio del Context completo, un problema de rendimiento que empeora proporcionalmente a la frecuencia del cambio y a la cantidad de consumidores, y que librerías dedicadas de estado como Zustand (Módulo 7) resuelven de forma más granular, permitiendo a cada componente suscribirse selectivamente solo a la porción específica del estado que efectivamente necesita, sin re-renderizarse ante cambios de otras porciones no relacionadas.
+#### ► LA ANALOGÍA
+Piensa en cuándo context es suficiente y cuándo no como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** Context es como un tablón de anuncios comunitario, perfecto para avisos poco frecuentes que interesan a todo el vecindario (el tema, el idioma); para actualizaciones extremadamente frecuentes que solo interesan a ciertos vecinos específicos, un tablón general que notifica a todo el vecindario ante cada actualización se vuelve ruidoso e ineficiente, siendo preferible un sistema de suscripción más selectivo y granular.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cuándo context es suficiente y cuándo no resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; para estado que cambia con mucha frecuencia y es consumido selectivamente, una librería con suscripción granular como Zustand evita re-renders innecesarios de consumidores no relacionados con el cambio específico.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cuándo Context es suficiente y cuándo no se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Diagrama:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cuándo Context es suficiente y cuándo no | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses cuándo context es suficiente y cuándo no por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cuándo context es suficiente y cuándo no funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cuándo Context es suficiente y cuándo no existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cuándo context es suficiente y cuándo no en tu contexto?
+2. ¿Cómo sabrías que cuándo context es suficiente y cuándo no no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cuándo context es suficiente y cuándo no?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Context apropiado: tema, idioma, usuario autenticado (cambia poco, se lee en muchos lugares)
 Context problemático: valor de un input en cada tecla (cambia mucho, re-renderiza TODOS los consumidores)
 ```
 
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { createContext, useContext, useState } from 'react';
 
@@ -184,48 +262,31 @@ function CampoBusqueda() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: `BarraSuperior` solo lee `operador`, nunca `filtroBusqueda`, pero cada tecla en el campo de búsqueda imprime `render de BarraSuperior` (dos veces en desarrollo, por `StrictMode`) — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-**Demo con React DevTools:**
-1. Usa `BarraSuperior` del ejemplo, que consume `SesionContext` y solo lee `operador`
-2. Usa `CampoBusqueda`, que lee `filtroBusqueda` del mismo Context
-3. Abre DevTools → Profiler tab → Grabar
-4. Tipea en el campo de búsqueda
-5. Detén la grabación y mira el chart: verás que `BarraSuperior` aparece resaltada en amarillo/rojo (re-renderizada)
-6. Aunque `BarraSuperior` solo usa `operador`, se re-renderizó igual porque el Context cambió
-7. Ahora refactoriza: saca `filtroBusqueda` del Context a un `useState` local en `CampoBusqueda`
-8. Tipea de nuevo y graba con Profiler: ahora `BarraSuperior` NO aparece resaltada (no se re-renderizó)
-9. Resultado esperado: ver en el Profiler la diferencia visual entre compartir estado innecesariamente vs mantenerlo local.
-
-#### Paso 5 · Práctica guiada
-Pista: deja `filtroBusqueda` dentro de `SesionContext` y escribe rápido en el campo de búsqueda mientras miras el `console.log` de `BarraSuperior` — ese es el fallo deliberado confirmado: `BarraSuperior` se re-renderiza en cada tecla aunque nunca lee `filtroBusqueda`, un desperdicio que empeora proporcionalmente a la cantidad de consumidores de `SesionContext`.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirma que `BarraSuperior` ya no se re-renderiza al escribir. En el proyecto integrador RutaFlow, mueve el filtro de búsqueda a estado local y confirma qué componentes dejan de re-renderizarse.
-
-#### Paso 7 · Cierre
-Entrega la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explica con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
-**Implicación práctica:** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; mezclar un valor de cambio frecuente dentro del mismo Context re-renderiza innecesariamente a todos los consumidores que no lo usan.
+</details>
 
 ### Tema 3: Componentes compuestos, render props y hooks personalizados · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir `Pestanias`/`Pestanias.Panel` (un componente compuesto) para organizar el panel de operador en pestañas ("Envíos activos", "Historial"), coordinadas internamente sin que quien lo usa gestione ese estado. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Sin un patrón de coordinación interna, cada vez que alguien usa un sistema de pestañas tendría que gestionar manualmente cuál está activa y pasarle esa información a cada panel individualmente.
+#### ► DE QUÉ TRATA
+Al finalizar vas a construir Pestanias/Pestanias.Panel (un componente compuesto) para organizar el panel de operador en pestañas ("Envíos activos", "Historial"), coordinadas internamente sin que quien lo usa gestione ese estado. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El patrón de componentes compuestos usa un Context interno y privado para coordinar estado entre un contenedor y sus hijos relacionados, sin exponer esa coordinación al usuario final del componente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a construir Pestanias/Pestanias.Panel (un componente compuesto) para organizar el panel de operador en pestañas ("Envíos activos", "Historial"), coordinadas internamente sin que quien lo usa gestione ese estado.**
 
-**Diagrama:**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en componentes compuestos, render props y hooks personalizados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["Pestanias<br/>Context privado<br/>estado interno: activa"]
@@ -245,11 +306,62 @@ graph TD
     style D fill:#e8f5e9
 ```
 
-* Cuándo: usar componentes compuestos cuando varios componentes relacionados necesitan coordinación interna oculta; no conviene cuando la coordinación es simple o cuando la lógica se reutiliza en contextos distintos (usa hooks personalizados en ese caso).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Componentes compuestos, render props y hooks personalizados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**¿Por qué es importante?** Los componentes compuestos ofrecen una API declarativa y limpia para el usuario final, ocultando la coordinación interna necesaria sin exponer detalles de implementación.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Componentes compuestos, render props y hooks personalizados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► CUÁNDO NO USAR ESTO
+No uses componentes compuestos, render props y hooks personalizados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: componentes compuestos, render props y hooks personalizados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Componentes compuestos, render props y hooks personalizados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve componentes compuestos, render props y hooks personalizados en tu contexto?
+2. ¿Cómo sabrías que componentes compuestos, render props y hooks personalizados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar componentes compuestos, render props y hooks personalizados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["Pestanias<br/>Context privado<br/>estado interno: activa"]
+    B["Pestanias.Panel 1<br/>índice: 0<br/>consuma Context"]
+    C["Pestanias.Panel 2<br/>índice: 1<br/>consuma Context"]
+    D["Panel activo renderiza"]
+    
+    A -->|Provee| B
+    A -->|Provee| C
+    B -->|Si activa==0| D
+    C -->|Si activa==1| D
+    
+    E["Usuario no gestiona estado"]
+    E -.->|Usa| A
+    
+    style A fill:#e3f2fd
+    style D fill:#e8f5e9
+```
+
 ```jsx
 import { createContext, useContext, useState } from 'react';
 
@@ -280,44 +392,8 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: `<Pestanias><Pestanias.Panel indice={0} titulo="Envíos activos">...</Pestanias.Panel></Pestanias>` coordina automáticamente cuál panel se muestra, sin que el código que usa `Pestanias` escriba ningún `useState` propio para rastrear la pestaña activa.
-
-Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: comprueba que al inicio se ve «RF-4471 · en ruta» y no «RF-4410 · entregado», pulsa el botón «Historial» con `userEvent` y comprueba lo contrario. Después ejecuta `npm test` (borra o adapta esta prueba cuando reemplaces `App.jsx` en otro tema).
-
-#### Paso 5 · Práctica guiada
-Pista: usa `Pestanias.Panel` fuera de un `<Pestanias>` envolvente, directamente en la pantalla — ese es el fallo deliberado: `useContext(PestaniasContext)` devuelve `null` dentro de `Panel`, y desestructurar `{ activa, setActiva }` de `null` lanza un error en tiempo de ejecución, porque `Panel` depende implícitamente de estar dentro de un `Pestanias`.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 devolviendo `Panel` dentro de `Pestanias`, y agrega una validación explícita dentro de `Panel` que lance un error descriptivo ("Pestanias.Panel debe usarse dentro de Pestanias") si el contexto es `null`, en vez de un error críptico de desestructuración. Extrae las pestañas del detalle de envío del proyecto integrador RutaFlow a un componente compuesto y conserva el foco.
-
-#### Paso 7 · Cierre
-Entrega el componente compuesto funcionando del Paso 4, el error por uso fuera de contexto del Paso 5, y el mensaje de error descriptivo del Paso 6; explica por qué `Pestanias.Panel` depende implícitamente de un ancestro `Pestanias`, y por qué hacer ese error explícito mejora la experiencia de quien use el componente. Siguiente paso: integra esto al panel de operador completo. Errores comunes: exponer el Context interno de un componente compuesto directamente al usuario, no validar el caso de uso fuera de contexto con un mensaje claro, y recrear patrones antiguos (render props, HOCs) cuando un componente compuesto expresa la misma idea de forma más directa. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/reusing-logic-with-custom-hooks.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** implementar un theme switcher completo con Context, y un componente compuesto Tabs/Tab.
-
-**Requisitos previos:** Módulos 0-3 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear `ThemeContext` con `ThemeProvider` | Ver Tema 1 | Envuelve la app completa |
-| 2 | Consumir el contexto 3 niveles abajo | Ver Tema 1 | Sin prop drilling |
-| 3 | Implementar el toggle de tema | Ver Tema 1 | Verifica que todos los consumidores se actualizan |
-| 4 | Construir `Tabs`/`Tabs.Tab` compuesto | Ver Tema 3 | Comparte estado interno vía Context |
-
-**Verificación:** el laboratorio se considera exitoso si el cambio de tema se refleja instantáneamente en todos los componentes consumidores sin importar su profundidad en el árbol, y si `Tabs`/`Tabs.Tab` coordinan la pestaña activa sin que el código que los usa gestione ese estado manualmente.
-
-**Errores comunes y soluciones**
-
-- **Usar Context para estado que cambia muy frecuentemente y es consumido por muchos componentes.** Considera Zustand (Módulo 7) para ese caso.
-- **Exponer el Context interno de un componente compuesto directamente al usuario.** Mantenlo privado, coordinando internamente sin exponer detalles de implementación.
-- **Olvidar envolver la aplicación (o el subárbol relevante) con el Provider.** Sin el Provider, `useContext` devuelve el valor por defecto, no el valor esperado.
-
----
+</details>

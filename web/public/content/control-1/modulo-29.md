@@ -12,20 +12,68 @@ Este capítulo conecta programación con mediciones físicas. Empieza por unidad
 
 ## Aprende construyendo
 
+
 ### Tema 1: Matemáticas aplicadas: derivada, integral y modelos · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. **En una frase:** Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `matematicas.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor de una entrega informa corriente cada segundo; integrar esas muestras estima carga consumida por su batería. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. En una frase: Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. Prerrequisitos: Python, variables, fu…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** La derivada es el velocímetro y la integral es el odómetro: una describe cuánto cambia algo y la otra acumula cambios. Para una carga Q(t)=t², I(t)=dQ/dt=2t. La integración numérica aproxima áreas; reducir el paso permite estudiar el error. Álgebra lineal expresa circuitos como Ax=b; las ecuaciones diferenciales describen RC/RLC; Laplace facilita estudiar transitorios y Fourier separa frecuencias. Las series aproximan funciones dentro de su región de convergencia, no universalmente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `matematicas.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en matemáticas aplicadas: derivada, integral y modelos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que matemáticas aplicadas: derivada, integral y modelos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Matemáticas aplicadas: derivada, integral y modelos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Matemáticas aplicadas: derivada, integral y modelos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses matemáticas aplicadas: derivada, integral y modelos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: matemáticas aplicadas: derivada, integral y modelos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Matemáticas aplicadas: derivada, integral y modelos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve matemáticas aplicadas: derivada, integral y modelos en tu contexto?
+2. ¿Cómo sabrías que matemáticas aplicadas: derivada, integral y modelos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar matemáticas aplicadas: derivada, integral y modelos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 tiempos = [0, 1, 2, 3]
 corrientes = [2 * t for t in tiempos]
@@ -39,47 +87,73 @@ print(f"Carga: {carga:.1f} C")
 python3 matematicas.py
 ```
 
-**Salida esperada:**
-
 ```text
 Carga: 9.0 C
 ```
 
-**Explicación por bloques:** `tiempos` define segundos y `corrientes` amperios; la comprensión calcula I(t)=2t. Cada término de `sum` multiplica corriente media por duración: amperios por segundos son culombios. Hay tres intervalos aunque existan cuatro muestras. Para esta corriente lineal, el área 0–3 coincide con 3²=9 C.
-
-**Fallo deliberado y diagnóstico:** Cambia el último tiempo a 2: el muestreo deja de representar intervalos de un segundo; diagnostica comparando cada diferencia de tiempos. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Calcula la carga hasta t=4 y contrasta con Q(4)-Q(0)=16 C. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El trapecio es exacto aquí porque la corriente es lineal; para señales curvas existe error de discretización.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué unidad tiene la derivada de carga?
-2. ¿Por qué el intervalo importa al integrar?
-3. ¿Qué cambia al duplicar la frecuencia de muestreo?
-
-**Errores comunes:** confundir el área bajo la curva con el valor de la función en un extremo; mezclar horas y segundos en una fórmula de carga; extrapolar una tabla fuera del intervalo medido. Si fallas una pregunta, rehaz la integral con una tabla de tres puntos y comprueba el trapecio contra un caso lineal exacto.
-
-**Fuente oficial:** [MIT OpenCourseWare: Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/). La integración numérica y la suma de Riemann se consultan allí; la sintaxis de Python, en [docs.python.org](https://docs.python.org/3/).
+</details>
 
 ### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. **En una frase:** Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `circuitos.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una entrada ADC carga un divisor de tensión; su voltaje cae respecto al valor calculado sin carga. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. En una frase: Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. Prerrequisitos: Python, variables, funciones y…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una red de agua ayuda a recordar que en un nodo se conserva flujo, pero la corriente eléctrica exige un circuito cerrado. Kirchhoff impone suma de corrientes cero en nodos y suma de tensiones cero en lazos. Thévenin reduce una red lineal a Vth en serie con Rth; Norton usa In=Vth/Rth en paralelo. Superposición combina respuestas lineales, no potencias. En AC se usan impedancias: R, jωL y 1/(jωC); la potencia activa es Vrms·Irms·cos(φ). RC, RL y RLC almacenan energía y generan transitorios.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `circuitos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en circuitos dc y ac: kirchhoff, thévenin y norton como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que circuitos dc y ac: kirchhoff, thévenin y norton resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Circuitos DC y AC: Kirchhoff, Thévenin y Norton se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Circuitos DC y AC: Kirchhoff, Thévenin y Norton | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses circuitos dc y ac: kirchhoff, thévenin y norton por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: circuitos dc y ac: kirchhoff, thévenin y norton funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Circuitos DC y AC: Kirchhoff, Thévenin y Norton existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve circuitos dc y ac: kirchhoff, thévenin y norton en tu contexto?
+2. ¿Cómo sabrías que circuitos dc y ac: kirchhoff, thévenin y norton no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar circuitos dc y ac: kirchhoff, thévenin y norton?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 fuente, r1, r2, carga = 5.0, 1000.0, 1000.0, 1000.0
 vth = fuente * r2 / (r1 + r2)
@@ -93,47 +167,73 @@ print(f"Vth={vth:.3f} V; Rth={rth:.0f} ohm; salida={v_carga:.3f} V")
 python3 circuitos.py
 ```
 
-**Salida esperada:**
-
 ```text
 Vth=2.500 V; Rth=500 ohm; salida=1.667 V
 ```
 
-**Explicación por bloques:** `fuente`, resistencias y carga definen el divisor. `vth` calcula su salida sin carga; `rth` calcula el paralelo de las resistencias con la fuente ideal cortocircuitada. La última expresión modela el divisor entre Rth y la carga: 2.5·1000/1500=1.667 V. Conectar la entrada no deja intacto el circuito.
-
-**Fallo deliberado y diagnóstico:** Sustituye r1 por 1 creyendo que representa 1 kΩ; diagnostica el error de unidades. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Usa una carga de 100000 ohm y explica por qué se aproxima a 2.5 V. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Con fuentes dependientes se conservan sus relaciones y se aplica una fuente de prueba; no se borran todas las fuentes sin criterio.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué conserva Kirchhoff?
-2. ¿Por qué cambia la salida al conectar una carga?
-3. ¿Qué fuentes se desactivan para calcular Rth?
-
-**Errores comunes:** medir la tensión de circuito abierto con la carga conectada; anular una fuente de corriente cortocircuitándola en vez de abrirla; reutilizar el equivalente de Thévenin con otra carga sin recalcular. Si fallas una pregunta, dibuja el circuito sin carga y obtén Voc e Isc por separado.
-
-**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). El curso cubre superposición, Thévenin y Norton con las convenciones de signo usadas en el tema.
+</details>
 
 ### Tema 3: Electrónica analógica: diodos, transistores y amplificadores · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. **En una frase:** La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `analogica.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una señal de temperatura de 0.2 V requiere ganancia diez para usar mejor el rango de un ADC de 3.3 V. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. En una frase: La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. Prerrequisitos: Python, variables, funciones y unidades…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un amplificador se parece a un megáfono: aumenta una señal usando energía de su alimentación. Un diodo conduce asimétricamente; el modelo de caída fija es una aproximación. BJT y MOSFET pueden amplificar o conmutar según su polarización. Un operacional con realimentación negativa aproxima V+=V− dentro de sus límites de alimentación, ganancia y ancho de banda. Fuentes y reguladores estabilizan alimentación; osciladores generan señales; filtros seleccionan frecuencias.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `analogica.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en electrónica analógica: diodos, transistores y amplificadores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que electrónica analógica: diodos, transistores y amplificadores resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Electrónica analógica: diodos, transistores y amplificadores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Electrónica analógica: diodos, transistores y amplificadores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses electrónica analógica: diodos, transistores y amplificadores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: electrónica analógica: diodos, transistores y amplificadores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Electrónica analógica: diodos, transistores y amplificadores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve electrónica analógica: diodos, transistores y amplificadores en tu contexto?
+2. ¿Cómo sabrías que electrónica analógica: diodos, transistores y amplificadores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar electrónica analógica: diodos, transistores y amplificadores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 vin, rf, rg, alimentacion = 0.2, 9000, 1000, 3.3
 ganancia = 1 + rf / rg
@@ -147,47 +247,73 @@ print(f"Ganancia={ganancia:.1f}; salida={salida:.2f} V")
 python3 analogica.py
 ```
 
-**Salida esperada:**
-
 ```text
 Ganancia=10.0; salida=2.00 V
 ```
 
-**Explicación por bloques:** La razón `rf/rg` fija la ganancia no inversora 1+9=10. `ideal` calcula 0.2·10=2 V y `min/max` limita la salida entre 0 y 3.3 V. Ese recorte representa saturación, no una respuesta lineal que sigue amplificando. Un dispositivo real suele tener un margen adicional respecto a los rieles.
-
-**Fallo deliberado y diagnóstico:** Cambia vin a 0.5: aparece saturación a 3.3 V; el diagnóstico compara salida ideal de 5 V con alimentación. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Calcula la máxima entrada sin saturar y compara con el datasheet de un operacional real. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo no incluye caída de salida, slew rate ni corriente máxima. En un circuito con varios diodos (como la ampliación de los cuatro diodos al final del módulo) identifica primero polaridades y cuáles son Zener; prueba cada hipótesis de conducción mediante KCL y desigualdades. No traslades la caída de 0.5 V a cualquier componente real.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿De dónde sale la energía amplificada?
-2. ¿Cuándo falla V+=V−?
-3. ¿Por qué importa la polaridad de un diodo?
-
-**Errores comunes:** aplicar la ganancia lineal más allá de los rieles de alimentación; ignorar el offset de entrada al comparar la salida esperada; cambiar la realimentación sin recalcular la ganancia. Si fallas una pregunta, lleva la entrada hasta que la salida toque el riel y localiza dónde deja de valer el modelo.
-
-**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Los amplificadores operacionales, la realimentación negativa y la saturación se desarrollan en ese curso.
+</details>
 
 ### Tema 4: Electrónica digital: lógica y máquinas de estados · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. **En una frase:** La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `digital.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una puerta de almacén autoriza despacho solo si hay paquete y la puerta está cerrada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. En una frase: La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. Prerrequisitos: Python, variables, funciones y unidades SI; par…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un semáforo es una máquina de estados: la misma entrada produce efectos distintos según el estado actual. Álgebra booleana modela AND, OR y NOT; un circuito combinacional depende de entradas actuales y uno secuencial conserva memoria. Contadores, registros y memorias almacenan estado. TTL y CMOS describen familias eléctricas con umbrales, alimentación y capacidad de corriente distintos, no solo ceros y unos.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `digital.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en electrónica digital: lógica y máquinas de estados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que electrónica digital: lógica y máquinas de estados resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Electrónica digital: lógica y máquinas de estados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Electrónica digital: lógica y máquinas de estados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses electrónica digital: lógica y máquinas de estados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: electrónica digital: lógica y máquinas de estados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Electrónica digital: lógica y máquinas de estados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve electrónica digital: lógica y máquinas de estados en tu contexto?
+2. ¿Cómo sabrías que electrónica digital: lógica y máquinas de estados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar electrónica digital: lógica y máquinas de estados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 for paquete in (False, True):
     for cerrada in (False, True):
@@ -200,8 +326,6 @@ for paquete in (False, True):
 python3 digital.py
 ```
 
-**Salida esperada:**
-
 ```text
 0 0 0
 0 1 0
@@ -209,41 +333,69 @@ python3 digital.py
 1 1 1
 ```
 
-**Explicación por bloques:** Los dos bucles enumeran cuatro pares de entradas: no son cuatro instantes de una máquina con memoria. `and` exige ambas condiciones y `int` presenta False/True como 0/1. La única salida habilitada es 1,1; el contraejemplo con puerta abierta demuestra la diferencia respecto a `or`.
-
-**Fallo deliberado y diagnóstico:** Cambia and por or: permite despacho con puerta abierta; localiza el contraejemplo en la tabla. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Añade estado BLOQUEADO y exige rearme después de una alarma. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Una simulación booleana no verifica rebotes, tiempos de setup/hold ni metastabilidad.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué diferencia lógica combinacional y secuencial?
-2. ¿Dónde se guarda el estado?
-3. ¿Por qué 3.3 V no siempre es compatible con 5 V?
-
-**Errores comunes:** confundir nivel lógico con tensión sin revisar los umbrales del dispositivo; tratar una entrada flotante como un cero; simplificar la tabla de verdad y eliminar una combinación de seguridad. Si fallas una pregunta, rehaz las cuatro filas del interlock y verifica cuál habilita la puerta.
-
-**Fuente oficial:** [MIT OpenCourseWare: Computation Structures](https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/). Lógica combinacional, tablas de verdad y temporización digital se cubren en ese curso.
+</details>
 
 ### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. **En una frase:** Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `microcontroladores.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El dispositivo del repartidor convierte la batería en una lectura ADC y reporta autonomía. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. En una frase: Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. Prerrequisitos: Python, variables, funciones y unidades SI; para temas d…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Es una pequeña oficina: CPU decide, memoria conserva trabajo y periféricos atienden entradas y salidas. GPIO lee niveles; ADC cuantiza voltaje; PWM varía el ciclo de trabajo de pulsos. UART es comunicación serial asíncrona; I2C usa direcciones y dos líneas; SPI suele usar reloj y selección de dispositivo. Interrupciones notifican eventos y temporizadores marcan periodos sin bloquear el programa. C/C++ permiten controlar registros y memoria, pero Python aquí solo simula el cálculo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `microcontroladores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en microcontroladores: gpio, adc, pwm e interrupciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que microcontroladores: gpio, adc, pwm e interrupciones resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Microcontroladores: GPIO, ADC, PWM e interrupciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Microcontroladores: GPIO, ADC, PWM e interrupciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses microcontroladores: gpio, adc, pwm e interrupciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: microcontroladores: gpio, adc, pwm e interrupciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Microcontroladores: GPIO, ADC, PWM e interrupciones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve microcontroladores: gpio, adc, pwm e interrupciones en tu contexto?
+2. ¿Cómo sabrías que microcontroladores: gpio, adc, pwm e interrupciones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar microcontroladores: gpio, adc, pwm e interrupciones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 bits, referencia, voltaje = 12, 3.3, 1.65
 maximo = 2 ** bits - 1
@@ -257,47 +409,73 @@ print(f"ADC={codigo}; reconstruido={reconstruido:.4f} V")
 python3 microcontroladores.py
 ```
 
-**Salida esperada:**
-
 ```text
 ADC=2048; reconstruido=1.6504 V
 ```
 
-**Explicación por bloques:** 12 bits representan 4096 códigos de 0 a 4095; por eso `maximo` resta uno. `round` asigna 1.65 V al código 2048, y la operación inversa da 1.6504 V. Este modelo de escala es didáctico: el fabricante puede especificar umbrales y LSB con otra convención. El error de redondeo no representa toda la incertidumbre.
-
-**Fallo deliberado y diagnóstico:** Usa referencia=5 con una placa de 3.3 V: la conversión reporta un voltaje incorrecto. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Compara cuantización a 8 y 12 bits; agrega validación de 0 <= voltaje <= referencia. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No se conectan voltajes fuera del rango de un pin. La arquitectura real requiere reloj, datasheet y niveles compatibles.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué hace el ADC?
-2. ¿Por qué PWM no es tensión analógica instantánea?
-3. ¿Qué trabajo debe evitar una interrupción?
-
-**Errores comunes:** dividir por 4095 en vez de 4096 al escalar un ADC de 12 bits; comparar cuentas de placas con distinta referencia; confundir resolución con exactitud. Si fallas una pregunta, calcula la cuenta de 0 V y la de Vref y comprueba que el rango completo ocupa 4096 pasos.
-
-**Fuente oficial:** [Arduino: entradas analógicas](https://docs.arduino.cc/learn/microcontrollers/analog-input/). La referencia describe `analogRead`, la tensión de referencia y cómo la resolución depende de la placa; el ejemplo usa 12 bits, así que su divisor es 4096.
+</details>
 
 ### Tema 6: Comunicaciones: modulación y detección de errores · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. **En una frase:** Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `comunicaciones.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor envía un byte y un bit de paridad; el receptor detecta una alteración simple. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. En una frase: Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. Prerrequisitos: Python, variables, funciones y unidades SI;…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Hablar por teléfono separa mensaje, medio y receptor. Modulación modifica amplitud, frecuencia o fase de una portadora; demodulación recupera el mensaje. La teoría de información relaciona incertidumbre, tasa y capacidad. Código de línea representa bits físicamente; antenas y propagación determinan alcance y pérdidas. Detectar un error no equivale a corregirlo ni autenticar al emisor.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `comunicaciones.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en comunicaciones: modulación y detección de errores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que comunicaciones: modulación y detección de errores resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Comunicaciones: modulación y detección de errores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Comunicaciones: modulación y detección de errores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses comunicaciones: modulación y detección de errores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: comunicaciones: modulación y detección de errores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Comunicaciones: modulación y detección de errores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve comunicaciones: modulación y detección de errores en tu contexto?
+2. ¿Cómo sabrías que comunicaciones: modulación y detección de errores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar comunicaciones: modulación y detección de errores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 dato = 0b10110010
 paridad = bin(dato).count("1") % 2
@@ -311,47 +489,73 @@ print(f"Trama válida: {valido}")
 python3 comunicaciones.py
 ```
 
-**Salida esperada:**
-
 ```text
 Trama válida: False
 ```
 
-**Explicación por bloques:** `bin(x).count("1")` cuenta los bits en 1 del byte; el módulo dos calcula paridad. XOR con 1 invierte un bit sin tocar los demás. El receptor vuelve a calcular y compara: una cuenta impar cambia de paridad. Invertir dos bits puede mantenerla, así que el resultado True no demostraría integridad completa.
-
-**Fallo deliberado y diagnóstico:** Invierte dos bits con ^ 0b00000011: la paridad acepta una trama corrupta; identifica su límite. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Propón CRC para detección y un MAC para autenticidad; explica qué problema resuelve cada uno. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El ejemplo opera sobre bits ideales; no modela BER, sincronización ni presupuesto de enlace.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué modula una portadora?
-2. ¿Por qué paridad falla con dos cambios?
-3. ¿Detectar errores autentica al sensor?
-
-**Errores comunes:** suponer que un bit de paridad detecta cualquier error; confundir detección con corrección; comparar protocolos sin contar la cabecera. Si fallas una pregunta, altera dos bits del mismo mensaje y explica por qué la paridad vuelve a coincidir.
-
-**Fuente oficial:** [MIT OpenCourseWare: Digital Communication Systems](https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/). Detección de errores, codificación y capacidad del canal se tratan con el formalismo que el tema solo introduce.
+</details>
 
 ### Tema 7: Señales y sistemas: muestreo, Fourier y convolución · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. **En una frase:** Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `senales.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor vibratorio de 7 Hz muestreado a 10 Hz produce muestras indistinguibles de otra frecuencia. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. En una frase: Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. Prerrequisitos: Python, variables, funciones y unidades SI; para temas de señal…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Tomar fotos de una rueda ilustra el muestreo: si fotografías demasiado lento puede parecer que gira al revés. Un sistema LTI es lineal e invariante en el tiempo; su salida es la convolución de entrada con respuesta al impulso. Correlación mide semejanza a distintos desplazamientos. Fourier analiza frecuencias y Laplace incluye dinámica y condiciones de convergencia. Reconstrucción exige señal acotada en banda y filtrado antialias previo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `senales.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en señales y sistemas: muestreo, fourier y convolución como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que señales y sistemas: muestreo, fourier y convolución resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Señales y sistemas: muestreo, Fourier y convolución se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Señales y sistemas: muestreo, Fourier y convolución | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses señales y sistemas: muestreo, fourier y convolución por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: señales y sistemas: muestreo, fourier y convolución funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Señales y sistemas: muestreo, Fourier y convolución existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve señales y sistemas: muestreo, fourier y convolución en tu contexto?
+2. ¿Cómo sabrías que señales y sistemas: muestreo, fourier y convolución no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar señales y sistemas: muestreo, fourier y convolución?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 import math
 fs = 10
@@ -365,49 +569,73 @@ print(f"Diferencia máxima: {max(abs(x-y) for x,y in zip(a,b)):.6f}")
 python3 senales.py
 ```
 
-**Salida esperada:**
-
 ```text
 Diferencia máxima: 0.000000
 ```
 
-**Explicación por bloques:** Ambas listas toman diez muestras en los mismos instantes n/fs. Una describe coseno de 7 Hz y otra de 3 Hz; a 10 muestras/s sus valores coinciden por periodicidad y simetría del coseno. `max(abs(...))` comprueba toda la secuencia; la salida redondeada a seis decimales oculta solo residuos de coma flotante, no la identidad de las señales continuas.
-
-**Fallo deliberado y diagnóstico:** Concluye que la señal original era de 3 Hz: el fallo es inferir frecuencia sin controlar el muestreo. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Sube fs a 20 y compara otra vez; explica el criterio fs > 2·fmax. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El teorema ideal no garantiza reconstrucción con ruido, banda desconocida o reloj irregular.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué conserva una muestra?
-2. ¿Qué es aliasing?
-3. ¿Por qué el filtro antialias debe actuar antes del ADC?
-
-**Errores comunes:** inferir la frecuencia original mirando solo las muestras; muestrear sin filtro antialias; confundir la frecuencia de Nyquist con el doble de la frecuencia de muestreo. Si fallas una pregunta, sube `fs` a 20 y repite la comparación antes de afirmar qué señal se observó.
-
-**Fuente oficial:** [MIT OpenCourseWare: Signals and Systems](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/). El muestreo y el teorema de Nyquist se desarrollan allí; para implementar filtros en Python, [SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html).
-
-**Diagrama interactivo:** [Muestreo y aliasing: 7 Hz y 3 Hz a 10 muestras/s](/visuals/temas/control-1/modulo-29-tema-7-aliasing.html).
+</details>
 
 ### Tema 8: DSP: filtros digitales y compresión · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. **En una frase:** El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `dsp.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La temperatura del paquete tiene un pico aislado; una media móvil lo atenúa sin demostrar que el pico fuera falso. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. En una frase: El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. Prerrequisitos: Python, variables, funciones y unidades SI; pa…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Promediar varias opiniones reduce fluctuaciones, pero retrasa una noticia nueva: un filtro también introduce compromiso entre ruido y respuesta. Un FIR combina muestras finitas; un IIR reutiliza salidas y necesita estabilidad. La transformada Z estudia sistemas discretos; polos y ceros condicionan respuesta. Compresión sin pérdida conserva muestras y con pérdida admite distorsión a cambio de menor tamaño; audio, imagen y video requieren métricas apropiadas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `dsp.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en dsp: filtros digitales y compresión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que dsp: filtros digitales y compresión resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| DSP: filtros digitales y compresión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar DSP: filtros digitales y compresión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses dsp: filtros digitales y compresión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dsp: filtros digitales y compresión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- DSP: filtros digitales y compresión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dsp: filtros digitales y compresión en tu contexto?
+2. ¿Cómo sabrías que dsp: filtros digitales y compresión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dsp: filtros digitales y compresión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 muestras = [20, 20, 29, 20, 20]
 ventana = 3
@@ -421,49 +649,73 @@ print(filtradas)
 python3 dsp.py
 ```
 
-**Salida esperada:**
-
 ```text
 [23.0, 23.0, 23.0]
 ```
 
-**Explicación por bloques:** La ventana incluye tres muestras y el primer índice de salida es dos: no se inventan datos anteriores. Cada ventana alrededor del pico suma 69 y su promedio es 23. Se emiten tres salidas correspondientes a posiciones 2, 3 y 4. Un filtro de longitud tres tiene retardo de grupo de una muestra en su régimen FIR lineal; una alarma exige analizar también el umbral de detección.
-
-**Fallo deliberado y diagnóstico:** Usa el promedio para ocultar una alarma real; diagnostica comparando señal cruda y filtrada. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Procesa [20,20,29,29,29]; mide cuándo el filtro reconoce el escalón. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No suavices señales de seguridad sin especificar tiempo máximo de detección. Conserva muestras originales.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Por qué aparece retardo?
-2. ¿Cuál es la diferencia FIR/IIR?
-3. ¿Qué evidencia permite elegir una ventana?
-
-**Errores comunes:** centrar una ventana causal y adelantar la salida en el tiempo; usar el suavizado para ocultar una alarma sin medir el retardo; comparar señales sin alinear sus índices. Si fallas una pregunta, filtra un escalón y anota en qué muestra la salida alcanza el nuevo nivel.
-
-**Fuente oficial:** [SciPy: referencia de `scipy.signal`](https://docs.scipy.org/doc/scipy/reference/signal.html). Allí se documentan filtros FIR/IIR, `lfilter` y `filtfilt`; la diferencia entre filtrado causal y de fase cero se explica en la guía de procesamiento de señal.
-
-**Diagrama interactivo:** [Media móvil causal: ventanas, salida y retardo](/visuals/temas/control-1/modulo-29-tema-8-media-movil.html).
+</details>
 
 ### Tema 9: Instrumentación: calibración, DAQ e incertidumbre · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. **En una frase:** La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `sensores.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Dos referencias permiten corregir ganancia y offset de un sensor térmico del transporte. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. En una frase: La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. Prerrequisitos: Python, variables, funciones y unidades SI; para…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una regla desplazada puede medir siempre dos centímetros de más: muchos dígitos no la vuelven exacta. Sensores de temperatura, presión, humedad, luz y posición requieren acondicionamiento y adquisición DAQ. Calibración compara referencias; linealización corrige una curva; transductores convierten energía y actuadores cambian el entorno. Resolución, repetibilidad, exactitud e incertidumbre describen propiedades distintas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `sensores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en instrumentación: calibración, daq e incertidumbre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que instrumentación: calibración, daq e incertidumbre resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Instrumentación: calibración, DAQ e incertidumbre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Instrumentación: calibración, DAQ e incertidumbre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses instrumentación: calibración, daq e incertidumbre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: instrumentación: calibración, daq e incertidumbre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Instrumentación: calibración, DAQ e incertidumbre existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve instrumentación: calibración, daq e incertidumbre en tu contexto?
+2. ¿Cómo sabrías que instrumentación: calibración, daq e incertidumbre no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar instrumentación: calibración, daq e incertidumbre?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 raw_frio, raw_caliente = 102, 902
 ref_frio, ref_caliente = 0.0, 100.0
@@ -477,47 +729,73 @@ print(f"Temperatura: {pendiente * 502 + offset:.2f} °C")
 python3 sensores.py
 ```
 
-**Salida esperada:**
-
 ```text
 Temperatura: 50.00 °C
 ```
 
-**Explicación por bloques:** La pendiente convierte diferencias de cuentas a grados: 100/800=0.125 °C/cuenta. El offset obliga a que la cuenta 102 represente 0 °C. La cuenta 502 queda 400 cuentas por encima y produce 50 °C. El tercer punto permite detectar que una recta de dos puntos puede no representar la curva real.
-
-**Fallo deliberado y diagnóstico:** Introduce raw_caliente=102: ZeroDivisionError revela referencias indistinguibles; revisa adquisición y configuración. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Comprueba un tercer punto a 25 °C; calcula residuo y documenta incertidumbre de la referencia. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Dos puntos no prueban linealidad ni cubren deriva temporal; no extrapoles sin caracterización.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué es offset?
-2. ¿Qué distingue resolución y exactitud?
-3. ¿Por qué se necesita un tercer punto?
-
-**Errores comunes:** extrapolar fuera del intervalo calibrado; confundir resolución con exactitud; aceptar una recta de dos puntos sin una tercera referencia. Si fallas una pregunta, agrega un punto intermedio, calcula su residuo y documenta la incertidumbre antes de aprobar el sensor.
-
-**Fuente oficial:** [NIST Technical Note 1297: incertidumbre de medida](https://www.nist.gov/pml/nist-technical-note-1297). Es la guía de referencia para expresar incertidumbre; la calibración concreta depende del certificado y del instrumento patrón.
+</details>
 
 ### Tema 10: Control automático: realimentación, PID y estabilidad · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. **En una frase:** El control automático compara una medición con una referencia y ajusta una acción para reducir el error. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `control.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Se simula la temperatura de un compartimento con pérdidas y potencia acotada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. En una frase: El control automático compara una medición con una referencia y ajusta una acción para reducir el error. Prerrequisitos: Python, variables, funciones y unidades SI; para temas de seña…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un termostato compara temperatura deseada y real. El modelo de planta describe su dinámica; P reacciona al error, I lo acumula y D estima su cambio. Saturación exige anti-windup. Bode, Nyquist y Routh permiten analizar estabilidad bajo sus supuestos; ver una respuesta rápida no demuestra margen ante retardo o perturbaciones. Compensadores modifican la dinámica del lazo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás simular un lazo proporcional y explicar su error estacionario.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `control.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en control automático: realimentación, pid y estabilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que control automático: realimentación, pid y estabilidad resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Control automático: realimentación, PID y estabilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Control automático: realimentación, PID y estabilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses control automático: realimentación, pid y estabilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: control automático: realimentación, pid y estabilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Control automático: realimentación, PID y estabilidad existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve control automático: realimentación, pid y estabilidad en tu contexto?
+2. ¿Cómo sabrías que control automático: realimentación, pid y estabilidad no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar control automático: realimentación, pid y estabilidad?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 temperatura, referencia = 20.0, 25.0
 for _ in range(100):
@@ -532,49 +810,73 @@ print(f"Temperatura: {temperatura:.2f} °C")
 python3 control.py
 ```
 
-**Salida esperada:**
-
 ```text
 Temperatura: 23.33 °C
 ```
 
-**Explicación por bloques:** Cada iteración calcula error, potencia saturada y actualización de la planta. La planta pierde energía proporcional a T−20. En equilibrio 2·(25−T)=T−20, de modo que T=70/3≈23.33 °C. El periodo implícito y el modelo térmico están fijados en esta simulación; una temperatura diferente no se corrige aumentando Kp sin estudiar estabilidad.
-
-**Fallo deliberado y diagnóstico:** Espera 25 °C exactos: el control P deja error estacionario por las pérdidas; el diagnóstico usa equilibrio de la planta. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Añade acción integral con límite y prueba una referencia inalcanzable antes de volver a 25 °C. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** La simulación no certifica un controlador físico; mide retardo, saturación y margen de estabilidad.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué variable se realimenta?
-2. ¿Por qué P deja error?
-3. ¿Qué ocurre con la integral cuando el actuador satura?
-
-**Errores comunes:** subir Kp para eliminar el error estacionario sin revisar estabilidad; ignorar la saturación del actuador; confundir error de régimen con lentitud de respuesta. Si fallas una pregunta, calcula el equilibrio de la planta y explica por qué la temperatura no llega a la referencia.
-
-**Fuente oficial:** [MIT OpenCourseWare: Feedback Systems](https://ocw.mit.edu/courses/6-302-feedback-systems-spring-2007/). Realimentación, estabilidad y análisis de lazo cerrado se cubren en ese curso; el PID con anti-windup requiere además la hoja del fabricante del controlador.
-
-**Diagrama interactivo:** [Lazo proporcional: realimentación y error estacionario](/visuals/temas/control-1/modulo-29-tema-10-lazo-p.html).
+</details>
 
 ### Tema 11: Potencia: conversión, eficiencia y disipación · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. **En una frase:** La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `potencia.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La unidad de seguimiento requiere 5 V y 1 A desde la batería de 12 V de un vehículo. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. En una frase: La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. Prerrequisitos: Python, variables, funciones y unidades SI; para t…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un convertidor se parece a una transmisión: cambia la relación de salida, no crea energía. Rectificadores convierten AC en DC; inversores hacen DC a AC; buck reduce DC y boost la eleva. En un buck ideal Vout=D·Vin. Motores requieren dimensionar arranque, conmutación y protecciones; las fuentes conmutadas disipan pérdidas y generan rizado. La temperatura depende de pérdidas y resistencia térmica.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `potencia.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en potencia: conversión, eficiencia y disipación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que potencia: conversión, eficiencia y disipación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Potencia: conversión, eficiencia y disipación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Potencia: conversión, eficiencia y disipación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses potencia: conversión, eficiencia y disipación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: potencia: conversión, eficiencia y disipación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Potencia: conversión, eficiencia y disipación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve potencia: conversión, eficiencia y disipación en tu contexto?
+2. ¿Cómo sabrías que potencia: conversión, eficiencia y disipación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar potencia: conversión, eficiencia y disipación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 vin, vout, corriente, eficiencia = 12, 5, 1, 0.9
 duty = vout / vin
@@ -588,47 +890,73 @@ print(f"Duty={duty:.3f}; pérdidas={pin-pout:.3f} W")
 python3 potencia.py
 ```
 
-**Salida esperada:**
-
 ```text
 Duty=0.417; pérdidas=0.556 W
 ```
 
-**Explicación por bloques:** El duty ideal es 5/12 y la potencia de salida 5·1=5 W. Dividir por eficiencia 0.9 exige entrada de 5.556 W. La diferencia 0.556 W es la pérdida total del modelo; no puede atribuirse entera a un MOSFET sin descomponer pérdidas. La resistencia térmica permite una estimación preliminar de temperatura.
-
-**Fallo deliberado y diagnóstico:** Fija eficiencia=1.2: el modelo produce pérdidas negativas; diagnostica una entrada físicamente inválida. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Calcula pérdidas a 80% y aumento térmico con 40 °C/W; compara con el límite del componente. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Estos cálculos no dimensionan inductancia, MOSFET, SOA, aislamiento ni compensación del convertidor; el laboratorio es numérico.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué significa duty?
-2. ¿Por qué hay pérdidas?
-3. ¿Por qué medir eficiencia a varias cargas?
-
-**Errores comunes:** confundir duty con eficiencia; usar una eficiencia mayor que 1 y obtener pérdidas negativas; atribuir toda la pérdida a un solo componente sin descomponerla. Si fallas una pregunta, recalcula con 80% y comprueba que la entrada sigue siendo mayor que la salida.
-
-**Fuente oficial:** [MIT OpenCourseWare: Power Electronics](https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/). Convertidores buck y boost, conmutación y pérdidas se analizan allí; inductancia, MOSFET y lazo de compensación exigen el diseño completo del convertidor.
+</details>
 
 ### Tema 12: PCB: esquemático, ERC, DRC y fabricación · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. **En una frase:** El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `pcb.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La placa del sensor tiene dos pistas paralelas cuyo espacio debe respetar la regla del fabricante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. En una frase: El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. Prerrequisitos: Python, variables, funciones y unidades SI…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** El esquemático es el plano de conexiones y el layout es la distribución real de calles. ERC encuentra incompatibilidades eléctricas y DRC verifica geometría; ninguno demuestra funcionamiento. Retorno de corriente, desacoplo, integridad de señal y gestión térmica importan tanto como unir redes. KiCad organiza esquemático, placa, BOM y Gerbers; el fabricante define anchos, separaciones y tolerancias.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `pcb.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en pcb: esquemático, erc, drc y fabricación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pcb: esquemático, erc, drc y fabricación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| PCB: esquemático, ERC, DRC y fabricación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar PCB: esquemático, ERC, DRC y fabricación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses pcb: esquemático, erc, drc y fabricación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pcb: esquemático, erc, drc y fabricación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- PCB: esquemático, ERC, DRC y fabricación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pcb: esquemático, erc, drc y fabricación en tu contexto?
+2. ¿Cómo sabrías que pcb: esquemático, erc, drc y fabricación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pcb: esquemático, erc, drc y fabricación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 centros_mm, ancho_a, ancho_b, minimo = 0.50, 0.30, 0.30, 0.25
 # Distancia de centros menos ambas mitades de pista.
@@ -640,47 +968,73 @@ print(f"Espacio={espacio:.2f} mm; cumple={espacio >= minimo}")
 python3 pcb.py
 ```
 
-**Salida esperada:**
-
 ```text
 Espacio=0.20 mm; cumple=False
 ```
 
-**Explicación por bloques:** Los centros están a 0.50 mm y cada pista ocupa 0.15 mm a cada lado de su centro. Restar ambas mitades deja 0.20 mm entre bordes, menor que 0.25 mm permitidos. Esta relación solo corresponde a pistas paralelas con esa geometría; un verificador de placa analiza todos los objetos y reglas de red.
-
-**Fallo deliberado y diagnóstico:** Compara distancia entre centros con mínimo: acepta falsamente las pistas; diagnostica midiendo borde a borde. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Aumenta centros a 0.60 mm y reproduce la restricción en KiCad con ERC/DRC y captura de resultados. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. Como extensión opcional, reproduce el ejemplo en un proyecto de KiCad (esquemático y layout) y ejecuta ERC/DRC. Fuente específica: https://docs.kicad.org/
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué compara DRC?
-2. ¿Qué diferencia esquemático y layout?
-3. ¿Dónde regresa la corriente?
-
-**Errores comunes:** confundir ERC (conectividad y reglas eléctricas) con DRC (geometría); aceptar un clearance menor que la regla sin justificarlo; medir en unidades de pantalla en vez de milímetros. Si fallas una pregunta, abre el reporte de DRC y localiza el par de pistas que incumple antes de mover nada.
-
-**Fuente oficial:** [Documentación de KiCad](https://docs.kicad.org/). Allí se describen el editor de PCB, las reglas de diseño y el DRC; los valores de clearance de fabricación se contrastan con la capacidad del fabricante, no con el ejemplo.
+</details>
 
 ### Tema 13: Sistemas embebidos: RTOS, buses y firmware · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. **En una frase:** Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `embebidos.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El sensor debe adquirir temperatura cada 20 ms y publicar cada 100 ms. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. En una frase: Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. Prerrequisitos: Python, variables, funcione…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una cocina con varias órdenes requiere prioridad y plazos, no solo velocidad media. RTOS planifica tareas; tiempo real significa cumplir deadlines. SPI, I2C, CAN y USB tienen contratos y costes distintos; firmware inicializa hardware, valida datos y recupera fallos. IoT añade conectividad, identidad y actualizaciones. Una tarea que bloquea un bus puede impedir medir a tiempo aunque la CPU esté libre.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `embebidos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en sistemas embebidos: rtos, buses y firmware como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sistemas embebidos: rtos, buses y firmware resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sistemas embebidos: RTOS, buses y firmware se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sistemas embebidos: RTOS, buses y firmware | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses sistemas embebidos: rtos, buses y firmware por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sistemas embebidos: rtos, buses y firmware funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Sistemas embebidos: RTOS, buses y firmware existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sistemas embebidos: rtos, buses y firmware en tu contexto?
+2. ¿Cómo sabrías que sistemas embebidos: rtos, buses y firmware no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sistemas embebidos: rtos, buses y firmware?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 def simular_rms(tareas, horizonte_ms):
     """Planificación por prioridad fija Rate Monotonic (menor periodo = mayor
@@ -714,47 +1068,73 @@ for tick, nombre, pendiente in fallos:
 python3 embebidos.py
 ```
 
-**Salida esperada:**
-
 ```text
 Deadlines incumplidos en 200 ms simulados: 0
 ```
 
-**Explicación por bloques:** `simular_rms` avanza un reloj discreto de 1 ms. En cada tick, si una tarea cumple su periodo, libera una nueva instancia: si la anterior no terminó (`restante > 0`), eso es un deadline incumplido real, no una cuenta de utilización. Luego la CPU ejecuta un ms de la tarea de mayor prioridad (menor periodo, Rate Monotonic) que tenga trabajo pendiente -- hay preempción real: `sensor` (periodo 20) interrumpe a `publicar` (periodo 100) cuando ambas compiten. Con sensor=2/20 y publicar=5/100 (15% de utilización combinada) la simulación no registra ningún incumplimiento en 200 ms.
-
-**Fallo deliberado y diagnóstico:** agrega una tercera tarea `("reportes", 100, 100)` a la lista (cuesta 100 ms y se repite cada 100 ms: sola ya ocupa el 100% de la CPU). Al volver a ejecutar, la simulación real -- no una fórmula -- reporta `Deadlines incumplidos en 200 ms simulados: 1` con `t=100ms tarea=reportes: quedan 15ms de la instancia anterior`: la sobrecarga se ve en la ejecución, con el tick y la tarea exactos que fallaron. Conserva ambas salidas y corrige la entrada o condición responsable (quitar `reportes` o bajarle el coste) antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** agregá un parámetro `bloqueo_bus_ms` que, cuando `sensor` necesita el bus, le reste tiempo de CPU a `publicar` aunque `sensor` no esté listo todavía (inversión de prioridad simplificada), y contá cuántos deadlines se incumplen con distintos valores; explicá por qué el promedio de utilización no avisa de este caso. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo ignora jitter, inversión de prioridad y WCET real. La validación de tiempo exige mediciones y análisis de planificación.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué es un deadline?
-2. ¿Por qué baja utilización no prueba cumplimiento?
-3. ¿Qué hace firmware cuando pierde red?
-
-**Errores comunes:** sumar utilizaciones y concluir que se cumplen deadlines; ignorar la inversión de prioridad y el bloqueo de bus; confundir tiempo real con velocidad media. Si fallas una pregunta, ejecuta la simulación con la tarea de 100 ms y localiza el tick exacto del incumplimiento.
-
-**Fuente oficial:** [Zephyr: planificación del kernel](https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html). La documentación describe prioridades, preempción y planificación; garantías temporales de un sistema concreto exigen medir WCET, jitter y bloqueos.
+</details>
 
 ### Tema 14: Programación de bajo nivel: C, memoria y depuración · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. **En una frase:** La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `bajo-nivel.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un mensaje UART transmite una medición sin signo de 16 bits en little-endian. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. En una frase: La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. Prerrequisitos: Python, variables…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un buffer es una fila de casillas con capacidad fija; escribir fuera invade otra responsabilidad. C/C++ dan control explícito y requieren ownership, límites y vida útil; ASM expresa instrucciones de máquina. Estructuras y algoritmos condicionan coste; depuración con GDB, warnings y sanitizers ayuda a localizar errores. Python puede ensayar un contrato binario, pero no reproduce comportamiento indefinido de C.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `bajo-nivel.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en programación de bajo nivel: c, memoria y depuración como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que programación de bajo nivel: c, memoria y depuración resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Programación de bajo nivel: C, memoria y depuración se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Programación de bajo nivel: C, memoria y depuración | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses programación de bajo nivel: c, memoria y depuración por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: programación de bajo nivel: c, memoria y depuración funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Programación de bajo nivel: C, memoria y depuración existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve programación de bajo nivel: c, memoria y depuración en tu contexto?
+2. ¿Cómo sabrías que programación de bajo nivel: c, memoria y depuración no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar programación de bajo nivel: c, memoria y depuración?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 import struct
 medicion = 513
@@ -767,47 +1147,73 @@ print(trama.hex(), struct.unpack("<H", trama)[0])
 python3 bajo-nivel.py
 ```
 
-**Salida esperada:**
-
 ```text
 0102 513
 ```
 
-**Explicación por bloques:** `<H` indica unsigned short de dos bytes en little-endian. 513=2·256+1 se representa como bytes 01 y 02; `hex` muestra 0102 y `unpack` reconstruye 513. Leer esos bytes en big-endian calcula 1·256+2=258, un valor legal pero incorrecto que podría pasar inadvertido sin comprobar el contrato.
-
-**Fallo deliberado y diagnóstico:** Decodifica con >H: obtienes 258; diagnostica el desacuerdo de endianness entre emisor y receptor. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Prueba 65535, 65536 y una trama de un byte; registra errores y exige tamaño antes de decodificar. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Un contrato binario no gestiona ownership ni sincronización. Para C usa compilación con warnings y AddressSanitizer en un entorno compatible.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué significa little-endian?
-2. ¿Cuántos valores caben en 16 bits?
-3. ¿Por qué C necesita comprobar límites?
-
-**Errores comunes:** decodificar sin acordar endianness y tamaño; suponer que `<H` acepta cualquier valor sin comprobar el rango; confundir un valor legal con un valor correcto. Si fallas una pregunta, empaqueta 513 y 65536 y anota qué bytes o excepción aparecen en cada caso.
-
-**Fuente oficial:** [Python: módulo `struct`](https://docs.python.org/3/library/struct.html). La tabla de formatos define tamaño y alineación; para C, el contrato equivalente se consulta en la norma del lenguaje y en la documentación del compilador.
+</details>
 
 ### Tema 15: Electromagnetismo: Faraday y líneas de transmisión · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. **En una frase:** El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `electromagnetismo.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un cable de sensor cercano a un motor capta tensión inducida por un campo cambiante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. En una frase: El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. Prerrequisitos: Python, variables, funciones y unidades SI; para te…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un lazo de cable funciona como una pequeña antena: capta cambios de flujo magnético. Coulomb describe fuerzas entre cargas; Faraday relaciona variación de flujo con tensión inducida; Maxwell unifica campos eléctricos y magnéticos. Ondas y líneas de transmisión requieren considerar velocidad de propagación, impedancia y terminaciones cuando el retardo no es despreciable frente al flanco.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `electromagnetismo.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en electromagnetismo: faraday y líneas de transmisión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que electromagnetismo: faraday y líneas de transmisión resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Electromagnetismo: Faraday y líneas de transmisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Electromagnetismo: Faraday y líneas de transmisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses electromagnetismo: faraday y líneas de transmisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: electromagnetismo: faraday y líneas de transmisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Electromagnetismo: Faraday y líneas de transmisión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve electromagnetismo: faraday y líneas de transmisión en tu contexto?
+2. ¿Cómo sabrías que electromagnetismo: faraday y líneas de transmisión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar electromagnetismo: faraday y líneas de transmisión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 area, cambio_campo, intervalo = 0.001, 0.01, 0.001
 # Campo uniforme y perpendicular; una sola vuelta.
@@ -819,47 +1225,73 @@ print(f"Tensión inducida: {voltaje:.3f} V")
 python3 electromagnetismo.py
 ```
 
-**Salida esperada:**
-
 ```text
 Tensión inducida: -0.010 V
 ```
 
-**Explicación por bloques:** El cambio de flujo es área por cambio de campo bajo orientación perpendicular. Dividir 0.001·0.01 por 0.001 s da 0.01 V; el signo menos expresa oposición al cambio según la orientación de referencia. Reducir área reduce magnitud; no modifica el hecho de que la inducción necesita variación de flujo.
-
-**Fallo deliberado y diagnóstico:** Usa 10 cm² como 10 m²: el error de conversión domina el resultado; convierte primero a 0.001 m². Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Reduce el área del lazo diez veces; explica por qué trenzar conductores puede reducir captación. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo supone geometría y campo uniformes; no reemplaza simulación EM ni ensayos de compatibilidad.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué cambia para inducir tensión?
-2. ¿Qué expresa el signo negativo?
-3. ¿Cuándo una pista exige modelo de línea?
-
-**Errores comunes:** convertir cm² a m² dividiendo por 100 en vez de 10 000; olvidar que la inducción exige flujo variable; ignorar la orientación del lazo respecto al campo. Si fallas una pregunta, repite el cálculo con el área en m² y con el lazo paralelo al campo.
-
-**Fuente oficial:** [MIT OpenCourseWare: Electricity and Magnetism](https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/). Ley de Faraday, flujo e inducción se desarrollan allí; el comportamiento de una pista rápida exige además simulación electromagnética.
+</details>
 
 ### Tema 16: Gestión profesional: requisitos, riesgos y evidencia · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. **En una frase:** La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `gestion.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow acepta un sensor si su error máximo medido es menor o igual a 0.5 °C en los puntos acordados. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. En una frase: La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. Prerrequisitos: Python, variables, funciones y unid…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Construir un puente exige acordar carga, plazo y prueba de aceptación antes de elegir materiales. Documentación técnica captura supuestos y decisiones; trabajo en equipo necesita interfaces y responsables; pensamiento crítico separa observación y explicación. Innovación y aprendizaje continuo consisten en experimentar con criterios, no perseguir herramientas sin objetivo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `gestion.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en gestión profesional: requisitos, riesgos y evidencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que gestión profesional: requisitos, riesgos y evidencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Gestión profesional: requisitos, riesgos y evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Gestión profesional: requisitos, riesgos y evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses gestión profesional: requisitos, riesgos y evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: gestión profesional: requisitos, riesgos y evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Gestión profesional: requisitos, riesgos y evidencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve gestión profesional: requisitos, riesgos y evidencia en tu contexto?
+2. ¿Cómo sabrías que gestión profesional: requisitos, riesgos y evidencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar gestión profesional: requisitos, riesgos y evidencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 referencias = [0, 25, 50]
 medidas = [0.2, 25.4, 49.7]
@@ -872,47 +1304,73 @@ print(f"Error máximo={max(errores):.2f} °C; acepta={max(errores) <= 0.5}")
 python3 gestion.py
 ```
 
-**Salida esperada:**
-
 ```text
 Error máximo=0.40 °C; acepta=True
 ```
 
-**Explicación por bloques:** `zip` empareja tres medidas con sus referencias; `abs` convierte diferencias firmadas en magnitudes de error. Los errores son 0.2, 0.4 y 0.3 °C; máximo 0.4 cumple el umbral 0.5. La conclusión se limita a estos puntos y condiciones: una medida válida en laboratorio no acredita todo rango ni meses de uso.
-
-**Fallo deliberado y diagnóstico:** Modifica 49.7 a 48: la aceptación falla; no cambies el umbral para ocultar el defecto. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Redacta requisito de latencia, dueño, riesgo y plan de prueba; agrega una decisión sobre recalibración. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Tres muestras no demuestran exactitud en todo rango; define cobertura, condiciones y evidencia antes de aprobar.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué hace verificable un requisito?
-2. ¿Por qué documentar supuestos?
-3. ¿Quién decide si una desviación es aceptable?
-
-**Errores comunes:** redactar un requisito sin umbral ni condición de medida; cambiar el umbral para que pase la prueba; presentar tres puntos como cobertura de todo el rango. Si fallas una pregunta, escribe la evidencia que falta (punto, condición y responsable) antes de declarar aceptado el sensor.
-
-**Fuente oficial:** [MIT OpenCourseWare: Fundamentals of Systems Engineering](https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/). El curso cubre requisitos, verificación y gestión de riesgos; la aceptación formal de un producto se rige además por el contrato y la norma aplicable.
+</details>
 
 ### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3 · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. **En una frase:** Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `plc.py`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La cinta del almacén debe detenerse si se abre una puerta o se activa una alarma. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+#### ► DE QUÉ TRATA
+Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. En una frase: Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. Prerrequisitos: Python, variables, funciones y unidades SI; para temas…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Es un supervisor que toma una foto de entradas, decide y publica órdenes en cada ronda. El ciclo de scan no es instantáneo: entradas pueden cambiar entre rondas. IEC 61131-3 define lenguajes de programación de controladores; Structured Text y Ladder tienen semántica y herramientas propias. Variables globales, bus de campo, HMI y registro cumplen funciones distintas. Una HMI muestra y solicita acciones; el control valida interlocks.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `plc.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en plc y control industrial: ciclo de scan e iec 61131-3 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que plc y control industrial: ciclo de scan e iec 61131-3 resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| PLC y control industrial: ciclo de scan e IEC 61131-3 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar PLC y control industrial: ciclo de scan e IEC 61131-3 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses plc y control industrial: ciclo de scan e iec 61131-3 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: plc y control industrial: ciclo de scan e iec 61131-3 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- PLC y control industrial: ciclo de scan e IEC 61131-3 existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve plc y control industrial: ciclo de scan e iec 61131-3 en tu contexto?
+2. ¿Cómo sabrías que plc y control industrial: ciclo de scan e iec 61131-3 no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar plc y control industrial: ciclo de scan e iec 61131-3?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 entradas = {"marcha": True, "puerta_cerrada": False, "alarma": False}
 # Interlock: marcha solicitada no basta para habilitar motor.
@@ -924,61 +1382,9 @@ print(f"Motor habilitado: {motor}")
 python3 plc.py
 ```
 
-**Salida esperada:**
-
 ```text
 Motor habilitado: False
 ```
-
-**Explicación por bloques:** El diccionario representa la foto de entradas de un scan. Se necesita marcha, puerta cerrada y ausencia de alarma simultáneamente. La puerta False deshabilita la salida aunque exista marcha True. La asignación produce la decisión de un ciclo; el código no contiene memoria de rearme, ni watchdog ni circuito independiente de seguridad.
-
-**Fallo deliberado y diagnóstico:** Elimina puerta_cerrada de la condición: el motor se habilita; diagnostica ausencia de interlock mediante tabla de entradas. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Construye la tabla completa y agrega política de rearme manual; describe entradas, lógica, salidas y tiempo máximo de respuesta. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Python simula lógica, no es runtime PLC ni implementación de seguridad funcional. Consulta documentación del controlador y edición aplicable del estándar; un interlock didáctico no certifica una máquina.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué ocurre en un scan?
-2. ¿Quién valida una orden de la HMI?
-3. ¿Por qué se separa control normal y seguridad?
-
-**Errores comunes:** confundir la HMI con el control de seguridad; asumir que un scan es instantáneo; presentar un interlock didáctico como seguridad funcional certificada. Si fallas una pregunta, dibuja la tabla de entradas del scan y localiza qué combinación habilita el motor sin puerta cerrada.
-
-**Fuente oficial:** [IEC 61131-3: controladores programables](https://webstore.iec.ch/en/publication/3800). La norma define los lenguajes de programación; el ciclo de scan, el watchdog y la seguridad funcional dependen del controlador y de la edición aplicable del estándar.
-
-**Diagrama interactivo:** [Scan PLC: interlock y actualización de salida](/visuals/temas/control-1/modulo-29-tema-17-plc-scan.html).
-
-## Ampliación: equivalente de Thévenin con tres fuentes
-
-Dibuja primero el circuito a partir de esta descripción: tierra inferior, fuente de 4 V con positivo abajo (`Va=-4 V`), resistencia de carga 6 Ω entre a y b, resistencia de 12 Ω de b a tierra, fuente de 8 V positiva en b y negativa en c (`Vb-Vc=8 V`), otra resistencia de 12 Ω de c a tierra y fuente de 2 A desde tierra hacia c.
-
-Retira la carga. El supernodo b-c cumple `Vb/12 + Vc/12 = 2`; junto con `Vb-Vc=8` da `Vb=16 V`, `Vc=8 V`. Por tanto `Vth=Va-Vb=-20 V`. Para hallar Rth, cortocircuita fuentes independientes de tensión y abre la de corriente: ambas resistencias de 12 Ω quedan en paralelo y `Rth=6 Ω`. Reconecta la carga: `Iab=-20/(6+6)=-5/3 A` y `Vab=Iab·6=-10 V`. El signo indica que b está 10 V por encima de a.
-
-Comprueba por nodos con carga: `(Vb+4)/6 + Vb/12 + Vc/12 = 2` y `Vc=Vb-8`; resulta `Vb=6 V`, `Vc=-2 V`, coherente con `Va-Vb=-10 V`. Para Norton, `In=Vth/Rth=-10/3 A`. Si cambias la polaridad de una fuente, cambia el sistema de ecuaciones antes de ejecutar: no reutilices este resultado para otro circuito.
-
-## Ampliación: cuatro diodos
-
-Dibuja primero el circuito con esta lista de conexiones (todas las tensiones respecto a tierra, 0 V):
-
-- **V1:** fuente de +8 V en el nodo superior izquierdo. **VA:** fija el nodo inferior derecho en −10 V.
-- **R1** = 3 kΩ entre V1 (+8 V) y el nodo x.
-- **D1:** ánodo en x, cátodo en tierra (0 V). **D2:** ánodo en x, cátodo en el nodo y.
-- **R2** = 1 kΩ entre y y el nodo z.
-- **D3** (Zener): ánodo en el nodo de −10 V, cátodo en z.
-- **VB** = 10 V: positivo en y, negativo en el nodo w, así que w = y − 10.
-- **R3** = 1 kΩ entre w y el nodo u.
-- **D4:** ánodo en u, cátodo en el nodo de −10 V.
-
-Modelo de diodo: conducción directa a 0.5 V y ruptura inversa a 8 V. Si cambias la orientación de un diodo, estas ecuaciones deben cambiar. Por VB, w=y-10. Hipótesis: D1 y D2 directos, D3 en ruptura y D4 bloqueado. Entonces x=0.5, y=x-0.5=0, z=-10+8=-2, u=w=-10 V.
-
-La corriente por R1 es (8-0.5)/3000 = 2.5 mA. R2 conduce (0-(-2))/1000 = 2 mA hacia D3; por tanto D2 lleva 2 mA y D1 recibe los 0.5 mA restantes. D3 conduce 2 mA en sentido inverso: ánodo a -10 V y cátodo a -2 V. D4 tiene 0 V ánodo-cátodo y 0 mA, consistente con bloqueo. Se cumplen KCL y las desigualdades de los cuatro estados; asumirlos sin comprobar corrientes no sería una solución.
-
-Para comprobar el modelo, parte de una carpeta vacía y crea manualmente `diodos.py`:
 
 ```bash
 mkdir practica-diodos && cd practica-diodos
@@ -1013,12 +1419,8 @@ print(f"D3 ruptura Zener: {float(-i3 * 1000):.3f} mA (sentido inverso)")
 print("D4 bloqueado: 0.000 mA")
 ```
 
-Ejecuta:
-
 ```bash
 python3 diodos.py
 ```
 
-**Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia `derecha` a `F(10)` sin reconstruir los demás nodos: las aserciones de polarización fallan y te obligan a revisar el modelo. **Práctica:** calcula `p_r1 = (8 - x) * ((8 - x) / 3000)` y `p_r2 = (y - z) * i2`, y demuestra que ambas potencias son no negativas.
-
-**Límite profesional:** esto valida el modelo de umbral y las polaridades de la lista de conexiones, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. Como extensión opcional, escribe la lista de conexiones como netlist de `ngspice` y compara sus corrientes con las calculadas aquí.
+</details>

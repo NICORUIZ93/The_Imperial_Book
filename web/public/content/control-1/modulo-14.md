@@ -10,114 +10,68 @@ Después de que pasa el transitorio, ¿la salida llega exactamente a la referenc
 
 ## Aprende construyendo
 
+
 ### Tema 1: Fórmula general del error en estado estacionario · Intermedio · 45 min
 
-**¿Por qué es importante?** El error final dice si el sistema llega exactamente a la referencia, que es lo que más le importa a quien usa el sistema.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control) y [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
+#### ► DE QUÉ TRATA
+Este tema te guía por fórmula general del error en estado estacionario con foco en comprensión antes de implementación.
 
-\[e_{ss} = \lim_{s\to0}\, s\,\frac{R(s)}{1+G(s)}\]
+#### ► LA IDEA EN UNA FRASE
+**Entender fórmula general del error en estado estacionario te permite tomar mejores decisiones técnicas.**
 
-*Realimentación unitaria. \(G\) incluye controlador y planta. El sistema en lazo cerrado debe ser estable.*
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Demostración
+#### ► LA ANALOGÍA
+Piensa en fórmula general del error en estado estacionario como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-\(E = R - Y\) y \(Y = \dfrac{G}{1+G}R\), así que \(E = \left(1 - \dfrac{G}{1+G}\right)R = \dfrac{R}{1+G}\). El teorema del valor final (módulo 2) da la fórmula.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que fórmula general del error en estado estacionario resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-∎
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Fórmula general del error en estado estacionario se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Más ejemplos resueltos
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Fórmula general del error en estado estacionario | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► CUÁNDO NO USAR ESTO
+No uses fórmula general del error en estado estacionario por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Ejemplo 1 · Error final de \(\frac{10}{s + 2}\) ante escalón · *Básico*
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: fórmula general del error en estado estacionario funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
+#### ► LO QUE DEBES RECORDAR
+- Fórmula general del error en estado estacionario existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s + 12\right)}\).
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve fórmula general del error en estado estacionario en tu contexto?
+2. ¿Cómo sabrías que fórmula general del error en estado estacionario no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar fórmula general del error en estado estacionario?
 
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
+</details>
 
-2. Lazo cerrado estable: sí.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{6}\).
-
-#### Ejemplo 2 · Error final de \(\frac{10}{s \left(s + 2\right)}\) ante escalón · *Básico*
-
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
-
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s + 2\right) + 10}\).
-
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
-
-2. Lazo cerrado estable: sí.
-
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = 0\).
-
-#### Ejemplo 3 · Error final de \(\frac{10}{s \left(s + 2\right)}\) ante rampa · *Intermedio*
-
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
-
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 2}{s \left(s \left(s + 2\right) + 10\right)}\).
-
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
-
-2. Lazo cerrado estable: sí.
-
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{5}\).
-
-#### Ejemplo 4 · Error final de \(\frac{5}{s + 1}\) ante rampa · *Intermedio*
-
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
-
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 1}{s^{2} \left(s + 6\right)}\).
-
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
-
-2. Lazo cerrado estable: sí.
-
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \infty\).
-
-#### Ejemplo 5 · Error final de \(\frac{20}{s^{2} \left(s + 5\right)}\) ante parábola · *Avanzado*
-
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
-
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{s + 5}{s \left(s^{2} \left(s + 5\right) + 20\right)}\).
-
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
-
-2. Lazo cerrado estable: no. El polinomio característico \(s^3+5s^2+20\) no tiene término en \(s\), y sus raíces son \(-5{,}63\) y \(0{,}315\pm1{,}858j\): dos polos en el semiplano derecho.
-
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** No se puede aplicar el teorema del valor final: el lazo cerrado es inestable y el error crece sin límite. El cálculo mecánico \(\lim_{s\to0} sE(s) = \tfrac{1}{4}\) da un número, pero no significa nada.
-
-#### Ejemplo 6 · Error final de \(\frac{8}{\left(s + 1\right) \left(s + 4\right)}\) ante escalón de amplitud 3 · *Básico*
-
-**Enunciado.** Realimentación unitaria. Halla \(e_{ss}\).
-
-1. \(E(s) = \dfrac{R(s)}{1+G(s)} = \frac{3 \left(s + 1\right) \left(s + 4\right)}{s \left(\left(s + 1\right) \left(s + 4\right) + 8\right)}\).
-
-   **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
-
-2. Lazo cerrado estable: sí.
-
-   **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
-
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = 1\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, limit
@@ -129,203 +83,73 @@ E = R / (1 + G)
 print("e_ss:", limit(s * E, s, 0))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `e_ss: 1/6`, igual al Ejemplo 1.
-
-#### Practica
-
-cambia `G` a `10/(s*(s+2))` y `R` a `1/s**2` (rampa) y confirma \(e_{ss}=1/5\) (Ejemplo 3). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta fórmula exige confirmar primero que el lazo cerrado es estable; en el Ejemplo 5 de este tema el número que da el límite (\(1/4\)) es engañoso porque el sistema en lazo cerrado en realidad es inestable — el error final no tiene sentido físico ahí.
+</details>
 
 ### Tema 2: Tipo de sistema y constantes · Intermedio · 45 min
 
-**¿Por qué es importante?** El tipo de sistema y las constantes \(K_p\), \(K_v\), \(K_a\) te dicen el error sin simular y orientan qué acción de control agregar.
-
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control) y [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
-
-Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\): cuántos integradores puros tiene.
-
-#### Demostración de cada caso
-
-1. **Escalón** \(R = 1/s\): \(e_{ss} = \dfrac{1}{1+\lim_{s\to0}G} = \dfrac{1}{1+K_p}\), con \(K_p = \lim_{s\to0}G(s)\).
-2. **Rampa** \(R = 1/s^2\): \(e_{ss} = \lim\dfrac{1}{s+sG} = \dfrac{1}{\lim sG} = \dfrac{1}{K_v}\), con \(K_v = \lim_{s\to0}sG(s)\).
-3. **Parábola** \(R = 1/s^3\) (es \(t^2/2\)): \(e_{ss} = \dfrac{1}{\lim s^2G} = \dfrac{1}{K_a}\), con \(K_a = \lim_{s\to0}s^2G(s)\).
-4. Si \(N = 0\): \(K_p\) es finito, \(K_v = K_a = 0\). Si \(N = 1\): \(K_p = \infty\), \(K_v\) finito, \(K_a = 0\). Si \(N = 2\): \(K_p = K_v = \infty\), \(K_a\) finito.
-
-∎
-
-| Tipo | Escalón | Rampa | Parábola |
-|---|---|---|---|
-| 0 | \(\dfrac{1}{1+K_p}\) | \(\infty\) | \(\infty\) |
-| 1 | \(0\) | \(\dfrac{1}{K_v}\) | \(\infty\) |
-| 2 | \(0\) | \(0\) | \(\dfrac{1}{K_a}\) |
-
-#### Ejemplo 1 · Tipo 0 con escalón · *Básico*
-
-**Enunciado.** \(G = \dfrac{10}{(s+1)(s+2)}\). Error ante escalón unitario.
-
-1. Cuenta integradores: ningún factor \(s\) suelto abajo, así que es tipo 0.
-
-   **¿Por qué?** El tipo decide qué fila de la tabla usar.
-
-2. \(K_p = G(0) = \dfrac{10}{1\cdot2} = 5\).
-
-   **¿Por qué?** Constante de posición.
-
-3. \(e_{ss} = \dfrac{1}{1+5} = 0{,}167\).
-
-   **¿Por qué?** Fórmula para tipo 0 con escalón.
-
-**Resultado:** 16,7 % de error
-
-#### Ejemplo 2 · Tipo 1 con rampa · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Ahora hay un integrador y la entrada es una rampa.
-
-**Enunciado.** \(G = \dfrac{10}{s(s+2)}\). Error ante escalón y ante rampa.
-
-1. Hay una \(s\) suelta abajo: tipo 1.
-
-   **¿Por qué?** Un integrador.
-
-2. Escalón: \(e = 0\).
-
-   **¿Por qué?** \(K_p = \infty\) porque \(G(0)\) divide por cero.
-
-3. Rampa: \(K_v = \lim_{s\to0} sG = \dfrac{10}{2} = 5\); \(e = 1/5 = 0{,}2\).
-
-   **¿Por qué?** La \(s\) de \(K_v\) cancela el integrador y queda un número finito.
-
-**Resultado:** Escalón 0; rampa 0,2
-
-#### Ejemplo 3 · Tipo 2 con parábola · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Dos integradores y entrada parabólica.
-
-**Enunciado.** \(G = \dfrac{10(s+1)}{s^2(s+5)}\). Error ante parábola.
-
-1. \(s^2\) abajo: tipo 2.
-
-   **¿Por qué?** Dos integradores.
-
-2. \(K_a = \lim s^2G = \dfrac{10\cdot1}{5} = 2\); \(e = 1/2\).
-
-   **¿Por qué?** La \(s^2\) cancela los dos integradores.
-
-**Resultado:** Error 0,5. Antes de confiar en el número, verifica estabilidad (módulo 15)
-
-#### Ejemplo 4 · Diseñar K para un error · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** \(K\) es la incógnita.
-
-**Enunciado.** \(G = \dfrac{K}{s(s+4)}\). ¿Qué \(K\) da error ante rampa de 5 % o menos?
-
-1. Tipo 1: \(K_v = \lim sG = K/4\).
-
-   **¿Por qué?** Ejemplo 2.
-
-2. \(e = \dfrac{4}{K} \le 0{,}05 \Rightarrow K \ge 80\).
-
-   **¿Por qué?** Se despeja \(K\).
-
-3. Lazo cerrado con \(K = 80\): \(s^2+4s+80\), \(\zeta = \dfrac{4}{2\sqrt{80}} = 0{,}224\), \(M_p = 48{,}6\,\%\).
-
-   **¿Por qué?** Siempre hay que revisar el transitorio.
-
-**Resultado:** \(K \ge 80\), pero el sobrepico queda muy alto. Se necesita un compensador (módulo 19)
-
-#### Errores comunes
-
-- Aplicar las fórmulas sin verificar estabilidad.
-- Calcular \(K_p\) de la función de lazo cerrado en vez de la de lazo abierto \(G\).
-- Contar como integrador un polo que no está exactamente en cero.
-
-- **1.**\(G = \dfrac{50}{(s+5)(s+10)}\): error ante escalón.
-
-  <details><summary>Respuesta</summary>
-
-  \(K_p = 1\): \(e = 0{,}5\).
-
-  </details>
-
-- **2.**\(G = \dfrac{20}{s(s+5)(s+1)}\): error ante rampa.
-
-  <details><summary>Respuesta</summary>
-
-  \(K_v = 20/5 = 4\): \(e = 0{,}25\).
-
-  </details>
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 5 · Tipo y constantes de \(\frac{50}{\left(s + 2\right) \left(s + 5\right)}\) · *Básico*
-
-**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
-
-1. Integradores (factores \(s\) en el denominador): 0 → **tipo 0**.
-
-   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
-
-2. \(K_p = 5,\ K_v = 0,\ K_a = 0\).
-
-   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
-
-**Resultado.** Escalón: \(e = \frac{1}{6}\); rampa: \(e = \infty\); parábola: \(e = \infty\).
-
-#### Ejemplo 6 · Tipo y constantes de \(\frac{12}{s \left(s + 3\right)}\) · *Básico*
-
-**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
-
-1. Integradores (factores \(s\) en el denominador): 1 → **tipo 1**.
-
-   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
-
-2. \(K_p = \infty,\ K_v = 4,\ K_a = 0\).
-
-   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
-
-**Resultado.** Escalón: \(e = 0\); rampa: \(e = \frac{1}{4}\); parábola: \(e = \infty\).
-
-#### Ejemplo 7 · Tipo y constantes de \(\frac{30 s + 30}{s^{2} \left(s + 6\right)}\) · *Intermedio*
-
-**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
-
-1. Integradores (factores \(s\) en el denominador): 2 → **tipo 2**.
-
-   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
-
-2. \(K_p = \infty,\ K_v = \infty,\ K_a = 5\).
-
-   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
-
-**Resultado.** Escalón: \(e = 0\); rampa: \(e = 0\); parábola: \(e = \frac{1}{5}\).
-
-#### Ejemplo 8 · Tipo y constantes de \(\frac{100}{s \left(s + 4\right) \left(s + 10\right)}\) · *Intermedio*
-
-**Enunciado.** Halla el tipo, \(K_p\), \(K_v\), \(K_a\) y los errores ante escalón, rampa y parábola.
-
-1. Integradores (factores \(s\) en el denominador): 1 → **tipo 1**.
-
-   **¿Por qué?** El tipo es el número de polos en el origen de \(G\).
-
-2. \(K_p = \infty,\ K_v = \frac{5}{2},\ K_a = 0\).
-
-   **¿Por qué?** \(K_p = \lim G\), \(K_v = \lim sG\), \(K_a = \lim s^2G\) cuando \(s\to0\).
-
-**Resultado.** Escalón: \(e = 0\); rampa: \(e = \frac{2}{5}\); parábola: \(e = \infty\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema (tipo 0).
-
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por tipo de sistema y constantes con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender tipo de sistema y constantes te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en tipo de sistema y constantes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que tipo de sistema y constantes resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tipo de sistema y constantes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tipo de sistema y constantes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tipo de sistema y constantes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tipo de sistema y constantes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Tipo de sistema y constantes existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tipo de sistema y constantes en tu contexto?
+2. ¿Cómo sabrías que tipo de sistema y constantes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tipo de sistema y constantes?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, limit, N
@@ -338,18 +162,8 @@ print("Kp:", Kp)
 print("e_ss:", N(e_ss, 3))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `Kp: 5` y `e_ss: 0.167`, igual al Ejemplo 1 (16,7 % de error).
-
-#### Practica
-
-cambia `G` a `10/(s*(s+2))` y calcula \(K_v=\lim_{s\to0}sG\) (Ejemplo 2) para confirmar \(K_v=5\), \(e=0{,}2\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** estas constantes (\(K_p\), \(K_v\), \(K_a\)) se calculan sobre \(G\) de **lazo abierto**, no sobre la función de lazo cerrado; mezclarlas es uno de los errores comunes señalados al final de esta sección.
-
-**Conexión con el proyecto integrador:** ejecuta `python3 simular.py --salida /tmp/control-1-tanque` y compara el `error_final` que imprime para P frente a PI. Con P puro queda un error permanente (el tanque se estabiliza en 1,3077 m en vez de 1,5 m); con PI el integrador lo elimina. Anota en tu bitácora por qué, usando lo aprendido aquí: P dado que el tanque es tipo 0 en lazo abierto, y PI porque agrega el polo en el origen que sube el tipo a 1.
+</details>

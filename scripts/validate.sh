@@ -72,10 +72,10 @@ echo "== Fuentes oficiales: fecha de consulta y enlace vivo (MASTER-PROMPT secci
 python3 scripts/validate_official_sources.py --check
 
 echo "== Specs"
-echo "== Formato único (specs/021)"
+echo "== Formato editorial único (specs/029)"
 tmp_formato="$(mktemp)"
 trap 'rm -f "$tmp_formato"' EXIT
-python3 scripts/validate_formato.py --check > "$tmp_formato" || { tail -1 "$tmp_formato"; exit 1; }
+python3 scripts/validate_formato.py --editorial --check > "$tmp_formato" || { tail -1 "$tmp_formato"; exit 1; }
 tail -1 "$tmp_formato"
 echo "== Nivel y duración de los temas y títulos de módulo (specs/026 C5-C6)"
 python3 scripts/check_tiempos.py --check

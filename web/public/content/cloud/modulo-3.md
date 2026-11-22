@@ -3,93 +3,102 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Colas, productores y consumidores · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos:
-Módulo 1 (`floci start`, `eval $(floci env)`).
-#### Paso 2 · Contexto y caso real
-En el diseño de RutaFlow, la cola `DeliveryCommands` permite al backend avisar "confirmá esta
-entrega" sin bloquear al conductor esperando que el worker termine. Cuando escribas tu propia
-plantilla `template.yaml`, declararás allí ese recurso.
-#### Paso 3 · Teoría, modelo mental y analogía
-La cola es una bandeja numerada: el productor deja trabajo, el consumidor lo retira cuando
-puede.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** cola de mensajes, productor, consumidor, acoplamiento, comunicación asíncrona.
+#### ► DE QUÉ TRATA
+Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
 
-Una cola de mensajes es una estructura intermedia que permite que dos partes de un sistema se comuniquen sin estar activas al mismo tiempo ni conocerse directamente entre sí. Un productor es cualquier componente que envía mensajes a la cola: podría ser una API que recibe una petición de usuario y necesita procesarla en segundo plano. Un consumidor es cualquier componente que lee y procesa esos mensajes: podría ser una función Lambda, un proceso en un contenedor, o cualquier programa que consulte la cola periódicamente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás enviar y recibir un mensaje real en una cola SQS.**
 
-La clave de este patrón es que el productor no necesita saber nada sobre el consumidor —ni su dirección, ni si está disponible en ese momento, ni cuántas instancias de consumidor existen— y viceversa. El productor simplemente coloca un mensaje en la cola y continúa con su trabajo; SQS se encarga de almacenar ese mensaje de forma duradera hasta que algún consumidor lo recoja. Esto es exactamente lo opuesto a una llamada directa entre dos servicios (por ejemplo, una API que llama directamente a otra API por HTTP y espera su respuesta), donde ambas partes deben estar disponibles al mismo tiempo para que la comunicación funcione.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Esta independencia entre productor y consumidor es lo que se llama desacoplamiento, y es una de las técnicas más importantes para construir sistemas resilientes. Si el consumidor está temporalmente caído, sobrecargado, o simplemente más lento que el productor, los mensajes se acumulan en la cola de forma segura en vez de perderse o de bloquear al productor esperando una respuesta. Cuando el consumidor vuelve a estar disponible, retoma el procesamiento de los mensajes acumulados exactamente donde se quedó, sin que el productor haya tenido que hacer nada especial ni haberse enterado siquiera de que hubo un problema.
+#### ► LA ANALOGÍA
+Piensa en colas, productores y consumidores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Este patrón también permite escalar productores y consumidores de forma completamente independiente: puedes tener un único productor generando mensajes a un ritmo constante, y ajustar el número de consumidores según la carga de trabajo (más consumidores si la cola crece, menos si está vacía), sin que eso afecte en absoluto al productor. Esta es la base de arquitecturas de procesamiento en segundo plano, colas de trabajos (job queues), y sistemas de eventos que vas a encontrar en prácticamente cualquier aplicación real de tamaño medio o grande.
-
-**Analogía:** una cola de mensajes es como el buzón de correos de un edificio de apartamentos. El cartero (productor) deja las cartas en el buzón sin necesidad de que el destinatario (consumidor) esté en casa en ese momento. El destinatario recoge sus cartas cuando puede, en el orden que prefiera, sin que eso afecte al cartero, que ya siguió con su ruta. Si el destinatario se va de viaje una semana, las cartas simplemente se acumulan esperando, sin perderse.
-
-**¿Por qué es importante?** El desacoplamiento vía colas de mensajes es uno de los patrones de diseño más usados en sistemas distribuidos reales, precisamente porque hace que un fallo o una lentitud temporal en una parte del sistema no se propague inmediatamente al resto. Sin este patrón, cualquier llamada directa entre servicios crea una dependencia frágil: si el servicio B está caído, todo lo que dependa de una respuesta inmediata de B falla también.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     P["Productor\n(API, servicio)\nNo sabe nada del consumidor,\nno espera respuesta directa"] -->|"envía mensaje"| Q["Cola SQS\n(almacena hasta que se procese)\nPersiste el mensaje de forma duradera"]
     C["Consumidor\n(Lambda, proceso, etc.)\nNo sabe nada del productor"] -->|"recibe mensaje"| Q
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica una confirmación de entrega y procésala con un consumidor de prueba. Repite la recepción y demuestra que la clave de idempotencia impide confirmar dos veces aunque el mensaje se vuelva a entregar.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Colas, productores y consumidores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Límites y decisión de uso:** Una cola no convierte por sí sola un efecto en exactamente una vez. La entrega puede repetirse o demorarse; usa identidad estable del mensaje y una operación de negocio idempotente, y distingue recepción de confirmación del procesamiento.
-**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
-#### Paso 4 · Demostración guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Colas, productores y consumidores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses colas, productores y consumidores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: colas, productores y consumidores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Colas, productores y consumidores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve colas, productores y consumidores en tu contexto?
+2. ¿Cómo sabrías que colas, productores y consumidores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar colas, productores y consumidores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    P["Productor\n(API, servicio)\nNo sabe nada del consumidor,\nno espera respuesta directa"] -->|"envía mensaje"| Q["Cola SQS\n(almacena hasta que se procese)\nPersiste el mensaje de forma duradera"]
+    C["Consumidor\n(Lambda, proceso, etc.)\nNo sabe nada del productor"] -->|"recibe mensaje"| Q
+```
+
 ```bash
 QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
 aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","accion":"confirmar-entrega"}'
 aws sqs receive-message --queue-url "$QUEUE_URL"
 ```
-Resultado esperado: `receive-message` devuelve un JSON con `Body` igual al que enviaste y un
-`ReceiptHandle` largo — el mensaje sigue en la cola (invisible), no se borró solo.
-#### Paso 5 · Práctica guiada
-Pista: enviá un mensaje a una URL de cola que no existe (cambiá una letra de `QUEUE_URL`) para
-provocar el fallo deliberado — `send-message` lo rechaza con
-`AWS.SimpleQueueService.NonExistentQueue`, no se pierde en silencio.
-#### Paso 6 · Práctica independiente
-Enviá un segundo mensaje distinto, recibilo, y confirmá con
-`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
-que la cola sigue teniendo el mensaje — todavía no lo borraste, eso es el Tema 2.
-#### Paso 7 · Cierre
-Entregá el `send-message`, el `receive-message`, y el error de la cola inexistente. Siguiente
-paso: visibilidad. Errores comunes: asumir que `receive-message` borra el mensaje. Fuente
-oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html.
+
+</details>
+
 ### Tema 2: Ciclo de vida de un mensaje · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente.
-Prerrequisitos: Tema 1 completo (cola `delivery-commands` con al menos un mensaje).
-#### Paso 2 · Contexto y caso real
-El worker de RutaFlow necesita tiempo real para confirmar una entrega (puede implicar escribir
-en `ShipmentEvents`) antes de poder decir "ya terminé con este mensaje".
-#### Paso 3 · Teoría, modelo mental y analogía
-El visibility timeout es el cartel de "en proceso"; el ReceiptHandle es el recibo que prueba
-que tenés ese mensaje en este momento.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** envío (`send-message`), recepción (`receive-message`), tiempo de visibilidad (visibility timeout), ReceiptHandle, borrado (`delete-message`), entrega al menos una vez (at-least-once).
+#### ► DE QUÉ TRATA
+Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente. Prerrequisitos: Tema 1 completo (cola delivery-commands con al menos un mensaje).
 
-Un mensaje en SQS pasa por cuatro etapas bien definidas. Primero, un productor lo envía con `send-message`, especificando el cuerpo del mensaje (texto libre, normalmente JSON) y, opcionalmente, atributos adicionales. El mensaje queda almacenado en la cola, disponible para cualquier consumidor que lo solicite. Segundo, un consumidor lo recibe con `receive-message`; en este punto, SQS no elimina el mensaje de la cola —lo marca como invisible durante un periodo configurable llamado tiempo de visibilidad (visibility timeout)—, y le entrega al consumidor, junto con el contenido del mensaje, un identificador temporal llamado ReceiptHandle.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente.**
 
-Este ReceiptHandle es distinto en cada recepción del mismo mensaje, y es la clave para la tercera etapa: el borrado. Una vez que el consumidor termina de procesar el mensaje con éxito, debe llamar explícitamente a `delete-message` usando ese ReceiptHandle, para indicarle a SQS que el mensaje ya fue procesado y puede eliminarse definitivamente de la cola. Si el consumidor no borra el mensaje dentro del tiempo de visibilidad —por ejemplo, porque el proceso se cayó a mitad de procesarlo, o simplemente tardó demasiado— el mensaje vuelve a hacerse visible automáticamente y SQS lo entrega de nuevo a cualquier consumidor disponible, como si nunca se hubiera recibido.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Este diseño explica una propiedad fundamental de SQS que sorprende a quien la ve por primera vez: la entrega "al menos una vez" (at-least-once delivery). Un mismo mensaje puede, en determinadas circunstancias, ser entregado más de una vez a un consumidor —por ejemplo, si el consumidor lo procesó correctamente pero falló al llamar a `delete-message` justo después, o si el tiempo de visibilidad era demasiado corto para el tiempo real que tomó procesarlo—. SQS nunca garantiza entrega exactamente una vez en su modo Standard (las colas FIFO sí ofrecen una garantía mucho más cercana a "exactamente una vez", con matices que verás en el Tema 4). Por esta razón, cualquier consumidor de una cola Standard debe diseñarse para ser idempotente: procesar el mismo mensaje dos veces no debería causar un efecto duplicado incorrecto (por ejemplo, cobrar dos veces al mismo cliente).
+#### ► LA ANALOGÍA
+Piensa en ciclo de vida de un mensaje como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Elegir un tiempo de visibilidad adecuado es una decisión de diseño importante: debe ser lo suficientemente largo para que el consumidor típico termine de procesar el mensaje con margen, pero no tan largo que, si el consumidor efectivamente falla, el mensaje tarde demasiado en volver a estar disponible para un reintento. Una práctica común es fijar el tiempo de visibilidad en varias veces el tiempo medio de procesamiento esperado.
-
-**Analogía:** el ciclo de vida de un mensaje es como sacar un libro prestado de una biblioteca con un sistema estricto: cuando lo sacas (`receive-message`), el sistema no lo borra del catálogo, pero lo marca como "prestado" durante un plazo fijo (el tiempo de visibilidad) y te da un recibo (ReceiptHandle) que demuestra que tú lo tienes en ese momento. Si lo devuelves a tiempo confirmando la lectura (`delete-message`), el libro sale definitivamente de circulación. Si no lo devuelves dentro del plazo, el sistema asume que lo perdiste o no lo vas a terminar, y vuelve a poner el libro disponible para el siguiente lector, aunque tú sigas teniéndolo físicamente.
-
-**¿Por qué es importante?** Entender que SQS entrega "al menos una vez", y no "exactamente una vez", es la diferencia entre escribir un consumidor correcto y uno con un bug sutil que solo aparece bajo ciertas condiciones de fallo poco frecuentes, exactamente el tipo de error difícil de reproducir y depurar en producción si no se diseñó con esto en mente desde el principio.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     SM["send-message"] --> MV["Mensaje en cola, visible"]
@@ -101,13 +110,54 @@ flowchart TD
     TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
 ```
 
-En el proyecto integrador RutaFlow, `ConfirmarEntregaFn` debe ser exactamente el consumidor
-idempotente que este tema describe: cuando escribas tu propia plantilla `template.yaml`, conecta
-esa función con `DeliveryCommands` y haz que solo dé el comando por terminado cuando termine de
-escribir en `ShipmentEvents`, no antes.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ciclo de vida de un mensaje se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema. La primera línea del segundo bloque obtiene la URL de la cola del Tema 1 (`create-queue` devuelve la misma URL si la cola ya existe con los mismos atributos), así no dependes de una variable de otra sesión.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ciclo de vida de un mensaje | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses ciclo de vida de un mensaje por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ciclo de vida de un mensaje funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Ciclo de vida de un mensaje existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ciclo de vida de un mensaje en tu contexto?
+2. ¿Cómo sabrías que ciclo de vida de un mensaje no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ciclo de vida de un mensaje?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    SM["send-message"] --> MV["Mensaje en cola, visible"]
+    MV --> RM["receive-message"]
+    RM --> INV["Mensaje invisible durante el visibility timeout\n(el consumidor recibe el ReceiptHandle)"]
+    INV --> DEL["delete-message a tiempo"]
+    INV --> TO["Timeout expira sin borrado"]
+    DEL --> ELIM["Mensaje eliminado definitivamente"]
+    TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -119,51 +169,28 @@ RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].
 aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
 aws sqs receive-message --queue-url "$QUEUE_URL"
 ```
-Resultado esperado: el segundo `receive-message` no devuelve el mensaje que borraste — ya no
-está en la cola.
-#### Paso 5 · Práctica guiada
-Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
-hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
-que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
-**Fallo deliberado:** guarda el `ReceiptHandle` de esta recepción, deja pasar el visibility timeout sin borrar el mensaje, vuelve a recibirlo y usa ESE handle viejo en un `delete-message`. El comando no muestra error, pero el mensaje puede seguir en la cola: según la API de SQS, con un handle antiguo «la solicitud tiene éxito, pero el mensaje podría no borrarse». Compruébalo con otro `receive-message` cuando pase el timeout y diagnostícalo comparando el handle viejo con el nuevo: para borrar, usa siempre el `ReceiptHandle` de la recepción más reciente.
-#### Paso 6 · Práctica independiente
-Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
-repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al
-menos una vez".
-#### Paso 7 · Cierre
-Entregá los 2 intentos de `receive-message` (antes y después del timeout) mostrando que el
-mensaje reapareció solo. Siguiente paso: DLQ. Errores comunes: borrar el mensaje antes de
-terminar de procesarlo de verdad. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
+
+</details>
 
 ### Tema 3: Dead Letter Queues (DLQ) · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin
-bloquear el resto de la cola. Prerrequisitos: Tema 2 completo.
-#### Paso 2 · Contexto y caso real
-`DeliveryCommands` en `template.yaml` ya declara `DeliveryCommandsDLQ` con
-`maxReceiveCount: 5` — si un comando de entrega falla 5 veces, RutaFlow lo aísla en vez de
-bloquear los comandos de otros envíos.
-#### Paso 3 · Teoría, modelo mental y analogía
-Una DLQ es la zona de inspección donde se retiene un paquete que no pasa el control, para no
-frenar el resto de la fila.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** Dead Letter Queue, `maxReceiveCount`, RedrivePolicy, mensaje envenenado (poison message).
+#### ► DE QUÉ TRATA
+Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin bloquear el resto de la cola. Prerrequisitos: Tema 2 completo.
 
-Un mensaje "envenenado" es aquel que un consumidor recibe pero nunca logra procesar con éxito, sin importar cuántas veces se reintente: quizá su contenido está malformado, quizá dispara un error de código consistente, o quizá depende de un recurso externo que nunca va a estar disponible para ese caso concreto. Sin ningún mecanismo adicional, un mensaje así entraría en un ciclo infinito: se entrega, falla, el tiempo de visibilidad expira, vuelve a entregarse, vuelve a fallar, indefinidamente, consumiendo recursos de procesamiento sin ningún resultado útil y potencialmente bloqueando el procesamiento de mensajes válidos detrás de él.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin bloquear el resto de la cola.**
 
-Una Dead Letter Queue resuelve exactamente este problema: es una segunda cola, configurada como destino de una cola principal mediante una RedrivePolicy, que especifica un `maxReceiveCount` (el número máximo de veces que un mensaje puede ser recibido antes de considerarse fallido). Cuando un mensaje alcanza ese número de recepciones sin haber sido borrado exitosamente, SQS lo mueve automáticamente a la DLQ en vez de devolverlo a la cola principal una vez más. A partir de ese momento, el mensaje deja de interferir con el procesamiento normal de la cola principal, y queda disponible en la DLQ para que un proceso separado (o una persona) lo inspeccione manualmente, entienda por qué falló repetidamente, y decida si corregirlo y reprocesarlo, o descartarlo definitivamente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Configurar una DLQ no es opcional en cualquier sistema serio que use colas de mensajes: es una práctica de resiliencia estándar. Sin ella, un solo mensaje problemático puede degradar silenciosamente el rendimiento de todo el sistema de procesamiento, consumiendo ciclos de los consumidores en reintentos infinitos sin que nadie se entere hasta que el problema ya es grave. Con una DLQ bien configurada, en cambio, ese mismo mensaje problemático queda aislado y visible rápidamente, normalmente disparando una alarma de monitorización (que verás en el módulo avanzado de CloudWatch) cuando la DLQ recibe su primer mensaje.
+#### ► LA ANALOGÍA
+Piensa en dead letter queues (dlq) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un detalle importante de diseño: el `maxReceiveCount` debe elegirse con cuidado. Un valor demasiado bajo (por ejemplo, 1) puede mover a la DLQ mensajes que en realidad habrían tenido éxito en un segundo intento, por un fallo transitorio y no por un problema real del mensaje. Un valor demasiado alto retrasa la detección de mensajes genuinamente problemáticos. Un valor entre 3 y 5 es un punto de partida razonable para la mayoría de los casos, ajustable según cuánta tolerancia a fallos transitorios necesite tu sistema en particular.
-
-**Analogía:** una DLQ es como la bandeja de "correo devuelto" de una oficina de correos. Si una carta no puede entregarse tras varios intentos (dirección incorrecta, destinatario desconocido), en vez de seguir intentándolo indefinidamente y bloqueando el flujo normal de reparto, la carta se aparta a una bandeja especial para que alguien la revise manualmente, entienda qué salió mal, y decida qué hacer con ella, sin que eso frene la entrega del resto del correo.
-
-**¿Por qué es importante?** Los sistemas de colas de mensajes sin DLQ son frágiles ante el caso, casi inevitable en cualquier sistema real con suficiente volumen, de que aparezca al menos un mensaje que no se puede procesar correctamente por alguna razón imprevista. Configurar una DLQ desde el diseño inicial, en vez de añadirla después de un incidente en producción, es una de las decisiones de resiliencia más baratas de implementar y más valiosas en la práctica.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     ME["Mensaje enviado"] --> CP["Cola principal"]
@@ -172,50 +199,79 @@ flowchart TD
     Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
 ```
 
-La RedrivePolicy con `maxReceiveCount: 5` que viste al inicio no es un ejemplo aislado: es la
-misma que corre en el proyecto integrador RutaFlow contra `DeliveryCommandsDLQ`. No conviene
-bajar ese número a 1 en un entorno real por la misma razón que viste en la demo: un fallo
-transitorio no debería aislar un mensaje que habría funcionado en el segundo intento.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Dead Letter Queues (DLQ) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Dead Letter Queues (DLQ) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses dead letter queues (dlq) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dead letter queues (dlq) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Dead Letter Queues (DLQ) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dead letter queues (dlq) en tu contexto?
+2. ¿Cómo sabrías que dead letter queues (dlq) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dead letter queues (dlq)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    ME["Mensaje enviado"] --> CP["Cola principal"]
+    CP -->|"recibido, falla, vuelve a ser visible\n(se repite hasta maxReceiveCount)"| Q{"¿Se alcanzó maxReceiveCount?"}
+    Q -->|"No — reintento normal"| CP
+    Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
+```
+
 ```bash
 DLQ_URL=$(aws sqs create-queue --queue-name delivery-commands-dlq --query QueueUrl --output text)
 DLQ_ARN=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
 aws sqs set-queue-attributes --queue-url "$QUEUE_URL" --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"2\"}"
 aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-9999","accion":"comando-malformado"}'
 ```
-Bajamos `maxReceiveCount` a 2 solo para esta demo, así no hace falta recibir 5 veces.
-#### Paso 5 · Práctica guiada
-Recibí ese mensaje 2 veces sin borrarlo (esperando el visibility timeout entre medio, o
-forzándolo con `--visibility-timeout 0`), y revisá la DLQ:
+
 ```bash
 aws sqs receive-message --queue-url "$DLQ_URL"
 ```
-Resultado esperado: la respuesta de la DLQ contiene el mensaje con `shipmentId` igual a `env-9999`.
 
-Ese es el fallo real provocado a propósito: el mensaje migró solo a la DLQ al superar
-`maxReceiveCount`, sin que nadie lo moviera a mano.
-**Fallo deliberado:** en el `set-queue-attributes` del Paso 4, poné `maxReceiveCount` en `0` en vez de `2` antes de ejecutarlo — provoca un error de validación (`InvalidParameterValue`), porque SQS exige que `maxReceiveCount` sea al menos 1; diagnosticalo leyendo el mensaje completo de la excepción antes de corregir el valor.
-Pista: contá cuántas veces recibiste el mensaje antes de que apareciera en la DLQ — tiene que coincidir exactamente con el `maxReceiveCount` configurado, ni una recepción más ni menos.
-#### Paso 6 · Práctica independiente
-Confirmá con
-`aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names ApproximateNumberOfMessages`
-que la cola principal quedó en 0 — el mensaje problemático ya no bloquea nada ahí.
-#### Paso 7 · Cierre
-Entregá la configuración de RedrivePolicy, y el mensaje apareciendo en la DLQ. Siguiente paso:
-colas FIFO. Errores comunes: poner `maxReceiveCount` en 1, moviendo a la DLQ mensajes que
-habrían funcionado en un segundo intento. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html.
+</details>
 
 ### Tema 4: Colas FIFO vs Standard · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado.
-Prerrequisitos: Tema 1 completo.
-#### Paso 2 · Contexto y caso real
-Los eventos de un mismo envío (creado → asignado → en camino → entregado) deben procesarse en
-ese orden exacto — aplicar "entregado" antes de "en camino" rompe `ShipmentEvents`. Eventos de
-envíos DISTINTOS no tienen esa restricción entre sí.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado. Prerrequisitos: Tema 1 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 FIFO es una fila única con turnos; Standard prioriza velocidad y no promete orden.
 
 **Conceptos clave:** cola Standard, cola FIFO, orden garantizado, deduplicación, `MessageGroupId`, `MessageDeduplicationId`.
@@ -260,7 +316,80 @@ una futura cola de eventos de estado de ese mismo sistema debería declararse `.
 
 ---
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
+        S1["Msg 3"]
+        S2["Msg 1"]
+        S3["Msg 2"]
+    end
+    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
+        direction LR
+        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
+    end
+    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
+        direction LR
+        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    end
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Colas FIFO vs Standard se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Colas FIFO vs Standard | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses colas fifo vs standard por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: colas fifo vs standard funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Colas FIFO vs Standard existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve colas fifo vs standard en tu contexto?
+2. ¿Cómo sabrías que colas fifo vs standard no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar colas fifo vs standard?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
+        S1["Msg 3"]
+        S2["Msg 1"]
+        S3["Msg 2"]
+    end
+    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
+        direction LR
+        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
+    end
+    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
+        direction LR
+        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    end
+```
+
 ```bash
 FIFO_URL=$(aws sqs create-queue --queue-name shipment-events.fifo --attributes FifoQueue=true --query QueueUrl --output text)
 aws sqs send-message --queue-url "$FIFO_URL" --message-body "asignado" --message-group-id env-4471 --message-deduplication-id d1
@@ -268,61 +397,135 @@ aws sqs send-message --queue-url "$FIFO_URL" --message-body "en-camino" --messag
 aws sqs send-message --queue-url "$FIFO_URL" --message-body "entregado" --message-group-id env-4471 --message-deduplication-id d3
 aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
 ```
-Resultado esperado: los 3 mensajes llegan en el orden exacto "asignado", "en-camino",
-"entregado" — nunca mezclados, porque comparten el mismo `MessageGroupId`.
-#### Paso 5 · Práctica guiada
-Pista: enviá un mensaje a esa misma cola FIFO sin `--message-group-id` para provocar el fallo
-deliberado — SQS lo rechaza con `MissingParameter`, a diferencia de Standard, donde ese
-parámetro no existe.
-#### Paso 6 · Práctica independiente
-Enviá 3 mensajes más, esta vez con `--message-group-id env-5000` (un envío distinto) y
-confirmá que SQS los deja intercalarse con los del grupo `env-4471` sin problema — el orden
-solo se garantiza DENTRO de un mismo grupo.
-#### Paso 7 · Cierre
-Entregá los 3 mensajes en orden del Paso 4, el error de `MissingParameter`, y la confirmación
-de que 2 grupos distintos no se bloquean entre sí. Siguiente paso: eventos. Errores comunes:
-usar FIFO para todo "por si acaso", perdiendo el rendimiento de Standard sin necesitarlo.
-Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html.
 
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** enviar, recibir y eliminar mensajes en una cola Standard, configurar una Dead Letter Queue, y crear una cola FIFO con agrupación de mensajes.
-
-**Requisitos previos:** Floci corriendo con el servicio SQS activo, AWS CLI configurada contra `http://localhost:4566`.
+</details>
 
 ### Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crear la cola principal | `aws sqs create-queue --queue-name mi-cola` | Crea una cola Standard | Un JSON con `QueueUrl` |
-| 2 | Enviar un mensaje | `aws sqs send-message --queue-url <QueueUrl> --message-body "Hola mundo"` | Coloca un mensaje en la cola | Un JSON con `MessageId` y `MD5OfMessageBody` |
-| 3 | Recibir el mensaje | `aws sqs receive-message --queue-url <QueueUrl>` | Obtiene el mensaje y su `ReceiptHandle`, dejándolo temporalmente invisible | Un JSON con `Body: "Hola mundo"` y un `ReceiptHandle` largo |
-| 4 | Eliminar el mensaje procesado | `aws sqs delete-message --queue-url <QueueUrl> --receipt-handle <ReceiptHandle>` | Confirma el procesamiento exitoso y elimina el mensaje definitivamente | Sin salida (comando exitoso) |
-| 5 | Crear una cola secundaria para la DLQ | `aws sqs create-queue --queue-name mi-cola-dlq` | Esta cola recibirá los mensajes que fallen repetidamente | Un JSON con `QueueUrl` de la DLQ |
-| 6 | Obtener el ARN de la DLQ | `aws sqs get-queue-attributes --queue-url <QueueUrl-DLQ> --attribute-names QueueArn` | Necesitas el ARN (no la URL) para configurar la RedrivePolicy | Un JSON con `QueueArn` |
-| 7 | Enlazar la cola principal a la DLQ | `aws sqs set-queue-attributes --queue-url <QueueUrl-principal> --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"<QueueArn-DLQ>\",\"maxReceiveCount\":\"2\"}"` | A partir de ahora, un mensaje que se reciba 2 veces sin ser borrado se mueve automáticamente a la DLQ | Sin salida (comando exitoso) |
-| 8 | Enviar un mensaje de prueba y recibirlo dos veces sin borrarlo | Envía un mensaje, y ejecuta `receive-message` dos veces seguidas dejando expirar el tiempo de visibilidad entre cada una (o usa `change-message-visibility` para forzarlo a 0) | Simula un consumidor que nunca logra procesar el mensaje | Tras la segunda recepción sin borrado, el mensaje debería migrar a la DLQ |
-| 9 | Verificar que el mensaje llegó a la DLQ | `aws sqs receive-message --queue-url <QueueUrl-DLQ>` | Confirma que el mensaje problemático quedó aislado en la DLQ | El mismo `Body` del mensaje de prueba aparece ahora en la DLQ |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 3.1 — ciclo completo con cola standard y dlq con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 3.1 — ciclo completo con cola standard y dlq te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 3.1 — ciclo completo con cola standard y dlq como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 3.1 — ciclo completo con cola standard y dlq resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 3.1 — ciclo completo con cola standard y dlq por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 3.1 — ciclo completo con cola standard y dlq funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 3.1 — ciclo completo con cola standard y dlq en tu contexto?
+2. ¿Cómo sabrías que laboratorio 3.1 — ciclo completo con cola standard y dlq no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 3.1 — ciclo completo con cola standard y dlq?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.1 — ciclo completo con cola standard y dlq.
+
+</details>
 
 ### Laboratorio 3.2 — Cola FIFO con MessageGroupId
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crear una cola FIFO | `aws sqs create-queue --queue-name mi-cola.fifo --attributes FifoQueue=true` | El nombre debe terminar en `.fifo`, y se debe declarar explícitamente el atributo `FifoQueue` | Un JSON con `QueueUrl` terminando en `.fifo` |
-| 2 | Enviar tres mensajes al mismo grupo | `aws sqs send-message --queue-url <QueueUrl> --message-body "Paso 1" --message-group-id pedido-001 --message-deduplication-id d1` (repetir con "Paso 2"/`d2` y "Paso 3"/`d3`, mismo `message-group-id`) | Los tres mensajes pertenecen al mismo `MessageGroupId`, por lo que se entregarán en el orden exacto en que se enviaron | Tres respuestas, cada una con su propio `MessageId` |
-| 3 | Recibir los mensajes en orden | `aws sqs receive-message --queue-url <QueueUrl> --max-number-of-messages 3` | Confirma que los tres mensajes llegan en el orden exacto de envío: "Paso 1", "Paso 2", "Paso 3" | Un JSON con los tres mensajes en ese orden exacto |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Comprobación visual:** abre Floci UI y localiza la categoría **Queue**. Desde la versión 0.1.0 esta superficie está conectada (no es un placeholder); deberías ver la cola `mi-cola.fifo` y sus atributos reales. Si tu versión instalada es anterior o la categoría aparece vacía, no interpretes eso como ausencia de la cola: usa `aws sqs list-queues` y los atributos de la DLQ como fuente de verdad, y esa misma distinción (runtime soporta SQS vs. la consola tiene o no esa superficie conectada en tu versión) sigue siendo la lección profesional de este paso.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 3.2 — cola fifo con messagegroupid con foco en comprensión antes de implementación.
 
-**Verificación:** el laboratorio se considera exitoso si, en el Laboratorio 3.1, el mensaje de prueba aparece finalmente en la cola DLQ tras alcanzar el `maxReceiveCount`, y si, en el Laboratorio 3.2, los tres mensajes del mismo `MessageGroupId` se reciben en el orden exacto en que fueron enviados, no en un orden distinto. Documenta además si Queue estaba conectada o marcada como placeholder en tu versión de Floci UI.
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 3.2 — cola fifo con messagegroupid te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- **`Value {...} for parameter QueueName is invalid` al crear una cola FIFO.** El nombre de una cola FIFO debe terminar exactamente en `.fifo`; si lo olvidas, SQS rechaza la creación con el atributo `FifoQueue=true` activo.
-- **`MissingParameter` al enviar un mensaje a una cola FIFO.** Las colas FIFO requieren `--message-group-id` en cada envío; olvidarlo es el error más común al migrar código de Standard a FIFO.
-- **El mensaje nunca migra a la DLQ aunque lo recibas muchas veces.** Verifica que configuraste correctamente el `RedrivePolicy` con el ARN correcto de la DLQ (no la URL), y que el `maxReceiveCount` no sea demasiado alto para tu prueba. También confirma que realmente dejaste expirar el tiempo de visibilidad entre cada recepción, o que usaste `change-message-visibility` para forzarlo.
-- **Confundir `QueueUrl` con `QueueArn`.** Son dos identificadores distintos del mismo recurso: la URL se usa en la mayoría de los comandos de la API (enviar, recibir, borrar), mientras que el ARN se usa específicamente en configuraciones como la RedrivePolicy. Usar uno donde se espera el otro produce errores de validación poco claros a primera vista.
+#### ► LA ANALOGÍA
+Piensa en laboratorio 3.2 — cola fifo con messagegroupid como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
----
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 3.2 — cola fifo con messagegroupid resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 3.2 — Cola FIFO con MessageGroupId se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 3.2 — Cola FIFO con MessageGroupId | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 3.2 — cola fifo con messagegroupid por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 3.2 — cola fifo con messagegroupid funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 3.2 — Cola FIFO con MessageGroupId existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 3.2 — cola fifo con messagegroupid en tu contexto?
+2. ¿Cómo sabrías que laboratorio 3.2 — cola fifo con messagegroupid no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 3.2 — cola fifo con messagegroupid?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.2 — cola fifo con messagegroupid.
+
+</details>

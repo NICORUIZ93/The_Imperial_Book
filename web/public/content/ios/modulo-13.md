@@ -7,20 +7,72 @@ Una app no termina cuando compila ni cuando pasa revisión. En producción recib
 
 ## Aprende construyendo
 
+
 ### Tema 1: El sandbox reduce superficie, pero no valida intenciones · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a validar un Universal Link entrante de RutaFlow (`https://rutaflow.app/envios/<id>`) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Cualquier app puede construir y enviar un link con la forma `https://rutaflow.app/envios/RF-4471`; que el sistema haya verificado que RutaFlow es la app asociada a ese dominio no significa que el conductor actual tenga permiso de leer ESE envío puntual.
-#### Paso 3 · Teoría, modelo mental y analogía
-El sandbox y la verificación de dominio reducen qué puede llegar a tu app, pero no validan la intención de cada entrada — una frontera con controles: validar estructura, autenticar, autorizar y recién después actuar.
-**Conceptos clave:** sandbox, entitlement, capability, least privilege, runtime permission, URL scheme, Universal Link, associated domain, input validation, authentication, authorization y threat model.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-iOS aísla procesos y exige capacidades firmadas, pero una frontera abierta sigue recibiendo datos no confiables. Audita los entitlements generados, activa únicamente capacidades necesarias y separa configuraciones de desarrollo y producción. Pedir acceso a cámara, fotos, ubicación o contactos requiere propósito concreto, texto comprensible y una ruta alternativa cuando el usuario rechaza el permiso.
+#### ► DE QUÉ TRATA
+Al finalizar vas a validar un Universal Link entrante de RutaFlow (https://rutaflow.app/envios/<id>) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente. Prerrequisitos: Módulo 5 completo.
 
-Los custom URL schemes pueden ser reclamados por otras apps. Para rutas web sensibles prefiere Universal Links con asociación entre dominio y aplicación. Esa verificación prueba qué app debe abrir el dominio; no demuestra que el usuario pueda leer el recurso. Valida esquema, host, ruta, tamaño y forma de los parámetros; después autentica, autoriza y confirma efectos destructivos.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a validar un Universal Link entrante de RutaFlow (https://rutaflow.app/envios/<id>) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en el sandbox reduce superficie, pero no valida intenciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["URL entrante"] --> B{"scheme/host/ruta válidos?"}
+    B -->|No| C[".malformed"]
+    B -->|Sí| D{"session.puedeLeer(id)?"}
+    D -->|No| E[".forbidden"]
+    D -->|Sí| F["Abrir DetalleEnvio"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El sandbox reduce superficie, pero no valida intenciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El sandbox reduce superficie, pero no valida intenciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el sandbox reduce superficie, pero no valida intenciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el sandbox reduce superficie, pero no valida intenciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El sandbox reduce superficie, pero no valida intenciones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el sandbox reduce superficie, pero no valida intenciones en tu contexto?
+2. ¿Cómo sabrías que el sandbox reduce superficie, pero no valida intenciones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el sandbox reduce superficie, pero no valida intenciones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 enum LinkError: Error { case malformed, forbidden }
 
@@ -36,16 +88,6 @@ func taskID(from url: URL, session: Session) throws -> TaskID {
 }
 ```
 
-Construye un modelo de amenazas pequeño antes del código: activos, actores, entradas, fronteras y mitigaciones. Incluye notificaciones, widgets, App Intents, extensiones, pasteboard y contenido remoto. Una extensión comparte menos privilegios, pero un App Group crea almacenamiento compartido que debe tratarse como frontera explícita.
-
-**Analogía:** el sandbox es el perímetro de una biblioteca; un Universal Link es una puerta con dirección verificada. Aun así, el bibliotecario debe comprobar qué libro puede consultar cada visitante.
-
-**¿Por qué es importante?** porque una entrada válida técnicamente puede intentar acceder a otra cuenta o ejecutar una acción inesperada.
-
-**Casos de uso reales:** enlace a un identificador ajeno, permiso solicitado al iniciar sin contexto, URL scheme secuestrado, entitlement sobrante y widget que expone información en pantalla bloqueada.
-
-**Diagrama:**
-
 ```text
 web/notificación/widget -> frontera iOS -> validar estructura
                                       -> autenticar sesión
@@ -53,8 +95,6 @@ web/notificación/widget -> frontera iOS -> validar estructura
                                       -> confirmar efecto
                                       -> dominio
 ```
-
-**Diagrama: validación en capas de un Universal Link**
 
 ```mermaid
 flowchart LR
@@ -65,9 +105,6 @@ flowchart LR
     D -->|Sí| F["Abrir DetalleEnvio"]
 ```
 
-En el proyecto integrador RutaFlow, practicá extendiendo `envioID(from:session:)` a tu proyecto propio con un segundo recurso protegido. Límite de la decisión: verificar el dominio asociado (Universal Link) no conviene tratarlo como prueba de autorización — confirma únicamente que RutaFlow es la app correcta para ese dominio, nunca que el usuario actual puede leer ese recurso puntual; confundir ambos pasos es exactamente la amenaza que este tema demuestra.
-
-#### Paso 4 · Demostración guiada
 ```swift
 import Foundation
 
@@ -98,30 +135,27 @@ func envioID(from url: URL, session: Session) throws -> EnvioID {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: `envioID(from:session:)` lanza `.malformed` si la URL no tiene exactamente la forma esperada, y lanza `.forbidden` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual — nunca abre un envío solo porque la URL "se ve bien".
-#### Paso 5 · Práctica guiada
-Pista: quitá la línea `guard session.puedeLeer(id) else { throw LinkError.forbidden }` "porque ya validamos la estructura de la URL arriba" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, exactamente la amenaza que la verificación de dominio no cubre por sí sola.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `.forbidden`, no que simplemente "no hace nada".
-
-#### Paso 7 · Cierre
-Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
-**Implicación práctica:** Una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
+</details>
 
 ### Tema 2: Proteger datos es controlar todas sus copias · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en `UserDefaults`), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Guardar el token de sesión de un conductor en `UserDefaults` "porque es más simple" lo deja en un archivo plist sin cifrado dedicado, legible por cualquiera con acceso al dispositivo o a un backup del mismo.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en UserDefaults), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en UserDefaults), y a confirmar que ese token no queda expuesto en logs.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Keychain protege secretos pequeños con una clase de accesibilidad explícita; redactar logs es tan necesario como elegir bien el almacén — guardar una joya en una caja fuerte no ayuda si su fotografía queda sobre la mesa.
 **Conceptos clave:** clasificación, minimización, Keychain, access class, Data Protection, Secure Enclave, backup, log redaction, screenshot, pasteboard, notification preview, privacy manifest, token y logout.
 
@@ -174,7 +208,85 @@ flowchart TD
 
 En tu propio proyecto RutaFlow, crea `SesionVault.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí este contenido completo. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["guardarToken(data, conductorID)"] --> B["SecItemAdd con\nkSecAttrAccessibleWhenUnlockedThisDeviceOnly"]
+    B --> C["Token seguro en Keychain"]
+    C -.->|"Logger().info(token)"| D["Fuga en logs del sistema\n(copia sin control)"]
+    style D fill:#ffcccc
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proteger datos es controlar todas sus copias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proteger datos es controlar todas sus copias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proteger datos es controlar todas sus copias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proteger datos es controlar todas sus copias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proteger datos es controlar todas sus copias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proteger datos es controlar todas sus copias en tu contexto?
+2. ¿Cómo sabrías que proteger datos es controlar todas sus copias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proteger datos es controlar todas sus copias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+func saveToken(_ data: Data, account: String) throws {
+    let query: [CFString: Any] = [
+        kSecClass: kSecClassGenericPassword,
+        kSecAttrService: "com.example.tasks.session",
+        kSecAttrAccount: account,
+        kSecValueData: data,
+        kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+    ]
+    SecItemDelete(query as CFDictionary)
+    guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
+        throw SessionError.keychainWrite
+    }
+}
+```
+
+```text
+dato -> clasificar -> ¿necesario? --no--> no guardar
+                    --sí--> Keychain / archivo protegido / base
+                              -> retención -> borrado verificable
+                              -> logs y UI redactados
+```
+
+```mermaid
+flowchart TD
+    A["guardarToken(data, conductorID)"] --> B["SecItemAdd con\nkSecAttrAccessibleWhenUnlockedThisDeviceOnly"]
+    B --> C["Token seguro en Keychain"]
+    C -.->|"Logger().info(token)"| D["Fuga en logs del sistema\n(copia sin control)"]
+    style D fill:#ffcccc
+```
+
 ```swift
 import Foundation
 import Security
@@ -196,34 +308,27 @@ func guardarToken(_ data: Data, conductorID: String) throws {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: el token queda en Keychain con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (no migra a otro dispositivo vía backup ni es legible con el teléfono bloqueado); buscar el string del token en los logs de la app no encuentra ninguna coincidencia.
-#### Paso 5 · Práctica guiada
-Pista: agregá `Logger().info("token guardado: \(String(data: data, encoding: .utf8) ?? "")")` justo después de `SecItemAdd` "para depurar" — ese es el fallo deliberado: ahora el token completo del conductor queda en los logs del sistema en texto plano, exactamente la copia secundaria sin control que vuelve inútil haber usado Keychain para el almacén principal.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que registre solo que "la sesión se guardó" (sin el valor), más una función `cerrarSesion(conductorID:)` que borre el token de Keychain con `SecItemDelete`.
-
-**Proyecto integrador:** en el proyecto que comenzaste desde una carpeta vacía para este tema, completa `SesionVault.swift` con guardar, leer y borrar, y crea `SesionConductorView.swift` para iniciar y cerrar una sesión de muestra con el token ficticio `token-prueba-no-real`. Añade `RutaFlowAppTests/SesionVaultTests.swift`: tras guardar debe recuperarse ese valor, tras `cerrarSesion` la lectura debe ser `nil` y el log capturado solo debe contener «sesión guardada», nunca el token. Cambia de `conductor-A` a `conductor-B` y verifica que cerrar la primera cuenta no deja su credencial visible para la segunda.
-
-#### Paso 7 · Cierre
-Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: guardá ese token con las llamadas concretas del Keychain. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
-**Implicación práctica:** Las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
+</details>
 
 ### Tema 3: Keychain — guardar secretos de forma segura · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás guardar y leer un token de sesión en el **Keychain** de iOS, y explicar por qué nunca se guarda un secreto en `UserDefaults`. Prerrequisitos: Temas 1-2 de este módulo (seguridad y copias de datos).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Tras el login, la app de RutaFlow recibe un token JWT (Módulo 5). Si lo guardas en `UserDefaults`, queda en texto plano en un `.plist` legible, accesible en un backup o en un dispositivo con jailbreak. El Keychain lo guarda cifrado por el sistema, protegido por el hardware de seguridad del dispositivo.
+#### ► DE QUÉ TRATA
+Al finalizar podrás guardar y leer un token de sesión en el Keychain de iOS, y explicar por qué nunca se guarda un secreto en UserDefaults. Prerrequisitos: Temas 1-2 de este módulo (seguridad y copias de datos).
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás guardar y leer un token de sesión en el Keychain de iOS, y explicar por qué nunca se guarda un secreto en UserDefaults.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `UserDefaults` es para preferencias no sensibles (tema claro/oscuro, última pestaña). El **Keychain** es el almacén cifrado del sistema para secretos (tokens, contraseñas, claves), con control de acceso por biometría y atributos de accesibilidad (`kSecAttrAccessibleWhenUnlocked`).
 
 **Analogía:** `UserDefaults` es la libreta de notas en tu escritorio (cualquiera que entre la lee); el Keychain es la caja fuerte empotrada del edificio, cifrada y con control de quién la abre y cuándo.
@@ -236,10 +341,51 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Errores comunes:** llamar a `SecItemAdd` directamente para "actualizar" un token sin borrar antes el item existente con `SecItemDelete` para la misma cuenta — si ya hay un item guardado con ese `kSecAttrAccount`, `SecItemAdd` devuelve `errSecDuplicateItem` y el token viejo se queda guardado en el Keychain en vez de reemplazarse.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Crea `Sources/RutaFlowApp/Llavero.swift`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que keychain — guardar secretos de forma segura resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Keychain — guardar secretos de forma segura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Keychain — guardar secretos de forma segura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses keychain — guardar secretos de forma segura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: keychain — guardar secretos de forma segura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Keychain — guardar secretos de forma segura existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve keychain — guardar secretos de forma segura en tu contexto?
+2. ¿Cómo sabrías que keychain — guardar secretos de forma segura no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar keychain — guardar secretos de forma segura?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 import Foundation
 import Security
@@ -272,32 +418,27 @@ enum Llavero {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto en Xcode, pega el código y úsalo desde una vista con un botón que llame a `Llavero.guardar(...)` y `Llavero.leer(...)`):
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** `Llavero.guardar("jwt-abc", cuenta: "sesion")` seguido de `Llavero.leer(cuenta: "sesion")` devuelve `"jwt-abc"`, y el valor NO aparece en ningún `.plist` legible. **Fallo deliberado:** guarda el token en `UserDefaults.standard.set(token, forKey: "token")` y localiza el archivo de preferencias en el contenedor de la app del simulador: el token está en texto plano. Diagnostica por qué eso es una fuga de credenciales esperando a ocurrir.
-
-#### Paso 5 · Práctica guiada
-Añade un método `borrar(cuenta:)` que elimine el token al cerrar sesión. Pista: usa `SecItemDelete` con la misma query de clase y cuenta.
-
-#### Paso 6 · Práctica independiente
-Protege la lectura del token con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` y explica la diferencia frente a `WhenUnlocked` respecto a backups y migración a otro dispositivo.
-
-#### Paso 7 · Cierre
-Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿Por qué es importante?** Toda app con login maneja un token, y dónde lo guardas es una decisión de seguridad real: el Keychain es el único lugar correcto en iOS. Equivocarse aquí es una de las fallas de seguridad móvil más comunes. Fuentes: [Apple — Keychain Services](https://developer.apple.com/documentation/security/keychain_services).
+</details>
 
 ### Tema 4: Permisos y privacidad — pedir acceso con criterio · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en `Info.plist` y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega. Prerrequisitos: Temas 1-2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita la ubicación del repartidor. iOS exige declarar POR QUÉ la quieres (en `Info.plist`) y mostrar un diálogo de permiso; si pides sin declarar el motivo, la app crashea; si pides al arrancar sin contexto, el usuario deniega. Pedir bien es una habilidad de producto y de App Store (un motivo pobre puede hacer que rechacen la app).
+#### ► DE QUÉ TRATA
+Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en Info.plist y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega. Prerrequisitos: Temas 1-2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en Info.plist y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Cada dato sensible (ubicación, cámara, contactos, notificaciones) requiere: (1) una clave de uso en `Info.plist` con una explicación en lenguaje humano, y (2) una solicitud en runtime en el momento con contexto. El usuario puede conceder, denegar o conceder "solo esta vez".
 
 **Analogía:** pedir un permiso es como pedir una llave: si no explicas para qué (Info.plist) el portero (iOS) no te deja ni preguntar; y si pides todas las llaves nada más entrar, desconfían y dicen que no. Pides la llave concreta cuando vas a usar esa puerta.
@@ -310,10 +451,51 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Errores comunes:** pedir `requestWhenInUseAuthorization()` antes de declarar la clave `NSLocationWhenInUseUsageDescription` en `Info.plist` — la app no muestra un diálogo vacío, crashea de inmediato, y el mensaje de la consola rara vez deja claro a primera vista que el problema es una clave faltante en `Info.plist`, no un bug en el código Swift.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Primero declara el motivo en `Info.plist` (clave `NSLocationWhenInUseUsageDescription`): `"RutaFlow usa tu ubicación para asignarte las entregas más cercanas."` Luego crea `Sources/RutaFlowApp/GestorUbicacion.swift`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que permisos y privacidad — pedir acceso con criterio resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Permisos y privacidad — pedir acceso con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Permisos y privacidad — pedir acceso con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses permisos y privacidad — pedir acceso con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: permisos y privacidad — pedir acceso con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Permisos y privacidad — pedir acceso con criterio existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve permisos y privacidad — pedir acceso con criterio en tu contexto?
+2. ¿Cómo sabrías que permisos y privacidad — pedir acceso con criterio no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar permisos y privacidad — pedir acceso con criterio?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 import CoreLocation
 
@@ -337,41 +519,27 @@ class GestorUbicacion: NSObject, CLLocationManagerDelegate {
 }
 ```
 
-**Ejecuta el ejemplo** (crea el proyecto, añade la clave a Info.plist, pega el código y llama a `pedirPermiso()` desde un botón):
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** al pulsar el botón aparece el diálogo del sistema con tu texto de motivo; conceder cambia `estado` a `.authorizedWhenInUse`, denegar lo deja en `.denied`. **Fallo deliberado:** quita la clave `NSLocationWhenInUseUsageDescription` del `Info.plist` y pide el permiso: la app **crashea** inmediatamente con un mensaje sobre la descripción de uso faltante. Diagnostica por qué iOS obliga a declarar el motivo antes de permitir siquiera preguntar.
-
-#### Paso 5 · Práctica guiada
-Maneja el estado `.denied` mostrando un mensaje que explique cómo habilitar el permiso desde Ajustes (no puedes volver a mostrar el diálogo una vez denegado). Pista: reacciona al `estado` en la vista.
-
-#### Paso 6 · Práctica independiente
-Añade el permiso de notificaciones (`UNUserNotificationCenter.requestAuthorization`) con su propia lógica de estado, y explica por qué conviene pedirlo tras una acción que lo justifique, no al arrancar.
-
-#### Paso 7 · Cierre
-Entrega la solicitud de ubicación, el manejo de denegación y el crash por motivo faltante. **¿Por qué es importante?** Los permisos son la frontera de privacidad del usuario y un punto de revisión de la App Store. Pedirlos bien (con motivo claro, en el momento adecuado, manejando la negativa) es diferencia directa entre una app que se aprueba y una que se rechaza o se desinstala. Fuentes: [Apple — Requesting authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
+</details>
 
 ### Tema 5: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
 
-**Prerrequisito:** tema «Keychain — guardar secretos de forma segura» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** pedir Face ID o Touch ID antes de una acción sensible con `LAContext`, ofrecer el código del dispositivo como alternativa y manejar los casos en que la biometría no está disponible.
+#### ► DE QUÉ TRATA
+Agrega a Info.plist la clave NSFaceIDUsageDescription con el motivo. En el simulador, activa Features > Face ID > Enrolled y usa Matching Face o Non-matching Face para probar.
 
-**¿Por qué es importante?** Confirmar el cobro contra entrega o ver datos del cliente con Face ID protege al conductor si pierde el teléfono desbloqueado, sin pedirle una contraseña más.
+#### ► LA IDEA EN UNA FRASE
+**Agrega a Info.plist la clave NSFaceIDUsageDescription con el motivo.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Agrega a `Info.plist` la clave `NSFaceIDUsageDescription` con el motivo. En el simulador, activa **Features > Face ID > Enrolled** y usa **Matching Face** o **Non-matching Face** para probar.
-
-#### Paso 2 · Contexto y caso real
-
-Un teléfono de RutaFlow se perdió desbloqueado y alguien registró cobros falsos. Ahora, confirmar un cobro pide Face ID; si el conductor no tiene biometría configurada, el código del teléfono.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `LAContext`, política `.deviceOwnerAuthentication`, `.deviceOwnerAuthenticationWithBiometrics`, `canEvaluatePolicy`, `LAError`, texto de motivo.
 
 `LAContext` pregunta al sistema si el dueño del dispositivo está presente. Hay dos políticas:
@@ -399,114 +567,75 @@ flowchart TB
     E -->|cancelado| N["no hacer nada"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/ConfirmacionSegura.swift`:
-
-```swift
-import LocalAuthentication
-
-enum ResultadoVerificacion { case verificado, cancelado, noDisponible(String) }
-
-func verificarDueno(motivo: String) async -> ResultadoVerificacion {
-    let contexto = LAContext()
-    contexto.localizedCancelTitle = "Cancelar"
-    var error: NSError?
-    // Biometría o, si no hay, el código del dispositivo.
-    guard contexto.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
-        return .noDisponible(error?.localizedDescription ?? "sin autenticación configurada")
-    }
-    do {
-        try await contexto.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: motivo)
-        return .verificado
-    } catch let error as LAError where error.code == .userCancel || error.code == .appCancel {
-        return .cancelado
-    } catch {
-        return .noDisponible(error.localizedDescription)
-    }
-}
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    A["Confirmar cobro"] --> C{"canEvaluatePolicy?"}
+    C -->|no| X["pedir otra verificación"]
+    C -->|sí| E["evaluatePolicy: Face ID"]
+    E -->|éxito| OK["registrar cobro"]
+    E -->|falla| F["código del dispositivo"]
+    E -->|cancelado| N["no hacer nada"]
 ```
 
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/CobroView.swift`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```swift
-import SwiftUI
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-struct CobroView: View {
-    @State private var estado = "Cobro pendiente: $52.000"
+#### ► CUÁNDO NO USAR ESTO
+No uses face id y touch id con localauthentication: confirmar acciones sensibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-    var body: some View {
-        VStack(spacing: 16) {
-            Text(estado)
-            Button("Confirmar cobro") {
-                Task {
-                    switch await verificarDueno(motivo: "Confirma el cobro contra entrega de ENV-42") {
-                    case .verificado: estado = "Cobro registrado"
-                    case .cancelado: estado = "Cobro pendiente: $52.000"
-                    case .noDisponible(let motivo): estado = "No se pudo verificar: \(motivo)"
-                    }
-                }
-            }
-        }
-    }
-}
-```
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: face id y touch id con localauthentication: confirmar acciones sensibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Compila, ejecuta y simula Face ID:
+#### ► LO QUE DEBES RECORDAR
+- Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-# en el simulador: Features > Face ID > Enrolled; al aparecer la solicitud, Features > Face ID > Matching Face
-```
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve face id y touch id con localauthentication: confirmar acciones sensibles en tu contexto?
+2. ¿Cómo sabrías que face id y touch id con localauthentication: confirmar acciones sensibles no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar face id y touch id con localauthentication: confirmar acciones sensibles?
 
-**Explicación por bloques:** `verificarDueno` crea un contexto nuevo en cada llamada (un contexto ya evaluado no vuelve a preguntar). Con `canEvaluatePolicy` revisa si hay biometría o código configurados. `evaluatePolicy` muestra la interfaz del sistema con el motivo. La cancelación del usuario se separa de los demás errores para no mostrar un mensaje de fallo cuando solo cambió de opinión. `CobroView` registra el cobro solo si el resultado es `.verificado`.
+</details>
 
-**Resultado esperado:**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-```text
-Con Matching Face: el estado cambia a «Cobro registrado».
-Con Non-matching Face dos veces: el sistema ofrece el código del dispositivo.
-Al pulsar Cancelar: el estado sigue en «Cobro pendiente: $52.000».
-```
+#### Objetivo observable
+Agrega a `Info.plist` la clave `NSFaceIDUsageDescription` con el motivo. En el simulador, activa **Features > Face ID > Enrolled** y usa **Matching Face** o **Non-matching Face** para probar.
 
-**Fallo deliberado:** borra `NSFaceIDUsageDescription` de `Info.plist` y ejecuta en un dispositivo con Face ID. **Error esperado:** la app se cierra al llamar a `evaluatePolicy` y la consola indica que falta la descripción de uso de Face ID. **Diagnóstico:** iOS exige explicar el uso de Face ID antes de mostrarlo. Agrega la clave.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** prueba los casos de rostro correcto, incorrecto y cancelación.
-2. **Variación:** cambia a `.deviceOwnerAuthenticationWithBiometrics` y observa qué pasa al fallar varias veces.
-3. **Diagnóstico:** reproduce el fallo deliberado sin la descripción de Face ID.
-4. **Integración:** muestra en el botón el tipo de biometría disponible con `contexto.biometryType` («Confirmar con Face ID»).
-5. **Diseño:** decide qué acciones de RutaFlow deben pedir Face ID y cuáles no, para no cansar al conductor.
-
-**Pista:** si la solicitud no aparece en el simulador, revisa que Face ID esté marcado como «Enrolled».
-
-#### Paso 6 · Práctica independiente
-
-Guarda el token de la API en el Keychain con `SecAccessControlCreateWithFlags(..., .biometryCurrentSet, ...)` para que leerlo exija Face ID, y compara con la verificación de este tema.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas las dos políticas de `LAContext`.
-- [ ] El cobro se registra solo tras verificar.
-- [ ] Reprodujiste el cierre sin la descripción de Face ID.
-- [ ] Sabes por qué un `true` local no basta ante el servidor.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reutilizar un `LAContext` ya evaluado, tratar la cancelación como error y confiar en la biometría como única prueba para el servidor. **Siguiente paso:** el tema «Notificaciones push con APNs» avisa al conductor de cobros pendientes.
-
-**Transferencia al proyecto integrador «RutaFlow»:** exige Face ID o el código del dispositivo para confirmar cobros contra entrega en la app del conductor de RutaFlow.
-
-**Fuente oficial:** [Apple — Logging a user into your app with Face ID or Touch ID](https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id).
+</details>
 
 ### Tema 6: Notificaciones push con APNs · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación. Prerrequisitos: Tema 4 (permisos) de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Cuando se asigna una entrega a un repartidor, su app debe avisarle aunque esté cerrada. Eso solo es posible con push: el backend de RutaFlow (Módulo Spring/Node) envía la notificación a APNs, y APNs la entrega al dispositivo correcto usando su device token.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
 
 **Analogía:** el device token es como la dirección postal del dispositivo, y APNs es el servicio de correos oficial de Apple: tu backend no entrega la carta en mano, se la da a correos (APNs) con la dirección (token), y correos la entrega.
@@ -519,10 +648,51 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Crea `Sources/RutaFlowApp/AppDelegate.swift`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que notificaciones push con apns resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Notificaciones push con APNs se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Notificaciones push con APNs | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses notificaciones push con apns por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: notificaciones push con apns funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Notificaciones push con APNs existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve notificaciones push con apns en tu contexto?
+2. ¿Cómo sabrías que notificaciones push con apns no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar notificaciones push con apns?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 import SwiftUI
 import UserNotifications
@@ -551,30 +721,27 @@ struct RutaFlowApp: App {
 }
 ```
 
-**Ejecuta el ejemplo** (requiere capability "Push Notifications" en el target; en Simulador se puede probar con un archivo `.apns`):
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** al conceder el permiso, la consola imprime el device token (una cadena hex larga). En el Simulador, arrastrar un archivo `.apns` con el payload sobre la ventana muestra la notificación. **Fallo deliberado:** omite `registerForRemoteNotifications()`: nunca llega el device token, y aunque el permiso esté concedido, el backend no tiene a dónde enviar. Diagnostica por qué el permiso y el registro son dos pasos distintos y ambos necesarios.
-
-#### Paso 5 · Práctica guiada
-Maneja `didFailToRegisterForRemoteNotificationsWithError` para registrar (log) el caso en que el registro falla (por ejemplo, sin conexión o sin capability). Pista: es el callback hermano del de éxito.
-
-#### Paso 6 · Práctica independiente
-Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y almacena el device token por usuario, y explica por qué el token puede cambiar y hay que actualizarlo.
-
-#### Paso 7 · Cierre
-Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
+</details>
 
 ### Tema 7: Offline-first es un protocolo, no una caché · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a construir una outbox persistente para confirmarEntrega (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a construir una outbox persistente para confirmarEntrega (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
 **Conceptos clave:** source of truth, outbox, state machine, idempotency key, retry, exponential backoff, jitter, reachability, optimistic UI, version, conflict, tombstone, background task y cancellation.
 
@@ -637,7 +804,99 @@ sequenceDiagram
 
 En tu propio proyecto RutaFlow, crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, asígnalo al target de la app y escribe allí la implementación EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion`, incluyendo el almacén y las funciones que el fragmento del Paso 4 invoca.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant UI as Confirmar entrega
+    participant Outbox as ConfirmacionPendiente (id fijo)
+    participant API as Servidor
+    UI->>Outbox: encolar (id = UUID estable)
+    Outbox->>API: enviar con ese id
+    API--xOutbox: red perdida, sin respuesta
+    Outbox->>API: reintentar CON EL MISMO id
+    API-->>Outbox: reconoce el id, no duplica el efecto
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Offline-first es un protocolo, no una caché se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Offline-first es un protocolo, no una caché | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses offline-first es un protocolo, no una caché por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: offline-first es un protocolo, no una caché funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Offline-first es un protocolo, no una caché existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve offline-first es un protocolo, no una caché en tu contexto?
+2. ¿Cómo sabrías que offline-first es un protocolo, no una caché no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar offline-first es un protocolo, no una caché?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+struct PendingMutation: Codable, Identifiable {
+    enum State: String, Codable { case queued, sending, failed }
+    let id: UUID                 // también es clave de idempotencia
+    let taskID: UUID
+    let baseVersion: Int
+    let operation: Operation
+    var state: State
+    var attempts: Int
+    var nextAttemptAt: Date
+}
+
+actor SyncEngine {
+    func drain() async {
+        for mutation in await store.readyMutations() {
+            guard !Task.isCancelled else { return }
+            await sendAndReconcile(mutation)
+        }
+    }
+}
+```
+
+```text
+UI -> base local -> outbox(queued) -> API + idempotency-key
+ ^                                      |
+ |            reconciliar/version <-----+
+ +-- estado pendiente/error/conflicto
+```
+
+```mermaid
+sequenceDiagram
+    participant UI as Confirmar entrega
+    participant Outbox as ConfirmacionPendiente (id fijo)
+    participant API as Servidor
+    UI->>Outbox: encolar (id = UUID estable)
+    Outbox->>API: enviar con ese id
+    API--xOutbox: red perdida, sin respuesta
+    Outbox->>API: reintentar CON EL MISMO id
+    API-->>Outbox: reconoce el id, no duplica el efecto
+```
+
 ```swift
 struct ConfirmacionPendiente: Codable, Identifiable {
     enum Estado: String, Codable { case encolada, enviando, fallida }
@@ -658,32 +917,27 @@ actor MotorSincronizacion {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
-#### Paso 5 · Práctica guiada
-Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
-
-**Proyecto integrador:** en el proyecto vacío de este tema, separa `ConfirmacionPendiente.swift`, `MotorSincronizacion.swift` y `ServidorConfirmacionesFalso.swift`. Haz que el servidor falso registre los IDs recibidos y simule «aplicó la confirmación, pero perdió la respuesta» en el primer envío. En `RutaFlowAppTests/OutboxTests.swift`, reintenta esa misma operación y verifica que ambos envíos llevan el mismo UUID pero el servidor contabiliza un solo efecto; añade un segundo caso que compruebe que el backoff queda dentro del intervalo elegido y que cancelar antes del próximo intento evita otra llamada.
-
-#### Paso 7 · Cierre
-Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
-**Implicación práctica:** La conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
+</details>
 
 ### Tema 8: Operar significa detectar, limitar y aprender del fallo · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 7 de este módulo.
-#### Paso 2 · Contexto y caso real
-"No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a instrumentar MotorSincronizacion.vaciar() (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 7 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a instrumentar MotorSincronizacion.vaciar() (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
 **Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
 
@@ -732,7 +986,82 @@ flowchart TD
 
 Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. En el grupo de la app crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona únicamente el target `RutaFlowApp` y escribe manualmente tanto el motor mínimo como la instrumentación del Paso 4. Esta práctica no reutiliza el archivo del Tema 7 ni necesita ningún archivo externo.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["sincronizacionMedida()\ncon OSSignposter"] --> B["Instruments: intervalo outbox-drain"]
+    B --> C["Tasa de éxito de sincronización"]
+    C --> D{"¿< 95% por más de 1h?"}
+    D -->|Sí| E["Alerta: revertir / feature flag / investigar"]
+    D -->|No| F["Sano, seguir desplegando"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Operar significa detectar, limitar y aprender del fallo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Operar significa detectar, limitar y aprender del fallo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses operar significa detectar, limitar y aprender del fallo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: operar significa detectar, limitar y aprender del fallo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Operar significa detectar, limitar y aprender del fallo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve operar significa detectar, limitar y aprender del fallo en tu contexto?
+2. ¿Cómo sabrías que operar significa detectar, limitar y aprender del fallo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar operar significa detectar, limitar y aprender del fallo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+import OSLog
+
+let points = OSSignposter(subsystem: "com.example.tasks", category: "sync")
+
+func measuredSync() async throws {
+    let state = points.beginInterval("outbox-drain")
+    defer { points.endInterval("outbox-drain", state) }
+    try await syncEngine.sync()
+}
+```
+
+```text
+TestFlight -> cohorte pequeña -> métricas sanas? -> despliegue gradual
+                                      no -> contener/flag/corregir
+producción -> MetricKit/signposts -> reproducir en Instruments -> aprendizaje
+```
+
+```mermaid
+flowchart TD
+    A["sincronizacionMedida()\ncon OSSignposter"] --> B["Instruments: intervalo outbox-drain"]
+    B --> C["Tasa de éxito de sincronización"]
+    C --> D{"¿< 95% por más de 1h?"}
+    D -->|Sí| E["Alerta: revertir / feature flag / investigar"]
+    D -->|No| F["Sano, seguir desplegando"]
+```
+
 ```swift
 import OSLog
 
@@ -752,8 +1081,6 @@ func sincronizacionMedida() async throws {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 # una sola vez, fuera de RutaFlowApp:
 mkdir Practica && cd Practica
@@ -762,38 +1089,24 @@ rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main q
 # pega el código en Sources/Practica/main.swift
 swift run
 ```
-Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
-Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
-#### Paso 5 · Práctica guiada
-Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
-
-**Proyecto integrador:** en el proyecto independiente creado desde cero en este tema, implementa 20 sincronizaciones locales en `MotorSincronizacion.swift`, con 18 éxitos y 2 fallos controlados, y delimita cada lote con el signpost de `SincronizacionMedida.swift`. Graba el intervalo `outbox-drain` en Instruments y calcula la tasa resultante (90%). Escribe `RunbookSincronizacion.md` con el umbral «menos de 95% durante una hora», la evidencia que debes adjuntar y la acción de desactivar la sincronización automática mediante un flag antes de investigar; repite con 20 éxitos y registra por qué ese segundo lote no abre incidente.
-
-#### Paso 7 · Cierre
-Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
-**Implicación práctica:** Todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
+</details>
 
 ### Tema 9: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min
 
-**Prerrequisito:** tema «Permisos y privacidad — pedir acceso con criterio» de este módulo y «AsyncSequence y AsyncStream» (módulo 4).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** pedir permiso de ubicación con el texto adecuado, recibir posiciones con `CLLocationUpdate.liveUpdates()` en un bucle `for await` y manejar la precisión aproximada que el usuario puede elegir.
+#### ► DE QUÉ TRATA
+Usa Xcode 26 o superior con destino iOS 18+: el código usa CLServiceSession y authorizationDenied, que solo existen desde iOS 18. En la pestaña Info del target (los proyectos nuevos de Xcode no traen un archivo Info.plist aparte) agrega NSLocationWhenInUseUsageDescription con un…
 
-**¿Por qué es importante?** La ubicación es uno de los permisos más sensibles. Pedirlo mal hace que el usuario lo niegue, y usarlo mal agota la batería. La API moderna reduce el código y se detiene sola al cancelar la tarea.
+#### ► LA IDEA EN UNA FRASE
+**Usa Xcode 26 o superior con destino iOS 18+: el código usa CLServiceSession y authorizationDenied, que solo existen desde iOS 18.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y `authorizationDenied`, que solo existen desde iOS 18. En la pestaña **Info** del target (los proyectos nuevos de Xcode no traen un archivo `Info.plist` aparte) agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
-
-#### Paso 2 · Contexto y caso real
-
-Muchos conductores de RutaFlow negaban la ubicación porque el mensaje decía solo «La app usa tu ubicación». Al explicar el beneficio («para ordenar tus paradas por cercanía») y pedirla al abrir la pantalla de ruta, la aceptación subió.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `CLLocationUpdate`, `liveUpdates`, `CLServiceSession`, autorización «al usar la app», precisión aproximada, `isStationary`, texto de propósito.
 
 Desde iOS 17, `CLLocationUpdate.liveUpdates()` es una `AsyncSequence` de ubicaciones: la recorres con `for await` y se detiene al cancelar la tarea. Desde iOS 18, una **`CLServiceSession`** declara cuánto acceso necesitas mientras exista, y el sistema muestra el permiso cuando hace falta.
@@ -820,108 +1133,77 @@ sequenceDiagram
     V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaView.swift`:
-
-```swift
-import CoreLocation
-import SwiftUI
-
-struct RutaView: View {
-    @State private var texto = "Buscando tu ubicación…"
-
-    var body: some View {
-        Text(texto)
-            .task {
-                let sesion = CLServiceSession(authorization: .whenInUse) // iOS 18+
-                defer { sesion.invalidate() }
-                do {
-                    for try await actualizacion in CLLocationUpdate.liveUpdates() {
-                        if actualizacion.authorizationDenied { texto = "Activa la ubicación en Ajustes"; break }
-                        guard let ubicacion = actualizacion.location, !actualizacion.isStationary else { continue }
-                        let precision = Int(ubicacion.horizontalAccuracy)
-                        texto = String(format: "%.4f, %.4f (±%d m)", ubicacion.coordinate.latitude, ubicacion.coordinate.longitude, precision)
-                    }
-                } catch {
-                    texto = "Ubicación no disponible"
-                }
-            }
-    }
-}
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant V as RutaView (.task)
+    participant S as CLServiceSession
+    participant L as CLLocationUpdate.liveUpdates
+    V->>S: sesión whenInUse
+    S-->>V: el sistema muestra el permiso
+    V->>L: for await update
+    L-->>V: ubicación, isStationary
+    V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
 ```
 
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/Info.plist`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Core Location moderno: CLLocationUpdate, permisos y precisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>Usamos tu ubicación para ordenar tus paradas por cercanía y avisar al cliente cuando estás llegando.</string>
-```
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Core Location moderno: CLLocationUpdate, permisos y precisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Compila, ejecuta y activa una ruta simulada:
+#### ► CUÁNDO NO USAR ESTO
+No uses core location moderno: cllocationupdate, permisos y precisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-# en el simulador: Features > Location > City Run
-```
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: core location moderno: cllocationupdate, permisos y precisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Explicación por bloques:** La vista empieza a escuchar en `.task`, que se cancela sola al cerrar la vista. `CLServiceSession` declara que la app necesita ubicación al usarla; el sistema muestra el permiso con el texto de `Info.plist`. `liveUpdates()` entrega actualizaciones: si el permiso fue negado, se muestra cómo activarlo; si el dispositivo está quieto o no hay ubicación, se salta. La precisión horizontal dice cuánto confiar en el punto: con ubicación aproximada será de miles de metros.
+#### ► LO QUE DEBES RECORDAR
+- Core Location moderno: CLLocationUpdate, permisos y precisión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Resultado esperado:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve core location moderno: cllocationupdate, permisos y precisión en tu contexto?
+2. ¿Cómo sabrías que core location moderno: cllocationupdate, permisos y precisión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar core location moderno: cllocationupdate, permisos y precisión?
 
-```text
-Primera vez: aparece el permiso con «Usamos tu ubicación para ordenar tus paradas…».
-Con City Run activo: el texto cambia cada segundo, por ejemplo «37.3349, -122.0090 (±5 m)».
-Con ubicación aproximada elegida por el usuario: la precisión pasa a miles de metros.
-```
+</details>
 
-**Fallo deliberado:** borra `NSLocationWhenInUseUsageDescription` de `Info.plist`. **Error esperado:** no aparece ningún permiso, la vista se queda en «Buscando tu ubicación…» y la consola avisa que falta la clave de descripción. **Diagnóstico:** iOS no pide un permiso sin explicación. Agrega el texto con el beneficio para el usuario.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 5 · Práctica guiada
+#### Objetivo observable
+Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y `authorizationDenied`, que solo existen desde iOS 18. En la pestaña **Info** del target (los proyectos nuevos de Xcode no traen un archivo `Info.plist` aparte) agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
 
-1. **Reproducción:** ejecuta con City Run y observa la precisión.
-2. **Variación:** elige «Ubicación aproximada» en Ajustes y explica cómo debería adaptarse la app.
-3. **Diagnóstico:** reproduce el fallo deliberado sin la clave de `Info.plist`.
-4. **Integración:** deja de procesar posiciones mientras `isStationary` sea verdadero y mide cuántas actualizaciones ahorras.
-5. **Diseño:** reescribe el texto del permiso para el caso de uso de RutaFlow y pídele a alguien que lo lea sin contexto.
-
-**Pista:** si no llegan ubicaciones, revisa el texto de `Info.plist`, el estado del permiso y la ruta simulada.
-
-#### Paso 6 · Práctica independiente
-
-Muestra un aviso con un botón que abra Ajustes (`UIApplication.openSettingsURLString`) cuando el permiso esté negado, en lugar de solo un texto.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas la diferencia entre «al usar» y «siempre».
-- [ ] La vista muestra posiciones con su precisión.
-- [ ] Reprodujiste el permiso que no aparece sin texto.
-- [ ] Tu app funciona con ubicación aproximada.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** pedir ubicación «siempre» sin necesitarla, escribir textos de permiso vagos y no manejar la ubicación aproximada. **Siguiente paso:** el tema siguiente programa trabajo en segundo plano sin mantener la ubicación encendida.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la pantalla de ruta de RutaFlow, muestra la posición con `liveUpdates()` y un texto de permiso que explique el beneficio para el conductor.
-
-**Fuente oficial:** [Apple — CLLocationUpdate](https://developer.apple.com/documentation/corelocation/cllocationupdate) y [Apple — Requesting authorization to use location services](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
+</details>
 
 ### Tema 10: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min
 
-**Prerrequisito:** tema «Offline-first es un protocolo, no una caché» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** registrar una tarea de actualización en segundo plano con `BGTaskScheduler` y el modificador `.backgroundTask` de SwiftUI, programarla y forzarla desde el depurador para probarla.
+#### ► DE QUÉ TRATA
+En el target, activa Background Modes > Background fetch y agrega a Info.plist la clave BGTaskSchedulerPermittedIdentifiers con co.rutaflow.sincronizar. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo…
 
-**¿Por qué es importante?** Las entregas confirmadas sin señal deben subirse cuando vuelva la conexión, aunque el conductor no abra la app. iOS no deja correr código en segundo plano a voluntad: hay que pedirle tiempo y aceptar que decide cuándo.
+#### ► LA IDEA EN UNA FRASE
+**En el target, activa Background Modes > Background fetch y agrega a Info.plist la clave BGTaskSchedulerPermittedIdentifiers con co.rutaflow.sincronizar.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo plano, y allí `submit` lanza `BGTaskScheduler.Error.unavailable`.
-
-#### Paso 2 · Contexto y caso real
-
-Algunos conductores de RutaFlow terminaban el día con entregas sin subir porque nunca volvían a abrir la app con señal. El equipo de soporte llamaba uno por uno. Una tarea en segundo plano sube lo pendiente cuando el sistema lo permite.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `BGTaskScheduler`, `BGAppRefreshTaskRequest`, `BGProcessingTaskRequest`, identificador permitido, `.backgroundTask(.appRefresh)`, `earliestBeginDate`, tiempo límite.
 
 iOS ofrece dos tipos principales:
@@ -951,135 +1233,188 @@ sequenceDiagram
     T->>S: programa la siguiente
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaFlowApp.swift`:
-
-```swift
-import BackgroundTasks
-import SwiftUI
-
-@main
-struct RutaFlowApp: App {
-    @Environment(\.scenePhase) private var fase
-
-    var body: some Scene {
-        WindowGroup { ContentView() }
-            .onChange(of: fase) { _, nueva in
-                if nueva == .background { programarSincronizacion() }
-            }
-            .backgroundTask(.appRefresh("co.rutaflow.sincronizar")) {
-                programarSincronizacion() // la siguiente, antes de trabajar
-                await Sincronizador.subirPendientes()
-            }
-    }
-}
-
-func programarSincronizacion() {
-    let solicitud = BGAppRefreshTaskRequest(identifier: "co.rutaflow.sincronizar")
-    solicitud.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // no antes de 15 min
-    try? BGTaskScheduler.shared.submit(solicitud)
-}
-
-enum Sincronizador {
-    static func subirPendientes() async {
-        for codigo in ["ENV-42", "ENV-43"] {
-            if Task.isCancelled { return } // el sistema puede cortar el tiempo
-            print("subiendo \(codigo)")
-            try? await Task.sleep(for: .seconds(1))
-        }
-        print("sincronización completa")
-    }
-}
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant A as App
+    participant S as BGTaskScheduler
+    participant T as .backgroundTask
+    A->>S: submit(appRefresh, earliestBeginDate: +15 min)
+    Note over S: el sistema decide el momento
+    S->>T: ejecuta co.rutaflow.sincronizar
+    T->>T: sube entregas pendientes
+    T->>S: programa la siguiente
 ```
 
-Fuerza la tarea desde el depurador de Xcode:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```bash
-cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS' build
-# 1) elige tu iPhone conectado como destino, ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
-# 2) en la consola lldb:
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"co.rutaflow.sincronizar"]
-# 3) continúa la ejecución
-```
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Explicación por bloques:** Al pasar a segundo plano, la app programa una actualización que no debe empezar antes de 15 minutos. El modificador `.backgroundTask(.appRefresh(...))` es el manejador: cuando el sistema lo ejecuta, primero programa la siguiente y luego sube los pendientes. `subirPendientes` revisa `Task.isCancelled` en cada paso para salir limpio si se acaba el tiempo. El comando de lldb pide al sistema que lance la tarea ya, solo para probar.
+#### ► CUÁNDO NO USAR ESTO
+No uses backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Resultado esperado:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-```text
-subiendo ENV-42
-subiendo ENV-43
-sincronización completa
-```
+#### ► LO QUE DEBES RECORDAR
+- BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** quita `co.rutaflow.sincronizar` de `BGTaskSchedulerPermittedIdentifiers`. **Error esperado:** `submit` lanza `BGTaskSchedulerErrorDomain Code=3` (identificador no permitido) y la tarea nunca corre. **Diagnóstico:** el sistema solo acepta identificadores declarados. Agrégalo a `Info.plist` exactamente igual.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite en tu contexto?
+2. ¿Cómo sabrías que backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite?
 
-#### Paso 5 · Práctica guiada
+</details>
 
-1. **Reproducción:** fuerza la tarea con lldb y lee la consola.
-2. **Variación:** agrega más pendientes y simula la expiración con `_simulateExpirationForTaskWithIdentifier`; comprueba que sales limpio.
-3. **Diagnóstico:** reproduce el fallo deliberado sin el identificador en `Info.plist` (usa `do/catch` en lugar de `try?` para ver el error).
-4. **Integración:** cambia a `BGProcessingTaskRequest` con `requiresExternalPower = true` para la limpieza de fotos antiguas.
-5. **Diseño:** escribe qué le dirías a soporte sobre cuándo se suben las entregas y por qué no hay hora exacta.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Pista:** si la tarea no corre, revisa el identificador en `Info.plist`, el modo de fondo activado y que hayas programado una solicitud.
+#### Objetivo observable
+En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo plano, y allí `submit` lanza `BGTaskScheduler.Error.unavailable`.
 
-#### Paso 6 · Práctica independiente
-
-Guarda en `UserDefaults` la hora de la última sincronización exitosa y muéstrala en la pantalla de ajustes como «Última sincronización: hace 12 min».
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas la diferencia entre app refresh y processing.
-- [ ] Forzaste la tarea y viste la sincronización.
-- [ ] Reprodujiste el error de identificador no permitido.
-- [ ] Tu tarea respeta la cancelación.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** en el módulo 14, «WidgetKit» muestra las entregas pendientes del día sin abrir la app y «App Intents» expone esas acciones a Siri y a los Atajos.
-
-**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow y muestra la hora de la última sincronización.
-
-**Fuente oficial:** [Apple — BackgroundTasks](https://developer.apple.com/documentation/backgroundtasks) y [Apple — Starting and terminating tasks during development](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development).
-
-## Revisión oficial de plataforma — julio de 2026
+</details>
 
 ### Swift 6.2 y actualizaciones SwiftUI de 2026
 
-**Swift 6.2** introduce concurrencia más gradual: aislamiento principal por defecto opcional, ejecución async más intuitiva y `@concurrent` para trabajo realmente concurrente. También mejora Swift Testing, memoria estricta y diagnóstico async. SwiftUI 2026 incorpora `ContentBuilder`, nuevas capacidades de reordenamiento/swipe, caché configurable de AsyncImage y cambios de estado al compilar con toolchains recientes. La versión del compilador y el deployment target son dimensiones distintas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Aplicación al proyecto:** activa comprobación de concurrencia en una rama, mueve decodificación CPU-bound a `@concurrent`, agrega una prueba de carrera y documenta disponibilidad/fallback antes de adoptar ContentBuilder o APIs SwiftUI nuevas.
+#### ► DE QUÉ TRATA
+Este tema te guía por swift 6.2 y actualizaciones swiftui de 2026 con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender swift 6.2 y actualizaciones swiftui de 2026 te permite tomar mejores decisiones técnicas.**
 
-## Laboratorio práctico
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Convierte el proyecto del módulo 12 en una entrega preparada para producción.
+#### ► LA ANALOGÍA
+Piensa en swift 6.2 y actualizaciones swiftui de 2026 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-1. Dibuja activos, entradas y fronteras; registra cinco amenazas con mitigación y prueba.
-2. Audita `.entitlements`, permisos y enlaces. Añade pruebas para host, ruta, identificador y autorización.
-3. Mueve la sesión a Keychain, redacta logs y documenta qué ocurre en logout, backup y pantalla bloqueada.
-4. Implementa una outbox persistente. Simula respuesta perdida, reintento, conflicto de versión, cancelación y cambio de cuenta.
-5. Instrumenta sincronización con signposts y perfílala en Instruments. Define cuatro indicadores y umbrales.
-6. Prueba una migración con datos de una versión anterior y redacta un release plan con TestFlight, despliegue gradual y contención.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que swift 6.2 y actualizaciones swiftui de 2026 resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-La entrega contiene código, pruebas, capturas del perfil, tabla de amenazas, política de datos y runbook. Una afirmación sin evidencia reproducible cuenta como hipótesis, no como resultado.
-
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
-## Atlas completo de temas oficiales
-
-Derivado de la [documentación oficial](https://developer.apple.com/documentation/swiftui), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 56 temas.**
-
-| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Swift | `value types` · `optionals` · `protocols` · `generics` · `errors` · `collections` · `ARC` · `ownership` · `Swift packages` | app conductor |
-| SwiftUI | `View` · `identity` · `state` · `Observation` · `environment` · `layout` · `navigation` · `animations` · `gestures` · `localization` | app conductor |
-| Concurrencia | `async/await` · `Task` · `task groups` · `actors` · `MainActor` · `Sendable` · `cancelación` · `AsyncSequence` · `Swift 6 isolation` | app conductor |
-| Datos | `URLSession` · `Codable` · `SwiftData y Core Data` · `cache` · `offline-first` · `migrations` · `CloudKit` · `Keychain` · `files` | app conductor |
-| Plataforma | `Core Location` · `MapKit` · `background tasks` · `push` · `camera` · `biometrics` · `widgets` · `App Intents` · `UIKit interop` | app conductor |
-| Producción | `Swift Testing` · `XCTest` · `UI tests` · `Instruments` · `VoiceOver` · `energy` · `privacy` · `signing` · `TestFlight` · `crashes` | app conductor |
+| Swift 6.2 y actualizaciones SwiftUI de 2026 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Swift 6.2 y actualizaciones SwiftUI de 2026 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses swift 6.2 y actualizaciones swiftui de 2026 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: swift 6.2 y actualizaciones swiftui de 2026 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Swift 6.2 y actualizaciones SwiftUI de 2026 existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve swift 6.2 y actualizaciones swiftui de 2026 en tu contexto?
+2. ¿Cómo sabrías que swift 6.2 y actualizaciones swiftui de 2026 no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar swift 6.2 y actualizaciones swiftui de 2026?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar swift 6.2 y actualizaciones swiftui de 2026.
+
+</details>
 
 ### Método de estudio y proyecto de ampliación
 
-Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
+2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
+
+</details>

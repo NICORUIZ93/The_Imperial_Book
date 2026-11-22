@@ -42,36 +42,27 @@ Con líneas punteadas, cada servicio se registra y manda latidos a un «Registro
 consultan; y un «Config Server» (tema 3) entrega la configuración a cada servicio al arrancar.
 
 ---
+
+
 ### Service Discovery: Eureka, Consul
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 7, Lección 1 de 5 · Fase 1 · 2,5 h: `jdk/Registro.java`,
-`f052-eureka/` (servidor Eureka + servicio `catalogo`) y `f052-consul/` (el mismo servicio registrado en Consul).
+#### ► DE QUÉ TRATA
+Configurar un registro de servicios (Eureka y Consul) en el que dos instancias de catalogo se registran solas, de modo que el test EurekaRegistroTest encuentre ambas por nombre, y explicar con la salida de jdk/Registro.java cómo el registro expulsa una instancia que deja de envia…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Configurar un registro de servicios (Eureka y Consul) en el que dos instancias de catalogo se registran solas, de modo que el test EurekaRegistroTest encuentre ambas por nombre, y explicar con la salida de jdk/Registro.java cómo el registro expulsa una instancia que deja de enviar latidos.**
 
-- Módulo 6: un servicio que llama a otro con `RestClient` usando una URL.
-- Módulo 1: perfiles, `application.yml` y variables de entorno; Módulo 0.5: Docker y Docker Compose.
-- Saber qué es una IP, un puerto y un *health check* (`/actuator/health`, Módulo 0.4 y Módulo 1).
+#### ► POR QUÉ EXISTE ESTO
+Un microservicio necesita la dirección de otro para llamarlo, igual que necesitas el número de teléfono de una persona. Si escribes la dirección a mano en el código (http://10.0.0.11:8081), el día que ese servicio cambie de máquina o se agregue una segunda copia, tu programa sigue llamando al sitio viejo.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en service discovery: eureka, consul como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Configurar** un registro de servicios (Eureka y Consul) en el que dos instancias de `catalogo` se registran solas,
-de modo que el test `EurekaRegistroTest` encuentre ambas por nombre, y **explicar** con la salida de
-`jdk/Registro.java` cómo el registro expulsa una instancia que deja de enviar latidos.
-
-#### 4. ANALOGÍA VISUAL
-
-La **recepción de un edificio de oficinas** con un tablero de corcho. Cada empleado que llega (una instancia) cuelga
-su ficha: «Catálogo — oficina 11, extensión 8081». Cada cierto tiempo pasa por recepción y dice «sigo aquí» (el
-**latido**). Si alguien se va sin avisar (se cae), la recepcionista, al ver que hace rato no pasa, **descuelga su
-ficha** (expulsión). Quien busca a «Catálogo» ya no recorre pasillos con una dirección escrita en un papel viejo:
-pregunta en recepción por el **nombre** y recibe la lista de oficinas donde hoy hay alguien de Catálogo. Dibuja el
-tablero con dos fichas verdes y una gris tachada, y un reloj de arena al lado de cada ficha.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C1 as catalogo:8081
@@ -92,92 +83,44 @@ sequenceDiagram
     R-->>P: [10.0.0.11:8081]
 ```
 
-**Texto alternativo:** diagrama de secuencia con cuatro participantes: catalogo:8081, catalogo:8082, el Registro
-(Eureka o Consul) y pedidos. Las dos instancias de catálogo se registran con su nombre y dirección. En un bucle, cada
-5 segundos, ambas envían un latido. Pedidos pregunta por las instancias de «catalogo» y recibe las dos direcciones.
-Una nota indica que 8082 se cae sin avisar; el registro, tras 15 segundos sin su latido, la expulsa. Cuando pedidos
-vuelve a preguntar (refresca cada 5 segundos) recibe solo 10.0.0.11:8081.
+1. Un microservicio necesita la dirección de otro para llamarlo, igual que necesitas el número de teléfono de una persona.
+2. Si escribes la dirección a mano en el código (http://10.0.0.11:8081), el día que ese servicio cambie de máquina o se agregue una segunda copia, tu programa sigue llamando al sitio viejo.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Service Discovery: Eureka, Consul se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un microservicio necesita la **dirección** de otro para llamarlo, igual que necesitas el número de teléfono de una
-persona. Si escribes la dirección a mano en el código (`http://10.0.0.11:8081`), el día que ese servicio cambie de
-máquina o se agregue una segunda copia, tu programa sigue llamando al sitio viejo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Service Discovery: Eureka, Consul | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Service Discovery** («descubrimiento de servicios») resuelve eso con una agenda compartida, el **registro**:
+#### ► CUÁNDO NO USAR ESTO
+Direcciones fijas «temporales» y registro sin caché ni timeouts:
 
-1. Cada copia de un servicio, al arrancar, se anota en la agenda con su **nombre** (`catalogo`) y su dirección.
-2. Mientras está viva, avisa cada pocos segundos que sigue ahí (el **latido**).
-3. Quien necesita llamar a `catalogo` pregunta a la agenda por el nombre y recibe las direcciones vigentes.
-4. Si una copia deja de avisar, la agenda la borra.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: service discovery: eureka, consul funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Eureka** y **Consul** son dos agendas de este tipo. Eureka es una aplicación Java (la levantas tú con Spring);
-Consul es un programa independiente de HashiCorp que se ejecuta como contenedor.
+#### ► LO QUE DEBES RECORDAR
+- Un microservicio necesita la dirección de otro para llamarlo, igual que necesitas el número de teléfono de una persona.
+- Si escribes la dirección a mano en el código (http://10.0.0.11:8081), el día que ese servicio cambie de máquina o se agregue una segunda copia, tu programa sigue llamando al sitio viejo.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve service discovery: eureka, consul en tu contexto?
+2. ¿Cómo sabrías que service discovery: eureka, consul no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar service discovery: eureka, consul?
 
-**El mecanismo** (lo ves entero en `jdk/Registro.java`): un mapa `servicio → instancia → (url, último latido)`, una
-operación para registrar/renovar, una para consultar, y una tarea periódica que borra las instancias cuyo último
-latido es más viejo que el TTL. Todo registro real añade a eso replicación, estados (`UP`, `DOWN`,
-`OUT_OF_SERVICE`) y una API HTTP.
+</details>
 
-**Eureka con Spring Cloud Netflix 5.0.3:**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Servidor:** `spring-cloud-starter-netflix-eureka-server` + `@EnableEurekaServer`. En modo *standalone* pones
-  `eureka.client.register-with-eureka=false` y `fetch-registry=false` (el servidor no se registra en sí mismo).
-  Panel web en `http://localhost:8761`, API en `/eureka/apps`.
-- **Cliente:** `spring-cloud-starter-netflix-eureka-client`. Al arrancar, la instancia se registra con
-  `spring.application.name` (Eureka lo guarda en mayúsculas: `CATALOGO`) y luego envía un latido cada
-  `eureka.instance.lease-renewal-interval-in-seconds` (**30 s por defecto**). El servidor la expulsa si no recibe
-  latidos en `lease-expiration-duration-in-seconds` (**90 s por defecto**). Cada cliente descarga **una copia del
-  registro** cada `eureka.client.registry-fetch-interval-seconds` (**30 s por defecto**) y consulta esa copia local:
-  si el servidor de Eureka se cae, los clientes siguen funcionando con lo último que descargaron.
-- En Spring Cloud 2025.1 el cliente Eureka habla HTTP con `RestClient`, así que necesitas
-  `spring-boot-starter-restclient` en el classpath (o `WebClient` / Jersey). Si Jersey está en el classpath (lo trae
-  el starter del servidor), el cliente lo prefiere: desactívalo con `eureka.client.jersey.enabled: false` (error
-  común de este tema).
-
-**Consul con Spring Cloud Consul 5.0.4:** `spring-cloud-starter-consul-discovery` registra la instancia en el agente
-de Consul (`spring.cloud.consul.host` y `port`, 8500 por defecto) y le pide a Consul que **la chequee él mismo**:
-Consul llama a `/actuator/health` cada `health-check-interval` (10 s por defecto) y solo devuelve las instancias que
-pasan el chequeo. Por eso el servicio necesita Actuator. Además de registro, Consul es un almacén clave-valor
-(configuración), tiene DNS (`catalogo.service.consul`) y es la base de Consul Connect (*service mesh*).
-
-**La misma abstracción para los dos:** tu código usa `DiscoveryClient.getInstances("catalogo")` de Spring Cloud
-Commons. Cambiar de Eureka a Consul es cambiar la dependencia y la configuración, no el código. El balanceador del
-tema 4 usa esa lista.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-**Dos filosofías.** En el teorema CAP, **Eureka elige disponibilidad (AP)**: los servidores replican entre pares de
-forma asíncrona, los clientes guardan caché y, con el *self-preservation mode*, si el servidor deja de recibir muchos
-latidos a la vez (típico de una partición de red) **deja de expulsar** instancias, porque supone que el problema es la
-red y no los servicios. Prefiere darte una lista quizá vieja a no darte ninguna. **Consul elige consistencia (CP)**:
-sus servidores usan Raft, necesitan quórum para escribir (3 o 5 servidores en producción) y un agente en cada nodo
-hace los chequeos de salud localmente.
-
-| Criterio | Eureka | Consul | Registro de la plataforma (Kubernetes) |
-|---|---|---|---|
-| Modelo | AP, réplicas entre pares | CP con Raft + agentes | etcd (CP) + `Service` y DNS |
-| Salud | Latido del cliente (*lease*) | Chequeo activo HTTP/TCP/TTL | *readiness probe* |
-| Lenguajes | Pensado para JVM | Cualquiera (HTTP/DNS) | Cualquiera (DNS) |
-| Extra | — | KV, DNS, *service mesh* | Todo el ciclo de vida |
-| Estado | Netflix lo dejó de usar internamente; Spring lo mantiene | Activo (HashiCorp) | Estándar de facto |
-
-**Cuándo NO usarlo.** Si despliegas en **Kubernetes**, ya tienes descubrimiento: un `Service` llamado `catalogo` te
-da un nombre DNS estable (`http://catalogo`) y kube-proxy reparte entre los pods sanos (*readiness*). Añadir Eureka
-encima duplica la fuente de verdad: dos sistemas pueden discrepar sobre qué instancia está viva. Tampoco lo necesitas
-con 2–3 servicios de despliegue fijo detrás de un balanceador de la nube: una URL configurable por entorno basta.
-Úsalo cuando tienes instancias que escalan solas fuera de Kubernetes (VMs, varias nubes) o necesitas descubrimiento
-entre plataformas distintas (Consul).
-
-**Trade-offs que pagas:** el registro es infraestructura crítica (si cae y los clientes no tienen caché, nadie
-encuentra a nadie), la información siempre llega con retraso (latidos + caché + refresco: con los valores por defecto
-de Eureka, una instancia caída puede seguir recibiendo tráfico hasta **90 s + 30 s + 30 s**) y por eso el descubrimiento
-**siempre** va acompañado de timeouts y reintentos (Módulo 8).
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Spring Cloud 2025.1.4 (Netflix Eureka 5.0.3, Consul 5.0.4),
 Testcontainers 2.0.5, imagen `hashicorp/consul:2.1.0`.
 
@@ -639,71 +582,7 @@ services:
       retries: 20
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. **El mecanismo, sin Spring.** Desde el código de este tema:
-
-```bash
-java jdk/Registro.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5):
-
-```text
-t=0s   instancias de catalogo: {catalogo-1=http://10.0.0.11:8081, catalogo-2=http://10.0.0.12:8081}
-[registro] expulsada catalogo-2 (sin latido > 3000 ms)
-t=4,5s instancias de catalogo: {catalogo-1=http://10.0.0.11:8081}
-OK: el cliente solo ve instancias que laten
-```
-
-   **Captura comentada:** al principio el registro tiene las dos instancias. `catalogo-2` se registró una vez y no
-   volvió a latir; a los 3 s el expulsor la borra (la línea `[registro] expulsada` aparece entre las dos consultas).
-   `catalogo-1`, que late cada segundo, sigue en la lista.
-
-2. **Eureka.** Abre tres terminales en `f052-eureka`:
-
-```bash
-../gradlew -q bootRun -Pprincipal=academia.discovery.servidor.EurekaServidorApp
-PUERTO=8081 ../gradlew -q bootRun -Pprincipal=academia.discovery.catalogo.CatalogoApp
-PUERTO=8082 ../gradlew -q bootRun -Pprincipal=academia.discovery.catalogo.CatalogoApp
-```
-
-   Espera unos 10 s y pregunta a una instancia qué ve en el registro:
-
-```bash
-curl -s localhost:8081/instancias/catalogo
-```
-
-   **Output esperado:** `["catalogo:8081 -> http://<tu-host>:8081","catalogo:8082 -> http://<tu-host>:8082"]` (el
-   orden puede variar). **Captura descrita:** en `http://localhost:8761`, la tabla «Instances currently registered
-   with Eureka» muestra la aplicación `CATALOGO` con `UP (2)`.
-
-3. **Fallo deliberado:** detén la instancia de 8082 con `Ctrl+C`. Spring la **desregistra** al apagarse; a los
-   ~5 s `curl -s localhost:8081/instancias/catalogo` devuelve solo `catalogo:8081`. Ahora mata la de 8081 sin darle
-   tiempo a despedirse (`kill -9` a su PID, que ves con `jps -l`): el panel la mantiene hasta que pasan 15 s sin
-   latido y el expulsor (cada 2 s en `servidor.yml`) la borra.
-
-4. **Consul.** En `modulo-11`:
-
-```bash
-docker compose up -d --wait
-cd f052-consul && ../gradlew -q bootRun \
-  --args="--spring.cloud.consul.discovery.prefer-ip-address=false --spring.cloud.consul.discovery.hostname=host.docker.internal"
-```
-
-   En otra terminal:
-
-```bash
-curl -s 'localhost:8500/v1/health/service/catalogo?passing=true' | jq -r '.[].Service.Service'
-```
-
-   **Output esperado:** `catalogo` (Consul devuelve JSON con un espacio tras los dos puntos: compara con `jq`,
-   no con `grep '"Service":"catalogo"'`). **Captura descrita:** en `http://localhost:8500/ui`, el servicio
-   `catalogo` aparece con su chequeo «Service 'catalogo' check» en verde. `host.docker.internal` hace falta porque
-   el chequeo lo ejecuta Consul **desde el contenedor** contra tu máquina. Termina con `docker compose down`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f052-eureka/src/test/java/academia/discovery/EurekaRegistroTest.java` arranca el servidor y **dos** instancias de
 `catalogo` en la misma JVM, cada una en un puerto libre, y espera hasta 30 s a que el `DiscoveryClient` vea las dos:
 
@@ -823,103 +702,27 @@ protegen los timeouts, los reintentos contra otra instancia y el circuit breaker
 nunca sustituye a la resiliencia.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** el servicio con el cliente Eureka no arranca y el error no menciona Eureka Server ni la red.
-
-**Cómo se ve** (error real al ejecutar `EurekaRegistroTest` en macOS con Spring Cloud 2025.1.4, antes de la
-corrección):
-
-```text
-EurekaRegistroTest.dosInstanciasDeCatalogoSeRegistranYSeDescubren:21 » ApplicationContext Failed to start bean 'eurekaAutoServiceRegistration'
-Caused by: java.lang.NullPointerException: Cannot invoke "org.springframework.cloud.netflix.eureka.CloudEurekaClient.getApplications()"
-  because the return value of "org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getEurekaClient()" is null
-```
-
-**Diagnóstico** (leído en las fuentes de Spring Cloud Netflix 5.0.3):
-
-1. `spring-cloud-starter-netflix-eureka-server` trae Jersey 3 al classpath (`org.glassfish.jersey.core:jersey-client`
-   y `eureka-client-jersey3`). En `f052-eureka` el servidor y `catalogo` comparten classpath, así que `catalogo`
-   también lo tiene.
-2. `DiscoveryClientOptionalArgsConfiguration` elige el transporte: si existe la clase
-   `org.glassfish.jersey.client.JerseyClient` y `eureka.client.jersey.enabled` no es `false` (por defecto es
-   `true`), la rama Jersey gana y la de `RestClient` se desactiva. Pero la rama Jersey **no crea** ningún bean
-   `TransportClientFactories`.
-3. El bean `eurekaClient` (`@RefreshScope` + `@Lazy`) exige un `TransportClientFactories`. Al ser perezoso, el contexto
-   arranca y el fallo aparece después: `EurekaRegistration.getEurekaClient()` intenta resolver el proxy, captura la
-   excepción, la deja en el log como `error getting CloudEurekaClient` y devuelve `null`; el registro automático
-   choca con ese `null`.
-
-**Diagnóstico visual:** busca hacia arriba en el log la línea `error getting CloudEurekaClient`: la causa real está
-en su traza, no en el `NullPointerException`. Y comprueba qué transporte se eligió: con `RestClient` el log dice
-`Eureka HTTP Client uses RestClient`; si no aparece esa línea, el cliente no tiene transporte.
-
-**Arreglo:** `eureka.client.jersey.enabled: false` en `catalogo.yml` y `servidor.yml` (la documentación lo indica
-para cuando Jersey está en el classpath y no lo quieres en el cliente) con `spring-boot-starter-restclient` en `build.gradle.kts`.
-En un proyecto real el servidor y los clientes van en artefactos separados y el cliente nunca ve Jersey.
-
-**Otro síntoma frecuente:** el servicio arranca pero nunca aparece en el panel y cada 30 s el log repite
-`Cannot execute request on any known server`. Es una `defaultZone` mal escrita (otro puerto, sin `/eureka/`, o la
-clave en minúsculas: es la clave de un mapa y debe ser `defaultZone`). Compruébalo con `curl -s
-localhost:8761/eureka/apps`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Usarías Eureka en un clúster de Kubernetes? ¿Qué diferencia hay entre descubrimiento en el cliente y en el
-servidor?»
-
-**Respuesta modelo:** en Kubernetes normalmente no: la plataforma ya ofrece descubrimiento en el **servidor** (un
-`Service` con DNS estable y kube-proxy repartiendo entre pods con *readiness* en verde), y añadir Eureka crea una
-segunda fuente de verdad que puede discrepar. El descubrimiento en el **cliente** (Eureka + Spring Cloud LoadBalancer)
-pone la lista de instancias y la elección dentro de cada servicio: da más control (zonas, reintentos a otra
-instancia, *hints*) a cambio de una librería por lenguaje y de lógica repetida en cada cliente. Lo elegiría fuera de
-Kubernetes o entre plataformas; dentro, me quedo con el `Service` y, si necesito más control, con un *service mesh*.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Direcciones fijas «temporales» y registro sin caché ni timeouts:**
-
-```yaml
-# application-prod.yml
-catalogo:
-  url: http://10.0.3.17:8081     # la IP de la VM de hoy; mañana el autoescalado crea otra
-```
-
-Se ve en producción como un servicio que «a veces» falla después de cada despliegue o escalado: la IP cambió y
-nadie actualizó el archivo. El extremo opuesto también es un anti-patrón: consultar al registro en **cada** petición
-y sin caché, de modo que el registro se convierte en un punto único de fallo y en un cuello de botella. La regla:
-nombres lógicos (`catalogo`), lista local refrescada periódicamente y timeouts en cada llamada.
-
----
 ### API Gateway: Spring Cloud Gateway
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 7, Lección 2 de 5 · Fase 1 · 2,5 h: `jdk/MiniGateway.java`
-y `f053-gateway/`.
+#### ► DE QUÉ TRATA
+Construir un API Gateway con Spring Cloud Gateway que enrute /api/catalogo/ y /api/inventario/ a sus servicios, quite el prefijo y añada un X-Request-Id, de modo que los 3 tests de GatewayTest pasen, y distinguir en una respuesta 404 si la dio el gateway (sin ruta) o el servicio…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Construir un API Gateway con Spring Cloud Gateway que enrute /api/catalogo/ y /api/inventario/ a sus servicios, quite el prefijo y añada un X-Request-Id, de modo que los 3 tests de GatewayTest pasen, y distinguir en una respuesta 404 si la dio el gateway (sin ruta) o el servicio (ruta mal reescrita).**
 
-- Tema anterior (nombres lógicos de servicio) y Módulo 6 (llamadas HTTP entre servicios).
-- Módulo 0.4: cabeceras HTTP, códigos 404/502 y `curl -i`.
-- Saber leer YAML anidado (Módulo 0.4).
+#### ► POR QUÉ EXISTE ESTO
+Cuando tienes muchos servicios, cada uno con su dirección, los clientes (la app, la web) tendrían que conocerlos todos. Un API Gateway es un único servidor que se pone delante: el cliente solo conoce https://api.tienda.com, y el gateway decide a qué servicio interno mandar cada petición mirando la ruta.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en api gateway: spring cloud gateway como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Construir** un API Gateway con Spring Cloud Gateway que enrute `/api/catalogo/**` y `/api/inventario/**` a sus
-servicios, quite el prefijo y añada un `X-Request-Id`, de modo que los 3 tests de `GatewayTest` pasen, y **distinguir**
-en una respuesta 404 si la dio el gateway (sin ruta) o el servicio (ruta mal reescrita).
-
-#### 4. ANALOGÍA VISUAL
-
-La **portería de un conjunto residencial**. Todos los visitantes entran por una sola puerta. El portero mira el
-destino («torre 2, apartamento 701»), revisa el documento, anota la visita en la planilla con un número de ficha y te
-indica el camino. No sube a arreglar la nevera del 701: solo **dirige, controla y anota**. Si preguntas por la «torre
-9», que no existe, el mismo portero te dice «aquí no hay torre 9» sin molestar a ningún residente. Dibuja la portería
-con un letrero de flechas (torres 1, 2, 3), una planilla con números de ficha y una talanquera.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     CLI["Cliente<br/>GET /api/catalogo/productos/7"] --> HM
@@ -934,77 +737,44 @@ flowchart LR
     CAT -->|"200"| RF
 ```
 
-**Texto alternativo:** el cliente envía GET /api/catalogo/productos/7 al gateway. Dentro del gateway, el
-RoutePredicateHandlerMapping busca la ruta cuyo predicado coincide (Path=/api/catalogo/**) y pasa al
-FilteringWebHandler, que aplica primero el filtro global RequestIdFilter (pone X-Request-Id), luego los filtros de la
-ruta (StripPrefix=2 y AddResponseHeader) y por último el NettyRoutingFilter, que hace de proxy y llama a catalogo:8081
-con GET /productos/7 y la cabecera X-Request-Id: req-001. La respuesta 200 vuelve por los filtros. Si ninguna ruta
-coincide, el gateway responde 404 sin llamar a nadie.
+1. Cuando tienes muchos servicios, cada uno con su dirección, los clientes (la app, la web) tendrían que conocerlos todos.
+2. Un API Gateway es un único servidor que se pone delante: el cliente solo conoce https://api.tienda.com, y el gateway decide a qué servicio interno mandar cada petición mirando la ruta.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| API Gateway: Spring Cloud Gateway se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando tienes muchos servicios, cada uno con su dirección, los clientes (la app, la web) tendrían que conocerlos
-todos. Un **API Gateway** es un único servidor que se pone delante: el cliente solo conoce
-`https://api.tienda.com`, y el gateway decide a qué servicio interno mandar cada petición mirando la ruta.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar API Gateway: Spring Cloud Gateway | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Además de **enrutar**, el gateway es el lugar natural para lo que todas las peticiones necesitan: ponerles un número
-de seguimiento, comprobar quién eres, limitar cuántas peticiones haces y medir. Lo que **no** hace es lógica de
-negocio: no calcula precios ni decide si un pedido es válido.
+#### ► CUÁNDO NO USAR ESTO
+El gateway «inteligente» (monolito en el borde):
 
-**Spring Cloud Gateway** es un gateway que configuras con una tabla de rutas en YAML. Cada ruta tiene un destino
-(`uri`), unas condiciones (`predicates`) y unos pasos de transformación (`filters`).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: api gateway: spring cloud gateway funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► LO QUE DEBES RECORDAR
+- Cuando tienes muchos servicios, cada uno con su dirección, los clientes (la app, la web) tendrían que conocerlos todos.
+- Un API Gateway es un único servidor que se pone delante: el cliente solo conoce https://api.tienda.com, y el gateway decide a qué servicio interno mandar cada petición mirando la ruta.
 
-**Dos sabores.** Desde Spring Cloud 2025.0 el gateway se publica en dos variantes con nombres nuevos:
-`spring-cloud-starter-gateway-server-webflux` (sobre WebFlux y Netty, el original) y
-`spring-cloud-starter-gateway-server-webmvc` (sobre Spring MVC y Tomcat). Las propiedades llevan el prefijo de su
-variante: `spring.cloud.gateway.server.webflux.routes`. Este tema usa la variante WebFlux.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve api gateway: spring cloud gateway en tu contexto?
+2. ¿Cómo sabrías que api gateway: spring cloud gateway no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar api gateway: spring cloud gateway?
 
-**Ruta = id + uri + predicados + filtros.**
+</details>
 
-- **Predicados** (*Route Predicate Factories*): `Path=/api/catalogo/**`, `Method=GET`, `Header=X-Version, 2`,
-  `Host=**.tienda.com`, `After=...`. Todos deben cumplirse. La primera ruta que coincide gana (orden de la lista).
-- **Filtros de ruta** (*GatewayFilter Factories*): `StripPrefix=2` quita los dos primeros segmentos
-  (`/api/catalogo`), `RewritePath`, `AddRequestHeader`, `AddResponseHeader`, `CircuitBreaker`, `Retry`,
-  `RequestRateLimiter` (con Redis).
-- **Filtros globales** (`GlobalFilter` + `Ordered`): se aplican a todas las rutas. `RequestIdFilter` del laboratorio
-  pone `X-Request-Id` con `Ordered.HIGHEST_PRECEDENCE` para que vaya primero.
-- **`uri: lb://catalogo`**: con Spring Cloud LoadBalancer (tema 4) y un registro (tema 1), el gateway resuelve el
-  nombre y reparte entre instancias.
-- **Timeouts globales** en `spring.cloud.gateway.server.webflux.httpclient`: `connect-timeout` (ms) y
-  `response-timeout` (duración). Sin ellos, un servicio colgado retiene conexiones del gateway.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**El mecanismo por dentro** (`jdk/MiniGateway.java`): una tabla prefijo → servicio, una búsqueda de la primera ruta
-que coincide, la reescritura de la ruta, la cabecera de correlación y la traducción de errores (sin ruta → 404; el
-servicio no responde → 502).
-
-#### 8. EXPLICACIÓN MAESTRA
-
-**Patrones de Azure que conviene distinguir:** *Gateway Routing* (una sola dirección para varios servicios),
-*Gateway Offloading* (TLS, autenticación, límites, compresión en el borde) y *Gateway Aggregation* (componer varias
-llamadas en una respuesta). Spring Cloud Gateway hace muy bien las dos primeras; la agregación pertenece a un BFF
-(tema 5), porque es lógica de una experiencia concreta.
-
-| Opción | Fortaleza | Coste | Cuándo |
-|---|---|---|---|
-| Spring Cloud Gateway (WebFlux) | Rutas en YAML o Java, filtros en Java, integración con LoadBalancer/Resilience4j | Una app más que operar; modelo reactivo | Equipo Java que quiere lógica de borde propia |
-| Spring Cloud Gateway (WebMVC) | Modelo bloqueante conocido; con hilos virtuales escala bien | Menos filtros históricos que WebFlux | Equipos sin experiencia reactiva |
-| Gateway gestionado (AWS API Gateway, Azure APIM) | Sin servidores que operar, planes de uso, portal | Coste por petición, *lock-in* | Producto con API pública y poco tráfico interno |
-| Ingress/Gateway API de Kubernetes (NGINX, Envoy) | Estándar de la plataforma, muy eficiente | Filtros propios = otro lenguaje/config | Ya estás en Kubernetes y el borde es simple |
-
-**Cuándo NO usarlo.** Con un solo servicio o un monolito, un gateway propio es una pieza más que desplegar, monitorear
-y que puede caerse: un balanceador de la nube o un Ingress basta. Tampoco lo uses como «orquestador»: si empiezas a
-escribir `if (pedido.total >...)` en un filtro, has creado un monolito en el borde que todos los equipos tienen que
-modificar (el anti-patrón de este tema).
-
-**Trade-offs:** el gateway es un **punto único de fallo** y un salto de red más (añade latencia, normalmente pocos
-milisegundos): despliega varias réplicas, ponle timeouts y circuit breakers a cada ruta, y mide su p99. Y es un
-**cuello de botella organizativo** si un único equipo controla las rutas de todos: versiona su configuración y deja
-que cada equipo proponga sus rutas.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Spring Cloud 2025.1.4 (Spring Cloud Gateway 5.0.4, variante WebFlux).
 
 **El mecanismo con JDK puro** — `modulo-11/jdk/MiniGateway.java`:
@@ -1235,55 +1005,7 @@ public class GatewayApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. **El mecanismo, sin Spring:**
-
-```bash
-java jdk/MiniGateway.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5):
-
-```text
-GET /api/catalogo/productos/7  -> 200 catalogo recibió /productos/7 con X-Request-Id=req-001
-GET /api/inventario/stock/7    -> 200 inventario recibió /stock/7 con X-Request-Id=req-002
-GET /api/pagos/1               -> 404 {"error":"SIN_RUTA","ruta":"/api/pagos/1"}
-GET /api/inventario/stock/7    -> 502 {"error":"SERVICIO_NO_RESPONDE"}
-OK: el gateway enruta, quita el prefijo y propaga X-Request-Id
-```
-
-   **Captura comentada:** los servicios reciben la ruta **sin** `/api/catalogo` (StripPrefix) y el mismo
-   `X-Request-Id` que envió el cliente. `/api/pagos` no tiene ruta: el 404 lo da el gateway. En la última línea el
-   inventario está apagado: el gateway traduce el fallo de conexión a 502.
-
-2. **Spring Cloud Gateway.** Necesitas algo detrás: usa la demostración del tema 1 como «catálogo» o, más simple,
-   dos servidores de prueba con Python (incluido en macOS y Linux):
-
-```bash
-mkdir -p /tmp/cat/productos && echo '{"id":7,"nombre":"Audífonos BT"}' > /tmp/cat/productos/7
-python3 -m http.server 8081 --directory /tmp/cat &
-cd f053-gateway && ../gradlew -q bootRun
-```
-
-   En otra terminal:
-
-```bash
-curl -i -H 'X-Request-Id: req-001' localhost:8080/api/catalogo/productos/7
-curl -s -o /dev/null -w '%{http_code}\n' localhost:8080/api/pagos/1
-```
-
-   **Output esperado:** el primer comando muestra `HTTP/1.1 200 OK`, las cabeceras `X-Request-Id: req-001` y
-   `X-Gateway: academia`, y el cuerpo `{"id":7,"nombre":"Audífonos BT"}`; el segundo imprime `404`. **Captura
-   descrita:** en la terminal de Python aparece `"GET /productos/7 HTTP/1.1" 200`: el servidor recibió la ruta sin
-   prefijo.
-
-3. **Fallo deliberado:** apaga Python (`kill %1`) y repite el primer `curl`. **Output esperado:** un error 5xx del
-   gateway (`500` o `503` según la versión, con el cuerpo JSON de error de Spring) en menos de 1 s gracias a
-   `connect-timeout: 1000`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f053-gateway/src/test/java/academia/gateway/GatewayTest.java` arranca el gateway en un puerto aleatorio con dos
 servicios de prueba (`Backend.java`, un `HttpServer` del JDK) y comprueba enrutamiento, `X-Request-Id` y 404:
 
@@ -1370,90 +1092,27 @@ Va a `legado`: la primera ruta que coincide gana y `/api/**` coincide con todo. 
 (o usa la propiedad `order` de cada ruta, menor número = más prioridad).
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** a través del gateway todo responde 404, pero el servicio, llamado directamente
-(`curl localhost:8081/productos/7`), responde 200.
-
-**Cómo se ve:** quitas `StripPrefix=2` de la ruta y pides `/api/catalogo/productos/7`. En el log del servicio de
-prueba (el `http.server` de Python del paso 2) aparece la ruta completa (salida real):
-
-```text
-127.0.0.1 - - [19/Nov/2026 21:57:43] code 404, message File not found
-127.0.0.1 - - [19/Nov/2026 21:57:43] "GET /api/catalogo/productos/7 HTTP/1.1" 404 -
-```
-
-**Diagnóstico visual:** hay dos 404 posibles y se distinguen por **quién** responde. Si el 404 lleva `X-Gateway:
-academia`, la petición pasó por la ruta y el 404 lo dio el **servicio** (no conoce `/api/catalogo/...`): falta
-reescribir la ruta. Si no lleva esa cabecera y el log del servicio está vacío, el 404 lo dio el **gateway** (ningún
-predicado coincidió). Activa `logging.level.org.springframework.cloud.gateway=DEBUG` para ver
-`Route matched: catalogo` o `No RouteDefinition found`.
-
-**Arreglo:** añade `StripPrefix=2` (o `RewritePath=/api/catalogo/(?<resto>.*), /$\{resto}`) y comprueba con el log
-del servicio que llega `/productos/7`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué pondrías en un API Gateway y qué nunca pondrías?»
-
-**Respuesta modelo:** pondría lo **transversal** y sin conocimiento del dominio: enrutamiento, terminación TLS,
-validación del token (no la autorización fina de negocio), límite de peticiones por cliente, correlación
-(`X-Request-Id`/`traceparent`), CORS, compresión, timeouts y circuit breakers por ruta, y métricas. Nunca pondría
-reglas de negocio, orquestación de varios servicios ni transformaciones específicas de una pantalla: eso acopla
-a todos los equipos a un mismo despliegue. La composición para una experiencia concreta va en un BFF. Y lo trataría
-como componente crítico: varias réplicas, configuración versionada y alertas sobre su p99.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El gateway «inteligente» (monolito en el borde):**
-
-```java
-@Component
-class DescuentoFilter implements GlobalFilter {
-    public Mono<Void> filter(ServerWebExchange ex, GatewayFilterChain chain) {
-        // Regla de negocio en el gateway: aplica 10 % a clientes VIP leyendo la base de clientes
-        if (clientesRepo.esVip(ex.getRequest().getHeaders().getFirst("X-Cliente"))) { /* reescribe el cuerpo */ }
-        return chain.filter(ex);
-    }
-}
-```
-
-Se ve así: cada cambio de una promoción obliga a desplegar el gateway, que comparten todos los equipos; el gateway
-necesita acceso a la base de clientes, y un error en el filtro tumba **todas** las APIs. Las reglas de descuento
-pertenecen al servicio de precios; el gateway solo enruta y aplica políticas transversales.
-
----
 ### Config Server: configuración centralizada
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 7, Lección 3 de 5 · Fase 1 · 2 h: `jdk/ConfigCentral.java` y
-`f054-config/` (Config Server + cliente `catalogo` + carpeta `config-repo/`).
+#### ► DE QUÉ TRATA
+Configurar un Config Server que sirva application.yml, catalogo.yml y catalogo-prod.yml, y un cliente que reciba la fuente de mayor prioridad, de modo que los 2 tests de ConfigServerTest pasen; y predecir qué valor ve un servicio después de un git push con y sin POST /actuator/re…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Configurar un Config Server que sirva application.yml, catalogo.yml y catalogo-prod.yml, y un cliente que reciba la fuente de mayor prioridad, de modo que los 2 tests de ConfigServerTest pasen; y predecir qué valor ve un servicio después de un git push con y sin POST /actuator/refresh.**
 
-- Módulo 1, «Perfiles y configuración externalizada»: `application.yml`, `application-prod.yml`, precedencia.
-- Módulo 0.4: Git (el backend por defecto del Config Server es un repositorio Git) y variables de entorno.
-- ficha 1 de este módulo (nombres de aplicación: `spring.application.name`).
+#### ► POR QUÉ EXISTE ESTO
+Cada servicio tiene configuración: valores que no son código y cambian según el entorno (la dirección de la base de datos, cuántos productos mostrar por página, un mensaje de promoción). Con 20 servicios y 3 entornos, tener un application.yml dentro de cada servicio significa 60 archivos repartidos, y para cambiar un valor hay que reconstruir y desplegar.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en config server: configuración centralizada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Configurar** un Config Server que sirva `application.yml`, `catalogo.yml` y `catalogo-prod.yml`, y un cliente que
-reciba la fuente de mayor prioridad, de modo que los 2 tests de `ConfigServerTest` pasen; y **predecir** qué valor
-ve un servicio después de un `git push` con y sin `POST /actuator/refresh`.
-
-#### 4. ANALOGÍA VISUAL
-
-El **tablero de anuncios de la sala de profesores** de un colegio. Hay una hoja general «para todos» (horario del
-timbre), una hoja por materia (Matemáticas: «calculadora permitida») y una hoja por materia y jornada (Matemáticas,
-jornada tarde: «examen el viernes»). Cada profesor, al llegar por la mañana, **copia en su libreta** lo que le
-aplica: primero lo general, encima lo de su materia y encima lo de su jornada; si dos hojas dicen cosas distintas,
-gana la más específica. Si la coordinadora cambia una hoja a mediodía, nadie se entera hasta que vuelva a mirar el
-tablero (**refrescar**). Si un día el tablero no está, un profesor prudente no da clase con una libreta en blanco
-(**fail-fast**). Dibuja el tablero con tres hojas superpuestas de colores y una libreta abierta al lado.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph REPO["Repositorio (Git o carpeta)"]
@@ -1468,75 +1127,44 @@ flowchart LR
     OPS["POST /actuator/refresh"] -.->|"vuelve a pedir y recrea<br/>los beans @RefreshScope"| CLI
 ```
 
-**Texto alternativo:** a la izquierda, un repositorio con tres archivos: application.yml (moneda COP, página 10),
-catalogo.yml (página 20) y catalogo-prod.yml (página 50 y banner Black Friday). El Config Server en el puerto 8888 los
-lee y, ante GET /catalogo/prod, responde una lista de fuentes ordenada de mayor a menor prioridad: catalogo-prod,
-catalogo, application. El cliente catalogo con perfil prod, que usa spring.config.import=configserver:, termina con
-página 50, banner Black Friday y moneda COP. Con líneas punteadas: un git push cambia el repositorio y un POST a
-/actuator/refresh hace que el cliente vuelva a pedir la configuración y recree los beans con @RefreshScope.
+1. Cada servicio tiene configuración: valores que no son código y cambian según el entorno (la dirección de la base de datos, cuántos productos mostrar por página, un mensaje de promoción).
+2. Con 20 servicios y 3 entornos, tener un application.yml dentro de cada servicio significa 60 archivos repartidos, y para cambiar un valor hay que reconstruir y desplegar.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Config Server: configuración centralizada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cada servicio tiene **configuración**: valores que no son código y cambian según el entorno (la dirección de la
-base de datos, cuántos productos mostrar por página, un mensaje de promoción). Con 20 servicios y 3 entornos, tener
-un `application.yml` dentro de cada servicio significa 60 archivos repartidos, y para cambiar un valor hay que
-reconstruir y desplegar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Config Server: configuración centralizada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Un **Config Server** es un servicio que guarda la configuración de todos en un solo lugar (normalmente un repositorio
-Git) y se la entrega a cada servicio cuando arranca. Cada servicio dice «soy `catalogo` y estoy en `prod`» y el
-servidor le devuelve lo que le corresponde. Cambiar un valor es hacer un commit; los servicios lo recogen al
-reiniciar o cuando se les pide **refrescar**.
+#### ► CUÁNDO NO USAR ESTO
+Config Server como base de datos de negocio y almacén de secretos:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: config server: configuración centralizada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Servidor:** `spring-cloud-config-server` + `@EnableConfigServer`. Expone `GET /{aplicación}/{perfil}[/{rama}]`,
-que devuelve JSON con `propertySources` ordenadas de **mayor a menor** prioridad. Backends: `git` (por defecto:
-`spring.cloud.config.server.git.uri`), `native` (carpetas o classpath: `spring.profiles.active=native` +
-`spring.cloud.config.server.native.search-locations`), Vault, JDBC, S3 y otros. El laboratorio usa `native` con la
-carpeta `config-repo/` para no necesitar un repositorio remoto.
+#### ► LO QUE DEBES RECORDAR
+- Cada servicio tiene configuración: valores que no son código y cambian según el entorno (la dirección de la base de datos, cuántos productos mostrar por página, un mensaje de promoción).
+- Con 20 servicios y 3 entornos, tener un application.yml dentro de cada servicio significa 60 archivos repartidos, y para cambiar un valor hay que reconstruir y desplegar.
 
-**Precedencia** (de menor a mayor): `application.yml` → `application-{perfil}.yml` → `{app}.yml` →
-`{app}-{perfil}.yml`. Es la misma idea de perfiles del Módulo 1, ahora con el nombre de la aplicación.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve config server: configuración centralizada en tu contexto?
+2. ¿Cómo sabrías que config server: configuración centralizada no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar config server: configuración centralizada?
 
-**Cliente:** `spring-cloud-starter-config` y, en su configuración local,
-`spring.config.import: configserver:http://localhost:8888`. Con el prefijo `optional:` el servicio arranca aunque el
-servidor no responda (con sus valores locales); sin él, y con `spring.cloud.config.fail-fast: true`, **no arranca**.
-El nombre que envía es `spring.application.name` y el perfil, `spring.profiles.active`.
+</details>
 
-**Refresco en caliente:** los valores se leen al arrancar. Tras cambiar el repositorio, `POST /actuator/refresh`
-(Actuator con el endpoint `refresh` expuesto) vuelve a pedir la configuración, publica los cambios y **recrea** los
-beans anotados con `@RefreshScope`; los `@ConfigurationProperties` mutables se vuelven a enlazar. Para refrescar muchas
-instancias a la vez existe Spring Cloud Bus (un mensaje por RabbitMQ o Kafka).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**El mecanismo por dentro** (`jdk/ConfigCentral.java`): un mapa de archivos, una mezcla en orden `application` →
-`{app}` → `{app}-{perfil}` donde la última fuente gana, un cliente que guarda su copia y solo la cambia al refrescar,
-y el fallo de arranque cuando el servidor no responde.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Opción | Ventaja | Coste | Cuándo |
-|---|---|---|---|
-| Spring Cloud Config (Git) | Historial, revisión por *pull request*, rollback con `git revert`, perfiles y etiquetas | Un servicio más, crítico en el arranque | Muchos servicios Spring fuera de Kubernetes |
-| Variables de entorno / `ConfigMap` de Kubernetes | Nada que operar; 12-Factor puro | Cambiar = redesplegar o reiniciar pods; poca estructura | Kubernetes y pocos valores por servicio |
-| Consul KV / etcd | Cambios en caliente con *watch*, multiplataforma | Otro sistema distribuido; sin revisión por PR por defecto | Ya usas Consul para descubrimiento |
-| AWS AppConfig / Azure App Configuration | Gestionado, *feature flags*, despliegue gradual de config | Coste y *lock-in* | Nube única y necesitas despliegue seguro de config |
-
-**Secretos:** el Config Server **no** es un gestor de secretos. Puede cifrar valores (`{cipher}...` con una clave
-simétrica o asimétrica), pero un repositorio Git con contraseñas, aunque cifradas, es un riesgo. Lo correcto es
-Vault (Módulo 9) como backend del Config Server o directamente desde el servicio.
-
-**Cuándo NO usarlo.** En Kubernetes con configuración pequeña, `ConfigMap` + variables de entorno resuelven lo mismo
-sin otro servicio crítico. Tampoco si tus equipos despliegan con frecuencia: la configuración puede viajar con el
-despliegue (*config as code* junto al servicio). Y nunca para *feature flags* que cambian por minuto: usa una
-herramienta de flags.
-
-**Riesgos que pagas:** (1) el servidor es una **dependencia de arranque**: si cae durante un despliegue masivo,
-ningún servicio arranca (mitígalo con varias réplicas, `retry` del cliente y caché local); (2) un `git push` erróneo
-llega a todos los entornos que refresquen (protege la rama, usa etiquetas por entorno: `/{app}/{perfil}/{label}`);
-(3) `@RefreshScope` recrea beans: un bean con estado (un pool de conexiones) puede cerrarse en mitad de una petición.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Spring Cloud 2025.1.4 (Spring Cloud Config 5.0.6).
 
 **El mecanismo con JDK puro** — `modulo-11/jdk/ConfigCentral.java`:
@@ -1841,73 +1469,7 @@ management:
         include: health,refresh
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. **El mecanismo, sin Spring:**
-
-```bash
-java jdk/ConfigCentral.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5):
-
-```text
-catalogo/default -> {catalogo.pagina=20, tienda.moneda=COP}
-catalogo/prod    -> {catalogo.banner=Black Friday, catalogo.pagina=50, tienda.moneda=COP}
-tras el push, sin refrescar: catalogo.pagina=50
-tras refrescar:              catalogo.pagina=80
-arranque sin servidor (fail-fast): no pude leer catalogo/prod del Config Server: ConnectException
-OK: precedencia, refresco y fail-fast comprobados
-```
-
-   **Captura comentada:** `catalogo.pagina` vale 10 en `application`, 20 en `catalogo` y 50 en `catalogo-prod`: cada
-   cliente ve el valor de su fuente más específica, y `tienda.moneda` llega a todos desde `application`. Tras el
-   «push» el cliente sigue con 50 hasta que refresca.
-
-2. **El servidor.** Desde `f054-config` (el servidor busca `./config-repo/` relativo a la carpeta actual):
-
-```bash
-../gradlew -q bootRun -Pprincipal=academia.config.servidor.ConfigServidorApp
-```
-
-   En otra terminal:
-
-```bash
-curl -s localhost:8888/catalogo/prod | jq '.propertySources[] | {name, source}'
-```
-
-   **Output esperado:** tres objetos, en este orden: el de `.../config-repo/catalogo-prod.yml` con
-   `{"catalogo.pagina": 50, "catalogo.banner": "Black Friday"}`, el de `catalogo.yml` con `{"catalogo.pagina": 20}` y
-   el de `application.yml` con la moneda y la página 10.
-
-3. **El cliente con perfil prod:**
-
-```bash
-SPRING_PROFILES_ACTIVE=prod ../gradlew -q bootRun -Pprincipal=academia.config.catalogo.CatalogoConfigApp
-curl -s localhost:8081/ajustes
-```
-
-   **Output esperado:** `{"pagina":50,"banner":"Black Friday","moneda":"COP"}` (el orden de las claves puede
-   variar).
-
-4. **Refresco en caliente.** Edita `config-repo/catalogo-prod.yml`: `pagina: 80` y `banner: Cyber Monday`. Luego:
-
-```bash
-curl -s localhost:8081/ajustes                        # sigue en 50: el cliente no se enteró
-curl -s -X POST localhost:8081/actuator/refresh       # ["catalogo.banner","catalogo.pagina"]
-curl -s localhost:8081/ajustes                        # ahora 80 y Cyber Monday
-```
-
-   **Output esperado:** el `POST` devuelve la lista de claves que cambiaron; la última consulta muestra
-   `"pagina":80` y `"banner":"Cyber Monday"`. Deja el archivo como estaba.
-
-5. **Fallo deliberado:** detén el servidor y arranca de nuevo el cliente. **Output esperado:** `APPLICATION FAILED
-   TO START` y, en la traza, `Could not locate PropertySource and the fail fast property is set, failing`. Con
-   `optional:configserver:` en lugar de `configserver:` arrancaría, pero `@Value("${catalogo.pagina}")` fallaría
-   porque nadie define ese valor.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f054-config/src/test/java/academia/config/ConfigServerTest.java` arranca el servidor y el cliente en puertos libres
 y comprueba la mezcla y el *fail-fast*:
 
@@ -1984,102 +1546,27 @@ timeout ve?
 que `application-prod.yml`. Si quieres 1 s en prod para inventario, créalo en `inventario-prod.yml`.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** el cliente no arranca y el error dice que no sabe leer la ubicación `configserver:`, aunque
-`spring-cloud-starter-config` está en `build.gradle.kts`.
-
-**Cómo se ve** (error real de `ConfigServerTest` en macOS con Spring Cloud Config 5.0.6, antes de la corrección):
-
-```text
-java.lang.IllegalStateException: Unable to load config data from 'configserver:http://localhost:49886'
-Caused by: java.lang.IllegalStateException: Incorrect ConfigDataLocationResolver chosen or file extension is not known
-  to any PropertySourceLoader. ... The location is being resolved using the StandardConfigDataLocationResolver,
-  check the location prefix if a different resolver is expected
-```
-
-**Diagnóstico** (leído en las fuentes de Spring Cloud Config 5.0.6): el resolver del cliente,
-`ConfigServerConfigDataLocationResolver`, solo acepta `configserver:` si `spring.cloud.config.enabled` vale `true`
-(por defecto lo es). Pero `f054-config` tiene también `spring-cloud-config-server` en el classpath, y el servidor trae
-`ConfigServerBootstrapApplicationListener`, que añade `spring.cloud.config.enabled=false` a **cualquier** aplicación
-que no lo haya definido como `true` (para que el servidor no se pida configuración a sí mismo). Con el resolver
-apagado, Spring Boot prueba el resolver estándar de archivos, que no entiende el prefijo. **Diagnóstico visual:** la
-palabra clave es `StandardConfigDataLocationResolver`: si aparece con una ubicación `configserver:`, el cliente de
-Config no está activo (falta la dependencia o alguien puso `enabled=false`).
-
-**Arreglo:** en `CatalogoConfigApp.arrancar` se define `spring.cloud.config.enabled=true` antes de arrancar (como
-propiedad por defecto, visible para el listener). En un proyecto real el cliente no lleva el servidor en su classpath
-y no hace falta. Con el resolver activo y el servidor caído, el error correcto es otro:
-`ConfigClientFailFastException: Could not locate PropertySource and the fail fast property is set, failing` (lo
-comprueba `sinConfigServerElClienteNoArranca`).
-
-**Otro síntoma frecuente:** el servicio arranca pero usa los valores generales (`catalogo.pagina=10`).
-`curl -s localhost:8888/catalog/prod | jq '.propertySources[].name'` muestra solo las fuentes `application`: el nombre
-que envía el cliente (`spring.application.name`) no coincide con el del archivo. El log del cliente lo revela en
-`Located environment: name=catalog, profiles=[prod],...`. Alinea el nombre y comprueba siempre con
-`GET /{app}/{perfil}` qué devuelve el servidor.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo cambias la configuración de 30 instancias en producción sin redesplegar, y qué riesgos tiene?»
-
-**Respuesta modelo:** con la configuración en un repositorio Git servido por Spring Cloud Config, el cambio pasa por
-*pull request* y queda en el historial. Después lo propago con Spring Cloud Bus (un `POST /actuator/busrefresh` que
-viaja por Kafka o RabbitMQ a todas las instancias) o, en Kubernetes, con un `ConfigMap` y un reinicio gradual. Los
-riesgos: un valor erróneo llega a todas las instancias a la vez (lo mitigo con validación de la configuración al
-enlazarla, despliegue gradual de la config y rollback con `git revert`), los beans `@RefreshScope` se recrean bajo
-carga, y el servidor de configuración se vuelve dependencia de arranque (varias réplicas y *fail-fast* con
-reintentos). Los secretos no van ahí: van en Vault.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Config Server como base de datos de negocio y almacén de secretos:**
-
-```yaml
-# config-repo/precios.yml   (en Git, visible para todos los que leen el repositorio)
-precios:
-  audifonos-bt: 189000          # el equipo comercial "cambia precios" con commits
-  descuento-vip: 15
-spring:
-  datasource:
-    password: Sup3rS3creta!      # secreto en texto plano en el historial de Git para siempre
-```
-
-Se ve así: el repositorio de configuración tiene cientos de commits diarios de personas de negocio, cada cambio de
-precio exige `refresh` en todas las instancias y la contraseña queda en el historial aunque luego la borres. Los
-datos de negocio van en la base de datos del servicio dueño (con su API), y los secretos en Vault.
-
----
 ### Load Balancing: Spring Cloud LoadBalancer
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 7, Lección 4 de 5 · Fase 1 · 2 h: `jdk/Balanceador.java` y
-`f055-loadbalancer/`.
+#### ► DE QUÉ TRATA
+Implementar balanceo de carga en el cliente con @LoadBalanced RestClient.Builder, de modo que 6 llamadas a http://catalogo se repartan 2-2-2 entre tres instancias (test BalanceoTest), y explicar con la salida de jdk/Balanceador.java por qué, sin health check, una instancia caída…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar balanceo de carga en el cliente con @LoadBalanced RestClient.Builder, de modo que 6 llamadas a http://catalogo se repartan 2-2-2 entre tres instancias (test BalanceoTest), y explicar con la salida de jdk/Balanceador.java por qué, sin health check, una instancia caída hace fallar 1 de cada 3 llamadas.**
 
-- Tema 1 (registro de servicios y `DiscoveryClient`).
-- Módulo 6: `RestClient` y su `Builder`.
-- Saber qué es un health check (`/actuator/health`).
+#### ► POR QUÉ EXISTE ESTO
+Cuando un servicio tiene varias copias (instancias) para atender más usuarios, alguien tiene que decidir a cuál copia va cada petición. Eso es balancear la carga. Puede hacerlo una máquina en medio (un balanceador de la nube, NGINX) o el propio servicio que llama, que conoce la lista de copias y elige una cada vez: eso es balanceo en el cliente.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en load balancing: spring cloud loadbalancer como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** balanceo de carga en el cliente con `@LoadBalanced RestClient.Builder`, de modo que 6 llamadas a
-`http://catalogo` se repartan 2-2-2 entre tres instancias (test `BalanceoTest`), y **explicar** con la salida de
-`jdk/Balanceador.java` por qué, sin health check, una instancia caída hace fallar 1 de cada 3 llamadas.
-
-#### 4. ANALOGÍA VISUAL
-
-Las **filas de cajas de un supermercado** vistas desde arriba, con un **empleado repartidor** a la entrada de la
-zona de cajas. Tiene la lista de cajas abiertas (1, 2, 3) y manda a cada cliente a la siguiente caja de la lista,
-en orden, como quien reparte cartas: 1, 2, 3, 1, 2, 3 (*round-robin*). Si la caja 2 se queda sin cajero y nadie
-avisa al repartidor, él sigue mandando gente a la caja 2, donde esperan para nada. Si el repartidor **mira** antes
-qué cajas tienen la luz encendida (*health check*), solo reparte entre la 1 y la 3. Dibuja las tres cajas, la 2 con
-la luz apagada, y flechas numeradas que salen del repartidor.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     COD["CatalogoCliente<br/>rest.get().uri('/quien')<br/>baseUrl http://catalogo"] --> INT["Interceptor de @LoadBalanced<br/>(LoadBalancerInterceptor)"]
@@ -2090,65 +1577,88 @@ flowchart LR
     REW --> C2["catalogo-2"]
 ```
 
-**Texto alternativo:** el código de CatalogoCliente hace una petición a /quien con URL base http://catalogo. El
-interceptor que añade @LoadBalanced la captura y pregunta al RoundRobinLoadBalancer, que obtiene la lista de
-instancias de un ServiceInstanceListSupplier; este la saca del DiscoveryClient (simple, Eureka o Consul), la guarda
-en caché y opcionalmente filtra las que no pasan el health check. El balanceador elige catalogo-2, la URL se
-reescribe a http://127.0.0.1:8082/quien y la petición sale hacia catalogo-2.
+1. Cuando un servicio tiene varias copias (instancias) para atender más usuarios, alguien tiene que decidir a cuál copia va cada petición.
+2. Eso es balancear la carga.
+3. Puede hacerlo una máquina en medio (un balanceador de la nube, NGINX) o el propio servicio que llama, que conoce la lista de copias y elige una cada vez: eso es balanceo en el cliente.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Load Balancing: Spring Cloud LoadBalancer se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando un servicio tiene varias copias (instancias) para atender más usuarios, alguien tiene que decidir **a cuál
-copia** va cada petición. Eso es **balancear la carga**. Puede hacerlo una máquina en medio (un balanceador de la
-nube, NGINX) o el propio servicio que llama, que conoce la lista de copias y elige una cada vez: eso es **balanceo en
-el cliente**.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Load Balancing: Spring Cloud LoadBalancer | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Spring Cloud LoadBalancer** hace lo segundo. Escribes `http://catalogo` como si `catalogo` fuera una página web, y
-antes de enviar la petición la librería cambia ese nombre por la dirección real de una de las copias, rotando entre
-ellas.
+#### ► CUÁNDO NO USAR ESTO
+Balanceo «a mano» con una lista fija y sin salud:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: load balancing: spring cloud loadbalancer funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Activación:** `spring-cloud-starter-loadbalancer` + un `RestClient.Builder` (o `RestTemplate`, `WebClient.Builder`)
-  anotado con `@LoadBalanced`. El *post-processor* le añade un interceptor que trata el *host* de la URL como
-  `serviceId`. Sin la anotación, `http://catalogo` es un nombre DNS más y falla al resolverse.
-- **De dónde sale la lista:** del `DiscoveryClient` activo. Sin registro, `SimpleDiscoveryClient` lee
-  `spring.cloud.discovery.client.simple.instances.<servicio>[i].uri` (lo usa el laboratorio). Con Eureka o Consul en
-  el classpath, la lista llega del registro sin cambiar el código.
-- **Algoritmos:** `RoundRobinLoadBalancer` (por defecto; empieza en una posición aleatoria y avanza con un contador
-  atómico) y `RandomLoadBalancer`. Se cambia por servicio con `@LoadBalancerClient(name = "catalogo",
-  configuration =...)` declarando un bean `ReactorLoadBalancer<ServiceInstance>`.
-- **Proveedores de instancias encadenados** (`ServiceInstanceListSupplier.builder()`): `.withDiscoveryClient()`,
-  `.withCaching()` (35 s por defecto), `.withHealthChecks()` (consulta `/actuator/health` de cada instancia
-  periódicamente y descarta las que fallan), `.withZonePreference()`, `.withSameInstancePreference()`. Por
-  propiedades: `spring.cloud.loadbalancer.configurations=health-check` o `zone-preference`.
-- **Reintentos:** `spring.cloud.loadbalancer.retry.*` puede repetir una petición idempotente en **otra** instancia
-  (requiere Spring Retry en el classpath para clientes bloqueantes).
+#### ► LO QUE DEBES RECORDAR
+- Cuando un servicio tiene varias copias (instancias) para atender más usuarios, alguien tiene que decidir a cuál copia va cada petición.
+- Eso es balancear la carga.
+- Puede hacerlo una máquina en medio (un balanceador de la nube, NGINX) o el propio servicio que llama, que conoce la lista de copias y elige una cada vez: eso es balanceo en el cliente.
 
-**El mecanismo por dentro** (`jdk/Balanceador.java`): un contador atómico módulo el número de instancias, y un
-filtro que pregunta `/actuator/health` antes de elegir.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve load balancing: spring cloud loadbalancer en tu contexto?
+2. ¿Cómo sabrías que load balancing: spring cloud loadbalancer no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar load balancing: spring cloud loadbalancer?
 
-#### 8. EXPLICACIÓN MAESTRA
+</details>
 
-| Opción | Dónde decide | Ventaja | Coste |
-|---|---|---|---|
-| Cliente (Spring Cloud LoadBalancer) | En cada servicio | Sin salto extra; reglas por servicio (zona, misma instancia, reintento en otra) | Lógica en cada cliente y por lenguaje; cada cliente ve una lista con retraso distinto |
-| Servidor (ALB/NLB, NGINX, HAProxy) | En un proxy dedicado | Transparente para el código, cualquier lenguaje | Un salto y un componente más; algoritmos genéricos |
-| Plataforma (`Service` de Kubernetes) | kube-proxy en cada nodo | Gratis en Kubernetes | Balanceo por **conexión**, no por petición (con HTTP/2 o gRPC y keep-alive se desequilibra) |
-| Service mesh (Envoy/Istio) | *Sidecar* junto a cada pod | Por petición, *outlier detection*, reintentos y mTLS sin código | Complejidad operativa y recursos por pod |
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Algoritmos y su trampa.** *Round-robin* supone instancias iguales y peticiones iguales; si una instancia es más
-lenta (vecino ruidoso, GC), recibe la misma cantidad y acumula cola. *Least-connections* o *power of two choices*
-(elige dos al azar y manda a la menos cargada) se adaptan mejor; Spring Cloud LoadBalancer no los trae, pero puedes
-implementarlos como `ReactorServiceInstanceLoadBalancer`. **Health checks activos** (el balanceador pregunta) detectan
-caídas con retraso del intervalo; **pasivos** (*outlier detection*: sacar una instancia tras N errores reales) reaccionan
-más rápido. Lo robusto combina ambos con reintento en otra instancia y circuit breaker (Módulo 8).
+#### Construcción guiada
+1. **El mecanismo, sin Spring:**
 
-**Cuándo NO usarlo.** En Kubernetes sin requisitos especiales, el `Service` ya balancea: `@LoadBalanced` con
-Kubernetes DiscoveryClient solo tiene sentido si necesitas reglas por petición. Con una sola instancia, no aporta nada.
+```bash
+java jdk/Balanceador.java
+```
 
-#### 9. CÓDIGO EJECUTABLE
+   **Output esperado** (ejecutado con JDK 25.0.5):
 
+```text
+1) Las 3 vivas, round-robin:          {catalogo-1=2, catalogo-2=2, catalogo-3=2}
+2) catalogo-2 caída, sin health check: {ERROR=2, catalogo-1=2, catalogo-3=2}
+3) catalogo-2 caída, con health check: {catalogo-1=3, catalogo-3=3}
+OK: round-robin reparte y el health check evita la instancia caída
+```
+
+   **Captura comentada:** con las tres vivas, reparto perfecto. Al apagar `catalogo-2`, el balanceador sin health
+   check la sigue eligiendo una de cada tres veces: 2 errores de 6. Con el filtro de salud, las 6 llamadas se
+   reparten 3-3 entre las vivas.
+
+2. **Con Spring.** Levanta tres «catálogos» que responden su nombre (Python, en tres terminales o en segundo plano):
+
+```bash
+for i in 1 2 3; do mkdir -p /tmp/c$i && echo -n catalogo-$i > /tmp/c$i/quien; \
+  python3 -m http.server 808$i --directory /tmp/c$i > /dev/null 2>&1 & done
+```
+
+   Después, desde `f055-loadbalancer`, haz 6 llamadas con el `CommandLineRunner` de `BalanceoApp` (la aplicación no
+   tiene servidor web: termina al acabar):
+
+```bash
+../gradlew -q bootRun --args=--demo.llamadas=6
+```
+
+   **Output esperado:** seis líneas `llamada N -> catalogo-X` con `catalogo-1`, `catalogo-2` y `catalogo-3` dos veces
+   cada uno, en rotación (la primera puede ser cualquiera: `RoundRobinLoadBalancer` empieza en una posición
+   aleatoria).
+
+3. **Fallo deliberado:** mata el servidor del puerto 8082 (`kill %2`) y repite: dos de las seis líneas dicen
+   `ERROR ResourceAccessException` (conexión rechazada). Activa `configurations: health-check`, reinicia y, pasado el
+   primer intervalo de chequeo, las seis llamadas van a 8081 y 8083. Termina con `kill %1 %3`.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Spring Cloud 2025.1.4 (Spring Cloud Commons/LoadBalancer 5.0.4).
 
 **El mecanismo con JDK puro** — `modulo-11/jdk/Balanceador.java`:
@@ -2399,51 +1909,7 @@ spring:
         interval: 5s                        # cada cuánto pregunta a /actuator/health
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. **El mecanismo, sin Spring:**
-
-```bash
-java jdk/Balanceador.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5):
-
-```text
-1) Las 3 vivas, round-robin:          {catalogo-1=2, catalogo-2=2, catalogo-3=2}
-2) catalogo-2 caída, sin health check: {ERROR=2, catalogo-1=2, catalogo-3=2}
-3) catalogo-2 caída, con health check: {catalogo-1=3, catalogo-3=3}
-OK: round-robin reparte y el health check evita la instancia caída
-```
-
-   **Captura comentada:** con las tres vivas, reparto perfecto. Al apagar `catalogo-2`, el balanceador sin health
-   check la sigue eligiendo una de cada tres veces: 2 errores de 6. Con el filtro de salud, las 6 llamadas se
-   reparten 3-3 entre las vivas.
-
-2. **Con Spring.** Levanta tres «catálogos» que responden su nombre (Python, en tres terminales o en segundo plano):
-
-```bash
-for i in 1 2 3; do mkdir -p /tmp/c$i && echo -n catalogo-$i > /tmp/c$i/quien; \
-  python3 -m http.server 808$i --directory /tmp/c$i > /dev/null 2>&1 & done
-```
-
-   Después, desde `f055-loadbalancer`, haz 6 llamadas con el `CommandLineRunner` de `BalanceoApp` (la aplicación no
-   tiene servidor web: termina al acabar):
-
-```bash
-../gradlew -q bootRun --args=--demo.llamadas=6
-```
-
-   **Output esperado:** seis líneas `llamada N -> catalogo-X` con `catalogo-1`, `catalogo-2` y `catalogo-3` dos veces
-   cada uno, en rotación (la primera puede ser cualquiera: `RoundRobinLoadBalancer` empieza en una posición
-   aleatoria).
-
-3. **Fallo deliberado:** mata el servidor del puerto 8082 (`kill %2`) y repite: dos de las seis líneas dicen
-   `ERROR ResourceAccessException` (conexión rechazada). Activa `configurations: health-check`, reinicia y, pasado el
-   primer intervalo de chequeo, las seis llamadas van a 8081 y 8083. Termina con `kill %1 %3`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f055-loadbalancer/src/test/java/academia/balanceo/BalanceoTest.java` levanta tres servidores del JDK, los registra
 como instancias de `catalogo` y comprueba el reparto y el efecto de una instancia caída:
 
@@ -2526,88 +1992,27 @@ Un tercio, y cada una de esas llamadas cruza de zona (más latencia y, en la nub
 prefiere instancias de la misma zona y solo usa la B si en la A no hay ninguna.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** `http://catalogo/quien` falla aunque el registro tiene las tres instancias.
-
-**Cómo se ve:** olvidaste `@LoadBalanced` (o inyectaste el `RestClient.Builder` de Spring Boot en lugar del tuyo).
-El cliente HTTP intenta resolver `catalogo` en DNS. Con el cliente del JDK 25 la cadena de causas es (salida real
-de `HttpClient` contra `http://catalogo/quien`):
-
-```text
-java.net.ConnectException
- <- java.net.ConnectException
- <- java.net.ConnectException
- <- java.nio.channels.UnresolvedAddressException
-```
-
-y `RestClient` la envuelve en `ResourceAccessException: I/O error on GET request for "http://catalogo/quien"`.
-
-**Diagnóstico:** `UnresolvedAddressException` (o `UnknownHostException`, según el cliente HTTP) significa «nadie
-tradujo el nombre»: el interceptor del balanceador no está en ese cliente. Con dos `RestClient.Builder` en el contexto
-(el de Boot y el tuyo con `@LoadBalanced`), Spring inyecta uno según el nombre del parámetro o el `@Primary`: comprueba
-cuál recibió tu clase.
-
-**Arreglo:** anota el bean con `@LoadBalanced` e inyecta ese (usa `@LoadBalanced` también en el punto de inyección o
-un `@Qualifier`). Si conviven llamadas internas (balanceadas) y externas (a una API pública), usa **dos** builders
-distintos: el balanceado trataría `api.pagos.com` como nombre de servicio.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Por qué un `Service` de Kubernetes puede repartir mal el tráfico gRPC y cómo lo resuelves?»
-
-**Respuesta modelo:** kube-proxy balancea **conexiones**, no peticiones. gRPC usa HTTP/2 con una conexión larga que
-multiplexa todas las peticiones, así que cada cliente queda pegado a un pod y unos pods reciben mucho más que otros.
-Se resuelve balanceando por **petición**: en el cliente (gRPC con *round_robin* sobre un *headless service*, o Spring
-Cloud LoadBalancer con el DiscoveryClient de Kubernetes) o con un *service mesh* (Envoy) que reparte cada petición.
-También ayuda limitar la vida máxima de las conexiones para que se redistribuyan.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Balanceo «a mano» con una lista fija y sin salud:**
-
-```java
-private final List<String> catalogos = List.of("http://10.0.0.11:8081", "http://10.0.0.12:8081");
-private int i = 0;                                         // ni atómico ni compartido entre hilos
-String url() { return catalogos.get(i++ % catalogos.size()); }   // i++ sin sincronizar y sin health check
-```
-
-Se ve así: con carga concurrente, `i++` pierde incrementos (dos hilos leen el mismo valor) y el reparto se tuerce; al
-llegar a `Integer.MAX_VALUE`, `i++` desborda a negativo y `get` lanza `IndexOutOfBoundsException`; y una instancia
-caída sigue recibiendo su parte. Usa el balanceador de la plataforma o de Spring Cloud, que resuelven concurrencia,
-salud y actualización de la lista.
-
----
 ### BFF pattern
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 7, Lección 5 de 5 · Fase 1 · 2 h: `jdk/Bff.java` y
-`f056-bff/` (dos aplicaciones: `BffMovilApp` en el puerto 8091 y `BffWebApp` en el 8092).
+#### ► DE QUÉ TRATA
+Diseñar dos BFF (móvil y web) sobre los mismos servicios de dominio, cada uno con el contrato de su pantalla y con llamadas en paralelo, de modo que el test BffTest compruebe que la respuesta móvil pesa menos de un tercio de la web y llega en menos de 250 ms; y justificar cuándo…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Diseñar dos BFF (móvil y web) sobre los mismos servicios de dominio, cada uno con el contrato de su pantalla y con llamadas en paralelo, de modo que el test BffTest compruebe que la respuesta móvil pesa menos de un tercio de la web y llega en menos de 250 ms; y justificar cuándo un BFF sobra.**
 
-- Tema 2 (API Gateway: qué va en el borde y qué no).
-- Módulo 6: `RestClient`; Módulo 1: hilos virtuales y `CompletableFuture`.
-- Módulo 2: records como DTO de respuesta.
+#### ► POR QUÉ EXISTE ESTO
+Distintos clientes necesitan cosas distintas: la app del celular tiene pantalla pequeña y datos móviles caros; la web tiene una pantalla grande y muestra más detalle. Si los dos usan la misma API genérica, la app descarga datos que no muestra y la web tiene que hacer muchas llamadas para armar su página.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en bff pattern como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diseñar** dos BFF (móvil y web) sobre los mismos servicios de dominio, cada uno con el contrato de su pantalla y
-con llamadas en paralelo, de modo que el test `BffTest` compruebe que la respuesta móvil pesa menos de un tercio de la
-web y llega en menos de 250 ms; y **justificar** cuándo un BFF sobra.
-
-#### 4. ANALOGÍA VISUAL
-
-Una **cocina central** que prepara los mismos ingredientes (servicios de dominio) y **dos meseros** distintos. El
-mesero de la **barra rápida** (BFF móvil) arma un plato pequeño en una bandeja de cartón: lo justo, rápido, para comer
-de pie. El mesero del **comedor** (BFF web) arma el plato completo, con entrada, guarnición y la nota del chef (las
-reseñas). Los dos piden a la cocina **a la vez** lo que necesitan, no un ingrediente después de otro. Cada mesero
-trabaja con su jefe de salón (el equipo de la app o de la web) y cambia su presentación sin pedir permiso a la cocina.
-Dibuja la cocina al centro, una bandeja pequeña a la izquierda y un plato grande a la derecha.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     APP["App móvil"] --> GW["API Gateway"]
@@ -2621,63 +2026,44 @@ flowchart LR
     BW -->|"en paralelo"| RES["resenas<br/>200 ms"]
 ```
 
-**Texto alternativo:** la app móvil y la web entran por el API Gateway. Las rutas /movil/** van al BFF móvil
-(puerto 8091), que devuelve una TarjetaProducto de 5 campos (unos 77 bytes); las rutas /web/** van al BFF web (puerto
-8092), que devuelve la FichaProducto completa (unos 450 bytes). El BFF móvil llama en paralelo a catálogo (150 ms) e
-inventario (100 ms); el BFF web llama en paralelo a catálogo, inventario y reseñas (200 ms).
+1. Distintos clientes necesitan cosas distintas: la app del celular tiene pantalla pequeña y datos móviles caros; la web tiene una pantalla grande y muestra más detalle.
+2. Si los dos usan la misma API genérica, la app descarga datos que no muestra y la web tiene que hacer muchas llamadas para armar su página.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| BFF pattern se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Distintos clientes necesitan cosas distintas: la app del celular tiene pantalla pequeña y datos móviles caros; la
-web tiene una pantalla grande y muestra más detalle. Si los dos usan la misma API genérica, la app descarga datos
-que no muestra y la web tiene que hacer muchas llamadas para armar su página.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar BFF pattern | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**BFF** significa *Backend For Frontend*: un pequeño servicio **por tipo de cliente** que habla con los servicios de
-la tienda y le devuelve a **su** cliente exactamente lo que su pantalla necesita, en una sola respuesta. Lo mantiene,
-idealmente, el mismo equipo que hace la app o la web.
+#### ► CUÁNDO NO USAR ESTO
+El «BFF» compartido que crece sin dueño:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: bff pattern funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Un BFF por experiencia**, no por tecnología: «app de compradores», «web de compradores», «consola de bodega».
-  Si iOS y Android muestran lo mismo, comparten BFF.
-- **Composición en paralelo:** las llamadas que no dependen entre sí salen a la vez. El tiempo total es el de la
-  más lenta (+ composición), no la suma. En el laboratorio, `Servicios` lanza cada llamada en un hilo virtual con
-  `CompletableFuture.supplyAsync(..., Executors.newVirtualThreadPerTaskExecutor())` y el controlador espera con
-  `join()`. Si una llamada necesita el resultado de otra (pedir el stock de los productos que devolvió el catálogo),
-  esa sí va en secuencia.
-- **Contrato propio:** cada BFF define sus DTO (`TarjetaProducto`, `FichaProducto`) y los evoluciona al ritmo de su
-  cliente. El dominio no cambia porque una pantalla cambie.
-- **Qué hace un BFF:** composición, adaptación de formatos, paginación y tamaño de imágenes para su dispositivo,
-  degradación cuando falla una dependencia no crítica (Módulo 8). **Qué no hace:** reglas de negocio (precios,
-  disponibilidad real), que siguen en sus servicios.
-- **Dónde va:** detrás del gateway (que sigue haciendo lo transversal) o, a veces, siendo él mismo el borde de su
-  cliente.
+#### ► LO QUE DEBES RECORDAR
+- Distintos clientes necesitan cosas distintas: la app del celular tiene pantalla pequeña y datos móviles caros; la web tiene una pantalla grande y muestra más detalle.
+- Si los dos usan la misma API genérica, la app descarga datos que no muestra y la web tiene que hacer muchas llamadas para armar su página.
 
-**El mecanismo por dentro** (`jdk/Bff.java`): tres servicios con latencia, dos composiciones distintas en paralelo y
-la medición del tamaño y el tiempo de cada una.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve bff pattern en tu contexto?
+2. ¿Cómo sabrías que bff pattern no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar bff pattern?
 
-#### 8. EXPLICACIÓN MAESTRA
+</details>
 
-| Opción | Ventaja | Coste | Cuándo |
-|---|---|---|---|
-| BFF por experiencia (Sam Newman) | Contrato a medida, autonomía del equipo de cliente, menos datos por la red | Un servicio por cliente; riesgo de duplicar lógica | Clientes con necesidades muy distintas y equipos separados |
-| API genérica única | Un solo contrato que mantener | Sobrecarga de datos (*over-fetching*) o muchas llamadas (*under-fetching*) | Un solo tipo de cliente o clientes parecidos |
-| GraphQL (Módulo 6) | El cliente pide justo los campos | Complejidad de caché, costes de consulta, N+1 | Muchas pantallas con combinaciones cambiantes |
-| Agregación en el gateway | Sin servicio nuevo | Lógica de experiencia en un componente compartido | Casos muy simples y estables |
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Duplicación:** dos BFF que calculan lo mismo (por ejemplo, «disponible si stock > 0») divergen con el tiempo. Lo
-que es regla de negocio baja al servicio de dominio; lo que es presentación se queda en cada BFF y puede duplicarse
-sin culpa. **Propiedad:** el BFF lo mantiene el equipo del cliente; si lo mantiene un equipo «de backend» central,
-vuelves a tener una API genérica con más pasos.
-
-**Cuándo NO usarlo (respuesta correcta frecuente).** Con un solo cliente, o con una app y una web que muestran lo
-mismo, un BFF es un salto de red y un despliegue extra sin beneficio: un endpoint bien diseñado en el servicio o un
-gateway basta. Tampoco crees un BFF por cada pantalla: crecen los servicios más que el valor. Y si tu equipo es
-pequeño, cada servicio nuevo que operar compite con las funcionalidades: empieza con una API y separa un BFF cuando el
-dolor (payloads enormes, cambios de la app bloqueados por otro equipo) sea medible.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3 (Spring MVC, `RestClient`, Jackson 3), hilos virtuales de Java 25.
 
 **El mecanismo con JDK puro** — `modulo-11/jdk/Bff.java`:
@@ -2988,69 +2374,7 @@ servicios:
   resenas: ${RESENAS_URL:http://localhost:8083}
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. **El mecanismo, sin Spring:**
-
-```bash
-java jdk/Bff.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5; los milisegundos cambian en cada máquina):
-
-```text
-BFF móvil (77 bytes, 156 ms): {"id":7,"nombre":"Audífonos BT","precio":189000,"stock":12,"imagen":"a.jpg"}
-BFF web   (446 bytes, 211 ms)
-OK: cada cliente recibe solo lo que su pantalla necesita, en paralelo
-```
-
-   **Captura comentada:** el móvil recibe 77 bytes en ~150 ms (lo que tarda el catálogo, la más lenta de sus dos
-   llamadas); la web, 446 bytes en ~200 ms (lo que tardan las reseñas). Ninguno paga la suma de latencias.
-
-2. **Fallo deliberado: llamadas en secuencia.**
-
-```bash
-java jdk/Bff.java --secuencial
-```
-
-   **Output esperado** (real):
-
-```text
-BFF móvil (77 bytes, 265 ms): {"id":7,"nombre":"Audífonos BT","precio":189000,"stock":12,"imagen":"a.jpg"}
-BFF web   (446 bytes, 464 ms)
-FALLA (esperada con --secuencial): la latencia es la SUMA de las llamadas
-```
-
-   150 + 100 ≈ 250 ms para el móvil y 150 + 100 + 200 ≈ 450 ms para la web: la misma información, el doble de
-   espera.
-
-3. **Con Spring.** Sirve los tres «servicios» con `servicios-falsos.py` (Python, solo biblioteca estándar: entrega
-   los archivos de una carpeta como `application/json`) y arranca los dos BFF desde `f056-bff`:
-
-```bash
-mkdir -p /tmp/s/productos /tmp/s/stock /tmp/s/resenas
-echo '{"id":7,"nombre":"Audífonos BT","precio":189000,"descripcion":"Cancelación de ruido","imagenes":["a.jpg","b.jpg"],"especificaciones":{"peso":"250 g"}}' > /tmp/s/productos/7
-echo '{"sku":7,"stock":12,"bodega":"BOG-1"}' > /tmp/s/stock/7
-echo '{"promedio":4.6,"total":318}' > /tmp/s/resenas/7
-python3 ../servicios-falsos.py 8081 /tmp/s 150 > /dev/null 2>&1 &
-export CATALOGO_URL=http://localhost:8081 INVENTARIO_URL=http://localhost:8081 RESENAS_URL=http://localhost:8081
-../gradlew -q bootRun -Pprincipal=academia.bff.movil.BffMovilApp &
-../gradlew -q bootRun -Pprincipal=academia.bff.web.BffWebApp &
-```
-
-   Cuando ambos digan `Started`, compara:
-
-```bash
-curl -s localhost:8091/movil/productos/7; echo
-curl -s localhost:8092/web/productos/7 | wc -c
-```
-
-   **Output esperado:** el primero, un JSON con exactamente `id`, `nombre`, `precio`, `stock` e `imagen`
-   (`"imagen":"a.jpg"`); el segundo, el número de bytes de la ficha completa, varias veces mayor. Detén todo con
-   `kill %1 %2 %3`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f056-bff/src/test/java/academia/bff/BffTest.java` levanta catálogo (150 ms), inventario (100 ms) y reseñas
 (200 ms) con `Backend.java` y arranca los dos BFF:
 
@@ -3140,52 +2464,4 @@ Dos: uno para la experiencia móvil (compartido por iOS y Android, que tienen la
 web. El BFF se define por experiencia de usuario, no por plataforma tecnológica.
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** el BFF responde bien pero lento; con más servicios detrás, cada vez peor.
-
-**Cómo se ve** (salida real de `java jdk/Bff.java --secuencial`): `BFF web (446 bytes, 464 ms)` frente a los ~210 ms de
-la versión en paralelo. En una traza distribuida (Módulo 10) se ve como una «escalera»: cada barra de llamada empieza
-cuando termina la anterior, en lugar de barras superpuestas.
-
-**Diagnóstico:** busca en el código un `join()`, `get()` o `retrieve().body(...)` bloqueante **entre** el
-lanzamiento de dos llamadas independientes. En el ejemplo: `producto.join()` antes de pedir el stock.
-
-**Arreglo:** lanza todas las llamadas independientes primero y espera después (`var a =...; var b =...;
-a.join(); b.join();`), o usa `CompletableFuture.allOf(...)`. Solo las llamadas que necesitan datos de otra van en
-secuencia.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué diferencia hay entre un API Gateway y un BFF? ¿Puedo tener los dos?»
-
-**Respuesta modelo:** el gateway es infraestructura transversal y genérica: enruta, autentica, limita y mide para
-todos los clientes, sin conocer pantallas. El BFF es un servicio de aplicación de **una** experiencia: compone y
-adapta datos para su cliente y lo mantiene el equipo de ese cliente. Se combinan: el gateway delante (TLS, token,
-límites) y un BFF por experiencia detrás. Si el gateway empieza a componer respuestas para una pantalla, se está
-convirtiendo en un BFF compartido por todos, que es justo lo que el patrón quiere evitar.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El «BFF» compartido que crece sin dueño:**
-
-```java
-@GetMapping("/productos/{id}")
-Map<String, Object> producto(@PathVariable long id, @RequestParam String cliente) {
-    var p = servicios.producto(id).join();
-    if (cliente.equals("movil")) { /* recorta */ }
-    else if (cliente.equals("web")) { /* agrega reseñas */ }
-    else if (cliente.equals("kiosko")) { /* otro formato */ }
-    else if (cliente.equals("partner-x")) { /* otro más */ }
-    return p;
-}
-```
-
-Se ve así: un solo servicio con `if` por cliente, mantenido por un equipo central, donde cada cambio de la app espera
-en la cola de ese equipo y puede romper a la web. Es una API genérica disfrazada de BFF. Separa un BFF por
-experiencia, cada uno con su dueño y su contrato.
-
----
-
-**Siguiente módulo:** Módulo 8 · Resiliencia (`modulo-12.md`): qué hacer cuando el registro, el gateway o un
-servicio detrás del BFF fallan o se vuelven lentos.
+</details>

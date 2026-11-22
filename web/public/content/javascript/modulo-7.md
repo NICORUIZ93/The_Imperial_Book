@@ -3,45 +3,74 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: ESM frente a CommonJS · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás crear y ejecutar un proyecto modular con ESM, reconocer un módulo CommonJS y diagnosticar el error que aparece al mezclar ambos formatos. Separarás el dominio de entregas del proyecto de su punto de entrada mediante exports nombrados.
 
-**Conocimiento previo:** funciones, objetos, rutas relativas y uso básico de la terminal. Necesitas Node.js 22 o posterior; compruébalo con `node --version`. Si el comando no existe, instala la versión LTS desde la fuente oficial antes de continuar.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás crear y ejecutar un proyecto modular con ESM, reconocer un módulo CommonJS y diagnosticar el error que aparece al mezclar ambos formatos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Cuando toda la aplicación vive en un solo archivo, una modificación en reportes puede romper la creación de entregas. En este incremento del proyecto, `guia.js` será responsable del dominio y `main.js` de iniciar el programa. El contrato entre ambos será visible mediante `export` e `import`.
+#### ► LA ANALOGÍA
+Piensa en esm frente a commonjs como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** análisis estático frente a resolución dinámica, `import`/`export`, `require`/`module.exports`.
-
-ESM (ECMAScript Modules, la sintaxis `import`/`export`) es el sistema de módulos estandarizado como parte del propio lenguaje JavaScript desde ES6, y tiene una propiedad fundamental que lo distingue de CommonJS: es estático y analizable en tiempo de build, sin necesidad de ejecutar el código. Las declaraciones `import`/`export` deben aparecer en el nivel superior de un módulo (no dentro de un `if` o una función condicional), lo que permite que una herramienta externa (como un bundler) analice el árbol completo de dependencias del proyecto sin ejecutar ni una sola línea de código, simplemente inspeccionando la estructura sintáctica de los `import`/`export`.
-
-CommonJS (`require`/`module.exports`), el sistema de módulos que Node.js adoptó originalmente (antes de que ESM se estandarizara y Node añadiera soporte para él), resuelve las dependencias de forma dinámica, en tiempo de ejecución: `require(ruta)` puede aparecer condicionalmente dentro de un `if`, con una ruta calculada dinámicamente en tiempo de ejecución, lo cual es imposible de analizar completamente de antemano sin ejecutar el código. Esta flexibilidad dinámica de CommonJS tiene un coste directo: un bundler no puede determinar con certeza absoluta, sin ejecutar el código, exactamente qué se exporta y qué se usa de cada módulo, lo que limita significativamente las optimizaciones de tree-shaking que sí son posibles con ESM.
-
-Determinar si un archivo se interpreta como ESM o como CommonJS depende de la configuración del proyecto: un `package.json` con `"type": "module"` hace que todos los archivos `.js` del proyecto se interpreten por defecto como ESM (permitiendo usar `import`/`export` directamente); sin esa configuración, `.js` se interpreta como CommonJS por defecto en Node, y hay que usar explícitamente la extensión `.mjs` para forzar la interpretación como ESM en un archivo individual, independientemente de la configuración general del proyecto (o `.cjs` para forzar CommonJS explícitamente en un proyecto configurado como ESM por defecto).
-
-Aunque ambos sistemas coexisten en el ecosistema JavaScript actual (gran cantidad de código y bibliotecas legadas siguen usando CommonJS), la dirección clara de la industria y del propio lenguaje es hacia ESM como el sistema de módulos estándar y preferido para código nuevo, en gran parte precisamente por las ventajas de análisis estático que habilita, incluyendo el tree-shaking del Tema 2.
-
-**Analogía:** ESM es como una lista de ingredientes impresa y fija en el envase de un producto, visible y verificable sin necesidad de abrir el paquete ni cocinar nada; CommonJS es como una receta que decide qué ingredientes usar en el momento mismo de cocinar, potencialmente de forma distinta cada vez según condiciones que solo se conocen al momento de la preparación real, imposibilitando verificar de antemano exactamente qué ingredientes se usarán sin ejecutar la receta completa.
-
-**¿Por qué es importante?** Entender la diferencia de análisis estático frente a dinámico entre ESM y CommonJS explica directamente por qué el tree-shaking funciona de forma mucho más confiable con ESM, una consideración práctica relevante al elegir el formato de las propias bibliotecas o al configurar un proyecto nuevo.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     ESM["ESM: import/export estático"] --> GRAPH["grafo analizable"] --> SHAKE["tree-shaking"]
     CJS["CommonJS: require dinámico"] --> RUNTIME["resolución al ejecutar"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| ESM frente a CommonJS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `ejemplo-esm-cjs` y su estructura:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar ESM frente a CommonJS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses esm frente a commonjs por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: esm frente a commonjs funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- ESM frente a CommonJS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve esm frente a commonjs en tu contexto?
+2. ¿Cómo sabrías que esm frente a commonjs no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar esm frente a commonjs?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    ESM["ESM: import/export estático"] --> GRAPH["grafo analizable"] --> SHAKE["tree-shaking"]
+    CJS["CommonJS: require dinámico"] --> RUNTIME["resolución al ejecutar"]
+```
 
 ```bash
 mkdir ejemplo-esm-cjs
@@ -49,8 +78,6 @@ cd ejemplo-esm-cjs
 npm init -y
 mkdir src
 ```
-
-Crea esta estructura; la extensión `.js` del import es obligatoria para que Node resuelva el archivo de forma inequívoca:
 
 ```text
 academia-web/
@@ -61,8 +88,6 @@ academia-web/
     └── main.js
 ```
 
-Guarda en `academia-web/package.json`:
-
 ```json
 {
   "name": "academia-web",
@@ -71,8 +96,6 @@ Guarda en `academia-web/package.json`:
   "scripts": { "start": "node src/main.js" }
 }
 ```
-
-Guarda en `academia-web/src/dominio/guia.js`:
 
 ```js
 // Export nombrado: el consumidor conoce el nombre del contrato.
@@ -85,8 +108,6 @@ export function crearGuia(numero) {
 }
 ```
 
-Guarda en `academia-web/src/main.js`:
-
 ```js
 // La ruta incluye la extensión porque este archivo se ejecuta directamente en Node.
 import { crearGuia } from "./dominio/guia.js";
@@ -95,73 +116,75 @@ const guia = crearGuia("RF-101");
 console.log(guia);
 ```
 
-Ejecuta desde `academia-web`:
-
-```bash
-npm start
-```
-
-**Resultado esperado:** `{ numero: 'RF-101', estado: 'CREADA' }`. `main.js` conoce el contrato público, pero no necesita saber cómo se valida o construye la guía.
-
-**Fallo deliberado:** reemplaza el `import` por `const { crearGuia } = require("./dominio/guia.js")`. Node mostrará `ReferenceError: require is not defined in ES module scope`, porque `"type": "module"` define el formato de todos los `.js`. Restaura el import y confirma que el programa vuelve a funcionar.
-
-#### Paso 5 · Práctica guiada
-
-Crea `src/dominio/ruta.js`, exporta `calcularParadas(entregas)` e impórtala desde `main.js`. **Pista:** usa un export nombrado y una ruta relativa que termine en `.js`; no agregues un export `default` solo para evitar escribir llaves.
-
-#### Paso 6 · Práctica independiente
-
-Reproduce el mismo dominio en una carpeta separada `comparacion-cjs/` con `module.exports` y `require`, sin mezclarlo con ESM. Ejecuta ambos programas y escribe una comparación de cuándo se conocen sus dependencias y qué formato escogerías para código nuevo.
-
-#### Paso 7 · Cierre
-
-Ya puedes dividir responsabilidades con el formato estándar del lenguaje y diagnosticar incompatibilidades con CommonJS. El siguiente tema aprovechará el análisis estático de ESM para reducir y dividir el bundle.
-
-**Errores comunes:** omitir `"type": "module"`; olvidar `.js` en imports ejecutados por Node; mezclar `require` e `import` en el mismo archivo; confundir export nombrado con default; crear dependencias circulares entre dominio y entrada.
-
-**Fuentes oficiales:** [Node.js — ECMAScript modules](https://nodejs.org/api/esm.html) y [MDN — JavaScript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Publica el cliente de seguimiento con un formato de módulos declarado. Prueba su importación en el entorno elegido y evita depender de que una herramienta convierta silenciosamente CommonJS y ESM.
+</details>
 
 ### Tema 2: Tree-shaking y code-splitting · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás diferenciar eliminación de código no usado y carga bajo demanda, generar un bundle de producción y comprobar ambos efectos inspeccionando artefactos reales. Optimizarás el reporte de entregas del proyecto con evidencia, no por suposición.
 
-**Prerrequisitos:** haber completado ESM frente a CommonJS, tener el proyecto `academia-web` funcionando y disponer de Node.js y npm. Debes poder explicar qué es un export nombrado antes de continuar.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás diferenciar eliminación de código no usado y carga bajo demanda, generar un bundle de producción y comprobar ambos efectos inspeccionando artefactos reales.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Los operadores usan la lista de entregas en cada sesión, pero abren el reporte de auditoría solo ocasionalmente. El proyecto debe enviar lo esencial al inicio, eliminar una función que nadie consume y descargar la auditoría únicamente cuando se solicite.
+#### ► LA ANALOGÍA
+Piensa en tree-shaking y code-splitting como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** eliminación de código muerto, división en chunks, carga bajo demanda.
-
-Tree-shaking es el proceso mediante el cual un bundler analiza qué exports de un módulo se usan realmente en algún punto de la aplicación, y elimina del bundle final cualquier código exportado que nunca se importa ni se usa, reduciendo el tamaño total del código entregado al navegador. Este proceso depende directamente del análisis estático que ESM habilita (Tema 1): el bundler necesita poder determinar, sin ejecutar código, exactamente qué se importa de cada módulo, algo que la naturaleza dinámica de CommonJS dificulta considerablemente, siendo la razón práctica principal por la que bibliotecas modernas suelen distribuirse en formato ESM (frecuentemente identificable por el sufijo `-es` en el nombre del paquete, como `lodash-es` frente a `lodash`).
-
-Un ejemplo concreto ilustra el impacto real: importar `import { debounce } from "lodash-es";` permite que el bundler incluya en el bundle final únicamente el código de la función `debounce` y sus dependencias internas directas, excluyendo el resto de las decenas de funciones que la biblioteca completa de Lodash contiene pero que la aplicación nunca usa; importar en cambio `import _ from "lodash";` (la versión CommonJS tradicional) típicamente incluye la biblioteca completa en el bundle, porque el bundler no puede determinar con certeza estática qué subconjunto de sus funciones se usará realmente.
-
-Code-splitting es una técnica complementaria pero conceptualmente distinta: en vez de (o además de) eliminar código no usado, divide el bundle final en múltiples archivos ("chunks") más pequeños, que se cargan bajo demanda solo cuando efectivamente se necesitan, en vez de cargar toda la aplicación de una sola vez al inicio. Un caso típico es dividir el código específico de cada ruta de una aplicación (usando `import()` dinámico, visto en el Tema 5) en su propio chunk, de modo que un usuario que solo visita la página de inicio no descarga el código de páginas que nunca visitó en esa sesión, mejorando directamente el tiempo de carga inicial de la aplicación.
-
-Vite (Tema 3), en su modo de producción, aplica ambas técnicas de forma automática usando Rollup internamente: tree-shaking elimina código verdaderamente no usado, y code-splitting divide el resultado en chunks razonables según los puntos de importación dinámica presentes en el código, sin que el desarrollador necesite configurar manualmente ninguna de las dos técnicas en la mayoría de casos comunes.
-
-**Analogía:** tree-shaking es como empacar una maleta de viaje llevando únicamente la ropa que realmente vas a usar en el viaje específico, en vez de empacar el armario completo "por si acaso"; code-splitting es como dividir el equipaje en varias maletas más pequeñas organizadas por actividad (una para la playa, otra para la ciudad), de modo que solo cargas la maleta correspondiente cuando efectivamente vas a esa actividad específica, no todo el equipaje completo todo el tiempo.
-
-**¿Por qué es importante?** Tree-shaking y code-splitting son las dos técnicas principales por las que aplicaciones web modernas mantienen tiempos de carga razonables a pesar de depender de un volumen creciente de código y bibliotecas de terceros.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     SOURCE["módulos fuente"] --> SHAKE["eliminar exports no usados"] --> MAIN["chunk inicial"]
     SOURCE --> SPLIT["import dinámico"] --> LAZY["chunk bajo demanda"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tree-shaking y code-splitting se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `ejemplo-code-splitting`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tree-shaking y code-splitting | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tree-shaking y code-splitting por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tree-shaking y code-splitting funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Tree-shaking y code-splitting existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tree-shaking y code-splitting en tu contexto?
+2. ¿Cómo sabrías que tree-shaking y code-splitting no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tree-shaking y code-splitting?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    SOURCE["módulos fuente"] --> SHAKE["eliminar exports no usados"] --> MAIN["chunk inicial"]
+    SOURCE --> SPLIT["import dinámico"] --> LAZY["chunk bajo demanda"]
+```
 
 ```bash
 mkdir ejemplo-code-splitting
@@ -170,16 +193,10 @@ npm init -y
 mkdir src
 ```
 
-Instala Vite en el proyecto existente y añade los scripts de construcción:
-
 ```bash
 npm install --save-dev vite
 npm pkg set scripts.dev="vite" scripts.build="vite build"
 ```
-
-`--save-dev` es la bandera que instala el paquete como dependencia de desarrollo (necesaria para construir el proyecto, no para que la app corra en producción).
-
-Crea `academia-web/index.html` con `<button id="auditoria">Abrir auditoría</button><script type="module" src="/src/main.js"></script>` y guarda en `src/reportes.js`:
 
 ```js
 export function resumenDiario(entregas) {
@@ -193,16 +210,12 @@ export function reporteNuncaUsado() {
 }
 ```
 
-Crea `academia-web/src/auditoria.js`:
-
 ```js
 export function abrirAuditoria() {
   // Este texto permite localizar el módulo en el chunk diferido.
   console.log("AUDITORIA_CARGADA");
 }
 ```
-
-Actualiza `academia-web/src/main.js`:
 
 ```js
 import { resumenDiario } from "./reportes.js";
@@ -216,74 +229,75 @@ document.querySelector("#auditoria").addEventListener("click", async () => {
 });
 ```
 
-Genera producción e inspecciona los artefactos:
-
-```bash
-npm run build
-grep -R "MARCADOR_ELIMINADO\|AUDITORIA_CARGADA" dist/assets
-```
-
-**Resultado esperado:** Vite crea al menos un archivo principal y un chunk de auditoría. `MARCADOR_ELIMINADO` no aparece; `AUDITORIA_CARGADA` aparece en el chunk diferido. Esa diferencia demuestra tree-shaking y code-splitting respectivamente.
-
-**Fallo deliberado:** añade `console.log("efecto")` en el nivel superior de `reportes.js` y vuelve a construir. Aunque un export no se use, el módulo con efectos laterales puede tener que conservarse. El diagnóstico no es “Vite falló”: el código dejó de ser eliminable con seguridad.
-
-#### Paso 5 · Práctica guiada
-
-Abre las herramientas de red del navegador, recarga y verifica que el chunk de auditoría no se descarga hasta pulsar el botón. **Pista:** filtra por `JS`, conserva el registro y compara las solicitudes antes y después del clic.
-
-#### Paso 6 · Práctica independiente
-
-Mide tamaño del chunk inicial, cantidad de solicitudes y tiempo de carga antes y después de mover un reporte pesado a `import()`. Conserva la división solamente si la medición mejora la experiencia; documenta también el coste de una solicitud adicional.
-
-#### Paso 7 · Cierre
-
-Ahora diferencias quitar código imposible de alcanzar de aplazar código que sí se utilizará. El siguiente tema explica cómo Vite sirve módulos en desarrollo y cómo produce estos artefactos con Rollup.
-
-**Errores comunes:** creer que minificación y tree-shaking son lo mismo; esperar eliminación fiable de CommonJS dinámico; introducir efectos laterales al importar; dividir funciones diminutas sin medir; validar solo el servidor de desarrollo y no el build.
-
-**Fuentes oficiales:** [Vite — Features: dynamic import](https://vite.dev/guide/features.html#dynamic-import) y [Rollup — Tree-shaking](https://rollupjs.org/introduction/#tree-shaking).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa utilidades puras del módulo que monta el DOM. Comprueba el bundle de un consumidor que solo usa el cliente y confirma que no incluye la interfaz completa.
+</details>
 
 ### Tema 3: Vite y esbuild · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás crear desde una carpeta vacía una aplicación con Vite, explicar qué ocurre durante desarrollo y producción, ejecutar ambos modos e interpretar un error de resolución. El resultado será la primera interfaz web ejecutable del proyecto.
 
-**Conocimiento previo:** ESM, terminal, HTML básico y los conceptos de tree-shaking y code-splitting. Comprueba `node --version` y `npm --version`; usa una versión LTS activa de Node.js para evitar incompatibilidades con la versión actual de Vite.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás crear desde una carpeta vacía una aplicación con Vite, explicar qué ocurre durante desarrollo y producción, ejecutar ambos modos e interpretar un error de resolución.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El proyecto necesita ciclos de desarrollo rápidos, pero también artefactos optimizados para producción. Vite servirá los módulos mientras programamos y generará una carpeta `dist/` desplegable. No trataremos `npm run dev` como prueba suficiente: el incremento se completa solamente cuando el build y su vista previa funcionan.
+#### ► LA ANALOGÍA
+Piensa en vite y esbuild como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** servidor de desarrollo con ESM nativo, esbuild, build de producción con Rollup.
-
-Vite representa un cambio de enfoque significativo frente a bundlers anteriores como Webpack en cómo funciona el servidor de desarrollo: en vez de empaquetar toda la aplicación completa antes de servirla (un proceso que puede tardar considerablemente en proyectos grandes y que debe repetirse en cada cambio de código), Vite sirve los módulos ESM directamente al navegador sin empaquetarlos durante el desarrollo, aprovechando que los navegadores modernos soportan `import`/`export` de forma nativa. Esto permite que el servidor de desarrollo arranque casi instantáneamente, independientemente del tamaño total del proyecto, porque no necesita procesar y empaquetar todo el código de antemano.
-
-Para el código que sí necesita transformación antes de poder ejecutarse en el navegador (TypeScript, JSX), Vite usa esbuild, un compilador escrito en Go extremadamente rápido comparado con transformadores basados en JavaScript puro como Babel, procesando archivos individuales bajo demanda según el navegador los solicita durante el desarrollo, en vez de procesar el proyecto completo de una sola vez por adelantado.
-
-Para el build de producción (`npm run build`), Vite cambia de estrategia y usa Rollup internamente, un bundler especializado en producir bundles optimizados y pequeños mediante tree-shaking agresivo y code-splitting inteligente (Tema 2), aceptando un tiempo de procesamiento mayor que el servidor de desarrollo a cambio de un resultado final más pequeño y eficiente para servir a usuarios reales, una decisión de diseño razonable dado que el build de producción se ejecuta una vez por despliegue, mientras que el servidor de desarrollo se reinicia y recarga constantemente durante la sesión de trabajo diaria de un desarrollador.
-
-Inspeccionar el resultado de `npm run build` —abriendo los archivos generados en la carpeta de salida— revela directamente los efectos de la minificación (eliminación de espacios y renombrado de variables para reducir tamaño) y el hashing de nombres de archivo (incluir un hash del contenido en el nombre del archivo, como `main.a3f8c2.js`, permitiendo cachear agresivamente ese archivo en el navegador del usuario mientras su contenido no cambie, e invalidando automáticamente la caché con un nombre distinto en cuanto el contenido sí cambia en un despliegue posterior).
-
-**Analogía:** el servidor de desarrollo de Vite es como un restaurante que prepara cada plato individual bajo demanda, exactamente cuando el cliente lo pide, permitiendo empezar a servir casi instantáneamente sin preparar el menú completo de antemano; el build de producción con Rollup es como preparar con antelación un banquete completo cuidadosamente optimizado para servir eficientemente a muchos comensales simultáneos, aceptando más tiempo de preparación previa a cambio de una entrega final más eficiente.
-
-**¿Por qué es importante?** Entender esta diferencia de estrategia entre desarrollo (ESM nativo sin empaquetar, esbuild bajo demanda) y producción (Rollup, tree-shaking y code-splitting completos) explica por qué el comportamiento y el rendimiento observado durante el desarrollo puede diferir del comportamiento en producción, y por qué siempre conviene probar el build de producción real antes de desplegar.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     DEV["npm run dev"] --> NATIVE["ESM nativo + transformaciones esbuild"]
     BUILD["npm run build"] --> ROLLUP["Rollup"] --> DIST["dist: chunks, hash y minificación"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Vite y esbuild se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `ejemplo-vite`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Vite y esbuild | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses vite y esbuild por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: vite y esbuild funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Vite y esbuild existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve vite y esbuild en tu contexto?
+2. ¿Cómo sabrías que vite y esbuild no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar vite y esbuild?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    DEV["npm run dev"] --> NATIVE["ESM nativo + transformaciones esbuild"]
+    BUILD["npm run build"] --> ROLLUP["Rollup"] --> DIST["dist: chunks, hash y minificación"]
+```
 
 ```bash
 mkdir ejemplo-vite
@@ -293,19 +307,11 @@ npm install -D vite
 mkdir src
 ```
 
-Implementa la pantalla creando `academia-web/src/main.js`; antes prepara el proyecto con estos comandos.
-
-Si todavía no creaste el proyecto del tema anterior, ejecuta desde tu carpeta de trabajo:
-
 ```bash
 npm create vite@latest academia-web -- --template vanilla
 cd academia-web
 npm install
 ```
-
-`--template` es la bandera que elige el andamiaje inicial del proyecto (acá, `vanilla`, sin ningún framework).
-
-Reemplaza `academia-web/src/main.js` por:
 
 ```js
 import "./style.css";
@@ -329,81 +335,86 @@ document.querySelector("#app").innerHTML = `
 `;
 ```
 
-Inicia desarrollo y abre la dirección que imprime Vite:
-
 ```bash
 npm run dev
 ```
-
-Detén el servidor con `Ctrl+C`, genera producción y sirve el resultado:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-**Resultado esperado:** desarrollo muestra dos entregas; el build crea `dist/index.html` y assets con hash; la vista previa reproduce la misma interfaz desde los artefactos de producción.
-
-**Fallo deliberado:** cambia `import "./style.css"` por `import "./styles.css"` sin crear ese archivo. Vite informa `Failed to resolve import`, junto con archivo, línea y ruta buscada. Restaura el nombre real y comprueba de nuevo desarrollo y build.
-
-#### Paso 5 · Práctica guiada
-
-Añade una tercera entrega y un estilo distinto para `ENTREGADA`. **Pista:** primero conserva el estado como dato, luego deriva una clase CSS segura; evita insertar texto recibido de un usuario directamente con `innerHTML`.
-
-#### Paso 6 · Práctica independiente
-
-Mide cuánto tarda el arranque de desarrollo y cuánto ocupa `dist/assets`. Cambia código, reconstruye y explica por qué cambia el hash del archivo afectado. Conserva captura o salida de terminal como comparación reproducible.
-
-#### Paso 7 · Cierre
-
-Ya puedes distinguir el servidor ágil de desarrollo del artefacto optimizado de producción. El siguiente tema formaliza formato de módulos, API pública y comandos repetibles en `package.json`.
-
-**Errores comunes:** ejecutar Vite con una versión de Node incompatible; editar archivos dentro de `dist`; desplegar el servidor de desarrollo; ignorar errores del build porque desarrollo funciona; asumir que esbuild produce el bundle final de Vite.
-
-**Fuentes oficiales:** [Vite — Getting Started](https://vite.dev/guide/) y [Vite — Why Vite](https://vite.dev/guide/why.html).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Arranca el widget con Vite y genera su build. Prueba el resultado servido como archivos estáticos, verificando rutas de recursos cuando se integra bajo un subdirectorio.
+</details>
 
 ### Tema 4: package.json — exports, type y scripts · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás configurar `type`, `scripts` y `exports` con una intención concreta, ejecutar el contrato operativo del proyecto y diagnosticar JSON inválido o una exportación no autorizada. Dejarás este proyecto reproducible para otra persona.
+#### ► DE QUÉ TRATA
+Al finalizar podrás configurar type, scripts y exports con una intención concreta, ejecutar el contrato operativo del proyecto y diagnosticar JSON inválido o una exportación no autorizada. Dejarás este proyecto reproducible para otra persona.
 
-**Prerrequisitos:** proyecto Vite funcionando, ESM y terminal. Debes distinguir una aplicación privada de una biblioteca publicada: `exports` define la API de un paquete consumible, no las rutas del navegador.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás configurar type, scripts y exports con una intención concreta, ejecutar el contrato operativo del proyecto y diagnosticar JSON inválido o una exportación no autorizada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Si cada integrante inicia el proyecto con un comando diferente, el entorno deja de ser reproducible. `package.json` será el manifiesto del proyecto: declara su formato, fija tareas comunes y, en el paquete de dominio, limita qué contratos pueden consumir otras aplicaciones.
+#### ► LA ANALOGÍA
+Piensa en package.json — exports, type y scripts como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    TYPE["type: formato de módulos"] --> NODE["interpretación de .js"]
+    EXPORTS["exports: API pública"] --> CONSUMER["consumidores permitidos"]
+    SCRIPTS["scripts: tareas repetibles"] --> TEAM["equipo y CI"]
+```
 
-**Conceptos clave:** punto de entrada de un paquete, `exports` map, `type`, scripts npm.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| package.json — exports, type y scripts se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-El campo `"type"` en `package.json` determina cómo Node.js interpreta por defecto los archivos `.js` del proyecto: `"module"` los interpreta como ESM (`import`/`export` disponibles directamente), mientras que su ausencia (o el valor explícito `"commonjs"`) los interpreta como CommonJS (`require`/`module.exports`). Esta configuración afecta a todo el proyecto salvo excepciones puntuales marcadas explícitamente con la extensión de archivo contraria (`.mjs` fuerza ESM en un proyecto CommonJS; `.cjs` fuerza CommonJS en un proyecto ESM).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar package.json — exports, type y scripts | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-El campo `"exports"`, una adición más reciente y más precisa que el tradicional campo `"main"`, permite a un paquete definir explícitamente qué archivos internos son accesibles públicamente al importar el paquete desde fuera, y con qué condiciones (por ejemplo, exponiendo una versión distinta del punto de entrada según si quien importa usa ESM o CommonJS, permitiendo que un mismo paquete publicado sea compatible con ambos sistemas de módulos simultáneamente). Esta capacidad de "exports condicionales" es importante para autores de bibliotecas que necesitan dar soporte tanto a consumidores modernos (ESM) como a proyectos legados que aún dependen de CommonJS.
+#### ► CUÁNDO NO USAR ESTO
+No uses package.json — exports, type y scripts por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Los `"scripts"` de `package.json` son comandos con nombre, invocables mediante `npm run <nombre>` (o directamente sin `run` para ciertos nombres convencionales como `start` y `test`), que encapsulan comandos de shell frecuentemente usados durante el desarrollo (`dev`, `build`, `test`, `lint`), evitando que cada desarrollador del equipo necesite recordar o escribir manualmente comandos largos y con opciones específicas cada vez; un nuevo miembro del equipo puede familiarizarse rápidamente con el flujo de trabajo de un proyecto simplemente leyendo la sección `scripts` del `package.json`, sin necesidad de documentación adicional externa para las tareas más comunes.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: package.json — exports, type y scripts funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Entender estos tres campos —`type`, `exports`, `scripts`— es esencial no solo para configurar proyectos propios correctamente, sino también para diagnosticar problemas de compatibilidad al integrar una biblioteca de terceros que, por ejemplo, solo expone un formato de módulo que no coincide con la configuración `type` del proyecto que la consume, un problema de integración sorprendentemente común en el ecosistema JavaScript actual, dada la coexistencia de ESM y CommonJS.
+#### ► LO QUE DEBES RECORDAR
+- package.json — exports, type y scripts existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** `"type"` es como el idioma principal en el que se redactan todos los documentos de una organización por defecto; `"exports"` es como el directorio oficial de una empresa que especifica exactamente qué departamentos y personas son de contacto público autorizado desde fuera, y bajo qué protocolo según quién pregunte; `"scripts"` es como un manual de procedimientos estándar con nombres cortos y memorables para las tareas más frecuentes de la organización.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve package.json — exports, type y scripts en tu contexto?
+2. ¿Cómo sabrías que package.json — exports, type y scripts no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar package.json — exports, type y scripts?
 
-**¿Por qué es importante?** Configurar correctamente estos campos evita problemas de compatibilidad frecuentes al integrar bibliotecas de terceros, y hace que un proyecto sea más fácil de entender y operar para cualquier nuevo colaborador.
+</details>
 
-#### Paso 4 · Demostración guiada desde cero
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-package-exports`:
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-package-exports
 cd ejemplo-package-exports
 npm init -y
 mkdir src
 ```
-
-Actualiza `academia-web/package.json`. No copies comentarios dentro del JSON porque el formato no los admite:
 
 ```json
 {
@@ -427,8 +438,6 @@ flowchart LR
     SCRIPTS["scripts: tareas repetibles"] --> TEAM["equipo y CI"]
 ```
 
-En un paquete independiente `academia-dominio/package.json`, sí puedes definir una API pública:
-
 ```json
 {
   "name": "@academia/dominio",
@@ -440,76 +449,79 @@ En un paquete independiente `academia-dominio/package.json`, sí puedes definir 
 }
 ```
 
-Ejecuta el contrato de verificación de la aplicación:
-
 ```bash
 npm run check
 ```
 
-**Resultado esperado:** npm encuentra el script, Vite termina sin errores y crea `dist/`. La aplicación privada no publica `exports`; el paquete de dominio solo permite importar la raíz y `@academia/dominio/estados`.
-
-**Fallo deliberado:** elimina la coma después de `"private": true` y ejecuta `npm run check`. npm informa un error `EJSONPARSE` con la zona inválida. Restaura la coma; después intenta importar una ruta interna no declarada en `exports` y observa `ERR_PACKAGE_PATH_NOT_EXPORTED`.
-
-#### Paso 5 · Práctica guiada
-
-Añade scripts `lint` y `test` únicamente si instalaste herramientas reales para ejecutarlos; luego crea `verify` que encadene tareas existentes. **Pista:** un script que apunta a un comando ausente no documenta el proyecto: crea una falsa promesa.
-
-#### Paso 6 · Práctica independiente
-
-Entrega el repositorio a otra persona o a una carpeta limpia y comprueba que puede ejecutar instalación, `npm run dev` y `npm run check` leyendo solo README y scripts. Registra cualquier conocimiento implícito y conviértelo en requisito o comando explícito.
-
-#### Paso 7 · Cierre
-
-Ya puedes leer `package.json` como contrato técnico y no como archivo incidental. El siguiente tema cargará una capacidad opcional mediante `import()` y usará `import.meta` para resolver recursos.
-
-**Errores comunes:** poner comentarios o comas finales en JSON; usar rangos de dependencias sin lockfile; exponer todos los archivos internos; confundir `exports` con un alias del bundler; declarar scripts que no funcionan en una instalación limpia.
-
-**Fuentes oficiales:** [Node.js — Packages](https://nodejs.org/api/packages.html) y [npm — package.json](https://docs.npmjs.com/cli/configuring-npm/package-json).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Declara entrada pública y scripts de desarrollo, prueba y build del widget. Instálalo desde un paquete local y comprueba que los consumidores no dependen de rutas internas no exportadas.
-
-**Límites y decisión de uso:** Exports limita entradas públicas del paquete, pero no protege secretos incluidos en el artefacto. Inspecciona los archivos empaquetados y prueba importación desde un consumidor limpio; el workspace puede ocultar dependencias faltantes.
+</details>
 
 ### Tema 5: import() dinámico e import.meta · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás cargar un módulo solo cuando el usuario lo solicite, manejar el rechazo de esa carga y resolver un recurso relativo con `import.meta.url`. Integrarás una auditoría diferida en el proyecto sin bloquear la experiencia principal.
+#### ► DE QUÉ TRATA
+Al finalizar podrás cargar un módulo solo cuando el usuario lo solicite, manejar el rechazo de esa carga y resolver un recurso relativo con import.meta.url. Integrarás una auditoría diferida en el proyecto sin bloquear la experiencia principal.
 
-**Conocimiento previo:** Promesas, `async`/`await`, eventos del DOM, ESM y build con Vite. Mantén abierto el panel Network del navegador para observar cuándo se descarga cada chunk.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás cargar un módulo solo cuando el usuario lo solicite, manejar el rechazo de esa carga y resolver un recurso relativo con import.meta.url.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La pantalla de entregas es esencial; el visor avanzado de auditoría es opcional y pesado. En este incremento del proyecto, el código principal mostrará la operación diaria y descargará auditoría después de un clic, con un mensaje comprensible si la red impide obtener el chunk.
+#### ► LA ANALOGÍA
+Piensa en import() dinámico e import.meta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que import() dinámico e import.meta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** importación dinámica, code-splitting basado en `import()`, metadatos del módulo.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| import() dinámico e import.meta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`import()` usado como una función (a diferencia de la declaración estática `import ... from ...`) devuelve una Promesa que resuelve con el módulo solicitado, y puede invocarse en cualquier punto del código, incluyendo dentro de condicionales, bucles o en respuesta a un evento del usuario, precisamente porque, a diferencia de la declaración estática, no está limitado al nivel superior del archivo. Esta forma dinámica es la base técnica sobre la que los bundlers implementan code-splitting (Tema 2): cada llamada a `import()` se convierte automáticamente en un punto de división, generando un chunk separado que solo se descarga cuando esa línea específica de código efectivamente se ejecuta.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar import() dinámico e import.meta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Un caso de uso extremadamente común es cargar el código de una ruta específica de la aplicación solo cuando el usuario navega hacia ella (`const Modulo = await import("./paginas/detalle.js");`), en vez de incluir el código de todas las rutas posibles en el bundle inicial que se descarga al cargar la aplicación por primera vez, mejorando directamente el tiempo de carga inicial percibido por el usuario, especialmente en aplicaciones con muchas rutas o funcionalidades opcionales poco usadas.
+#### ► CUÁNDO NO USAR ESTO
+No uses import() dinámico e import.meta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-`import.meta` es un objeto especial disponible dentro de cualquier módulo ESM que expone metadatos sobre el propio módulo en tiempo de ejecución; su propiedad más comúnmente usada es `import.meta.url`, que contiene la URL completa del propio archivo del módulo, útil para resolver rutas relativas a recursos (como imágenes o archivos de datos) de forma robusta independientemente de desde dónde se haya importado el módulo. Vite además expone `import.meta.env` con variables de entorno específicas del build (distinguiendo, por ejemplo, entre modo de desarrollo y modo de producción), una convención propia de Vite construida sobre esta capacidad estándar de `import.meta` del lenguaje.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: import() dinámico e import.meta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Combinar `import()` dinámico con un framework de routing (como el router manual construido en el Módulo 12, o el router de Angular/React en sus tracks correspondientes) es el patrón estándar de "lazy loading de rutas" en aplicaciones modernas de una sola página, una técnica de optimización de rendimiento ampliamente adoptada en la industria precisamente porque reduce directamente el tamaño del bundle inicial sin sacrificar ninguna funcionalidad de la aplicación completa.
+#### ► LO QUE DEBES RECORDAR
+- import() dinámico e import.meta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** la declaración estática `import` es como pedir por adelantado, al hacer una reserva de restaurante, absolutamente todos los platos del menú que podrías llegar a querer durante toda la velada; `import()` dinámico es pedir cada plato exactamente en el momento en que decides que lo quieres, sin comprometerte de antemano con nada que quizás nunca termines pidiendo.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve import() dinámico e import.meta en tu contexto?
+2. ¿Cómo sabrías que import() dinámico e import.meta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar import() dinámico e import.meta?
 
-**¿Por qué es importante?** `import()` dinámico es la base técnica del lazy loading de rutas y funcionalidades, una de las optimizaciones de rendimiento más directamente impactantes y ampliamente adoptadas en aplicaciones web modernas de cualquier escala no trivial.
+</details>
 
-#### Paso 4 · Demostración guiada desde cero
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-import-dinamico`:
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-import-dinamico
 cd ejemplo-import-dinamico
 npm init -y
 mkdir src
 ```
-
-Crea `academia-web/src/auditoria.js`:
 
 ```js
 export function abrirAuditoria(contenedor) {
@@ -519,8 +531,6 @@ export function abrirAuditoria(contenedor) {
 
 export const rutaCatalogo = new URL("./datos/catalogo.json", import.meta.url);
 ```
-
-Actualiza `academia-web/src/main.js`:
 
 ```js
 const boton = document.querySelector("#auditoria");
@@ -542,65 +552,32 @@ boton.addEventListener("click", async () => {
 });
 ```
 
-El HTML debe incluir `<button id="auditoria">Abrir auditoría</button>` y `<p id="estado-auditoria"></p>`. Ejecuta:
-
 ```bash
 npm run dev
 npm run build
 ```
 
-**Resultado esperado:** al recargar, Network no muestra el chunk de auditoría; al pulsar aparece una nueva solicitud y el texto `Auditoría cargada para RF-101`. El build contiene un asset adicional asociado al módulo dinámico.
-
-**Fallo deliberado:** cambia la ruta a `./auditoria-inexistente.js`. Vite detectará la ruta literal durante build o la Promesa rechazará si falta el chunk en ejecución. El `catch` debe mostrar un estado recuperable; lee el diagnóstico y restaura la ruta.
-
-#### Paso 5 · Práctica guiada
-
-Añade un botón “Reintentar” y evita imports simultáneos con un estado `cargando`. **Pista:** deshabilita durante la espera y restablece solo en `catch`; un módulo cargado correctamente queda en caché.
-
-#### Paso 6 · Práctica independiente
-
-Carga bajo demanda un visor de mapa simulado, mide el chunk inicial y el diferido y diseña estados de cargando, listo y error accesibles. Prueba navegación lenta y documenta si la división aporta valor frente a incluir el código inicialmente.
-
-#### Paso 7 · Cierre
-
-Ya puedes convertir una capacidad opcional en un límite de carga observable y recuperable. El siguiente tema compara bundlers y transformadores para elegir herramientas por restricciones reales.
-
-**Errores comunes:** olvidar que `import()` devuelve una Promesa; no mostrar estado de carga; construir rutas imposibles de analizar; confundir `import.meta.url` con la URL de la página; crear chunks minúsculos sin medir.
-
-**Fuentes oficiales:** [MDN — import()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) y [MDN — import.meta](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import.meta).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Carga el módulo del mapa solo al solicitarlo y resuelve sus recursos con una base explícita. Prueba descarga fallida y ofrece la vista textual sin bloquear las consultas siguientes.
+</details>
 
 ### Tema 6: Webpack, Rollup y Babel/SWC · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás separar las responsabilidades de servidor de desarrollo, bundler y transformador, comparar alternativas con criterios medibles y registrar una decisión técnica. Mantendrás Vite en el proyecto o justificarás un cambio con evidencia reproducible.
 
-**Prerrequisitos:** build de Vite funcionando, ESM, `package.json` e inspección de `dist`. No necesitas dominar configuraciones avanzadas de Webpack: necesitas reconocer qué problema resuelve cada herramienta.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás separar las responsabilidades de servidor de desarrollo, bundler y transformador, comparar alternativas con criterios medibles y registrar una decisión técnica.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El equipo del proyecto propone migrar porque otra herramienta “es más rápida”. Cambiar el pipeline afecta desarrollo, pruebas, plugins, despliegue y mantenimiento. Este tema convierte la preferencia en una decisión del proyecto basada en restricciones, mediciones y consecuencias.
+#### ► LA ANALOGÍA
+Piensa en webpack, rollup y babel/swc como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** panorama de herramientas de build, cuándo cada una es apropiada.
-
-Webpack fue, durante buena parte de la década pasada, el bundler dominante del ecosistema JavaScript, con un modelo de configuración extremadamente flexible y potente (capaz de manejar prácticamente cualquier tipo de asset mediante "loaders" configurables), a costa de una configuración inicial considerablemente más compleja y verbosa que las alternativas más modernas como Vite. Webpack sigue siendo ampliamente usado en proyectos existentes de gran escala y en algunos frameworks específicos que lo integran internamente, aunque para proyectos nuevos, Vite (con Rollup para producción) ha ganado adopción significativa precisamente por su configuración considerablemente más simple y su servidor de desarrollo más rápido.
-
-Rollup, el bundler que Vite usa internamente para producción, está optimizado específicamente para producir bundles pequeños mediante tree-shaking de alta calidad, y es particularmente popular como herramienta de build para bibliotecas (en contraste con aplicaciones completas), donde producir un output limpio, pequeño y bien tree-shaken es la prioridad principal por encima de otras capacidades más orientadas a aplicaciones, como el hot module replacement durante desarrollo.
-
-Babel fue, durante años, la herramienta estándar para transformar sintaxis moderna de JavaScript (o JSX, o TypeScript) a una versión compatible con navegadores más antiguos que no soportaban esa sintaxis nativamente, mediante un sistema de plugins altamente configurable escrito en JavaScript puro. SWC (Speedy Web Compiler) y esbuild son alternativas más recientes que realizan transformaciones similares pero escritas en lenguajes compilados (Rust y Go respectivamente), ofreciendo mejoras de velocidad de un orden de magnitud frente a Babel para las transformaciones más comunes, siendo la razón técnica concreta detrás de la velocidad notablemente mayor de herramientas modernas como Vite (que usa esbuild) frente a configuraciones tradicionales basadas puramente en Babel y Webpack.
-
-Elegir entre estas herramientas en un proyecto nuevo, en la práctica actual de la industria, rara vez requiere una decisión completamente manual desde cero: frameworks y herramientas de scaffolding modernas (como `npm create vite@latest`) ya vienen preconfiguradas con una combinación sensata (Vite + esbuild + Rollup para producción) que cubre la gran mayoría de necesidades comunes sin configuración manual adicional, reservando la necesidad de entender estas herramientas individualmente principalmente para diagnosticar problemas específicos o para necesidades de configuración avanzada que excedan lo que la configuración por defecto cubre.
-
-**Analogía:** Webpack es como una fábrica industrial completamente configurable capaz de producir literalmente cualquier cosa con suficiente configuración manual detallada; Rollup es una línea de producción especializada y optimizada específicamente para un tipo de producto (bibliotecas pequeñas y limpias); Babel es un traductor humano experto pero relativamente lento; SWC/esbuild son traductores automáticos ultra rápidos que cubren la gran mayoría de casos comunes con una fracción del tiempo.
-
-**¿Por qué es importante?** Conocer el panorama general de estas herramientas, aunque la configuración por defecto de Vite cubra la mayoría de casos sin intervención manual, es útil para entender por qué un proyecto legado usa Webpack, o para diagnosticar un problema de configuración de build que exceda lo que el scaffolding por defecto resuelve automáticamente.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     NEED{"Necesidad principal"}
@@ -610,9 +587,51 @@ flowchart TD
     NEED -->|"transformar sintaxis"| TRANSFORM["Babel / SWC / esbuild"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Webpack, Rollup y Babel/SWC se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `ejemplo-build-tools`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Webpack, Rollup y Babel/SWC | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses webpack, rollup y babel/swc por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: webpack, rollup y babel/swc funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Webpack, Rollup y Babel/SWC existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve webpack, rollup y babel/swc en tu contexto?
+2. ¿Cómo sabrías que webpack, rollup y babel/swc no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar webpack, rollup y babel/swc?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    NEED{"Necesidad principal"}
+    NEED -->|"aplicación nueva"| VITE["Vite: desarrollo + build"]
+    NEED -->|"biblioteca"| ROLLUP["Rollup"]
+    NEED -->|"proyecto legado configurable"| WEBPACK["Webpack"]
+    NEED -->|"transformar sintaxis"| TRANSFORM["Babel / SWC / esbuild"]
+```
 
 ```bash
 mkdir ejemplo-build-tools
@@ -620,10 +639,6 @@ cd ejemplo-build-tools
 npm init -y
 mkdir src
 ```
-
-Crea primero el medidor ejecutable `academia-web/scripts/medir-build.js` y acompáñalo con el registro de decisión descrito a continuación.
-
-Crea `academia-web/docs/adr/001-herramienta-build.md`:
 
 ```md
 # ADR-001: herramienta de build del proyecto
@@ -643,8 +658,6 @@ Mantener Vite mientras soporte navegadores, plugins y despliegue requeridos.
 Aceptamos su convención y mediremos build, chunks y compatibilidad en CI.
 ```
 
-Crea `academia-web/scripts/medir-build.js`:
-
 ```js
 import { readdir, stat } from "node:fs/promises";
 
@@ -658,67 +671,32 @@ const tamanos = await Promise.all(
 console.log({ chunks: archivos.length, bytes: tamanos.reduce((a, b) => a + b, 0) });
 ```
 
-Ejecuta build y medición:
-
 ```bash
 npm run build
 node scripts/medir-build.js
 ```
 
-**Resultado esperado:** aparece un objeto con número de chunks y bytes mayor que cero; el ADR relaciona esos datos con restricciones del proyecto, no con popularidad.
-
-**Fallo deliberado:** ejecuta la medición antes del build o renombra `dist/assets`. Node muestra `ENOENT`, indicando que falta el artefacto previo. No ocultes el error: agrega al proceso la dependencia explícita `npm run build` antes de medir.
-
-#### Paso 5 · Práctica guiada
-
-Añade al ADR una matriz con compatibilidad de plugins, tiempo de build, tamaño, experiencia del equipo y coste de migración. **Pista:** define cómo verificar cada criterio; “mejor” o “moderno” no son métricas.
-
-#### Paso 6 · Práctica independiente
-
-Transforma un archivo pequeño con Babel o SWC y con esbuild en una carpeta experimental, registra comandos, tiempo y resultado, pero no migres el proyecto completo. Decide si la diferencia observada justifica complejidad adicional en este proyecto concreto.
-
-#### Paso 7 · Cierre
-
-Ahora puedes distinguir bundling de transformación y defender una herramienta mediante una decisión reversible. El próximo módulo aplicará pruebas automatizadas al código construido.
-
-**Errores comunes:** migrar por tendencia; comparar desarrollo de una herramienta con producción de otra; ignorar plugins y navegadores objetivo; medir una sola ejecución sin entorno comparable; confundir transpilación con empaquetado.
-
-**Fuentes oficiales:** [Webpack — Concepts](https://webpack.js.org/concepts/), [Rollup — Introduction](https://rollupjs.org/introduction/), [Babel — Learn](https://babeljs.io/docs/) y [SWC — Getting Started](https://swc.rs/docs/getting-started/).
-
----
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Compara el artefacto del widget con la configuración de bundling elegida. Verifica navegadores objetivo y source maps, justificando cada transformación por un requisito de compatibilidad.
+</details>
 
 ### Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min
 
-**Prerrequisito:** temas «ESM frente a CommonJS» e «import() dinámico e import.meta» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** usar `await` fuera de una función en un módulo, explicar por qué un ciclo de importación puede fallar y mapear nombres de paquetes a URLs en el navegador con un import map.
+#### ► DE QUÉ TRATA
+Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 22 o superior. Crea la carpeta academia-labs/javascript/esm-a-fondo. Todos los archivos usan la extensión .mjs, así Node los trata como módulos ES sin tocar package.json.
 
-**¿Por qué es importante?** Los módulos ES tienen reglas de carga propias. Si no las conoces, aparecen errores como «Cannot access before initialization» que parecen aleatorios, o configuraciones que bloquean el arranque de toda la aplicación.
+#### ► LA IDEA EN UNA FRASE
+**Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 22 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 22 o superior. Crea la carpeta `academia-labs/javascript/esm-a-fondo`. Todos los archivos usan la extensión `.mjs`, así Node los trata como módulos ES sin tocar `package.json`.
+#### ► LA ANALOGÍA
+Piensa en módulos es a fondo: top-level await, ciclos de importación e import maps como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-RutaFlow carga su configuración (la región de operación) desde un archivo antes de calcular rutas. Además, el módulo de rutas y el de paradas se importan entre sí. Ese ciclo funciona hasta que alguien lee una variable del otro módulo durante la carga, y entonces el arranque se rompe en producción.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** grafo de módulos, evaluación en orden, top-level await, ciclo de importación, zona muerta temporal (TDZ), import map.
-
-Antes de ejecutar nada, el motor lee todos los `import` y arma un **grafo de módulos**. Luego evalúa cada módulo una sola vez, empezando por las hojas: un módulo se ejecuta después de los módulos que importa.
-
-- **Top-level await:** un módulo puede usar `await` en su nivel superior. Los módulos que lo importan esperan a que termine. Es útil para cargar configuración, pero una espera larga retrasa todo el arranque.
-- **Ciclo de importación:** si `a.mjs` importa `b.mjs` y `b.mjs` importa `a.mjs`, uno de los dos se evalúa primero. Mientras tanto, las variables `const` y `let` del otro todavía no existen (están en la zona muerta temporal). Leerlas durante la carga lanza `ReferenceError`; leerlas después, dentro de una función, funciona.
-- **Import map:** en el navegador, `import { x } from 'rutas-util'` falla porque el navegador no sabe dónde está `rutas-util`. Un `<script type="importmap">` le dice a qué URL corresponde cada nombre. Node no usa import maps: resuelve con `node_modules` y `package.json`.
-
-**Analogía:** el grafo de módulos es una lista de compras con dependencias: no cocinas la salsa antes de tener los tomates. En un ciclo, dos recetas se piden mutuamente; puedes empezar una, pero no usar el resultado de la otra hasta que esté lista. La analogía falla en que el motor no espera a la otra receta: si la usas antes, lanza un error.
-
-**Límite de uso:** no uses top-level await para operaciones lentas o que pueden colgarse (por ejemplo, una petición de red sin tiempo límite): bloquea a todos los módulos que dependen de ese. Un ciclo de importación es una señal de diseño; muchas veces conviene mover lo compartido a un tercer módulo.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     M["main.mjs"] --> C["config.mjs<br/>top-level await"]
@@ -728,15 +706,55 @@ flowchart LR
     C --> J["config.json"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Módulos ES a fondo: top-level await, ciclos de importación e import maps se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/javascript/esm-a-fondo/config.json`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Módulos ES a fondo: top-level await, ciclos de importación e import maps | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses módulos es a fondo: top-level await, ciclos de importación e import maps por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: módulos es a fondo: top-level await, ciclos de importación e import maps funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Módulos ES a fondo: top-level await, ciclos de importación e import maps existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve módulos es a fondo: top-level await, ciclos de importación e import maps en tu contexto?
+2. ¿Cómo sabrías que módulos es a fondo: top-level await, ciclos de importación e import maps no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar módulos es a fondo: top-level await, ciclos de importación e import maps?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    M["main.mjs"] --> C["config.mjs<br/>top-level await"]
+    M --> A["a.mjs"]
+    A --> B["b.mjs"]
+    B -. "ciclo: lee a.mjs solo dentro de funciones" .-> A
+    C --> J["config.json"]
+```
 
 ```json
 { "region": "bogota" }
 ```
-
-Archivo `academia-labs/javascript/esm-a-fondo/config.mjs`:
 
 ```js
 import { readFile } from 'node:fs/promises';
@@ -746,8 +764,6 @@ const texto = await readFile(new URL('./config.json', import.meta.url), 'utf8');
 export const config = JSON.parse(texto);
 ```
 
-Archivo `academia-labs/javascript/esm-a-fondo/a.mjs`:
-
 ```js
 import { nombreB } from './b.mjs';
 
@@ -756,8 +772,6 @@ export function saludar() {
   return `A conoce a ${nombreB()}`;
 }
 ```
-
-Archivo `academia-labs/javascript/esm-a-fondo/b.mjs`:
 
 ```js
 import { nombreA } from './a.mjs';
@@ -772,8 +786,6 @@ export function quienEsA() {
 }
 ```
 
-Archivo `academia-labs/javascript/esm-a-fondo/main.mjs`:
-
 ```js
 import { config } from './config.mjs';
 import { saludar } from './a.mjs';
@@ -784,102 +796,27 @@ console.log(saludar());
 console.log(`B lee a A después de evaluar: ${quienEsA()}`);
 ```
 
-Archivo `academia-labs/javascript/esm-a-fondo/index.html`:
-
-```html
-<!-- Solo para el navegador: Node no lee import maps. -->
-<script type="importmap">
-  { "imports": { "rutas-util": "/vendor/rutas-util/index.js" } }
-</script>
-<script type="module">
-  import { version } from 'rutas-util'; // el import map traduce el nombre a la URL
-  console.log(version);
-</script>
-```
-
-Ejecuta el programa de Node desde la carpeta del ejemplo:
-
-```bash
-cd academia-labs/javascript/esm-a-fondo
-node main.mjs
-```
-
-**Explicación por bloques:** `config.mjs` usa `await` sin función: `main.mjs` no continúa hasta que el JSON está leído. `a.mjs` y `b.mjs` forman un ciclo. Como `a.mjs` importa `b.mjs`, el motor evalúa primero `b.mjs`; en ese momento `nombreA` todavía no existe, pero `b.mjs` no lo lee durante la carga, solo dentro de `quienEsA()`. Cuando `main.mjs` llama esa función, los dos módulos ya terminaron de evaluarse. `index.html` muestra el import map: el navegador cambia `rutas-util` por la URL `/vendor/rutas-util/index.js`.
-
-![Captura de terminal: node main.mjs imprime la región bogota, el saludo de A a B y que B lee a A después de evaluar](content/figures/javascript/esm-a-fondo.svg)
-
-**Resultado esperado:**
-
-```text
-Región: bogota
-A conoce a B
-B lee a A después de evaluar: A
-```
-
-**Fallo deliberado:** agrega al final de `b.mjs` la línea `console.log(nombreA);`, fuera de cualquier función. **Error esperado:** `ReferenceError: Cannot access 'nombreA' before initialization`. **Diagnóstico:** `b.mjs` se evalúa antes que `a.mjs` y lee una constante que todavía está en la zona muerta temporal. Mueve la lectura a una función o saca lo compartido a un tercer módulo.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** cambia la región en `config.json` y confirma que la primera línea cambia.
-2. **Variación:** agrega en `config.mjs` un `await new Promise(r => setTimeout(r, 2000))` y observa que todo el programa tarda dos segundos más en imprimir.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica, con el orden de evaluación, por qué ocurre.
-4. **Integración:** rompe el ciclo creando `nombres.mjs` con `nombreA` y `nombreB`, e impórtalo desde `a.mjs` y `b.mjs`.
-5. **Diseño:** sirve `index.html` con `npx serve` y una carpeta `vendor/rutas-util/index.js` que exporte `version`; comprueba en la consola del navegador que el import map funciona.
-
-**Pista:** si un error dice «before initialization» y hay un ciclo, busca qué módulo lee una variable del otro fuera de una función.
-
-#### Paso 6 · Práctica independiente
-
-Escribe `secretos.mjs`, que con top-level await lea `secretos.json` y falle con un mensaje claro si el archivo no existe. Luego impórtalo desde `main.mjs` y demuestra que, si falla, ningún otro módulo llega a ejecutarse.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas en qué orden se evalúan `main.mjs`, `a.mjs` y `b.mjs`.
-- [ ] `node main.mjs` imprime las tres líneas esperadas.
-- [ ] Reprodujiste el `ReferenceError` del ciclo y lo corregiste.
-- [ ] Explicas por qué Node no usa import maps y el navegador sí.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** leer variables de un módulo del ciclo durante la carga, usar top-level await para peticiones sin tiempo límite y esperar que Node lea un import map. **Siguiente paso:** el tema «package.json — exports, type y scripts» controla qué rutas de un paquete se pueden importar.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, carga la configuración de región con top-level await en un único módulo `config.mjs` y revisa con `npx madge --circular src` que no queden ciclos entre `rutas` y `paradas`.
-
-**Fuente oficial:** [MDN — Módulos de JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Modules) y [MDN — script type="importmap"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap).
+</details>
 
 ### Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min
 
-**Prerrequisito:** tema «package.json — exports, type y scripts» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** explicar cómo npm detecta un paquete alterado con el campo `integrity` del lockfile, comprobarlo con `node:crypto` y aplicar las defensas básicas de la cadena de suministro.
+#### ► DE QUÉ TRATA
+Usa Node.js 18 o superior y una terminal. Crea la carpeta academia-labs/javascript/cadena-suministro. El ejemplo simula la publicación y la instalación sin descargar nada, así puedes alterar un paquete sin riesgo.
 
-**¿Por qué es importante?** Casi todo el código de una aplicación JavaScript viene de paquetes de terceros. Un paquete comprometido corre con los mismos permisos que tu código. Saber qué protege el lockfile y qué no protege evita confiar de más.
+#### ► LA IDEA EN UNA FRASE
+**Usa Node.js 18 o superior y una terminal.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Node.js 18 o superior y una terminal. Crea la carpeta `academia-labs/javascript/cadena-suministro`. El ejemplo simula la publicación y la instalación sin descargar nada, así puedes alterar un paquete sin riesgo.
+#### ► LA ANALOGÍA
+Piensa en cadena de suministro npm: lockfile, integridad y paquetes alterados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-Un paquete pequeño que RutaFlow usa para formatear rutas cambió de dueño y su nueva versión envió variables de entorno a un servidor externo. El equipo se salvó porque instalaba con `npm ci`: el hash del lockfile no coincidía con el archivo descargado.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** lockfile, `integrity` (Subresource Integrity), `npm ci`, `npm audit`, scripts de instalación, procedencia (*provenance*).
-
-Cuando instalas un paquete, `package-lock.json` guarda su versión exacta y un campo `integrity`: el hash SHA-512 del archivo `.tgz`, escrito como `sha512-` seguido del hash en Base64. Con `npm ci`, npm descarga el archivo, calcula su hash y lo compara. Si no coincide, **rechaza la instalación**.
-
-El lockfile protege contra un archivo alterado **después** de que lo registraste. No protege si la versión que registraste ya era maliciosa. Para eso hay otras capas:
-
-| Riesgo | Defensa |
-|---|---|
-| Archivo cambiado en el camino o en el registro | `integrity` del lockfile y `npm ci` |
-| Vulnerabilidad conocida en una dependencia | `npm audit` y actualizaciones revisadas |
-| Script que se ejecuta al instalar | `npm ci --ignore-scripts` y revisar `postinstall` |
-| Paquete publicado desde una máquina comprometida | firmas y procedencia: `npm audit signatures` |
-
-**Analogía:** el lockfile es la foto de cada caja que recibiste: si mañana llega una caja con el mismo nombre pero otro peso, la rechazas. La analogía falla en que la foto no dice si el contenido original era bueno; solo que no cambió.
-
-**Límite de uso:** el hash no detecta un paquete malicioso desde su primera versión ni un error en tu propio código. `npm audit` solo conoce vulnerabilidades ya reportadas.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     P["npm publish<br/>rutas-util 1.0.0"] --> R["Registro npm"]
@@ -889,9 +826,51 @@ flowchart LR
     I -->|hash distinto| NO["rechaza: EINTEGRITY"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cadena de suministro npm: lockfile, integridad y paquetes alterados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/javascript/cadena-suministro/preparar.mjs`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cadena de suministro npm: lockfile, integridad y paquetes alterados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses cadena de suministro npm: lockfile, integridad y paquetes alterados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cadena de suministro npm: lockfile, integridad y paquetes alterados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cadena de suministro npm: lockfile, integridad y paquetes alterados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cadena de suministro npm: lockfile, integridad y paquetes alterados en tu contexto?
+2. ¿Cómo sabrías que cadena de suministro npm: lockfile, integridad y paquetes alterados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cadena de suministro npm: lockfile, integridad y paquetes alterados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    P["npm publish<br/>rutas-util 1.0.0"] --> R["Registro npm"]
+    R -->|.tgz| I["npm ci"]
+    L["package-lock.json<br/>integrity sha512-..."] --> I
+    I -->|hash coincide| OK["instala"]
+    I -->|hash distinto| NO["rechaza: EINTEGRITY"]
+```
 
 ```js
 import { createHash } from 'node:crypto';
@@ -908,8 +887,6 @@ const lock = { lockfileVersion: 3, packages: { 'node_modules/rutas-util': { vers
 await writeFile('package-lock.json', JSON.stringify(lock, null, 2));
 console.log(`lockfile registrado con ${integrity.slice(0, 20)}…`);
 ```
-
-Archivo `academia-labs/javascript/cadena-suministro/verificar-integridad.mjs`:
 
 ```js
 import { createHash } from 'node:crypto';
@@ -930,19 +907,11 @@ for (const archivo of ['rutas-util-1.0.0.tgz', 'rutas-util-alterado.tgz']) {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/javascript/cadena-suministro
 node preparar.mjs
 node verificar-integridad.mjs
 ```
-
-**Explicación por bloques:** `preparar.mjs` hace dos cosas que en la vida real hace npm: guarda el paquete y, en la primera instalación, escribe su hash en `package-lock.json`. La copia alterada tiene una línea extra que envía datos a otro servidor. `verificar-integridad.mjs` repite la comprobación de `npm ci`: calcula el SHA-512 de cada archivo y lo compara con el lockfile. Basta un byte distinto para que el hash cambie por completo.
-
-![Captura de terminal: el lockfile registra el hash sha512 y el paquete alterado no coincide](content/figures/javascript/cadena-suministro-npm.svg)
-
-**Resultado esperado:**
 
 ```text
 lockfile registrado con sha512-nnu+uJngDBWve…
@@ -950,76 +919,69 @@ rutas-util-1.0.0.tgz: coincide
 rutas-util-alterado.tgz: NO coincide, npm rechazaría la instalación
 ```
 
-**Fallo deliberado:** borra `package-lock.json` y vuelve a ejecutar `node preparar.mjs`, pero esta vez cambia `contenido` por el texto alterado antes de calcular el hash. **Error esperado:** ahora el archivo alterado «coincide». **Diagnóstico:** el lockfile solo protege lo que registraste; si registraste una versión mala, la confirma. Por eso también necesitas `npm audit`, revisar cambios de dueño y procedencia.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta los dos scripts y copia el hash completo del lockfile.
-2. **Variación:** cambia un solo espacio del paquete original y comprueba que el hash cambia por completo.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica qué riesgo no cubre el lockfile.
-4. **Integración:** en un proyecto real, ejecuta `npm ci --ignore-scripts` y `npm audit --omit=dev`, y anota qué encontró cada uno.
-5. **Diseño:** escribe una política de dependencias de cinco líneas para RutaFlow: quién aprueba paquetes nuevos y cómo se actualizan.
-
-**Pista:** pregúntate en qué momento se registró el hash: el lockfile solo compara contra ese momento.
-
-#### Paso 6 · Práctica independiente
-
-En un proyecto con dependencias reales, busca en `package-lock.json` un paquete y su `integrity`. Descarga el `.tgz` con `npm pack <paquete>@<versión>` y comprueba con tu script que el hash coincide.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué guarda el campo `integrity` y quién lo comprueba.
-- [ ] Los scripts imprimen las tres líneas esperadas.
-- [ ] Reprodujiste el caso en que el lockfile confirma una versión mala.
-- [ ] Nombras una defensa para cada fila de la tabla de riesgos.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `npm install` en CI en lugar de `npm ci`, no versionar el lockfile y confiar en que `npm audit` sin hallazgos significa «seguro». **Siguiente paso:** el módulo 13 trata los datos no confiables y la seguridad en el navegador.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el CI de RutaFlow, instala con `npm ci --ignore-scripts`, ejecuta `npm audit --audit-level=high` y `npm audit signatures`, y falla el pipeline si alguno falla.
-
-**Fuente oficial:** [npm Docs — package-lock.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json) y [npm Docs — npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit).
-
-## Construcción guiada del capítulo
-
-**Objetivo del laboratorio:** construir un proyecto multi-módulo con Vite, comparar ESM con CommonJS, y auditar el bundle de producción resultante.
-
-**Requisitos previos:** Node.js instalado, Módulos 0-6 completados.
-
-| Paso | Acción | Comando/Código | Explicación |
-|---|---|---|---|
-| 1 | Crear 3 archivos ESM interconectados | `math.mjs`, `format.mjs`, `main.mjs` con exports nombrados y un default | Impórtalos entre sí y verifica que funcionan |
-| 2 | Recrear el mismo ejemplo con CommonJS | `require`/`module.exports` | Compara sintaxis y el momento de resolución |
-| 3 | Inicializar un proyecto con Vite | `npm create vite@latest` | Observa la estructura generada y `vite.config` |
-| 4 | Ejecutar el build de producción | `npm run build` | Abre el bundle final: identifica minificación y hashing |
-| 5 | Verificar tree-shaking real | Importa solo una función de `lodash-es` | Confirma con el analizador de bundle que el resto no entra |
-| 6 | Configurar un alias de import | `@/utils` en `vite.config` | Úsalo en vez de rutas relativas largas |
-
-**Verificación:** el laboratorio se considera exitoso si el bundle de producción generado en el paso 4 es sustancialmente más pequeño que la suma del código fuente sin procesar, y si el paso 5 confirma visualmente (con un analizador de bundle) que solo la función importada de `lodash-es` entra al resultado final, no la biblioteca completa.
+</details>
 
 ### Comprueba lo construido
 
-#### Ejercicio verificable 1
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Escribe el valor de `type` que hace que Node interprete los archivos `.js` como ESM.
+#### ► DE QUÉ TRATA
+Este tema te guía por comprueba lo construido con foco en comprensión antes de implementación.
 
-**Respuesta esperada:** module
+#### ► LA IDEA EN UNA FRASE
+**Entender comprueba lo construido te permite tomar mejores decisiones técnicas.**
 
-#### Ejercicio verificable 2
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Escribe el nombre de la técnica que elimina exports no utilizados del bundle.
+#### ► LA ANALOGÍA
+Piensa en comprueba lo construido como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Respuesta esperada:** tree-shaking|tree shaking
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que comprueba lo construido resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Ejercicio verificable 3
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Comprueba lo construido se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-¿Qué comando genera el bundle de producción definido por Vite?
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Comprueba lo construido | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Respuesta esperada:** npm run build
+#### ► CUÁNDO NO USAR ESTO
+No uses comprueba lo construido por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Errores comunes y soluciones**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: comprueba lo construido funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Mezclar `import`/`export` con `require`/`module.exports` en el mismo archivo sin configurar `type` correctamente.** Verifica el campo `"type"` en `package.json` y usa extensiones `.mjs`/`.cjs` si necesitas forzar un formato específico en un archivo puntual.
-- **Importar la biblioteca completa (`import _ from "lodash"`) y esperar tree-shaking.** Usa la versión ESM del paquete (`lodash-es`) e importa solo las funciones específicas necesarias.
-- **Confundir el comportamiento del servidor de desarrollo con el del build de producción.** Siempre verifica el comportamiento real con `npm run build` antes de asumir que el rendimiento de desarrollo representa el de producción.
+#### ► LO QUE DEBES RECORDAR
+- Comprueba lo construido existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
----
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve comprueba lo construido en tu contexto?
+2. ¿Cómo sabrías que comprueba lo construido no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar comprueba lo construido?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar comprueba lo construido.
+
+</details>

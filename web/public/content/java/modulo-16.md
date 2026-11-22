@@ -4,91 +4,133 @@
 
 En este módulo vas a persistir un modelo pequeño de pedidos y medir las consultas que Hibernate ejecuta. La meta no es memorizar anotaciones: es decidir qué datos cargar para cada operación sin producir N+1, errores de sesión cerrada ni respuestas JSON cíclicas.
 
+
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** dos clientes y tres pedidos en H2. Comprueba la clave foránea, carga los pedidos dentro de una transacción y compara el SQL de `LAZY` y `EAGER`.
-- **Caso RutaFlow:** una pantalla paginada de envíos muestra referencia, estado y última parada. No serialices la entidad completa: crea una proyección DTO para el listado, una consulta de detalle con `@EntityGraph` y mide ambas con datos suficientes para que aparezca N+1.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-La progresión importa: `EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un `JOIN`. La evidencia del caso real es una prueba de integración con el número de filas y consultas observado, no solo una anotación en la entidad.
+#### ► DE QUÉ TRATA
+Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
+2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
+
+</details>
 
 ### Tema 1: Entidades y relaciones JPA · Intermedio · 35 min
 
-**¿Por qué es importante?** el mapeo conecta objetos con filas; el lado propietario escribe la clave foránea.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 1.1: Guarda una relación de cliente y pedido · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por entidades y relaciones jpa con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender entidades y relaciones jpa te permite tomar mejores decisiones técnicas.**
 
-Un pedido debe conservar el ID de su cliente incluso después de cerrar el contexto Java.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en entidades y relaciones jpa como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Abre **Cliente.java** y **Pedido.java**. Ejecuta:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que entidades y relaciones jpa resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-~~~bash
-./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
-~~~
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Entidades y relaciones JPA se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Resultado esperado:** la consulta ordena RT-101 y RT-102; la fila de pedido conserva cliente_id.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Entidades y relaciones JPA | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Fallo deliberado:** comenta pedido.asignarCliente(this). **Diagnóstico:** Pedido tiene @JoinColumn y es dueño de la relación; sincroniza ambos lados del objeto.
+#### ► CUÁNDO NO USAR ESTO
+No uses entidades y relaciones jpa por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**3. Entiende**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: entidades y relaciones jpa funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-JPA define el contrato; Hibernate lo implementa. mappedBy indica el lado inverso.
+#### ► LO QUE DEBES RECORDAR
+- Entidades y relaciones JPA existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**4. Cierra**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve entidades y relaciones jpa en tu contexto?
+2. ¿Cómo sabrías que entidades y relaciones jpa no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar entidades y relaciones jpa?
 
-Guarda el test verde y el fallo.
+</details>
 
-#### Subtema 1.2: Protege la referencia obligatoria · 10 min
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**1. Contexto**
-
-Un pedido sin referencia no se debe guardar.
-
-**2. Hazlo tú**
-
-En **Pedido.java** agrega la validación de referencia y la restricción de columna requerida. Añade un caso válido y otro vacío en **src/test/java/academia/pedidos/PedidoJpaLabTest.java** y ejecuta ./mvnw -q test desde el código de este tema.
-
-**Resultado esperado:** la referencia vacía se rechaza y el pedido válido se persiste.
-
-**Fallo deliberado:** valida solo en el controlador. **Diagnóstico:** una tarea o un test podría omitirlo; protege el modelo y la base.
-
-**3. Entiende**
-
-Validación de objeto y restricción SQL protegen partes distintas del flujo.
-
-**4. Cierra**
-
-Registra qué capa rechazó cada caso.
-
-#### Subtema 1.3: Elige la cascada según historial · 10 min
-
-**1. Contexto**
-
-Al guardar cliente y pedidos nuevos, quieres persistir el agregado; al borrarlo, quizá debas conservar historial.
-
-**2. Hazlo tú**
-
-En **Cliente.java** cambia temporalmente CascadeType.PERSIST por CascadeType.ALL. Añade un test de borrado en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** el test revela cuáles operaciones se propagan al pedido.
-
-**Fallo deliberado:** añade REMOVE solo para silenciar una excepción. **Diagnóstico:** decide si el historial debe borrarse, bloquear la operación o reasignarse.
-
-**3. Entiende**
-
-CascadeType propaga operaciones JPA; no equivale a ON DELETE de la base.
-
-**4. Cierra**
-
-Guarda el test y la política elegida. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
-
-**Comprueba persistencia:** guarda una entidad dentro de una transacción y vuelve a leerla en un contexto nuevo. Así distingues un objeto en memoria de un cambio confirmado en la base. Usa un DTO si la respuesta HTTP no debe exponer asociaciones internas. Elige relaciones según ciclo de vida: una parada puede pertenecer a un envío; una ciudad suele compartirse. No pongas todas las relaciones en `EAGER`; cada caso de uso debe traer lo que necesita. Fuente: https://jakarta.ee/specifications/persistence/.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 @Entity
 public class Pedido {
@@ -104,96 +146,73 @@ public class Pedido {
 }
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ```
 
-**Conexión con el proyecto integrador:** el proyecto integrador ("Motor de asignación de entregas") necesita persistir pedidos y sus clientes de forma real; este laboratorio JPA es literalmente la capa de persistencia que vas a reutilizar ahí, no un ejemplo aislado.
-
-**Límite:** `@JoinColumn` define el lado propietario de la relación; sincronizar solo un lado del objeto en memoria (sin `asignarCliente`) deja el objeto Java inconsistente aunque la base de datos reciba la clave foránea correcta desde el lado que sí persiste.
-
-#### Practica
-
-Modifica `CascadeType.PERSIST` por `CascadeType.ALL` en `Cliente.java` (Subtema 1.3), añade un test que borre el cliente y ejecuta `./mvnw -q test` para ver qué pasa con sus pedidos.
+</details>
 
 ### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
-**¿Por qué es importante?** cardinalidad y herencia cambian claves, restricciones y consultas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 2.1: Impide dos perfiles para el mismo cliente · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por relaciones uno a uno, muchos a muchos y herencia con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender relaciones uno a uno, muchos a muchos y herencia te permite tomar mejores decisiones técnicas.**
 
-Un cliente tiene como máximo un perfil de entrega.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en relaciones uno a uno, muchos a muchos y herencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crea **PerfilEntrega.java** con @OneToOne y una clave cliente_id con restricción única. Agrega test de unicidad en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que relaciones uno a uno, muchos a muchos y herencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** la base rechaza el segundo perfil para el mismo cliente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Relaciones uno a uno, muchos a muchos y herencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** quita la unicidad. **Diagnóstico:** la anotación Java no reemplaza la restricción del esquema.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Relaciones uno a uno, muchos a muchos y herencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses relaciones uno a uno, muchos a muchos y herencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Uno-a-uno necesita una clave foránea y garantía única.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: relaciones uno a uno, muchos a muchos y herencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- Relaciones uno a uno, muchos a muchos y herencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Guarda el test que intenta duplicar el perfil.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve relaciones uno a uno, muchos a muchos y herencia en tu contexto?
+2. ¿Cómo sabrías que relaciones uno a uno, muchos a muchos y herencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar relaciones uno a uno, muchos a muchos y herencia?
 
-#### Subtema 2.2: Modela una línea como entidad · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Una línea de pedido guarda producto, cantidad y precio acordado.
-
-**2. Hazlo tú**
-
-Crea **LineaPedido.java** con asociaciones ManyToOne a Pedido y Producto, además de cantidad y precioUnitario. Añade una prueba con dos líneas a un pedido y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** cantidad y precio se guardan en la relación entre pedido y producto.
-
-**Fallo deliberado:** usa ManyToMany directo y busca dónde guardar cantidad. **Diagnóstico:** convierte la relación en entidad de asociación con sus propios datos.
-
-**3. Entiende**
-
-ManyToMany simple sirve si la tabla intermedia no tiene información de negocio.
-
-**4. Cierra**
-
-Guarda el pedido y sus dos líneas.
-
-#### Subtema 2.3: Inspecciona una estrategia de herencia · 10 min
-
-**1. Contexto**
-
-Envío nacional e internacional comparten referencia, pero tienen datos específicos.
-
-**2. Hazlo tú**
-
-Crea **src/main/java/academia/pedidos/Envio.java** y dos subclases; prueba SINGLE_TABLE con discriminador y consulta las filas en un test JPA. Ejecuta `./mvnw -q test`.
-
-**Resultado esperado:** ambas variantes se leen desde la tabla común y el discriminador distingue su tipo.
-
-**Fallo deliberado:** elige la estrategia antes de revisar consultas y columnas. **Diagnóstico:** compara SINGLE_TABLE, JOINED y TABLE_PER_CLASS con el esquema que necesita el caso.
-
-**3. Entiende**
-
-Cada estrategia intercambia joins, columnas nulas y costo de consultas.
-
-**4. Cierra**
-
-Guarda la consulta y el criterio de elección. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
-
-**Elige por datos y propiedad:** muchos-a-muchos funciona si la unión no tiene datos propios. Si guarda fecha, estado o prioridad, crea una entidad intermedia como `AsignacionEnvio`. En asociaciones bidireccionales identifica el lado que escribe la clave foránea y actualiza ambos objetos desde un método de dominio. Antes de elegir herencia, comprueba el SQL y las tablas de cada estrategia. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html.
-
-**Verifica propiedad:** persiste ambos lados y consulta la clave foránea generada. En una relación intermedia revisa que sus campos propios puedan guardarse y consultarse.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 @Entity
 public class PerfilEntrega {
@@ -206,98 +225,73 @@ public class PerfilEntrega {
 }
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q test
 ```
 
-**Conexión con el proyecto integrador:** decidir entre `ManyToMany` simple y una entidad de asociación propia (como `LineaPedido`, con cantidad y precio) es la misma decisión que tomarás en el proyecto integrador al modelar qué guías van en qué bloque de entrega.
-
-**Límite:** la restricción `unique = true` en la columna evita el segundo perfil a nivel de base de datos; la anotación Java sola (sin esa restricción) solo documenta la intención y no impide un segundo insert concurrente.
-
-#### Practica
-
-Modifica `PerfilEntrega.java` para quitar `unique = true` de la columna, ejecuta el test de unicidad del Subtema 2.1 y confirma que ahora sí permite un segundo perfil para el mismo cliente.
+</details>
 
 ### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
-**¿Por qué es importante?** el estado administrado determina si JPA detecta un cambio.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 3.1: Separa flush de clear · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por ciclo de vida, entitymanager y consultas tipadas con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender ciclo de vida, entitymanager y consultas tipadas te permite tomar mejores decisiones técnicas.**
 
-Quieres comprobar datos escritos en la base, no un objeto todavía guardado en memoria.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en ciclo de vida, entitymanager y consultas tipadas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En **PedidoJpaLabTest.java** guarda un cliente, llama flush(), luego clear() y vuelve a buscarlo. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que ciclo de vida, entitymanager y consultas tipadas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** find reconstruye las entidades a partir de la base de prueba.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ciclo de vida, EntityManager y consultas tipadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** asume que persist() ya ejecutó SQL. **Diagnóstico:** JPA puede diferir escrituras; flush sincroniza el contexto.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ciclo de vida, EntityManager y consultas tipadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses ciclo de vida, entitymanager y consultas tipadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-persist administra, flush sincroniza, clear separa las instancias del contexto.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ciclo de vida, entitymanager y consultas tipadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- Ciclo de vida, EntityManager y consultas tipadas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Anota el estado del objeto después de cada llamada.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ciclo de vida, entitymanager y consultas tipadas en tu contexto?
+2. ¿Cómo sabrías que ciclo de vida, entitymanager y consultas tipadas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ciclo de vida, entitymanager y consultas tipadas?
 
-#### Subtema 3.2: Consulta entidades con JPQL · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Operaciones lista pedidos por cliente en orden de referencia.
-
-**2. Hazlo tú**
-
-En **PedidoRepository.java** revisa listarPorCliente y la consulta select p from Pedido p where p.cliente.id =:clienteId order by p.referencia. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
-
-**Resultado esperado:** devuelve RT-101 y RT-102 en ese orden.
-
-**Fallo deliberado:** usa el nombre SQL de la tabla dentro de JPQL. **Diagnóstico:** JPQL consulta entidades y atributos Java.
-
-**3. Entiende**
-
-Hibernate traduce JPQL al SQL correspondiente al dialecto de base.
-
-**4. Cierra**
-
-Guarda la consulta y el resultado.
-
-#### Subtema 3.3: Reconoce una entidad separada · 10 min
-
-**1. Contexto**
-
-Editar un objeto desconectado no actualiza automáticamente su fila.
-
-**2. Hazlo tú**
-
-En **Pedido.java** agrega un método de dominio cambiarReferencia(String valor). En **PedidoJpaLabTest.java** persiste un pedido, llama entityManager.clear(), cambia la referencia del objeto separado con ese método y vuelve a consultar. Ejecuta./mvnw -q test.
-
-**Resultado esperado:** la base conserva el dato anterior porque esa instancia ya no está administrada.
-
-**Fallo deliberado:** espera que cualquier objeto Java modificado se guarde. **Diagnóstico:** modifica una entidad administrada dentro de una transacción o evalúa merge con su semántica.
-
-**3. Entiende**
-
-Los estados son nuevo, administrado, separado y eliminado.
-
-**4. Cierra**
-
-Anota en qué estado está cada referencia. Fuente: [EntityManager y Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
-
-**Observa estados:** `persist` pasa la entidad nueva a administrada; al cerrar el contexto queda separada. Si la cambias mientras está administrada, el proveedor puede generar `UPDATE` durante `flush`, aunque no llames a `save` otra vez. Prueba `persist`, `find`, `flush` y `clear`; vuelve a leer para ver qué sobrevivió. En JPQL, enlaza parámetros en vez de concatenar datos de usuario. Fuente: https://jakarta.ee/specifications/platform/11/apidocs/jakarta/persistence/EntityManager.html.
-
-**Resultado esperado:** después de `clear`, una lectura nueva muestra solo los cambios confirmados; si no hubo commit, el cambio no debe tratarse como persistido.
-
-Un test debe abrir una transacción, guardar un envío, llamar `flush()` para enviar SQL y luego `clear()` para quitarlo del contexto. Si lees la misma instancia sin limpiar, podrías estar viendo memoria y no la base. Prueba la consulta tipada con un parámetro que no coincide y explica por qué devuelve una lista vacía.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 // PedidoJpaLabTest.java
 entityManager.persist(pedido);
@@ -306,94 +300,73 @@ entityManager.clear();  // separa las instancias del contexto
 Pedido recargado = entityManager.find(Pedido.class, pedido.getId());
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ```
 
-**Conexión con el proyecto integrador:** el proyecto integrador va a tener servicios que leen y escriben pedidos en varias transacciones; distinguir una entidad administrada de una separada es lo que evita el error de "creí que había guardado eso, pero la instancia ya no está administrada".
-
-**Límite:** `flush()` sincroniza SQL con la base, pero no confirma la transacción (eso lo hace el commit); un `flush()` dentro de una transacción que después hace rollback no deja ese cambio en la base, aunque el SQL sí se haya enviado.
+</details>
 
 ### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
-**¿Por qué es importante?** filtros combinables requieren consultas seguras y mantenibles.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 4.1: Busca por prefijo con Criteria · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por búsquedas dinámicas con criteria y querydsl con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender búsquedas dinámicas con criteria y querydsl te permite tomar mejores decisiones técnicas.**
 
-Operaciones quiere encontrar guías cuya referencia comience con RT-.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en búsquedas dinámicas con criteria y querydsl como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Abre **BusquedaPedido.java** y ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` desde el código de este tema.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que búsquedas dinámicas con criteria y querydsl resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** el resultado incluye RT-201 y excluye OT-202.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Búsquedas dinámicas con Criteria y Querydsl se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** concatena entrada en una cadena JPQL. **Diagnóstico:** usa parámetros ligados o Criteria para separar el valor.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Búsquedas dinámicas con Criteria y Querydsl | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses búsquedas dinámicas con criteria y querydsl por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Criteria construye predicados desde la API; es verboso, pero facilita condiciones combinables.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: búsquedas dinámicas con criteria y querydsl funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- Búsquedas dinámicas con Criteria y Querydsl existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Guarda la salida para prefijo RT- y OT-.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve búsquedas dinámicas con criteria y querydsl en tu contexto?
+2. ¿Cómo sabrías que búsquedas dinámicas con criteria y querydsl no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar búsquedas dinámicas con criteria y querydsl?
 
-#### Subtema 4.2: Combina filtros opcionales · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-La pantalla permite combinar prefijo y estado; ambos filtros pueden faltar.
-
-**2. Hazlo tú**
-
-En **BusquedaPedido.java** agrega dos filtros opcionales y reúne en una lista solo los Predicate presentes. Añade tests sin filtros y con ambos; ejecuta ./mvnw -q test.
-
-**Resultado esperado:** cada combinación devuelve solo las filas correspondientes.
-
-**Fallo deliberado:** trata una cadena vacía como todas las condiciones. **Diagnóstico:** omite el predicado si ese filtro no se solicitó.
-
-**3. Entiende**
-
-Consulta SQL generada y plan de ejecución cuando el filtro deja de ser pequeño.
-
-**4. Cierra**
-
-Guarda dos combinaciones y su resultado.
-
-#### Subtema 4.3: Prueba Querydsl con Jakarta · 10 min
-
-**1. Contexto**
-
-El equipo quiere consultas legibles con campos revisados por compilador.
-
-**2. Hazlo tú**
-
-En **pom.xml** agrega Querydsl JPA para Jakarta y su procesador, según la guía oficial. Genera Q-types, escribe la consulta de prefijo equivalente a Criteria y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** ambas consultas producen las mismas referencias.
-
-**Fallo deliberado:** copia artefactos antiguos que importan javax.persistence. **Diagnóstico:** elige la variante Jakarta y revisa imports generados.
-
-**3. Entiende**
-
-Querydsl agrega generación de código; úsalo si compensa su costo de configuración.
-
-**4. Cierra**
-
-Registra versión, imports y resultados comparados. Fuente: [Querydsl](https://querydsl.com/).
-
-**Compara consultas:** extrae filtros Criteria en funciones pequeñas como `porCiudad` y pruébalos con y sin valor. Criteria forma parte de Jakarta Persistence; Querydsl requiere plugin y generación de tipos en el build. Confirma que se genere antes de compilar y que CI lo ejecute desde cero. Para una consulta fija y corta, JPQL con parámetros puede ser más legible. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
-
-**Resultado esperado:** quitar un filtro opcional amplía los resultados sin cambiar el orden ni concatenar texto del usuario en la consulta. Registra cuántas filas devolvió cada caso.
-
-Con Querydsl, inspecciona el archivo de tipos generado y confirma que el plugin de generación corre en una copia limpia antes de compilar. Con Criteria, mantén cada filtro opcional en un bloque pequeño y verificable. Si los filtros son fijos y pocos, compara la complejidad con una consulta JPQL parametrizada antes de sumar otra herramienta al build.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 CriteriaQuery<Pedido> query = cb.createQuery(Pedido.class);
@@ -401,191 +374,145 @@ Root<Pedido> raiz = query.from(Pedido.class);
 query.where(cb.like(raiz.get("referencia"), "RT-%"));
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test
 ```
 
-**Conexión con el proyecto integrador:** el filtro combinable (prefijo + estado) de este tema es la misma pantalla de búsqueda que necesitará el proyecto integrador para que operaciones encuentre envíos sin escribir una consulta nueva por cada combinación posible de filtros.
-
-**Límite:** Criteria evita concatenar texto del usuario en JPQL, pero es verboso para pocas condiciones fijas; con 1-2 filtros que no cambian, una consulta JPQL parametrizada suele ser más legible que el código de Criteria equivalente.
-
-#### Practica
-
-Modifica `BusquedaPedido.java` para tratar una cadena vacía como "sin filtro de prefijo" en vez de omitir el predicado solo cuando el valor es `null`, y prueba con `""` para confirmar que la combinación de filtros sigue siendo correcta.
+</details>
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
-**¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 5.1: Accede a una relación lazy en su contexto · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por fetchtype.lazy, eager y el problema n+1 con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender fetchtype.lazy, eager y el problema n+1 te permite tomar mejores decisiones técnicas.**
 
-La pantalla necesita el nombre del cliente al presentar un pedido.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en fetchtype.lazy, eager y el problema n+1 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta./mvnw -q test.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que fetchtype.lazy, eager y el problema n+1 resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** Hibernate carga la asociación mientras la transacción está activa.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| FetchType.LAZY, EAGER y el problema N+1 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** mueve el acceso después del cierre de sesión. **Diagnóstico:** consulta dentro de la transacción o devuelve un DTO con los campos necesarios.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar FetchType.LAZY, EAGER y el problema N+1 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses fetchtype.lazy, eager y el problema n+1 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-LAZY aplaza la carga; no mantiene viva una sesión cerrada.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: fetchtype.lazy, eager y el problema n+1 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- FetchType.LAZY, EAGER y el problema N+1 existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Conserva la prueba dentro y fuera del contexto.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve fetchtype.lazy, eager y el problema n+1 en tu contexto?
+2. ¿Cómo sabrías que fetchtype.lazy, eager y el problema n+1 no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar fetchtype.lazy, eager y el problema n+1?
 
-#### Subtema 5.2: Cuenta las consultas N+1 · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Un listado carga N pedidos y luego consulta cada cliente por separado.
-
-**2. Hazlo tú**
-
-En **PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde el código de este tema y observa Hibernate Statistics.
-
-**Resultado esperado:** N+1 produce más sentencias que la lectura con EntityGraph.
-
-**Fallo deliberado:** prueba con un único pedido. **Diagnóstico:** usa varias filas representativas para hacer visible el crecimiento de consultas.
-
-**3. Entiende**
-
-N+1 combina una consulta inicial con consultas repetidas por resultado relacionado.
-
-**4. Cierra**
-
-Guarda el contador de ambos caminos.
-
-#### Subtema 5.3: Elige datos para cada pantalla · 10 min
-
-**1. Contexto**
-
-El listado necesita referencia y estado; el detalle muestra también el cliente.
-
-**2. Hazlo tú**
-
-Compara findAll y findAllWithClienteByOrderByReferenciaAsc en **PedidoRepository.java**. Añade una proyección para listado y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** cada operación carga los campos que muestra.
-
-**Fallo deliberado:** cambia todo a EAGER. **Diagnóstico:** EAGER no garantiza JOIN; vuelve a contar sentencias y usa un fetch plan por caso.
-
-**3. Entiende**
-
-La consulta y su fetch plan se eligen según la operación, no para toda la aplicación.
-
-**4. Cierra**
-
-Anota campos de listado y de detalle.
-
-**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html.
-
-**Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 @EntityGraph(attributePaths = "cliente")
 List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
 ```
 
-**Conexión con el proyecto integrador:** la pantalla paginada de envíos de tu proyecto integrador (referencia, estado, última parada) es exactamente el caso real descrito al inicio del módulo; sin `@EntityGraph` o una proyección DTO, listar N envíos dispara N consultas adicionales por el cliente de cada uno.
-
-**Límite:** `@EntityGraph` evita N+1 para la asociación declarada, pero no es gratis: trae esos datos siempre que se use ese método, aunque una pantalla distinta no los necesite; por eso conviene tener un método de repositorio por necesidad de pantalla, no uno genérico con todo `EAGER`.
-
-#### Practica
-
-Modifica el repositorio para usar `findAll()` simple en vez de `findAllWithClienteByOrderByReferenciaAsc()` dentro del mismo test y cuenta cuántas consultas SQL adicionales aparecen al acceder a `cliente` de cada pedido.
+</details>
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
-**¿Por qué es importante?** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 6.1: Carga detalle con EntityGraph · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por entitygraph y cachés de persistencia con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender entitygraph y cachés de persistencia te permite tomar mejores decisiones técnicas.**
 
-La vista de pedido necesita mostrar el nombre del cliente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en entitygraph y cachés de persistencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En **PedidoRepository.java** revisa @EntityGraph(attributePaths = "cliente"). Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` y `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde el código de este tema.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que entitygraph y cachés de persistencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** aparece el cliente y la ruta de detalle reduce consultas observadas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| EntityGraph y cachés de persistencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** serializa la entidad completa. **Diagnóstico:** expón DTO para evitar ciclos y controlar datos cargados.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar EntityGraph y cachés de persistencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses entitygraph y cachés de persistencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-EntityGraph expresa asociaciones requeridas; el SQL concreto depende del proveedor.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: entitygraph y cachés de persistencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- EntityGraph y cachés de persistencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Guarda consultas y contador antes/después.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve entitygraph y cachés de persistencia en tu contexto?
+2. ¿Cómo sabrías que entitygraph y cachés de persistencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar entitygraph y cachés de persistencia?
 
-#### Subtema 6.2: Observa el caché de primer nivel · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Dos búsquedas del mismo ID ocurren dentro del mismo EntityManager.
-
-**2. Hazlo tú**
-
-En **PedidoJpaLabTest.java** llama dos veces find para el mismo pedido, compara identidad, llama clear() y busca de nuevo. Ejecuta./mvnw -q test.
-
-**Resultado esperado:** dentro del mismo contexto se reutiliza instancia; después de clear se carga otra.
-
-**Fallo deliberado:** llamarlo caché distribuido. **Diagnóstico:** el primer nivel vive en el EntityManager y no coordina procesos.
-
-**3. Entiende**
-
-El contexto conserva una identidad por entidad e ID durante la unidad de trabajo.
-
-**4. Cierra**
-
-Guarda la comparación antes y después de clear().
-
-#### Subtema 6.3: Mide antes de activar caché de segundo nivel · 10 min
-
-**1. Contexto**
-
-El catálogo puede leerse muchas veces, pero una tarifa mutable puede quedar obsoleta.
-
-**2. Hazlo tú**
-
-En **pom.xml** habilita un proveedor de caché compatible con la versión fijada de Spring/Hibernate; marca solo el catálogo como cacheable y compara lecturas desde dos EntityManager. Ejecuta./mvnw -q test.
-
-**Resultado esperado:** la medición indica si se evita SQL bajo esa configuración.
-
-**Fallo deliberado:** asume que la anotación habilita una caché compartida. **Diagnóstico:** comprueba proveedor, estrategia, invalidación y estadísticas.
-
-**3. Entiende**
-
-Caché de segundo nivel es opcional y necesita política de consistencia.
-
-**4. Cierra**
-
-Guarda medición y decisión.
-
-**Distingue herramientas:** `EntityGraph` describe asociaciones deseadas para una operación; no es una caché ni obliga al proveedor a traer solo esos datos. La caché de primer nivel vive en el contexto actual; la de segundo nivel requiere configuración e invalidación. Compara SQL con y sin grafo y repite después de limpiar el contexto para no medir una entidad ya administrada. Fuentes: https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html y https://docs.hibernate.org/orm/6.6/introduction/html_single/.
-
-**Comprobación:** compara conteo de consultas en un contexto recién creado y en el mismo contexto. Anota si cambió por el grafo o por una entidad ya administrada.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 // PedidoJpaLabTest.java: caché de primer nivel
 Pedido primero = entityManager.find(Pedido.class, id);
@@ -595,98 +522,73 @@ entityManager.clear();
 Pedido tercero = entityManager.find(Pedido.class, id); // instancia nueva
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test
 ```
 
-**Conexión con el proyecto integrador:** si el catálogo de servicios o tarifas del proyecto integrador se lee muchas veces y cambia poco, esta sección explica exactamente cuándo vale la pena activar caché de segundo nivel y cuándo el primer nivel (gratis, por contexto) ya es suficiente.
-
-**Límite:** el caché de primer nivel vive solo en el `EntityManager` actual: no coordina nada entre dos instancias de la aplicación corriendo en paralelo; un caché de segundo nivel distribuido exige además una política de invalidación explícita, no solo una anotación.
-
-#### Practica
-
-Modifica el test de caché de primer nivel para llamar `entityManager.clear()` entre las dos lecturas del mismo pedido y confirma con `assertNotSame` que ahora son instancias distintas.
+</details>
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
-**¿Por qué es importante?** dos operadores pueden cambiar el mismo envío; el sistema debe detectar conflicto y decidir rollback.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 7.1: Detecta una actualización perdida · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por concurrencia, transacciones y propagación con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender concurrencia, transacciones y propagación te permite tomar mejores decisiones técnicas.**
 
-Dos transacciones cargan el mismo pedido y guardan cambios.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en concurrencia, transacciones y propagación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En **Pedido.java** revisa @Version; crea un test que cargue dos instancias, guarde la primera y después la segunda. Ejecuta./mvnw -q test.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que concurrencia, transacciones y propagación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** la segunda escritura detecta una versión obsoleta.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Concurrencia, transacciones y propagación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** quita @Version. **Diagnóstico:** el cambio puede sobrescribirse sin aviso; restaura control optimista.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Concurrencia, transacciones y propagación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses concurrencia, transacciones y propagación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-La versión se compara al confirmar y detecta conflicto sin mantener lock durante toda la edición.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: concurrencia, transacciones y propagación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- Concurrencia, transacciones y propagación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Guarda versión inicial y conflicto.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve concurrencia, transacciones y propagación en tu contexto?
+2. ¿Cómo sabrías que concurrencia, transacciones y propagación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar concurrencia, transacciones y propagación?
 
-#### Subtema 7.2: Revierte un agregado completo · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Cabecera y líneas del pedido deben persistir juntas.
-
-**2. Hazlo tú**
-
-Crea **CrearPedido.java** con un método @Transactional que guarde cabecera y líneas. Añade test que lance error entre ambas y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** al fallar, ninguna parte queda confirmada.
-
-**Fallo deliberado:** captura el error y devuelve éxito. **Diagnóstico:** la transacción puede confirmar; propaga el error o marca rollback.
-
-**3. Entiende**
-
-El límite transaccional define qué operaciones forman una unidad.
-
-**4. Cierra**
-
-Cuenta filas en caso exitoso y fallido.
-
-#### Subtema 7.3: Compara lock optimista y pesimista · 10 min
-
-**1. Contexto**
-
-Inventario con alta contención puede necesitar bloquear una fila mientras se reserva.
-
-**2. Hazlo tú**
-
-Crea **InventarioRepository.java** con consulta @Lock(LockModeType.PESSIMISTIC_WRITE) dentro de transacción. Compara resultado con @Version y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** puedes explicar si se detecta conflicto al guardar o se espera por lock.
-
-**Fallo deliberado:** bloquea toda consulta. **Diagnóstico:** un lock prolongado reduce concurrencia y puede causar esperas; úsalo solo si el caso y el motor lo justifican.
-
-**3. Entiende**
-
-Optimista valida al confirmar; pesimista bloquea durante operación.
-
-**4. Cierra**
-
-Guarda prueba y decisión. Fuente: [Jakarta Persistence](https://jakarta.ee/specifications/persistence/).
-
-**Prueba la última unidad:** ejecuta dos reservas concurrentes con una unidad disponible; solo una puede confirmarse. `@Version` detecta una escritura cambiada desde la lectura y permite devolver conflicto o reintentar con límite. Mantén las transacciones cortas; no retengas una conexión durante una llamada HTTP. Una transacción agrupa trabajo de base de datos, pero no hace seguro un objeto compartido entre hilos. Fuente: https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3-2.html.
-
-**Resultado esperado:** una reserva confirma, la otra recibe conflicto y la cantidad final permanece en cero; repite el caso para descartar un resultado casual.
-
-Una transacción aplicada por proxy afecta llamadas que atraviesan ese proxy; una llamada interna del mismo objeto puede no iniciar el límite esperado. Prueba el caso desde otro servicio. Evita mantener la transacción abierta mientras llamas un proveedor HTTP: registra la intención, confirma cambios de base y coordina lo externo con un mecanismo adecuado al negocio.
-
-#### Fragmento real
-
+#### Código y verificación
 ```java
 @Entity
 public class Pedido {
@@ -695,106 +597,80 @@ public class Pedido {
 }
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q test
 ```
 
-**Conexión con el proyecto integrador:** dos operadores cambiando el mismo envío al mismo tiempo es justo el caso del proyecto integrador cuando dos domiciliarios intentan tomar la misma guía; `@Version` es la forma barata (sin bloquear) de detectar ese conflicto.
-
-**Límite:** el control optimista con `@Version` detecta el conflicto al confirmar, pero no lo evita durante la edición; para inventario de alta contención (la última unidad disponible) a veces conviene `@Lock(PESSIMISTIC_WRITE)` en vez de dejar que dos escrituras compitan y una pierda.
-
-#### Practica
-
-Modifica `Pedido.java` para quitar `@Version` temporalmente, repite el test de actualización perdida y confirma que ahora la segunda escritura sobrescribe la primera sin avisar.
+</details>
 
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
-**¿Por qué es importante?** el esquema de producción debe cambiar con migraciones rastreables y pruebas del motor real.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 8.1: Versiona un cambio de esquema · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por migraciones y pruebas jpa con testcontainers con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender migraciones y pruebas jpa con testcontainers te permite tomar mejores decisiones técnicas.**
 
-Añadir estado al pedido no debería depender de Hibernate recreando la tabla al iniciar.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en migraciones y pruebas jpa con testcontainers como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crea V1__crear_tablas.sql y V2__agregar_estado_pedido.sql bajo **migration**. Configura Flyway en **pom.xml** y ejecuta `./mvnw -q test` desde el código de este tema.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que migraciones y pruebas jpa con testcontainers resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Resultado esperado:** se aplican migraciones en orden y el log informa las versiones.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migraciones y pruebas JPA con Testcontainers se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Fallo deliberado:** edita V1 tras aplicarla. **Diagnóstico:** Flyway detecta checksum distinto; agrega V3 correctiva.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migraciones y pruebas JPA con Testcontainers | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**3. Entiende**
+#### ► CUÁNDO NO USAR ESTO
+No uses migraciones y pruebas jpa con testcontainers por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Migraciones versionadas hacen el cambio revisable; ddl-auto no sustituye historial del esquema productivo.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migraciones y pruebas jpa con testcontainers funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**4. Cierra**
+#### ► LO QUE DEBES RECORDAR
+- Migraciones y pruebas JPA con Testcontainers existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Guarda el log y secuencia de migraciones.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migraciones y pruebas jpa con testcontainers en tu contexto?
+2. ¿Cómo sabrías que migraciones y pruebas jpa con testcontainers no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migraciones y pruebas jpa con testcontainers?
 
-#### Subtema 8.2: Ejecuta integración contra PostgreSQL · 10 min
+</details>
 
-**1. Contexto**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-H2 puede aceptar SQL que el motor de producción interpreta distinto.
-
-**2. Hazlo tú**
-
-En **pom.xml** fija Flyway mediante el BOM de Spring Boot 4.1.2, agrega org.flywaydb:flyway-database-postgresql, org.postgresql:postgresql:42.7.14 y org.testcontainers:testcontainers-junit-jupiter:2.0.5 y testcontainers-postgresql:2.0.5 en scope test. Crea **src/test/java/academia/pedidos/PedidoPostgresTest.java** con @Testcontainers y PostgreSQLContainer<>("postgres:17.11-alpine3.24"). Ejecuta./mvnw -q -Dtest=PedidoPostgresTest test con Docker activo.
-
-**Resultado esperado:** migraciones y repositorio corren contra PostgreSQL desechable.
-
-**Fallo deliberado:** usa postgres:latest. **Diagnóstico:** fija imagen/version para impedir cambios silenciosos del motor.
-
-**3. Entiende**
-
-H2 sirve para práctica rápida; Testcontainers comprueba compatibilidad con un motor real.
-
-**4. Cierra**
-
-Guarda imagen, salida de migración y resultado. Fuente: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/).
-
-#### Subtema 8.3: Comprueba rollback fuera del contexto viejo · 10 min
-
-**1. Contexto**
-
-Un fallo en una línea no debe dejar la cabecera del pedido a medias.
-
-**2. Hazlo tú**
-
-En **PedidoPostgresTest.java**, fuerza una excepción tras guardar cabecera y antes de completar líneas; abre una transacción nueva para consultar y ejecuta ./mvnw -q -Dtest=PedidoPostgresTest test.
-
-**Resultado esperado:** PostgreSQL confirma que la transacción revirtió el agregado.
-
-**Fallo deliberado:** consulta con el mismo EntityManager que retiene la entidad. **Diagnóstico:** limpia el contexto o lee en otra transacción para ver lo que quedó almacenado.
-
-**3. Entiende**
-
-La prueba del motor real verifica SQL y rollback del proveedor, no solo objetos en memoria.
-
-**4. Cierra**
-
-Guarda migración, error y consulta de comprobación.
-
-#### Fragmento real
-
+#### Código y verificación
 ```sql
 -- V2__agregar_estado_pedido.sql
 ALTER TABLE pedido ADD COLUMN estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE';
 ```
 
-Ejecuta:
-
 ```bash
 ./mvnw -q test
 ```
 
-**Conexión con el proyecto integrador:** el esquema del proyecto integrador va a evolucionar (agregar estado, columnas nuevas); Flyway versionado es cómo lo haces sin que `ddl-auto` recree silenciosamente la tabla y pierda datos en un ambiente real.
-
-**Límite:** H2 acepta cierto SQL que un motor real (PostgreSQL) interpreta distinto; una migración que pasa contra H2 todavía necesita probarse contra el motor de producción con Testcontainers (Subtema 8.2) antes de confiar en ella.
-
----
-**Alcance de la prueba:** el contenedor comprueba PostgreSQL, pero no certifica la configuración productiva. Fija la imagen, aplica migraciones a una base vacía y prueba actualizar desde una versión anterior. No edites un script aplicado: crea otro con versión siguiente para reproducir el cambio. Explica qué tests necesitan Docker y cómo correrlos junto con pruebas rápidas. Fuentes: https://java.testcontainers.org/modules/databases/postgres/ y https://documentation.red-gate.com/flyway/flyway-concepts/migrations.
+</details>

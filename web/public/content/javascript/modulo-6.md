@@ -3,34 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: async/await sobre promesas · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás escribir flujos asíncronos legibles, distinguir dependencia de concurrencia y demostrar que `await` pausa una función, no el hilo.
+#### ► DE QUÉ TRATA
+Al finalizar podrás escribir flujos asíncronos legibles, distinguir dependencia de concurrencia y demostrar que await pausa una función, no el hilo.
 
-**Conocimiento previo:** promesas, event loop, combinadores y funciones.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás escribir flujos asíncronos legibles, distinguir dependencia de concurrencia y demostrar que await pausa una función, no el hilo.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** El proyecto consulta una entrega y después obtiene su ruta; esos pasos dependen entre sí. En cambio, dos guías independientes deben consultarse en paralelo para no sumar latencias.
+#### ► LA ANALOGÍA
+Piensa en async/await sobre promesas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** azúcar sintáctica sobre Promesas, pausa no bloqueante, legibilidad secuencial.
-
-`async`/`await`, introducido en ES2017, no es un mecanismo de concurrencia distinto de las Promesas estudiadas en el Módulo 5: es sintaxis construida directamente encima de ellas, diseñada para que el código asíncrono se lea de forma secuencial y familiar, en vez de encadenar múltiples `.then()`. Declarar una función con la palabra clave `async` garantiza que esa función siempre devuelve una Promesa (incluso si internamente retorna un valor simple, JavaScript lo envuelve automáticamente en una Promesa resuelta), y habilita el uso de `await` dentro de su cuerpo.
-
-`await` pausa la ejecución de la función `async` (no del programa completo, ni del hilo único de JavaScript) hasta que la Promesa a su derecha se resuelve, devolviendo entonces el valor resuelto directamente como si fuera una expresión síncrona normal. Es fundamental entender que esta "pausa" no bloquea el hilo principal de ejecución: mientras la función `async` está pausada esperando un `await`, el Event Loop (Módulo 5) sigue libre para procesar otras tareas pendientes (otros eventos, otras funciones), y solo cuando la Promesa esperada se resuelve, la ejecución de esa función específica se reanuda, como una microtask.
-
-Esta distinción —pausa de una función específica frente a bloqueo del hilo completo— es la razón por la que `async`/`await` no sacrifica ninguna de las propiedades no bloqueantes de JavaScript: es exactamente el mismo modelo de concurrencia basado en Promesas y en el Event Loop, simplemente expresado con una sintaxis que se lee de arriba a abajo como código síncrono tradicional, en vez de requerir seguir visualmente una cadena de callbacks anidados o de `.then()` encadenados.
-
-Reescribir una cadena de `.then().then().catch()` como una función `async` con `try/catch` no cambia el comportamiento en tiempo de ejecución (ambas formas son, en el fondo, exactamente las mismas Promesas resolviéndose de la misma manera), pero mejora sustancialmente la legibilidad, especialmente cuando hay lógica condicional o manejo de errores intercalado entre pasos asíncronos sucesivos, un escenario donde el anidamiento de `.then()` puede volverse difícil de seguir visualmente.
-
-**Analogía:** `async`/`await` es como leer una receta de cocina escrita en pasos secuenciales normales ("hierve el agua, luego añade la pasta, luego escurre"), en vez de la misma receta escrita como una cadena de instrucciones condicionales anidadas ("cuando el agua hierva, entonces añade la pasta, y cuando la pasta esté lista, entonces escurre"); el resultado final es idéntico, pero la primera forma se sigue con mucha menos carga cognitiva.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant UI as Interfaz de la app
@@ -43,9 +35,54 @@ sequenceDiagram
     F-->>UI: Promise con la guía
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| async/await sobre promesas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea el ejemplo independiente y guarda `src/consultas.js`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar async/await sobre promesas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses async/await sobre promesas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: async/await sobre promesas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- async/await sobre promesas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve async/await sobre promesas en tu contexto?
+2. ¿Cómo sabrías que async/await sobre promesas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar async/await sobre promesas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant UI as Interfaz de la app
+    participant F as función async
+    participant API as API
+    UI->>F: consultarGuia()
+    F->>API: await fetch(...)
+    Note over F: se pausa solo esta función
+    API-->>F: respuesta
+    F-->>UI: Promise con la guía
+```
 
 ```bash
 mkdir ejemplo-async-await
@@ -79,50 +116,69 @@ console.timeEnd('paralelo');
 node src/consultas.js
 ```
 
-**Resultado esperado:** la secuencia tarda cerca de 100 ms y la consulta paralela cerca de 50 ms. **Fallo deliberado:** elimina `async` de `consultarSecuencial`; Node mostrará que `await` solo es válido dentro de una función async o en el nivel superior de un módulo. Restáuralo y explica que se pausa la función, no el hilo.
-
-#### Paso 5 · Práctica guiada
-
-Usa `Promise.all` para iniciar ambas consultas y mide cerca de 50 ms. **Pista:** crea las dos promesas antes de esperar sus resultados.
-
-#### Paso 6 · Práctica independiente
-
-Modela `consultarGuia → consultarRuta`, donde el segundo paso necesita el ID del primero. Combina esa secuencia con otra entrega independiente y dibuja dependencias y concurrencia.
-
-#### Paso 7 · Cierre
-
-Ya usas `await` para dependencias y combinadores para concurrencia. El siguiente tema clasifica y propaga errores. Fuente oficial: [MDN — async function](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/async_function).
-
-**Errores comunes:** creer que `async` devuelve un valor directo; esperar operaciones independientes una por una; usar `await` fuera de contexto compatible; confundir pausa con bloqueo.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Encadena consulta y normalización mediante async/await. Prueba que el indicador de carga termina tanto con éxito como con error y que la UI no trata una promesa como si fuera el resultado.
+</details>
 
 ### Tema 2: try/catch en flujos asíncronos · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás convertir fallos de red, HTTP y datos en errores diferenciados, limpiar siempre el estado visual y conservar la causa técnica.
 
-**Conocimiento previo:** `async`/`await`, `fetch`, excepciones y códigos HTTP.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás convertir fallos de red, HTTP y datos en errores diferenciados, limpiar siempre el estado visual y conservar la causa técnica.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Una entrega del proyecto puede fallar por conexión, por respuesta 404 o por JSON inválido. Mostrar “algo salió mal” para todos los casos impide actuar y diagnosticar.
+#### ► LA ANALOGÍA
+Piensa en try/catch en flujos asíncronos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que try/catch en flujos asíncronos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** captura de rechazos, manejo explícito de errores, propagación de excepciones asíncronas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| try/catch en flujos asíncronos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Dentro de una función `async`, un `await` sobre una Promesa que se rechaza lanza una excepción síncrona equivalente en el punto exacto del `await`, que puede capturarse con un bloque `try/catch` normal, exactamente igual que cualquier error síncrono. Esto es lo que permite que el manejo de errores asíncronos se exprese con la misma sintaxis familiar de manejo de errores síncronos, en vez de requerir un segundo argumento o un `.catch()` separado como en la cadena de Promesas tradicional.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar try/catch en flujos asíncronos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Es crítico rodear con `try/catch` cualquier `await` cuya Promesa pueda rechazarse de forma esperada (por ejemplo, una petición de red que puede fallar por conectividad, o un servidor que puede responder con un código de error); omitir el manejo de errores en una función `async` no hace que el error desaparezca, sino que la Promesa devuelta por la función `async` completa se rechaza con esa misma razón, propagando la responsabilidad de manejarlo hacia quien haya invocado la función, y si nadie en la cadena lo maneja finalmente, se produce una advertencia de "unhandled promise rejection", el mismo problema mencionado en el Módulo 5 para Promesas no capturadas.
+#### ► CUÁNDO NO USAR ESTO
+No uses try/catch en flujos asíncronos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Un patrón común y recomendado es manejar el error lo más cerca posible del punto donde tiene sentido decidir qué hacer al respecto: mostrar un mensaje al usuario, reintentar la operación, o usar un valor por defecto, en vez de dejar que el error se propague silenciosamente hacia capas superiores del programa que quizás no tengan suficiente contexto para decidir la respuesta apropiada. `fetch` tiene una particularidad importante que sorprende a quien lo usa por primera vez: no rechaza la Promesa ante respuestas HTTP de error (404, 500); solo rechaza ante fallos de red genuinos (sin conexión, DNS no resuelto). Por esta razón, es necesario verificar explícitamente `respuesta.ok` (o el código `respuesta.status`) y lanzar un error manualmente si la respuesta indica un fallo, para que ese caso también sea capturado correctamente por el `try/catch`.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: try/catch en flujos asíncronos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Combinar `try/catch` con un bloque `finally` es útil para ejecutar lógica de limpieza que debe ocurrir sin importar si la operación tuvo éxito o falló, como ocultar un indicador de carga que se mostró antes de iniciar la petición asíncrona, garantizando que ese indicador se oculte tanto en el camino de éxito como en el de error.
+#### ► LO QUE DEBES RECORDAR
+- try/catch en flujos asíncronos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Un bloque `catch (error)` no garantiza que `error` sea realmente una instancia de `Error`: código externo (una dependencia, un worker, una API del navegador) puede rechazar o lanzar cualquier valor. Además, `instanceof Error` puede fallar cuando el valor proviene de otro realm (otro iframe, otro contexto `vm` en Node), porque cada realm tiene su propio constructor `Error`. Desde ECMAScript 2026 (Node.js 24.3 o superior; en Node.js 22 no existe), `Error.isError(valor)` resuelve esto con una comprobación fiable que no depende de la cadena de prototipos del realm actual:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve try/catch en flujos asíncronos en tu contexto?
+2. ¿Cómo sabrías que try/catch en flujos asíncronos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar try/catch en flujos asíncronos?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```javascript
 function normalizarRechazo(valor) {
   if (!Error.isError(valor)) {
@@ -131,14 +187,6 @@ function normalizarRechazo(valor) {
   return valor;
 }
 ```
-
-**Analogía:** `try/catch` alrededor de un `await` es como tener una red de seguridad instalada exactamente debajo de un tramo específico y conocido de un trapecio: si el artista (la operación asíncrona) cae en ese tramo exacto, la red lo atrapa ahí mismo; si no se instala ninguna red en ese tramo, la caída continúa hacia abajo (se propaga) hasta encontrar, si existe, una red instalada en un nivel inferior (un `try/catch` en una función que invocó a esta).
-
-**Código del ejemplo:**
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `ejemplo-errores-async`:
 
 ```bash
 mkdir ejemplo-errores-async
@@ -162,64 +210,73 @@ async function obtenerUsuarios() {
 }
 ```
 
-Guarda una versión ejecutable en `academia-javascript/src/errores-asincronos.js`, define allí `url` y reemplaza la limpieza visual por `console.log('Carga finalizada')`.
-
 ```bash
 node src/errores-asincronos.js
 ```
 
-**Resultado esperado:** con una URL válida devuelve datos y siempre imprime `Carga finalizada`.
-
-**Fallo deliberado:** usa una ruta inexistente. `fetch` resuelve con una respuesta 404; solo `if (!r.ok) throw ...` la convierte en el error `HTTP 404` que captura el flujo.
-
-#### Paso 5 · Práctica guiada
-
-Crea `ErrorHttp` con propiedad `status`. **Pista:** conserva `cause` al envolver otro error y decide en una capa superior qué mensaje mostrar.
-
-#### Paso 6 · Práctica independiente
-
-Clasifica red, HTTP, JSON inválido y validación de dominio. Escribe un caso reproducible por categoría y demuestra que `finally` se ejecuta en todos sin devolver silenciosamente `[]` cuando eso oculte el fallo.
-
-#### Paso 7 · Cierre
-
-Ya manejas errores donde existe contexto para decidir y propagas los demás con causa. El siguiente tema cancela solicitudes obsoletas. Fuente oficial: [MDN — try...catch](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/try...catch).
-
-**Errores comunes:** asumir que fetch rechaza 404; capturar y devolver vacío siempre; perder la causa original; omitir `finally` para indicadores de carga.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Captura errores en la frontera del cliente y conserva su causa para diagnóstico. Prueba JSON inválido y HTTP fallido por separado, mostrando mensajes útiles sin revelar el cuerpo completo de error.
+</details>
 
 ### Tema 3: fetch API y AbortController · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás cancelar una petición obsoleta, distinguir cancelación intencional de error y evitar que una respuesta antigua sobrescriba la más reciente.
 
-**Conocimiento previo:** `fetch`, promesas, `try/catch` y eventos de interfaz.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás cancelar una petición obsoleta, distinguir cancelación intencional de error y evitar que una respuesta antigua sobrescriba la más reciente.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En este proyecto un operador puede buscar varias entregas rápidamente. Sin cancelación, una respuesta lenta de la primera búsqueda puede reemplazar el resultado correcto de la última.
+#### ► LA ANALOGÍA
+Piensa en fetch api y abortcontroller como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que fetch api y abortcontroller resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `fetch`, `Response`, cancelación de peticiones en curso.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| fetch API y AbortController se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`fetch(url, opciones)` es la API estándar y moderna para realizar peticiones HTTP desde JavaScript, reemplazando a `XMLHttpRequest` (la API anterior, mucho más verbosa y basada en callbacks) en prácticamente todo código nuevo. `fetch` devuelve una Promesa que se resuelve con un objeto `Response`, del cual se puede extraer el cuerpo en distintos formatos (`.json()`, `.text()`, `.blob()`), cada uno de ellos también devolviendo, a su vez, una Promesa (porque leer el cuerpo completo de la respuesta es en sí mismo una operación potencialmente asíncrona, especialmente para respuestas grandes).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar fetch API y AbortController | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-`AbortController` es el mecanismo estándar para cancelar una petición `fetch` en curso: se crea una instancia (`const controlador = new AbortController();`), se pasa su propiedad `signal` en las opciones de `fetch` (`fetch(url, { signal: controlador.signal })`), y en cualquier momento posterior se puede invocar `controlador.abort()` para cancelar la petición, lo que hace que la Promesa de `fetch` se rechace con un error cuyo `name` es `"AbortError"`, distinguible explícitamente de otros tipos de fallo de red en el bloque `catch`.
+#### ► CUÁNDO NO USAR ESTO
+No uses fetch api y abortcontroller por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-El caso de uso más común de `AbortController` es una interfaz de búsqueda en vivo: cada vez que el usuario escribe un nuevo carácter, se dispara una nueva petición de búsqueda, pero si la petición anterior aún está en curso cuando llega la nueva, cancelarla explícitamente evita que una respuesta desactualizada (correspondiente a una búsqueda anterior y ya obsoleta) llegue después que la respuesta de la búsqueda más reciente, y sobrescriba incorrectamente los resultados mostrados al usuario con datos obsoletos, un bug de "race condition" (condición de carrera) extremadamente común en interfaces de búsqueda mal implementadas sin cancelación explícita.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: fetch api y abortcontroller funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Combinar `AbortController` con `debounce` (visto en el Módulo 1) es un patrón robusto y frecuente: `debounce` evita disparar una petición nueva en cada pulsación de tecla individual, esperando una pequeña pausa en la escritura; `AbortController` cancela cualquier petición previa que aún esté en curso cuando efectivamente se dispara la siguiente, cubriendo conjuntamente tanto el problema de exceso de peticiones como el de respuestas desordenadas llegando fuera de secuencia.
+#### ► LO QUE DEBES RECORDAR
+- fetch API y AbortController existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** `fetch` sin `AbortController` es como enviar una carta por correo sin ninguna forma de interceptarla una vez enviada, incluso si te das cuenta después de que ya no la necesitas; `AbortController` es como tener la capacidad de llamar a la oficina de correos y cancelar el envío mientras la carta aún está en tránsito, antes de que llegue a su destino.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve fetch api y abortcontroller en tu contexto?
+2. ¿Cómo sabrías que fetch api y abortcontroller no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar fetch api y abortcontroller?
 
-**Código del ejemplo:**
+</details>
 
-#### Paso 4 · Demostración guiada desde cero
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-fetch-abort`:
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-fetch-abort
 cd ejemplo-fetch-abort
@@ -237,66 +294,73 @@ fetch(url, { signal: controlador.signal })
 controlador.abort(); // cancela la petición anterior en curso
 ```
 
-Crea `academia-javascript/src/busqueda-cancelable.js` y usa una promesa controlada o servidor local lento para que la práctica sea determinista.
-
 ```bash
 node src/busqueda-cancelable.js
 ```
 
-**Resultado esperado:** al llamar `abort()` antes de completar aparece `petición cancelada`; no se muestra como fallo al usuario.
-
-**Fallo deliberado:** elimina la cancelación y dispara búsqueda lenta `RF-1`, seguida de búsqueda rápida `RF-10`. La respuesta antigua puede escribirse al final y dejar datos obsoletos.
-
-#### Paso 5 · Práctica guiada
-
-Conserva un controlador activo y cancélalo antes de cada nueva búsqueda. **Pista:** crea otro controlador después de abortar; una señal abortada no puede reutilizarse.
-
-#### Paso 6 · Práctica independiente
-
-Combina debounce, cancelación y un contador de solicitud. Prueba respuesta fuera de orden, cancelación intencional y fallo real; solo el último debe mostrar error.
-
-#### Paso 7 · Cierre
-
-Ya evitas actualizaciones obsoletas y distingues cancelación de fallo. El siguiente tema limita tiempo y reintenta solo operaciones seguras. Fuente oficial: [MDN — AbortController](https://developer.mozilla.org/es/docs/Web/API/AbortController).
-
-Cada campo de búsqueda o filtro en vivo del proyecto integrador (SPA sin framework, Módulo 12) necesitará este mismo par debounce + `AbortController` para no mostrar resultados obsoletos cuando el usuario escribe más rápido de lo que responde la API.
-
-**Cuándo no usarlo:** para una petición única disparada por una acción explícita (un botón "Buscar", no cada tecla), cancelar peticiones previas no aporta nada porque no hay una petición anterior en curso que pueda quedar obsoleta; `AbortController` se justifica cuando el mismo tipo de petición puede dispararse varias veces antes de que la anterior responda.
-
-**Errores comunes:** reutilizar una señal abortada; mostrar cancelación como error; creer que ignorar una respuesta cancela la red; no limpiar listeners asociados.
+</details>
 
 ### Tema 4: Reintentos y timeouts manuales · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás aplicar timeout por intento, backoff exponencial con jitter y una política limitada de reintentos para operaciones idempotentes.
 
-**Conocimiento previo:** `async`/`await`, `AbortController`, códigos HTTP y combinadores.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás aplicar timeout por intento, backoff exponencial con jitter y una política limitada de reintentos para operaciones idempotentes.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** El proyecto debe recuperarse de una caída breve sin duplicar una confirmación de entrega ni saturar un servicio degradado. No todos los errores ni comandos son reintentables.
+#### ► LA ANALOGÍA
+Piensa en reintentos y timeouts manuales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que reintentos y timeouts manuales resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** backoff exponencial, reintentos limitados, timeout con `Promise.race`.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Reintentos y timeouts manuales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una función de reintentos automáticos (`fetchConReintentos`) mejora la robustez de una aplicación frente a fallos de red transitorios (una petición que falla ocasionalmente por una interrupción momentánea de conectividad, pero que probablemente tendría éxito si se intentara de nuevo unos instantes después). El patrón típico ejecuta la operación en un bucle acotado (con un número máximo de intentos, para evitar reintentar indefinidamente ante un fallo permanente), y entre cada intento fallido espera un tiempo antes de reintentar, típicamente con backoff (el tiempo de espera aumenta progresivamente en cada intento sucesivo, en vez de reintentar inmediatamente), para no sobrecargar un servidor que ya está teniendo problemas con reintentos inmediatos y repetidos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Reintentos y timeouts manuales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Un timeout manual —limitar cuánto tiempo se está dispuesto a esperar una operación antes de considerarla fallida, aunque la operación en sí no tenga ningún mecanismo nativo de timeout— se implementa combinando `Promise.race` (visto en el Módulo 5) entre la operación real y una Promesa que se rechaza automáticamente tras un tiempo límite fijo usando `setTimeout`. Cualquiera de las dos que se resuelva primero determina el resultado: si la operación real termina antes del límite, su resultado gana la carrera; si el límite de tiempo se cumple primero, la Promesa de timeout gana, y el código trata ese caso como un fallo por tiempo excedido.
+#### ► CUÁNDO NO USAR ESTO
+No uses reintentos y timeouts manuales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Combinar reintentos con timeout requiere cuidado en el orden de composición: normalmente se aplica el timeout a cada intento individual (para no esperar indefinidamente en un intento específico que esté colgado), y el bucle de reintentos envuelve esa combinación completa, de modo que si un intento individual excede su timeout, se cuenta como un fallo de ese intento específico y se procede al siguiente intento del bucle de reintentos, en vez de que el timeout aplique una sola vez al conjunto completo de todos los reintentos sumados.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: reintentos y timeouts manuales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Estas dos técnicas —reintentos con backoff y timeout manual— son extremadamente comunes en clientes de API de producción, y su ausencia es una causa frecuente de aplicaciones frágiles que fallan completamente ante cualquier interrupción transitoria de red, en vez de recuperarse automáticamente de forma silenciosa para el usuario final.
+#### ► LO QUE DEBES RECORDAR
+- Reintentos y timeouts manuales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** el backoff en reintentos es como llamar por teléfono a alguien que no contesta: en vez de volver a marcar inmediatamente una y otra vez sin pausa (lo cual sería inútil e insistente), esperas un poco más cada vez antes de volver a intentar, dando tiempo a que la situación que impidió la respuesta se resuelva por sí sola. Un timeout manual es como decidir de antemano que, si nadie contesta después de cierto número de tonos, cuelgas y consideras la llamada fallida, en vez de esperar indefinidamente sin límite.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve reintentos y timeouts manuales en tu contexto?
+2. ¿Cómo sabrías que reintentos y timeouts manuales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar reintentos y timeouts manuales?
 
-**Código del ejemplo:**
+</details>
 
-#### Paso 4 · Demostración guiada desde cero
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-reintentos`:
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-reintentos
 cd ejemplo-reintentos
@@ -322,64 +386,73 @@ function conTimeout(promesa, ms) {
 }
 ```
 
-Guarda el cliente en `academia-javascript/src/resiliencia.js`, instrumenta cada intento y ejecuta:
-
 ```bash
 node src/resiliencia.js
 ```
 
-**Resultado esperado:** como máximo tres intentos y un resultado o error final explícito.
-
-**Fallo deliberado:** configura timeout de `1` ms. La carrera rechaza, pero la operación perdedora continúa si no recibe una señal; combina timeout con `AbortController` para cancelar trabajo real.
-
-#### Paso 5 · Práctica guiada
-
-Implementa espera `base * 2 ** intento + jitter`. **Pista:** inyecta la función aleatoria y el reloj para probar demoras sin esperar realmente.
-
-#### Paso 6 · Práctica independiente
-
-Clasifica red, 408, 429, 400 y 500; respeta `Retry-After`, limita presupuesto total y exige idempotencia para comandos. Escribe pruebas deterministas de éxito al tercer intento y fallo permanente.
-
-#### Paso 7 · Cierre
-
-Ya aplicas resiliencia sin convertir reintentos en duplicación o tormenta de tráfico. El siguiente tema crea secuencias perezosas con generadores. Fuente oficial: [MDN — AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static).
-
-**Errores comunes:** reintentar 400; omitir jitter; no cancelar el intento vencido; reintentar comandos no idempotentes; ignorar `Retry-After`.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Añade un plazo a la consulta y reintentos limitados para fallos recuperables. Usa reloj controlado y comprueba que cancelar una guía impide iniciar el siguiente intento pendiente.
+</details>
 
 ### Tema 5: Generadores — function*, yield y yield* · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás construir una secuencia perezosa con `function*`, detenerla con `yield`, reanudarla con `.next()` y componerla con `yield*`. La aplicarás al proyecto para recorrer entregas por lotes sin crear todas las páginas en memoria.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir una secuencia perezosa con function*, detenerla con yield, reanudarla con .next() y componerla con yield*. La aplicarás al proyecto para recorrer entregas por lotes sin crear todas las páginas en memoria.
 
-**Conocimiento previo:** funciones, arrays, ciclos `for`, objetos y el protocolo iterable presentado en el módulo de colecciones. Si todavía no distingues un iterable de un iterador, repasa que el iterable puede producir un iterador y que `.next()` devuelve `{ value, done }`.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una secuencia perezosa con function*, detenerla con yield, reanudarla con .next() y componerla con yield*.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El panel de operaciones puede recibir miles de entregas. Convertirlas todas en páginas antes de usar la primera aumenta memoria y demora la primera respuesta. En este incremento del proyecto construiremos un paginador perezoso: cada lote se calcula únicamente cuando el consumidor lo solicita.
+#### ► LA ANALOGÍA
+Piensa en generadores — function*, yield y yield* como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que generadores — function*, yield y yield* resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** funciones generadoras, pausar y reanudar ejecución, iteradores personalizados.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Generadores — function*, yield y yield* se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una función generadora, declarada con `function*` (asterisco después de la palabra clave `function`), tiene una capacidad única entre las funciones de JavaScript: puede pausar su propia ejecución en cualquier punto marcado con `yield`, devolviendo un valor en ese punto exacto, y reanudar su ejecución exactamente desde donde se pausó cuando se solicita el siguiente valor. Invocar una función generadora no ejecuta su cuerpo inmediatamente (a diferencia de una función normal); en cambio, devuelve un objeto iterador especial, y cada llamada a `.next()` sobre ese iterador ejecuta el cuerpo de la función hasta el siguiente `yield` (o hasta el final de la función), devolviendo un objeto `{value, done}` con el valor producido y un booleano que indica si el generador ya terminó.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Generadores — function*, yield y yield* | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Esta capacidad de pausar y reanudar ejecución hace a los generadores la herramienta idónea para implementar iteradores personalizados y flujos de datos que se producen de forma perezosa (uno a la vez, bajo demanda), en vez de generar una colección completa en memoria de antemano. Un generador que produce una secuencia infinita (por ejemplo, números de Fibonacci sin límite) es perfectamente viable, porque cada valor solo se calcula cuando efectivamente se solicita con `.next()`, sin necesidad de calcular ni almacenar toda la secuencia infinita de antemano, algo imposible con un array normal.
+#### ► CUÁNDO NO USAR ESTO
+No uses generadores — function*, yield y yield* por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-`yield*` delega la iteración a otro iterable (incluyendo otro generador), permitiendo componer generadores más pequeños en generadores más grandes, de forma similar a cómo `pipe` (Módulo 1) compone funciones más pequeñas en transformaciones más complejas. Los generadores también son la base conceptual sobre la que históricamente se construyeron algunas implementaciones tempranas de `async`/`await` (antes de que se estandarizara como sintaxis nativa del lenguaje), porque comparten la misma capacidad fundamental de pausar y reanudar ejecución en puntos específicos.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: generadores — function*, yield y yield* funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Aunque los generadores son una herramienta relativamente especializada en el uso cotidiano (comparado con `map`/`filter`/`async`/`await`, mucho más frecuentes en código de aplicación típico), aparecen en contextos específicos como la implementación de iteradores personalizados para estructuras de datos propias (haciendo que una clase propia sea compatible con `for...of`), y en bibliotecas de gestión de efectos asíncronos complejos como Redux-Saga en el ecosistema React.
+#### ► LO QUE DEBES RECORDAR
+- Generadores — function*, yield y yield* existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** una función normal es como una película que, una vez que empieza a reproducirse, corre de principio a fin sin posibilidad de pausa intermedia controlada por quien la mira; una función generadora es como un video con capacidad de pausa en marcadores específicos predefinidos, donde cada vez que se pulsa "reproducir" de nuevo, continúa exactamente desde el marcador donde se pausó anteriormente, no desde el principio.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve generadores — function*, yield y yield* en tu contexto?
+2. ¿Cómo sabrías que generadores — function*, yield y yield* no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar generadores — function*, yield y yield*?
 
-**¿Por qué es importante?** Los generadores permiten expresar secuencias perezosas e infinitas de forma natural, y son la base conceptual de mecanismos avanzados de control de flujo asíncrono en bibliotecas especializadas del ecosistema JavaScript.
+</details>
 
-#### Paso 4 · Demostración guiada
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-generadores`, ejecuta `npm init -y`, crea `src` y después `src/generadores.js`. El ejemplo valida primero el tamaño para que el ciclo siempre avance; después `yield` entrega una sola página y conserva internamente la posición `inicio` hasta la siguiente petición.
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-generadores
 cd ejemplo-generadores
@@ -412,66 +485,73 @@ console.log("Segunda solicitud:", paginas.next());
 console.log("Fin:", paginas.next());
 ```
 
-Desde `academia-javascript`, ejecuta:
-
 ```bash
 node src/generadores.js
 ```
 
-**Resultado esperado:** la primera llamada contiene `RF-101` y `RF-102` con `done: false`; la segunda contiene `RF-103`; la tercera devuelve `{ value: undefined, done: true }`. Observa que llamar a `paginarEntregas` no ejecuta el cuerpo: el trabajo comienza con `.next()`.
-
-**Fallo deliberado:** elimina temporalmente la validación y usa tamaño `0`. El incremento `inicio += tamano` nunca cambia `inicio`, por lo que el generador puede producir la misma página indefinidamente. Detén la ejecución, restaura el `RangeError` y confirma que el diagnóstico aparece antes de entrar al ciclo.
-
-#### Paso 5 · Práctica guiada
-
-Implementa `function* entregasOrdenadas(prioritarias, normales)` que delegue primero con `yield* prioritarias` y luego con `yield* normales`. **Pista:** `yield*` recibe cualquier iterable; no necesitas escribir dos ciclos ni copiar ambos arrays.
-
-#### Paso 6 · Práctica independiente
-
-Crea un generador infinito de números de guía `RF-000001`, `RF-000002`, etc., y una función que consuma solamente los primeros cinco. Explica por qué el programa no reserva memoria para una colección infinita y añade una prueba que verifique el quinto identificador.
-
-#### Paso 7 · Cierre
-
-Ya puedes producir datos bajo demanda y reconocer cuándo un array completo es innecesario. El siguiente tema estudia cómo interceptar operaciones sobre objetos con Proxy y Reflect.
-
-**Errores comunes:** creer que invocar la función ejecuta su cuerpo; ignorar `done`; crear un ciclo infinito sin limitar el consumo; usar un generador esperando paralelismo o comportamiento asíncrono; olvidar validar que el estado avance.
-
-**Fuente oficial:** [MDN — Iterators and generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_generators) y [MDN — `yield*`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield*).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Recorre páginas de eventos con un generador que preserve orden y fin de datos. Interrumpe la iteración y comprueba que no solicita páginas adicionales que el usuario ya no necesita.
+</details>
 
 ### Tema 6: Proxies y Reflect · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás interceptar lecturas y escrituras con `Proxy`, conservar la semántica del lenguaje mediante `Reflect` y decidir cuándo esta metaprogramación es adecuada. Protegerás el estado de una entrega del proyecto sin ocultar las reglas centrales del dominio.
+#### ► DE QUÉ TRATA
+Al finalizar podrás interceptar lecturas y escrituras con Proxy, conservar la semántica del lenguaje mediante Reflect y decidir cuándo esta metaprogramación es adecuada. Protegerás el estado de una entrega del proyecto sin ocultar las reglas centrales del dominio.
 
-**Prerrequisitos:** objetos, propiedades, funciones, excepciones y modo estricto. Recuerda que una asignación puede tener reglas internas —propiedades no escribibles, accesores o herencia— que no conviene reimplementar manualmente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás interceptar lecturas y escrituras con Proxy, conservar la semántica del lenguaje mediante Reflect y decidir cuándo esta metaprogramación es adecuada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El proyecto recibe objetos desde formularios, almacenamiento local y APIs. En el borde de infraestructura queremos auditar cambios y rechazar estados desconocidos antes de que contaminen el proyecto. El Proxy funcionará como una frontera observable; las transiciones de negocio más complejas seguirán en métodos explícitos de la entrega.
+#### ► LA ANALOGÍA
+Piensa en proxies y reflect como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proxies y reflect resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** intercepción de operaciones sobre objetos, traps (`get`/`set`/`has`), `Reflect`.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proxies y Reflect se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un `Proxy` envuelve un objeto (llamado el "target") y permite interceptar y personalizar operaciones fundamentales sobre él —leer una propiedad, asignar una propiedad, comprobar si una propiedad existe con `in`, entre otras— mediante funciones llamadas "traps" (trampas), definidas en un segundo objeto llamado "handler". Por ejemplo, un trap `get` se ejecuta cada vez que se intenta leer cualquier propiedad del Proxy, permitiendo ejecutar lógica personalizada (registrar accesos, calcular valores derivados, lanzar validaciones) de forma completamente transparente para quien usa el objeto, sin que necesite saber que está interactuando con un Proxy en vez de con el objeto original directamente.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proxies y Reflect | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-`Reflect` es un objeto global que expone, como métodos estáticos, exactamente las mismas operaciones fundamentales que los traps de `Proxy` interceptan, proporcionando la forma "por defecto" y estándar de realizar cada operación. Dentro de un trap de `Proxy`, es una práctica extremadamente común invocar el método correspondiente de `Reflect` para delegar hacia el comportamiento original si el trap no necesita modificarlo (por ejemplo, un trap `set` que solo necesita registrar un log antes de la asignación real invocaría `Reflect.set(target, propiedad, valor)` para efectivamente realizar la asignación tras registrar el log), evitando reimplementar manualmente la semántica exacta de esa operación fundamental.
+#### ► CUÁNDO NO USAR ESTO
+No uses proxies y reflect por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Un caso de uso instructivo de Proxy es implementar validación transparente: un Proxy sobre un objeto de configuración cuyo trap `set` verifica que el valor asignado sea del tipo esperado antes de permitir la asignación, lanzando un error si no lo es, de forma completamente invisible para el código que simplemente asigna `configuracion.puerto = 8080` como si fuera un objeto normal, sin necesidad de llamar a un método de validación explícito por separado. Frameworks reactivos modernos (Vue.js, notablemente) usan Proxies internamente para detectar automáticamente cuándo cambia una propiedad de un objeto de estado y disparar actualizaciones de la interfaz de forma transparente, sin que el desarrollador necesite llamar manualmente a una función de notificación de cambio.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proxies y reflect funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Aunque Proxy es una herramienta de uso relativamente avanzado y especializado (rara vez necesaria en código de aplicación cotidiano), entender su existencia y su propósito —interceptar y personalizar operaciones fundamentales sobre objetos de forma transparente— completa el panorama de las capacidades de metaprogramación de JavaScript, y ayuda a entender internamente cómo funcionan ciertos frameworks reactivos populares.
+#### ► LO QUE DEBES RECORDAR
+- Proxies y Reflect existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Analogía:** un Proxy es como un asistente personal que intercepta todas las llamadas telefónicas dirigidas a ti (las operaciones sobre el objeto original), decide qué hacer con cada una según reglas personalizadas (los traps), y puede optar por pasarte la llamada exactamente como llegó (delegando con `Reflect`) o gestionarla de forma completamente distinta antes de responder.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proxies y reflect en tu contexto?
+2. ¿Cómo sabrías que proxies y reflect no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proxies y reflect?
 
-**¿Por qué es importante?** Proxy y Reflect son la base de metaprogramación transparente en JavaScript, usada internamente por frameworks reactivos modernos para detectar cambios de estado automáticamente, un mecanismo que vale la pena entender conceptualmente aunque rara vez se implemente Proxies propios en código de aplicación típico.
+</details>
 
-#### Paso 4 · Demostración guiada
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía crea `ejemplo-proxy`, ejecuta `npm init -y`, crea `src` y después `src/proxy.js`. El trap `set` valida una regla pequeña de frontera, registra el cambio y delega la asignación real a `Reflect.set`; el trap `get` conserva la lectura estándar.
-
+#### Código y verificación
 ```bash
 mkdir ejemplo-proxy
 cd ejemplo-proxy
@@ -506,69 +586,31 @@ entregaAuditada.estado = "EN_RUTA";
 console.log(`${entregaAuditada.numero}: ${entregaAuditada.estado}`);
 ```
 
-Desde `academia-javascript`, ejecuta:
-
 ```bash
 node src/proxy.js
 ```
 
-**Salida esperada:** primero aparece `AUDITORÍA estado: CREADA -> EN_RUTA` y después `RF-201: EN_RUTA`.
-
-**Fallo deliberado:** cambia el estado a `"PERDIDA"`. Debes obtener `TypeError: Estado no permitido: PERDIDA` y el objeto original debe conservar `EN_RUTA`. Después sustituye temporalmente `return Reflect.set(...)` por `return false`: en modo estricto la asignación lanza `TypeError`, demostrando que el booleano del trap forma parte del contrato.
-
-#### Paso 5 · Práctica guiada
-
-Añade una lista `camposPermitidos` y rechaza la escritura de una propiedad desconocida como `estatus`. **Pista:** valida con `Reflect.has(target, propiedad)` antes de delegar; permite únicamente las excepciones que hayas definido de manera explícita.
-
-#### Paso 6 · Práctica independiente
-
-Construye un Proxy que cuente lecturas de `estado`, escribe pruebas para lectura, escritura válida e inválida y compara esta solución con un método explícito `entrega.cambiarEstado()`. Documenta por qué elegirías el método para reglas del negocio y el Proxy para observabilidad o adaptación en una frontera.
-
-#### Paso 7 · Cierre
-
-Ahora distingues una intercepción transversal de una regla de dominio y sabes delegar sin romper invariantes. El próximo módulo organiza estas capacidades en módulos, herramientas y una aplicación mantenible.
-
-**Errores comunes:** esconder reglas esenciales dentro de traps difíciles de rastrear; olvidar devolver el booleano de `set`; violar invariantes de propiedades no configurables; provocar recursión leyendo el Proxy dentro de su propio trap; asumir que el Proxy y el objeto original tienen la misma identidad.
-
-**Fuentes oficiales:** [MDN — Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) y [MDN — Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect).
-
----
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Experimenta con un proxy de diagnóstico del store en una rama del widget. Verifica lecturas y escrituras interceptadas y compara con una API explícita antes de aceptar esa complejidad.
+</details>
 
 ### Tema 7: Streams web: leer una respuesta de fetch por partes · Avanzado · 45 min
 
-**Prerrequisito:** tema «fetch API y AbortController» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** leer el cuerpo de una respuesta HTTP a medida que llega, con `ReadableStream`, `TextDecoderStream` y un `TransformStream` propio que separa líneas.
+#### ► DE QUÉ TRATA
+Usa Node.js 22 o superior, que trae fetch y los streams web sin instalar nada. Crea la carpeta academia-labs/javascript/streams-web. El ejemplo levanta su propio servidor local, así que no necesitas internet.
 
-**¿Por qué es importante?** `await respuesta.text()` espera a que llegue todo el cuerpo. Con respuestas grandes o lentas (un reporte, un registro en vivo) eso gasta memoria y retrasa lo que el usuario ve. Con streams procesas cada parte apenas llega.
+#### ► LA IDEA EN UNA FRASE
+**Usa Node.js 22 o superior, que trae fetch y los streams web sin instalar nada.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Node.js 22 o superior, que trae `fetch` y los streams web sin instalar nada. Crea la carpeta `academia-labs/javascript/streams-web`. El ejemplo levanta su propio servidor local, así que no necesitas internet.
+#### ► LA ANALOGÍA
+Piensa en streams web: leer una respuesta de fetch por partes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El panel de RutaFlow muestra las paradas de una ruta mientras el servidor las calcula. Si el navegador espera la respuesta completa, la pantalla queda vacía varios segundos. Leyendo por partes, cada parada aparece en cuanto el servidor la envía.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `ReadableStream`, trozo (*chunk*), `TextDecoderStream`, `TransformStream`, `pipeThrough`, `for await...of`.
-
-`respuesta.body` es un `ReadableStream` de bytes. Llega en **trozos** cuyo tamaño decide la red, no tu programa: un trozo puede traer media línea o tres líneas.
-
-Por eso se encadenan transformaciones con `pipeThrough`:
-
-1. `TextDecoderStream` convierte bytes en texto, sin romper caracteres como «ñ» que ocupan dos bytes.
-2. Un `TransformStream` propio junta los trozos y emite **líneas completas**. Guarda lo que sobra para el siguiente trozo y, al final (`flush`), emite el último resto.
-
-Un `ReadableStream` se puede recorrer con `for await...of`.
-
-**Analogía:** los trozos son baldes de agua que llegan por una tubería. `TextDecoderStream` filtra el agua y tu `TransformStream` la embotella en botellas del mismo tamaño (líneas). La analogía falla en que el agua no tiene significado; un byte cortado a la mitad sí lo pierde, por eso se decodifica con un stream y no trozo por trozo con `toString()`.
-
-**Límite de uso:** si necesitas todo el cuerpo para decidir algo (por ejemplo, validar un JSON completo), leerlo por partes no ayuda. Para JSON por partes usa un formato por líneas como NDJSON.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S["Servidor<br/>envía paradas"] -->|bytes en trozos| B["respuesta.body<br/>ReadableStream"]
@@ -577,9 +619,50 @@ flowchart LR
     T --> L["for await<br/>una línea por vez"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streams web: leer una respuesta de fetch por partes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/javascript/streams-web/leer-por-partes.mjs`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streams web: leer una respuesta de fetch por partes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses streams web: leer una respuesta de fetch por partes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streams web: leer una respuesta de fetch por partes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Streams web: leer una respuesta de fetch por partes existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streams web: leer una respuesta de fetch por partes en tu contexto?
+2. ¿Cómo sabrías que streams web: leer una respuesta de fetch por partes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streams web: leer una respuesta de fetch por partes?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    S["Servidor<br/>envía paradas"] -->|bytes en trozos| B["respuesta.body<br/>ReadableStream"]
+    B --> D["TextDecoderStream<br/>bytes a texto"]
+    D --> T["separarLineas()<br/>TransformStream"]
+    T --> L["for await<br/>una línea por vez"]
+```
 
 ```js
 import { createServer } from 'node:http';
@@ -622,18 +705,10 @@ for await (const linea of lineas) {
 servidor.close();
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/javascript/streams-web
 node leer-por-partes.mjs
 ```
-
-**Explicación por bloques:** El servidor escribe una parada, espera 50 ms y escribe la siguiente, como haría un cálculo real. `servidor.listen(0, ...)` pide un puerto libre. `separarLineas` guarda en `resto` lo que quedó después del último salto de línea, porque ese trozo puede estar incompleto, y lo emite en `flush` cuando termina el stream. `pipeThrough` encadena la decodificación y la separación, y `for await` imprime cada línea en cuanto está completa, sin esperar el final de la respuesta.
-
-![Captura de terminal: node leer-por-partes.mjs imprime llegó Bodega, llegó Calle 26 y llegó Cliente](content/figures/javascript/streams-web-fetch.svg)
-
-**Resultado esperado:**
 
 ```text
 llegó: Bodega
@@ -641,82 +716,69 @@ llegó: Calle 26
 llegó: Cliente
 ```
 
-**Fallo deliberado:** borra el método `flush` y cambia la última parada para que se envíe sin `\n` (por ejemplo, `res.end('Cliente')` fuera del bucle). **Error esperado:** la línea «Cliente» nunca se imprime. **Diagnóstico:** el último trozo quedó guardado en `resto` y nadie lo emitió. `flush` existe justo para eso.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el ejemplo y cambia la espera a 500 ms para ver que las líneas aparecen de a una.
-2. **Variación:** agrega una parada con tilde, como «Plaza Bolívar», y confirma que se imprime bien.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica qué guarda `resto` en cada trozo.
-4. **Integración:** cuenta los trozos agregando un `console.log` dentro de `transform` y compáralo con el número de líneas.
-5. **Diseño:** cambia el servidor para que envíe NDJSON (`{"parada":"Bodega"}` por línea) y conviértelo con `JSON.parse` en otra transformación.
-
-**Pista:** el número de trozos no es igual al número de líneas: depende de la red. Tu código debe funcionar con cualquier corte.
-
-#### Paso 6 · Práctica independiente
-
-Escribe `contarBytes()`, un `TransformStream` que deja pasar los bytes sin cambiarlos y, en `flush`, imprime cuántos bytes pasaron. Colócalo antes de `TextDecoderStream` y compara el total con `content-length` de una respuesta sin streaming.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué un trozo puede cortar una línea o un carácter.
-- [ ] El programa imprime las tres líneas esperadas.
-- [ ] Reprodujiste la pérdida de la última línea sin `flush`.
-- [ ] Sabes cuándo conviene `respuesta.text()` en vez de streams.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** decodificar cada trozo con `new TextDecoder().decode(trozo)` sin `{ stream: true }`, olvidar `flush` y suponer que un trozo es una línea. **Siguiente paso:** el tema «Reintentos y timeouts manuales» combina estas lecturas con `AbortController` para cortar respuestas que se quedan colgadas.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, muestra las paradas a medida que llegan desde el endpoint de cálculo, leyendo la respuesta con `pipeThrough` y una transformación por líneas.
-
-**Fuente oficial:** [MDN — Streams API](https://developer.mozilla.org/es/docs/Web/API/Streams_API) y [MDN — TransformStream](https://developer.mozilla.org/en-US/docs/Web/API/TransformStream).
-
-## Construcción guiada del capítulo
-
-**Objetivo del laboratorio:** construir un cliente de API robusto que consuma una API pública con manejo de errores, cancelación, reintentos y timeout, usando `async`/`await` de principio a fin.
-
-**Requisitos previos:** Módulos 0-5 completados, acceso a `https://jsonplaceholder.typicode.com`.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Reescribir una cadena `.then()` como `async`/`try/catch` | Ver Tema 1 | Verifica comportamiento idéntico entre ambas formas |
-| 2 | Consumir la API pública con `fetch` | `await fetch(".../users")` | Verifica `respuesta.ok` antes de parsear el JSON |
-| 3 | Manejar un fetch que falla (URL inválida) | `try/catch` con mensaje claro al usuario | Distingue error de red de error HTTP |
-| 4 | Implementar cancelación con `AbortController` | Ver Tema 3 | Simula una nueva búsqueda cancelando la anterior |
-| 5 | Implementar `fetchConReintentos` | Ver Tema 4 | Verifica hasta 3 intentos con backoff creciente |
-| 6 | Implementar timeout manual de 5 segundos | `conTimeout(fetch(url), 5000)` | Verifica que se rechaza si la petición excede el límite |
-
-**Verificación:** el laboratorio se considera exitoso si el cliente maneja correctamente los tres escenarios de fallo (red caída, HTTP de error, timeout excedido), mostrando en cada caso un mensaje claro y distinto al usuario, sin ningún error no manejado en la consola.
+</details>
 
 ### Comprueba lo construido
 
-#### Ejercicio verificable 1
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Ejecuta el ejemplo del Event Loop del módulo anterior y responde qué cola se vacía antes de tomar una macrotask.
+#### ► DE QUÉ TRATA
+Este tema te guía por comprueba lo construido con foco en comprensión antes de implementación.
 
-**Pista:** las continuaciones de `await` usan la misma prioridad que `.then()`.
+#### ► LA IDEA EN UNA FRASE
+**Entender comprueba lo construido te permite tomar mejores decisiones técnicas.**
 
-**Respuesta esperada:** microtasks|microtareas
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Ejercicio verificable 2
+#### ► LA ANALOGÍA
+Piensa en comprueba lo construido como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una API responde HTTP 404. Escribe la propiedad de `Response` que debes comprobar porque `fetch` no rechaza automáticamente.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que comprueba lo construido resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Pista:** es un booleano.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Comprueba lo construido se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Respuesta esperada:** ok|response.ok|respuesta.ok
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Comprueba lo construido | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Ejercicio verificable 3
+#### ► CUÁNDO NO USAR ESTO
+No uses comprueba lo construido por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Escribe el nombre exacto del error usado para reconocer una cancelación intencional de `fetch`.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: comprueba lo construido funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Pista:** se consulta en `error.name`.
+#### ► LO QUE DEBES RECORDAR
+- Comprueba lo construido existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Respuesta esperada:** AbortError
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve comprueba lo construido en tu contexto?
+2. ¿Cómo sabrías que comprueba lo construido no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar comprueba lo construido?
 
-**Errores comunes y soluciones**
+</details>
 
-- **Asumir que `fetch` rechaza automáticamente ante un 404 o 500.** `fetch` solo rechaza ante fallos de red genuinos; verifica siempre `respuesta.ok` explícitamente y lanza un error manualmente si es necesario.
-- **Reintentar sin backoff, machacando el servidor con peticiones inmediatas repetidas.** Añade una espera creciente entre cada intento fallido.
-- **Olvidar distinguir un `AbortError` de otros tipos de error en el `catch`.** Verifica `error.name === "AbortError"` para no tratar una cancelación intencional como un fallo real que deba mostrarse al usuario.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
----
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar comprueba lo construido.
+
+</details>

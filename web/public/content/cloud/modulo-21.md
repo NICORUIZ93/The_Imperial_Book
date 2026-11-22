@@ -3,27 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás lanzar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
-#### Paso 2 · Contexto y caso real
-Una tarea persistente necesita control del sistema operativo y del proceso.
-#### Paso 3 · Teoría, modelo mental y analogía
-Una instancia es alquilar una máquina completa con ciclo de vida explícito.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `RunInstances`, ciclo de vida de instancia, contenedor Docker real, `tail -f /dev/null`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás lanzar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-A diferencia de un emulador que solo devuelve un JSON con un `instance-id` falso, Floci traduce cada llamada a `RunInstances` en un `docker run` real: se lanza un contenedor Docker verdadero que se mantiene activo con `tail -f /dev/null`, un truco que permite que funcione cualquier imagen base sin importar cuál sea su `CMD` por defecto. El ciclo de vida completo de una instancia EC2 se mapea directamente a operaciones de Docker: `pending → running` es un contenedor creado e iniciado, `stopping → stopped` es un `docker stop` (con 30 segundos de gracia antes de `SIGKILL`), y `shutting-down → terminated` es un `docker rm -f`. Las instancias terminadas siguen siendo consultables durante una hora antes de desaparecer, replicando el comportamiento real de EC2.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás lanzar una instancia desde cero.**
 
-Esta decisión de diseño —contenedores reales en vez de estado simulado— es la misma filosofía que ya viste con Lambda, RDS y ECS: Floci prioriza fidelidad de comportamiento sobre velocidad de implementación cuando el servicio lo justifica. El resultado práctico es que dentro de una instancia EC2 de Floci puedes instalar paquetes, ejecutar procesos reales y conectarte por SSH exactamente como lo harías en una instancia real, solo que el "hardware" subyacente es el motor Docker de tu máquina.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** una instancia EC2 en Floci es como un departamento amueblado de verdad dentro de un edificio de pruebas: no es una maqueta de cartón, es un espacio real donde puedes vivir, solo que el edificio completo (el datacenter de AWS) es en realidad tu propio computador.
+#### ► LA ANALOGÍA
+Piensa en el modelo de ejecución de ec2 — instancias que son contenedores docker reales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Entender que `RunInstances` lanza un contenedor real —no un stub— es lo que te permite razonar correctamente sobre qué vas a poder hacer dentro de la instancia (instalar software, correr servicios, usar SSH) y qué limitaciones existen (comparte el kernel de tu máquina, no aísla red a nivel de paquete).
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
  [*] --> pending: RunInstances (docker create + start)
@@ -36,7 +35,54 @@ stateDiagram-v2
  terminated --> [*]: consultable 1h, luego se elimina
 ```
 
-**Practícalo tú:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El modelo de ejecución de EC2 — instancias que son contenedores Docker reales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El modelo de ejecución de EC2 — instancias que son contenedores Docker reales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el modelo de ejecución de ec2 — instancias que son contenedores docker reales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el modelo de ejecución de ec2 — instancias que son contenedores docker reales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El modelo de ejecución de EC2 — instancias que son contenedores Docker reales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el modelo de ejecución de ec2 — instancias que son contenedores docker reales en tu contexto?
+2. ¿Cómo sabrías que el modelo de ejecución de ec2 — instancias que son contenedores docker reales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el modelo de ejecución de ec2 — instancias que son contenedores docker reales?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+stateDiagram-v2
+ [*] --> pending: RunInstances (docker create + start)
+ pending --> running
+ running --> stopping: StopInstances (docker stop)
+ stopping --> stopped
+ stopped --> pending: StartInstances (docker start)
+ running --> shutting_down: TerminateInstances (docker rm -f)
+ shutting_down --> terminated
+ terminated --> [*]: consultable 1h, luego se elimina
+```
 
 ```bash
 # archivo: src/labs/modulo-21/tema-1-ciclo-de-vida.sh — ejecutar con: bash tema-1-ciclo-de-vida.sh
@@ -48,39 +94,30 @@ sleep 3
 docker ps -a | grep "$ID"       # mismo contenedor, ahora "Exited"
 ```
 
-`--image-id` es la bandera que elige qué AMI (imagen de máquina) lanzar — acá resuelta a una imagen Docker real, como ves más abajo; `--instance-type` es el tamaño de la instancia (CPU/memoria — `t2.micro` es de las más chicas); `--instance-ids` (usado más abajo con `stop-instances`) identifica qué instancia puntual controlar, tomando el valor que guardaste del primer comando.
-
-**Resultado esperado:** el primer `docker ps` muestra el contenedor en estado `Up`; después de `stop-instances`, `docker ps -a` lo muestra `Exited` — la prueba de que `pending/running/stopped` de EC2 son estados reales de Docker, no un campo simulado en una base de datos.
-
-**Modifica esto:** repite el experimento pero termina la instancia con `aws ec2 terminate-instances` en vez de detenerla, y confirma con `docker ps -a` que el contenedor desaparece por completo (`docker rm -f`) en vez de quedar `Exited`.
-
-**Cuándo no usarlo:** no asumas que el contenedor aísla red, CPU o memoria como lo haría una instancia EC2 real; comparte el kernel y la red de tu máquina, así que no sirve para pruebas de aislamiento o de rendimiento comparables a producción.
-
-**Cómo crece tu proyecto:** esta instancia es el primer nodo de cómputo que usará tu proyecto para correr el agente de seguimiento del proyecto integrador — arráncala y detenla aquí antes de conectarla a nada más.
-
-#### Paso 4 · Demostración guiada
-Con Floci iniciado con `floci start` (monta el socket de Docker que EC2 necesita) y `eval "$(floci env)"` cargado, guarda el bloque **Practícalo tú** de este tema en `ejemplo-ec2/tema-1-ciclo-de-vida.sh` y ejecútalo:
 ```bash
 mkdir ejemplo-ec2 && cd ejemplo-ec2
 # pega aquí el contenido de tema-1-ciclo-de-vida.sh y guárdalo
 bash tema-1-ciclo-de-vida.sh
 aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,State.Name]' --output text
 ```
-Resultado esperado: el primer `docker ps` muestra una fila con el ID de la instancia y estado `Up`; después de `stop-instances`, `docker ps -a` muestra el mismo contenedor `Exited`, y `describe-instances` lista ese `InstanceId` con estado `stopped`. La instancia de Floci es un contenedor real: detenerla detiene el contenedor sin borrarlo.
-#### Paso 5 · Práctica guiada
-Pista: usa una imagen inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Inicia, inspecciona y detén una instancia simulada.
-#### Paso 7 · Cierre
-Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad. Errores comunes: instancias sin apagado y puertos abiertos. Fuente oficial: https://docs.aws.amazon.com/ec2/.
+
+</details>
 
 ### Tema 2: AMIs, grupos de seguridad y claves SSH · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a preparar el grupo de seguridad y la clave SSH que el primer nodo de reparto va a usar para arrancar. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-El nodo de reparto (Tema 1) necesita una identidad de red declarada (`demo-nodo`) y una clave real (`demo-key`) antes de poder lanzarse — sin eso, no hay forma de conectarse ni de razonar sobre qué tráfico debería permitir.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a preparar el grupo de seguridad y la clave SSH que el primer nodo de reparto va a usar para arrancar.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 La AMI es el molde de la instancia; el security group es la portería que declara qué tráfico debería entrar; la key pair es la llave real para entrar por SSH.
 
 **Conceptos clave:** mapeo de AMI a imagen Docker, `CreateSecurityGroup`, `ImportKeyPair`, inyección de clave pública.
@@ -114,41 +151,129 @@ Los grupos de seguridad se crean, almacenan y devuelven correctamente vía `Crea
 
 **¿Por qué es importante?** Saber que los grupos de seguridad no filtran tráfico realmente en Floci evita que confundas "mi laboratorio funcionó a pesar de reglas restrictivas" con "mis reglas de seguridad son correctas": esa validación real solo la obtienes contra AWS de verdad.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que amis, grupos de seguridad y claves ssh resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| AMIs, grupos de seguridad y claves SSH se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar AMIs, grupos de seguridad y claves SSH | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses amis, grupos de seguridad y claves ssh por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: amis, grupos de seguridad y claves ssh funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- AMIs, grupos de seguridad y claves SSH existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve amis, grupos de seguridad y claves ssh en tu contexto?
+2. ¿Cómo sabrías que amis, grupos de seguridad y claves ssh no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar amis, grupos de seguridad y claves ssh?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-21/tema-2-security-group-y-clave.sh — ejecutar con: bash tema-2-security-group-y-clave.sh
+GROUP_ID=$(aws ec2 create-security-group \
+  --group-name demo-nodo --description "SG del primer nodo demo" \
+  --query 'GroupId' --output text)
+aws ec2 authorize-security-group-ingress --group-id "$GROUP_ID" --protocol tcp --port 22 --cidr 0.0.0.0/0
+aws ec2 import-key-pair --key-name demo-key --public-key-material fileb://~/.ssh/id_rsa.pub
+```
+
 ```bash
 GROUP_ID=$(aws ec2 create-security-group --group-name demo-nodo --description "SG del primer nodo demo" --query 'GroupId' --output text)
 aws ec2 authorize-security-group-ingress --group-id "$GROUP_ID" --protocol tcp --port 22 --cidr 0.0.0.0/0
 aws ec2 import-key-pair --key-name demo-key --public-key-material fileb://~/.ssh/id_rsa.pub
 ```
-Resultado esperado: `create-security-group` devuelve el `GroupId`; `import-key-pair` devuelve el `KeyFingerprint` — ambos quedan registrados, aunque como vas a comprobar en el Paso 5, el `GroupId` no filtra tráfico real en Floci.
-#### Paso 5 · Práctica guiada
-Pista: "deniega" el puerto 22 quitando la regla de ingreso (`aws ec2 revoke-security-group-ingress --group-id "$GROUP_ID" --protocol tcp --port 22 --cidr 0.0.0.0/0`) y probá conectarte por SSH igual al puerto publicado del contenedor — ese es el fallo deliberado que advierte este Tema: la conexión sigue funcionando, porque el security group vive en el registro de Floci, no en la red puente de Docker que realmente enruta el tráfico.
-#### Paso 6 · Práctica independiente
-Documentá cuál sería la regla mínima real (no `0.0.0.0/0`) que usarías en AWS de verdad para `demo-nodo` — pista: el rango de IPs de tu propia red de oficina, no "cualquier IP del mundo" — y por qué esa regla sí importaría en un entorno real aunque no lo haga aquí.
-#### Paso 7 · Cierre
-Entregá el security group y la clave creados, la conexión que no se bloqueó en el Paso 5, y la regla mínima documentada del Paso 6; explicá por qué no deberías validar reglas de firewall de producción contra Floci. Siguiente paso: UserData. Errores comunes: claves en repositorio y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html.
+
+</details>
 
 ### Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás inicializar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
-#### Paso 2 · Contexto y caso real
-El arranque debe instalar dependencias sin incrustar credenciales.
-#### Paso 3 · Teoría, modelo mental y analogía
-UserData es la lista de apertura; IMDSv2 entrega credenciales con token.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `UserData` en base64, IMDSv1 vs IMDSv2, token de sesión, credenciales IAM vía perfil de instancia.
+#### ► DE QUÉ TRATA
+Al finalizar podrás inicializar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-La bandera `--user-data` de `run-instances` es donde le pasás ese script. `UserData` es un script que se ejecuta automáticamente al arrancar la instancia, codificado en base64 en la petición (igual que en AWS real). Floci lo decodifica, lo copia a `/tmp/user-data.sh` dentro del contenedor y lo ejecuta con `sh` justo después de inyectar la clave SSH, capturando su salida en los logs. Esto es lo que te permite, por ejemplo, instalar y arrancar `nginx` automáticamente al lanzar la instancia, sin conectarte manualmente después.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás inicializar una instancia desde cero.**
 
-El servicio de metadatos de instancia (IMDS) es un servidor HTTP que Floci expone en el puerto `9169` del host, y cada contenedor lanzado recibe la variable `AWS_EC2_METADATA_SERVICE_ENDPOINT` apuntando a él. IMDSv1 responde sin autenticación; IMDSv2 exige primero pedir un token con `PUT /latest/api/token` y usarlo en cada petición posterior — el flujo moderno y más seguro que ya deberías preferir siempre. Cuando lanzas una instancia con un perfil de instancia IAM (`--iam-instance-profile`), IMDS entrega credenciales temporales reales en `/latest/meta-data/iam/security-credentials/{role}`, que el AWS SDK dentro del contenedor puede usar automáticamente para llamar a otros servicios de Floci con validación SigV4 completa — el mismo patrón que usarías en producción real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** IMDS es como una recepción interna del edificio que solo el inquilino de un departamento específico puede consultar para pedir "¿cuál es mi dirección? ¿tengo paquetes esperando? ¿cuáles son mis llaves temporales de acceso?" — información contextual sobre uno mismo, no del edificio entero.
+#### ► LA ANALOGÍA
+Piensa en userdata e imds — arranque automatizado y credenciales por instancia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** El patrón "instancia con rol IAM que obtiene credenciales vía IMDS" es la forma correcta y recomendada de dar permisos a una instancia EC2 real, en vez de hardcodear credenciales de larga duración dentro de la instancia — un error de seguridad común que quieres evitar desde el principio.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que userdata e imds — arranque automatizado y credenciales por instancia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Practícalo tú:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| UserData e IMDS — arranque automatizado y credenciales por instancia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar UserData e IMDS — arranque automatizado y credenciales por instancia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses userdata e imds — arranque automatizado y credenciales por instancia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: userdata e imds — arranque automatizado y credenciales por instancia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- UserData e IMDS — arranque automatizado y credenciales por instancia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve userdata e imds — arranque automatizado y credenciales por instancia en tu contexto?
+2. ¿Cómo sabrías que userdata e imds — arranque automatizado y credenciales por instancia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar userdata e imds — arranque automatizado y credenciales por instancia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 # archivo: src/labs/modulo-21/tema-3-userdata-imds.sh — ejecutar con: bash tema-3-userdata-imds.sh
 aws ec2 run-instances --image-id ami-amazonlinux2023 --instance-type t2.micro \
@@ -161,39 +286,30 @@ TOKEN=$(curl -s -X PUT http://localhost:9169/latest/api/token -H "x-aws-ec2-meta
 curl -s -H "x-aws-ec2-metadata-token: $TOKEN" http://localhost:9169/latest/meta-data/instance-id
 ```
 
-**Resultado esperado:** `docker logs` muestra la ejecución del script de `UserData` (no hace falta conectarte por SSH para confirmarlo); la petición IMDSv2 devuelve el mismo `InstanceId` que reportó `run-instances`.
-
-**Modifica esto:** cambia el `UserData` para que también escriba la fecha (`date >> /tmp/listo.txt`) y confirma en los logs que ambas líneas aparecen en orden.
-
-**Cuándo no usarlo:** no confíes en IMDSv1 (sin token) para nada que dependas en producción real; AWS lo desalienta activamente por motivos de seguridad (SSRF) y Floci lo soporta solo por compatibilidad con scripts antiguos.
-
-**Cómo crece tu proyecto:** el patrón `UserData` + credenciales por `IMDS` es el que usará el nodos de reparto para autoconfigurarse al arrancar, sin que nadie tenga que conectarse manualmente a instalarlo.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara el arranque de una instancia de laboratorio para el consumidor. Registra cómo obtiene configuración e identidad temporal y verifica que los logs de inicialización no contienen credenciales.
-
-#### Paso 4 · Demostración guiada
-Con Floci iniciado con `floci start`, el puerto `9169` accesible desde tu equipo y `eval "$(floci env)"` cargado, guarda el bloque **Practícalo tú** de este tema en `ejemplo-bootstrap/tema-3-userdata-imds.sh` y ejecútalo:
 ```bash
 mkdir ejemplo-bootstrap && cd ejemplo-bootstrap
 # pega aquí el contenido de tema-3-userdata-imds.sh y guárdalo
 bash tema-3-userdata-imds.sh
 docker logs "$(docker ps -lq)" | grep -ci 'secret\|password' || true
 ```
-Resultado esperado: `grep listo` encuentra la línea del script de `UserData`, la consulta IMDSv2 imprime un `InstanceId` igual al de `run-instances`, y el último comando imprime `0`: los logs de arranque no contienen palabras como `secret` o `password`. Si la consulta a `9169` no responde, revisa la sección de errores comunes del laboratorio.
-#### Paso 5 · Práctica guiada
-Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Verifica idempotencia y logs de arranque.
-#### Paso 7 · Cierre
-Entrega script, salida, fallo y corrección; explica el resultado. Siguiente paso: escalado. Errores comunes: secretos en UserData y usar IMDSv1. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html.
+
+</details>
 
 ### Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar `demo-asg`, el grupo que mantiene siempre disponible al menos un nodo de reparto activo. Prerrequisitos: Temas 2-3 de este módulo.
-#### Paso 2 · Contexto y caso real
-La demanda de entregas cambia durante el día — RutaFlow necesita entre 1 y 3 nodos de reparto activos según la carga, sin que nadie tenga que lanzarlos o apagarlos a mano.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a declarar demo-asg, el grupo que mantiene siempre disponible al menos un nodo de reparto activo. Prerrequisitos: Temas 2-3 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a declarar demo-asg, el grupo que mantiene siempre disponible al menos un nodo de reparto activo.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un Auto Scaling Group es una flota con mínimo, máximo y capacidad deseada declarados: vos decís el resultado que querés, el grupo se encarga de los pasos para lograrlo.
 
 **Conceptos clave:** launch configuration, Auto Scaling Group, capacidad mínima/máxima/deseada, adjunto a grupos objetivo ELB.
@@ -230,28 +346,87 @@ aws autoscaling create-auto-scaling-group \
 
 **Cómo crece tu proyecto:** `demo-asg` es el grupo que mantiene siempre disponible al menos un nodo de reparto activo para el proyecto integrador, incluso si uno falla.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que auto scaling — configuraciones de lanzamiento y grupos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Auto Scaling — configuraciones de lanzamiento y grupos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Auto Scaling — configuraciones de lanzamiento y grupos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses auto scaling — configuraciones de lanzamiento y grupos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: auto scaling — configuraciones de lanzamiento y grupos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Auto Scaling — configuraciones de lanzamiento y grupos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve auto scaling — configuraciones de lanzamiento y grupos en tu contexto?
+2. ¿Cómo sabrías que auto scaling — configuraciones de lanzamiento y grupos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar auto scaling — configuraciones de lanzamiento y grupos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-21/tema-4-launch-config.sh — ejecutar con: bash tema-4-launch-config.sh
+aws autoscaling create-launch-configuration \
+  --launch-configuration-name demo-lc \
+  --image-id ami-amazonlinux2023 --instance-type t2.micro
+aws autoscaling create-auto-scaling-group \
+  --auto-scaling-group-name demo-asg \
+  --launch-configuration-name demo-lc \
+  --min-size 1 --max-size 3 --desired-capacity 1 \
+  --availability-zones us-east-1a
+```
+
 ```bash
 aws autoscaling create-launch-configuration --launch-configuration-name demo-lc \
   --image-id ami-amazonlinux2023 --instance-type t2.micro --security-groups demo-nodo --key-name demo-key
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name demo-asg \
   --launch-configuration-name demo-lc --min-size 1 --max-size 3 --desired-capacity 1 --availability-zones us-east-1a
 ```
-Resultado esperado: ambos comandos terminan sin salida (éxito silencioso); `describe-auto-scaling-groups --auto-scaling-group-names demo-asg` muestra una instancia en `InService` a los pocos segundos, usando el security group y la clave que preparaste en el Tema 2.
-#### Paso 5 · Práctica guiada
-Pista: probá crear un grupo con `--min-size 3 --max-size 1` (mínimo mayor que máximo) — ese es el fallo deliberado: `ValidationError`, porque esa combinación no tiene ningún valor de capacidad deseada que pueda satisfacer ambos límites a la vez.
-#### Paso 6 · Práctica independiente
-Corregí los valores a `--min-size 1 --max-size 3 --desired-capacity 1`, confirmá que el grupo queda con una sola instancia activa, y documentá qué pasaría si subieras `--desired-capacity` a 5 (más que el máximo): el grupo lo rechazaría, no lo "ajustaría solo" al máximo.
-#### Paso 7 · Cierre
-Entregá `demo-asg` creado con éxito, el error de mínimo/máximo invertido del Paso 5, y la verificación de límites del Paso 6; explicá por qué separar "qué lanzar" (la configuración de lanzamiento) de "cuántos mantener" (el grupo) es el mismo patrón declarativo de Kubernetes o ECS. Siguiente paso: políticas. Errores comunes: capacidad deseada inconsistente y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html.
+
+</details>
 
 ### Tema 5: El reconciliador de capacidad y las políticas de escalado · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a forzar que el reconciliador de `demo-asg` (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible. Prerrequisitos: Tema 4 de este módulo.
-#### Paso 2 · Contexto y caso real
-En un pico de pedidos, RutaFlow necesita que `demo-asg` reaccione subiendo de 1 a 3 nodos de reparto sin que nadie llame manualmente a `RunInstances` tres veces.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a forzar que el reconciliador de demo-asg (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible. Prerrequisitos: Tema 4 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a forzar que el reconciliador de demo-asg (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El reconciliador compara, cada 10 segundos, cuántas instancias hay contra cuántas debería haber — como un encargado de turno que cuenta meseros y llama a alguien de guardia si faltan.
 
 **Conceptos clave:** reconciliador de capacidad, ciclo de 10 segundos, scale-out, scale-in, lifecycle hooks, políticas de escalado.
@@ -285,8 +460,58 @@ aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Aumenta la demanda simulada de procesamiento y observa las decisiones de capacidad. Documenta umbral, enfriamiento y capacidad máxima; al bajar la carga, comprueba que las tareas en curso no se pierden.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que el reconciliador de capacidad y las políticas de escalado resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El reconciliador de capacidad y las políticas de escalado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El reconciliador de capacidad y las políticas de escalado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el reconciliador de capacidad y las políticas de escalado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el reconciliador de capacidad y las políticas de escalado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El reconciliador de capacidad y las políticas de escalado existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el reconciliador de capacidad y las políticas de escalado en tu contexto?
+2. ¿Cómo sabrías que el reconciliador de capacidad y las políticas de escalado no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el reconciliador de capacidad y las políticas de escalado?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-21/tema-5-reconciliador.sh — ejecutar con: bash tema-5-reconciliador.sh
+aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desired-capacity 3
+sleep 12
+aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -296,29 +521,28 @@ aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desire
 sleep 12
 aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 ```
-Resultado esperado: el historial de actividades muestra el reconciliador lanzando dos instancias nuevas para pasar de 1 a 3 `InService`, sin que ningún humano haya corrido `RunInstances` directamente.
-#### Paso 5 · Práctica guiada
-Pista: probá `aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desired-capacity 10` (más que el `--max-size 3` del Tema 4) — ese es el fallo deliberado: la API rechaza el cambio con un error de validación, porque la capacidad deseada nunca puede exceder el máximo declarado, sin importar qué tan urgente sea el pico de demanda.
-#### Paso 6 · Práctica independiente
-Bajá `desired-capacity` de nuevo a 1 y observá en `describe-scaling-activities` el evento de scale-in correspondiente; documentá qué lifecycle hook agregarías (`PutLifecycleHook`) para ejecutar un script de "drenado" antes de que una instancia se termine, en vez de cortarla de golpe mientras procesa una entrega.
-#### Paso 7 · Cierre
-Entregá el scale-out real del Paso 4, el límite rechazado del Paso 5, y el scale-in más el lifecycle hook propuesto del Paso 6; explicá por qué este mismo patrón de reconciliación continua aparece también en Kubernetes y Terraform. Siguiente paso: VPC. Errores comunes: escalar por métrica ruidosa y olvidar cooldown. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html.
+
+</details>
 
 ### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública. Prerrequisitos: Módulo 0 (fundamentos de redes: IP, puertos) y Floci corriendo.
 
-#### Paso 2 · Contexto y caso real
-Casi todo recurso de nube vive dentro de una **VPC** (red virtual privada). Entender VPC es lo que separa "lancé una instancia" de "diseñé una arquitectura segura": la base de datos de RutaFlow NO debe ser accesible desde internet, solo desde los servidores de la app; eso se logra con subredes y security groups, no con suerte.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una **VPC** es tu red aislada con un rango de IPs (CIDR, p. ej. `10.0.0.0/16`). Se divide en **subredes**: una *pública* (con ruta a internet vía Internet Gateway) para lo que debe ser accesible (balanceador), y una *privada* (sin ruta directa a internet) para lo sensible (base de datos). Un **security group** es un firewall a nivel de recurso: define qué tráfico entra y sale.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** la VPC es un edificio privado; las subredes son plantas (la planta baja pública con recepción, las plantas altas privadas); el security group es el control de acceso de cada oficina, que dice quién puede tocar a esa puerta y por qué puerto.
+#### ► LA ANALOGÍA
+Piensa en vpc y redes — subredes, security groups y el flujo del tráfico como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     I[Internet] --> IGW[Internet Gateway]
@@ -327,18 +551,50 @@ flowchart LR
     PRIV -.sin ruta directa a internet.-> I
 ```
 
-**Diagrama interactivo:** [VPC de RutaFlow: subred pública y privada](/visuals/temas/cloud/modulo-21-tema-6-vpc.html) — arquitectura explorable con las subredes, el flujo del tráfico y la base de datos aislada.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| VPC y redes — subredes, security groups y el flujo del tráfico se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** VPC y CIDR, subred pública vs privada, Internet Gateway, security group, principio de mínima exposición.
-**Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar VPC y redes — subredes, security groups y el flujo del tráfico | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** copiar la regla `--cidr 0.0.0.0/0` del security group del balanceador (Paso 5) como plantilla para el security group de la base de datos, sin revisar que esta última nunca debe aceptar tráfico fuera de la VPC — es la misma línea de comando, pero correcta en un recurso y una filtración de datos en el otro.
-**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
+#### ► CUÁNDO NO USAR ESTO
+No uses vpc y redes — subredes, security groups y el flujo del tráfico por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
-Con Floci corriendo (`floci start` y `eval $(floci env)`, Módulo 1):
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: vpc y redes — subredes, security groups y el flujo del tráfico funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- VPC y redes — subredes, security groups y el flujo del tráfico existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve vpc y redes — subredes, security groups y el flujo del tráfico en tu contexto?
+2. ¿Cómo sabrías que vpc y redes — subredes, security groups y el flujo del tráfico no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar vpc y redes — subredes, security groups y el flujo del tráfico?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    I[Internet] --> IGW[Internet Gateway]
+    IGW --> PUB[Subred pública: Balanceador]
+    PUB --> PRIV[Subred privada: App + Base de datos]
+    PRIV -.sin ruta directa a internet.-> I
+```
 
 ```bash
 # 1. Crear la VPC
@@ -352,52 +608,134 @@ aws ec2 authorize-security-group-ingress --group-id "$SG" --protocol tcp --port 
 aws ec2 describe-security-groups --group-ids "$SG"
 ```
 
-**Resultado esperado:** la VPC y las dos subredes se crean, y el security group muestra una regla de entrada que permite el puerto 5432 solo desde `10.0.0.0/16` (dentro de la VPC), no desde internet. **Fallo deliberado:** cambia la regla a `--cidr 0.0.0.0/0` (abrir el puerto de la base de datos a todo internet). Diagnostica por qué eso es exactamente la mala configuración que causa las filtraciones de bases de datos más famosas: una base nunca debe aceptar tráfico de `0.0.0.0/0`.
-
-#### Paso 5 · Práctica guiada
-Crea un segundo security group para el balanceador que permita el puerto 443 (HTTPS) desde internet, y confirma que es correcto que ESE sí acepte `0.0.0.0/0` mientras la base no. Pista: la regla depende del rol del recurso.
-
-#### Paso 6 · Práctica independiente
-Dibuja (o describe) la ruta completa de una petición de un usuario: Internet → Gateway → subred pública (balanceador) → subred privada (app) → base de datos, indicando qué security group permite cada salto.
-
-#### Paso 7 · Cierre
-Entrega la VPC con sus subredes, el security group restrictivo y el análisis del fallo `0.0.0.0/0`. **¿Por qué es importante?** La VPC y los security groups son la base de la seguridad de red en la nube; el error de exponer una base de datos a internet es tan común como grave. Diseñar el flujo del tráfico (qué es público, qué es privado) es una decisión de arquitectura que tomarás en cada proyecto cloud. Fuentes: [AWS — VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html).
-
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** lanzar una instancia EC2 real con acceso SSH funcional verificado vía IMDS, y luego crear un Auto Scaling Group y observar al reconciliador de Floci mantener la capacidad deseada automáticamente.
-
-**Requisitos previos:** Floci corriendo con el socket Docker montado (`-v /var/run/docker.sock:/var/run/docker.sock`) y el puerto `9169` (IMDS) expuesto si necesitas consultarlo desde fuera de la red puente de Docker.
+</details>
 
 ### Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Importa tu clave pública SSH | `aws ec2 import-key-pair --key-name mi-clave --public-key-material fileb://~/.ssh/id_rsa.pub` | Registra tu clave pública real para inyectarla en la instancia | Un `KeyFingerprint` en la respuesta |
-| 2 | Lanza una instancia con UserData | `aws ec2 run-instances --image-id ami-amazonlinux2023 --instance-type t2.micro --key-name mi-clave --user-data '#!/bin/bash\necho hola > /tmp/listo.txt'` | Crea un contenedor Docker real basado en Amazon Linux 2023 y ejecuta el script al arrancar | Un `InstanceId` con estado `pending` |
-| 3 | Confirma que está en ejecución | `aws ec2 describe-instances --instance-ids <id>` | El estado debe pasar a `running` en pocos segundos | `"Name": "running"` en `State` |
-| 4 | Verifica que Docker realmente la lanzó | `docker ps \| grep <id>` | Confirma que existe un contenedor real, no solo un registro simulado | Una fila con el contenedor de la instancia |
-| 5 | Consulta IMDSv2 desde dentro del contenedor | `docker exec <container-id> sh -c 'TOKEN=$(curl -s -X PUT http://169.254.169.254/latest/api/token -H "x-aws-ec2-metadata-token-ttl-seconds: 21600"); curl -s -H "x-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id'` | Pide un token IMDSv2 y lo usa para consultar el instance-id | El mismo `InstanceId` devuelto en el paso 2 |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds en tu contexto?
+2. ¿Cómo sabrías que laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds.
+
+</details>
 
 ### Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea una configuración de lanzamiento | `aws autoscaling create-launch-configuration --launch-configuration-name mi-lc --image-id ami-amazonlinux2023 --instance-type t2.micro` | Define la plantilla que usará el grupo para lanzar instancias | Sin salida (éxito silencioso) |
-| 2 | Crea el grupo con capacidad deseada 2 | `aws autoscaling create-auto-scaling-group --auto-scaling-group-name mi-asg --launch-configuration-name mi-lc --min-size 1 --max-size 5 --desired-capacity 2 --availability-zones us-east-1a` | Arranca el ciclo de reconciliación de capacidad | Sin salida (éxito silencioso) |
-| 3 | Observa cómo aparecen las instancias | `aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names mi-asg` | El reconciliador lanza instancias cada 10 s hasta alcanzar la capacidad deseada | 2 instancias listadas con `LifecycleState: InService` |
-| 4 | Sube la capacidad deseada a 4 | `aws autoscaling set-desired-capacity --auto-scaling-group-name mi-asg --desired-capacity 4` | Ordena un scale-out | Sin salida (éxito silencioso) |
-| 5 | Confirma el escalado y revisa el historial | `aws autoscaling describe-scaling-activities --auto-scaling-group-name mi-asg` | El reconciliador lanza 2 instancias adicionales en los siguientes ~10 s | Actividades de tipo lanzamiento registradas hasta llegar a 4 instancias `InService` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Verificación:** el laboratorio se considera exitoso si `docker ps` muestra un contenedor real para la instancia EC2 lanzada, la consulta a IMDSv2 devuelve el mismo `InstanceId` que reportó `run-instances`, y `describe-auto-scaling-groups` muestra que el grupo llegó a 4 instancias `InService` después de subir la capacidad deseada, sin que hayas lanzado ninguna manualmente.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 21.2 — auto scaling group con reconciliador en vivo con foco en comprensión antes de implementación.
 
-**Errores comunes y soluciones**
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 21.2 — auto scaling group con reconciliador en vivo te permite tomar mejores decisiones técnicas.**
 
-- **IMDS no responde desde fuera del contenedor.** El `docker-compose.yml` de la raíz no publica el puerto `9169` ni monta el socket de Docker en su servicio `aws-local`. En tu copia, añade `"9169:9169"` a sus `ports` y `/var/run/docker.sock:/var/run/docker.sock` a sus `volumes`, y reinicia con `docker compose up -d aws-local`.
-- **`ImportKeyPair` funciona pero SSH pide contraseña.** Revisa que estés usando la clave privada correspondiente a la pública importada, y que el puerto SSH asignado (rango 2200–2299) sea el correcto: consúltalo con `docker port <container-id>`.
-- **El Auto Scaling Group no lanza instancias.** Verifica que el socket Docker esté montado (`-v /var/run/docker.sock:/var/run/docker.sock`); sin él, EC2 —y por lo tanto Auto Scaling— no puede lanzar contenedores reales.
-- **Las instancias no se registran en el grupo objetivo del balanceador.** Confirma que usaste `attach-load-balancer-target-groups` con el ARN correcto del Módulo 22, y que el grupo objetivo existe antes de adjuntarlo.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
----
+#### ► LA ANALOGÍA
+Piensa en laboratorio 21.2 — auto scaling group con reconciliador en vivo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 21.2 — auto scaling group con reconciliador en vivo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 21.2 — auto scaling group con reconciliador en vivo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 21.2 — auto scaling group con reconciliador en vivo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 21.2 — auto scaling group con reconciliador en vivo en tu contexto?
+2. ¿Cómo sabrías que laboratorio 21.2 — auto scaling group con reconciliador en vivo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 21.2 — auto scaling group con reconciliador en vivo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 21.2 — auto scaling group con reconciliador en vivo.
+
+</details>

@@ -11,86 +11,68 @@ El controlador decide cuánta acción aplicar según el error. Aquí verás qué
 
 ## Aprende construyendo
 
+
 ### Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia · Avanzado · 45 min
 
-**¿Por qué es importante?** Entender qué mira cada acción (presente, pasado, tendencia) explica para qué sirve cada término del PID.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
+#### ► DE QUÉ TRATA
+Este tema te guía por la idea de las acciones p, i y d: presente, pasado y tendencia con foco en comprensión antes de implementación.
 
-> **Idea clave.** El controlador mira el error de tres maneras: cuánto hay ahora (P), cuánto se ha acumulado (I) y hacia dónde va (D).
+#### ► LA IDEA EN UNA FRASE
+**Entender la idea de las acciones p, i y d: presente, pasado y tendencia te permite tomar mejores decisiones técnicas.**
 
-\[u(t) = K_p\,e(t) + K_i\int_0^t e(\tau)\,d\tau + K_d\frac{de(t)}{dt}\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-\[C(s) = K_p + \frac{K_i}{s} + K_d s = K_p\left(1 + \frac{1}{T_i s} + T_d s\right)\]
+#### ► LA ANALOGÍA
+Piensa en la idea de las acciones p, i y d: presente, pasado y tendencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-*\(T_i = K_p/K_i\) es el tiempo integral y \(T_d = K_d/K_p\) el tiempo derivativo.*
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que la idea de las acciones p, i y d: presente, pasado y tendencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Más ejemplos resueltos
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| La idea de las acciones P, I y D: presente, pasado y tendencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar La idea de las acciones P, I y D: presente, pasado y tendencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Ejemplo 1 · ¿Qué mira la acción Proporcional (P)? · *Básico*
+#### ► CUÁNDO NO USAR ESTO
+No uses la idea de las acciones p, i y d: presente, pasado y tendencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Enunciado.** Explica con una frase qué información usa la acción proporcional (p).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: la idea de las acciones p, i y d: presente, pasado y tendencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-1. Mira el error de ahora.
+#### ► LO QUE DEBES RECORDAR
+- La idea de las acciones P, I y D: presente, pasado y tendencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Un error grande produce una acción grande; si el error es cero, la acción es cero.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve la idea de las acciones p, i y d: presente, pasado y tendencia en tu contexto?
+2. ¿Cómo sabrías que la idea de las acciones p, i y d: presente, pasado y tendencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar la idea de las acciones p, i y d: presente, pasado y tendencia?
 
-**Resultado.** Por eso proporcional se escribe \(K_pe(t)\).
+</details>
 
-#### Ejemplo 2 · ¿Qué mira la acción Integral (I)? · *Básico*
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Enunciado.** Explica con una frase qué información usa la acción integral (i).
-
-1. Mira la suma de todos los errores pasados.
-
-   **¿Por qué?** Mientras quede error, la integral sigue creciendo y empuja hasta eliminarlo.
-
-**Resultado.** Por eso integral se escribe \(K_i\int_0^t e\,d\tau\).
-
-#### Ejemplo 3 · ¿Qué mira la acción Derivativa (D)? · *Básico*
-
-**Enunciado.** Explica con una frase qué información usa la acción derivativa (d).
-
-1. Mira qué tan rápido cambia el error.
-
-   **¿Por qué?** Frena antes de llegar si el error está cayendo rápido: anticipa y amortigua.
-
-**Resultado.** Por eso derivativa se escribe \(K_d\,de/dt\).
-
-#### Ejemplo 4 · La ducha como PID · *Básico*
-
-**Enunciado.** Ajustas el agua de la ducha. ¿Qué haces como P, como I y como D?
-
-1. P: si está muy fría, giras mucho la llave; si está casi bien, poco.
-
-   **¿Por qué?** Acción proporcional al error de temperatura.
-
-2. I: si después de un rato sigue un poco fría, sigues girando de a poquito hasta que queda bien.
-
-   **¿Por qué?** Acumulas el error que persiste.
-
-3. D: si notas que se está calentando muy rápido, dejas de girar antes de llegar.
-
-   **¿Por qué?** Reaccionas a la velocidad de cambio para no pasarte.
-
-**Resultado.** Las tres acciones juntas son un PID humano.
-
-#### Ejemplo 5 · Leer un PID escrito en s · *Intermedio*
-
-**Enunciado.** Interpreta \(C(s) = 4 + \dfrac{2}{s} + 0{,}5s\).
-
-1. \(K_p = 4\), \(K_i = 2\), \(K_d = 0{,}5\).
-
-   **¿Por qué?** Cada término de \(C(s)\) es una acción: constante, \(1/s\) (integra) y \(s\) (deriva).
-
-**Resultado.** Forma estándar: \(C(s) = K_p\left(1 + \dfrac{1}{T_is} + T_ds\right)\) con \(T_i = K_p/K_i = 2\) s y \(T_d = K_d/K_p = 0{,}125\) s.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 5.
-
+#### Código y verificación
 ```python
 # verificacion.py
 Kp, Ki, Kd = 4, 2, 0.5
@@ -100,109 +82,73 @@ print("Ti:", Ti)
 print("Td:", Td)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `Ti: 2.0` y `Td: 0.125`, igual al Ejemplo 5.
-
-#### Practica
-
-cambia `Kp, Ki, Kd` a `2, 0.5, 1` y calcula \(T_i\) y \(T_d\) para ese controlador (práctica 3 de la sección final del módulo, con \(T_i=4\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta conversión entre \((K_p,K_i,K_d)\) y \((K_p,T_i,T_d)\) es solo notación; ninguna de las dos formas dice todavía si esas ganancias son buenas — eso depende de cómo responde el lazo cerrado (Tema 3).
+</details>
 
 ### Tema 2: Error en estado estacionario · Avanzado · 45 min
 
-**¿Por qué es importante?** El error estacionario muestra con números por qué la acción integral es necesaria en la mayoría de procesos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
+#### ► DE QUÉ TRATA
+Este tema te guía por error en estado estacionario con foco en comprensión antes de implementación.
 
-Con realimentación unitaria, el error final ante un escalón unitario depende de cuántos integradores (polos en \(s=0\)) tiene \(C(s)G(s)\). A ese número se le llama **tipo** del sistema.
+#### ► LA IDEA EN UNA FRASE
+**Entender error en estado estacionario te permite tomar mejores decisiones técnicas.**
 
-| Tipo | Error ante escalón | Error ante rampa |
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en error en estado estacionario como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que error en estado estacionario resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| 0 (sin integrador) | \(\dfrac{1}{1+K_{pos}}\), con \(K_{pos} = \lim_{s\to0}CG\) | \(\infty\) |
-| 1 (un integrador) | \(0\) | \(\dfrac{1}{K_v}\), con \(K_v = \lim_{s\to0}s\,CG\) |
-| 2 | \(0\) | \(0\) |
+| Error en estado estacionario se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-> **Por eso la acción integral elimina el error:** el \(1/s\) del controlador sube el tipo en uno.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Error en estado estacionario | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Demostración · el integrador elimina el error ante escalón
+#### ► CUÁNDO NO USAR ESTO
+No uses error en estado estacionario por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-1. El error en lazo cerrado unitario es \(E = R - Y = R - \dfrac{CG}{1+CG}R = \dfrac{R}{1+CG}\).
-2. Con escalón \(R = 1/s\) y valor final: \(e_{ss} = \lim_{s\to0} s\cdot\dfrac{1}{s}\cdot\dfrac{1}{1+CG} = \dfrac{1}{1+\lim_{s\to0}CG}\).
-3. Sin integrador, \(\lim CG = K_{pos}\) es finito y \(e_{ss} = \dfrac{1}{1+K_{pos}} \ne 0\).
-4. Con integrador, \(CG = \dfrac{\ldots}{s(\ldots)}\) y \(\lim_{s\to0}CG = \infty\), así que \(e_{ss} = 0\).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: error en estado estacionario funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-∎
+#### ► LO QUE DEBES RECORDAR
+- Error en estado estacionario existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-#### Demostración · por qué la D amplifica el ruido
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve error en estado estacionario en tu contexto?
+2. ¿Cómo sabrías que error en estado estacionario no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar error en estado estacionario?
 
-Un ruido senoidal \(n(t) = a\sin\omega t\) tiene derivada \(a\omega\cos\omega t\): su amplitud queda multiplicada por \(\omega\). El ruido de los sensores es de alta frecuencia (\(\omega\) grande), así que la acción D lo amplifica mucho. En la práctica se usa \(K_d\dfrac{s}{1+s/N}\) (derivada filtrada) para limitar la ganancia a altas frecuencias.
+</details>
 
-∎
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 1 · Error ante escalón con P con Kp = 4 · *Básico*
-
-**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 4\). Halla el error final ante un escalón.
-
-1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
-
-   **¿Por qué?** Valor final del error con realimentación unitaria.
-
-**Resultado.** \(e_{ss} = \frac{1}{3}\) (33,3 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
-
-#### Ejemplo 2 · Error ante escalón con P con Kp = 18 · *Básico*
-
-**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 18\). Halla el error final ante un escalón.
-
-1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
-
-   **¿Por qué?** Valor final del error con realimentación unitaria.
-
-**Resultado.** \(e_{ss} = \frac{1}{10}\) (10 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
-
-#### Ejemplo 3 · Error ante escalón con PI · *Intermedio*
-
-**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 4 + \frac{2}{s}\). Halla el error final ante un escalón.
-
-1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
-
-   **¿Por qué?** Valor final del error con realimentación unitaria.
-
-**Resultado.** \(e_{ss} = 0\): la integral lo elimina.
-
-#### Ejemplo 4 · Error ante escalón con P con Kp = 98 · *Básico*
-
-**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 98\). Halla el error final ante un escalón.
-
-1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
-
-   **¿Por qué?** Valor final del error con realimentación unitaria.
-
-**Resultado.** \(e_{ss} = \frac{1}{50}\) (2 %): con solo P siempre queda error; subir \(K_p\) lo reduce pero no lo anula.
-
-#### Ejemplo 5 · Error ante escalón con PI con Ki = 5 · *Intermedio*
-
-**Enunciado.** Planta \(P = \frac{1}{s + 2}\), realimentación unitaria, \(C = 1 + \frac{5}{s}\). Halla el error final ante un escalón.
-
-1. \(e_{ss} = \lim_{s\to0} \dfrac{1}{1 + C(s)P(s)}\).
-
-   **¿Por qué?** Valor final del error con realimentación unitaria.
-
-**Resultado.** \(e_{ss} = 0\): la integral lo elimina.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, limit
@@ -214,172 +160,70 @@ e_ss = limit(1 / (1 + C * P), s, 0)
 print("e_ss:", e_ss)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `e_ss: 1/3`, igual al Ejemplo 1 (33,3 %).
-
-#### Practica
-
-cambia `C` a `4 + 2/s` (PI) y confirma `e_ss: 0` (Ejemplo 3): la integral lo elimina. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** este cálculo solo da el error en **estado estacionario**; no dice nada sobre el sobrepico o el tiempo de establecimiento del transitorio, que hay que revisar aparte (Tema 3).
+</details>
 
 ### Tema 3: Cada acción, con números · Avanzado · 45 min
 
-**¿Por qué es importante?** Ver el efecto de cada acción con un ejemplo numérico te da argumentos reales para el punto 4 del Parcial 1.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
+#### ► DE QUÉ TRATA
+Este tema te guía por cada acción, con números con foco en comprensión antes de implementación.
 
-#### ON/OFF (dos posiciones)
+#### ► LA IDEA EN UNA FRASE
+**Entender cada acción, con números te permite tomar mejores decisiones técnicas.**
 
-El actuador solo está prendido o apagado. Se usa con histéresis para que no conmute a cada instante. Ejemplos: nevera, plancha, termostato básico.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Proporcional: C(s) = Kp
+#### ► LA ANALOGÍA
+Piensa en cada acción, con números como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Ejemplo 1 · El P deja error · *Básico*
-
-**Enunciado.** Planta \(G = \dfrac{1}{s+1}\), control P con \(K_p = 9\), realimentación unitaria.
-
-1. Lazo cerrado: \(\dfrac{9}{s+1+9} = \dfrac{9}{s+10}\).
-
-   **¿Por qué?** \(\dfrac{N}{D+N}\) (módulo 5).
-
-2. Valor final: \(9/10 = 0{,}9\).
-
-   **¿Por qué?** \(G(0)\) del lazo cerrado.
-
-3. Error: \(1 - 0{,}9 = 0{,}1\). Con la fórmula: \(\dfrac{1}{1+K_p} = \dfrac{1}{10}\).
-
-   **¿Por qué?** Sistema tipo 0 (módulo 14).
-
-4. Con \(K_p = 99\): error \(1/100\).
-
-   **¿Por qué?** Baja, pero solo llega a cero con \(K_p\) infinito.
-
-**Resultado:** El P reduce el error, pero no lo elimina
-
-#### Ejemplo 2 · El precio de subir Kp · *Intermedio*
-
-> **Qué cambia respecto al anterior:** La planta es de segundo orden: ahora también aparece sobrepico.
-
-**Enunciado.** Planta \(\dfrac{1}{(s+1)(s+2)}\) con P. Compara \(K_p = 10\) y \(K_p = 40\).
-
-1. Lazo cerrado: \(\dfrac{K_p}{s^2+3s+2+K_p}\). Error: \(\dfrac{1}{1+K_p/2} = \dfrac{2}{2+K_p}\).
-
-   **¿Por qué?** \(G(0) = 1/2\), así que \(K_{pos} = K_p/2\).
-
-2. \(K_p = 10\): \(s^2+3s+12\), \(\zeta = \dfrac{3}{2\sqrt{12}} = 0{,}433\), \(M_p = 22{,}1\,\%\), error 16,7 %.
-
-   **¿Por qué?** Módulo 12.
-
-3. \(K_p = 40\): \(s^2+3s+42\), \(\zeta = 0{,}231\), \(M_p = 47{,}4\,\%\), error 4,8 %.
-
-   **¿Por qué?** Subir \(K_p\) sube \(\omega_n\) pero no el término en \(s\), así que \(\zeta\) baja.
-
-**Resultado:** Menos error a cambio de más sobrepico
-
+#### ► CÓMO FUNCIONA
 ![Efecto de subir Kp](content/figures/control-1/efecto-kp.svg)
 
-*Ejemplo 2: \(K_p = 10\) (azul) y \(K_p = 40\) (naranja). Ninguna llega a 1 (línea punteada).*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cada acción, con números se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Integral: C(s) = Ki/s
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cada acción, con números | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Ejemplo 3 · El PI quita el error · *Intermedio*
+#### ► CUÁNDO NO USAR ESTO
+No uses cada acción, con números por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-> **Qué cambia respecto al anterior:** Se agrega la acción integral.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cada acción, con números funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Enunciado.** Planta \(\dfrac{1}{s+1}\) con PI: \(K_p = 3\), \(K_i = 8\).
+#### ► LO QUE DEBES RECORDAR
+- Cada acción, con números existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-1. \(C = 3 + \dfrac8s = \dfrac{3s+8}{s}\). \(CG = \dfrac{3s+8}{s(s+1)}\).
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cada acción, con números en tu contexto?
+2. ¿Cómo sabrías que cada acción, con números no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cada acción, con números?
 
-   **¿Por qué?** Se pasa \(C\) a una sola fracción.
+</details>
 
-2. Tiene un integrador: tipo 1, error ante escalón 0.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** Módulo 14.
-
-3. Lazo cerrado: \(\dfrac{3s+8}{s(s+1)+3s+8} = \dfrac{3s+8}{s^2+4s+8}\). Valor final \(8/8 = 1\).
-
-   **¿Por qué?** Se confirma: llega exacto a 1.
-
-**Resultado:** Error cero; el sistema pasó a segundo orden (\(\zeta = 0{,}707\))
-
-#### Derivativa: C(s) = Kd s
-
-#### Ejemplo 4 · El D amortigua · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** Se agrega la acción derivativa.
-
-**Enunciado.** Planta \(\dfrac{1}{s^2}\). Compara P (\(K_p = 4\)) con PD (\(K_p = 4\), \(K_d = 2{,}8\)).
-
-1. P: \(\dfrac{4}{s^2+4}\). Polos \(\pm2j\): no hay término en \(s\), así que \(\zeta = 0\) y oscila para siempre.
-
-   **¿Por qué?** La planta no tiene fricción y el P tampoco la agrega.
-
-2. PD: \(CG = \dfrac{2{,}8s+4}{s^2}\). Lazo cerrado: \(\dfrac{2{,}8s+4}{s^2+2{,}8s+4}\).
-
-   **¿Por qué?** La D aporta el término \(2{,}8s\).
-
-3. \(\omega_n = 2\), \(\zeta = \dfrac{2{,}8}{2\cdot2} = 0{,}7\).
-
-   **¿Por qué?** Ese término en \(s\) es justamente el amortiguamiento.
-
-**Resultado:** La D convierte una oscilación eterna en una respuesta amortiguada
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 5 · Efecto de P (Kp = 8) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
-
-**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
-
-1. Ecuación característica: \(s \left(s + 4\right) + 8 = 0\).
-
-   **¿Por qué?** Denominador de \(CP/(1+CP)\).
-
-2. \(\omega_n \approx 2{,}828,\ \zeta \approx 0{,}707\).
-
-   **¿Por qué?** Comparando con la forma estándar.
-
-**Resultado.** \(M_p \approx 4{,}3\,\%\). Subir \(K_p\) acelera pero aumenta el sobrepico.
-
-#### Ejemplo 6 · Efecto de P (Kp = 20) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
-
-**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
-
-1. Ecuación característica: \(s \left(s + 4\right) + 20 = 0\).
-
-   **¿Por qué?** Denominador de \(CP/(1+CP)\).
-
-2. \(\omega_n \approx 4{,}472,\ \zeta \approx 0{,}447\).
-
-   **¿Por qué?** Comparando con la forma estándar.
-
-**Resultado.** \(M_p \approx 20{,}8\,\%\). Subir \(K_p\) acelera pero aumenta el sobrepico.
-
-#### Ejemplo 7 · Efecto de PD (Kp = 20, Kd = 4) sobre \(P = \frac{1}{s \left(s + 4\right)}\) · *Intermedio*
-
-**Enunciado.** Halla \(\zeta\), \(\omega_n\) y el sobrepico del lazo cerrado.
-
-1. Ecuación característica: \(s^{2} + 8 s + 20 = 0\).
-
-   **¿Por qué?** Denominador de \(CP/(1+CP)\).
-
-2. \(\omega_n \approx 4{,}472,\ \zeta \approx 0{,}894\).
-
-   **¿Por qué?** Comparando con la forma estándar.
-
-**Resultado.** \(M_p \approx 0{,}2\,\%\). La derivada aumenta el amortiguamiento y quita casi todo el sobrepico sin perder velocidad.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema (control P).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import Rational
@@ -389,106 +233,73 @@ e_ss = Rational(1, 1 + Kp)
 print("e_ss:", e_ss)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `e_ss: 1/10`, igual al Ejemplo 1.
-
-#### Practica
-
-cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor: el error baja pero nunca llega a cero). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la fórmula \(1/(1+K_p)\) solo aplica a sistemas tipo 0 (sin integrador en la planta); con un integrador en la planta misma, el error ante escalón ya es cero incluso con solo P (como en el Ejemplo 4 de este tema, donde la planta es \(1/s^2\)).
+</details>
 
 ### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1) · Avanzado · 45 min
 
-**¿Por qué es importante?** Las ventajas y desventajas son la pregunta teórica más repetida de los parciales.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
+#### ► DE QUÉ TRATA
+Este tema te guía por ventajas y desventajas (punto 4 del parcial 1) con foco en comprensión antes de implementación.
 
-| Acción | Ventajas | Desventajas |
+#### ► LA IDEA EN UNA FRASE
+**Entender ventajas y desventajas (punto 4 del parcial 1) te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en ventajas y desventajas (punto 4 del parcial 1) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que ventajas y desventajas (punto 4 del parcial 1) resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| **ON/OFF** | Muy barato, simple, robusto | Oscilación permanente alrededor de la referencia; desgasta el actuador; necesita histéresis |
-| **P** | Simple, un solo parámetro; respuesta inmediata; subir \(K_p\) acelera y reduce el error | Deja error estacionario en plantas tipo 0; \(K_p\) alto aumenta sobrepico y puede desestabilizar |
-| **I** | Elimina el error ante escalón; rechaza perturbaciones constantes | Más lento y oscilatorio; resta estabilidad (90° de atraso de fase); windup si el actuador se satura |
-| **D** | Anticipa: reduce sobrepico y oscilación; mejora estabilidad | Amplifica el ruido del sensor; nunca se usa sola; no quita el error; pico grande ante escalones en la referencia |
-| **PI** | Error cero con buena velocidad; el más usado en procesos (nivel, flujo, temperatura) | Sobrepico y windup |
-| **PD** | Rápido y amortiguado; ideal en posición y servomotores | Sensible al ruido; no elimina el error estacionario |
-| **PID** | Exacto, rápido y amortiguado | Tres parámetros para sintonizar; ruido y windup |
+| Ventajas y desventajas (punto 4 del Parcial 1) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Efecto de subir cada ganancia
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ventajas y desventajas (punto 4 del Parcial 1) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-| Subir | Tiempo de subida | Sobrepico | Establecimiento | Error estacionario | Estabilidad |
-|---|---|---|---|---|---|
-| \(K_p\) | Baja | Sube | Poco cambio | Baja, no a cero | Empeora |
-| \(K_i\) | Baja | Sube | Sube | Se elimina | Empeora |
-| \(K_d\) | Poco cambio | Baja | Baja | No cambia | Mejora si \(K_d\) es pequeño |
+#### ► CUÁNDO NO USAR ESTO
+No uses ventajas y desventajas (punto 4 del parcial 1) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Ejemplo 1 · Error ante rampa · *Intermedio*
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ventajas y desventajas (punto 4 del parcial 1) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Enunciado.** \(CG = \dfrac{4}{s(s+2)}\). Error ante escalón y ante rampa.
+#### ► LO QUE DEBES RECORDAR
+- Ventajas y desventajas (punto 4 del Parcial 1) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-1. Tipo 1: error ante escalón 0.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ventajas y desventajas (punto 4 del parcial 1) en tu contexto?
+2. ¿Cómo sabrías que ventajas y desventajas (punto 4 del parcial 1) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ventajas y desventajas (punto 4 del parcial 1)?
 
-   **¿Por qué?** Hay un integrador.
+</details>
 
-2. \(K_v = \lim s\cdot\dfrac{4}{s(s+2)} = 2\). Error \(1/2\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** Módulo 14.
-
-**Resultado:** Escalón 0; rampa 0,5
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Elegir controlador: Horno industrial lento, sin ruido en el senso… · *Intermedio*
-
-**Enunciado.** Horno industrial lento, sin ruido en el sensor; se exige error cero. ¿Qué controlador eliges?
-
-1. Elección: **PI**.
-
-   **¿Por qué?** La integral elimina el error; el proceso es lento y no necesita la anticipación de D.
-
-**Resultado.** PI, justificado por la ventaja que aporta y la desventaja que se evita.
-
-#### Ejemplo 3 · Elegir controlador: Posición de un motor que oscila demasiado con… · *Intermedio*
-
-**Enunciado.** Posición de un motor que oscila demasiado con solo P. ¿Qué controlador eliges?
-
-1. Elección: **PD**.
-
-   **¿Por qué?** La derivada agrega amortiguamiento; un motor ya tiene un integrador natural (posición), así que el error al escalón ya es cero.
-
-**Resultado.** PD, justificado por la ventaja que aporta y la desventaja que se evita.
-
-#### Ejemplo 4 · Elegir controlador: Medición de flujo muy ruidosa.… · *Intermedio*
-
-**Enunciado.** Medición de flujo muy ruidosa. ¿Qué controlador eliges?
-
-1. Elección: **PI (sin D)**.
-
-   **¿Por qué?** La derivada amplifica el ruido de alta frecuencia; se evita o se filtra.
-
-**Resultado.** PI (sin D), justificado por la ventaja que aporta y la desventaja que se evita.
-
-#### Ejemplo 5 · Elegir controlador: Brazo que debe llegar rápido, sin sobrepico y… · *Intermedio*
-
-**Enunciado.** Brazo que debe llegar rápido, sin sobrepico y sin error. ¿Qué controlador eliges?
-
-1. Elección: **PID**.
-
-   **¿Por qué?** Se necesita la rapidez de P, la exactitud de I y el amortiguamiento de D.
-
-**Resultado.** PID, justificado por la ventaja que aporta y la desventaja que se evita.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 de este tema.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, limit
@@ -500,118 +311,73 @@ print("Kv:", Kv)
 print("error_rampa:", 1 / Kv)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `Kv: 2` y `error_rampa: 1/2`, igual al Ejemplo 1 (escalón 0, rampa 0,5).
-
-#### Practica
-
-cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\), usando \(K_d=4\)) y calcula de nuevo \(K_v\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta tabla de ventajas/desventajas es una guía general; la elección real de controlador (Ejemplos 2-5) siempre depende del caso concreto — ruido del sensor, velocidad del proceso y tolerancia al sobrepico — no de aplicar la tabla mecánicamente.
-
-**Conexión con el proyecto integrador:** la bitácora de `control-1-tanque` pide justamente esta decisión con datos, no solo con la tabla. Con los dos CSV que genera `simular.py` (P y PI), argumenta por escrito por qué el PI es la elección correcta para un tanque que no puede quedarse con error permanente, y qué desventaja del PI (windup, si el caudal se satura en 1,5 m³/s) habría que vigilar en la planta real.
+</details>
 
 ### Tema 5: Sintonía de Ziegler-Nichols · Avanzado · 45 min
 
-**¿Por qué es importante?** Ziegler-Nichols es el método práctico para sintonizar un PID cuando no hay un modelo exacto.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
+#### ► DE QUÉ TRATA
+Este tema te guía por sintonía de ziegler-nichols con foco en comprensión antes de implementación.
 
-> **Idea clave.** Cuando no tienes un modelo exacto, Ziegler-Nichols da valores iniciales de \(K_p\), \(T_i\) y \(T_d\) a partir de un experimento. Después se ajustan a mano.
+#### ► LA IDEA EN UNA FRASE
+**Entender sintonía de ziegler-nichols te permite tomar mejores decisiones técnicas.**
 
-#### Método 1: ganancia crítica (lazo cerrado)
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Procedimiento**
+#### ► LA ANALOGÍA
+Piensa en sintonía de ziegler-nichols como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-1. Deja solo la acción P y sube \(K_p\) hasta que la salida oscile de forma sostenida. Esa es la ganancia crítica \(K_{cr}\).
-2. Mide el período de la oscilación, \(P_{cr}\). (Con modelo: Routh da los dos, módulo 15.)
-3. Usa la tabla.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sintonía de ziegler-nichols resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-| Controlador | \(K_p\) | \(T_i\) | \(T_d\) |
-|---|---|---|---|
-| P | \(0{,}5K_{cr}\) | — | — |
-| PI | \(0{,}45K_{cr}\) | \(P_{cr}/1{,}2\) | — |
-| PID | \(0{,}6K_{cr}\) | \(0{,}5P_{cr}\) | \(0{,}125P_{cr}\) |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sintonía de Ziegler-Nichols se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Ejemplo 1 · PID por ganancia crítica · *Nivel parcial*
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sintonía de Ziegler-Nichols | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Enunciado.** Planta \(\dfrac{1}{s(s+1)(s+5)}\).
+#### ► CUÁNDO NO USAR ESTO
+No uses sintonía de ziegler-nichols por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-1. Con solo P: \(s^3+6s^2+5s+K_p = 0\). Routh: \(s^1 = \dfrac{30 - K_p}{6}\). Oscila en \(K_{cr} = 30\).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sintonía de ziegler-nichols funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-   **¿Por qué?** Ziegler-Nichols necesita la ganancia del límite de estabilidad.
+#### ► LO QUE DEBES RECORDAR
+- Sintonía de Ziegler-Nichols existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-2. Auxiliar: \(6s^2 + 30 = 0 \Rightarrow \omega = \sqrt5 = 2{,}236\). \(P_{cr} = 2\pi/2{,}236 = 2{,}81\) s.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sintonía de ziegler-nichols en tu contexto?
+2. ¿Cómo sabrías que sintonía de ziegler-nichols no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sintonía de ziegler-nichols?
 
-   **¿Por qué?** El período es \(2\pi/\omega\).
+</details>
 
-3. Tabla PID: \(K_p = 0{,}6\cdot30 = 18\); \(T_i = 0{,}5\cdot2{,}81 = 1{,}405\); \(T_d = 0{,}125\cdot2{,}81 = 0{,}351\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-   **¿Por qué?** Fórmulas empíricas del método.
-
-**Resultado:** \(C = 18\left(1 + \dfrac{1}{1{,}405s} + 0{,}351s\right)\)
-
-#### Método 2: curva de reacción (lazo abierto)
-
-Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfrac{Ke^{-Ls}}{Ts+1}\) (módulo 11, identificación): \(L\) es el retardo y \(T\) la constante de tiempo.
-
-| Controlador | \(K_p\) | \(T_i\) | \(T_d\) |
-|---|---|---|---|
-| P | \(\dfrac{T}{KL}\) | — | — |
-| PI | \(0{,}9\dfrac{T}{KL}\) | \(L/0{,}3\) | — |
-| PID | \(1{,}2\dfrac{T}{KL}\) | \(2L\) | \(0{,}5L\) |
-
-#### Ejemplo 2 · PID por curva de reacción · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Se usa un experimento en lazo abierto en vez de Routh.
-
-**Enunciado.** Planta identificada con \(K = 2\), \(L = 1\) s, \(T = 5\) s.
-
-1. \(K_p = 1{,}2\dfrac{T}{KL} = 1{,}2\cdot\dfrac{5}{2\cdot1} = 3\).
-
-   **¿Por qué?** Tabla del método 2.
-
-2. \(T_i = 2L = 2\) s; \(T_d = 0{,}5L = 0{,}5\) s.
-
-   **¿Por qué?** Igual.
-
-**Resultado:** \(C = 3\left(1 + \dfrac{1}{2s} + 0{,}5s\right)\)
-
-#### Detalles de implementación real
-
-- **Derivada filtrada:** \(K_d\dfrac{s}{1+s/N}\) con \(N\) entre 5 y 20, para limitar el ruido.
-- **Derivada sobre la medición:** derivar \(-y\) en vez de \(e\) evita el pico cuando cambia la referencia.
-- **Anti-windup:** detener la integral cuando el actuador está saturado, para que no acumule error que luego produce sobrepicos enormes.
-
-#### Errores comunes
-
-- Decir que el P elimina el error: solo lo reduce.
-- Proponer un controlador solo D.
-- Listar ventajas sin explicar el porqué (por ejemplo: “elimina el error porque agrega un integrador”).
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 3 · Ziegler-Nichols por oscilación: Ku = 10, Pu = 2 s · *Básico*
-
-**Enunciado.** Calcula las ganancias P, PI y PID.
-
-1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
-
-   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
-
-**Resultado.** P: \(K_p = 5\). PI: \(K_p = 4{,}5,\ T_i = 1{,}667\) s. PID: \(K_p = 6,\ T_i = 1,\ T_d = 0{,}25\) s, es decir \(K_i = 6,\ K_d = 1{,}5\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar las tres filas de la tabla con \(K_u=10\), \(P_u=2\).
-
+#### Código y verificación
 ```python
 # verificacion.py
 Ku, Pu = 10, 2
@@ -623,76 +389,8 @@ print("PI:", Kp_PI, Ti_PI)
 print("PID:", Kp_PID, Ti_PID, Td_PID)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `P: 5.0`, `PI: 4.5 1.6666666666666667` y `PID: 6.0 1.0 0.25`, igual al Ejemplo 3.
-
-#### Practica
-
-cambia `Ku, Pu` a `4.8, 1.2` y confirma los valores del Ejemplo 4 (\(K_p=2{,}4\) para P). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** Ziegler-Nichols da un punto de partida, no el ajuste final; en la práctica casi siempre hay que afinar a mano después (reducir sobrepico, verificar saturación del actuador), sobre todo si la planta tiene mucho retardo.
-
-#### Ejemplo 4 · Ziegler-Nichols por oscilación: Ku = 4,8, Pu = 1,2 s · *Intermedio*
-
-**Enunciado.** Calcula las ganancias P, PI y PID.
-
-1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
-
-   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
-
-**Resultado.** P: \(K_p = 2{,}4\). PI: \(K_p = 2{,}16,\ T_i = 1\) s. PID: \(K_p = 2{,}88,\ T_i = 0{,}6,\ T_d = 0{,}15\) s, es decir \(K_i = 4{,}8,\ K_d = 0{,}432\).
-
-#### Ejemplo 5 · Ziegler-Nichols por oscilación: Ku = 25, Pu = 0,5 s · *Intermedio*
-
-**Enunciado.** Calcula las ganancias P, PI y PID.
-
-1. Tabla: P → \(K_p = 0{,}5K_u\); PI → \(0{,}45K_u\), \(T_i = P_u/1{,}2\); PID → \(0{,}6K_u\), \(T_i = P_u/2\), \(T_d = P_u/8\).
-
-   **¿Por qué?** Son las reglas empíricas de Ziegler-Nichols para el método de la ganancia crítica.
-
-**Resultado.** P: \(K_p = 12{,}5\). PI: \(K_p = 11{,}25,\ T_i = 0{,}417\) s. PID: \(K_p = 15,\ T_i = 0{,}25,\ T_d = 0{,}062\) s, es decir \(K_i = 60,\ K_d = 0{,}938\).
-
-#### Ejemplo 6 · Obtener Ku y Pu con Routh · *Avanzado*
-
-**Enunciado.** Planta \(\dfrac{1}{(s+1)^3}\) con control P. Halla \(K_u\), \(P_u\) y el PID de Ziegler-Nichols.
-
-1. \((s+1)^3 + K = s^3 + 3s^2 + 3s + 1 + K\). Fila \(s^1\): \(9 - (1+K) = 0 \Rightarrow K_u = 8\).
-
-   **¿Por qué?** La ganancia crítica es la que pone el lazo justo al borde de la estabilidad.
-
-2. Polinomio auxiliar \(3s^2 + 9 = 0 \Rightarrow \omega = \sqrt3\); \(P_u = 2\pi/\sqrt3 \approx 3{,}63\) s.
-
-   **¿Por qué?** El periodo de la oscilación sostenida.
-
-**Resultado.** PID: \(K_p = 4{,}8\), \(T_i \approx 1{,}81\) s, \(T_d \approx 0{,}45\) s.
-
-#### Práctica para resolver sola o solo
-
-- **1.**Planta \(\dfrac{2}{s+4}\) con P de \(K_p = 6\). Error ante escalón.
-
-  <details><summary>Respuesta</summary>
-
-  \(K_{pos} = 6\cdot\tfrac24 = 3\): error \(1/4 = 25\,\%\).
-
-  </details>
-
-- **2.**¿Qué acción usarías si el sensor es muy ruidoso y necesitas error cero?
-
-  <details><summary>Respuesta</summary>
-
-  PI: el I quita el error y se evita la D, que amplifica el ruido.
-
-  </details>
-
-- **3.**Escribe \(C(s)\) de un PID con \(K_p = 2\), \(T_i = 4\), \(T_d = 0{,}5\).
-
-  <details><summary>Respuesta</summary>
-
-  \(2\left(1 + \dfrac{1}{4s} + 0{,}5s\right) = 2 + \dfrac{0{,}5}{s} + s\).
-
-  </details>
+</details>

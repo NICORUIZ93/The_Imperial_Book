@@ -3,19 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: setState y sus límites · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a confirmar por qué `setState` no alcanza para compartir el contador de "envíos pendientes" entre `BarraSuperior` y `ListaEnvios`, dos widgets que no son padre-hijo directo. Prerrequisitos: Módulo 3 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`BarraSuperior` necesita mostrar "3 pendientes" mientras `ListaEnvios` (en otra parte del árbol) es quien efectivamente marca envíos como entregados — con `setState` puro, compartir ese número exigiría elevarlo hasta un ancestro común y pasarlo manualmente por cada nivel intermedio.
+#### ► DE QUÉ TRATA
+Al finalizar vas a confirmar por qué setState no alcanza para compartir el contador de "envíos pendientes" entre BarraSuperior y ListaEnvios, dos widgets que no son padre-hijo directo. Prerrequisitos: Módulo 3 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`setState` es apropiado para estado local a un widget y su subárbol cercano; se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado sin una relación directa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a confirmar por qué setState no alcanza para compartir el contador de "envíos pendientes" entre BarraSuperior y ListaEnvios, dos widgets que no son padre-hijo directo.**
 
-**Diagrama: Prop Drilling problema**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en setstate y sus límites como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["App State\npendientes=3"] -->|pasar manualmente| B["BarraSuperior"]
@@ -32,26 +39,64 @@ graph TD
     style F fill:#ffcccc
 ```
 
-**Conceptos clave:** suficiente para estado local, incómodo para estado compartido entre widgets distantes.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| setState y sus límites se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`setState()` (Módulo 1) es suficiente y apropiado cuando el estado pertenece exclusivamente a un único widget y su subárbol inmediato de hijos, sin necesidad de que ningún otro widget distante en el árbol lea o reaccione a ese mismo estado; se vuelve incómodo y progresivamente más difícil de mantener cuando varios widgets distantes entre sí (que no comparten una relación directa de padre-hijo cercana) necesitan compartir y reaccionar al mismo estado, dado que la única forma de compartir ese estado con `setState` puro sería elevarlo hasta un ancestro común suficientemente alto en el árbol y pasarlo manualmente hacia abajo a través de cada nivel intermedio, un patrón de "prop drilling" tedioso y frágil que se agrava cuanto más distantes están los widgets que necesitan el mismo estado compartido.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar setState y sus límites | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Este es exactamente el mismo problema fundamental de gestión de estado compartido estudiado en cada ecosistema de UI declarativa: `@State` local vs Context API en React (Módulo 5 del track de React), `remember` local vs un store de signals en Angular (Módulo 4 del track de Angular), y `@State` local vs `@Environment` en SwiftUI (Módulo 2 del track de iOS), todos resolviendo la misma tensión entre simplicidad de estado local y necesidad de compartir estado entre partes distantes de un árbol de UI.
+#### ► CUÁNDO NO USAR ESTO
+No uses setstate y sus límites por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** `setState` para estado puramente local es como llevar notas personales en el propio bolsillo, perfectamente eficiente mientras solo uno mismo las necesita consultar; cuando varias personas distantes entre sí necesitan consultar y modificar la misma nota, mantener copias manuales sincronizadas en cada bolsillo individual se vuelve rápidamente insostenible, requiriendo en cambio un tablero compartido accesible por todos sin necesidad de copias manuales dispersas.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: setstate y sus límites funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**¿Por qué es importante?** `setState` es suficiente para estado puramente local a un widget y su subárbol cercano, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución de gestión de estado más robusta como Riverpod o Bloc.
+#### ► LO QUE DEBES RECORDAR
+- setState y sus límites existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Diagrama:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve setstate y sus límites en tu contexto?
+2. ¿Cómo sabrías que setstate y sus límites no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar setstate y sus límites?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["App State\npendientes=3"] -->|pasar manualmente| B["BarraSuperior"]
+    A -->|pasar manualmente| C["ListaEnvios"]
+    C -->|necesita compartir| D["DetalleEnvio"]
+    D -->|anidado 3 niveles| E["BotonEntregado"]
+    
+    E -->|necesita pendientes| F["Requiere pasar\npor 3 widgets\nintermedisos!"]
+    
+    B -->|mostrar pendientes| G["Texto: 3 pendientes"]
+    E -->|ejecutar acción| H["setState pendientes--"]
+    
+    style A fill:#ffebee
+    style F fill:#ffcccc
+```
 
 ```
 setState()  → apropiado: estado local a un widget y su subárbol cercano
 setState()  → incómodo: estado compartido entre widgets distantes (requiere prop drilling manual)
 ```
 
-En el proyecto integrador RutaFlow, el prop drilling de este tema vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Práctica propia: documentá en tu proyecto propio el punto exacto donde `setState` dejó de alcanzar.
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 import 'package:flutter/material.dart';
 
@@ -93,36 +138,29 @@ class ListaEnvios extends StatelessWidget {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: `pendientes` vive en `_AppState` y se pasa manualmente como prop hacia abajo a ambos widgets — funciona, pero cualquier widget nuevo que necesite leer `pendientes` en un nivel más profundo del árbol exigiría repetir ese mismo reenvío manual por cada nivel intermedio.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá una tercera pantalla (`DetalleEnvio`, anidada tres niveles más abajo dentro de `ListaEnvios`) que también necesita mostrar `pendientes`, y pasala como prop a través de cada widget intermedio que no la usa para nada propio — ese es el fallo deliberado: ahora tres widgets intermedios reciben y reenvían `pendientes` sin usarla ellos mismos, puro acoplamiento sin beneficio.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 documentando por escrito en qué punto exacto el prop drilling se volvió insostenible, como evidencia concreta de por qué `setState` puro deja de alcanzar en este caso.
-
-#### Paso 7 · Cierre
-Entregá el prop drilling funcional del Paso 4, el acoplamiento sin beneficio provocado en el Paso 5, y tu documentación del Paso 6; explicá en qué momento preciso decidirías migrar de `setState` a una solución de estado compartido. Siguiente paso: estudia Riverpod. Errores comunes: usar `setState` para estado que varios widgets distantes necesitan compartir, elevar estado a un ancestro común demasiado alto sin necesidad real todavía, y confundir prop drilling tedioso con un problema de rendimiento. Fuentes oficiales: https://docs.flutter.dev/data-and-backend/state-mgmt/simple y https://docs.flutter.dev/get-started/fwe/state-management.
-**Implicación práctica:** `setState` es suficiente para estado puramente local, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución más robusta.
+</details>
 
 ### Tema 2: Riverpod · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un `NotifierProvider` de Riverpod, consumido desde `BarraSuperior` y `DetalleEnvio` sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El prop drilling de tres niveles del Tema 1 ya se sentía insostenible — ahora `BarraSuperior` y `DetalleEnvio` necesitan leer y modificar el mismo contador sin que ningún widget intermedio lo reenvíe manualmente.
+#### ► DE QUÉ TRATA
+Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un NotifierProvider de Riverpod, consumido desde BarraSuperior y DetalleEnvio sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un NotifierProvider de Riverpod, consumido desde BarraSuperior y DetalleEnvio sin ningún prop drilling.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Riverpod declara providers como objetos globales independientes del árbol de widgets, verificados en tiempo de compilación — un directorio centralizado de servicios verificado antes de abrir el edificio.
 
 **Diagrama: Riverpod vs prop drilling**
@@ -215,7 +253,142 @@ final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
 
 En el proyecto integrador RutaFlow, `pendientesProvider` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Práctica: extendé ese mismo provider en tu proyecto propio para un segundo contador relacionado.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+graph TB
+    subgraph PropDrill["❌ Prop Drilling (setState)"]
+        PD1["App"]
+        PD2["BarraSuperior (pendientes)"]
+        PD3["ListaEnvios (pendientes)"]
+        PD4["Widget intermedio"]
+        PD5["DetalleEnvio (pendientes)"]
+        PD1 -->|prop pendientes| PD2
+        PD1 -->|prop pendientes| PD3
+        PD3 -->|prop pendientes| PD4
+        PD4 -->|prop pendientes| PD5
+    end
+    
+    subgraph Riverpod["✓ Riverpod (providers)"]
+        RV1["BarraSuperior:\nref.watch(pendientesProvider)"]
+        RV2["DetalleEnvio:\nref.watch(pendientesProvider)"]
+        RV3["Provider Global:\npendientesProvider"]
+        RV1 -.->|directo| RV3
+        RV2 -.->|directo| RV3
+    end
+    
+    style PropDrill fill:#ffebee
+    style Riverpod fill:#e8f5e9
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Riverpod se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Riverpod | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses riverpod por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: riverpod funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Riverpod existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve riverpod en tu contexto?
+2. ¿Cómo sabrías que riverpod no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar riverpod?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TB
+    subgraph PropDrill["❌ Prop Drilling (setState)"]
+        PD1["App"]
+        PD2["BarraSuperior (pendientes)"]
+        PD3["ListaEnvios (pendientes)"]
+        PD4["Widget intermedio"]
+        PD5["DetalleEnvio (pendientes)"]
+        PD1 -->|prop pendientes| PD2
+        PD1 -->|prop pendientes| PD3
+        PD3 -->|prop pendientes| PD4
+        PD4 -->|prop pendientes| PD5
+    end
+    
+    subgraph Riverpod["✓ Riverpod (providers)"]
+        RV1["BarraSuperior:\nref.watch(pendientesProvider)"]
+        RV2["DetalleEnvio:\nref.watch(pendientesProvider)"]
+        RV3["Provider Global:\npendientesProvider"]
+        RV1 -.->|directo| RV3
+        RV2 -.->|directo| RV3
+    end
+    
+    style PropDrill fill:#ffebee
+    style Riverpod fill:#e8f5e9
+```
+
+```mermaid
+graph LR
+    A["En build()"] -->|ref.watch| B["Suscribe a cambios"]
+    B -->|provider cambia| C["Reconstruye widget"]
+    
+    D["En callback\nonPressed"] -->|ref.read| E["Lee valor actual"]
+    E -->|NO se suscribe| F["No reconstruye widget"]
+    
+    style A fill:#c8e6c9
+    style D fill:#fff9c4
+```
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Contador extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void incrementar() => state++;
+}
+
+final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
+
+class PantallaContador extends ConsumerWidget {
+  const PantallaContador({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final contador = ref.watch(contadorProvider);
+    return ElevatedButton(
+      onPressed: () => ref.read(contadorProvider.notifier).incrementar(),
+      child: Text('$contador'),
+    );
+  }
+}
+```
+
+```dart
+final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
+// Verificado en COMPILACIÓN, independiente de dónde esté ubicado en el árbol de widgets
+```
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -260,41 +433,34 @@ void main() {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter pub add flutter_riverpod
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: `BarraSuperior` y `DetalleEnvio` leen y modifican `pendientesProvider` sin que ningún widget entre ellos conozca ni reenvíe ese valor — el acoplamiento sin beneficio del Tema 1 desaparece.
-
-#### Paso 5 · Práctica guiada
-Pista: en `DetalleEnvio`, usa `ref.watch(pendientesProvider.notifier).entregar()` (con `watch` en vez de `read`) dentro del `onPressed` — ese es el fallo deliberado: `ref.watch` dentro de un callback de evento no tiene el efecto esperado de suscripción y es un uso incorrecto que el propio analizador de Riverpod señala, dado que espera `watch` solo durante la construcción del widget.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `ref.read(pendientesProvider.notifier).state--` dentro del callback, y agregá un tercer widget (`ResumenZona`) que también observe `pendientesProvider`, confirmando que los tres widgets reflejan siempre el mismo valor sin ninguna sincronización manual.
-
-#### Paso 7 · Cierre
-Entregá el provider compartido del Paso 4, el uso incorrecto de `watch` en un callback del Paso 5, y el tercer consumidor del Paso 6; explicá la diferencia entre `ref.watch` (suscribe a cambios, usar en `build`) y `ref.read` (lee una vez, usar en callbacks). Siguiente paso: estudia Bloc/Cubit como alternativa con más estructura. Errores comunes: confundir `ref.watch` con `ref.read` dentro de un callback, leer un provider que no fue declarado antes de usarlo, y no aprovechar la verificación en tiempo de compilación que Riverpod ofrece sobre Provider. Fuentes oficiales: https://riverpod.dev/docs/concepts2/providers y https://riverpod.dev/docs/concepts2/refs.
-**Implicación práctica:** Riverpod verifica providers en tiempo de compilación y permite compartir estado entre widgets distantes sin prop drilling manual, resolviendo directamente el problema del Tema 1.
+</details>
 
 ### Tema 3: Bloc/Cubit y otras alternativas · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a reimplementar el contador de "envíos pendientes" con un `Cubit`, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo de RutaFlow quiere poder testear exhaustivamente cada transición posible del contador de pendientes (nunca puede ir por debajo de 0) de forma aislada, sin depender de ningún widget renderizado.
+#### ► DE QUÉ TRATA
+Al finalizar vas a reimplementar el contador de "envíos pendientes" con un Cubit, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Bloc/Cubit separa explícitamente "qué pasó" (una llamada a un método) de "cómo cambia el estado en respuesta" (`emit(...)`) — un protocolo formal de solicitud de cambios, auditable y predecible.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a reimplementar el contador de "envíos pendientes" con un Cubit, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante.**
 
-**Diagrama: Bloc event → state flow**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en bloc/cubit y otras alternativas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
     A["UI: botón tapped"] -->|llama| B["cubit.entregado()"]
@@ -309,7 +475,56 @@ graph LR
     style G fill:#ffcccc
 ```
 
-**Diagrama: Comparación setState vs Riverpod vs Bloc**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Bloc/Cubit y otras alternativas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Bloc/Cubit y otras alternativas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses bloc/cubit y otras alternativas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: bloc/cubit y otras alternativas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Bloc/Cubit y otras alternativas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve bloc/cubit y otras alternativas en tu contexto?
+2. ¿Cómo sabrías que bloc/cubit y otras alternativas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar bloc/cubit y otras alternativas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph LR
+    A["UI: botón tapped"] -->|llama| B["cubit.entregado()"]
+    B -->|método Cubit| C["Validar reglas\nif state > 0"]
+    C -->|OK| D["emit(state - 1)"]
+    D -->|Notifica| E["BlocBuilder"]
+    E -->|Reconstruye| F["UI actualizada"]
+    
+    C -->|Falla| G["No emit()\nEstado sin cambios"]
+    
+    style D fill:#c8e6c9
+    style G fill:#ffcccc
+```
 
 ```mermaid
 graph TB
@@ -338,8 +553,6 @@ graph TB
     style Bloc2 fill:#e3f2fd
 ```
 
-**Conceptos clave:** separación explícita entre evento y cambio de estado resultante.
-
 ```dart
 class ContadorCubit extends Cubit<int> {
   ContadorCubit() : super(0);
@@ -351,32 +564,17 @@ BlocBuilder<ContadorCubit, int>(
 )
 ```
 
-Bloc/Cubit fuerza una separación explícita y estructurada entre "qué pasó" (una llamada a un método como `incrementar()`, o en el patrón Bloc completo, un evento explícito modelado como su propio tipo) y "cómo cambia el estado en respuesta" (`emit(state + 1)`), un patrón considerablemente más predecible y fácil de testear de forma aislada que mutaciones de estado dispersas directamente en callbacks de UI, a cambio de más ceremonia (más código boilerplate) que Riverpod para casos simples como un contador; esta estructura explícita es especialmente valorada en equipos grandes donde la previsibilidad y testeabilidad exhaustiva del flujo de eventos justifica el costo adicional de ceremonia, un patrón conceptualmente similar al de Redux (estudiado en el Módulo 8 del track de React) o a NgRx (mencionado en el Módulo 4 del track de Angular).
-
-GetX ofrece un enfoque "todo-en-uno" que combina gestión de estado, inyección de dependencias y navegación en un único paquete con una API más ligera, apreciado por su simplicidad inicial pero criticado por algunos equipos por acoplar demasiadas responsabilidades distintas en una única herramienta; `get_it` (un simple service locator) e `injectable` (generación de código para configurar `get_it` automáticamente a partir de anotaciones) son alternativas de inyección de dependencias más ligeras y menos opinionadas que el sistema de providers de Riverpod, apropiadas cuando se prefiere una solución de DI más simple sin adoptar todo el ecosistema de gestión de estado de Riverpod.
-
-**Analogía:** Bloc/Cubit es como un protocolo formal de solicitud de cambios en una organización burocrática (cada cambio requiere una solicitud explícita documentada y una respuesta correspondiente), más lento de operar para cambios triviales pero extremadamente auditable y predecible para cambios complejos en organizaciones grandes; GetX es como una caja de herramientas multiuso conveniente pero menos especializada que herramientas dedicadas a cada tarea individual.
-
-**¿Por qué es importante?** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear para apps con lógica de negocio compleja, a cambio de más ceremonia que Riverpod; elegir entre `setState`, Riverpod y Bloc depende del tamaño del equipo y la complejidad del estado compartido de la app.
-
-**Diagrama:**
-
 ```
 setState  → estado puramente local
 Riverpod  → balance simplicidad/robustez, mayoría de apps
 Bloc      → equipos grandes, estructura explícita basada en eventos
 ```
 
-En el proyecto integrador RutaFlow, `PendientesCubit` vive en `lib/features/deliveries/domain/pendientes_cubit.dart`. Verificá la guarda con un test unitario real:
-
 ```bash
 flutter test test/pendientes_cubit_test.dart
 # 00:01 +1: PendientesCubit nunca baja de 0
 ```
 
-Límite de la decisión: Bloc/Cubit no conviene para un contador trivial de un solo widget — ahí el boilerplate de clases Cubit/evento supera el beneficio; frente a esa escala, `setState` o un `NotifierProvider` sencillo de Riverpod siguen siendo la opción correcta.
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -410,37 +608,23 @@ class PantallaPendientes extends StatelessWidget {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter pub add flutter_bloc
-flutter run
-```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
-
-Resultado esperado: llamar a `entregado()` disminuye el contador en uno, pero nunca por debajo de 0 (la guarda `if (state > 0)` lo impide); esa regla puede testearse de forma completamente aislada instanciando `PendientesCubit()` directamente, sin renderizar ningún widget.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la guarda `if (state > 0)` y llamá a `entregado()` cuatro veces seguidas con el contador inicial en 3 — ese es el fallo deliberado: el contador llega a -1, un estado que no tiene ningún sentido real en el dominio, y nada en el tipo `int` del estado lo había prevenido.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la guarda, y escribí un test unitario que instancie `PendientesCubit()` directamente y confirme que llamar `entregado()` cuatro veces desde el estado inicial 3 deja el contador exactamente en 0, no en un valor negativo.
-
-#### Paso 7 · Cierre
-Entregá el Cubit con la guarda del Paso 4, el estado inválido provocado en el Paso 5, y el test unitario del Paso 6; explicá por qué poder testear esta regla sin renderizar ningún widget es una ventaja concreta de separar "evento" de "cambio de estado" de forma explícita. Siguiente paso: estudia formularios profesionales con Formz y Riverpod. Errores comunes: adoptar Bloc para una feature tan simple que no necesita esa ceremonia, omitir guardas de validez en el método que emite el nuevo estado, y testear un Cubit renderizando widgets en vez de instanciándolo directamente. Fuentes oficiales: https://bloclibrary.dev/bloc-concepts/ y https://bloclibrary.dev/testing/.
-**Implicación práctica:** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
+</details>
 
 ### Tema 4: Formularios profesionales con Formz y Riverpod · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (`ReasonInput`, `NoteInput`) y un `Notifier` de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El conductor debe elegir un motivo y escribir una observación de 10 a 300 caracteres — un formulario real necesita distinguir lo que el usuario todavía no tocó, una entrada inválida, un envío en curso, un rechazo del backend y una confirmación exitosa, no solo un conjunto de `TextEditingController`.
+#### ► DE QUÉ TRATA
+Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (ReasonInput, NoteInput) y un Notifier de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (ReasonInput, NoteInput) y un Notifier de Riverpod que coordine validación y envío único.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Formz distingue `pure` (sin interacción) de `dirty` (ya modificado); el estado del formulario es inmutable y separa validez de estado de red — las entradas son inspectores especializados, el estado del formulario es el tablero de despacho.
 **Conceptos clave:** valor `pure`/`dirty`, validación determinista, estado inmutable, feedback progresivo, envío único y error de servidor.
 
@@ -595,13 +779,78 @@ stateDiagram-v2
 
 **¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+stateDiagram-v2
+  [*] --> Pure
+  Pure --> Invalid: primera edición inválida
+  Pure --> Valid: primera edición válida
+  Invalid --> Valid: corrige entradas
+  Valid --> Sending: enviar
+  Sending --> Failure: red o servidor
+  Failure --> Sending: reintentar sin borrar
+  Sending --> Success: confirmación remota
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Formularios profesionales con Formz y Riverpod se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Formularios profesionales con Formz y Riverpod | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses formularios profesionales con formz y riverpod por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: formularios profesionales con formz y riverpod funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Formularios profesionales con Formz y Riverpod existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve formularios profesionales con formz y riverpod en tu contexto?
+2. ¿Cómo sabrías que formularios profesionales con formz y riverpod no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar formularios profesionales con formz y riverpod?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+flutter pub add flutter_riverpod formz
+```
+
+```text
+lib/features/delivery_issue/
+├── domain/delivery_issue_repository.dart
+├── application/report_issue.dart
+└── presentation/
+    ├── issue_form_inputs.dart
+    ├── issue_form_state.dart
+    ├── issue_form_notifier.dart
+    └── issue_form_page.dart
+test/features/delivery_issue/presentation/issue_form_notifier_test.dart
+```
+
 ```dart
-import 'package:flutter/material.dart';
 import 'package:formz/formz.dart';
 
 enum ReasonError { empty }
-
 final class ReasonInput extends FormzInput<String, ReasonError> {
   const ReasonInput.pure() : super.pure('');
   const ReasonInput.dirty([super.value = '']) : super.dirty();
@@ -609,62 +858,107 @@ final class ReasonInput extends FormzInput<String, ReasonError> {
   ReasonError? validator(String value) => value.isEmpty ? ReasonError.empty : null;
 }
 
-void main() => runApp(const MaterialApp(
-      home: Scaffold(body: Padding(padding: EdgeInsets.all(16), child: CampoMotivo())),
-    ));
-
-class CampoMotivo extends StatefulWidget {
-  const CampoMotivo({super.key});
-
+enum NoteError { tooShort, tooLong }
+final class NoteInput extends FormzInput<String, NoteError> {
+  const NoteInput.pure() : super.pure('');
+  const NoteInput.dirty([super.value = '']) : super.dirty();
   @override
-  State<CampoMotivo> createState() => _CampoMotivoState();
+  NoteError? validator(String value) {
+    final text = value.trim();
+    if (text.length < 10) return NoteError.tooShort;
+    if (text.length > 300) return NoteError.tooLong;
+    return null;
+  }
 }
+```
 
-class _CampoMotivoState extends State<CampoMotivo> {
-  ReasonInput motivo = const ReasonInput.pure();
+```dart
+enum SubmitStatus { idle, sending, success, failure }
 
+final class IssueFormState {
+  const IssueFormState({
+    this.reason = const ReasonInput.pure(),
+    this.note = const NoteInput.pure(),
+    this.submitStatus = SubmitStatus.idle,
+    this.serverMessage,
+  });
+
+  final ReasonInput reason;
+  final NoteInput note;
+  final SubmitStatus submitStatus;
+  final String? serverMessage;
+  bool get isValid => Formz.validate([reason, note]);
+
+  IssueFormState copyWith({ReasonInput? reason, NoteInput? note,
+      SubmitStatus? submitStatus, String? serverMessage}) => IssueFormState(
+    reason: reason ?? this.reason,
+    note: note ?? this.note,
+    submitStatus: submitStatus ?? this.submitStatus,
+    serverMessage: serverMessage,
+  );
+}
+```
+
+```dart
+final class IssueFormNotifier extends Notifier<IssueFormState> {
   @override
-  Widget build(BuildContext context) => TextField(
-        decoration: InputDecoration(
-          labelText: 'Motivo',
-          // `displayError` es null mientras la entrada siga pure.
-          errorText: motivo.displayError == ReasonError.empty ? 'Escribe un motivo' : null,
-        ),
-        onChanged: (valor) => setState(() => motivo = ReasonInput.dirty(valor)),
+  IssueFormState build() => const IssueFormState();
+
+  void reasonChanged(String value) {
+    state = state.copyWith(reason: ReasonInput.dirty(value));
+  }
+
+  void noteChanged(String value) {
+    state = state.copyWith(note: NoteInput.dirty(value));
+  }
+
+  Future<void> submit() async {
+    if (!state.isValid || state.submitStatus == SubmitStatus.sending) return;
+    state = state.copyWith(submitStatus: SubmitStatus.sending);
+    try {
+      await ref.read(deliveryIssueRepositoryProvider).report(
+        reason: state.reason.value,
+        note: state.note.value.trim(),
       );
+      state = state.copyWith(submitStatus: SubmitStatus.success);
+    } catch (_) {
+      state = state.copyWith(
+        submitStatus: SubmitStatus.failure,
+        serverMessage: 'No pudimos guardar el reporte. Intenta nuevamente.',
+      );
+    }
+  }
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter pub add formz
-flutter run
+```dart
+FilledButton(
+  onPressed: form.isValid && form.submitStatus != SubmitStatus.sending
+      ? notifier.submit
+      : null,
+  child: form.submitStatus == SubmitStatus.sending
+      ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator())
+      : const Text('Reportar novedad'),
+)
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: un `ReasonInput.pure()` sin que el usuario haya escrito nada no muestra ningún error todavía (porque está "pure"); en cuanto el usuario escribe algo y se convierte en `ReasonInput.dirty(valor)`, el validador corre y puebla el error correspondiente si el valor sigue vacío.
-
-#### Paso 5 · Práctica guiada
-Pista: tocá dos veces rápidamente el botón "Reportar novedad" mientras el repositorio falso tarda dos segundos en responder — ese es el fallo deliberado: sin la guarda `state.submitStatus == SubmitStatus.sending` dentro de `submit()`, el segundo toque dispara una segunda llamada a `report()` mientras la primera todavía está en curso, pudiendo duplicar el reporte en el servidor.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submitStatus == SubmitStatus.sending) return;` está presente, y escribí el test que confirma que `report` se invoca exactamente una vez sin importar cuántos toques rápidos reciba el botón.
-
-#### Paso 7 · Cierre
-Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts2/providers.
+</details>
 
 ### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con `overrides`, sin red ni servidores. Prerrequisitos: Temas 2 y 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Las pruebas de la app del repartidor llamaban a la API real: fallaban sin internet y dejaban datos basura en QA. El caso real de la inyección de dependencias es poder cambiar la implementación (HTTP real, falsa, caché) sin tocar el código que la usa.
+#### ► DE QUÉ TRATA
+Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con overrides, sin red ni servidores. Prerrequisitos: Temas 2 y 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con overrides, sin red ni servidores.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 La **inyección de dependencias** (DI) consiste en que un componente **reciba** lo que necesita en lugar de crearlo. En Flutter con Riverpod, cada proveedor es un punto de inyección: `repositorioEnviosProvider` entrega la implementación y quien lo lee solo conoce la interfaz. En pruebas, `ProviderContainer(overrides: [...])` o `ProviderScope(overrides: [...])` reemplaza la implementación. Otras opciones son pasar dependencias por constructor o un localizador de servicios como `get_it`, que es más simple pero esconde las dependencias.
 
 **Analogía:** es el enchufe de la pared: la lámpara no sabe si la electricidad viene de la red o de una batería, solo que llega por el enchufe.
@@ -687,8 +981,59 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    C[pendientesProvider] --> R[repositorioEnviosProvider]
+    R -- app --> H[RepositorioEnviosHttp]
+    R -- prueba con override --> F[RepositorioEnviosFalso]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Inyección de dependencias con Riverpod: reemplazar implementaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Inyección de dependencias con Riverpod: reemplazar implementaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses inyección de dependencias con riverpod: reemplazar implementaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: inyección de dependencias con riverpod: reemplazar implementaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Inyección de dependencias con Riverpod: reemplazar implementaciones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve inyección de dependencias con riverpod: reemplazar implementaciones en tu contexto?
+2. ¿Cómo sabrías que inyección de dependencias con riverpod: reemplazar implementaciones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar inyección de dependencias con riverpod: reemplazar implementaciones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    C[pendientesProvider] --> R[repositorioEnviosProvider]
+    R -- app --> H[RepositorioEnviosHttp]
+    R -- prueba con override --> F[RepositorioEnviosFalso]
+```
 
 ```bash
 mkdir inyeccion && cd inyeccion
@@ -696,8 +1041,6 @@ flutter create repartidor_di
 cd repartidor_di
 flutter pub add flutter_riverpod
 ```
-
-Crea `test/envios_test.dart`:
 
 ```dart
 // test/envios_test.dart
@@ -721,8 +1064,6 @@ void main() {
   });
 }
 ```
-
-Crea `lib/envios.dart`:
 
 ```dart
 // lib/envios.dart — una abstracción, dos implementaciones y un proveedor
@@ -748,93 +1089,13 @@ final pendientesProvider = FutureProvider.family<int, String>((ref, repartidor) 
 });
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 rm test/widget_test.dart
 flutter test
 ```
 
-**Resultado esperado:**
-
 ```text
 00:02 +1: All tests passed!
 ```
 
-La prueba no necesitó red: el override cambió la implementación solo para ese contenedor. La versión de `flutter_riverpod` la elige `flutter pub add`; si usas una versión anterior a la 3, la sintaxis de `overrides` es la misma.
-
-**Fallo deliberado:** Quita la lista `overrides` del `ProviderContainer`. La prueba falla con `UnimplementedError: requiere red: no debe llamarse en pruebas`: se usó la implementación real. Así se detecta una prueba que, sin querer, sale a la red.
-
-#### Paso 5 · Práctica guiada
-Agrega `RepositorioEnviosCache` que envuelva a otro repositorio y guarde la última respuesta, e inyéctalo en la app sin cambiar `pendientesProvider`. **Pista:** crea un proveedor que lea el repositorio HTTP y devuelva el de caché envolviéndolo; `pendientesProvider` solo depende de la interfaz.
-
-#### Paso 6 · Práctica independiente
-Implementa el mismo ejemplo con `get_it` y compara cómo se reemplaza la dependencia en pruebas y qué tan visibles quedan las dependencias de cada clase.
-
-#### Paso 7 · Cierre
-Antes de seguir, confirma estas cuatro evidencias:
-
-- [ ] `flutter test` pasa con el `override` del Paso 4 y falla con `UnimplementedError` al quitarlo.
-- [ ] `RepositorioEnviosCache` del Paso 5 se inyecta sin modificar `pendientesProvider`.
-- [ ] Puedes explicar con tus palabras por qué `pendientesProvider` depende de la interfaz `RepositorioEnvios` y no de `RepositorioEnviosHttp`.
-- [ ] Anotaste, tras el Paso 6, una diferencia concreta entre reemplazar la dependencia con `overrides` de Riverpod y con `get_it`.
-
-Fuentes oficiales: https://riverpod.dev/docs/concepts2/overrides y https://pub.dev/packages/get_it.
-
-## Aplicación guiada: RutaFlow Flutter
-
-**Construye una app propia que demuestre los Temas 2-4.** Parte de una carpeta vacía:
-```bash
-flutter create rutaflow_flutter
-cd rutaflow_flutter
-flutter pub add flutter_riverpod
-```
-
-Crea manualmente `lib/features/deliveries/domain/delivery_providers.dart` con los proveedores de los Temas 2-4:
-- Riverpod providers para estado compartido.
-- `Notifier` + `NotifierProvider` para operaciones de actualización (`StateNotifier` es legacy en Riverpod 3).
-- Uso deliberado de `ref.watch()` y `ref.read()`.
-- Invalidación de providers para sincronización.
-
-Crea `lib/features/deliveries/presentation/delivery_list_screen.dart` con un `ConsumerWidget`, el manejo de `AsyncValue` (loading/error/data) y `ValueKey` por identificador de entrega. En `lib/main.dart`, envuelve esa pantalla con `ProviderScope` y úsala como `home` del `MaterialApp`.
-
-**Ejecuta tu app:**
-```bash
-flutter pub get
-flutter run
-```
-
-Luego inspecciona en Flutter DevTools:
-1. **Performance tab**: Observa rebuilds selectivos con Riverpod
-2. **Network tab**: Inspecciona requests al API
-3. **Console tab**: Ve logs de providers siendo creados/invalidados
-
----
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una feature completa implementada con Riverpod (o Bloc) en vez de `setState`.
-
-**Requisitos previos:** Módulo 3 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Implementar una feature simple con `setState` | Ver Tema 1 | Documenta sus límites al crecer |
-| 2 | Reimplementarla con Riverpod | Ver Tema 2 | Un `Provider` para exponer el estado |
-| 3 | Consumirlo desde 2 widgets distintos | Ver Tema 2 | Sin pasar el estado manualmente |
-| 4 | Reimplementarla con Bloc/Cubit | Ver Tema 3 | Compara ceremonia y curva de aprendizaje |
-| 5 | Documentar un criterio propio | Ver Tema 3 | setState vs Riverpod vs Bloc |
-| 6 | Construir el formulario de novedad | Ver Tema 4 | Entradas tipadas, feedback progresivo y envío único |
-| 7 | Probar doble toque y error remoto | Ver Tema 4 | Una petición y valores conservados para reintento |
-
-**Verificación:** el laboratorio se considera exitoso si el estado se comparte correctamente entre los dos widgets distantes sin prop drilling manual usando Riverpod, y si el documento comparativo identifica correctamente las diferencias de ceremonia entre los tres enfoques.
-
-**Errores comunes y soluciones**
-
-- **Usar `setState` para estado que necesita compartirse entre widgets distantes.** Migra a Riverpod o Bloc antes de que el prop drilling se vuelva insostenible.
-- **Adoptar Bloc para una feature muy simple sin necesidad real de esa ceremonia.** Considera Riverpod como balance para la mayoría de los casos.
-- **Confundir `ref.watch` con `ref.read` dentro de un callback.** Usa `ref.read` cuando no necesitas suscribirte a cambios, típicamente dentro de callbacks de eventos.
-- **Mostrar todos los errores al abrir el formulario.** Usa el estado `pure` hasta que exista interacción o intento de envío.
-- **Usar la validez como confirmación remota.** Un formulario válido todavía puede estar pendiente, fallar o ser rechazado por el servidor.
-
----
+</details>

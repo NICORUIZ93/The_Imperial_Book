@@ -7,19 +7,26 @@ Una SPA puede aprobar el flujo feliz y aun desaparecer ante un error de render, 
 
 **Servidor del módulo:** los temas 1 y 2 se ejecutan en `mi-react` (`npm run dev`, `http://localhost:5173`; `npm test` usa el Vitest configurado en el módulo 0). Los temas 3 y 4 necesitan servidor y se ejecutan en el proyecto Next.js `app` del módulo 10 (`http://localhost:3000`).
 
+
 ### Tema 1: Diseñar estados de carga, error y recuperación · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a envolver `DetalleEnvio` en un `ErrorBoundary` + `Suspense` que distinga un fallo real de la carga normal, con un botón de recuperación que invalida la query en vez de repetir el mismo recurso rechazado. Prerrequisitos: Módulo 6 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si la API de RutaFlow falla al cargar un envío puntual, `DetalleEnvio` hoy simplemente desaparece sin ningún fallback — el operador no sabe si el envío no existe, si la red falló, o si la app se rompió.
+#### ► DE QUÉ TRATA
+Al finalizar vas a envolver DetalleEnvio en un ErrorBoundary + Suspense que distinga un fallo real de la carga normal, con un botón de recuperación que invalida la query en vez de repetir el mismo recurso rechazado. Prerrequisitos: Módulo 6 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un Error Boundary captura errores de render en descendientes y muestra un fallback; recuperar significa restaurar una precondición (invalidar la query), no repetir ciegamente el mismo recurso rechazado — los mamparos de un barco limitan qué compartimento se pierde.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a envolver DetalleEnvio en un ErrorBoundary + Suspense que distinga un fallo real de la carga normal, con un botón de recuperación que invalida la query en vez de repetir el mismo recurso rechazado.**
 
-**Diagrama: Error Boundary + Suspense**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en diseñar estados de carga, error y recuperación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["Componente en árbol"]
@@ -45,15 +52,67 @@ graph TD
     style G fill:#e8f5e9
 ```
 
-**Conceptos clave:** pureza, render, commit, Effect, sincronización, Suspense, promise cacheada, Error Boundary, fallback, reset, error operacional, defecto, component stack, telemetría y Strict Mode.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Diseñar estados de carga, error y recuperación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-El render debe comportarse como función pura: mismas props, estado y contexto producen la misma descripción sin modificar el exterior. Acceder al DOM, iniciar una petición imperativa o escribir storage durante render crea resultados que dependen de cuántas veces React evalúe. Un Effect sincroniza con un sistema externo **después** del commit; no es un lugar genérico para derivar estado que podía calcularse durante render.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Diseñar estados de carga, error y recuperación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Strict Mode repite ciertos ciclos en desarrollo para revelar efectos sin limpieza y render impuro. No “causa” la duplicación de producción: expone que el código no es simétrico. Cada suscripción debe devolver cleanup; cada request debe cancelarse o ignorar resultados obsoletos.
+#### ► CUÁNDO NO USAR ESTO
+No uses diseñar estados de carga, error y recuperación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Suspense representa una parte que todavía no puede mostrar contenido. Una frontera demasiado alta reemplaza toda la pantalla por spinner; una demasiado baja produce parpadeo. Ubícala donde el diseño acepta revelar contenido conjuntamente. Una Promise leída mediante `use` necesita identidad cacheada; crearla durante cada render suspende repetidamente.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: diseñar estados de carga, error y recuperación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Error Boundary captura errores de render en descendientes y muestra fallback. No captura event handlers, callbacks asíncronos ordinarios, SSR, ni errores del propio boundary. Los eventos deben manejar rechazo en su flujo; el servidor usa su frontera; timers reportan explícitamente.
+#### ► LO QUE DEBES RECORDAR
+- Diseñar estados de carga, error y recuperación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve diseñar estados de carga, error y recuperación en tu contexto?
+2. ¿Cómo sabrías que diseñar estados de carga, error y recuperación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar diseñar estados de carga, error y recuperación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["Componente en árbol"]
+    
+    B["Durante carga:<br/>useQuery loading"]
+    C["Suspense muestra<br/>fallback"]
+    
+    D["Durante error:<br/>useQuery error"]
+    E["ErrorBoundary captura<br/>muestra fallback"]
+    
+    F["Durante éxito:<br/>datos listos"]
+    G["Renderiza contenido<br/>normal"]
+    
+    A -->|Paso 1| B
+    B -->|Si carga| C
+    A -->|Paso 2| D
+    D -->|Si falla| E
+    A -->|Paso 3| F
+    F -->|Si éxito| G
+    
+    style C fill:#fff3e0
+    style E fill:#ffebee
+    style G fill:#e8f5e9
+```
 
 ```tsx
 <ErrorBoundary
@@ -72,16 +131,6 @@ Error Boundary captura errores de render en descendientes y muestra fallback. No
 </ErrorBoundary>
 ```
 
-Recuperar significa restaurar una precondición: invalidar query, crear nueva Promise, resetear boundary o navegar. Un botón que repite el mismo recurso rechazado no recupera. Conserva estado confirmado, revierte optimistic update fallido y distingue offline, 404, 403 y defecto inesperado.
-
-La telemetría incluye versión, ruta lógica y correlation ID, no props completos, tokens ni texto del usuario. Source maps simbolizan stacks con acceso controlado.
-
-**Analogía:** los mamparos de un barco no evitan toda entrada de agua; limitan qué compartimento se pierde y permiten que el resto siga operando mientras se repara.
-
-**Casos de uso reales:** chunk lazy que falla, query rechazada, componente con dato inesperado, actualización optimista revertida, sesión expirada y efecto duplicado en desarrollo.
-
-**Diagrama:**
-
 ```text
 render puro -> suspende -> Suspense fallback -> recurso resuelve -> UI
            `-> error -> boundary más cercano -> fallback + reporte
@@ -89,12 +138,6 @@ evento async -> catch explícito -> estado recuperable
 reset -> nuevo recurso/precondición, no repetir objeto rechazado
 ```
 
-
-**Límites y decisión de uso:** Un spinner indefinido no resuelve una operación cuyo resultado se desconoce. Define plazos, cancelación y reconciliación; un timeout de confirmación no autoriza a repetir un efecto sin identidad estable.
-
-**¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { Suspense, use, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -151,42 +194,74 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes react-error-boundary) y arráncalo:
-
 ```bash
 npm install react-error-boundary
 npm run dev
 ```
 
-Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error: pulsa «RF-0000 (falla)» y verás el mensaje con los botones de navegación intactos; como `resetKeys={[envioId]}` depende del envío, volver a «RF-4471» limpia el error. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-#### Paso 5 · Práctica guiada
-Pista: implementa `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agrega un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red. Integra el boundary en la vista de detalle del proyecto integrador RutaFlow y prueba el reintento con MSW.
-
-#### Paso 7 · Cierre
-Entrega el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explica por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
+</details>
 
 ### Tema 2: La composición visual debe conservar semántica y foco · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante `aria-describedby`, en vez de solo cambiar un color. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Hoy, si el PIN es incorrecto, el campo se pone en borde rojo — alguien que navega con teclado o lector de pantalla no recibe ninguna señal de que algo falló, ni sabe cuál campo corregir.
+#### ► DE QUÉ TRATA
+Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante aria-describedby, en vez de solo cambiar un color. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-React no cambia las reglas de HTML; un campo con error necesita `aria-invalid` y `aria-describedby` apuntando al mensaje real, y el foco debe moverse al primer campo inválido tras un submit fallido.
-**Conceptos clave:** HTML semántico, nombre accesible, rol, estado, teclado, foco, landmark, heading, route announcement, live region, formulario, error, portal, focus trap, Testing Library y axe.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante aria-describedby, en vez de solo cambiar un color.**
 
-React no cambia las reglas de HTML. Un componente `Button` que devuelve `<div onClick>` sigue siendo un div. Diseña primitivas semánticas antes de añadir estilos. Props polimórficas requieren contratos: si `as="a"`, debe existir `href`; si actúa como botón, usa button.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Las listas mantienen identidad mediante `key`. Una key inestable no solo afecta rendimiento: puede mover estado y foco al elemento equivocado después de reordenar. Usa identidad del dominio, nunca índice cuando se insertan o eliminan filas.
+#### ► LA ANALOGÍA
+Piensa en la composición visual debe conservar semántica y foco como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Al navegar en SPA actualiza `document.title`, conserva un `<h1>` único y anuncia transición. No enfoques automáticamente en cada render. Tras una navegación iniciada por usuario, mover foco al encabezado o contenido principal puede dar contexto; al cerrar modal, retorna al disparador. Portals cambian ubicación DOM, no la jerarquía React, y necesitan foco atrapado, Escape y fondo inerte.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que la composición visual debe conservar semántica y foco resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| La composición visual debe conservar semántica y foco se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar La composición visual debe conservar semántica y foco | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses la composición visual debe conservar semántica y foco por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: la composición visual debe conservar semántica y foco funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- La composición visual debe conservar semántica y foco existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve la composición visual debe conservar semántica y foco en tu contexto?
+2. ¿Cómo sabrías que la composición visual debe conservar semántica y foco no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar la composición visual debe conservar semántica y foco?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```tsx
 function Field({ id, label, error, ...props }: FieldProps) {
   const errorId = `${id}-error`;
@@ -205,16 +280,6 @@ function Field({ id, label, error, ...props }: FieldProps) {
 }
 ```
 
-En un submit inválido, muestra resumen con enlaces o lleva foco al primer campo inválido según el flujo, sin borrar valores. Mensajes deben indicar cómo corregir, no solo “error”. Estados loading y disabled conservan nombre y explicación; no sustituyas el botón por spinner sin texto.
-
-Testing Library consulta por roles/nombres porque aproxima el árbol accesible. Añade axe para reglas automatizables y Playwright para tabulación, Escape y restauración de foco. Ninguna herramienta sustituye lector y revisión humana del orden.
-
-**Analogía:** componer componentes es ensamblar señales de tránsito. Cambiar pintura no puede eliminar el significado, orden ni ruta que una persona necesita para llegar.
-
-**Casos de uso reales:** modal por portal, combobox, formulario multi-paso, lista reordenable, toast, navegación protegida y skeleton que oculta nombres.
-
-**Diagrama:**
-
 ```text
 componente -> elemento nativo -> nombre + rol + estado
 acción teclado -> foco predecible -> feedback asociado
@@ -222,12 +287,6 @@ Testing Library/axe -> regresión automática
 teclado + lector -> flujo completo comprensible
 ```
 
-
-**Límites y decisión de uso:** Un componente visual reutilizable puede romper la semántica si genera controles anidados o pierde referencias de foco. Prueba el árbol accesible y teclado en la composición final, no solo en su ejemplo aislado.
-
-**¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { useState } from 'react';
 
@@ -258,32 +317,27 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir. Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `1` en «PIN de entrega», pulsa «Confirmar» y comprueba `expect(campo).toHaveAttribute('aria-invalid', 'true')` y `expect(campo).toHaveAccessibleDescription('El PIN no coincide con el de la guía.')`. Después ejecuta `npm test`.
-
-#### Paso 5 · Práctica guiada
-Pista: quita `aria-describedby` y deja solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `aria-describedby`, y agrega además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba. Aplica el orden de foco al formulario del proyecto integrador RutaFlow y verifica con teclado qué campo recibe el foco tras el error.
-
-#### Paso 7 · Cierre
-Entrega el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explica por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
+</details>
 
 ### Tema 3: Cliente y servidor forman una sola frontera de seguridad · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a auditar la Server Action `confirmarEntregaAction` (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Ocultar el botón "Confirmar entrega" para conductores sin la ruta asignada no impide que alguien invoque la Server Action directamente, sin pasar nunca por ese botón.
+#### ► DE QUÉ TRATA
+Al finalizar vas a auditar la Server Action confirmarEntregaAction (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a auditar la Server Action confirmarEntregaAction (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Una Server Action es un endpoint invocable, no una función privada por estar junto al componente — una puerta tras el mostrador, no una habitación secreta; debe autenticar y autorizar dentro de la propia acción.
 **Conceptos clave:** XSS, escape, dangerouslySetInnerHTML, sanitización contextual, URL, CSP, nonce, Server Component, Client Component, serialización, secreto, Server Action, autenticación, autorización, CSRF y cache.
 
@@ -331,109 +385,70 @@ CSP/Trusted Types cubren DOM completo
 
 **¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea las piezas de seguridad simuladas en `src/lib/seguridad.ts`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-```ts
-// Piezas mínimas de seguridad para el ejemplo. En producción, la sesión sale de
-// una cookie firmada o de tu proveedor de identidad, y `asignaciones` de la base de datos.
-const asignaciones = new Map([['RF-4471', 'conductor-ana']]);
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cliente y servidor forman una sola frontera de seguridad resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-export async function requireSession() {
-  return { userId: 'conductor-luis' }; // simula al conductor autenticado
-}
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cliente y servidor forman una sola frontera de seguridad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-export const EnvioId = {
-  parse(valor: FormDataEntryValue | null): string {
-    if (typeof valor !== 'string' || !/^RF-\d{4}$/.test(valor)) throw new Error('envioId inválido');
-    return valor;
-  },
-};
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cliente y servidor forman una sola frontera de seguridad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-export async function authorize(userId: string, accion: 'confirmar', envioId: string) {
-  if (asignaciones.get(envioId) !== userId) {
-    throw new Error(`No autorizado: ${userId} no puede ${accion} ${envioId}`);
-  }
-}
+#### ► CUÁNDO NO USAR ESTO
+No uses cliente y servidor forman una sola frontera de seguridad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-export const envios = {
-  async confirmar(envioId: string) {
-    console.log(`Envío ${envioId} confirmado`);
-  },
-};
-```
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cliente y servidor forman una sola frontera de seguridad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-La acción en `src/app/seguridad/actions.ts`:
+#### ► LO QUE DEBES RECORDAR
+- Cliente y servidor forman una sola frontera de seguridad existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-```ts
-'use server';
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cliente y servidor forman una sola frontera de seguridad en tu contexto?
+2. ¿Cómo sabrías que cliente y servidor forman una sola frontera de seguridad no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cliente y servidor forman una sola frontera de seguridad?
 
-import { authorize, EnvioId, envios, requireSession } from '@/lib/seguridad';
+</details>
 
-export async function confirmarEntregaAction(formData: FormData) {
-  const session = await requireSession();
-  const envioId = EnvioId.parse(formData.get('envioId'));
-  await authorize(session.userId, 'confirmar', envioId);
-  await envios.confirmar(envioId);
-}
-```
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Y una página que la usa, `src/app/seguridad/page.tsx`:
+#### Objetivo observable
+Al finalizar vas a auditar la Server Action `confirmarEntregaAction` (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
 
-```tsx
-import { confirmarEntregaAction } from './actions';
-
-export default function PaginaSeguridad() {
-  // El formulario se muestra a cualquiera a propósito: la autorización vive en la acción.
-  return (
-    <form action={confirmarEntregaAction}>
-      <input type="hidden" name="envioId" value="RF-4471" />
-      <button type="submit">Confirmar RF-4471</button>
-    </form>
-  );
-}
-```
-
-**Ejecuta el ejemplo** en el proyecto Next.js `app` del módulo 10 (una Server Action necesita un framework con React Server Components; en `mi-react`, con Vite, `'use server'` no tiene efecto):
-
-```bash
-npm run dev
-```
-
-Abre `http://localhost:3000/seguridad` y pulsa el botón.
-
-Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario: el ejemplo simula al conductor `conductor-luis` y RF-4471 está asignado a `conductor-ana`, así que la acción lanza «No autorizado…». Cambia `requireSession` para que devuelva `conductor-ana` y la confirmación pasa (la terminal imprime «Envío RF-4471 confirmado»).
-
-#### Paso 5 · Práctica guiada
-Pista: quita la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `authorize(...)`, y agrega una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual. Aplica la validación de sesión del proyecto integrador RutaFlow en el servidor y verifica que el cliente no pueda saltarla.
-
-**Autoriza y modifica con el mismo predicado.** Comprobar el permiso y después actualizar en dos pasos deja una ventana: si la asignación cambia entre la comprobación y la escritura, actualizas algo que ya no es tuyo. Con una base de datos, incluye el dueño en el filtro de la propia escritura y comprueba cuántas filas cambiaron:
-
-```ts
-const resultado = await db.envio.updateMany({
-  where: { id: envioId, conductorId: session.userId }, // autoriza y actualiza a la vez
-  data: { estado: 'entregado' },
-});
-if (resultado.count !== 1) throw new Error('Envío no disponible para este conductor');
-```
-
-Valida la **forma** de `envioId` con un esquema (por ejemplo, `z.string().regex(/^RF-\d{4}$/)` de zod): un id ajeno con formato válido pasa el esquema, y solo el filtro por `conductorId` lo rechaza. Prueba los tres casos: sin sesión, guía ajena con formato válido y guía con formato inválido; ninguno debe modificar datos.
-
-#### Paso 7 · Cierre
-Entrega la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explica por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
+</details>
 
 ### Tema 4: Hidratación determinista, idioma y releases medibles · Experto · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a eliminar un mismatch de hidratación en `DetalleEnvio` causado por formatear la fecha estimada con la zona horaria del navegador del cliente, distinta de la usada en el servidor. Prerrequisitos: Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`DetalleEnvio` renderizado en el servidor (SSR) muestra la fecha estimada formateada con una zona horaria, pero el primer render del cliente la recalcula sin especificar zona, usando la del navegador del conductor — si son distintas, React detecta una discrepancia entre el HTML del servidor y lo que el cliente esperaba renderizar.
+#### ► DE QUÉ TRATA
+Al finalizar vas a eliminar un mismatch de hidratación en DetalleEnvio causado por formatear la fecha estimada con la zona horaria del navegador del cliente, distinta de la usada en el servidor. Prerrequisitos: Tema 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a eliminar un mismatch de hidratación en DetalleEnvio causado por formatear la fecha estimada con la zona horaria del navegador del cliente, distinta de la usada en el servidor.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 La hidratación une listeners al HTML del servidor asumiendo que el primer render del cliente coincide exactamente; una zona horaria implícita (o `Date.now()`, `Math.random()`) produce un mismatch.
 **Conceptos clave:** SSR, hydration, mismatch, determinismo, identifierPrefix, suppressHydrationWarning, locale, timezone, RTL, streaming, bundle budget, Core Web Vitals, RUM, deployment ID y rollback.
 
@@ -489,8 +504,97 @@ graph LR
 
 * Ejecutar: `npm run build && npm start` en el proyecto Next.js `app` del módulo 10
 
-#### Paso 4 · Demostración guiada desde cero
-Este tema necesita render en servidor e hidratación, así que usa el proyecto Next.js `app` del módulo 10. Crea `src/app/fecha/FechaEntrega.tsx` (componente de cliente: se renderiza en el servidor y luego se hidrata en el navegador):
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+graph LR
+    A["Request con locale/zona"] --> B["HTML servidor"]
+    B --> C["Payload JSON"]
+    C --> D["Primer render cliente"]
+    D -->|Coincide| E["Hidratación exitosa"]
+    D -->|No coincide| F["Hydration mismatch"]
+    
+    G["Build"] --> H["Presupuesto JS"]
+    H --> I["Canary deploy"]
+    I --> J["RUM por deployment ID"]
+    J -->|Éxito| K["Ampliar a producción"]
+    J -->|Regresión| L["Rollback compatible"]
+    
+    style E fill:#4caf50
+    style F fill:#f44336
+    style K fill:#4caf50
+    style L fill:#ff9800
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Hidratación determinista, idioma y releases medibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Hidratación determinista, idioma y releases medibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses hidratación determinista, idioma y releases medibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: hidratación determinista, idioma y releases medibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Hidratación determinista, idioma y releases medibles existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve hidratación determinista, idioma y releases medibles en tu contexto?
+2. ¿Cómo sabrías que hidratación determinista, idioma y releases medibles no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar hidratación determinista, idioma y releases medibles?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```tsx
+const price = new Intl.NumberFormat(locale, {
+  style: 'currency',
+  currency: task.currency,
+}).format(task.amount);
+
+const due = new Intl.DateTimeFormat(locale, {
+  dateStyle: 'long',
+  timeZone: userTimeZone,
+}).format(new Date(task.dueAt));
+```
+
+```mermaid
+graph LR
+    A["Request con locale/zona"] --> B["HTML servidor"]
+    B --> C["Payload JSON"]
+    C --> D["Primer render cliente"]
+    D -->|Coincide| E["Hidratación exitosa"]
+    D -->|No coincide| F["Hydration mismatch"]
+    
+    G["Build"] --> H["Presupuesto JS"]
+    H --> I["Canary deploy"]
+    I --> J["RUM por deployment ID"]
+    J -->|Éxito| K["Ampliar a producción"]
+    J -->|Regresión| L["Rollback compatible"]
+    
+    style E fill:#4caf50
+    style F fill:#f44336
+    style K fill:#4caf50
+    style L fill:#ff9800
+```
 
 ```tsx
 'use client';
@@ -505,8 +609,6 @@ export default function FechaEntrega({ fechaEstimada, locale, userTimeZone }: {
   return <p>Entrega estimada: {due}</p>;
 }
 ```
-
-Y `src/app/fecha/page.tsx`, que decide `locale` y zona una sola vez:
 
 ```tsx
 import FechaEntrega from './FechaEntrega';
@@ -523,60 +625,27 @@ export default function PaginaFecha() {
 npm run dev
 ```
 
-Abre `http://localhost:3000/fecha`.
-
-Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados («Entrega estimada: 19 de noviembre de 2026») — sin ninguna advertencia de mismatch de hidratación en consola. La fecha elegida lo hace visible: la misma hora en UTC ya es 20 de noviembre, así que si quitas `timeZone` y tu servidor y tu navegador están en zonas distintas, cada lado muestra un día diferente.
-
-#### Paso 5 · Práctica guiada
-Pista: quita `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirma en la consola del navegador que la advertencia de mismatch desapareció.
-
-#### Paso 7 · Cierre
-Entrega el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explica por qué `suppressHydrationWarning` no habría sido la corrección correcta aquí: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cierra el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
-**Implicación práctica:** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
+</details>
 
 ### Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Experto · 45 min
 
-**Prerrequisito:** tema «Hidratación determinista, idioma y releases medibles» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** actualizar un proyecto de React 18 a 19 por pasos: preparar con 18.3, aplicar los codemods oficiales, corregir lo que no se automatiza y verificar con pruebas.
+#### ► DE QUÉ TRATA
+Necesitas un proyecto con React 18, Git limpio y pruebas que pasen. Crea una rama migracion-react-19. Los codemods se ejecutan con npx codemod.
 
-**¿Por qué es importante?** Una actualización mayor mezcla cambios automáticos y manuales. Hacerla de una vez, sin plan, deja errores que aparecen semanas después en pantallas poco usadas. Un proceso por pasos los encuentra antes.
+#### ► LA IDEA EN UNA FRASE
+**Necesitas un proyecto con React 18, Git limpio y pruebas que pasen.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Necesitas un proyecto con React 18, Git limpio y pruebas que pasen. Crea una rama `migracion-react-19`. Los codemods se ejecutan con `npx codemod`.
+#### ► LA ANALOGÍA
+Piensa en migrar a react 19: codemods, cambios que rompen y verificación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El portal de clientes de RutaFlow seguía en React 18 y usaba `ReactDOM.render`, `defaultProps` en componentes de función y `forwardRef` por todas partes. La actualización se dividió en commits pequeños, uno por tipo de cambio, para poder revertir cualquiera.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** versión mayor, aviso de obsolescencia, codemod, `createRoot`, `ref` como prop, `defaultProps`, `propTypes`.
-
-**Plan en cinco pasos:**
-
-1. Actualiza a **React 18.3**: es igual a 18.2, pero avisa en consola de todo lo que 19 elimina.
-2. Corrige esos avisos con las pruebas en verde.
-3. Ejecuta el **codemod** oficial: cambia automáticamente patrones como `ReactDOM.render` por `createRoot` y los `act` de pruebas.
-4. Instala React 19 y corrige a mano lo que el codemod no cubre.
-5. Verifica: pruebas, build de producción y un recorrido manual de las pantallas críticas.
-
-| Eliminado o cambiado en 19 | Reemplazo |
-|---|---|
-| `ReactDOM.render` / `hydrate` | `createRoot` / `hydrateRoot` |
-| `defaultProps` en funciones | valores por defecto en la desestructuración |
-| `propTypes` | TypeScript o validación propia |
-| `forwardRef` necesario | `ref` llega como una prop normal (`forwardRef` sigue funcionando) |
-| `<Context.Provider>` | `<Context value>` (el anterior sigue funcionando) |
-
-**Analogía:** migrar es mudarse de casa por cajas etiquetadas: una caja por habitación, para saber dónde buscar si algo se rompe. La analogía falla en que aquí puedes devolver una caja a la casa vieja con `git revert`.
-
-**Límite de uso:** los codemods no entienden librerías de terceros: revisa que cada dependencia declare soporte para React 19 antes de actualizar. No mezcles la migración con funciones nuevas en el mismo pull request.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["React 18.2"] --> B["18.3: ver avisos"]
@@ -586,9 +655,51 @@ flowchart LR
     E --> F["pruebas + build + recorrido"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migrar a React 19: codemods, cambios que rompen y verificación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `portal/src/main.jsx`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migrar a React 19: codemods, cambios que rompen y verificación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses migrar a react 19: codemods, cambios que rompen y verificación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migrar a react 19: codemods, cambios que rompen y verificación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migrar a React 19: codemods, cambios que rompen y verificación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migrar a react 19: codemods, cambios que rompen y verificación en tu contexto?
+2. ¿Cómo sabrías que migrar a react 19: codemods, cambios que rompen y verificación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migrar a react 19: codemods, cambios que rompen y verificación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["React 18.2"] --> B["18.3: ver avisos"]
+    B --> C["corregir avisos"]
+    C --> D["codemod react/19"]
+    D --> E["React 19 + ajustes manuales"]
+    E --> F["pruebas + build + recorrido"]
+```
 
 ```jsx
 // ANTES (React 18 y anteriores):
@@ -601,8 +712,6 @@ import App from './App';
 
 createRoot(document.getElementById('root')).render(<App />);
 ```
-
-Archivo `portal/src/Campo.jsx`:
 
 ```jsx
 // ANTES: forwardRef y defaultProps.
@@ -620,8 +729,6 @@ export default function Campo({ etiqueta = 'Código', ref }) {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 git switch -c migracion-react-19
 npm install react@18.3 react-dom@18.3 && npm test   # el portal necesita un script test, como el del módulo 0
@@ -630,98 +737,204 @@ npm install react@19 react-dom@19
 npm test && npm run build
 ```
 
-**Explicación por bloques:** En `main.jsx`, el codemod reemplaza `ReactDOM.render` por `createRoot` desde `react-dom/client`. En `Campo.jsx`, el ajuste es manual: `defaultProps` en componentes de función ya no tiene efecto en React 19, así que el valor por defecto pasa a la desestructuración, y `ref` llega como una prop más sin `forwardRef`. Los comandos siguen el plan: primero 18.3 con pruebas, luego el codemod, luego la versión 19 con pruebas y build.
-
-**Resultado esperado:**
-
 ```text
 Con React 18.3, la consola muestra avisos «will be removed in React 19» para cada patrón obsoleto.
 Después del codemod y de React 19: npm test pasa y npm run build termina sin errores.
 ```
 
-**Fallo deliberado:** instala React 19 sin quitar `Campo.defaultProps`. **Error esperado:** no hay error en consola, pero la etiqueta del campo aparece vacía. **Diagnóstico:** React 19 ignora `defaultProps` en componentes de función; el fallo es silencioso. Por eso el paso de 18.3, que sí avisa, va antes.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** actualiza a 18.3 y cuenta los avisos de la consola.
-2. **Variación:** corrige un aviso por commit y ejecuta las pruebas después de cada uno.
-3. **Diagnóstico:** reproduce el fallo deliberado de `defaultProps` y busca todos los casos con `grep -rn "defaultProps" src`.
-4. **Integración:** revisa en `npm ls react` qué dependencias aún piden React 18 y busca sus versiones compatibles.
-5. **Diseño:** escribe la lista de pantallas críticas del portal que recorrerás a mano antes de desplegar.
-
-**Pista:** un commit por tipo de cambio: si algo se rompe, `git bisect` te dice cuál fue.
-
-#### Paso 6 · Práctica independiente
-
-Migra un proyecto pequeño tuyo a React 19 siguiendo los cinco pasos y escribe en el README qué cambió de forma automática y qué a mano.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué conviene pasar por 18.3.
-- [ ] Aplicaste el codemod y revisaste su diff.
-- [ ] Reprodujiste el fallo silencioso de `defaultProps`.
-- [ ] Pruebas y build pasan con React 19.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** saltarse 18.3, mezclar la migración con funciones nuevas y no revisar la compatibilidad de las dependencias. **Siguiente paso:** el módulo 14 aprovecha lo nuevo de React 19 en el servidor.
-
-**Transferencia al proyecto integrador «RutaFlow»:** migra el portal de clientes de RutaFlow a React 19 en commits por tipo de cambio y documenta el recorrido manual de las pantallas críticas.
-
-**Fuente oficial:** [React — React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide).
-
-## Revisión oficial de plataforma — julio de 2026
+</details>
 
 ### React 19.2, Compiler y seguridad de Server Components
 
-**React 19.2** incorpora `Activity`, `useEffectEvent`, `cacheSignal`, Performance Tracks y capacidades de pre-render parcial. `useEffectEvent` separa lógica no reactiva de un efecto sin mentir al linter; no es una forma general de omitir dependencias. **React Compiler** 1.0 puede reducir memorización manual, pero primero exige código conforme a las reglas de React y mediciones. Para los paquetes `react-server-dom-webpack`, `react-server-dom-parcel` y `react-server-dom-turbopack`, el aviso actualizado el 26 de enero de 2026 corrige los problemas descritos en 19.0.4, 19.1.5 y 19.2.4, respectivamente. 19.2.1–19.2.3 no bastan. Usa una versión mantenida del framework con todos los avisos aplicables corregidos y comprueba el lockfile; estos mínimos históricos no sustituyen revisar nuevos avisos. Fuente oficial: https://react.dev/blog/2025/12/11/denial-of-service-and-source-code-exposure-in-react-server-components.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Aplicación al proyecto:** elimina una memorización especulativa y compara Performance Tracks, modela una pantalla conservada con Activity, migra un callback de efecto a useEffectEvent y añade un gate que rechace versiones vulnerables de paquetes RSC.
+#### ► DE QUÉ TRATA
+Este tema te guía por react 19.2, compiler y seguridad de server components con foco en comprensión antes de implementación.
 
-## Laboratorio práctico
+#### ► LA IDEA EN UNA FRASE
+**Entender react 19.2, compiler y seguridad de server components te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en react 19.2, compiler y seguridad de server components como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que react 19.2, compiler y seguridad de server components resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| React 19.2, Compiler y seguridad de Server Components se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar React 19.2, Compiler y seguridad de Server Components | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses react 19.2, compiler y seguridad de server components por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: react 19.2, compiler y seguridad de server components funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- React 19.2, Compiler y seguridad de Server Components existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve react 19.2, compiler y seguridad de server components en tu contexto?
+2. ¿Cómo sabrías que react 19.2, compiler y seguridad de server components no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar react 19.2, compiler y seguridad de server components?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar react 19.2, compiler y seguridad de server components.
+
+</details>
 
 ### Proyecto: auditoría resiliente de la SPA y su versión Next.js
 
-Parte del proyecto 12. Si migraste una vista a Next.js, ejecuta las pruebas de servidor/cliente; si conservas Vite, implementa las partes aplicables y documenta la frontera que no existe.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Dibuja árbol de Suspense y Error Boundaries para rutas y widgets. Justifica qué contenido permanece ante cada fallo.
-2. Inyecta errores de render, query, handler, timer y SSR; registra cuáles captura cada mecanismo.
-3. Implementa fallback accesible con retry que renueva el recurso y conserva estado confirmado.
-4. Recorre login/lista/crear/editar solo con teclado y lector. Corrige semántica, foco, errores y announcements.
-5. Automatiza roles/nombres, orden de tabulación, modal y restauración de foco con Testing Library, axe y Playwright.
-6. Introduce un payload XSS inocuo en una descripción rica aislada, corrige con política contextual y añade CSP.
-7. Audita props que cruzan Server/Client Components y cada Server Action; prueba 401, 403, manipulación y CSRF aplicable.
-8. Provoca mismatches con fecha, random e información de navegador; elimínalos sin abuso de `suppressHydrationWarning`.
-9. Añade `es-CO` y `en-US`, plurales, moneda y dos zonas; prueba RTL o pseudo-RTL y fallbacks.
-10. Define budgets por entrada/ruta y mide Core Web Vitals en un dispositivo limitado antes/después de una mejora.
-11. Simula despliegue con HTML viejo y chunks nuevos, y viceversa. Documenta compatibilidad, recuperación de formulario y rollback.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto: auditoría resiliente de la spa y su versión next.js con foco en comprensión antes de implementación.
 
-**Verificación:** conserva matriz fallo/frontera/resultado, evidencia del lector, reporte axe, payload bloqueado, pruebas de autorización, logs de hydration limpios, capturas de locales/RTL y comparación de métricas por deployment ID. CI falla ante regresión de contrato, a11y o budget crítico.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto: auditoría resiliente de la spa y su versión next.js te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- Usar Effect para derivar estado: calcula durante render o modela evento; Effect sincroniza externos.
-- Un boundary global único: delimita unidades que pueden fallar y recuperarse independientemente.
-- Esperar que boundary capture eventos/timers: usa manejo asíncrono explícito.
-- Arreglar accesibilidad con `aria-label` indiscriminado: empieza por elemento, label y flujo nativos.
-- Confiar en “React escapa”: revisa HTML intencional, URLs, DOM externo y librerías.
-- Autorizar ocultando botones: valida sesión y permiso dentro de acción/servidor.
-- Silenciar hydration: elimina no determinismo o aísla la diferencia inevitable mínima.
-- Formatear según navegador tras SSR: conserva la misma decisión de locale/zona en ambos lados.
+#### ► LA ANALOGÍA
+Piensa en proyecto: auditoría resiliente de la spa y su versión next.js como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
-## Atlas completo de temas oficiales
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto: auditoría resiliente de la spa y su versión next.js resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Derivado de la [documentación oficial](https://react.dev/reference/react), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 45 temas.**
-
-| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Modelo | `pureza` · `JSX` · `props` · `estado` · `keys` · `render y commit` · `eventos` · `estado como snapshot` | portal |
-| Hooks | `useState` · `useReducer` · `useContext` · `useRef` · `useEffect` · `useLayoutEffect` · `useEffectEvent` · `hooks propios` | portal |
-| UX | `formularios` · `Actions` · `useActionState` · `useOptimistic` · `useTransition` · `Suspense` · `use` · `error boundaries` | portal |
-| Servidor | `SSR` · `streaming` · `hidratación` · `Server Components` · `Server Functions` · `use client/use server` · `serialización` | portal |
-| Optimización | `React Compiler` · `reglas del compilador` · `memoización` · `profiler` · `code splitting` · `caché` · `virtualización` | portal |
-| Ingeniería | `routing` · `testing` · `accesibilidad` · `seguridad RSC` · `estado remoto` · `arquitectura` · `migración` | portal |
+| Proyecto: auditoría resiliente de la SPA y su versión Next.js se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto: auditoría resiliente de la SPA y su versión Next.js | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto: auditoría resiliente de la spa y su versión next.js por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto: auditoría resiliente de la spa y su versión next.js funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto: auditoría resiliente de la SPA y su versión Next.js existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto: auditoría resiliente de la spa y su versión next.js en tu contexto?
+2. ¿Cómo sabrías que proyecto: auditoría resiliente de la spa y su versión next.js no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto: auditoría resiliente de la spa y su versión next.js?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: auditoría resiliente de la spa y su versión next.js.
+
+</details>
 
 ### Método de estudio y proyecto de ampliación
 
-Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
+2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
+
+</details>

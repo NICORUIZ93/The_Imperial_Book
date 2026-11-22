@@ -4,34 +4,74 @@
 
 Cada tema comienza en una carpeta vacía y usa únicamente Node.js LTS y `curl`. Escribe manualmente los archivos indicados; no necesitas Express, código prefabricado de la academia ni archivos de otros temas.
 
+
 ### Tema 1: El modelo request/response · Intermedio · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Node.js LTS y terminal; no necesitas Express.
+#### ► DE QUÉ TRATA
+Este tema te guía por el modelo request/response con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** crear, arrancar y detener un servidor HTTP que responda JSON, elegir explícitamente estado y cabeceras y diagnosticar una ruta desconocida o un puerto ocupado.
+#### ► LA IDEA EN UNA FRASE
+**Entender el modelo request/response te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** Express y Fastify automatizan parsing, routing y respuestas, pero esas abstracciones siguen apoyándose en el intercambio nativo. Conocerlo permite diagnosticar cabeceras ausentes, respuestas duplicadas y cuerpos mal formados en lugar de tratar el framework como magia.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`http.createServer(callback)` registra una función que recibe `req`, un `IncomingMessage`, y `res`, un `ServerResponse`. `req.method` y `req.url` identifican la operación; `req` también es un stream legible porque el cuerpo llega por chunks. La respuesta se construye con `writeHead`, uno o varios `write` opcionales y `end` para cerrarla.
+#### ► LA ANALOGÍA
+Piensa en el modelo request/response como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`listen(puerto)` mantiene el proceso atendiendo conexiones mediante I/O no bloqueante. Un framework puede exponer `req.body` y `res.json`, pero antes debes entender qué trabajo realiza por ti.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que el modelo request/response resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** el módulo nativo es recibir correspondencia sin asistente: abres cada sobre, interpretas su contenido y redactas la respuesta. Un framework clasifica y resume el sobre, pero no cambia el significado de la carta.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El modelo request/response se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Practica
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El modelo request/response | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía:
+#### ► CUÁNDO NO USAR ESTO
+No uses el modelo request/response por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el modelo request/response funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El modelo request/response existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el modelo request/response en tu contexto?
+2. ¿Cómo sabrías que el modelo request/response no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el modelo request/response?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-http-basico
 cd ejemplo-http-basico
 npm init -y
 mkdir src
 ```
-
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
 
 ```js
 import { createServer } from "node:http";
@@ -53,71 +93,83 @@ servidor.listen(3000, "127.0.0.1", () => {
 });
 ```
 
-Ejecuta en una terminal:
-
 ```bash
 node src/server.js
 ```
-
-En otra terminal:
 
 ```bash
 curl -i http://127.0.0.1:3000/
 ```
 
-**Resultado esperado:** `HTTP/1.1 200 OK`, `content-type: application/json` y `{"mensaje":"Servidor Node activo"}`. Detén el servidor con `Ctrl+C` al terminar.
-
-**Fallo deliberado y corrección:** solicita `http://127.0.0.1:3000/inexistente`. El `404` y `{"error":"Ruta no encontrada"}` son la respuesta correcta, no un fallo del servidor. Si aparece `EADDRINUSE`, detén el proceso anterior o cambia el puerto en `listen` y `curl`; no respondas eliminando procesos que no reconoces.
-
-**Práctica guiada:** cambia el mensaje e incluye `method: req.method` en la respuesta. Conserva `JSON.stringify`: pasar un objeto directamente a `res.end` produce un error de tipo.
-
-**Ejercicio independiente:** añade `GET /salud` que responda `{ "status": "ok" }`. Prueba `/`, `/salud` y una ruta desconocida con `curl -i`, y explica por qué la última no debe responder `200`.
-
-#### Aplica
-
-En el **[Proyecto integrador: API nativa de tareas](#proyecto-3-api-http-nativa-de-tareas)**, construye primero una ruta de salud con estado, tipo de contenido y cierre explícitos antes de añadir operaciones.
-
-**Checklist de salida**
-
-- [ ] Creaste el proyecto y `src/server.js` manualmente.
-- [ ] La ruta válida responde JSON con estado y `Content-Type` correctos.
-- [ ] Cada rama termina su respuesta una sola vez.
-- [ ] Una ruta desconocida produce `404`.
-- [ ] Puedes explicar y resolver `EADDRINUSE` sin confundirlo con un error de sintaxis.
-- [ ] Sabes qué trabajo adicional automatizaría un framework.
-
-**Cuándo no usarlo:** para muchas rutas, `http` puro obliga a reimplementar routing, parsing y errores. Es apropiado para un servicio mínimo, streaming de bajo nivel o para comprender el contrato antes de usar Express.
-
-**Fuentes oficiales:** [`node:http`](https://nodejs.org/api/http.html), [`http.createServer`](https://nodejs.org/api/http.html#httpcreateserveroptions-requestlistener) y [códigos de estado HTTP de MDN](https://developer.mozilla.org/es/docs/Web/HTTP/Status).
+</details>
 
 ### Tema 2: Routing manual · Intermedio · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Node LTS, JSON básico y `curl`. Este proyecto no reutiliza el servidor anterior.
+#### ► DE QUÉ TRATA
+Este tema te guía por routing manual con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** implementar rutas `GET` y `POST` sin framework, leer un body JSON, devolver `201`, `400` y `404` de forma consistente y explicar los límites del estado en memoria.
+#### ► LA IDEA EN UNA FRASE
+**Entender routing manual te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una API pequeña necesita distinguir consulta y creación aunque compartan URL. Escribir el router manual muestra exactamente qué decisiones ocultan `app.get` y `app.post`, y evita que una coincidencia parcial ejecute la operación equivocada.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Una ruta se identifica por método y URL. `GET /tareas` consulta; `POST /tareas` crea. Cualquier combinación no reconocida debe recibir una respuesta explícita, normalmente `404`, en lugar de quedar abierta.
+#### ► LA ANALOGÍA
+Piensa en routing manual como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El array en memoria permite practicar el contrato sin base de datos, pero se pierde al reiniciar y no se comparte entre procesos. No es persistencia real. Con muchas rutas, una cadena de condicionales se vuelve difícil de mantener; un router de framework también aporta parámetros y organización modular.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que routing manual resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** el routing manual es una recepcionista con una lista de instrucciones para cada combinación de pregunta y procedimiento. El array es su libreta temporal: útil durante el turno, inexistente si se rompe o se reinicia.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Routing manual se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Practica
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Routing manual | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía:
+#### ► CUÁNDO NO USAR ESTO
+No uses routing manual por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: routing manual funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Routing manual existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve routing manual en tu contexto?
+2. ¿Cómo sabrías que routing manual no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar routing manual?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-routing-manual
 cd ejemplo-routing-manual
 npm init -y
 mkdir src
 ```
-
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
 
 ```js
 import { createServer } from "node:http";
@@ -162,8 +214,6 @@ servidor.listen(3001, "127.0.0.1", () => {
 });
 ```
 
-Arranca el servidor y, en otra terminal, consulta, crea y vuelve a consultar:
-
 ```bash
 node src/server.js
 ```
@@ -174,59 +224,75 @@ curl -i -X POST http://127.0.0.1:3001/tareas -H "Content-Type: application/json"
 curl -i http://127.0.0.1:3001/tareas
 ```
 
-**Resultado esperado:** la primera consulta devuelve `200` y lista vacía; el POST devuelve `201` con `id: 1`; la última incluye la tarea. Al reiniciar, la lista vuelve a estar vacía.
-
-**Fallo deliberado y corrección:** envía `curl -i -X POST http://127.0.0.1:3001/tareas -d '{titulo:sin-comillas}'`. Recibes `400` porque el JSON es inválido y el proceso sigue disponible. Corrige el cuerpo a `{"titulo":"Leer HTTP"}` con la cabecera JSON y verifica `201`. Prueba también `GET /tarea` para observar `404`.
-
-**Práctica guiada:** añade `GET /tareas/1` con comparación exacta y búsqueda por `id`. Si no existe, responde `404`, no `200` con una lista vacía.
-
-**Ejercicio independiente:** implementa `DELETE /tareas/1`; prueba una tarea existente y otra inexistente. Explica por qué reiniciar borra el estado y qué responsabilidad asumiría una base de datos.
-
-#### Aplica
-
-En el **[Proyecto integrador: routing de tareas](#proyecto-3-api-http-nativa-de-tareas)**, enruta consulta y creación por método y URL exactos. Una combinación no soportada no debe ejecutar otra operación por coincidencia parcial.
-
-**Checklist de salida**
-
-- [ ] El servidor fue creado desde cero y no usa framework.
-- [ ] `GET` y `POST` se distinguen aunque compartan URL.
-- [ ] La creación válida devuelve `201`; la entrada inválida, `400`.
-- [ ] Toda rama responde una sola vez y el fallback devuelve `404`.
-- [ ] Comprobaste que el estado desaparece al reiniciar.
-- [ ] Puedes señalar qué aportaría un router de framework.
-
-**Errores comunes:** comprobar solo la URL, no devolver después de responder, usar memoria como persistencia, responder `200` al crear y dejar `JSON.parse` sin capturar.
-
-**Fuentes oficiales:** [métodos HTTP en MDN](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Methods), [estado `201`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/201), [estado `404`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/404) y [`IncomingMessage`](https://nodejs.org/api/http.html#class-httpincomingmessage).
+</details>
 
 ### Tema 3: Parsing de body y headers · Intermedio · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Node LTS, streams básicos y JSON. Comienza otro proyecto vacío.
+#### ► DE QUÉ TRATA
+Este tema te guía por parsing de body y headers con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** leer un body JSON mediante iteración asíncrona, validar `Content-Type`, limitar bytes y traducir errores de cliente sin derribar el proceso.
+#### ► LA IDEA EN UNA FRASE
+**Entender parsing de body y headers te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una API no puede aceptar datos ilimitados ni asumir que todo cuerpo es JSON válido. Sin límite, un cliente consume memoria; sin manejo de errores, un cuerpo mal formado puede afectar solicitudes que no tienen relación con él.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`req` es un stream legible. `for await (const chunk of req)` permite acumular los fragmentos; `Buffer.concat` los une y `JSON.parse` interpreta el texto. El parseo debe estar protegido porque un JSON inválido lanza una excepción.
+#### ► LA ANALOGÍA
+Piensa en parsing de body y headers como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`req.headers` contiene nombres normalizados en minúsculas. `content-type` declara el formato recibido. El límite debe medir `chunk.length` en bytes mientras llega el stream, no caracteres después de cargar todo. `415` comunica formato no admitido, `413` tamaño excesivo y `400` sintaxis inválida.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que parsing de body y headers resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** el documento llega en varios sobres. Recepción revisa la etiqueta y el peso antes de abrirlos, los ensambla en orden y solo entonces interpreta el documento.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Parsing de body y headers se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Practica
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Parsing de body y headers | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía:
+#### ► CUÁNDO NO USAR ESTO
+No uses parsing de body y headers por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: parsing de body y headers funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Parsing de body y headers existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve parsing de body y headers en tu contexto?
+2. ¿Cómo sabrías que parsing de body y headers no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar parsing de body y headers?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-body-headers
 cd ejemplo-body-headers
 npm init -y
 mkdir src
 ```
-
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
 
 ```js
 import { createServer } from "node:http";
@@ -274,8 +340,6 @@ createServer(async (req, res) => {
 }).listen(3002, "127.0.0.1", () => console.log("API en http://127.0.0.1:3002"));
 ```
 
-Arranca y envía JSON válido:
-
 ```bash
 node src/server.js
 ```
@@ -284,59 +348,75 @@ node src/server.js
 curl -i -X POST http://127.0.0.1:3002/eco -H "Content-Type: application/json" -d '{"nombre":"Ana"}'
 ```
 
-**Resultado esperado:** `200` y `{"recibido":{"nombre":"Ana"}}`.
-
-**Fallo deliberado y corrección:** repite sin la cabecera `Content-Type`: recibes `415`. Después envía `-d '{nombre:Ana}'` con la cabecera correcta: recibes `400 JSON inválido`. Restaura el cuerpo `{"nombre":"Ana"}` y verifica `200`; el proceso permanece disponible durante los tres casos.
-
-**Práctica guiada:** reduce `LIMITE_BYTES` a `20` y envía un JSON que lo supere. Comprueba `413`, restaura después un límite razonable y no lo aumentes solo para ocultar la prueba.
-
-**Ejercicio independiente:** exige `x-request-id` de 8 a 40 caracteres. Entrega un caso válido y otro con `400`, y explica por qué la cabecera se valida antes de la lógica de negocio.
-
-#### Aplica
-
-En el **[Proyecto integrador: entrada acotada](#proyecto-3-api-http-nativa-de-tareas)**, limita tamaño y formato del cuerpo de creación. JSON inválido, cuerpo excesivo y cabecera incompatible deben rechazarse antes de agregar una tarea.
-
-**Checklist de salida**
-
-- [ ] Escribiste un proyecto nuevo sin middleware.
-- [ ] Acumulas chunks y mides bytes antes de parsear.
-- [ ] Un tipo no admitido devuelve `415`.
-- [ ] Un cuerpo excesivo devuelve `413` durante la lectura.
-- [ ] JSON inválido devuelve `400` y no derriba el proceso.
-- [ ] Los identificadores de solicitud se validan sin imprimir datos sensibles.
-
-**Errores comunes:** asumir `req.body`, omitir límite, validar el tipo después de consumir el cuerpo, responder `500` a errores del cliente y medir caracteres en lugar de bytes.
-
-**Fuentes oficiales:** [`IncomingMessage.headers`](https://nodejs.org/api/http.html#messageheaders), [estado `400`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/400), [estado `413`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/413) y [estado `415`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/415).
+</details>
 
 ### Tema 4: Códigos de estado y content negotiation · Intermedio · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Node LTS y cabeceras HTTP básicas. Este ejemplo es independiente.
+#### ► DE QUÉ TRATA
+Este tema te guía por códigos de estado y content negotiation con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** elegir estados HTTP coherentes, servir JSON o texto según `Accept`, declarar `Content-Type` y `Vary`, y distinguir `406` de `404`.
+#### ► LA IDEA EN UNA FRASE
+**Entender códigos de estado y content negotiation te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** los clientes automatizados deciden reintentos y alertas según el estado, no según una interpretación humana del cuerpo. Un mismo recurso puede necesitar JSON para una aplicación y texto para una terminal sin obligar a adivinar el formato.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa `200` para consulta correcta, `201` para creación, `400` para petición inválida, `404` para recurso inexistente y `500` para fallo inesperado del servidor. El código forma parte del contrato.
+#### ► LA ANALOGÍA
+Piensa en códigos de estado y content negotiation como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`Accept` expresa qué representaciones acepta el cliente. El servidor elige una que pueda producir y la declara en `Content-Type`. `Vary: Accept` advierte a las cachés que la respuesta cambia según esa cabecera. Si el recurso existe pero no hay representación compatible, corresponde `406`.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que códigos de estado y content negotiation resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** el estado es una señal de tráfico común para personas y sistemas. `Accept` es el idioma que el visitante acepta y `Content-Type` el idioma en que finalmente recibe el documento.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Códigos de estado y content negotiation se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Practica
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Códigos de estado y content negotiation | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía:
+#### ► CUÁNDO NO USAR ESTO
+No uses códigos de estado y content negotiation por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: códigos de estado y content negotiation funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Códigos de estado y content negotiation existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve códigos de estado y content negotiation en tu contexto?
+2. ¿Cómo sabrías que códigos de estado y content negotiation no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar códigos de estado y content negotiation?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-content-negotiation
 cd ejemplo-content-negotiation
 npm init -y
 mkdir src
 ```
-
-Añade `"type": "module"` a `package.json` y crea `src/server.js`:
 
 ```js
 import { createServer } from "node:http";
@@ -368,8 +448,6 @@ createServer((req, res) => {
 }).listen(3003, "127.0.0.1", () => console.log("API en http://127.0.0.1:3003"));
 ```
 
-Arranca y prueba las dos representaciones:
-
 ```bash
 node src/server.js
 ```
@@ -379,57 +457,73 @@ curl -i -H "Accept: application/json" http://127.0.0.1:3003/producto
 curl -i -H "Accept: text/plain" http://127.0.0.1:3003/producto
 ```
 
-**Resultado esperado:** ambas respuestas usan `200`, una con JSON y otra con texto; ambas incluyen `Vary: Accept`.
-
-**Fallo deliberado y corrección:** solicita `curl -i -H "Accept: application/xml" http://127.0.0.1:3003/producto`. Recibes `406`: el recurso existe, pero no hay XML. Cambia `Accept` a `application/json` y vuelve a `200`. Solicita `/productos` para comparar el `404` de ruta inexistente.
-
-**Práctica guiada:** añade `text/csv` con una cabecera y una fila, conserva `Vary: Accept` y verifica el `Content-Type` con `curl -i`.
-
-**Ejercicio independiente:** crea `POST /producto` que valide nombre y precio, responda `201` al crear y `400` cuando falte un campo. Entrega creación válida, body inválido y formato no aceptado, explicando cada estado.
-
-#### Aplica
-
-En el **[Proyecto integrador: representaciones de tareas](#proyecto-3-api-http-nativa-de-tareas)**, ofrece JSON y texto solo si ambos son necesarios, y conserva estados coherentes para creación, entrada inválida y recursos ausentes.
-
-**Checklist de salida**
-
-- [ ] El proyecto fue creado manualmente desde una carpeta vacía.
-- [ ] JSON y texto tienen el `Content-Type` que realmente describen.
-- [ ] Las respuestas variables incluyen `Vary: Accept`.
-- [ ] Un formato incompatible devuelve `406`, no `404`.
-- [ ] Una creación válida usa `201` y una entrada inválida usa `400`.
-- [ ] Puedes justificar cuándo negociar formatos añade complejidad innecesaria.
-
-**Cuándo no usarlo:** si solo existe un consumidor y un formato fijo, fija `Content-Type` y evita negociación manual. No inventes formatos que el servidor no pueda serializar correctamente.
-
-**Fuentes oficiales:** [negociación de contenido en MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Content_negotiation), [cabecera `Accept`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Accept), [cabecera `Vary`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Vary) y [estado `406`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/406).
+</details>
 
 ### Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** arrays, módulos ESM, HTTP y `node:test`; Node 24 o superior. Comprueba `node --version`.
+#### ► DE QUÉ TRATA
+Este tema te guía por paginación por cursor y límites de entrada comprobables con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** diseñar un corte estable con cursor, detectar la página siguiente sin cargar resultados innecesarios y rechazar cursores o tamaños inválidos antes de consultar datos.
+#### ► LA IDEA EN UNA FRASE
+**Entender paginación por cursor y límites de entrada comprobables te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** la API no debe cargar todos los envíos en una petición ni repetir elementos por ordenar solo una fecha no única. La paginación afecta memoria, latencia y la capacidad de reanudar una lectura.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El cursor representa una posición en un orden estable. Aquí es un identificador entero ascendente y único: la página incluye IDs estrictamente mayores. Seleccionar `size + 1` elementos permite saber si existe otra página; el último ID visible se convierte en el cursor siguiente.
+#### ► LA ANALOGÍA
+Piensa en paginación por cursor y límites de entrada comprobables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En una base de datos, filtro, orden y límite deben ejecutarse en la consulta con un índice apropiado. Este ejemplo en memoria aísla el algoritmo, pero no demuestra escalabilidad ni una foto inmutable bajo concurrencia. Un cursor real conserva filtros y orden, y nunca elude autorización.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que paginación por cursor y límites de entrada comprobables resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** el cursor es un separador que indica después de qué ficha continuar. Pedir una ficha adicional permite saber si queda otra sección sin mostrarla todavía.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Paginación por cursor y límites de entrada comprobables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Practica
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Paginación por cursor y límites de entrada comprobables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía:
+#### ► CUÁNDO NO USAR ESTO
+No uses paginación por cursor y límites de entrada comprobables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: paginación por cursor y límites de entrada comprobables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Paginación por cursor y límites de entrada comprobables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve paginación por cursor y límites de entrada comprobables en tu contexto?
+2. ¿Cómo sabrías que paginación por cursor y límites de entrada comprobables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar paginación por cursor y límites de entrada comprobables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir cursor-envios
 cd cursor-envios
 ```
-
-Crea `pagina.mjs`:
 
 ```js
 export function pagina(rows, after = 0, size = 2) {
@@ -443,8 +537,6 @@ export function pagina(rows, after = 0, size = 2) {
   return { items, next: selected.length > size ? items.at(-1).id : null };
 }
 ```
-
-Crea `pagina.test.mjs`:
 
 ```js
 import test from "node:test";
@@ -467,72 +559,31 @@ test("rechaza límites y cursor inválidos", () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 node --test pagina.test.mjs
 ```
 
-**Resultado esperado:** dos pruebas correctas. La primera recorre IDs `1,2`, después `3,4` y termina sin cursor; la segunda rechaza tamaño `1000` y cursor `-1`.
-
-**Fallo deliberado y corrección:** cambia `row.id > after` por `>=`. La segunda página repite el último elemento anterior y la prueba falla. Restaura `>` para que «después de» sea estricto y repite las pruebas.
-
-**Práctica guiada:** añade casos de lista vacía, tamaño `1` y cursor mayor que el último ID. Verifica elementos, cursor siguiente y ausencia de repeticiones.
-
-**Ejercicio independiente:** diseña el contrato HTTP con parámetros `after` y `size`, y respuesta `400` para valores inválidos. Escribe `contrato.http.md` con ejemplos y justifica por qué no convertir texto inválido silenciosamente a cero.
-
-#### Aplica
-
-Lleva el cursor al **[Proyecto integrador: listado acotado](#proyecto-3-api-http-nativa-de-tareas)**. El siguiente paso será trasladar filtro, orden único y límite a SQL con un índice, y medir con datos representativos.
-
-**Checklist de salida**
-
-- [ ] Creaste `pagina.mjs` y sus pruebas desde una carpeta vacía.
-- [ ] El cursor usa un orden único y una comparación estricta.
-- [ ] El elemento adicional determina `next` sin incluirlo en la página.
-- [ ] Tamaño y cursor se validan antes de seleccionar.
-- [ ] Lista vacía, tamaño uno y cursor final tienen pruebas explícitas.
-- [ ] Reconoces que memoria y concurrencia requieren otra verificación.
-
-**Errores comunes:** ordenar por un campo no único, aceptar tamaños sin límite y paginar después de cargar todos los datos.
-
-**Fuente oficial:** [Node test runner](https://nodejs.org/api/test.html).
+</details>
 
 ### Tema 6: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min
 
-**Prerrequisito:** tema «El modelo request/response» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** resolver un nombre con `dns`, intercambiar un mensaje por TCP con `net` y enviar un datagrama UDP con `dgram`, y explicar cuándo conviene cada protocolo.
+#### ► DE QUÉ TRATA
+Este tema te guía por debajo de http: tcp con net, udp con dgram y resolución dns con foco en comprensión antes de implementación.
 
-**¿Por qué es importante?** HTTP corre sobre TCP, y TCP necesita DNS para encontrar al servidor. Cuando una conexión falla con `ENOTFOUND`, `ECONNREFUSED` o `ETIMEDOUT`, entender estas capas te dice dónde buscar.
+#### ► LA IDEA EN UNA FRASE
+**Entender debajo de http: tcp con net, udp con dgram y resolución dns te permite tomar mejores decisiones técnicas.**
 
-#### Aprende
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Objetivo y preparación.**
+#### ► LA ANALOGÍA
+Piensa en debajo de http: tcp con net, udp con dgram y resolución dns como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
-
-**Contexto y caso real.**
-
-Los mensajeros de RutaFlow envían su posición cada pocos segundos. Si una posición se pierde no pasa nada, porque llega otra. En cambio, la confirmación de entrega no puede perderse. La primera encaja con UDP; la segunda con TCP.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** DNS, dirección IP, puerto, TCP (conexión, orden, entrega garantizada), UDP (datagrama, sin conexión), `ENOTFOUND`, `ECONNREFUSED`.
-
-- **DNS** traduce un nombre (`api.rutaflow.co`) a una dirección IP. `dns.lookup` usa el resolvedor del sistema operativo, el mismo que usa `fetch`. Si el nombre no existe, el error es `ENOTFOUND`.
-- **TCP** abre una conexión, entrega los bytes en orden y reenvía lo que se pierde. Si nadie escucha en el puerto, el error es `ECONNREFUSED`. HTTP/1.1 y HTTP/2 viajan sobre TCP.
-- **UDP** envía **datagramas** sueltos: sin conexión, sin orden y sin garantía de entrega. Es más ligero y sirve cuando un dato viejo ya no importa (posiciones, video en vivo, DNS mismo).
-
-| Necesitas | Usa |
-|---|---|
-| que todo llegue y en orden | TCP |
-| lo más reciente, rápido, y tolerar pérdidas | UDP |
-
-**Analogía:** TCP es una llamada telefónica: marcas, la otra persona contesta y conversan en orden. UDP es lanzar postales: cada una va sola y alguna puede perderse. DNS es la guía telefónica. La analogía falla en que TCP no «escucha» palabras, sino bytes: tu programa debe saber dónde termina cada mensaje.
-
-**Límite de uso:** no construyas tu propio protocolo sobre TCP o UDP si HTTP, WebSocket o un broker de mensajes resuelven el problema: tendrías que diseñar reintentos, formatos y seguridad. Los datagramas UDP grandes pueden fragmentarse y perderse.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
@@ -542,11 +593,51 @@ flowchart LR
     U --> P["posiciones, video, DNS"]
 ```
 
-#### Practica
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Demostración guiada desde cero.**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Archivo `academia-labs/node/redes/redes.mjs`:
+#### ► CUÁNDO NO USAR ESTO
+No uses debajo de http: tcp con net, udp con dgram y resolución dns por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: debajo de http: tcp con net, udp con dgram y resolución dns funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve debajo de http: tcp con net, udp con dgram y resolución dns en tu contexto?
+2. ¿Cómo sabrías que debajo de http: tcp con net, udp con dgram y resolución dns no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar debajo de http: tcp con net, udp con dgram y resolución dns?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
+    IP --> T["TCP: conexión<br/>orden y entrega"]
+    IP --> U["UDP: datagrama<br/>sin garantía"]
+    T --> H["HTTP, WebSocket, bases de datos"]
+    U --> P["posiciones, video, DNS"]
+```
 
 ```js
 import { createServer, connect } from 'node:net';
@@ -581,18 +672,10 @@ clienteUdp.close();
 servidorUdp.close();
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/node/redes
 node redes.mjs
 ```
-
-**Explicación por bloques:** `lookup` pide al sistema la IP de `localhost`. El servidor TCP responde a cada mensaje y cierra con `socket.end`; el cliente se conecta, escribe y espera la respuesta. El servidor UDP no acepta conexiones: solo recibe datagramas con el evento `message`. El cliente UDP envía uno sin saber si alguien lo recibe. Ambos servidores usan el puerto `0` para que el sistema elija uno libre.
-
-![Captura de terminal: node redes.mjs resuelve localhost a 127.0.0.1, recibe la respuesta TCP de ENV-42 y el datagrama UDP de posición](content/figures/node/net-dgram-dns.svg)
-
-**Resultado esperado:**
 
 ```text
 DNS: localhost -> 127.0.0.1 (IPv4)
@@ -600,69 +683,27 @@ TCP: recibido ENV-42
 UDP: posicion 4.65,-74.05
 ```
 
-**Fallo deliberado:** cambia `lookup('localhost', ...)` por `lookup('api.rutaflow.invalid', ...)`. **Error esperado:** `Error: getaddrinfo ENOTFOUND api.rutaflow.invalid`. **Diagnóstico:** el fallo ocurre antes de abrir cualquier conexión: el nombre no existe. Revisa DNS antes de culpar al servidor o al firewall.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el ejemplo y explica qué línea usa cada protocolo.
-2. **Variación:** conecta el cliente TCP a un puerto donde nadie escucha y anota el error (`ECONNREFUSED`).
-3. **Diagnóstico:** reproduce el fallo deliberado de DNS y compáralo con el de la variación.
-4. **Integración:** envía diez datagramas UDP seguidos y cuenta cuántos llegan; repite enviando 60 000 bytes en uno solo.
-5. **Diseño:** decide si las confirmaciones de entrega de RutaFlow pueden ir por UDP y justifica.
-
-**Pista:** lee el código de error: `ENOTFOUND` es DNS, `ECONNREFUSED` es que nadie escucha y `ETIMEDOUT` es que nadie responde.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Escribe un servidor TCP de eco que responda en mayúsculas, línea por línea, aunque el cliente envíe varias líneas en un solo `write`. Pruébalo con `nc localhost <puerto>`.
-
-**Checklist de salida.**
-
-- [ ] Explicas qué hace DNS antes de una petición HTTP.
-- [ ] El script imprime las tres líneas esperadas.
-- [ ] Distingues `ENOTFOUND`, `ECONNREFUSED` y `ETIMEDOUT`.
-- [ ] Eliges TCP o UDP con un criterio, no por costumbre.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** suponer que cada `data` de TCP es un mensaje completo, usar UDP para datos que no pueden perderse y diagnosticar un `ENOTFOUND` como problema del servidor. **Siguiente paso:** el tema «Códigos de estado y content negotiation» vuelve a HTTP, ahora sabiendo qué hay debajo.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, documenta en un diagrama qué viaja por TCP (API, base de datos) y qué podría viajar por UDP (posiciones), y agrega a la guía de soporte la tabla de errores de red.
-
-**Fuente oficial:** [Node.js — net](https://nodejs.org/api/net.html) y [Node.js — dgram](https://nodejs.org/api/dgram.html) y [Node.js — dns](https://nodejs.org/api/dns.html).
+</details>
 
 ### Tema 7: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min
 
-**Prerrequisito:** tema «El modelo request/response» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** levantar un servidor HTTP/2 sobre TLS con un certificado propio, conectarte con un cliente que confía en él y comprobar que dos peticiones comparten la misma conexión.
+#### ► DE QUÉ TRATA
+Este tema te guía por https y http/2 con tls: certificados, alpn y varias peticiones por conexión con foco en comprensión antes de implementación.
 
-**¿Por qué es importante?** Sin TLS, cualquiera en la red puede leer o cambiar lo que viaja, incluidos tokens. HTTP/2 reduce la latencia al enviar muchas peticiones por una sola conexión. Saber configurar ambos evita desactivar la verificación de certificados «para que funcione».
+#### ► LA IDEA EN UNA FRASE
+**Entender https y http/2 con tls: certificados, alpn y varias peticiones por conexión te permite tomar mejores decisiones técnicas.**
 
-#### Aprende
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Objetivo y preparación.**
+#### ► LA ANALOGÍA
+Piensa en https y http/2 con tls: certificados, alpn y varias peticiones por conexión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Usa una versión LTS con soporte de Node.js (22 o 24) y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
-
-**Contexto y caso real.**
-
-La app móvil de RutaFlow pide la ruta, las paradas y el estado del mensajero al mismo tiempo. Con HTTP/1.1 abría varias conexiones TLS, y cada una pagaba su propio saludo inicial. Con HTTP/2, las tres peticiones viajan por una conexión.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** TLS, certificado, autoridad de confianza (`ca`), ALPN, HTTP/2, stream, multiplexación.
-
-**TLS** cifra la conexión y demuestra la identidad del servidor con un **certificado**. El cliente solo acepta el certificado si lo firmó alguien en quien confía. En desarrollo creas un certificado propio y se lo das al cliente con la opción `ca`; nunca desactives la verificación.
-
-Al conectarse, cliente y servidor acuerdan el protocolo con **ALPN**: `h2` es HTTP/2 y `http/1.1` es el anterior.
-
-En **HTTP/2** cada petición es un **stream** con un número (los del cliente son impares: 1, 3, 5…). Muchos streams comparten una conexión: eso es la **multiplexación**.
-
-**Analogía:** HTTP/1.1 es abrir una ventanilla nueva del banco por cada trámite; HTTP/2 es una sola ventanilla que atiende varios trámites intercalados. TLS es el vidrio blindado de la ventanilla. La analogía falla en que, si un paquete TCP se pierde, todos los streams de la conexión esperan (eso lo resuelve HTTP/3).
-
-**Límite de uso:** los navegadores solo usan HTTP/2 con TLS. Detrás de un proxy (Nginx, un balanceador) muchas veces el TLS termina en el proxy y Node recibe HTTP/1.1. El certificado autofirmado es solo para desarrollo.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente
@@ -675,11 +716,54 @@ sequenceDiagram
     S-->>C: stream 3: 200
 ```
 
-#### Practica
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Demostración guiada desde cero.**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Archivo `academia-labs/node/http2-tls/servidor-h2.mjs`:
+#### ► CUÁNDO NO USAR ESTO
+No uses https y http/2 con tls: certificados, alpn y varias peticiones por conexión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: https y http/2 con tls: certificados, alpn y varias peticiones por conexión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve https y http/2 con tls: certificados, alpn y varias peticiones por conexión en tu contexto?
+2. ¿Cómo sabrías que https y http/2 con tls: certificados, alpn y varias peticiones por conexión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar https y http/2 con tls: certificados, alpn y varias peticiones por conexión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor Node
+    C->>S: saludo TLS, ALPN: h2, http/1.1
+    S-->>C: certificado + ALPN elegido: h2
+    C->>S: stream 1: GET /rutas
+    C->>S: stream 3: GET /paradas
+    S-->>C: stream 1: 200
+    S-->>C: stream 3: 200
+```
 
 ```js
 import { readFileSync } from 'node:fs';
@@ -717,8 +801,6 @@ sesion.close();
 servidor.close();
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/node/http2-tls
 openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
@@ -727,12 +809,6 @@ openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
 node servidor-h2.mjs
 ```
 
-**Explicación por bloques:** `openssl` crea una clave y un certificado autofirmado para `localhost`, válido 30 días. El servidor usa los dos con `createSecureServer`. El cliente pasa `ca: cert`, así confía solo en ese certificado sin desactivar la verificación. `alpnProtocol` muestra que se eligió `h2`. Las dos peticiones salen en paralelo por la misma sesión y reciben los streams 1 y 3. El orden de las dos líneas de respuesta puede variar, porque viajan intercaladas. La respuesta confirma HTTP/2 sobre TLS 1.3.
-
-![Captura de terminal: el cliente negocia h2 por ALPN, recibe 200 en los streams 1 y 3 y la respuesta indica HTTP/2.0 sobre TLSv1.3](content/figures/node/https-http2-tls.svg)
-
-**Resultado esperado:**
-
 ```text
 ALPN negociado: h2
 /rutas -> 200 en el stream 1
@@ -740,50 +816,69 @@ ALPN negociado: h2
 respuesta: HTTP/2.0 sobre TLSv1.3
 ```
 
-**Fallo deliberado:** quita `{ ca: cert }` del `connect`. **Error esperado:** `Error: self-signed certificate` (código `DEPTH_ZERO_SELF_SIGNED_CERT`). **Diagnóstico:** el cliente no confía en un certificado que nadie conocido firmó. La solución es darle el certificado con `ca`, no poner `rejectUnauthorized: false` ni `NODE_TLS_REJECT_UNAUTHORIZED=0`.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el ejemplo y anota los números de stream.
-2. **Variación:** agrega una tercera petición `/estado` y predice qué número de stream recibe.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica por qué desactivar la verificación sería peligroso.
-4. **Integración:** prueba el servidor con `curl --cacert cert.pem --http2 -v https://localhost:<puerto>/rutas` y busca `ALPN: server accepted h2` en la salida.
-5. **Diseño:** dibuja qué cambia si un balanceador termina TLS antes de llegar a Node.
-
-**Pista:** si ves un error de certificado, pregúntate quién lo firmó y si el cliente conoce a ese firmante.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Convierte el servidor para que, además, acepte HTTP/1.1. Conéctate con `curl --http1.1 --cacert cert.pem` y comprueba que `protocolo` cambia a `1.1` mientras `tls` sigue siendo TLS 1.3.
-
-**Checklist de salida.**
-
-- [ ] Explicas para qué sirve ALPN.
-- [ ] El ejemplo imprime las cuatro líneas esperadas.
-- [ ] Reprodujiste el error de certificado y lo corregiste con `ca`.
-- [ ] Explicas qué es un stream en HTTP/2.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** desactivar la verificación TLS en desarrollo y olvidarlo en producción, usar el certificado autofirmado fuera de desarrollo y esperar HTTP/2 en el navegador sin TLS. **Siguiente paso:** el tema siguiente baja a los protocolos debajo de HTTP: TCP, UDP y DNS.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el entorno local de RutaFlow, sirve la API con HTTP/2 y un certificado de desarrollo, y documenta en el README cómo confiar en él sin desactivar la verificación.
-
-**Fuente oficial:** [Node.js — HTTP/2](https://nodejs.org/api/http2.html) y [Node.js — TLS (SSL)](https://nodejs.org/api/tls.html).
-
-## Laboratorio práctico
+</details>
 
 ### Proyecto 3: API HTTP nativa de tareas
 
-Desde una carpeta vacía crea `api-http-tareas/` y ejecuta `npm init -y`. Escribe manualmente un proyecto ESM con `src/server.js` y las funciones auxiliares que necesites, sin framework ni archivos copiados de los temas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Entregable:** un servidor con `GET /salud`, `GET /tareas` y `POST /tareas`; body JSON limitado, estados explícitos y representaciones JSON o texto según `Accept`.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto 3: api http nativa de tareas con foco en comprensión antes de implementación.
 
-**Criterios de aceptación observables:**
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto 3: api http nativa de tareas te permite tomar mejores decisiones técnicas.**
 
-1. `GET /salud` responde `200` y JSON válido.
-2. La primera consulta de tareas devuelve una lista vacía; una creación válida devuelve `201`; la consulta posterior contiene la tarea.
-3. JSON inválido devuelve `400`, tamaño excesivo `413`, tipo incompatible `415` y ruta desconocida `404`, sin derribar el proceso.
-4. `Accept: application/json` y `Accept: text/plain` producen representaciones y cabeceras coherentes con `Vary: Accept`.
-5. Un listado paginado valida `after` y `size`, no repite elementos y termina con `next: null`.
-6. El README escrito por ti incluye los comandos `curl`, salidas esperadas y la advertencia de que el estado en memoria desaparece al reiniciar.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en proyecto 3: api http nativa de tareas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto 3: api http nativa de tareas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto 3: API HTTP nativa de tareas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto 3: API HTTP nativa de tareas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto 3: api http nativa de tareas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto 3: api http nativa de tareas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto 3: API HTTP nativa de tareas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto 3: api http nativa de tareas en tu contexto?
+2. ¿Cómo sabrías que proyecto 3: api http nativa de tareas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto 3: api http nativa de tareas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto 3: api http nativa de tareas.
+
+</details>

@@ -3,13 +3,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar `demo-alb` para repartir tráfico entre los nodos de reparto de `demo-asg` (Módulo 21). Prerrequisitos: Módulo 21 completo.
-#### Paso 2 · Contexto y caso real
-La API de seguimiento de RutaFlow necesita repartir solicitudes entre varios nodos de reparto y dejar de enviarles tráfico si alguno deja de responder — sin que nadie tenga que decidir a mano a cuál instancia le toca cada petición.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a declarar demo-alb para repartir tráfico entre los nodos de reparto de demo-asg (Módulo 21). Prerrequisitos: Módulo 21 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a declarar demo-alb para repartir tráfico entre los nodos de reparto de demo-asg (Módulo 21).**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un ALB es una central que escucha, decide según reglas (ruta, host) y envía al grupo objetivo correspondiente, retirando de la rotación cualquier objetivo que falle el healthcheck.
 
 **Conceptos clave:** Application Load Balancer (ALB), grupo objetivo (target group), listener, regla de enrutamiento, Fase 1 vs Fase 2.
@@ -48,7 +57,63 @@ aws elbv2 create-rule --listener-arn "$LISTENER_ARN" --priority 10 \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Enruta seguimiento y operaciones a grupos objetivo distintos. Retira una instancia del grupo de prueba y confirma mediante peticiones que el tráfico se dirige únicamente a destinos saludables.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que elb v2 — balanceadores, grupos objetivo y reglas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| ELB v2 — balanceadores, grupos objetivo y reglas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar ELB v2 — balanceadores, grupos objetivo y reglas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses elb v2 — balanceadores, grupos objetivo y reglas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: elb v2 — balanceadores, grupos objetivo y reglas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- ELB v2 — balanceadores, grupos objetivo y reglas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve elb v2 — balanceadores, grupos objetivo y reglas en tu contexto?
+2. ¿Cómo sabrías que elb v2 — balanceadores, grupos objetivo y reglas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar elb v2 — balanceadores, grupos objetivo y reglas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-22/tema-1-alb.sh — ejecutar con: bash tema-1-alb.sh
+LB_ARN=$(aws elbv2 create-load-balancer --name demo-alb --type application --scheme internet-facing \
+  --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+TG_ARN=$(aws elbv2 create-target-group --name demo-objetivos --protocol HTTP --port 80 --target-type instance \
+  --query 'TargetGroups[0].TargetGroupArn' --output text)
+LISTENER_ARN=$(aws elbv2 create-listener --load-balancer-arn "$LB_ARN" --protocol HTTP --port 80 \
+  --default-actions Type=forward,TargetGroupArn="$TG_ARN" --query 'Listeners[0].ListenerArn' --output text)
+aws elbv2 create-rule --listener-arn "$LISTENER_ARN" --priority 10 \
+  --conditions Field=path-pattern,Values='/api/*' --actions Type=forward,TargetGroupArn="$TG_ARN"
+```
+
 ```bash
 LB_ARN=$(aws elbv2 create-load-balancer --name demo-alb --type application --scheme internet-facing \
   --query 'LoadBalancers[0].LoadBalancerArn' --output text)
@@ -58,35 +123,69 @@ LISTENER_ARN=$(aws elbv2 create-listener --load-balancer-arn "$LB_ARN" --protoco
   --default-actions Type=forward,TargetGroupArn="$TG_ARN" --query 'Listeners[0].ListenerArn' --output text)
 ```
 
-Resultado esperado: los tres comandos devuelven sus ARN respectivos — `demo-alb` ya existe con un listener HTTP y un grupo objetivo `demo-objetivos`, listo para recibir instancias reales del Módulo 21.
-#### Paso 5 · Práctica guiada
-Pista: registrá un target con un ID de instancia que nunca lanzaste (`aws elbv2 register-targets --target-group-arn "$TG_ARN" --targets Id=i-00000000falso`) — ese es el fallo deliberado: el registro se acepta sin error inmediato, pero `describe-target-health` nunca va a reportar esa instancia como saludable porque simplemente no existe.
-#### Paso 6 · Práctica independiente
-Agregá una regla de enrutamiento por ruta (`aws elbv2 create-rule --listener-arn "$LISTENER_ARN" --priority 10 --conditions Field=path-pattern,Values='/api/*' --actions Type=forward,TargetGroupArn="$TG_ARN"`) y confirmá con `describe-rules` que la regla por defecto automática sigue existiendo junto a la nueva.
-#### Paso 7 · Cierre
-Entregá `demo-alb` con su listener y grupo objetivo, el target inválido del Paso 5, y la regla de ruta del Paso 6; explicá qué parte de este flujo es idéntica a como lo harías con Terraform contra un ALB real. Siguiente paso: certificados. Errores comunes: healthcheck superficial y reglas solapadas. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html.
+</details>
 
 ### Tema 2: ACM — certificados TLS con criptografía real · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a emitir el certificado TLS que `demo-alb` (Tema 1) va a necesitar para su listener HTTPS. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-El tráfico de los clientes y conductores de RutaFlow hacia la API de seguimiento debe cifrarse con TLS, y ese certificado debe renovarse sin que nadie tenga que acordarse de hacerlo a mano cada año.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un certificado ACM es una matrícula criptográfica real con fecha y autoridad verificable, aunque en Floci se emita al instante en vez de esperar la validación real de DNS.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** emisión automática, criptografía real (RSA/EC), tipos `AMAZON_ISSUED` vs `PRIVATE`.
+#### ► DE QUÉ TRATA
+Al finalizar vas a emitir el certificado TLS que demo-alb (Tema 1) va a necesitar para su listener HTTPS. Prerrequisitos: Tema 1 de este módulo.
 
-A diferencia de ELB, ACM en Floci sí es completamente funcional de extremo a extremo: cuando solicitas un certificado con `RequestCertificate`, Floci lo emite inmediatamente con estado `ISSUED` —sin esperar validación real de DNS o correo—, pero genera claves criptográficas reales (RSA de 2048 a 4096 bits, o curvas elípticas P-256/P-384/P-521) y una estructura X.509 válida de verdad, no un certificado de mentira. Puedes recuperar el certificado y su cadena en formato PEM con `GetCertificate`, y si lo solicitaste como tipo `PRIVATE` (indicando una autoridad certificadora), incluso exportarlo junto a su clave privada.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a emitir el certificado TLS que demo-alb (Tema 1) va a necesitar para su listener HTTPS.**
 
-Esta combinación —emisión instantánea, pero con criptografía verdadera— es exactamente lo que necesitas para probar localmente flujos que dependen de tener un certificado TLS válido (por ejemplo, para el listener HTTPS de un ALB, o para la Cosmos DB Java SDK que exige TLS), sin la latencia ni la complejidad de un proceso de validación real que en AWS puede tardar minutos u horas.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** ACM en Floci es como un notario de práctica en una escuela de derecho: emite documentos con formato y firma perfectamente válidos técnicamente, de forma instantánea, sin el proceso de verificación de identidad completo que exigiría un notario real.
+#### ► LA ANALOGÍA
+Piensa en acm — certificados tls con criptografía real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Tener certificados reales pero de emisión instantánea te permite practicar arquitecturas HTTPS-first (la única forma correcta de construir en la nube hoy) sin fricción, algo que sería mucho más lento de ensayar contra AWS real cada vez.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que acm — certificados tls con criptografía real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Practícalo tú:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| ACM — certificados TLS con criptografía real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar ACM — certificados TLS con criptografía real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses acm — certificados tls con criptografía real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: acm — certificados tls con criptografía real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- ACM — certificados TLS con criptografía real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve acm — certificados tls con criptografía real en tu contexto?
+2. ¿Cómo sabrías que acm — certificados tls con criptografía real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar acm — certificados tls con criptografía real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 # archivo: src/labs/modulo-22/tema-2-acm.sh — ejecutar con: bash tema-2-acm.sh
 CERT_ARN=$(aws acm request-certificate --domain-name api.demo.example.com --validation-method DNS \
@@ -95,20 +194,6 @@ aws acm describe-certificate --certificate-arn "$CERT_ARN" --query 'Certificate.
 aws acm get-certificate --certificate-arn "$CERT_ARN"
 ```
 
-`--domain-name` es el dominio para el que pedís el certificado; `--validation-method DNS` elige cómo vas a demostrarle a la autoridad certificadora que sos dueño de ese dominio (agregando un registro DNS específico, la alternativa a validar por correo); `--certificate-arn` identifica el certificado ya emitido en los comandos siguientes. En resumen: `--certificate-arn` es la bandera que fija a qué certificado te referís.
-
-**Resultado esperado:** `describe-certificate` devuelve `ISSUED` de inmediato; `get-certificate` devuelve un PEM real con una cadena X.509 válida — puedes verificarlo pasando el `Certificate` devuelto a `openssl x509 -noout -text`.
-
-**Modifica esto:** repite la solicitud con `--certificate-authority-arn <arn>` (tipo `PRIVATE`) y confirma que ahora sí puedes exportar la clave privada con `export-certificate`, algo que un certificado `AMAZON_ISSUED` no permite.
-
-**Cuándo no usarlo:** no confíes en la emisión instantánea como comportamiento realista de tiempos; en AWS real la validación DNS puede tardar minutos, y tu automatización debe esperar el evento correspondiente, no asumir éxito inmediato.
-
-**Cómo crece tu proyecto:** este certificado es el que adjuntarás al listener HTTPS del ALB para servir su API de seguimiento por TLS.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Configura el certificado del endpoint de laboratorio y verifica nombre, cadena y vencimiento con un cliente TLS. Un certificado válido para otro nombre debe producir un error verificable, no una excepción desactivada.
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -118,21 +203,24 @@ CERT_ARN=$(aws acm request-certificate --domain-name api.demo.example.com --vali
   --query 'CertificateArn' --output text)
 aws acm describe-certificate --certificate-arn "$CERT_ARN" --query 'Certificate.Status' --output text
 ```
-Resultado esperado: `describe-certificate` devuelve `ISSUED` de inmediato, con una cadena X.509 real detrás (verificable con `openssl x509 -noout -text`), aunque la validación DNS real nunca ocurrió — Floci no esperó nada, a diferencia de AWS real.
-#### Paso 5 · Práctica guiada
-Pista: documentá qué pasaría contra AWS real si pidieras un certificado para un dominio que no controlás y nunca agregaras el registro DNS de validación — ese es el fallo deliberado que Floci no puede reproducir: el certificado se quedaría en `PENDING_VALIDATION` indefinidamente, nunca en `ISSUED`, porque ahí sí hay una comprobación real detrás.
-#### Paso 6 · Práctica independiente
-Documentá, para `api.demo.example.com`, cuándo ACM intentaría renovar automáticamente este certificado en AWS real (pista: unos 60 días antes de expirar, siempre que el registro DNS de validación siga existiendo) y qué rompería esa renovación automática si alguien borrara ese registro de Route53 por error.
-#### Paso 7 · Cierre
-Entregá el certificado emitido del Paso 4, el escenario de validación pendiente del Paso 5, y la renovación documentada del Paso 6; explicá por qué la emisión instantánea de Floci es útil para practicar pero no para medir tiempos reales. Siguiente paso: caché. Errores comunes: certificados vencidos y claves expuestas. Fuente oficial: https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html.
+
+</details>
 
 ### Tema 3: CloudFront — distribución de contenido y control de acceso al origen · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a distribuir las fotos de entrega de `pruebas-entrega` (Módulo 2) por CDN, en vez de servirlas directamente desde S3. Prerrequisitos: Módulo 2 completo.
-#### Paso 2 · Contexto y caso real
-Las fotos de `pruebas-entrega` deben llegar rápido al cliente sin que el bucket de origen quede expuesto públicamente — exactamente el problema que resuelve una distribución con control de acceso al origen.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a distribuir las fotos de entrega de pruebas-entrega (Módulo 2) por CDN, en vez de servirlas directamente desde S3. Prerrequisitos: Módulo 2 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a distribuir las fotos de entrega de pruebas-entrega (Módulo 2) por CDN, en vez de servirlas directamente desde S3.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 CloudFront es una red de sucursales: la caché evita que cada petición tenga que viajar hasta el almacén central (el bucket S3 de origen).
 
 **Conceptos clave:** distribución, política de caché, invalidación, control de acceso de origen (OAC).
@@ -170,28 +258,83 @@ aws cloudfront create-invalidation --distribution-id "$DIST_ID" \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Distribuye solo recursos públicos del seguimiento mediante el borde. Comprueba que una evidencia privada no se vuelve accesible al reutilizar la misma política de caché o de origen.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cloudfront — distribución de contenido y control de acceso al origen resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CloudFront — distribución de contenido y control de acceso al origen se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CloudFront — distribución de contenido y control de acceso al origen | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses cloudfront — distribución de contenido y control de acceso al origen por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cloudfront — distribución de contenido y control de acceso al origen funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- CloudFront — distribución de contenido y control de acceso al origen existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cloudfront — distribución de contenido y control de acceso al origen en tu contexto?
+2. ¿Cómo sabrías que cloudfront — distribución de contenido y control de acceso al origen no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cloudfront — distribución de contenido y control de acceso al origen?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-22/tema-3-cloudfront.sh — ejecutar con: bash tema-3-cloudfront.sh
+DIST_ID=$(aws cloudfront create-distribution --distribution-config \
+  '{"CallerReference":"demo-1","Enabled":true,"Origins":{"Quantity":1,"Items":[{"Id":"origen-s3","DomainName":"curso-cloud-local.s3.amazonaws.com","S3OriginConfig":{"OriginAccessIdentity":""}}]},"DefaultCacheBehavior":{"TargetOriginId":"origen-s3","ViewerProtocolPolicy":"redirect-to-https","CachePolicyId":"658327ea-f89d-4fab-a63d-7e88639e58f6"}}' \
+  --query 'Distribution.Id' --output text)
+aws cloudfront create-invalidation --distribution-id "$DIST_ID" \
+  --invalidation-batch '{"Paths":{"Quantity":1,"Items":["/*"]},"CallerReference":"inv-1"}'
+```
+
 ```bash
 DIST_ID=$(aws cloudfront create-distribution --distribution-config \
   '{"CallerReference":"pruebas-entrega-1","Enabled":true,"Origins":{"Quantity":1,"Items":[{"Id":"origen-pruebas-entrega","DomainName":"pruebas-entrega.s3.amazonaws.com","S3OriginConfig":{"OriginAccessIdentity":""}}]},"DefaultCacheBehavior":{"TargetOriginId":"origen-pruebas-entrega","ViewerProtocolPolicy":"redirect-to-https","CachePolicyId":"658327ea-f89d-4fab-a63d-7e88639e58f6"}}' \
   --query 'Distribution.Id' --output text)
 ```
 
-Resultado esperado: la distribución pasa a `Deployed` de inmediato con un `DomainName` tipo `{id}.cloudfront.net` — ese dominio, no la URL directa de S3, es el que debería recibir el cliente del pedido para ver su foto de entrega.
-#### Paso 5 · Práctica guiada
-Pista: intentá borrar esta distribución directamente con `aws cloudfront delete-distribution --id "$DIST_ID" --if-match <etag>` sin deshabilitarla antes — ese es el fallo deliberado: `DistributionNotDisabled`, porque CloudFront exige desactivar explícitamente una distribución (`update-distribution` con `Enabled=false`) antes de permitir borrarla.
-#### Paso 6 · Práctica independiente
-Creá una invalidación sobre `/envio-4471/*` (`aws cloudfront create-invalidation --distribution-id "$DIST_ID" --invalidation-batch '{"Paths":{"Quantity":1,"Items":["/envio-4471/*"]},"CallerReference":"inv-1"}'`) y confirmá que se marca `Completed` de inmediato, simulando el caso real de "el conductor volvió a subir la foto, hay que forzar que ya no se sirva la versión cacheada vieja".
-#### Paso 7 · Cierre
-Entregá la distribución creada sobre `pruebas-entrega`, el error de borrado sin deshabilitar del Paso 5, y la invalidación del Paso 6; explicá por qué nunca deberías cachear sin control de acceso al origen una foto de entrega que podría ser sensible. Siguiente paso: DNS. Errores comunes: cachear datos privados y olvidar invalidación. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html.
+</details>
 
 ### Tema 4: Route53 — zonas alojadas y registros de recursos · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear la zona DNS de `demo.example.com` y apuntar `fotos.demo.example.com` hacia la distribución CloudFront del Tema 3. Prerrequisitos: Tema 3 de este módulo.
-#### Paso 2 · Contexto y caso real
-El cliente de RutaFlow necesita llegar a `fotos.demo.example.com` sin que le importe si el `DomainName` real de CloudFront cambia alguna vez — ese nivel de indirección es exactamente lo que resuelve una zona DNS propia.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear la zona DNS de demo.example.com y apuntar fotos.demo.example.com hacia la distribución CloudFront del Tema 3. Prerrequisitos: Tema 3 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear la zona DNS de demo.example.com y apuntar fotos.demo.example.com hacia la distribución CloudFront del Tema 3.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 DNS es una agenda jerárquica que traduce un nombre legible a un destino real, y una zona alojada es la página de esa agenda que le corresponde a tu dominio.
 
 **Conceptos clave:** zona alojada, registro SOA/NS, `ChangeResourceRecordSets`, comprobación de estado (health check).
@@ -227,28 +370,84 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID"
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea la zona alojada del seguimiento y publica los subdominios de sus servicios como registros separados. Intenta borrar el `SOA` del vértice y conserva el rechazo como prueba de que ese registro lo gestiona el servicio, no tú.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que route53 — zonas alojadas y registros de recursos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Route53 — zonas alojadas y registros de recursos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Route53 — zonas alojadas y registros de recursos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses route53 — zonas alojadas y registros de recursos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: route53 — zonas alojadas y registros de recursos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Route53 — zonas alojadas y registros de recursos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve route53 — zonas alojadas y registros de recursos en tu contexto?
+2. ¿Cómo sabrías que route53 — zonas alojadas y registros de recursos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar route53 — zonas alojadas y registros de recursos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-22/tema-4-route53.sh — ejecutar con: bash tema-4-route53.sh
+ZONE_ID=$(aws route53 create-hosted-zone --name demo.example.com --caller-reference "$(date +%s)" \
+  --query 'HostedZone.Id' --output text)
+aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \
+  '{"Changes":[{"Action":"CREATE","ResourceRecordSet":{"Name":"fotos.demo.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"d111111abcdef8.cloudfront.net"}]}}]}'
+aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID"
+```
+
 ```bash
 ZONE_ID=$(aws route53 create-hosted-zone --name demo.example.com --caller-reference "$(date +%s)" \
   --query 'HostedZone.Id' --output text)
 aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \
   '{"Changes":[{"Action":"CREATE","ResourceRecordSet":{"Name":"fotos.demo.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"d111111abcdef8.cloudfront.net"}]}}]}'
 ```
-Resultado esperado: la zona nace con registros `SOA`/`NS` automáticos, y el `CNAME` nuevo queda `INSYNC` de inmediato, apuntando `fotos.demo.example.com` hacia la distribución del Tema 3.
-#### Paso 5 · Práctica guiada
-Pista: intentá borrar el registro `SOA` del vértice de la zona (`Action: DELETE` sobre ese registro) — ese es el fallo deliberado: Route53 lo rechaza, porque esos registros los gestiona el propio servicio automáticamente, no son tuyos para borrar.
-#### Paso 6 · Práctica independiente
-Agregá un health check HTTP sobre el destino real, y documentá qué TTL elegirías para el `CNAME` si tuvieras que cambiar de distribución CloudFront con frecuencia durante pruebas (pista: un TTL bajo acelera la propagación de cambios futuros, a costa de más consultas DNS).
-#### Paso 7 · Cierre
-Entregá la zona y el `CNAME` creados, el intento de borrar el `SOA` del Paso 5, y la decisión de TTL del Paso 6; explicá por qué Floci no puede confirmar que `fotos.demo.example.com` resuelva de verdad desde tu navegador. Siguiente paso: TLS. Errores comunes: TTL excesivo y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html.
+
+</details>
 
 ### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a encadenar los cuatro servicios de este módulo: `demo-alb` (Tema 1) con el certificado de `api.demo.example.com` (Tema 2), y el `CNAME` de Route53 apuntando al balanceador mientras `fotos.demo.example.com` sigue apuntando a CloudFront. Prerrequisitos: Temas 1-4 de este módulo.
-#### Paso 2 · Contexto y caso real
-La API de seguimiento de RutaFlow (servida por `demo-alb`, no por archivos estáticos) debe cifrar su tráfico y ser alcanzable por `api.demo.example.com` — un recorrido distinto al de las fotos estáticas, disponibles en `fotos.demo.example.com` por CloudFront.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a encadenar los cuatro servicios de este módulo: demo-alb (Tema 1) con el certificado de api.demo.example.com (Tema 2), y el CNAME de Route53 apuntando al balanceador mientras fotos.demo.example.com sigue apuntando a CloudFront. Prerrequisitos: Temas 1-4 de este…
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a encadenar los cuatro servicios de este módulo: demo-alb (Tema 1) con el certificado de api.demo.example.com (Tema 2), y el CNAME de Route53 apuntando al balanceador mientras fotos.demo.example.com sigue apuntando a CloudFront.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 ACM es la identidad criptográfica; el ALB es la recepción que termina esa conexión TLS; Route53 es el directorio que le dice al cliente a qué recepción ir.
 
 **Conceptos clave:** cadena ACM → listener ALB → Route53, dos nombres DNS para dos servicios, terminación TLS.
@@ -294,8 +493,66 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID" --query "Resou
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Dibuja el recorrido DNS, TLS, distribución y balanceador del seguimiento. Provoca un fallo en una capa y conserva la prueba que lo distingue de un error de aplicación.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cómo se integran los cuatro servicios en una arquitectura de borde real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cómo se integran los cuatro servicios en una arquitectura de borde real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cómo se integran los cuatro servicios en una arquitectura de borde real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses cómo se integran los cuatro servicios en una arquitectura de borde real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cómo se integran los cuatro servicios en una arquitectura de borde real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cómo se integran los cuatro servicios en una arquitectura de borde real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cómo se integran los cuatro servicios en una arquitectura de borde real en tu contexto?
+2. ¿Cómo sabrías que cómo se integran los cuatro servicios en una arquitectura de borde real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cómo se integran los cuatro servicios en una arquitectura de borde real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-22/tema-5-cadena-completa.sh — ejecutar con: bash tema-5-cadena-completa.sh
+# Cada ARN se recupera por nombre: este bloque no depende de variables de
+# los Temas 1, 2 y 4 — puedes correrlo en una terminal nueva.
+LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+LISTENER_ARN=$(aws elbv2 describe-listeners --load-balancer-arn "$LB_ARN" --query 'Listeners[0].ListenerArn' --output text)
+CERT_ARN=$(aws acm list-certificates --query "CertificateSummaryList[?DomainName=='api.demo.example.com'].CertificateArn | [0]" --output text)
+ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name demo.example.com --query 'HostedZones[0].Id' --output text)
+
+aws acm describe-certificate --certificate-arn "$CERT_ARN" --query 'Certificate.Status'
+aws elbv2 modify-listener --listener-arn "$LISTENER_ARN" --protocol HTTPS --port 443 \
+  --certificates CertificateArn="$CERT_ARN"
+aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID" --query "ResourceRecordSets[?Type=='CNAME']"
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -305,51 +562,28 @@ aws elbv2 add-listener-certificates --listener-arn "$LISTENER_ARN" --certificate
 aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch \
   '{"Changes":[{"Action":"UPSERT","ResourceRecordSet":{"Name":"api.demo.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"demo-alb-123456.us-east-1.elb.amazonaws.com"}]}}]}'
 ```
-Resultado esperado: el listener de `demo-alb` ahora tiene adjunto el certificado de `api.demo.example.com` del Tema 2; `api.demo.example.com` queda apuntando al nombre DNS del balanceador — la cadena completa (Route53 → ALB → certificado ACM) queda declarada de punta a punta.
-#### Paso 5 · Práctica guiada
-Pista: apuntá el `CNAME` de `api.demo.example.com` al `DomainName` de la distribución CloudFront del Tema 3 en vez de al del ALB — ese es el fallo deliberado: técnicamente el registro se crea sin error, pero la API de seguimiento (que vive en el ALB, no en CloudFront) deja de ser alcanzable por ese nombre, un error de "apunté bien el DNS pero al servicio equivocado".
-#### Paso 6 · Práctica independiente
-Corregí el `CNAME` de vuelta al nombre del ALB, y documentá qué pasaría si el certificado adjunto al listener fuera para un dominio distinto a `api.demo.example.com` (pista: el navegador mostraría una advertencia de certificado no coincidente, aunque la conexión TLS en sí se establezca).
-#### Paso 7 · Cierre
-Entregá la cadena completa declarada en el Paso 4, el `CNAME` apuntado al destino equivocado del Paso 5, y la corrección más la reflexión sobre dominios no coincidentes del Paso 6; explicá por qué las fotos (CloudFront) y la API (ALB) de RutaFlow necesitan cadenas DNS separadas aunque comparten el mismo dominio base. Siguiente paso: observabilidad. Errores comunes: terminación en lugar incorrecto y mixed content. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html.
+
+</details>
 
 ### Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min
 
-**Prerrequisito:** temas «ELB v2 — balanceadores…» y «CloudFront — distribución de contenido» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** poner un Web Application Firewall delante de la API con una regla administrada contra ataques comunes y una regla de límite de peticiones por IP, y explicar qué cubre la protección DDoS del proveedor.
-
-**¿Por qué es importante?** La API de seguimiento de RutaFlow es pública. Sin protección, un bot puede consultarla millones de veces o probar inyecciones SQL. Filtrar en el borde evita que ese tráfico llegue a tu código y a tu factura.
-
-#### Paso 1 · Objetivo y preparación
-
+#### ► DE QUÉ TRATA
 Usa Terraform con el proveedor AWS. Puedes practicar el plan contra el emulador local; el bloqueo real se prueba en una cuenta con CloudFront o un balanceador.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Usa Terraform con el proveedor AWS.**
 
-Un competidor raspaba la API de seguimiento de RutaFlow con miles de peticiones por minuto para conocer volúmenes de envío. La base de datos se saturó en hora pico. Una regla de límite por IP en el WAF lo frenó sin tocar el código.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA ANALOGÍA
+Piensa en waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** WAF, ACL web, regla administrada, regla basada en tasa (*rate-based*), acción `block` y `count`, ataque DDoS de capa 3/4 y de capa 7, AWS Shield.
-
-Hay dos tipos de ataques de denegación de servicio:
-
-| Capa | Ejemplo | Quién protege |
-|---|---|---|
-| 3/4 (red) | inundación de paquetes SYN o UDP | protección del proveedor (Shield Standard, incluida) |
-| 7 (aplicación) | miles de peticiones HTTP «válidas» | tú, con un WAF |
-
-Un **WAF** revisa cada petición HTTP con reglas en orden:
-
-- **Reglas administradas:** conjuntos mantenidos por el proveedor contra ataques comunes (inyección SQL, XSS, bots conocidos).
-- **Reglas basadas en tasa:** bloquean una IP que supera N peticiones en una ventana de tiempo.
-- **Acción `count`:** cuenta sin bloquear; úsala primero para ver el efecto antes de bloquear.
-
-**Analogía:** la protección DDoS del proveedor es el muro del edificio contra una multitud; el WAF es el guardia de la puerta que revisa a cada persona y no deja entrar a quien ya pasó cien veces en un minuto. La analogía falla en que el guardia también puede equivocarse: por eso se empieza contando.
-
-**Límite de uso:** un WAF no corrige vulnerabilidades del código: es una capa más. Los límites por IP afectan a usuarios detrás de la misma IP (una empresa, un operador móvil); ajusta el umbral con datos reales.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     I["Internet"] --> S["Shield: capas 3/4"]
@@ -359,9 +593,51 @@ flowchart LR
     C --> A["API RutaFlow"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `infra/waf.tf`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde en tu contexto?
+2. ¿Cómo sabrías que waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    I["Internet"] --> S["Shield: capas 3/4"]
+    S --> W["WAF: reglas administradas + límite por IP"]
+    W -->|permitido| C["CloudFront / ALB"]
+    W -->|bloqueado| X["403"]
+    C --> A["API RutaFlow"]
+```
 
 ```hcl
 resource "aws_wafv2_web_acl" "api" {
@@ -424,8 +700,6 @@ resource "aws_wafv2_web_acl_association" "alb" {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd infra
 terraform plan
@@ -433,80 +707,140 @@ terraform plan
 hey -n 2000 -c 50 https://api.rutaflow.co/seguimiento/ENV-42
 ```
 
-**Explicación por bloques:** La ACL web deja pasar todo por defecto y evalúa dos reglas en orden. La primera aplica el conjunto administrado de reglas comunes de AWS (`override_action none` respeta las acciones del conjunto). La segunda bloquea cualquier IP que supere 600 peticiones en cinco minutos. Cada regla publica métricas y muestras de peticiones para revisar qué bloquea. La asociación conecta la ACL con el balanceador de la API.
-
-**Resultado esperado:**
-
 ```text
 terraform plan: «Plan: 2 to add» con aws_wafv2_web_acl.api y su asociación.
 En la prueba de carga desde una IP: las primeras peticiones responden 200 y, al superar el límite, el resto responde 403.
 En CloudWatch, la métrica limite-por-ip muestra las peticiones bloqueadas.
 ```
 
-**Fallo deliberado:** activa la regla de límite directamente con `block` y un umbral de 50. **Error esperado:** los operadores de una oficina que comparten IP pública reciben 403 en horas pico. **Diagnóstico:** el umbral no se midió. Empieza con `count {}`, revisa la distribución de peticiones por IP una semana y fija el límite por encima del uso legítimo más alto.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** planea la ACL y explica el orden de las reglas.
-2. **Variación:** cambia la regla de límite a `count {}` y revisa las peticiones de muestra.
-3. **Diagnóstico:** reproduce el fallo deliberado con un umbral muy bajo.
-4. **Integración:** agrega una regla que bloquee países donde RutaFlow no opera, y discute sus riesgos.
-5. **Diseño:** escribe qué harías durante un ataque DDoS de capa 7: métricas a mirar, a quién avisar y qué regla ajustar.
-
-**Pista:** antes de bloquear, cuenta: las métricas te dicen si la regla atraparía usuarios legítimos.
-
-#### Paso 6 · Práctica independiente
-
-Agrega una regla basada en tasa solo para la ruta `/login` (con `scope_down_statement` por URI) con un límite más estricto que el resto.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingues ataques de capa 3/4 y de capa 7.
-- [ ] La ACL tiene reglas administradas y un límite por IP.
-- [ ] Reprodujiste el bloqueo de usuarios legítimos.
-- [ ] Sabes empezar en modo conteo.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** bloquear sin medir, creer que el WAF arregla vulnerabilidades del código y no revisar las muestras de peticiones bloqueadas. **Siguiente paso:** el tema «Cómo se integran los cuatro servicios» coloca el WAF en la cadena completa del borde.
-
-**Transferencia al proyecto integrador «RutaFlow»:** protege la API pública de seguimiento de RutaFlow con reglas administradas y un límite por IP medido con datos de una semana.
-
-**Fuente oficial:** [AWS WAF — How AWS WAF works](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html) y [AWS Shield — Overview](https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html).
-
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** crear un Application Load Balancer con un grupo objetivo y una regla de enrutamiento por ruta, y luego solicitar un certificado ACM, crear una distribución CloudFront con origen S3 y publicar una zona Route53 con un registro apuntando a ella.
-
-**Requisitos previos:** un bucket S3 existente (puedes reutilizar `curso-cloud-local` de módulos anteriores) y al menos una instancia EC2 del Módulo 21 si quieres registrar un objetivo real en el grupo objetivo.
+</details>
 
 ### Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea el balanceador | `aws elbv2 create-load-balancer --name mi-alb --type application --scheme internet-facing` | Registra un ALB en estado `provisioning`, que pasa a `active` de inmediato | Un `LoadBalancerArn` en la respuesta |
-| 2 | Crea el grupo objetivo | `aws elbv2 create-target-group --name mis-objetivos --protocol HTTP --port 80 --target-type instance` | Define dónde se enviaría el tráfico | Un `TargetGroupArn` |
-| 3 | Registra un objetivo | `aws elbv2 register-targets --target-group-arn <tg-arn> --targets Id=<instance-id>,Port=8080` | Asocia una instancia EC2 real del Módulo 21 al grupo | Sin salida (éxito silencioso) |
-| 4 | Crea el listener | `aws elbv2 create-listener --load-balancer-arn <lb-arn> --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=<tg-arn>` | Crea automáticamente una regla por defecto inmutable | Un `ListenerArn` |
-| 5 | Añade una regla por ruta | `aws elbv2 create-rule --listener-arn <listener-arn> --priority 10 --conditions Field=path-pattern,Values='/api/*' --actions Type=forward,TargetGroupArn=<tg-arn>` | Enruta específicamente el tráfico bajo `/api/*` | Un `RuleArn` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 22.1 — application load balancer con enrutamiento por ruta con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 22.1 — application load balancer con enrutamiento por ruta te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 22.1 — application load balancer con enrutamiento por ruta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 22.1 — application load balancer con enrutamiento por ruta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 22.1 — application load balancer con enrutamiento por ruta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 22.1 — application load balancer con enrutamiento por ruta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 22.1 — application load balancer con enrutamiento por ruta en tu contexto?
+2. ¿Cómo sabrías que laboratorio 22.1 — application load balancer con enrutamiento por ruta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 22.1 — application load balancer con enrutamiento por ruta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 22.1 — application load balancer con enrutamiento por ruta.
+
+</details>
 
 ### Laboratorio 22.2 — Certificado, distribución CDN y zona DNS
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Solicita un certificado | `aws acm request-certificate --domain-name miapp.example.com --validation-method DNS` | Emite un certificado real con estado `ISSUED` de inmediato | Un `CertificateArn` |
-| 2 | Crea una distribución con origen S3 | `aws cloudfront create-distribution --distribution-config '{"CallerReference":"ref-1","Enabled":true,"Origins":{"Quantity":1,"Items":[{"Id":"origen-s3","DomainName":"curso-cloud-local.s3.amazonaws.com","S3OriginConfig":{"OriginAccessIdentity":""}}]},"DefaultCacheBehavior":{"TargetOriginId":"origen-s3","ViewerProtocolPolicy":"redirect-to-https","CachePolicyId":"658327ea-f89d-4fab-a63d-7e88639e58f6"}}'` | Crea la distribución en estado `Deployed` de inmediato | Un `Id` de 14 caracteres y un `DomainName` tipo `{id}.cloudfront.net` |
-| 3 | Crea la zona alojada | `aws route53 create-hosted-zone --name miapp.example.com --caller-reference "$(date +%s)"` | Crea la zona con registros SOA/NS automáticos | Un `Id` de zona (formato `Z...`) |
-| 4 | Añade un CNAME de subdominio hacia CloudFront | `aws route53 change-resource-record-sets --hosted-zone-id <zone-id> --change-batch '{"Changes":[{"Action":"CREATE","ResourceRecordSet":{"Name":"fotos.miapp.example.com.","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"<distribution-domain>"}]}}]}'` | Conecta el nombre de las fotos con la distribución CDN; el vértice de la zona no admite un CNAME | Estado `INSYNC` inmediato |
-| 5 | Verifica el registro | `aws route53 list-resource-record-sets --hosted-zone-id <zone-id>` | Confirma que el registro quedó guardado | `fotos.miapp.example.com` apunta a tu distribución |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Verificación:** el laboratorio se considera exitoso si `describe-load-balancers` muestra tu ALB `active` con un listener y una regla por ruta `/api/*`, `acm describe-certificate` muestra el certificado en estado `ISSUED` con claves criptográficas reales, `cloudfront get-distribution` devuelve tu distribución en estado `Deployed`, y `route53 list-resource-record-sets` muestra el CNAME de `fotos.miapp.example.com` apuntando al dominio de CloudFront.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 22.2 — certificado, distribución cdn y zona dns con foco en comprensión antes de implementación.
 
-**Errores comunes y soluciones**
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 22.2 — certificado, distribución cdn y zona dns te permite tomar mejores decisiones técnicas.**
 
-- **`CreateListener` falla con conflicto de prioridad.** Cada regla necesita una prioridad única dentro del mismo listener; revisa con `describe-rules` qué prioridades ya están en uso antes de crear una nueva.
-- **`DeleteDistribution` falla con `DistributionNotDisabled`.** CloudFront exige que `Enabled` sea `false` antes de poder eliminar la distribución; llama primero a `update-distribution` con el `ETag` correcto para deshabilitarla.
-- **`ChangeResourceRecordSets` falla al intentar borrar el registro SOA o NS del vértice.** Esos registros los gestiona Route53 automáticamente y no se pueden eliminar; solo puedes añadir, modificar o quitar registros adicionales.
-- **`RequestCertificate` con `CertificateAuthorityArn` falla al exportar.** Solo los certificados de tipo `PRIVATE` se pueden exportar con `ExportCertificate`; los `AMAZON_ISSUED` no admiten exportación de clave privada, igual que en AWS real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
----
+#### ► LA ANALOGÍA
+Piensa en laboratorio 22.2 — certificado, distribución cdn y zona dns como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 22.2 — certificado, distribución cdn y zona dns resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 22.2 — Certificado, distribución CDN y zona DNS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 22.2 — Certificado, distribución CDN y zona DNS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 22.2 — certificado, distribución cdn y zona dns por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 22.2 — certificado, distribución cdn y zona dns funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 22.2 — Certificado, distribución CDN y zona DNS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 22.2 — certificado, distribución cdn y zona dns en tu contexto?
+2. ¿Cómo sabrías que laboratorio 22.2 — certificado, distribución cdn y zona dns no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 22.2 — certificado, distribución cdn y zona dns?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 22.2 — certificado, distribución cdn y zona dns.
+
+</details>

@@ -2,33 +2,73 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: flutter test y WidgetTester · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir un widget test con `WidgetTester` que confirme que `ListaEnvios` muestra "Sin envíos" cuando la lista está vacía, sin levantar un emulador. **Prerrequisitos:** Flutter estable y Dart; confirma `flutter doctor`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un cambio de UI en la pantalla de lista de envíos rompió silenciosamente el estado vacío (el texto "Sin envíos" dejó de mostrarse), y nadie lo notó hasta que un usuario reportó una pantalla en blanco — nada en el pipeline de CI lo habría detectado sin un test que monte el widget real.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir un widget test con WidgetTester que confirme que ListaEnvios muestra "Sin envíos" cuando la lista está vacía, sin levantar un emulador. Prerrequisitos: Flutter estable y Dart; confirma flutter doctor.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`WidgetTester` simula un usuario interactuando con el árbol de widgets en memoria, sin necesitar un dispositivo o emulador real; `pump()` avanza un frame, permitiendo verificar el estado exacto del árbol en cualquier punto. La analogía: un maniquí de pruebas que reacciona exactamente como un usuario real, pero en un entorno de laboratorio controlado y repetible.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir un widget test con WidgetTester que confirme que ListaEnvios muestra "Sin envíos" cuando la lista está vacía, sin levantar un emulador.**
 
-**¿Por qué es importante?** Un widget test confirma el comportamiento visible real del árbol de widgets sin el costo de un emulador, detectando regresiones de UI antes de que lleguen a producción.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Conceptos clave:** WidgetTester, pump(), árbol de widgets en memoria, testWidgets.
+#### ► LA ANALOGÍA
+Piensa en flutter test y widgettester como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Añade pruebas del estado vacío y con entregas de la lista real. Cambia temporalmente el texto o la condición de vacío y verifica que el test detecta la regresión visible.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que flutter test y widgettester resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Límites y decisión de uso:** Un widget test verifica comportamiento en el entorno de prueba, pero no la cámara, permisos ni integración completa del dispositivo. Combínalo con pruebas de integración para esas fronteras, como distingue la [documentación de Flutter](https://docs.flutter.dev/testing/overview).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| flutter test y WidgetTester se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía y genera tu propio proyecto:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar flutter test y WidgetTester | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses flutter test y widgettester por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: flutter test y widgettester funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- flutter test y WidgetTester existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve flutter test y widgettester en tu contexto?
+2. ¿Cómo sabrías que flutter test y widgettester no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar flutter test y widgettester?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 flutter create ejemplo_flutter_testing
 cd ejemplo_flutter_testing
 ```
 
-Crea `lib/buscador_envios.dart` con el widget mínimo que vas a probar:
 ```dart
 import 'package:flutter/material.dart';
 
@@ -46,7 +86,6 @@ class ListaEnvios extends StatelessWidget {
 }
 ```
 
-Crea `test/lista_envios_test.dart` con una prueba completa:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,48 +98,79 @@ void main() {
   });
 }
 ```
-Ejecuta desde la carpeta que contiene `pubspec.yaml`:
+
 ```bash
 flutter test test/lista_envios_test.dart
 ```
-Resultado esperado: el test pasa en verde, confirmando que el texto "Sin envíos" aparece exactamente cuando la lista está vacía, sin necesidad de ningún emulador corriendo.
 
-**Fallo deliberado:** cambia la aserción a `expect(find.text('Sin envíos'), findsNothing)` sin tocar el widget real. El test ahora falla porque SÍ encuentra el texto, confirmando que el test original estaba verificando correctamente lo que el widget realmente hace; restaura la aserción original antes de continuar.
-
-#### Paso 5 · Práctica guiada
-Pista: antes de corregir, lee el mensaje de fallo completo (`Expected: no matching nodes... Actual: ...`) — confirma que el framework te dice exactamente qué encontró, no solo que algo falló.
-
-#### Paso 6 · Práctica independiente
-Agrega un segundo test que confirme que, con al menos un envío en la lista, el texto "Sin envíos" NO aparece (`findsNothing`), cubriendo ambos estados del mismo widget.
-
-#### Paso 7 · Cierre
-Entrega el test del estado vacío del Paso 4, la aserción invertida del Paso 5, y el segundo test del estado con datos del Paso 6; explica por qué `WidgetTester` permite verificar el árbol de widgets sin el costo de un emulador real. Como siguiente paso, usa `pumpAndSettle` para probar interacciones asíncronas e integration tests de extremo a extremo. Errores comunes: usar `tester.pump()` una sola vez para un widget con animaciones o datos asíncronos que necesitan varios frames; probar implementación interna (variables privadas) en vez del resultado visible para el usuario. Fuentes oficiales: https://docs.flutter.dev/testing/overview y https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html.
+</details>
 
 ### Tema 2: pumpAndSettle, golden e integration tests · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a usar `pumpAndSettle()` para esperar a que una animación de carga termine antes de verificar el resultado, y vas a reproducir el fallo clásico de un test que verifica demasiado pronto. **Prerrequisitos:** Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un test que verifica el resultado de una búsqueda de envíos justo después de disparar la búsqueda (sin esperar a que la animación de carga termine) falla intermitentemente: a veces el spinner todavía está en pantalla cuando el test ya está verificando el resultado final.
+#### ► DE QUÉ TRATA
+Al finalizar vas a usar pumpAndSettle() para esperar a que una animación de carga termine antes de verificar el resultado, y vas a reproducir el fallo clásico de un test que verifica demasiado pronto. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`pumpAndSettle()` avanza frames repetidamente hasta que no quede ninguna animación o frame pendiente, aproximando lo que un usuario real experimentaría esperando a que la pantalla "se asiente"; si algo mantiene la UI en animación perpetua, `pumpAndSettle()` nunca termina y el test falla por timeout. La analogía: esperar a que una escena termine de moverse antes de tomar la fotografía, en vez de disparar el obturador a mitad del movimiento.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a usar pumpAndSettle() para esperar a que una animación de carga termine antes de verificar el resultado, y vas a reproducir el fallo clásico de un test que verifica demasiado pronto.**
 
-**¿Por qué es importante?** `pumpAndSettle()` evita fallas intermitentes esperando explícitamente a que la UI se estabilice, pero falla por timeout ante animaciones genuinamente infinitas — una limitación que hay que conocer, no un bug.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Conceptos clave:** pumpAndSettle(), estabilización de frames, falla intermitente como señal de sincronización faltante.
+#### ► LA ANALOGÍA
+Piensa en pumpandsettle, golden e integration tests como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Controla la respuesta del repositorio durante la búsqueda de una guía. Avanza el reloj del test y verifica carga, resultado y error sin depender de una petición real o de esperas indefinidas.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pumpandsettle, golden e integration tests resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Demostración guiada
-Parte de otra carpeta vacía y crea un proyecto independiente con el widget y sus pruebas:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| pumpAndSettle, golden e integration tests se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar pumpAndSettle, golden e integration tests | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses pumpandsettle, golden e integration tests por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pumpandsettle, golden e integration tests funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- pumpAndSettle, golden e integration tests existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pumpandsettle, golden e integration tests en tu contexto?
+2. ¿Cómo sabrías que pumpandsettle, golden e integration tests no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pumpandsettle, golden e integration tests?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 flutter create ejemplo_flutter_testing_async
 cd ejemplo_flutter_testing_async
 ```
 
-Crea `lib/buscador_envios.dart` con ambos widgets y una función de búsqueda inyectable:
 ```dart
 import 'package:flutter/material.dart';
 
@@ -156,7 +226,6 @@ class _BuscadorEnviosState extends State<BuscadorEnvios> {
 }
 ```
 
-Crea `test/buscador_envios_test.dart` con este contenido y ejecuta `flutter test test/buscador_envios_test.dart`:
 ```dart
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -190,40 +259,70 @@ void main() {
   });
 }
 ```
-**Resultado esperado:** primero hay un spinner y no hay resultado; después de completar explícitamente el Future, aparece RF-4471. `pumpAndSettle` solo espera frames programados; no es una espera universal de red. Si se invoca mientras sigue el spinner indeterminado y el Future nunca responde, falla por timeout. La API y la UI se controlan por separado.
 
-**Fallo deliberado:** omite `respuesta.complete(...)`: la aserción del resultado falla (o pumpAndSettle agota su timeout). Restaura la respuesta y verifica el test verde. No dependemos de que una carrera falle de manera intermitente.
-
-#### Paso 5 · Práctica guiada
-Pista: coloca la aserción del resultado ANTES de `respuesta.complete`. El fallo deliberado debe ser determinista porque aún no hay respuesta. Luego completa, bombea y verifica éxito. Compara esto con una animación finita de duración conocida, donde `pump(Duration(...))` controla el tiempo virtual sin simular red.
-
-#### Paso 6 · Práctica independiente
-Agrega un test que complete el Future con error y otro que desmonte el widget antes de responder. Verifica mensaje recuperable y ausencia de setState después de dispose. Conserva golden e integration tests como capas distintas: los primeros comparan píxeles con entorno fijado y los segundos recorren la app en un dispositivo.
-
-#### Paso 7 · Cierre
-Entrega el test con `pumpAndSettle()` del Paso 4, la falla intermitente con `pump()` único del Paso 5, y el caso de animación infinita del Paso 6; explica por qué una falla intermitente en un test (no un fallo consistente) suele señalar una sincronización asíncrona faltante, no un bug aleatorio real. Como siguiente paso, mide el rendimiento de una lista con `RepaintBoundary` y Keys correctas. Errores comunes: usar un único `pump()` para estados asíncronos que necesitan varios frames; aplicar `pumpAndSettle()` a una pantalla con una animación intencionalmente infinita, sin un timeout explícito. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/integration-tests.
+</details>
 
 ### Tema 3: Rendimiento, RepaintBoundary y Keys · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a medir con DevTools cuántos widgets se repintan al actualizar un ítem de una lista de envíos, y vas a reducirlo con `RepaintBoundary` y una `Key` correcta. **Prerrequisitos:** Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una lista de 100 envíos pierde frames notablemente al marcar uno solo como "entregado" — el ítem actualizado se repinta correctamente, pero el profiler muestra que TODA la lista se repintó también, sin ninguna razón visible para el usuario.
+#### ► DE QUÉ TRATA
+Al finalizar vas a medir con DevTools cuántos widgets se repintan al actualizar un ítem de una lista de envíos, y vas a reducirlo con RepaintBoundary y una Key correcta. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Sin `RepaintBoundary`, una región que cambia puede forzar el repintado de widgets vecinos que comparten la misma capa de pintura; sin una `Key` estable por ítem, Flutter puede confundir la identidad de los widgets al reordenar una lista, reconstruyendo más de lo necesario. La analogía: pintar una sola ventana de un edificio sin afectar a las demás (RepaintBoundary), frente a repintar todo el edificio porque no quedó claro cuál ventana específica cambió.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a medir con DevTools cuántos widgets se repintan al actualizar un ítem de una lista de envíos, y vas a reducirlo con RepaintBoundary y una Key correcta.**
 
-**¿Por qué es importante?** Medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real; una Key basada en índice en vez de identidad real produce bugs de estado visual asociado a la fila equivocada.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Conceptos clave:** RepaintBoundary, Key por identidad real vs índice, profiler antes de optimizar.
+#### ► LA ANALOGÍA
+Piensa en rendimiento, repaintboundary y keys como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Mide repintado y estado de filas al completar y reordenar entregas. Una fila debe conservar su identidad por guía; compara la medición antes y después de introducir límites de repintado.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rendimiento, repaintboundary y keys resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Demostración guiada
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Rendimiento, RepaintBoundary y Keys se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Reemplaza `lib/main.dart` por esta lista: cada fila tiene su propio `RepaintBoundary` con la guía como `Key`, y marcar un envío lo mueve al final. Desde la raíz del proyecto ejecuta `flutter run --profile` en un dispositivo físico; abre DevTools y compara los repintados antes y después de actualizar un envío.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Rendimiento, RepaintBoundary y Keys | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses rendimiento, repaintboundary y keys por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rendimiento, repaintboundary y keys funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Rendimiento, RepaintBoundary y Keys existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rendimiento, repaintboundary y keys en tu contexto?
+2. ¿Cómo sabrías que rendimiento, repaintboundary y keys no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rendimiento, repaintboundary y keys?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:flutter/material.dart';
 
@@ -292,51 +391,78 @@ cd demo_flutter
 flutter run --profile
 ```
 
-Resultado esperado: el DevTools Performance overlay muestra, al marcar un envío como entregado, que solo el `RepaintBoundary` de ESE ítem se repinta (resaltado en el overlay de "repaint rainbow"), no la lista completa.
-
-**Fallo deliberado:** quita `RepaintBoundary`, pon la `Key` en `TarjetaEnvio` y cambia `ValueKey(envio.id)` por `ValueKey(envios.indexOf(envio))` (el índice, no el id real). Al marcar un envío como entregado (lo que puede reordenar la lista, moviendo los entregados al final), Flutter asocia el estado visual al ÍNDICE, no al envío real, y el checkbox de "entregado" aparece marcado en la fila equivocada tras el reordenamiento.
-
-#### Paso 5 · Práctica guiada
-Pista: medí con el profiler ANTES de aplicar cualquier corrección — sin una medición base, no podés confirmar después que la corrección realmente redujo el trabajo de repintado.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `RepaintBoundary` y `ValueKey(envios[i].id)` (el id real, estable entre reordenamientos), y medí con el profiler de DevTools el conteo de widgets repintados antes y después, documentando la diferencia numérica.
-
-#### Paso 7 · Cierre
-Entrega la lista con `RepaintBoundary`/`Key` correcta del Paso 4, el checkbox en la fila equivocada del Paso 5, y la medición comparada del Paso 6; explica por qué medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real. Como siguiente paso, aislá el dominio de negocio con Clean Architecture. Errores comunes: usar el índice de una lista como Key en vez de un identificador estable del dato real; optimizar con RepaintBoundary sin medir primero cuál widget realmente se repinta de más. Fuentes oficiales: https://docs.flutter.dev/perf/best-practices y https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html.
+</details>
 
 ### Tema 4: Clean Architecture · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a estructurar el dominio de envíos en capas (`domain`, `application`, `data`) con dependencias que solo apuntan hacia adentro, y vas a reproducir el error de que `domain` dependa de un detalle de infraestructura. **Prerrequisitos:** Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo necesita cambiar el cliente HTTP (`Dio` por otro) sin tocar ninguna regla de negocio sobre cuándo un envío puede marcarse como entregado — si esa regla está mezclada con código de `Dio`, cambiar el cliente HTTP obliga a tocar y volver a probar la lógica de negocio también.
+#### ► DE QUÉ TRATA
+Al finalizar vas a estructurar el dominio de envíos en capas (domain, application, data) con dependencias que solo apuntan hacia adentro, y vas a reproducir el error de que domain dependa de un detalle de infraestructura. Prerrequisitos: Tema 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Clean Architecture organiza el código en capas concéntricas donde las dependencias solo pueden apuntar hacia el centro (`domain`): la capa de dominio no conoce ningún detalle de infraestructura (HTTP, base de datos, UI), mientras que las capas externas sí pueden depender del dominio. La analogía: cada capa es un puesto de aduana con un contrato — el centro nunca necesita saber cómo llegó la mercadería desde afuera.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a estructurar el dominio de envíos en capas (domain, application, data) con dependencias que solo apuntan hacia adentro, y vas a reproducir el error de que domain dependa de un detalle de infraestructura.**
 
-**¿Por qué es importante?** La dirección de las dependencias (siempre hacia el dominio, nunca al revés) es lo que permite cambiar infraestructura sin tocar ni volver a probar la lógica de negocio.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Conceptos clave:** domain/application/data, dirección de dependencias, repositorio abstracto, aislamiento de infraestructura.
+#### ► LA ANALOGÍA
+Piensa en clean architecture como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Extrae confirmar entrega como caso de uso independiente de widgets. Prueba reglas con un repositorio falso y conserva una prueba de interfaz que demuestre que la pantalla presenta el fallo de dominio.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que clean architecture resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/domain/envio.dart` con el contenido de este tema.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Clean Architecture se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Clean Architecture | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses clean architecture por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: clean architecture funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Clean Architecture existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve clean architecture en tu contexto?
+2. ¿Cómo sabrías que clean architecture no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar clean architecture?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 flutter create ejemplo
 ```
-
-**Crea** el archivo `lib/domain/envio.dart` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
 
 ```dart
 // lib/domain/envio.dart — SIN ningún import de Dio, http, ni UI
 class Envio { final String id; final String estado; Envio(this.id, this.estado); }
 abstract class EnvioRepository { Future<Envio> obtener(String id); }
 ```
-
-Crea `lib/application/marcar_entregado.dart`, que solo conoce el dominio:
 
 ```dart
 // lib/application/marcar_entregado.dart
@@ -347,43 +473,74 @@ class MarcarEntregadoUseCase {
   MarcarEntregadoUseCase(this.repo);
 }
 ```
+
 ```bash
 flutter test
 ```
-Resultado esperado: `flutter test` pasa sin que el paquete `dio` (ni ningún plugin de plataforma) aparezca como dependencia de `lib/domain/`, confirmando que la regla de negocio es independiente de cómo se obtienen los datos.
 
-**Fallo deliberado:** importa `package:dio/dio.dart` directamente dentro de `lib/domain/envio.dart` "para simplificar y hacer la petición ahí mismo". Ahora el dominio depende de un detalle de infraestructura específico, y cambiar `Dio` por otro cliente HTTP en el futuro obligaría a modificar y volver a probar la clase `Envio` también, exactamente el acoplamiento que Clean Architecture existe para evitar.
-
-#### Paso 5 · Práctica guiada
-Pista: ejecutá `flutter analyze` o buscá manualmente `import 'package:dio` dentro de `lib/domain/` — esa búsqueda por sí sola es una forma simple de verificar la regla de dependencias sin herramientas adicionales.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el import de `dio` del dominio, implementando `EnvioRepository` con `Dio` en una clase de la capa `data` (no `domain`), y agrega un test que instancie `MarcarEntregadoUseCase` con un repositorio falso (sin ningún HTTP real), confirmando que la lógica de negocio se prueba completamente aislada de la infraestructura.
-
-#### Paso 7 · Cierre
-Entrega las capas separadas del Paso 4, la dependencia de `Dio` filtrada al dominio del Paso 5, y el test aislado con repositorio falso del Paso 6; explica por qué la dirección de las dependencias (siempre hacia el centro) es lo que realmente define Clean Architecture, no solo tener carpetas con esos nombres. Como siguiente paso, hacé que esos textos sean traducibles con internacionalización completa. Errores comunes: crear carpetas `domain`/`application`/`data` sin hacer cumplir realmente la dirección de dependencias; agregar capas ceremoniales a un proyecto tan simple que no las necesita. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
+</details>
 
 ### Tema 5: Internacionalización completa · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a traducir la pantalla de estado de un envío al español y al inglés con archivos `.arb`, y vas a reproducir el error de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 4 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-RutaFlow planea operar en una región con usuarios que hablan español e inglés; el texto del estado de un envío ("En ruta", "Entregado") está hardcodeado directamente en los widgets, haciendo imposible mostrarlo en otro idioma sin tocar el código de cada pantalla.
+#### ► DE QUÉ TRATA
+Al finalizar vas a traducir la pantalla de estado de un envío al español y al inglés con archivos .arb, y vas a reproducir el error de una clave de traducción faltante en un idioma. Prerrequisitos: Tema 4 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Flutter genera clases de localización tipadas a partir de archivos `.arb` (uno por idioma), reemplazando strings hardcodeados por llamadas a `AppLocalizations.of(context)`; el formato de fechas, números y plurales también depende de la configuración regional (`Locale`), no solo de traducir palabra por palabra. La analogía: traducir un contrato no es reemplazar palabras una por una, sino adaptar el formato completo (fechas, moneda, pluralización) a las convenciones de cada idioma.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a traducir la pantalla de estado de un envío al español y al inglés con archivos .arb, y vas a reproducir el error de una clave de traducción faltante en un idioma.**
 
-**¿Por qué es importante?** Una clave de traducción faltante en un idioma produce un error detectable (en build o en runtime), nunca una traducción silenciosamente incorrecta — pero solo si algo (un test de paridad) la busca activamente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Conceptos clave:** archivos .arb, AppLocalizations, Locale, paridad de claves entre idiomas.
+#### ► LA ANALOGÍA
+Piensa en internacionalización completa como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Localiza conteos, fechas y mensajes de error de la ruta. Prueba idioma alternativo y texto ampliado, verificando que ninguna traducción modifica el código de estado enviado al backend.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que internacionalización completa resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Límites y decisión de uso:** Traducir cadenas no resuelve formato de fechas, pluralización, lectura RTL ni espacio disponible. Prueba datos reales de cada locale y mantén fechas e identificadores de transporte independientes de su presentación traducida.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Internacionalización completa se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía y crea el proyecto con sus dependencias:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Internacionalización completa | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses internacionalización completa por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: internacionalización completa funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Internacionalización completa existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve internacionalización completa en tu contexto?
+2. ¿Cómo sabrías que internacionalización completa no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar internacionalización completa?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 flutter create ejemplo_flutter_l10n
 cd ejemplo_flutter_l10n
@@ -391,7 +548,6 @@ flutter pub add flutter_localizations --sdk=flutter
 flutter pub add intl
 ```
 
-En `pubspec.yaml`, dentro de la sección `flutter:` existente, agrega `generate: true`. Crea `l10n.yaml`:
 ```yaml
 arb-dir: lib/l10n
 template-arb-file: app_es.arb
@@ -399,16 +555,14 @@ output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 ```
 
-Crea `lib/l10n/app_es.arb`:
 ```json
 { "estadoEnRuta": "En ruta" }
 ```
-Crea `lib/l10n/app_en.arb`:
+
 ```json
 { "estadoEnRuta": "In transit" }
 ```
 
-Reemplaza `lib/main.dart` por una app mínima que use delegates y locales soportados:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:ejemplo_flutter_l10n/l10n/app_localizations.dart';
@@ -427,7 +581,6 @@ class App extends StatelessWidget {
 }
 ```
 
-Crea `test/l10n_test.dart` para comprobar ambos idiomas:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -449,50 +602,77 @@ void main() {
 }
 ```
 
-Ejecuta:
-```bash
-flutter pub get
-flutter gen-l10n
-flutter test test/l10n_test.dart
-```
-Resultado esperado: `flutter gen-l10n` genera la clase `AppLocalizations`, y la app muestra "En ruta" o "In transit" automáticamente según el `Locale` del dispositivo, sin ningún `if` manual de idioma en el widget.
-
-**Fallo deliberado:** agrega la clave `estadoEntregado` solo a `app_es.arb`, sin agregarla a `app_en.arb`. Al correr la app con el locale en inglés, Flutter no encuentra la clave `estadoEntregado` para ese idioma; según la configuración del proyecto, esto produce un error en tiempo de compilación de `flutter gen-l10n` o un texto de respaldo en tiempo de ejecución, nunca una traducción silenciosamente correcta.
-
-#### Paso 5 · Práctica guiada
-Pista: corré `flutter gen-l10n` inmediatamente después de agregar la clave a un solo archivo — el error (o la advertencia) aparece ahí mismo, antes de siquiera correr la app.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando `estadoEntregado` también a `app_en.arb`, y agrega un test que recorra todas las claves de `app_es.arb` confirmando que cada una tiene su equivalente en `app_en.arb`, para detectar claves faltantes automáticamente en CI en vez de descubrirlas manualmente.
-
-#### Paso 7 · Cierre
-Entrega las traducciones funcionando del Paso 4, la clave faltante en un idioma del Paso 5, y el test de paridad de claves del Paso 6; explica por qué verificar automáticamente que ambos archivos `.arb` tengan las mismas claves evita descubrir una traducción faltante recién en producción. Como siguiente paso, generá y firmá el artefacto de build final. Errores comunes: agregar una clave de traducción a un solo idioma sin verificar los demás; formatear fechas o números manualmente en vez de usar las utilidades de `intl` sensibles al `Locale`. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization y https://pub.dev/packages/intl.
+</details>
 
 ### Tema 6: Builds, firma y despliegue · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar generarás y verificarás un APK de laboratorio firmado explícitamente. **Prerrequisitos:** proyecto Flutter Android, JDK con `keytool` y Android SDK Build Tools con `apksigner` en PATH; confirma `flutter doctor` y `apksigner version`. No necesitas publicar nada en una tienda para esta práctica.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Crear un keystore no cambia la firma del build: Gradle debe seleccionarlo. Un equipo puede producir un APK release que todavía usa la configuración debug si no revisa esa asociación. La comprobación útil es inspeccionar el certificado del artefacto, no confiar en su nombre.
+#### ► DE QUÉ TRATA
+Al finalizar generarás y verificarás un APK de laboratorio firmado explícitamente. Prerrequisitos: proyecto Flutter Android, JDK con keytool y Android SDK Build Tools con apksigner en PATH; confirma flutter doctor y apksigner version. No necesitas publicar nada en una tienda para…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La firma identifica al emisor del artefacto. **Analogía:** fabricar un sello no implica haberlo usado sobre el paquete. Distingue clave de subida y clave de firma de la aplicación cuando utilices Play App Signing: no son necesariamente la misma. Las claves debug no son adecuadas para publicación. La recuperación de una clave de subida y la pérdida de una clave de firma autogestionada tienen consecuencias distintas; no afirmes que cualquier pérdida es irreversible. Fuente oficial: [firma de aplicaciones Android](https://developer.android.com/studio/publish/app-signing).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar generarás y verificarás un APK de laboratorio firmado explícitamente.**
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.dart` con el contenido de este tema.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en builds, firma y despliegue como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que builds, firma y despliegue resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Builds, firma y despliegue se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Builds, firma y despliegue | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses builds, firma y despliegue por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: builds, firma y despliegue funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Builds, firma y despliegue existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve builds, firma y despliegue en tu contexto?
+2. ¿Cómo sabrías que builds, firma y despliegue no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar builds, firma y despliegue?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 flutter create ejemplo
 ```
-
-En una copia de laboratorio, crea una clave fuera del repositorio; `keytool` solicita contraseña y datos de certificado interactivamente:
 
 ```bash
 keytool -genkeypair -keystore "$HOME/rutaflow-upload-lab.jks" \
   -storetype JKS -alias rutaflow-lab -keyalg RSA -keysize 2048 -validity 10000
 ```
-
-Guarda la configuración local en `android/key.properties`, con tu ruta absoluta y los valores elegidos:
 
 ```properties
 storeFile=/ruta/absoluta/rutaflow-upload-lab.jks
@@ -500,8 +680,6 @@ storePassword=REEMPLAZAR_LOCALMENTE
 keyAlias=rutaflow-lab
 keyPassword=REEMPLAZAR_LOCALMENTE
 ```
-
-Excluye `android/key.properties`, `*.jks` y `*.keystore` en `.gitignore`. En `android/app/build.gradle.kts`, conserva el bloque plugins y la configuración existente. Añade el import al principio y carga las propiedades después de plugins:
 
 ```kotlin
 import java.util.Properties
@@ -511,8 +689,6 @@ val signingProperties = Properties().apply {
     rootProject.file("key.properties").inputStream().use { load(it) }
 }
 ```
-
-Dentro del bloque `android`, configura la firma y reemplaza la asignación debug del release; no dupliques el bloque release existente:
 
 ```kotlin
 signingConfigs {
@@ -530,57 +706,33 @@ buildTypes {
 }
 ```
 
-El archivo ausente o una propiedad omitida deben fallar explícitamente. No añadas una recuperación que firme silenciosamente con debug. Consulta las variantes Kotlin/Groovy de la [guía Flutter de despliegue Android](https://docs.flutter.dev/deployment/android).
-
 ```bash
 flutter build apk --release
 apksigner verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk
 keytool -list -v -keystore "$HOME/rutaflow-upload-lab.jks" -alias rutaflow-lab
 ```
 
-**Resultado esperado:** verificación exitosa y la misma huella SHA-256 en el certificado del APK y en el alias del keystore. `apksigner` comprueba esquemas de firma de APK; no sustituyas esta comprobación por verificar únicamente el contenedor JAR. Fuente oficial: [apksigner](https://developer.android.com/tools/apksigner).
-
-**Fallo deliberado:** cambia temporalmente `keyAlias` por un alias inexistente. El build debe fallar; restaura el valor y vuelve a verificar el certificado. Este error local demuestra que Gradle usa la configuración sin publicar un artefacto incorrecto.
-
-#### Paso 5 · Práctica guiada
-Pista: compara huellas completas, no solo el nombre del certificado. Registra el mensaje del alias inexistente y explica qué propiedad identifica la entrada dentro del keystore.
-
-#### Paso 6 · Práctica independiente
-Incrementa la versión del laboratorio y prueba actualizar una instalación firmada con la misma clave. Comprueba que conserva sus datos. Documenta custodia y recuperación sin incluir contraseñas ni claves privadas en la evidencia.
-
-#### Paso 7 · Cierre
-Entrega las salidas de verificación, el fallo y su corrección. Como siguiente paso, prepara una distribución interna siguiendo los requisitos de la tienda elegida. **Errores comunes:** generar una clave sin conectarla a Gradle, confundir claves de subida y distribución, subir secretos al repositorio y asumir que un build release ya implica una firma correcta.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Genera una versión firmada para distribución interna y registra su certificado y número de build. Prueba actualización sobre una instalación con cambios offline pendientes sin publicar claves ni contraseñas.
-
-**Límites y decisión de uso:** Esta prueba acredita configuración y firma del APK local. No sustituye los requisitos de publicación, custodia, recuperación y pruebas en dispositivos de una distribución real.
-
+</details>
 
 ### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a actualizar la app de entregas a Flutter 3.50 (estable desde el 11 de noviembre de 2026, junto con Dart 3.14), aplicar las migraciones automáticas y comprobar con evidencia que no se rompió nada. **Prerrequisitos:** el Tema 1 de este módulo (pruebas con `flutter test`), Git y la app del proyecto integrador en una rama limpia.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Cada versión de Flutter trae mejoras, pero también cambios que obligan a tocar código. En 3.50 los widgets de Material y Cupertino salen del SDK hacia paquetes propios, las APIs web antiguas de JavaScript quedan obsoletas y CocoaPods deja de recibir actualizaciones. Si actualizas «a ciegas», el problema aparece en producción. **¿Por qué es importante?** Una migración ordenada te deja actualizar en una tarde, con pruebas que confirman que la app sigue igual.
+#### ► DE QUÉ TRATA
+Al finalizar vas a actualizar la app de entregas a Flutter 3.50 (estable desde el 11 de noviembre de 2026, junto con Dart 3.14), aplicar las migraciones automáticas y comprobar con evidencia que no se rompió nada. Prerrequisitos: el Tema 1 de este módulo (pruebas con flutter test…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Conceptos clave:** canal estable, cambio incompatible (*breaking change*), deprecación, migración automática con `dart fix` y `dart migrate`, rama de migración.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a actualizar la app de entregas a Flutter 3.50 (estable desde el 11 de noviembre de 2026, junto con Dart 3.14), aplicar las migraciones automáticas y comprobar con evidencia que no se rompió nada.**
 
-Una **deprecación** avisa que algo va a desaparecer, pero todavía funciona. Un **cambio incompatible** rompe la compilación o el comportamiento. Lo que cambia en esta versión:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-| Cambio | Qué haces |
-|---|---|
-| Material y Cupertino pasan a los paquetes `material_ui` y `cupertino_ui`; los del SDK quedan obsoletos, no eliminados | `dart fix --apply --code=migrate_design_widgets` |
-| `dart:html`, `dart:js`, `dart:js_util` y `package:js` quedan obsoletos | `flutter build web --no-deprecated-js-interop` encuentra usos directos y de dependencias |
-| WebAssembly funciona también en Safari 26.2+ y Firefox 147+, pero hay que activarlo | `wasmAllowList` en `flutter_bootstrap.js` y `flutter build web --wasm` |
-| CocoaPods deja de recibir actualizaciones (diciembre de 2026) | pasar los plugins de iOS a Swift Package Manager |
-| Dart 3.14 trae `dart migrate` | `dart migrate --dry-run` para ver los cambios antes de aplicarlos |
+#### ► LA ANALOGÍA
+Piensa en migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** es como mudarte de casa con una lista: primero etiquetas cada caja (inventario), mueves por partes (una migración por commit) y al llegar revisas que todo funcione (pruebas). Se rompe en que aquí la mitad del trabajo lo hace una herramienta automática, y aun así debes revisar cada cambio.
-
-**Límite de uso:** no migres durante una entrega urgente. Si una dependencia importante todavía no soporta 3.50, espera o fija la versión anterior y regístralo.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["rama migracion-3.50"] --> B["flutter upgrade"]
@@ -591,8 +743,52 @@ flowchart LR
     E --> F["merge con evidencia"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Desde la raíz del proyecto integrador, crea la rama y actualiza:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega en tu contexto?
+2. ¿Cómo sabrías que migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migrar una app a flutter 3.50 y dart 3.14 sin romper la entrega?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["rama migracion-3.50"] --> B["flutter upgrade"]
+    B --> C["dart fix / dart migrate"]
+    C --> D["flutter analyze + flutter test"]
+    D -->|"verde"| E["build web/iOS/Android"]
+    D -->|"rojo"| C
+    E --> F["merge con evidencia"]
+```
 
 ```bash
 git switch -c migracion-3.50
@@ -607,10 +803,6 @@ flutter analyze
 flutter test
 flutter build web --no-deprecated-js-interop
 ```
-
-**Explicación por bloques:** la rama aísla la migración; `flutter --version` deja registrada la versión exacta; `evidencia-antes.txt` guarda el estado de las pruebas antes de cambiar nada; `dart migrate --dry-run` muestra qué cambiaría sin tocar archivos; `dart fix` reescribe los imports de Material y Cupertino hacia los paquetes nuevos y `git diff --stat` te deja revisar cada archivo tocado; `flutter analyze` y `flutter test` confirman que todo compila y se comporta igual; el build web con `--no-deprecated-js-interop` falla si queda una dependencia con la interoperabilidad JS antigua.
-
-Para probar WebAssembly en Safari y Firefox, en `web/flutter_bootstrap.js` (archivo `web/flutter_bootstrap.js`):
 
 ```javascript
 _flutter.loader.load({
@@ -628,49 +820,27 @@ _flutter.loader.load({
 flutter build web --wasm
 ```
 
-**Resultado esperado:** `flutter --version` muestra Flutter 3.50 y Dart 3.14; `git diff --stat` lista los archivos con imports de Material o Cupertino actualizados; `flutter analyze` termina sin errores; `flutter test` tiene el mismo número de pruebas aprobadas que `evidencia-antes.txt`; el build web termina o señala la dependencia que aún usa `dart:html`.
-
-**Fallo deliberado:** agrega a un archivo `import 'dart:html';` y ejecuta de nuevo `flutter build web --no-deprecated-js-interop`. **Error esperado:** el build reporta el uso de la interoperabilidad JS obsoleta. **Diagnóstico:** la bandera existe justamente para encontrar estos usos antes de que la API desaparezca; reemplázalo por `package:web` y vuelve a compilar.
-
-#### Paso 5 · Práctica guiada
-1. **Reproducción:** repite la migración en una copia de la app y guarda la salida de cada comando.
-2. **Variación:** activa solo `webkit` en `wasmAllowList` y compara el tamaño de la descarga en Safari.
-3. **Diagnóstico:** si `flutter test` baja de pruebas aprobadas, identifica el commit de la migración que lo causó con `git bisect`.
-
-**Pista:** haz un commit por cada herramienta (`dart fix`, `dart migrate`, cambio manual) para poder revertir solo una.
-
-#### Paso 6 · Práctica independiente
-Pasa los plugins de iOS de la app de CocoaPods a Swift Package Manager y documenta en el README qué plugin todavía no lo soporta.
-
-#### Paso 7 · Cierre
-- [ ] Rama `migracion-3.50` con un commit por migración.
-- [ ] Mismo número de pruebas aprobadas antes y después.
-- [ ] Build web sin interoperabilidad JS obsoleta.
-- [ ] README con la versión fijada y las dependencias pendientes.
-
-**Errores comunes:** migrar en `main`, aplicar `dart fix` sin revisar el diff y confundir deprecación con eliminación. **Siguiente paso:** el Tema 8 agrega IA a la app ya migrada.
-
-**Transferencia al proyecto integrador «App de entregas»:** fija Flutter 3.50 en CI y adjunta la evidencia antes y después de la migración al pull request.
-
-**Fuente oficial:** [Flutter 3.50.0 release notes](https://docs.flutter.dev/release/release-notes/release-notes-3.50.0) y [cambios incompatibles de Flutter](https://docs.flutter.dev/release/breaking-changes).
+</details>
 
 ### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a agregar a la app de entregas un asistente que resume las novedades de un envío con un modelo Gemini, usando el plugin oficial `firebase_ai`, y a proteger su uso. **Prerrequisitos:** Tema 7 de este módulo (app en Flutter 3.50), un proyecto de Firebase y el CLI `flutterfire`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El conductor recibe notas largas del cliente («dejar en portería, perro bravo, llamar antes»). Un resumen de una línea le ahorra tiempo en la calle. Llamar a un modelo de IA directamente desde la app con una clave escrita en el código sería inseguro: cualquiera podría sacar la clave del binario. **Firebase AI Logic** (antes «Vertex AI in Firebase») da acceso a los modelos Gemini desde la app sin guardar la clave del modelo en el código. **¿Por qué es importante?** Es la forma oficial de usar IA en Flutter sin montar un backend propio solo para eso.
+#### ► DE QUÉ TRATA
+Al finalizar vas a agregar a la app de entregas un asistente que resume las novedades de un envío con un modelo Gemini, usando el plugin oficial firebase_ai, y a proteger su uso. Prerrequisitos: Tema 7 de este módulo (app en Flutter 3.50), un proyecto de Firebase y el CLI flutter…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Conceptos clave:** modelo generativo, prompt, respuesta en *streaming*, sesión de chat, App Check.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a agregar a la app de entregas un asistente que resume las novedades de un envío con un modelo Gemini, usando el plugin oficial firebase_ai, y a proteger su uso.**
 
-El plugin habla con Firebase y Firebase habla con el modelo. Tu app nunca ve la clave del modelo. Creas un `GenerativeModel`, le envías contenido (texto, imagen) y recibes texto. Para conversaciones, una **sesión de chat** guarda el historial por ti. **App Check** comprueba que la petición viene de tu app real y no de un script que copió tu configuración.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** Firebase es la recepción de un edificio: tú pides hablar con el experto (el modelo) y la recepción verifica quién eres (App Check) antes de pasarte la llamada. Se rompe en que el experto puede equivocarse: la respuesta es una propuesta, no un dato verificado.
+#### ► LA ANALOGÍA
+Piensa en integrar ia generativa en una app flutter con firebase ai logic como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Límite de uso:** no uses IA para decisiones que deben ser exactas (cobros, direcciones legales). Muestra siempre el texto original junto al resumen.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant A as App Flutter
@@ -683,15 +853,59 @@ sequenceDiagram
     F-->>A: response.text
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-En la consola de Firebase abre **AI Logic → Get started** y elige el proveedor **Gemini Developer API**. Luego, desde la raíz de la app:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Integrar IA generativa en una app Flutter con Firebase AI Logic se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Integrar IA generativa en una app Flutter con Firebase AI Logic | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses integrar ia generativa en una app flutter con firebase ai logic por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: integrar ia generativa en una app flutter con firebase ai logic funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Integrar IA generativa en una app Flutter con Firebase AI Logic existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve integrar ia generativa en una app flutter con firebase ai logic en tu contexto?
+2. ¿Cómo sabrías que integrar ia generativa en una app flutter con firebase ai logic no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar integrar ia generativa en una app flutter con firebase ai logic?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant A as App Flutter
+    participant F as Firebase AI Logic + App Check
+    participant G as Modelo Gemini
+    A->>F: generateContent(prompt con la nota)
+    F->>F: verifica App Check
+    F->>G: solicitud con la clave del proyecto
+    G-->>F: resumen
+    F-->>A: response.text
+```
 
 ```bash
 flutter pub add firebase_core firebase_ai
 flutterfire configure
 ```
-
-Archivo `lib/main.dart` (inicializa Firebase antes de arrancar la app):
 
 ```dart
 import 'package:firebase_core/firebase_core.dart';
@@ -712,8 +926,6 @@ class App extends StatelessWidget {
       const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow'))));
 }
 ```
-
-Archivo `lib/asistente/resumidor_notas.dart`:
 
 ```dart
 import 'package:firebase_ai/firebase_ai.dart';
@@ -738,30 +950,4 @@ class ResumidorNotas {
 }
 ```
 
-**Explicación por bloques:** `Firebase.initializeApp` conecta la app con tu proyecto usando el archivo generado por `flutterfire configure`; `FirebaseAI.googleAI()` elige el proveedor Gemini Developer API y `generativeModel` crea el modelo; `generateContent` envía el prompt y devuelve la respuesta; el `??` maneja el caso en que el modelo no entrega texto. La clave del modelo no aparece en ningún archivo de la app.
-
-**Resultado esperado:** al llamar `resumir('Dejar en portería, perro bravo, llamar antes de subir')` recibes una sola línea parecida a «Llamar antes; dejar en portería; cuidado con el perro». El texto exacto varía en cada ejecución porque el modelo es generativo.
-
-**Fallo deliberado:** comenta la línea `await Firebase.initializeApp(...)` y ejecuta la app. **Error esperado:** una excepción que indica que no existe la app de Firebase por defecto. **Diagnóstico:** el plugin de IA depende de Firebase inicializado; restaura la línea.
-
-#### Paso 5 · Práctica guiada
-1. **Reproducción:** muestra el resumen debajo de la nota original en la pantalla del envío.
-2. **Variación:** cambia a `generateContentStream` y pinta el texto a medida que llega.
-3. **Diagnóstico:** mide cuántas llamadas haces al abrir y cerrar la pantalla diez veces y guarda el resumen para no repetirlo.
-
-**Pista:** el resumen de una nota no cambia; guárdalo con la persistencia local del Módulo 6.
-
-#### Paso 6 · Práctica independiente
-Activa App Check en el proyecto y en la app, y demuestra que una petición sin token de App Check es rechazada.
-
-#### Paso 7 · Cierre
-- [ ] Resumen visible junto a la nota original.
-- [ ] Ninguna clave de modelo en el código ni en el repositorio.
-- [ ] Caso sin texto manejado con un mensaje claro.
-- [ ] App Check activo.
-
-**Errores comunes:** poner una clave de API del modelo en el código, no mostrar el texto original y llamar al modelo en cada redibujado del widget. **Siguiente paso:** el proyecto integrador agrega el asistente a la pantalla de ruta.
-
-**Transferencia al proyecto integrador «App de entregas»:** resume la nota de cada envío al cargar la ruta del día y guarda el resultado en caché local.
-
-**Fuente oficial:** [Firebase AI Logic: primeros pasos con Flutter](https://firebase.google.com/docs/ai-logic/get-started?platform=flutter) y [Flutter AI Toolkit](https://docs.flutter.dev/ai/ai-toolkit).
+</details>

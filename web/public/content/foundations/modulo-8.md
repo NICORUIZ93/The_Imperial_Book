@@ -5,40 +5,78 @@ Hasta ahora construiste un inventario, lo protegiste con pruebas y seguridad y s
 
 ## Aprende construyendo
 
+
 ### Tema 1: El sistema operativo como administrador y frontera · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir un cálculo de ruta mínimo, lanzarlo como proceso real, inspeccionarlo con `ps` y detenerlo con una señal. Prerrequisitos: Python 3 instalado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos, y en este módulo en particular vas a escribir pruebas para cada función del gestor de tareas. `nearest_neighbor_route` de RutaFlow puede tardar notablemente en una zona con muchas paradas — si un operador necesita cancelarlo a mitad de camino, necesita entender qué hace el sistema operativo con ese proceso, no solo con el código Python.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir un cálculo de ruta mínimo, lanzarlo como proceso real, inspeccionarlo con ps y detenerlo con una señal. Prerrequisitos: Python 3 instalado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un programa es el archivo `domain.py`; un proceso es ese programa corriendo de verdad, con PID, memoria y descriptores propios — el kernel es el bibliotecario que presta esos recursos, nunca el programa accediendo directo al hardware.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir un cálculo de ruta mínimo, lanzarlo como proceso real, inspeccionarlo con ps y detenerlo con una señal.**
 
-**Conceptos clave:** hardware, kernel, espacio de usuario, llamada al sistema, programa, proceso, PID, descriptor de archivo, sistema de archivos, usuario, permisos, señal y código de salida.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un **programa** es información almacenada en un archivo. Un **proceso** es una instancia viva del programa con identidad, memoria, recursos y estado. Al ejecutar `python app.py`, la shell pide al kernel crear un proceso. El kernel carga el intérprete, asigna memoria, agenda momentos de CPU y registra descriptores para entrada, salida y errores. Python no escribe directamente en el disco: solicita la operación mediante llamadas al sistema.
+#### ► LA ANALOGÍA
+Piensa en el sistema operativo como administrador y frontera como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El kernel separa el acceso privilegiado al hardware del espacio de las aplicaciones. Esa frontera limita daños y permite compartir recursos. En Unix, cada proceso empieza normalmente con los descriptores `0` (stdin), `1` (stdout) y `2` (stderr).
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    FILE["app.py"] --> PROCESS["proceso Python"] --> SYSCALL["llamadas al sistema"] --> KERNEL["kernel"]
+    PROCESS --> MEMORY["memoria"]
+    PROCESS --> FD["archivos y sockets"]
+    KERNEL --> CPU["CPU"]
+    KERNEL --> DISK["disco"]
+    KERNEL --> NET["red"]
+```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El sistema operativo como administrador y frontera se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El sistema operativo como administrador y frontera | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el sistema operativo como administrador y frontera por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el sistema operativo como administrador y frontera funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El sistema operativo como administrador y frontera existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el sistema operativo como administrador y frontera en tu contexto?
+2. ¿Cómo sabrías que el sistema operativo como administrador y frontera no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el sistema operativo como administrador y frontera?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 python app.py >salida.log 2>errores.log &
 ps -o pid,ppid,state,etime,command
 kill -TERM 12345
 ```
-
-`SIGTERM` solicita un apagado ordenado que el programa puede manejar para cerrar conexiones. `SIGKILL` termina inmediatamente y no puede manejarse; por eso `kill -9` no debe ser el primer recurso. El código de salida `0` comunica éxito y otro valor comunica un resultado excepcional que una shell o CI puede interpretar.
-
-Los permisos clásicos distinguen propietario, grupo y otros mediante lectura (`r`), escritura (`w`) y ejecución (`x`). En una carpeta, `x` permite atravesarla. Conceder `777` oculta el diagnóstico y amplía el acceso. Investiga primero con `id`, `ls -ld` y `namei -l ruta`.
-
-**Analogía:** el kernel es la administración de una biblioteca. Los lectores no entran al depósito: presentan solicitudes, reciben préstamos identificados y respetan permisos y turnos.
-
-**¿Por qué es importante?** Porque un proceso que recibe SIGKILL no tiene ninguna oportunidad de cerrar una transacción o loguear su estado: la diferencia entre SIGTERM y SIGKILL es la diferencia entre un apagado ordenado y una pérdida de evidencia.
-
-**Casos de uso reales:** apagar una API sin perder solicitudes, investigar permisos, redirigir logs en CI y terminar un worker atascado conservando evidencia.
-
-**Diagrama:**
 
 ```mermaid
 flowchart LR
@@ -50,14 +88,9 @@ flowchart LR
     KERNEL --> NET["red"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente `domain.py` y `lento.py`:
-
 ```bash
 mkdir ejemplo-procesos && cd ejemplo-procesos
 ```
-
-Archivo `domain.py`:
 
 ```python
 from dataclasses import dataclass
@@ -85,8 +118,6 @@ def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> li
     return ordered
 ```
 
-Archivo `lento.py`:
-
 ```python
 import os
 import time
@@ -99,8 +130,6 @@ time.sleep(30)
 nearest_neighbor_route((0, 0), paradas)
 ```
 
-Lanzalo en segundo plano y observá su identidad real:
-
 ```bash
 python3 lento.py > proceso.log 2>&1 &
 PID=$!
@@ -109,58 +138,76 @@ ps -o pid,ppid,state,etime,command -p "$PID"
 cat proceso.log
 ```
 
-Resultado esperado (el PID y el tiempo varían):
+</details>
 
-```text
-  PID  PPID STAT ELAPSED COMMAND
-75497 75491 SN     00:01 python3 lento.py
-pid=75497 paradas=50000
-```
-
-El kernel le asignó PID, proceso padre, estado, tiempo transcurrido y memoria propios desde que arrancó. El cálculo O(n²) todavía no empezó: el proceso duerme 30 segundos antes de ejecutar `nearest_neighbor_route`.
-
-#### Paso 5 · Práctica guiada
-Pista: enviá `kill -9 "$PID"` mientras el proceso sigue durmiendo. Ese es el fallo deliberado: `kill -9` no puede manejarse, así que el proceso muere sin ejecutar ningún cierre ni escribir una última línea de log. Comprobá con `wait "$PID"; echo $?` que el código de salida es 137, no 0. Repetilo con `kill -TERM "$PID"`: el código de salida es 143 y el proceso tuvo la oportunidad de manejar la señal.
-
-#### Paso 6 · Práctica independiente
-Cambiá `lento.py` para que registre una señal con `signal.signal(signal.SIGTERM, ...)` y escriba "cierre ordenado" antes de salir. Comparé `kill -TERM` (imprime el mensaje, sale con 0) con `kill -9` (no imprime nada, sale con 137) y documentá por qué esa diferencia importa para un worker que escribe en una base de datos.
-
-#### Paso 7 · Cierre
-Entregá la salida de `ps` del Paso 4, los códigos de salida de SIGKILL y SIGTERM del Paso 5, y el manejador de señal del Paso 6; explicá la diferencia entre ambas señales en términos de qué puede y qué no puede hacer tu código antes de terminar. Como siguiente paso, aplicá el mismo diagnóstico a un proceso que escribe en SQLite y comprobá qué deja a medio hacer un SIGKILL. Errores comunes: usar `kill -9` como primer recurso en vez de SIGTERM, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
 ### Tema 2: Memoria y concurrencia sin magia · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a provocar una condición de carrera real sobre el contador de capacidad de un vehículo de reparto, y a corregirla con un lock. Prerrequisitos: Python 3 instalado.
 
-#### Paso 2 · Contexto y caso real
-Si dos procesos de asignación intentaran reservar un lugar en el mismo vehículo al mismo tiempo (dos envíos asignándose casi simultáneamente), ambos podrían leer la misma capacidad disponible antes de que ninguno la actualice — perdiendo una reserva sin que nadie lo note.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a provocar una condición de carrera real sobre el contador de capacidad de un vehículo de reparto, y a corregirla con un lock.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`capacidad = capacidad - 1` no es una operación atómica: es leer, calcular y escribir — dos hilos pueden leer el mismo valor antes de que ninguno escriba, perdiendo una actualización, igual que dos agentes vendiendo el mismo último asiento desde copias separadas.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Escenario:** Dos procesos en tu inventario: uno transfiere stock de bodega A a B, otro de B a A. Ambos pueden quedarse bloqueados esperándose mutuamente.
+#### ► LA ANALOGÍA
+Piensa en memoria y concurrencia sin magia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Tu tarea:**
-1. Escribe código en pseudocódigo que deadlocker.
-2. ¿Por qué ocurre? (Condiciones de Coffman.)
-3. ¿Cómo detectarlo? (Timeout, detector de ciclos.)
-4. ¿Cómo prevenirlo sin sacrificar concurrencia?
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant A as Tarea A
+    participant S as Stock compartido
+    participant B as Tarea B
+    A->>S: leer 10
+    B->>S: leer 10
+    A->>S: escribir 9
+    B->>S: escribir 9
+    Note over S: incorrecto 9, esperado 8
+```
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Memoria y concurrencia sin magia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-> Pseudocódigo: P1 lock(A) → lock(B); P2 lock(B) → lock(A). Ambas retienen un lock y esperan al otro. Condiciones Coffman: (1) exclusión mutua (locks), (2) sin preemption (no desalojar), (3) retención con espera, (4) espera circular. Detección: timeout en lock (si esperas >30s, rollback), o detector de ciclos de espera. Prevención: ordenar locks (A siempre antes de B) o usar transacciones serializables que detectan y revierten.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Memoria y concurrencia sin magia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses memoria y concurrencia sin magia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: memoria y concurrencia sin magia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Memoria y concurrencia sin magia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve memoria y concurrencia sin magia en tu contexto?
+2. ¿Cómo sabrías que memoria y concurrencia sin magia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar memoria y concurrencia sin magia?
 
 </details>
 
-**Conceptos clave:** memoria virtual, stack, heap, proceso, hilo, concurrencia, paralelismo, intercalado, sección crítica, condición de carrera, mutex, semáforo, deadlock e inmutabilidad.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Cada proceso observa un espacio de direcciones virtual propio. El sistema y el hardware traducen direcciones a memoria física. El **stack** contiene normalmente marcos de llamadas y variables locales; el **heap** guarda objetos con vida más flexible. Es un modelo útil, aunque los detalles dependen del lenguaje y su runtime.
-
-Los hilos de un proceso comparten heap y descriptores, pero tienen stack y estado propios. **Concurrencia** significa que varias tareas progresan en períodos solapados; **paralelismo**, que ejecutan simultáneamente, por ejemplo en núcleos diferentes. Puede haber concurrencia en un solo núcleo por intercalado.
-
-`saldo = saldo - cantidad` parece una operación, pero implica leer, calcular y escribir. Dos tareas pueden leer el mismo saldo antes de escribir y perder una actualización. El resultado depende entonces de un orden temporal no controlado: una condición de carrera.
-
+#### Código y verificación
 ```python
 from threading import Lock
 
@@ -177,14 +224,6 @@ def retirar(conexion, producto_id, cantidad):
             raise ValueError("stock insuficiente")
 ```
 
-El lock coordina hilos de este proceso; la transacción y la condición SQL protegen también cuando existen varios procesos. Bloquear demasiado reduce rendimiento. Dos tareas que esperan recursos bloqueados entre sí forman un **deadlock**. Se previene reduciendo estado compartido, adquiriendo locks en un orden constante, limitando esperas y prefiriendo mensajes o datos inmutables cuando corresponda.
-
-**Analogía:** dos agentes venden el último asiento desde copias distintas. Un control de reserva atómico decide quién lo obtiene; pedir que trabajen más rápido no resuelve el conflicto.
-
-**Casos de uso reales:** descontar inventario, procesar pagos idempotentes, ejecutar workers, actualizar cachés y evitar migraciones simultáneas.
-
-**Diagrama:**
-
 ```mermaid
 sequenceDiagram
     participant A as Tarea A
@@ -197,15 +236,6 @@ sequenceDiagram
     Note over S: incorrecto 9, esperado 8
 ```
 
-El proyecto integrador Fundamentos tiene la misma sección crítica escondida en `almacenamiento.py`: si dos invocaciones de `python3 cli.py add` corrieran en paralelo, ambas podrían leer la misma lista de tareas antes de que ninguna la reescriba, y una de las dos tareas agregadas se perdería silenciosamente — el mismo patrón de leer-calcular-escribir sin lock que este Tema demuestra con `capacidad["disponible"]`.
-
-**Límites y decisión de uso:** Más concurrencia no implica más velocidad y puede introducir carreras o presión de memoria. Identifica estado compartido y trabajo independiente antes de añadir tareas; compara resultados y recursos con la versión secuencial.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-**¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
-
-#### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
@@ -225,57 +255,31 @@ hilos = [Thread(target=reservar_lugar) for _ in range(10)]
 print(capacidad["disponible"])
 ```
 
-**Ejecuta el ejemplo** (guarda el código en un archivo y córrelo desde la terminal):
-
 ```bash
 python3 ejemplo.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: en la mayoría de las corridas, el resultado NO es `0` (el esperado tras 10 reservas de un vehículo con capacidad 10) — algunas actualizaciones se pisan entre sí, y el número exacto varía de ejecución en ejecución.
-
-#### Paso 5 · Práctica guiada
-Pista: ese resultado inconsistente del Paso 4 ES el fallo deliberado — corrélo varias veces y anotá que el número final cambia entre corridas (a veces 2, a veces 4, nunca garantizado 0), la firma de una condición de carrera real, no un bug determinista que siempre falla igual.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (como en el ejemplo de `retirar()` de este mismo Tema), y confirmá que ahora el resultado es siempre `0`, sin importar cuántas veces repitas la corrida.
-
-#### Paso 7 · Cierre
-Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
+</details>
 
 ### Tema 3: Linux como entorno observable · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a diagnosticar, con herramientas reales de Linux, un servicio mínimo que expone la lógica de `domain.py` como endpoint de salud. Prerrequisitos: Python 3 instalado; Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si el servicio que calcula rutas para RutaFlow dejara de responder, un operador necesita un flujo real de diagnóstico — no adivinar reiniciando a ciegas y perdiendo la evidencia de qué estaba pasando.
+#### ► DE QUÉ TRATA
+Al finalizar vas a diagnosticar, con herramientas reales de Linux, un servicio mínimo que expone la lógica de domain.py como endpoint de salud. Prerrequisitos: Python 3 instalado; Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Operar un servicio es como la medicina clínica: observás signos (CPU, puertos, logs) antes de intervenir, en vez de "reiniciar y ver si se arregla".
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a diagnosticar, con herramientas reales de Linux, un servicio mínimo que expone la lógica de domain.py como endpoint de salud.**
 
-**Conceptos clave:** shell, variable de entorno, pipe, proceso padre, daemon, servicio, log, socket, puerto, healthcheck, CPU, memoria y runbook.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Operar Linux no significa encadenar comandos desconocidos. Formula una pregunta y conserva evidencia. `pwd` responde dónde estás; `id`, con qué identidad; `ps`, qué procesos existen; `ss -ltnp`, qué sockets TCP escuchan; `df -h`, cuánto almacenamiento queda; `free -h`, el estado de memoria; `top`, actividad dinámica.
+#### ► LA ANALOGÍA
+Piensa en linux como entorno observable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un pipe conecta stdout de un proceso con stdin de otro. No comparte memoria:
-
-```bash
-ps -eo pid,user,%cpu,%mem,command | sort -k3 -nr | head
-curl --fail --silent http://127.0.0.1:8000/health
-ss -ltnp
-```
-
-`--fail` es la bandera que hace que `curl` termine con error si la respuesta HTTP es un código de fallo (en vez de imprimir la página de error como si fuera éxito), y `--silent` es la bandera que oculta la barra de progreso, dejando solo la respuesta. Un servicio debe escribir logs útiles en stdout/stderr, responder una comprobación de salud y manejar `SIGTERM`. La salud debe indicar si puede cumplir su función, no solo si el proceso existe. Una variable de entorno configura, pero puede aparecer en inspecciones o procesos hijos: no es una caja fuerte. En producción, los secretos pertenecen al gestor de la plataforma y reciben acceso mínimo en ejecución.
-
-**Analogía:** operar un servicio se parece a la medicina clínica: antes de intervenir, se observan signos, se formula una hipótesis y se solicita una prueba capaz de refutarla.
-
-**¿Por qué es importante?** Porque `ps` puede mostrar que el proceso sigue vivo mientras `curl --fail` confirma que ya no responde: sin los tres ángulos de diagnóstico, reiniciar a ciegas destruye la evidencia de qué estaba fallando realmente.
-
-**Casos de uso reales:** localizar quién ocupa un puerto, distinguir falta de CPU de espera de I/O, detectar disco lleno, seguir logs y comprobar un despliegue.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     REQUEST["petición"] --> PORT["puerto"] --> PROCESS2["proceso"] --> DATA["SQLite / volumen"]
@@ -284,10 +288,56 @@ flowchart LR
     PROCESS2 --> METRICS["CPU / memoria"]
 ```
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Identifica proceso, puerto y logs del gestor en Linux. Detén únicamente el proceso de laboratorio y conserva el diagnóstico que diferencia aplicación detenida de error en sus datos.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Linux como entorno observable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `index.html` y un servicio mínimo, y diagnosticálo desde tres ángulos distintos:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Linux como entorno observable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses linux como entorno observable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: linux como entorno observable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Linux como entorno observable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve linux como entorno observable en tu contexto?
+2. ¿Cómo sabrías que linux como entorno observable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar linux como entorno observable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+ps -eo pid,user,%cpu,%mem,command | sort -k3 -nr | head
+curl --fail --silent http://127.0.0.1:8000/health
+ss -ltnp
+```
+
+```mermaid
+flowchart LR
+    REQUEST["petición"] --> PORT["puerto"] --> PROCESS2["proceso"] --> DATA["SQLite / volumen"]
+    PROCESS2 --> LOGS["stdout / stderr"]
+    PROCESS2 --> HEALTH["/health"]
+    PROCESS2 --> METRICS["CPU / memoria"]
+```
 
 ```bash
 mkdir ejemplo && cd ejemplo
@@ -300,8 +350,6 @@ lsof -nP -iTCP:8765 -sTCP:LISTEN
 ps -o pid,state,command -p "$PID"
 ```
 
-Resultado esperado (el PID y la ruta del intérprete varían):
-
 ```text
 ok
 sano
@@ -311,39 +359,74 @@ Python  77911 nicolasruiz    5u  IPv6  TCP *:8765 (LISTEN)
 77911 SN   python3 -m http.server 8765
 ```
 
-`curl --fail` confirma que el servicio responde; `lsof` muestra el puerto escuchando con su PID (en Linux, `ss -ltnp | grep 8765` da la misma información); `ps` confirma el mismo proceso con su estado. Son tres ángulos del mismo servicio, capturados antes de tocar nada.
+</details>
 
-#### Paso 5 · Práctica guiada
-Pista: matá el proceso con `kill -9 "$PID"` y repetí `curl --fail --silent http://127.0.0.1:8765/`. Ese es el fallo deliberado reproducido a propósito: el comando termina con código 7 (conexión rechazada) y no imprime "sano". Comprobá el código con `echo $?` después del `curl`: la evidencia confirma que el servicio ya no responde, en vez de suponerlo.
-
-#### Paso 6 · Práctica independiente
-Repetí el Paso 4 redirigiendo la salida del servidor a un log (`> servicio.log 2>&1 &`) y seguilo con `tail -f servicio.log` mientras hacés una petición. Documentá qué evidencia adicional aporta el log que `ps` y `ss` no muestran, y limpiá el proceso con `kill -TERM "$PID"` al terminar.
-
-#### Paso 7 · Cierre
-Entregá los tres ángulos de diagnóstico del Paso 4, el código de salida del `curl` tras el fallo del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Como siguiente paso, repetí el diagnóstico con un servicio que exponga `/health` y compará qué responde cuando el proceso vive pero la base no. Errores comunes: reiniciar el servicio antes de capturar `ps`, `lsof` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/lsof.8.html y https://man7.org/linux/man-pages/man8/ss.8.html.
 ### Tema 4: Contenedores: aislamiento reproducible · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a contenerizar `domain.py` de RutaFlow con un usuario sin privilegios y a confirmar que los datos sobreviven a recrear el contenedor. Prerrequisitos: Docker instalado; Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si el cálculo de rutas de RutaFlow corriera en un contenedor, necesitaría guardar un caché de rutas calculadas en un volumen — perderlo cada vez que se recrea el contenedor sería inaceptable para un servicio real.
+#### ► DE QUÉ TRATA
+Al finalizar vas a contenerizar domain.py de RutaFlow con un usuario sin privilegios y a confirmar que los datos sobreviven a recrear el contenedor. Prerrequisitos: Docker instalado; Tema 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La imagen es una receta sellada; el contenedor es una preparación concreta de esa receta; el volumen es la despensa externa — podés cambiar la cocina (recrear el contenedor) sin perder lo que había en la despensa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a contenerizar domain.py de RutaFlow con un usuario sin privilegios y a confirmar que los datos sobreviven a recrear el contenedor.**
 
-**Escenario:** Tu worker y tu BD corren en el mismo `docker-compose.yml`. Sin límites, el worker consume toda la RAM y mata la BD. Necesitas garantizar 512MB para BD, 256MB para worker.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Tu tarea:**
-1. Escribe `docker-compose.yml` con `limits` y `reservations`.
-2. ¿Cuál es la diferencia? (Soft vs hard.)
-3. ¿Qué pasa cuando worker se pasa del límite?
-4. ¿Cómo monitorearlo sin instrumentación adicional?
+#### ► LA ANALOGÍA
+Piensa en contenedores: aislamiento reproducible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    KERNEL2["Kernel Linux compartido"] --> C1["contenedor app"]
+    KERNEL2 --> C2["otro contenedor"]
+    C1 --> PY["proceso Python"] --> VOL["volumen /data"]
+    LIMITS["cgroups: límites"] --> C1
+    NS["namespaces: vistas"] --> C1
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Contenedores: aislamiento reproducible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Contenedores: aislamiento reproducible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses contenedores: aislamiento reproducible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: contenedores: aislamiento reproducible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Contenedores: aislamiento reproducible existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve contenedores: aislamiento reproducible en tu contexto?
+2. ¿Cómo sabrías que contenedores: aislamiento reproducible no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar contenedores: aislamiento reproducible?
+
+</details>
 
 <details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-> ```yaml
+#### Código y verificación
+```yaml
 > services:
 >   db:
 >     image: postgres:17
@@ -362,16 +445,6 @@ La imagen es una receta sellada; el contenedor es una preparación concreta de e
 >         reservations:
 >           memory: 256M
 > ```
->
-> `limits` es el techo: la plataforma impide que el contenedor asigne más memoria. `reservations` es el mínimo que la plataforma debe garantizarle. Cada servicio reserva lo que necesita garantizado (512 MB la BD, 256 MB el worker) y tiene ese mismo valor como techo, así que el worker nunca puede quitarle memoria a la BD. Si el worker intenta pasar de su límite, el kernel mata el proceso por falta de memoria (OOM, código de salida 137) y la BD sigue viva. Monitoréalo sin instrumentación adicional con `docker stats`, que muestra el uso de memoria frente al límite de cada contenedor.
-
-</details>
-
-**Conceptos clave:** máquina virtual, contenedor, imagen, capa, registro, namespace, cgroup, volumen, red, puerto, usuario no root, build reproducible y cadena de suministro.
-
-Una máquina virtual incluye un sistema operativo invitado. Un contenedor es un conjunto de procesos aislados que **comparte el kernel del host**. Los namespaces separan vistas como procesos, red y mounts; los cgroups limitan o contabilizan recursos. Una imagen es una plantilla inmutable por capas; un contenedor es su ejecución con una capa escribible efímera.
-
-Docker mejora repetibilidad, pero no vuelve segura una aplicación. Dependencias sin fijar cambian entre builds; root aumenta impacto; copiar secretos los conserva en capas; guardar SQLite en la capa efímera pierde datos al recrear. Los datos durables pertenecen a un volumen.
 
 ```dockerfile
 FROM python:3.14-slim
@@ -387,16 +460,6 @@ EXPOSE 8000
 CMD ["python", "-m", "src.server"]
 ```
 
-`EXPOSE` documenta; no publica un puerto. `-p 127.0.0.1:8000:8000` conecta host y contenedor. `-v inventory-data:/data` conserva SQLite. `.dockerignore` excluye `.git`, entornos y secretos del contexto. Los límites requieren pruebas: observa si el servicio degrada, rechaza trabajo o termina de forma controlada.
-
-**Analogía:** una imagen es una receta sellada y un contenedor una preparación concreta. El volumen es la despensa externa: puedes sustituir la cocina sin perder ingredientes persistentes.
-
-**¿Por qué es importante?** porque “funciona en mi máquina” suele ocultar diferencias de dependencias, identidad, configuración y filesystem.
-
-**Casos de uso reales:** CI reproducible, despliegue de APIs, herramientas aisladas y entornos desechables. Un contenedor no es una frontera absoluta contra código hostil.
-
-**Diagrama:**
-
 ```mermaid
 flowchart TB
     KERNEL2["Kernel Linux compartido"] --> C1["contenedor app"]
@@ -406,17 +469,9 @@ flowchart TB
     NS["namespaces: vistas"] --> C1
 ```
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Empaqueta el gestor y ejecuta su prueba de humo desde un contenedor limpio. Recrea el proceso y comprueba qué datos persisten mediante el volumen, sin depender de archivos de tu equipo.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente `domain.py` y `Dockerfile`:
-
 ```bash
 mkdir ejemplo-contenedor && cd ejemplo-contenedor
 ```
-
-Archivo `domain.py`:
 
 ```python
 from dataclasses import dataclass
@@ -441,8 +496,6 @@ def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> li
     return ordered
 ```
 
-Archivo `Dockerfile`:
-
 ```dockerfile
 FROM python:3.14-slim
 WORKDIR /app
@@ -453,39 +506,27 @@ USER rutaflow
 CMD ["python", "-c", "from domain import nearest_neighbor_route, Stop; print(nearest_neighbor_route((0,0),[Stop('RF-1',1,1)]))"]
 ```
 
-Construye y ejecuta desde esa misma carpeta:
-
-```bash
-docker build -t rutaflow-rutas .
-docker run --rm -v rutaflow-cache:/data rutaflow-rutas
-```
-Resultado esperado: el contenedor corre como `rutaflow` (UID 10001), nunca como root, e imprime la ruta calculada — el mismo cálculo del Tema 1, ahora empaquetado de forma reproducible.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `USER rutaflow` del Dockerfile y volvé a construir — ese es el fallo deliberado: el proceso dentro del contenedor corre como root, aumentando el impacto de cualquier vulnerabilidad en el código o en una dependencia, exactamente lo que el usuario no privilegiado existía para evitar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/data` desde el contenedor, recreá el contenedor por completo (`docker rm` + `docker run` de nuevo con el mismo volumen), y confirmá que el archivo sigue ahí — la prueba de que el volumen, no el contenedor, es lo que persiste.
-
-#### Paso 7 · Cierre
-Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
-**Implicación práctica:** Un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
+</details>
 
 ### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás reproducir un interbloqueo (deadlock) con la cena de los filósofos, evitarlo imponiendo un orden global de recursos y permitir lecturas concurrentes con exclusión de escritores. Prerrequisito: Tema 2 de este módulo (memoria y concurrencia).
 
-#### Paso 2 · Contexto y caso real
-En RutaFlow, cinco despachadores comparten cinco radios y cada uno necesita dos para coordinar una entrega. Un día el sistema se congeló sin errores: cada uno tenía una radio y esperaba la otra. El mismo caso real aparece con bloqueos de base de datos y con locks en servicios. Los libros de *Clean Code* y de sistemas operativos lo enseñan como los problemas clásicos de concurrencia.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reproducir un interbloqueo (deadlock) con la cena de los filósofos, evitarlo imponiendo un orden global de recursos y permitir lecturas concurrentes con exclusión de escritores.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un **interbloqueo** requiere cuatro condiciones a la vez (Coffman): exclusión mutua, retener y esperar, no expropiación y **espera circular**. Romper cualquiera lo evita; la forma más práctica es un **orden global de recursos**: todos toman primero el de menor número, así no puede formarse un ciclo. El problema de **lectores y escritores** permite muchos lectores a la vez pero un solo escritor: el primer lector bloquea a los escritores y el último los libera (esta versión favorece a los lectores y puede dejar esperando a un escritor).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** cinco personas en una mesa redonda con un palillo entre cada par; si todas toman el de su izquierda al mismo tiempo, nadie come nunca.
+#### ► LA ANALOGÍA
+Piensa en problemas clásicos de concurrencia: filósofos y lectores-escritores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     M0[mensajero 0] -- tiene --> R0[radio 0]
@@ -496,23 +537,56 @@ flowchart LR
     M4 -. espera .-> R0
 ```
 
-**¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
-**Fuente oficial:** [threading (docs.python.org)](https://docs.python.org/3/library/threading.html), [Dining philosophers problem (Wikipedia)](https://en.wikipedia.org/wiki/Dining_philosophers_problem); Robert C. Martin, *Código limpio*, cap. 13.
-**Conceptos clave:** interbloqueo, condiciones de Coffman, espera circular, orden global de recursos, inanición, lectores-escritores, `threading.Lock`.
-**Cuándo no usarlo:** si puedes evitar compartir estado (colas, mensajes, datos inmutables), hazlo: es más simple que coordinar locks.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Problemas clásicos de concurrencia: filósofos y lectores-escritores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** protege con un orden fijo de bloqueos la asignación de dos recursos (persona y vehículo) a una tarea.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** tomar los locks en el orden "natural" de cada hilo (izquierda, derecha) en vez de un orden global por número, lo que crea una espera circular y bloquea todo el programa (el fallo deliberado); y usar la versión de lectores-escritores que favorece lectores sin medir que, bajo lectura constante, un escritor puede quedar esperando indefinidamente (inanición).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Problemas clásicos de concurrencia: filósofos y lectores-escritores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+#### ► CUÁNDO NO USAR ESTO
+No uses problemas clásicos de concurrencia: filósofos y lectores-escritores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: problemas clásicos de concurrencia: filósofos y lectores-escritores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Problemas clásicos de concurrencia: filósofos y lectores-escritores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve problemas clásicos de concurrencia: filósofos y lectores-escritores en tu contexto?
+2. ¿Cómo sabrías que problemas clásicos de concurrencia: filósofos y lectores-escritores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar problemas clásicos de concurrencia: filósofos y lectores-escritores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    M0[mensajero 0] -- tiene --> R0[radio 0]
+    M0 -. espera .-> R1[radio 1]
+    M1[mensajero 1] -- tiene --> R1
+    M1 -. espera .-> R2[radio 2]
+    M4[mensajero 4] -- tiene --> R4[radio 4]
+    M4 -. espera .-> R0
+```
 
 ```bash
 mkdir concurrencia && cd concurrencia
 ```
-
-Crea `concurrencia_clasica.py`:
 
 ```python
 import threading, time
@@ -570,48 +644,78 @@ tablero.escribir("BO-1", "entregado")
 print(f"Lectores simultáneos máximos: {tablero.max_simultaneos}, estado final: {tablero.leer('BO-1')}")
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 python3 concurrencia_clasica.py
 ```
-
-**Resultado esperado:**
 
 ```text
 Filósofos: rondas por mensajero=[50, 50, 50, 50, 50], hilos bloqueados=0
 Lectores simultáneos máximos: 8, estado final: entregado
 ```
 
-Todos completaron sus 50 rondas sin bloquearse. El máximo de lectores simultáneos depende del planificador del sistema operativo: con Python 3.14.6 en Linux salió 7 u 8 según la ejecución. Lo que importa es que supere 1, porque la lectura no excluye a otros lectores; un escritor, en cambio, siempre escribe solo.
-
-**Fallo deliberado:** Cambia `primero, segundo = min(izquierda, derecha), max(izquierda, derecha)` por `primero, segundo = izquierda, derecha`. Ahora imprime `Filósofos: rondas por mensajero=[0, 0, 0, 0, 0], hilos bloqueados=5` y el programa **no termina**: cada hilo tiene una radio y espera la del vecino, formando un ciclo. Detenlo con Ctrl+C. El `sleep` dentro del primer bloqueo hace visible un error que, sin él, aparecería solo de vez en cuando.
-
-#### Paso 5 · Práctica guiada
-Cuenta cuánto tiempo espera cada mensajero para obtener sus dos radios y muestra el mayor tiempo de espera. **Pista:** mide con `time.perf_counter()` antes del primer `with` y justo dentro del segundo, y guarda el máximo por mensajero.
-
-#### Paso 6 · Práctica independiente
-Escribe una versión de lectores-escritores que dé prioridad a los escritores y demuestra con un experimento que un escritor ya no espera indefinidamente.
-
-#### Paso 7 · Cierre
-
-
-## Construcción guiada del capítulo
+</details>
 
 ### Proyecto 8 — Inventario operable en un contenedor
 
-Parte de la raíz del proyecto acumulativo. Si no tienes servidor HTTP, crea un adaptador mínimo con `GET /health` y una consulta; no coloques lógica de negocio en las rutas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Crea `Dockerfile`, `.dockerignore` y `compose.yaml` desde archivos vacíos.
-2. Fija dependencias, crea un usuario sin privilegios y usa forma exec en `CMD`.
-3. Monta un volumen en `/data`; aplica la migración al ejecutar, nunca durante el build.
-4. Añade healthcheck con inicio, intervalo, timeout y reintentos razonados.
-5. Publica el puerto en `127.0.0.1` durante desarrollo y añade límites de CPU/memoria.
-6. Envía `SIGTERM` durante una petición y confirma cierre limpio de SQLite.
-7. Ejecuta retiradas simultáneas y demuestra que nunca aparece stock negativo.
-8. Recrea el contenedor y prueba persistencia; usa otro volumen para demostrar aislamiento.
-9. Escribe `docs/runbook.md`: iniciar, salud, logs, backup, restore, actualización, reversión y fallos comunes.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto 8 — inventario operable en un contenedor con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto 8 — inventario operable en un contenedor te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en proyecto 8 — inventario operable en un contenedor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto 8 — inventario operable en un contenedor resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto 8 — Inventario operable en un contenedor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto 8 — Inventario operable en un contenedor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto 8 — inventario operable en un contenedor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto 8 — inventario operable en un contenedor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto 8 — Inventario operable en un contenedor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto 8 — inventario operable en un contenedor en tu contexto?
+2. ¿Cómo sabrías que proyecto 8 — inventario operable en un contenedor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto 8 — inventario operable en un contenedor?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```yaml
 services:
   inventory:
@@ -630,12 +734,4 @@ volumes:
   inventory-data:
 ```
 
-**Verificación:** conserva la salida de la configuración resuelta, build, usuario, salud, límites, prueba concurrente, señal y recreación con datos. Las pruebas deben pasar fuera y dentro de la imagen. Otra persona debe reproducirlo siguiendo solo el README.
-
-**Errores comunes y soluciones**
-
-- Permiso denegado en `/data`: inspecciona UID/GID; no concedas `777`.
-- Solo responde dentro: escucha en `0.0.0.0` dentro y restringe la publicación en el host.
-- Datos desaparecen: confirma que SQLite usa la ruta montada.
-- `SIGTERM` no llega: usa `CMD` exec y evita una shell como PID 1.
-- Carrera pese al lock: un lock local no coordina varios procesos; protege en la base.
+</details>

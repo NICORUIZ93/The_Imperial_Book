@@ -16,98 +16,68 @@ Cuando subir la ganancia no basta (módulo 14, Ejemplo 4), se agrega un compensa
 - Adelanto (lead)El cero está más cerca del origen que el polo. Aporta ángulo positivo: \(\angle(s+z) - \angle(s+p) > 0\). Jala el lugar a la izquierda: más rápido y más amortiguado. Se parece a un PD.
 - Atraso (lag)El polo está más cerca del origen. Con \(z\) y \(p\) muy pequeños casi no cambia el lugar, pero multiplica la ganancia en \(s=0\) por \(z/p\). Mejora el error. Se parece a un PI.
 
+
 ### Tema 1: Diseño de un adelanto · Avanzado · 40 min
 
-**¿Por qué es importante?** El adelanto mejora la velocidad y el amortiguamiento cuando subir la ganancia ya no alcanza.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
+#### ► DE QUÉ TRATA
+Este tema te guía por diseño de un adelanto con foco en comprensión antes de implementación.
 
-**Procedimiento**
+#### ► LA IDEA EN UNA FRASE
+**Entender diseño de un adelanto te permite tomar mejores decisiones técnicas.**
 
-1. Con \(M_p\) y \(t_s\) deseados, calcula los polos deseados \(s_d\) (módulo 12 y módulo 16).
-2. Calcula \(\angle G(s_d)\). Lo que falta para llegar a −180° es el ángulo que debe aportar el compensador, \(\phi\).
-3. Ubica el cero (una opción simple: cancelar un polo de la planta que no esté en el origen) y calcula el polo para que el compensador aporte \(\phi\).
-4. Calcula \(K_c\) con la condición de magnitud.
-5. Verifica: simula y revisa que no haya otros polos que dominen.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Ejemplo 1 · Adelanto: el doble de rápido · *Experto*
+#### ► LA ANALOGÍA
+Piensa en diseño de un adelanto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Enunciado.** Planta \(\dfrac{4}{s(s+2)}\) (en lazo cerrado da \(\zeta = 0{,}5\), \(\omega_n = 2\)). Se quiere \(\zeta = 0{,}5\) con \(\omega_n = 4\).
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que diseño de un adelanto resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-1. Polos deseados: \(\sigma = 0{,}5\cdot4 = 2\), \(\omega_d = 4\sqrt{0{,}75} = 3{,}46\). \(s_d = -2+3{,}46j\).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Diseño de un adelanto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-   **¿Por qué?** Módulo 12.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Diseño de un adelanto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-2. Ángulo de la planta en \(s_d\): desde 0 el vector \((-2;\ 3{,}46)\) mide 120°; desde −2, \((0;\ 3{,}46)\) mide 90°. \(\angle G = -(120°+90°) = -210°\).
+#### ► CUÁNDO NO USAR ESTO
+No uses diseño de un adelanto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** Los polos restan su ángulo (17.1).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: diseño de un adelanto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-3. Falta \(+30°\) para llegar a −180°.
+#### ► LO QUE DEBES RECORDAR
+- Diseño de un adelanto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Condición de ángulo: si \(s_d\) estuviera en el lugar, la suma daría −180°.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve diseño de un adelanto en tu contexto?
+2. ¿Cómo sabrías que diseño de un adelanto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar diseño de un adelanto?
 
-4. Cero en −2 (cancela el polo de la planta). Queda \(\dfrac{4K_c}{s(s+p)}\): \(-120° - \angle(s_d+p) = -180°\), así que \(\angle(s_d+p) = 60°\).
+</details>
 
-   **¿Por qué?** Con el cero cancelando, solo falta ubicar el polo.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-5. \(\tan60° = \dfrac{3{,}46}{p-2} \Rightarrow p - 2 = 2 \Rightarrow p = 4\).
-
-   **¿Por qué?** Geometría del vector desde \(-p\) hasta \(s_d\).
-
-6. Lazo cerrado: \(s^2 + 4s + 4K_c\). Para \(\omega_n^2 = 16\): \(K_c = 4\).
-
-   **¿Por qué?** Condición de magnitud, o comparar coeficientes.
-
-**Resultado:** \(G_c = 4\dfrac{s+2}{s+4}\): \(t_s\) pasa de 4 s a 2 s
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Adelanto que aporta 30° de fase · *Básico*
-
-**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 30°.
-
-1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}5}{1 + 0{,}5} \approx 0{,}333\).
-
-   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
-
-**Resultado.** El polo queda 3 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
-
-#### Ejemplo 3 · Adelanto que aporta 45° de fase · *Intermedio*
-
-**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 45°.
-
-1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}707}{1 + 0{,}707} \approx 0{,}172\).
-
-   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
-
-**Resultado.** El polo queda 5,83 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
-
-#### Ejemplo 4 · Adelanto que aporta 55° de fase · *Intermedio*
-
-**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 55°.
-
-1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}819}{1 + 0{,}819} \approx 0{,}099\).
-
-   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
-
-**Resultado.** El polo queda 10,06 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
-
-#### Ejemplo 5 · Adelanto que aporta 20° de fase · *Básico*
-
-**Enunciado.** Halla la relación \(\alpha\) de un compensador \(\dfrac{s + 1/T}{s + 1/(\alpha T)}\) para aportar 20°.
-
-1. \(\alpha = \dfrac{1 - \sin\phi_m}{1 + \sin\phi_m} = \dfrac{1 - 0{,}342}{1 + 0{,}342} \approx 0{,}49\).
-
-   **¿Por qué?** Fórmula de la fase máxima de un adelanto.
-
-**Resultado.** El polo queda 2,04 veces más lejos que el cero. La fase máxima ocurre en \(\omega_m = 1/(T\sqrt{\alpha})\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import sin, pi, N
@@ -117,178 +87,146 @@ alpha = N((1 - sin(phi)) / (1 + sin(phi)), 3)
 print("alpha:", alpha)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `alpha: 0.333`, igual al Ejemplo 2 (el polo queda 3 veces más lejos que el cero).
-
-#### Practica
-
-cambia `phi` a `pi*45/180` y confirma \(\alpha\approx0{,}172\) (Ejemplo 3, 45° de fase). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta fórmula de \(\alpha\) da la relación cero/polo para la fase **máxima** de un adelanto simple; no dice dónde ubicar ese cero en \(s\) — eso sale de la condición de ángulo en el polo deseado \(s_d\) (procedimiento completo del Ejemplo 1).
+</details>
 
 ### Tema 2: Diseño de un atraso · Avanzado · 40 min
 
-**¿Por qué es importante?** El atraso reduce el error final sin dañar el transitorio, algo que la ganancia sola no puede lograr.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
+#### ► DE QUÉ TRATA
+Este tema te guía por diseño de un atraso con foco en comprensión antes de implementación.
 
-#### Demostración · el atraso multiplica el error sin mover los polos
+#### ► LA IDEA EN UNA FRASE
+**Entender diseño de un atraso te permite tomar mejores decisiones técnicas.**
 
-1. En \(s = 0\): \(G_c(0) = K_c\dfrac{z}{p}\). Si \(K_c = 1\) y \(z/p = 10\), \(K_v\) se multiplica por 10.
-2. Cerca de los polos dominantes \(s_d\) (lejos del origen), \(\dfrac{s_d+z}{s_d+p} \approx 1\) en magnitud y casi 0° en ángulo, porque \(z\) y \(p\) son muy pequeños comparados con \(|s_d|\).
-3. Así que el lugar de las raíces, y por lo tanto el transitorio, casi no cambia.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-∎
+#### ► LA ANALOGÍA
+Piensa en diseño de un atraso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Ejemplo 1 · Atraso: diez veces menos error · *Experto*
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que diseño de un atraso resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-> **Qué cambia respecto al anterior:** Ahora se busca menos error, no más velocidad.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Diseño de un atraso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Enunciado.** Misma planta (\(K_v = 2\)). Se quiere \(K_v = 20\) sin cambiar el transitorio.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Diseño de un atraso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Necesitas multiplicar \(K_v\) por 10, así que \(z/p = 10\).
+#### ► CUÁNDO NO USAR ESTO
+No uses diseño de un atraso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** El atraso multiplica la ganancia en \(s = 0\) por \(z/p\) (demostración arriba).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: diseño de un atraso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-2. Elige \(z\) y \(p\) pequeños: \(z = 0{,}1\), \(p = 0{,}01\).
+#### ► LO QUE DEBES RECORDAR
+- Diseño de un atraso existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Cerca del origen casi no tocan el lugar donde están los polos dominantes.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve diseño de un atraso en tu contexto?
+2. ¿Cómo sabrías que diseño de un atraso no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar diseño de un atraso?
 
-3. Comprueba el ángulo en \(s_d = -1+1{,}73j\): \(117{,}5° - 119{,}8° = -2{,}3°\).
+</details>
 
-   **¿Por qué?** Menos de 5° se considera despreciable.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Resultado:** \(G_c = \dfrac{s+0{,}1}{s+0{,}01}\): \(K_v = 20\), error ante rampa 0,05
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Atraso para subir Kv de 2 a 20 · *Básico*
-
-**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
-
-1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 10\).
-
-   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
-
-2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}01\).
-
-   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
-
-**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}01}\): el error ante rampa baja 10 veces y la respuesta transitoria casi no cambia.
-
-#### Ejemplo 3 · Atraso para subir Kv de 5 a 50 · *Intermedio*
-
-**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
-
-1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 10\).
-
-   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
-
-2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}01\).
-
-   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
-
-**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}01}\): el error ante rampa baja 10 veces y la respuesta transitoria casi no cambia.
-
-#### Ejemplo 4 · Atraso para subir Kv de 1 a 8 · *Intermedio*
-
-**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
-
-1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 8\).
-
-   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
-
-2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}0125\).
-
-   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
-
-**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}0125}\): el error ante rampa baja 8 veces y la respuesta transitoria casi no cambia.
-
-#### Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*
-
-**Enunciado.** Diseña el cero y el polo del atraso sin mover los polos dominantes.
-
-1. \(\beta = K_{v,\text{nuevo}}/K_{v,\text{actual}} = 4\).
-
-   **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
-
-2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}025\).
-
-   **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
-
-**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}025}\): el error ante rampa baja 4 veces y la respuesta transitoria casi no cambia.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2.
-
+#### Código y verificación
 ```python
 # verificacion.py
 z, p = 0.1, 0.01
 print("beta:", z / p)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `beta: 10.0`, igual al Ejemplo 2 (\(K_v\) se multiplica por 10).
-
-#### Practica
-
-cambia `z, p` a `0.1, 0.0125` y confirma `beta: 8.0` (Ejemplo 4). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esta multiplicación de \(K_v\) solo es válida si el cero y el polo quedan mucho más cerca del origen que los polos dominantes (regla práctica: a menos de 5° de desviación, como se comprueba en el Ejemplo 1); si \(z\) o \(p\) se acercan demasiado a \(s_d\), sí mueven el transitorio.
+</details>
 
 ### Tema 3: Implementación con op-amps · Avanzado · 40 min
 
-**¿Por qué es importante?** Implementar el compensador con op-amps conecta el diseño en papel con un circuito real.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
+#### ► DE QUÉ TRATA
+Este tema te guía por implementación con op-amps con foco en comprensión antes de implementación.
 
-Dos inversores en cascada: el primero con \(Z_i = R_1\parallel C_1\) y \(Z_f = R_2\parallel C_2\); el segundo con \(R_3\) y \(R_4\) para corregir el signo y la ganancia.
+#### ► LA IDEA EN UNA FRASE
+**Entender implementación con op-amps te permite tomar mejores decisiones técnicas.**
 
-\[G_c(s) = \frac{R_4R_2}{R_3R_1}\cdot\frac{R_1C_1s+1}{R_2C_2s+1} = \frac{R_4C_1}{R_3C_2}\cdot\frac{s+\frac{1}{R_1C_1}}{s+\frac{1}{R_2C_2}}\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-*Adelanto si \(R_1C_1 > R_2C_2\); atraso si \(R_1C_1 < R_2C_2\).*
+#### ► LA ANALOGÍA
+Piensa en implementación con op-amps como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Demostración
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que implementación con op-amps resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Con el módulo 7: \(Z_i = \dfrac{R_1}{1+sR_1C_1}\), \(Z_f = \dfrac{R_2}{1+sR_2C_2}\). La primera etapa da \(-\dfrac{R_2}{R_1}\cdot\dfrac{1+sR_1C_1}{1+sR_2C_2}\), y la segunda \(-R_4/R_3\). El producto quita el signo. Para la segunda forma, saca \(R_1C_1\) y \(R_2C_2\) como factor común.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Implementación con op-amps se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-∎
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Implementación con op-amps | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Más ejemplos resueltos
+#### ► CUÁNDO NO USAR ESTO
+No uses implementación con op-amps por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: implementación con op-amps funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Ejemplo 1 · Compensador con op-amps: R1 = 100 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*
+#### ► LO QUE DEBES RECORDAR
+- Implementación con op-amps existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve implementación con op-amps en tu contexto?
+2. ¿Cómo sabrías que implementación con op-amps no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar implementación con op-amps?
 
-1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
+</details>
 
-   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-2. Cero en \(-10\), polo en \(-100\).
-
-   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
-
-**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1.
-
+#### Código y verificación
 ```python
 # verificacion.py
 R1, C1, R2, C2 = 100e3, 1e-6, 10e3, 1e-6
@@ -298,73 +236,8 @@ print("cero:", cero)
 print("polo:", polo)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `cero: -10.0` y `polo: -100.0`, igual al Ejemplo 1 (cero más cerca del origen que el polo: es un adelanto).
-
-#### Practica
-
-cambia los valores a los del Ejemplo 3 (\(R_1=1\text{k}\Omega, C_1=1\mu F, R_2=10\text{k}\Omega, C_2=1\mu F\)) y confirma que ahora el polo (\(-100\)) queda más cerca del origen que el cero (\(-1000\)): es un atraso. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** este script solo ubica el cero y el polo; la ganancia de alta frecuencia (\(C_1/C_2\)) y el signo (dos inversores en cascada) hay que calcularlos aparte, como en la demostración de este tema.
-
-#### Ejemplo 2 · Compensador con op-amps: R1 = 10 kΩ, C1 = 10 µF, R2 = 1 kΩ, C2 = 10 µF · *Intermedio*
-
-**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
-
-   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
-
-2. Cero en \(-10\), polo en \(-100\).
-
-   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
-
-**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
-
-#### Ejemplo 3 · Compensador con op-amps: R1 = 1 kΩ, C1 = 1 µF, R2 = 10 kΩ, C2 = 1 µF · *Intermedio*
-
-**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
-
-   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
-
-2. Cero en \(-1000\), polo en \(-100\).
-
-   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
-
-**Resultado.** Es un **atraso** con ganancia de alta frecuencia \(1\).
-
-#### Ejemplo 4 · Compensador con op-amps: R1 = 220 kΩ, C1 = 1 µF, R2 = 22 kΩ, C2 = 0,47 µF · *Avanzado*
-
-**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
-
-   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
-
-2. Cero en \(-4{,}545\), polo en \(-96{,}712\).
-
-   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
-
-**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(2{,}128\).
-
-#### Ejemplo 5 · Compensador con op-amps: R1 = 47 kΩ, C1 = 2,2 µF, R2 = 4,7 kΩ, C2 = 2,2 µF · *Intermedio*
-
-**Enunciado.** Con la red \(R_1\parallel C_1\) a la entrada y \(R_2\parallel C_2\) en realimentación (más un inversor), halla cero, polo y tipo.
-
-1. \(\dfrac{V_o}{V_i} = \dfrac{R_2}{R_1}\dfrac{R_1C_1s + 1}{R_2C_2s + 1} = \dfrac{C_1}{C_2}\dfrac{s + 1/(R_1C_1)}{s + 1/(R_2C_2)}\).
-
-   **¿Por qué?** Inversor con impedancias en paralelo y un segundo inversor para quitar el signo.
-
-2. Cero en \(-9{,}671\), polo en \(-96{,}712\).
-
-   **¿Por qué?** Cero más cerca del origen que el polo → adelanto; al revés → atraso.
-
-**Resultado.** Es un **adelanto** con ganancia de alta frecuencia \(1\).
-
+</details>

@@ -37,39 +37,27 @@ bloque «Spring Boot esencial»: tema 3 (IoC, DI, ciclo de vida, ApplicationCont
 bloque «Arranque rápido»: tema 7 (CRaC) y tema 8 (GraalVM Native Image).
 
 ---
+
+
 ### Java 21: Streams, Lambdas, Optional, Records, Pattern Matching
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 1 de 8 · Fase 1 · 2,5 h.
-El título conserva «Java 21» del temario: son las funciones que Java 21 (LTS) dejó estables. Aquí las usas con
-**JDK 25 LTS**, que las mantiene y añade el patrón `_` (Java 22) que también verás.
+#### ► DE QUÉ TRATA
+Aplicar records, sealed interfaces, pattern matching, lambdas, streams y Optional para calcular totales, agrupar y buscar en un pedido, de modo que los 6 tests de JavaModernoTest pasen y puedas explicar por qué el compilador rechaza un switch al que le falta un caso.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Aplicar records, sealed interfaces, pattern matching, lambdas, streams y Optional para calcular totales, agrupar y buscar en un pedido, de modo que los 6 tests de JavaModernoTest pasen y puedas explicar por qué el compilador rechaza un switch al que le falta un caso.**
 
-- Módulo 0.3: variables, tipos, `if`, `for`, métodos y clases en Java.
-- Módulo 0.5: compilar y ejecutar un archivo con `java Archivo.java`.
-- Saber qué es una lista (`List`) y un mapa (`Map`) aunque no los hayas usado mucho.
+#### ► POR QUÉ EXISTE ESTO
+Un programa trabaja con datos (un producto, un pedido) y con acciones sobre esos datos (sumar, buscar, ordenar). Java moderno te da cinco herramientas para escribir eso con menos código y menos errores:
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en java 21: streams, lambdas, optional, records, pattern matching como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Aplicar** records, sealed interfaces, pattern matching, lambdas, streams y `Optional` para calcular totales,
-agrupar y buscar en un pedido, de modo que los 6 tests de `JavaModernoTest` pasen y puedas **explicar** por qué el
-compilador rechaza un `switch` al que le falta un caso.
-
-#### 4. ANALOGÍA VISUAL
-
-Una **cinta transportadora de una planta empacadora de café**. A la izquierda llegan bolsas (los elementos de una
-lista). Encima de la cinta hay estaciones con un letrero: «**filtrar**: solo bolsas de más de 40 000», «**mapear**:
-quita la bolsa y deja solo la etiqueta», «**ordenar**», y al final una caja que «**recolecta**» lo que llega. Cada
-bolsa es un **record**: una caja sellada y transparente con su etiqueta impresa (SKU, categoría, precio) que nadie
-puede reescribir. Al lado de la cinta, un **clasificador de monedas** con ranuras de formas distintas (tarjeta,
-transferencia, efectivo) representa el *pattern matching*: cada objeto cae por la ranura de su forma, y si fabricas
-una moneda nueva sin ranura, la máquina no arranca (el compilador te avisa). Por último, una **caja con ventanita**
-que puede estar vacía o tener un producto dentro es `Optional`: antes de abrirla, miras por la ventana.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     L["List#lt;Linea#gt;<br/>3 records"] -->|"stream()"| F["filter(esCaro)<br/>lambda"]
@@ -87,69 +75,49 @@ flowchart LR
     T & TR & E -->|"switch exhaustivo"| TXT["texto descriptivo"]
 ```
 
-**Texto alternativo:** a la izquierda, una lista de tres líneas de pedido. De ella salen cuatro tuberías. La
-primera pasa por «filter» (lambda esCaro), «sorted» por precio descendente, «map» a SKU y «toList», y produce
-[TEC-3, LIB-1]. La segunda mapea cada línea a su subtotal y reduce sumando desde cero hasta 250000. La tercera
-agrupa en un TreeMap de categoría a total. La cuarta filtra por SKU y termina en un rombo «Optional»: si está
-presente, se mapea al precio; si está vacío, se usa orElse(ZERO). Abajo, una interfaz sellada Pago con tres records
-(Tarjeta, Transferencia, Efectivo) que confluyen en un switch exhaustivo que produce un texto.
+1. **Record**: una ficha de datos que no cambia. Escribes `record Producto(String sku, String categoria, BigDecimal
+2. **Lambda**: una función pequeña sin nombre que puedes pasar como dato. `l -> l.producto().sku()` significa «dame
+3. **Stream**: una cinta transportadora sobre una lista. Encadenas pasos (`filter`, `map`, `sorted`) y al final
+4. **Optional**: una caja que puede venir vacía. En vez de devolver `null` (que provoca el famoso
+5. **Pattern matching**: un `switch` que pregunta «¿de qué forma es este objeto?» y, si es una tarjeta, te entrega
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Java 21: Streams, Lambdas, Optional, Records, Pattern Matching se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un programa trabaja con **datos** (un producto, un pedido) y con **acciones** sobre esos datos (sumar, buscar,
-ordenar). Java moderno te da cinco herramientas para escribir eso con menos código y menos errores:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Java 21: Streams, Lambdas, Optional, Records, Pattern Matching | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+Optional como campo y get() sin comprobar. Se ve así:
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: java 21: streams, lambdas, optional, records, pattern matching funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - **Record**: una ficha de datos que no cambia. Escribes `record Producto(String sku, String categoria, BigDecimal
-  precio)` y Java crea por ti el constructor, los métodos para leer cada dato y la comparación entre fichas.
 - **Lambda**: una función pequeña sin nombre que puedes pasar como dato. `l -> l.producto().sku()` significa «dame
-  una línea y te devuelvo su SKU».
 - **Stream**: una cinta transportadora sobre una lista. Encadenas pasos (`filter`, `map`, `sorted`) y al final
-  recolectas el resultado (`toList`, `reduce`, `collect`). La lista original no cambia.
 - **Optional**: una caja que puede venir vacía. En vez de devolver `null` (que provoca el famoso
-  `NullPointerException`), devuelves `Optional` y quien lo recibe decide qué hacer si está vacía.
-- **Pattern matching**: un `switch` que pregunta «¿de qué forma es este objeto?» y, si es una tarjeta, te entrega
-  directamente sus partes (`ultimos4`, `cuotas`).
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve java 21: streams, lambdas, optional, records, pattern matching en tu contexto?
+2. ¿Cómo sabrías que java 21: streams, lambdas, optional, records, pattern matching no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar java 21: streams, lambdas, optional, records, pattern matching?
 
-**Records.** Son clases `final` con campos `private final`. El *constructor compacto* (`public Producto {... }`)
-valida antes de asignar: así es imposible crear un `Producto` con precio negativo. `equals` compara por valor, por eso
-`assertEquals(new Producto(...), otro)` funciona sin escribir nada.
+</details>
 
-**Lambdas y referencias a métodos.** Una lambda implementa una *interfaz funcional* (una interfaz con un solo
-método abstracto): `Predicate<Linea>` (`test`), `Function<A,B>` (`apply`), `Comparator<T>` (`compare`).
-`Linea::subtotal` es una referencia a método equivalente a `l -> l.subtotal()`.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Streams.** Tienen operaciones *intermedias* perezosas (`filter`, `map`, `sorted`) que no hacen nada hasta que
-aparece una operación *terminal* (`toList`, `reduce`, `collect`, `findFirst`). Un stream se consume una sola vez.
-`Collectors.groupingBy(clave, TreeMap::new, Collectors.reducing(...))` agrupa y reduce en un paso; el `TreeMap`
-ordena las claves. Para dinero se usa `BigDecimal`, nunca `double`.
-
-**Optional.** `findFirst()` devuelve `Optional<T>`. Se encadena con `map`, `filter`, `orElse`, `orElseGet` y
-`orElseThrow()`. No se usa como campo de una clase ni como parámetro: es un tipo de **retorno**.
-
-**Sealed + pattern matching.** `sealed interface Pago permits Tarjeta, Transferencia, Efectivo` cierra la jerarquía.
-En `switch (pago)` cada `case Tarjeta(var u4, var cuotas)` es un *record pattern* que desarma el objeto; `when` añade
-una condición (*guard*); `_` ignora un componente (estable desde Java 22). Como el compilador conoce todos los
-subtipos, el `switch` es **exhaustivo** sin `default`: si mañana añades `Pse`, el código que no lo trate deja de
-compilar, que es justo lo que quieres.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Decisión | Opción A | Opción B | Trade-off |
-|---|---|---|---|
-| Modelar datos | `record` | clase con Lombok `@Value` | Record es del lenguaje y no necesita *annotation processor*; Lombok permite herencia y *builders*, pero añade una dependencia que toca el compilador. |
-| Recorrer colecciones | Stream | bucle `for` | El stream expresa intención y se paraleliza con `parallelStream()`; el `for` es más rápido de depurar, permite `break` y gana en bucles muy calientes o con estado mutable. |
-| Ausencia de valor | `Optional` | `null` + anotaciones `@Nullable` (JSpecify) | `Optional` obliga al llamador; JSpecify no crea objetos y sirve en campos y parámetros, pero depende de que el IDE o NullAway lo verifiquen. |
-| Variantes de un tipo | `sealed` + `switch` | polimorfismo (método abstracto `describir()` en cada clase) | El polimorfismo es mejor cuando las variantes cambian poco y las operaciones mucho al revés; con `sealed` añadir **operaciones** es barato y el compilador vigila las **variantes**. |
-
-**Cuándo NO usarlo.** No uses `parallelStream()` en un servidor web por defecto: comparte el `ForkJoinPool` común con
-todo el proceso y con pocas filas es más lento. No conviertas en stream un algoritmo con varios estados mutables
-(es más legible un `for`). No uses records para entidades JPA (F028): Hibernate necesita constructor sin argumentos y
-campos mutables. No devuelvas `Optional<List<T>>`: una lista vacía ya expresa «no hay».
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS (25.0.5) · Gradle 9.9.2 · el BOM de Spring Boot 4.1.3 como plataforma, solo para fijar la
 versión de JUnit Jupiter 6.0.3. El código no depende de Spring y corre tal cual con
 `java src/main/java/academia/java/JavaModerno.java` (lanzador de un solo archivo, desde Java 11).
@@ -391,48 +359,7 @@ public class JavaModerno {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Entra en la carpeta del tema:
-
-```bash
-java -version
-```
-
-2. Ejecuta el archivo directamente con el lanzador de código fuente (no hace falta Gradle):
-
-```bash
-java src/main/java/academia/java/JavaModerno.java
-```
-
-   **Output esperado** (salida real con JDK 25.0.5):
-
-```text
-Total: 250000
-Por categoría: {libros=90000, papeleria=40000, tecnologia=120000}
-Caros (> 40000): [TEC-3, LIB-1]
-Buscar TEC-3: 120000
-Buscar XXX-0: 0
-Tarjeta *4242 a 3 cuotas
-Tarjeta *1111 de contado
-Transferencia desde Banco Andino
-Efectivo contra entrega
-```
-
-   **Captura comentada:** la segunda línea sale ordenada alfabéticamente porque `groupingBy` recibe `TreeMap::new`;
-   la tercera pone `TEC-3` antes que `LIB-1` por el `reversed()`; `Buscar XXX-0: 0` es el `orElse` de un `Optional`
-   vacío; las dos tarjetas toman caminos distintos del `switch` gracias a `when cuotas > 1`.
-
-3. **Fallo deliberado:** borra la línea `case Efectivo() -> "Efectivo contra entrega";` y vuelve a ejecutar el paso 2.
-
-   **Output esperado:** el programa no llega a correr; el compilador responde con
-   `error: the switch expression does not cover all possible input values` y señala el `switch`. Restaura la línea.
-
-4. Cambia `TreeMap::new` por `java.util.HashMap::new`, ejecuta y observa que el orden de las categorías ya no está
-   garantizado. Restaura `TreeMap::new`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 El test que debes ejecutar:
 
 `modulo-5/f017-java-moderno/src/test/java/academia/java/JavaModernoTest.java`:
@@ -511,85 +438,27 @@ Porque un stream no altera su fuente: `sorted` ordena los elementos que pasan po
 lista **nueva** (e inmodificable). La lista original sigue en el orden en que se creó.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** al convertir una lista en mapa con `Collectors.toMap`, el programa explota en producción con datos
-reales aunque en tus pruebas funcionaba.
-
-**Cómo se ve** (salida real con JDK 25.0.5):
-
-```text
-Exception in thread "main" java.lang.IllegalStateException: Duplicate key LIB-1 (attempted merging values Producto[sku=LIB-1, precio=45000] and Producto[sku=LIB-1, precio=47000])
-	at java.base/java.util.stream.Collectors.duplicateKeyException(Collectors.java:135)
-```
-
-**Diagnóstico:** `toMap(clave, valor)` asume claves únicas; dos productos con el mismo SKU (por ejemplo, dos precios
-de proveedores) chocan. El mensaje te dice la clave (`LIB-1`) y los dos valores en conflicto. Un error primo es
-`IllegalStateException: stream has already been operated upon or closed`, que aparece al reutilizar un stream ya
-consumido.
-
-**Arreglo:** decide qué hacer con el duplicado con el tercer argumento:
-`Collectors.toMap(Producto::sku, p -> p, (a, b) -> a.precio().compareTo(b.precio()) <= 0 ? a: b)` (se queda con el
-más barato), o usa `groupingBy` si necesitas todos.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué ventaja tiene una `sealed interface` con records frente a una jerarquía abierta con `instanceof` y un `else`
-final?»
-
-**Respuesta modelo:** con la jerarquía sellada el compilador conoce todas las variantes, así que un `switch` sobre
-ella es exhaustivo sin `default`. Si se agrega una variante nueva, cada `switch` que no la trate deja de compilar y el
-equipo encuentra todos los lugares a actualizar antes de desplegar. Con `instanceof` y un `else`, la variante nueva cae
-en silencio en la rama por defecto y el error aparece en producción. Los records además dan igualdad por valor y
-desestructuración (`case Tarjeta(var u4, var cuotas)`), lo que convierte el tipo en un *algebraic data type*. El
-coste es que la jerarquía no se puede extender desde otro módulo sin tocar el `permits`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**`Optional` como campo y `get()` sin comprobar.** Se ve así:
-
-```java
-class Cliente {
-    Optional<String> telefono;                // Optional como campo: no es serializable y suele ser null
-}
-String tel = cliente.telefono.get();          // NoSuchElementException si está vacío: el null de siempre
-```
-
-Evítalo: el campo es `String telefono` (que puede ser `null`), el **getter** devuelve
-`Optional.ofNullable(telefono)` y quien lo usa llama a `orElse`, `orElseThrow` o `ifPresent`. Su primo en streams es
-el *stream con efectos*: `lista.stream().forEach(x -> otraLista.add(x))`; usa `toList()` o `collect`.
-
----
 ### Virtual Threads (Project Loom)
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 2 de 8 · Fase 1 · 2 h.
+#### ► DE QUÉ TRATA
+Comparar un pool fijo de hilos de plataforma con un hilo virtual por tarea midiendo 1 000 esperas de 200 ms, y justificar con los números (≈ 4 s frente a ≈ 0,2 s) cuándo conviene cada uno y por qué hay que limitar la concurrencia hacia recursos escasos con un Semaphore.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Comparar un pool fijo de hilos de plataforma con un hilo virtual por tarea midiendo 1 000 esperas de 200 ms, y justificar con los números (≈ 4 s frente a ≈ 0,2 s) cuándo conviene cada uno y por qué hay que limitar la concurrencia hacia recursos escasos con un Semaphore.**
 
-- Lección 1 de este módulo: lambdas y streams (`IntStream.range`).
-- Módulo 0.3: qué es un hilo y por qué un servidor atiende a varios clientes a la vez.
-- Saber que una llamada a una base de datos o a otra API **espera** la respuesta (E/S).
+#### ► POR QUÉ EXISTE ESTO
+Un hilo es una fila de instrucciones que el computador ejecuta. Un servidor usa muchos hilos para atender a muchas personas a la vez. Los hilos clásicos («de plataforma») son caros: cada uno reserva memoria y el sistema operativo solo aguanta unos miles. Lo grave es que, mientras esperan una base de datos, no hacen nada pero siguen ocupados.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en virtual threads (project loom) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Comparar** un pool fijo de hilos de plataforma con un hilo virtual por tarea midiendo 1 000 esperas de 200 ms, y
-**justificar** con los números (≈ 4 s frente a ≈ 0,2 s) cuándo conviene cada uno y por qué hay que limitar la
-concurrencia hacia recursos escasos con un `Semaphore`.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **restaurante con 50 meseros** (hilos de plataforma). Cada mesero toma un pedido y se queda **parado junto a la
-cocina** hasta que sale el plato: con 1 000 mesas, 950 esperan sin que nadie las atienda. Ahora imagina el mismo
-restaurante con **libretas de pedido** (hilos virtuales): cada mesa tiene su libreta, y los pocos meseros reales
-(*carriers*, uno por núcleo) solo la cargan mientras escriben. Cuando el pedido está en la cocina, cuelgan la libreta
-en un **gancho** y atienden otra mesa; cuando suena la campana, cualquier mesero libre descuelga la libreta y sigue
-donde iba. En el dibujo se ven 1 000 libretas colgadas en ganchos, 2 meseros moviéndose y una **puerta de cocina
-con un torniquete de 10 pasos** (el `Semaphore`): aunque haya mil libretas, solo 10 pedidos entran a la vez.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant VT as Hilo virtual (pedido-42)
@@ -604,60 +473,48 @@ sequenceDiagram
     VT->>VT: continúa en la línea siguiente
 ```
 
-**Texto alternativo:** diagrama de secuencia con tres participantes: el hilo virtual «pedido-42», el hilo carrier
-del ForkJoinPool (uno por núcleo) y el sistema operativo. El hilo virtual se monta en el carrier y ejecuta código;
-cuando llama a sleep o lee un socket, se desmonta y su pila se guarda en el heap, y el carrier queda libre para
-montar otro hilo virtual. Cuando llega la respuesta, el hilo virtual se vuelve a montar, quizá en otro carrier, y
-continúa en la línea siguiente.
+1. Un hilo es una fila de instrucciones que el computador ejecuta.
+2. Un servidor usa muchos hilos para atender a muchas personas a la vez.
+3. Los hilos clásicos («de plataforma») son caros: cada uno reserva memoria y el sistema operativo solo aguanta unos miles.
+4. Lo grave es que, mientras esperan una base de datos, no hacen nada pero siguen ocupados.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Un **hilo** es una fila de instrucciones que el computador ejecuta. Un servidor usa muchos hilos para atender a
-muchas personas a la vez. Los hilos clásicos («de plataforma») son caros: cada uno reserva memoria y el sistema
-operativo solo aguanta unos miles. Lo grave es que, mientras esperan una base de datos, **no hacen nada pero siguen
-ocupados**.
-
-Los **hilos virtuales** son hilos livianos que crea Java, no el sistema operativo. Puedes tener cientos de miles. Cuando
-uno espera, Java lo «guarda en un cajón» y usa el hilo real para otra tarea. Tu código no cambia: sigue siendo código
-normal, línea tras línea, sin `callbacks`.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Creación:** `Thread.ofVirtual().name("pedido-42").start(tarea)` o, lo habitual,
-  `Executors.newVirtualThreadPerTaskExecutor()`, que crea **un hilo virtual nuevo por tarea** (no hay pool que
-  dimensionar). `ExecutorService` es `AutoCloseable` desde Java 19: `try (executor) {... }` espera a que todas las
-  tareas terminen.
-- **Carriers:** los hilos virtuales se ejecutan sobre un `ForkJoinPool` con tantos hilos como núcleos
-  (`jdk.virtualThreadScheduler.parallelism`). Al bloquearse en E/S, `sleep`, `BlockingQueue` o `ReentrantLock`, el
-  hilo virtual se **desmonta**.
-- **Pinning:** si el hilo no puede desmontarse queda «clavado» a su carrier. Desde **JDK 24 (JEP 491)** `synchronized`
-  ya no clava; todavía clavan las llamadas nativas (JNI) y la inicialización de clases. Se observa con el evento JFR
-  `jdk.VirtualThreadPinned`.
-- **Medición del laboratorio:** con un pool de 50 hilos, 1 000 tareas de 200 ms van en 20 tandas: el mínimo teórico es
-  20 × 200 ms = 4 000 ms. Con hilos virtuales las 1 000 esperas ocurren a la vez: ≈ 200 ms más el costo de crearlas.
-- **En Spring Boot:** `spring.threads.virtual.enabled=true` hace que Tomcat atienda cada petición en un hilo virtual
-  y que `@Async` y `@Scheduled` también los usen.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Modelo | Bueno para | Coste |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Pool fijo de hilos de plataforma | CPU intensiva (cálculo, compresión): tantos hilos como núcleos | Cada hilo ≈ 1 MB de pila reservada; con E/S, el pool es el cuello de botella. |
-| Hilos virtuales | Muchas esperas de E/S: APIs que llaman a BD y a otros servicios | No aceleran la CPU; trasladan el cuello de botella al recurso de abajo (pool de conexiones, API externa). |
-| Programación reactiva (WebFlux, Reactor) | *Streaming*, *backpressure* explícita, miles de conexiones largas | Código asíncrono más difícil de leer, depurar y perfilar; todo el stack debe ser no bloqueante. |
+| Virtual Threads (Project Loom) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Lo que cambia de verdad:** el límite de concurrencia deja de ser «cuántos hilos tengo» y pasa a ser «cuánto aguanta
-lo que hay detrás». Con 10 000 peticiones simultáneas y un HikariCP de 10 conexiones, 9 990 hilos virtuales esperan
-conexión y empiezan los *timeouts*. Por eso el laboratorio limita con `Semaphore(10)`: el semáforo es el nuevo
-«tamaño de pool», pero explícito y por recurso.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Virtual Threads (Project Loom) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO usarlos:** trabajo de CPU pura (no ganas nada y pierdes predictibilidad), código que guarda objetos
-grandes en `ThreadLocal` (con un hilo por tarea se multiplican; prefiere `ScopedValue`, final en JDK 25), y librerías
-que hacen mucho JNI. **Nunca** metas hilos virtuales en un pool (`newFixedThreadPool(100, Thread.ofVirtual().factory())`):
-son baratos para crear y desechar; un pool reintroduce el límite que querías quitar.
+#### ► CUÁNDO NO USAR ESTO
+Pool de hilos virtuales y ThreadLocal como caché:
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: virtual threads (project loom) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Un hilo es una fila de instrucciones que el computador ejecuta.
+- Un servidor usa muchos hilos para atender a muchas personas a la vez.
+- Los hilos clásicos («de plataforma») son caros: cada uno reserva memoria y el sistema operativo solo aguanta unos miles.
+- Lo grave es que, mientras esperan una base de datos, no hacen nada pero siguen ocupados.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve virtual threads (project loom) en tu contexto?
+2. ¿Cómo sabrías que virtual threads (project loom) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar virtual threads (project loom)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS (25.0.5) · sin dependencias en ejecución · JUnit Jupiter 6.0.3 para el test (versión fijada
 por el BOM de Spring Boot 4.1.3). Corre tal cual con `java src/main/java/academia/hilos/HilosVirtuales.java`.
 
@@ -783,35 +640,7 @@ public class HilosVirtuales {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Entra en la carpeta y ejecuta la comparación:
-
-```bash
-java src/main/java/academia/hilos/HilosVirtuales.java
-```
-
-   **Output esperado** (salida real con JDK 25.0.5 en 2 núcleos; los milisegundos varían en tu equipo, pero la
-   primera cifra nunca baja de 4 000 y la segunda queda muy por debajo):
-
-```text
-Plataforma (pool de 50): 1000 tareas en 4104 ms
-Virtuales (1 por tarea): 1000 tareas en 224 ms
-¿Virtual? true · nombre=pedido-42
-Máximo simultáneo con Semaphore(10): 10
-```
-
-   **Captura comentada:** 4104 ms ≈ 20 tandas × 200 ms; 224 ms ≈ una sola espera de 200 ms más la creación de 1 000
-   hilos; la última línea prueba que, aunque había 500 hilos virtuales, nunca entraron más de 10 a la «cocina».
-
-2. Cambia `Executors.newFixedThreadPool(50)` por `Executors.newFixedThreadPool(200)` y ejecuta: la primera cifra baja
-   a ≈ 1 000 ms (5 tandas). Ese es el «ajuste del tamaño del pool» que los hilos virtuales vuelven innecesario.
-
-3. **Fallo deliberado:** en el laboratorio de error común (paso 12) verás qué pasa si creas 10 000 hilos de
-   plataforma en un sistema con límite de procesos.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f018-virtual-threads/src/test/java/academia/hilos/HilosVirtualesTest.java`:
 
 ```java
@@ -871,75 +700,23 @@ conexiones, ¿cuántas consultas simultáneas llegan como máximo a la base de d
 las demás esperan (y pueden agotar el *timeout* del pool). La concurrencia efectiva la fija el recurso más escaso.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** «para no esperar», alguien cambia el pool por un hilo **de plataforma** por tarea y el servicio se cae
-con picos de tráfico.
-
-**Cómo se ve** (salida real con JDK 25.0.5 y límite de 2 000 procesos por usuario, `ulimit -u 2000`):
-
-```text
-[0.872s][warning][os,thread] Failed to start thread "Unknown thread" - pthread_create failed (EAGAIN) for attributes: stacksize: 1024k, guardsize: 0k, detached.
-[0.872s][warning][os,thread] Failed to start the native thread for java.lang.Thread "Thread-1981"
-Exception in thread "main" java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
-	at java.base/java.lang.Thread.start0(Native Method)
-```
-
-**Diagnóstico:** el código usaba `Executors.newThreadPerTaskExecutor(Thread.ofPlatform().factory())` con 10 000
-tareas de 2 s. Cada hilo de plataforma es un hilo del sistema operativo con pila de 1 MB; al llegar al límite,
-`pthread_create` falla (`EAGAIN`). Que diga `OutOfMemoryError` confunde: no falta *heap*, faltan hilos del sistema.
-
-**Arreglo:** cambia `Thread.ofPlatform()` por `Thread.ofVirtual()` (o usa `newVirtualThreadPerTaskExecutor()`). Con el
-mismo límite, el programa termina normalmente: los 10 000 hilos virtuales viven en el heap y comparten 2 carriers.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Migramos a hilos virtuales y ahora la API devuelve errores de *timeout* al pedir conexión a la base de datos. ¿Por
-qué, si antes no pasaba?»
-
-**Respuesta modelo:** antes, el pool de 200 hilos de Tomcat limitaba de forma implícita cuántas peticiones llegaban a
-la vez al pool de conexiones. Con hilos virtuales ese límite desapareció: miles de peticiones compiten por las 10
-conexiones de HikariCP y las que esperan más que `connectionTimeout` fallan. La solución no es volver al pool, sino
-poner un límite explícito y medido por recurso: un `Semaphore` o un *bulkhead* (Resilience4j, Módulo 8) alrededor de
-la BD, dimensionar el pool de conexiones según lo que aguanta PostgreSQL y aplicar *backpressure* (rechazar con 503)
-cuando la cola crece.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Pool de hilos virtuales** y **`ThreadLocal` como caché**:
-
-```java
-// Mal: limita la concurrencia con el tamaño del pool y reutiliza hilos que deberían desecharse
-ExecutorService pool = Executors.newFixedThreadPool(100, Thread.ofVirtual().factory());
-
-// Mal: con un hilo por tarea, cada petición crea su propio formateador (y nunca se reutiliza)
-static final ThreadLocal<SimpleDateFormat> FORMATO = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
-```
-
-Hazlo así: `Executors.newVirtualThreadPerTaskExecutor()` + `Semaphore` donde haya un recurso escaso, y objetos
-inmutables compartidos (`DateTimeFormatter.ISO_LOCAL_DATE`) en lugar de cachés por hilo.
-
----
 ### Spring IoC, DI, Bean Lifecycle, ApplicationContext
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 3 de 8 · Fase 1 · 2 h.
+#### ► DE QUÉ TRATA
+Explicar quién crea, conecta y destruye los objetos de una aplicación Spring y ordenar las 8 fases del ciclo de vida de un bean (constructor → setter → @PostConstruct → afterPropertiesSet → BeanPostProcessor → ApplicationReadyEvent → @PreDestroy → destroy), comprobándolo con un t…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Explicar quién crea, conecta y destruye los objetos de una aplicación Spring y ordenar las 8 fases del ciclo de vida de un bean (constructor → setter → @PostConstruct → afterPropertiesSet → BeanPostProcessor → ApplicationReadyEvent → @PreDestroy → destroy), comprobándolo con un test que verifica ese orden exacto.**
 
-- Lección 1: interfaces, records y lambdas.
-- Módulo 0.3: clases, constructores y `new`.
-- Módulo 0.5: ejecutar Java desde la terminal (`java -jar`). Lección 1 de este módulo: el wrapper (`./gradlew build`).
+#### ► POR QUÉ EXISTE ESTO
+En un programa sencillo, cada objeto crea con new los objetos que necesita. Si ServicioPedidos hace new NotificadorCorreo(), queda «soldado» al correo: para cambiar a SMS o para probarlo sin enviar correos tienes que editar su código.
 
-#### 3. OBJETIVO DE APRENDIZAJE
-
-**Explicar** quién crea, conecta y destruye los objetos de una aplicación Spring y **ordenar** las 8 fases del ciclo
-de vida de un bean (constructor → setter → `@PostConstruct` → `afterPropertiesSet` → `BeanPostProcessor` →
-`ApplicationReadyEvent` → `@PreDestroy` → `destroy`), comprobándolo con un test que verifica ese orden exacto.
-
-#### 4. ANALOGÍA VISUAL
-
+#### ► LA ANALOGÍA
 Un **teatro**. Los actores (tus objetos) no se contratan entre ellos ni se compran el vestuario: el **director de
 escena** (el `ApplicationContext`) tiene el guion con el reparto (las anotaciones `@Component`, `@Service`, `@Bean`).
 Antes de la función, el director contrata a cada actor (constructor), le entrega su utilería (inyección), lo manda
@@ -949,8 +726,9 @@ cada actor recoge sus cosas (`@PreDestroy`). En el dibujo, el director está en 
 actores solo señalan lo que **necesitan** («un notificador») y el director les pone en la mano el que tenga en el
 reparto. Eso es **inversión de control**: el actor no controla de dónde sale su compañero.
 
-#### 5. DIAGRAMA TÉCNICO
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
     [*] --> Definicion: escaneo de @Component / @Bean
@@ -963,61 +741,95 @@ stateDiagram-v2
     Destruido --> [*]
 ```
 
-**Texto alternativo:** diagrama de estados del ciclo de vida de un bean. Empieza en «Definición», cuando Spring
-escanea @Component o @Bean. Pasa a «Instanciado» con el constructor (fase 1, inyección obligatoria), a «Poblado» con
-setters o @Autowired (fase 2), a «Inicializado» con @PostConstruct y afterPropertiesSet (fases 3 y 4), a «Listo»
-tras el BeanPostProcessor que puede envolverlo en un proxy (fase 5), a «En uso» con ApplicationReadyEvent (fase 6) y
-a «Destruido» al cerrar el contexto, con @PreDestroy y destroy (fases 7 y 8).
+1. En un programa sencillo, cada objeto crea con new los objetos que necesita.
+2. Si ServicioPedidos hace new NotificadorCorreo(), queda «soldado» al correo: para cambiar a SMS o para probarlo sin enviar correos tienes que editar su código.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-En un programa sencillo, cada objeto crea con `new` los objetos que necesita. Si `ServicioPedidos` hace
-`new NotificadorCorreo()`, queda «soldado» al correo: para cambiar a SMS o para probarlo sin enviar correos tienes que
-editar su código.
-
-Spring le da la vuelta: tu clase solo **pide** lo que necesita en el constructor (`ServicioPedidos(Notificador n)`) y
-Spring se lo **entrega**. A eso se le llama **inyección de dependencias (DI)**. Como ahora es Spring quien controla la
-creación, se habla de **inversión de control (IoC)**. Los objetos que Spring administra se llaman **beans** y el
-lugar donde viven es el **ApplicationContext** (el «contenedor»).
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Registro de beans:** `@SpringBootApplication` incluye `@ComponentScan`: busca `@Component`, `@Service`,
-  `@Repository`, `@Controller` en su paquete y subpaquetes. Para objetos que no son tuyos (como `java.time.Clock`)
-  escribes un método `@Bean` en una clase de configuración.
-- **Tipos de inyección:** por **constructor** (recomendada: dependencias obligatorias, campos `final`, fácil de probar
-  con `new`), por **setter** (opcionales o cambiables) y por **campo** (`@Autowired` sobre el atributo: evítala, oculta
-  dependencias y obliga a usar reflexión en los tests).
-- **Resolución:** Spring busca por **tipo**. Si hay un solo `Notificador`, lo usa. Si hay dos, falla (ver error común)
-  salvo que marques uno con `@Primary` o pidas uno con `@Qualifier("nombre")`.
-- **Ámbitos:** `singleton` (por defecto, una instancia por contexto), `prototype` (una nueva cada vez que se pide),
-  y en web `request` y `session`.
-- **Ciclo de vida:** el orden del laboratorio es el oficial de Spring: inicialización = `@PostConstruct`, luego
-  `InitializingBean.afterPropertiesSet()`, luego un `init-method`; destrucción = `@PreDestroy`, luego
-  `DisposableBean.destroy()`. Los `BeanPostProcessor` reciben cada bean antes y después de inicializarse: ahí Spring
-  envuelve tus beans en *proxies* para `@Transactional`, `@Async` o `@Cacheable`.
-- **ApplicationContext:** además de fábrica de beans, publica eventos (`ApplicationReadyEvent`), resuelve
-  propiedades (`Environment`) y mensajes. `SpringApplication.run` devuelve un `ConfigurableApplicationContext` que se
-  cierra con `close()`.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Alternativa | Cómo resuelve dependencias | Cuándo elegirla |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Spring IoC (reflexión + AOT) | En el arranque, escaneando anotaciones; con AOT (F024) parte se precalcula | Ecosistema enorme (datos, seguridad, mensajería); el estándar de esta fase. |
-| DI en compilación (Dagger, Micronaut, Quarkus ArC) | Genera el código de conexión al compilar | Arranque y memoria mínimos, sin reflexión; menos dinámico (sin `@Conditional` en ejecución). |
-| DI manual (constructores + una clase `main` que conecta) | `new` explícito en un solo lugar | Librerías, CLIs y servicios minúsculos: cero magia, cero dependencias. |
+| Spring IoC, DI, Bean Lifecycle, ApplicationContext se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Trade-offs que importan en microservicios:** el contenedor cuesta tiempo de arranque (cientos de ms a segundos);
-F023 y F024 atacan eso. Los *proxies* solo interceptan llamadas **desde fuera** del bean: un método que llama a otro
-método `@Transactional` de la misma clase no pasa por el proxy (auto-invocación). Los beans `singleton` son
-compartidos entre hilos: no guardes estado de una petición en sus campos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Spring IoC, DI, Bean Lifecycle, ApplicationContext | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO usar el contenedor:** en el dominio puro (F021 lo deja sin anotaciones de Spring) y en utilidades
-estáticas sin dependencias. Un `@Component` para cada clase no es diseño: es acoplarte al framework sin necesidad.
+#### ► CUÁNDO NO USAR ESTO
+Service Locator: pedirle beans al contexto desde dentro del código de negocio.
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: spring ioc, di, bean lifecycle, applicationcontext funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- En un programa sencillo, cada objeto crea con new los objetos que necesita.
+- Si ServicioPedidos hace new NotificadorCorreo(), queda «soldado» al correo: para cambiar a SMS o para probarlo sin enviar correos tienes que editar su código.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve spring ioc, di, bean lifecycle, applicationcontext en tu contexto?
+2. ¿Cómo sabrías que spring ioc, di, bean lifecycle, applicationcontext no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar spring ioc, di, bean lifecycle, applicationcontext?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+**Explicar** quién crea, conecta y destruye los objetos de una aplicación Spring y **ordenar** las 8 fases del ciclo
+de vida de un bean (constructor → setter → `@PostConstruct` → `afterPropertiesSet` → `BeanPostProcessor` →
+`ApplicationReadyEvent` → `@PreDestroy` → `destroy`), comprobándolo con un test que verifica ese orden exacto.
+
+#### Construcción guiada
+1. Compila y ejecuta:
+
+```bash
+../gradlew -q bootJar
+java -jar build/libs/f019-ioc-di-1.0.0.jar
+```
+
+   **Output esperado:**
+
+```text
+1. constructor: recibe NotificadorCorreo
+2. setter: recibe Clock
+3. @PostConstruct
+4. afterPropertiesSet
+5. BeanPostProcessor: servicioPedidos listo para usarse
+6. ApplicationReadyEvent: la app atiende
+Correo enviado: pedido P-1 confirmado (zona America/Bogota)
+¿Mismo objeto? true
+Beans propios: [auditorDeBeans, notificadorCorreo, reloj, servicioPedidos]
+7. @PreDestroy
+8. destroy
+```
+
+   **Captura comentada:** las líneas 1–6 ocurren **dentro** de `SpringApplication.run`, antes de que tu `main` pida
+   el bean; `¿Mismo objeto? true` demuestra el ámbito singleton; el nombre de cada bean es el de la clase con la
+   primera letra en minúscula (o el del método `@Bean`); 7 y 8 aparecen al cerrarse el `try`.
+
+2. **Fallo deliberado:** crea `src/main/java/academia/ioc/NotificadorSms.java`:
+
+```java
+package academia.ioc;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class NotificadorSms implements Notificador {
+    @Override
+    public String enviar(String mensaje) { return "SMS enviado: " + mensaje; }
+}
+```
+
+   Repite el paso 1. La app no arranca (ver error común). Añade `@Primary` (de
+   `org.springframework.context.annotation.Primary`) sobre `NotificadorCorreo`, repite y confirma que vuelve a
+   funcionar. Borra `NotificadorSms.java` al terminar.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 (Spring Framework 7.0.11) · `spring-boot-starter` (sin servidor web) ·
 `spring-boot-starter-test` (JUnit Jupiter 6, AssertJ). `application.properties` apaga el banner y deja el log en
 `warn` para que solo veas tus líneas.
@@ -1230,55 +1042,7 @@ public class IocApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Compila y ejecuta:
-
-```bash
-../gradlew -q bootJar
-java -jar build/libs/f019-ioc-di-1.0.0.jar
-```
-
-   **Output esperado:**
-
-```text
-1. constructor: recibe NotificadorCorreo
-2. setter: recibe Clock
-3. @PostConstruct
-4. afterPropertiesSet
-5. BeanPostProcessor: servicioPedidos listo para usarse
-6. ApplicationReadyEvent: la app atiende
-Correo enviado: pedido P-1 confirmado (zona America/Bogota)
-¿Mismo objeto? true
-Beans propios: [auditorDeBeans, notificadorCorreo, reloj, servicioPedidos]
-7. @PreDestroy
-8. destroy
-```
-
-   **Captura comentada:** las líneas 1–6 ocurren **dentro** de `SpringApplication.run`, antes de que tu `main` pida
-   el bean; `¿Mismo objeto? true` demuestra el ámbito singleton; el nombre de cada bean es el de la clase con la
-   primera letra en minúscula (o el del método `@Bean`); 7 y 8 aparecen al cerrarse el `try`.
-
-2. **Fallo deliberado:** crea `src/main/java/academia/ioc/NotificadorSms.java`:
-
-```java
-package academia.ioc;
-
-import org.springframework.stereotype.Component;
-
-@Component
-public class NotificadorSms implements Notificador {
-    @Override
-    public String enviar(String mensaje) { return "SMS enviado: " + mensaje; }
-}
-```
-
-   Repite el paso 1. La app no arranca (ver error común). Añade `@Primary` (de
-   `org.springframework.context.annotation.Primary`) sobre `NotificadorCorreo`, repite y confirma que vuelve a
-   funcionar. Borra `NotificadorSms.java` al terminar.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f019-ioc-di/src/test/java/academia/ioc/CicloDeVidaTest.java`:
 
 ```java
@@ -1333,93 +1097,27 @@ La fase 1: para construir `ServicioPedidos` Spring necesita un `Notificador` y y
 el contexto falla al arrancar con «required a bean of type 'academia.ioc.Notificador' that could not be found».
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** después de añadir una segunda implementación de una interfaz, la aplicación deja de arrancar.
-
-**Cómo se ve:**
-
-```text
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Parameter 0 of constructor in academia.ioc.ServicioPedidos required a single bean, but 2 were found:
-	- notificadorCorreo: defined in file [.../academia/ioc/NotificadorCorreo.class]
-	- notificadorSms: defined in file [.../academia/ioc/NotificadorSms.class]
-
-Action:
-
-Consider marking one of the beans as @Primary, updating the consumer to accept multiple beans, or using @Qualifier to identify the bean that should be consumed
-```
-
-**Diagnóstico:** Spring inyecta por tipo y encontró dos candidatos para `Notificador`. El reporte dice qué parámetro
-(«Parameter 0 of constructor»), de qué clase y la lista de candidatos con su archivo.
-
-**Arreglo (elige uno):** `@Primary` en la implementación por defecto; `@Qualifier("notificadorSms")` en el parámetro
-del constructor para elegir explícitamente; o pedir `List<Notificador>` si de verdad quieres usar todos.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Por qué se recomienda la inyección por constructor sobre la inyección por campo con `@Autowired`?»
-
-**Respuesta modelo:** con constructor las dependencias son explícitas y obligatorias: el objeto no puede existir a
-medias, los campos pueden ser `final` (inmutables y seguros entre hilos) y en un test unitario lo creas con `new
-ServicioPedidos(notificadorFalso)` sin levantar Spring ni usar reflexión. Además, un constructor con siete parámetros
-es una alarma visible de que la clase tiene demasiadas responsabilidades. La inyección por campo oculta todo eso, y
-las dependencias circulares solo aparecen en ejecución. Desde Spring 4.3, si la clase tiene un único constructor, ni
-siquiera hace falta `@Autowired`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Service Locator**: pedirle beans al contexto desde dentro del código de negocio.
-
-```java
-@Service
-class ServicioPedidos {
-    @Autowired ApplicationContext contexto;                      // dependencia oculta del contenedor
-    String confirmar(String id) {
-        Notificador n = contexto.getBean(Notificador.class);    // ¿qué necesita esta clase? hay que leerla entera
-        return n.enviar(id);
-    }
-}
-```
-
-Las dependencias no se ven en el constructor, el test necesita un contexto completo y el error de «bean no
-encontrado» aparece en mitad de una petición en vez de al arrancar. Usa `getBean` solo en el borde (el `main`, como en
-`IocApp`), nunca en el dominio.
-
----
 ### Auto-configuración condicional, @Conditional, starters
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 4 de 8 · Fase 1 · 2 h.
+#### ► DE QUÉ TRATA
+Construir una auto-configuración propia con @AutoConfiguration, @ConditionalOnClass, @ConditionalOnProperty, @ConditionalOnMissingBean y una Condition escrita a mano, registrarla en el archivo AutoConfiguration.imports y demostrar con 6 tests de ApplicationContextRunner en qué ca…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Construir una auto-configuración propia con @AutoConfiguration, @ConditionalOnClass, @ConditionalOnProperty, @ConditionalOnMissingBean y una Condition escrita a mano, registrarla en el archivo AutoConfiguration.imports y demostrar con 6 tests de ApplicationContextRunner en qué casos aplica y en cuáles se aparta.**
 
-- Lección 3: beans, `@Bean`, `@Configuration`, inyección por constructor y `@Primary`.
-- Saber leer un archivo `application.properties` (Módulo 0.4: configuración clave=valor).
+#### ► POR QUÉ EXISTE ESTO
+Cuando agregas spring-boot-starter-webmvc a tu proyecto y ejecutas, aparece un servidor web en el puerto 8080 sin que escribas una línea de configuración. No es magia: Spring Boot trae cientos de clases de auto-configuración, y cada una tiene condiciones: «si existe la clase de Tomcat y nadie configuró otro servidor, crea un Tomcat». Si la condición no se cumple, esa configuración se salta.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en auto-configuración condicional, @conditional, starters como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Construir** una auto-configuración propia con `@AutoConfiguration`, `@ConditionalOnClass`, `@ConditionalOnProperty`,
-`@ConditionalOnMissingBean` y una `Condition` escrita a mano, registrarla en el archivo `AutoConfiguration.imports`
-y **demostrar** con 6 tests de `ApplicationContextRunner` en qué casos aplica y en cuáles se aparta.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **hotel que prepara la habitación según tu reserva**. Antes de que llegues, el ama de llaves recorre una
-**lista de chequeo con casillas condicionales**: «si el huésped trae bebé → poner cuna», «si pidió no fumador → quitar
-cenicero», «si el huésped **trajo su propia almohada**, no poner la del hotel». Tú no pediste nada explícitamente: el
-hotel dedujo lo necesario mirando tu reserva (el *classpath* y las propiedades). Un **starter** es el **paquete
-«familia con bebé»** de la agencia: con una sola casilla trae cuna, silla alta y pañales. En el dibujo, la lista de
-chequeo tiene una columna «¿se cumple?» con ✔ y ✘, y al lado la habitación resultante.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A["SpringApplication.run"] --> B["Lee META-INF/spring/<br/>org.springframework.boot.autoconfigure.AutoConfiguration.imports<br/>de cada jar"]
@@ -1436,63 +1134,103 @@ flowchart TD
     H -- "no" --> J["sin FirmaFormal"]
 ```
 
-**Texto alternativo:** diagrama de flujo de arriba abajo. SpringApplication.run lee el archivo
-AutoConfiguration.imports de cada jar y encuentra SaludoAutoConfiguration. Primer rombo: si la clase Saludador no
-está en el classpath, la configuración se descarta. Segundo rombo: si saludo.habilitado vale false, se descarta; si
-vale true o no existe, continúa. De ahí salen dos rombos: «¿el usuario ya definió un Saludador?» (si sí, se usa el
-del usuario; si no, se crea uno con el prefijo configurado) y «¿saludo.formal es true?» (si sí, se crea FirmaFormal;
-si no, no).
+1. Cuando agregas spring-boot-starter-webmvc a tu proyecto y ejecutas, aparece un servidor web en el puerto 8080 sin que escribas una línea de configuración.
+2. No es magia: Spring Boot trae cientos de clases de auto-configuración, y cada una tiene condiciones: «si existe la clase de Tomcat y nadie configuró otro servidor, crea un Tomcat».
+3. Si la condición no se cumple, esa configuración se salta.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Cuando agregas `spring-boot-starter-webmvc` a tu proyecto y ejecutas, aparece un servidor web en el puerto 8080 sin
-que escribas una línea de configuración. No es magia: Spring Boot trae cientos de clases de **auto-configuración**,
-y cada una tiene **condiciones**: «si existe la clase de Tomcat y nadie configuró otro servidor, crea un Tomcat». Si
-la condición no se cumple, esa configuración se salta.
-
-Un **starter** es una dependencia «paquete» que no trae código propio: trae las librerías correctas y, con ellas, las
-condiciones que activan la auto-configuración. En este tema construyes tu propia auto-configuración para entender
-cómo lo hace Boot por dentro.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Registro:** desde Spring Boot 2.7 (y único mecanismo desde 3.0), una auto-configuración se declara en
-  `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`, un nombre de clase por línea.
-  Se marca con `@AutoConfiguration` (que incluye `@Configuration(proxyBeanMethods = false)` y permite `before`/`after`
-  para ordenar respecto a otras).
-- **No se escanea:** las auto-configuraciones viven en un paquete fuera del de la app; `@SpringBootApplication`
-  incluso las excluye del escaneo. Entran solo por el archivo `.imports` y **después** de tus beans, por eso
-  `@ConditionalOnMissingBean` puede ver lo que tú definiste.
-- **Condiciones más usadas:** `@ConditionalOnClass` / `OnMissingClass` (classpath), `@ConditionalOnBean` /
-  `OnMissingBean` (contexto), `@ConditionalOnProperty` (y `@ConditionalOnBooleanProperty` desde Boot 3.5),
-  `@ConditionalOnWebApplication`, `@ConditionalOnResource`. Todas son implementaciones de la interfaz `Condition` de
-  Spring Framework, igual que `ModoFormalCondition`.
-- **Propiedades tipadas:** `@EnableConfigurationProperties(SaludoProperties.class)` enlaza `saludo.*` a un record con
-  valores por defecto (`@DefaultValue`).
-- **Diagnóstico:** `--debug` imprime el *Conditions Evaluation Report* (qué coincidió y qué no, y por qué); con
-  Actuator, el **endpoint** (URL de una API que responde una operación) `/actuator/conditions` da lo mismo en JSON.
-- **Starter propio:** dos artefactos por convención: `saludo-spring-boot-autoconfigure` (este código) y
-  `saludo-spring-boot-starter` (un `pom.xml` sin código que depende del anterior y de la librería). El prefijo
-  `spring-boot-starter-*` está reservado para los oficiales.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Forma de compartir configuración entre servicios | Ventaja | Inconveniente |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Auto-configuración + starter interno | Cada servicio la recibe con solo añadir la dependencia; se apaga o se reemplaza por propiedades o beans propios | Es «magia» para quien no conoce el mecanismo; hay que versionarla y probar las condiciones. |
-| `@Import(MiConfig.class)` explícito | Visible en el código de cada app; nada sucede sin que lo pidas | Cada servicio debe recordarlo; no puede «retirarse» sola si falta una clase. |
-| Copiar la clase de configuración en cada servicio | Cero acoplamiento | Deriva: diez copias, diez versiones distintas de la misma regla. |
+| Auto-configuración condicional, @Conditional, starters se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Trade-offs:** las condiciones se evalúan en el arranque (con AOT, F024, se evalúan al compilar y quedan fijas: una
-propiedad que cambia una condición en ejecución deja de tener efecto en un binario nativo). Una auto-configuración
-**siempre** debe ceder ante el usuario (`@ConditionalOnMissingBean`) y nunca debe hacer `@ComponentScan`.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Auto-configuración condicional, @Conditional, starters | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO crearla:** si solo un servicio la usa (un `@Configuration` normal basta) o si la «configuración común» en
-realidad es lógica de negocio compartida: eso es una librería, y compartir dominio entre microservicios suele ser
-acoplamiento (Módulo 5).
+#### ► CUÁNDO NO USAR ESTO
+Auto-configuración que no cede ni se apaga:
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: auto-configuración condicional, @conditional, starters funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Cuando agregas spring-boot-starter-webmvc a tu proyecto y ejecutas, aparece un servidor web en el puerto 8080 sin que escribas una línea de configuración.
+- No es magia: Spring Boot trae cientos de clases de auto-configuración, y cada una tiene condiciones: «si existe la clase de Tomcat y nadie configuró otro servidor, crea un Tomcat».
+- Si la condición no se cumple, esa configuración se salta.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve auto-configuración condicional, @conditional, starters en tu contexto?
+2. ¿Cómo sabrías que auto-configuración condicional, @conditional, starters no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar auto-configuración condicional, @conditional, starters?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+**Construir** una auto-configuración propia con `@AutoConfiguration`, `@ConditionalOnClass`, `@ConditionalOnProperty`,
+`@ConditionalOnMissingBean` y una `Condition` escrita a mano, registrarla en el archivo `AutoConfiguration.imports`
+y **demostrar** con 6 tests de `ApplicationContextRunner` en qué casos aplica y en cuáles se aparta.
+
+#### Construcción guiada
+1. Compila y ejecuta sin configurar nada:
+
+```bash
+../gradlew -q bootJar
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar
+```
+
+   **Output esperado:**
+
+```text
+Hola, Ana!
+¿Hay FirmaFormal? false
+```
+
+2. Cambia la configuración desde la línea de comandos, sin recompilar:
+
+```bash
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.prefijo=Buenas --saludo.formal=true
+```
+
+   **Output esperado:**
+
+```text
+Buenas, Ana!
+¿Hay FirmaFormal? true
+```
+
+3. Mira el informe de condiciones y busca tu clase:
+
+```bash
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.root=info | grep -A3 "SaludoAutoConfiguration"
+```
+
+   **Output esperado (fragmento):** en *Positive matches* aparece `SaludoAutoConfiguration matched:` con una línea
+   `@ConditionalOnClass found required class 'academia.saludo.autoconfigure.Saludador'` y otra de
+   `@ConditionalOnProperty`; `SaludoAutoConfiguration#saludador matched:` con `@ConditionalOnMissingBean... did not
+   find any beans`; y en *Negative matches* aparece `SaludoAutoConfiguration#firmaFormal`.
+
+   **Captura comentada:** el informe es la «lista de chequeo del hotel» impresa: cada fila dice qué condición se
+   evaluó, el resultado y la clase `Condition` que la evaluó.
+
+4. **Fallo deliberado:** apaga la auto-configuración:
+
+```bash
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.habilitado=false
+```
+
+   **Output esperado:** termina con
+   `org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'academia.saludo.autoconfigure.Saludador' available`:
+   la condición dejó fuera el bean y el `main` lo pedía.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter` · test con `ApplicationContextRunner`
 (`spring-boot-starter-test`). Estructura: el paquete `academia.saludo.autoconfigure` hace de «librería + starter» y
 `academia.app` es la aplicación que lo consume.
@@ -1669,61 +1407,7 @@ public class SaludoApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Compila y ejecuta sin configurar nada:
-
-```bash
-../gradlew -q bootJar
-java -jar build/libs/f020-autoconfiguracion-1.0.0.jar
-```
-
-   **Output esperado:**
-
-```text
-Hola, Ana!
-¿Hay FirmaFormal? false
-```
-
-2. Cambia la configuración desde la línea de comandos, sin recompilar:
-
-```bash
-java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.prefijo=Buenas --saludo.formal=true
-```
-
-   **Output esperado:**
-
-```text
-Buenas, Ana!
-¿Hay FirmaFormal? true
-```
-
-3. Mira el informe de condiciones y busca tu clase:
-
-```bash
-java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.root=info | grep -A3 "SaludoAutoConfiguration"
-```
-
-   **Output esperado (fragmento):** en *Positive matches* aparece `SaludoAutoConfiguration matched:` con una línea
-   `@ConditionalOnClass found required class 'academia.saludo.autoconfigure.Saludador'` y otra de
-   `@ConditionalOnProperty`; `SaludoAutoConfiguration#saludador matched:` con `@ConditionalOnMissingBean... did not
-   find any beans`; y en *Negative matches* aparece `SaludoAutoConfiguration#firmaFormal`.
-
-   **Captura comentada:** el informe es la «lista de chequeo del hotel» impresa: cada fila dice qué condición se
-   evaluó, el resultado y la clase `Condition` que la evaluó.
-
-4. **Fallo deliberado:** apaga la auto-configuración:
-
-```bash
-java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.habilitado=false
-```
-
-   **Output esperado:** termina con
-   `org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'academia.saludo.autoconfigure.Saludador' available`:
-   la condición dejó fuera el bean y el `main` lo pedía.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f020-autoconfiguracion/src/test/java/academia/saludo/SaludoAutoConfigurationTest.java`:
 
 ```java
@@ -1816,82 +1500,27 @@ Solo falla `laAppLaRecibePorElArchivoImports`: la app ya no descubre la auto-con
 pasando porque `ApplicationContextRunner` la carga explícitamente con `AutoConfigurations.of(...)`.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** escribiste una clase `@AutoConfiguration` en tu librería, la añadiste como dependencia y en la app
-«no pasa nada»: el bean no existe.
-
-**Cómo se ve:** `NoSuchBeanDefinitionException: No qualifying bean of type '...' available` al pedir el bean, y en el
-informe de `--debug` tu clase **no aparece** ni en *Positive* ni en *Negative matches*.
-
-**Diagnóstico:** si la clase no figura en el informe, Spring Boot nunca la leyó: el archivo de registro falta, tiene
-otra ruta o el nombre de clase está mal escrito. Errores típicos: usar el antiguo `META-INF/spring.factories` (ya no
-se lee para auto-configuraciones desde Boot 3.0), escribir `AutoConfiguration.import` sin la `s`, o ponerlo en
-`src/main/java` en vez de `src/main/resources`. Si en cambio aparece en *Negative matches*, sí se leyó y la razón
-está escrita al lado.
-
-**Arreglo:** crea exactamente
-`src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` con el nombre
-completo de la clase y compruébalo dentro del jar con
-`jar tf build/libs/f020-autoconfiguracion-1.0.0.jar | grep imports`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Si defino mi propio bean `DataSource`, ¿por qué Spring Boot no crea el suyo y cómo garantiza ese orden?»
-
-**Respuesta modelo:** la auto-configuración del `DataSource` está anotada con `@ConditionalOnMissingBean(DataSource.class)`.
-Spring Boot procesa primero las definiciones de la aplicación (escaneo y `@Bean` del usuario) y deja las
-auto-configuraciones para el final mediante un `DeferredImportSelector`; así, cuando se evalúa la condición, el bean del
-usuario ya está registrado y la auto-configuración se retira. Entre auto-configuraciones el orden se fija con
-`@AutoConfiguration(before =..., after =...)`. Se puede comprobar con `--debug` o `/actuator/conditions`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Auto-configuración que no cede ni se apaga:**
-
-```java
-@AutoConfiguration
-@ComponentScan("com.empresa.comun")          // escanea paquetes ajenos: mete beans que nadie pidió
-public class ComunAutoConfiguration {
-    @Bean
-    RestClient restClient() { ... }          // sin @ConditionalOnMissingBean: choca con el del usuario
-}
-```
-
-Consecuencias: «required a single bean, but 2 were found» en cada servicio que ya tenía su `RestClient`, y beans
-fantasma imposibles de desactivar. Regla: cada `@Bean` de una auto-configuración lleva una condición, nunca hay
-`@ComponentScan`, y existe una propiedad `xxx.enabled` para apagarla.
-
----
 ### Multi-module Spring Boot projects
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 5 de 8 · Fase 1 · 1,5 h.
+#### ► DE QUÉ TRATA
+Organizar un build de Gradle en un proyecto raíz y dos subproyectos, que aquí llamamos módulos (tienda-dominio sin Spring y tienda-api con Spring Boot), construir solo la parte que necesitas con :tienda-api:test o buildDependents y diagnosticar una dependencia cíclica entre módul…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Organizar un build de Gradle en un proyecto raíz y dos subproyectos, que aquí llamamos módulos (tienda-dominio sin Spring y tienda-api con Spring Boot), construir solo la parte que necesitas con :tienda-api:test o buildDependents y diagnosticar una dependencia cíclica entre módulos a partir del mensaje real de Gradle.**
 
-- Lecciones 3 y 4: beans, `@Bean` y cómo Boot arma la aplicación.
-- Lección 1: `build.gradle.kts`, catálogo de versiones, coordenadas `groupId:artifactId:version` y `./gradlew build`.
+#### ► POR QUÉ EXISTE ESTO
+Al principio todo cabe en un proyecto. Cuando crece, conviene separarlo en piezas que se compilan juntas pero tienen límites claros: una pieza con las reglas del negocio (cuánto descuento aplica) y otra con la parte web (recibir peticiones HTTP). Gradle llama a cada pieza subproyecto (en Maven, módulo; aquí usamos las dos palabras), y al conjunto, build multi-proyecto (multi-módulo). Con un solo comando (./gradlew te…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en multi-module spring boot projects como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Organizar** un build de Gradle en un proyecto raíz y dos subproyectos, que aquí llamamos módulos (`tienda-dominio`
-sin Spring y `tienda-api` con Spring Boot), **construir** solo la parte que necesitas con `:tienda-api:test` o
-`buildDependents` y **diagnosticar** una dependencia cíclica entre módulos a partir del mensaje real de Gradle.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **edificio de apartamentos con una sola escritura**. El proyecto raíz (`settings.gradle.kts` y el catálogo de versiones) es el **reglamento de copropiedad**: dice qué
-apartamentos existen y fija las reglas comunes (versiones de librerías y plugins) para todos. Cada módulo es un **apartamento** con su puerta:
-`tienda-dominio` es el apartamento del primer piso, donde vive el «cerebro» del negocio, sin cables de Spring;
-`tienda-api` está encima y tiene la **escalera que baja** al primer piso (su dependencia). La escalera solo baja: si
-alguien construye otra que suba desde el primer piso al segundo, se forma un **círculo** y el inspector (Gradle) no
-aprueba la obra. En el dibujo, una flecha gruesa baja de `tienda-api` a `tienda-dominio` y una flecha tachada en rojo
-intenta subir.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     P["f021-multimodulo (proyecto raíz, sin jar)<br/>settings.gradle.kts: include de los dos módulos<br/>catálogo libs: Spring Boot 4.1.3"]
@@ -1901,56 +1530,112 @@ flowchart TB
     D -. "✘ prohibido: ciclo" .-> A
 ```
 
-**Texto alternativo:** arriba, el proyecto raíz f021-multimodulo, que no produce jar: su settings.gradle.kts incluye
-los dos módulos y el catálogo libs fija Spring Boot 4.1.3. De la raíz salen dos flechas «include» hacia tienda-dominio (jar con la
-clase PoliticaDescuento, Java puro con JUnit) y tienda-api (jar ejecutable con Spring MVC y el plugin de Spring Boot).
-Una flecha sólida va de tienda-api a tienda-dominio con la etiqueta «depende de»; una flecha punteada de vuelta, de
-tienda-dominio a tienda-api, está marcada como prohibida porque formaría un ciclo.
+1. Al principio todo cabe en un proyecto.
+2. Cuando crece, conviene separarlo en piezas que se compilan juntas pero tienen límites claros: una pieza con las reglas del negocio (cuánto descuento aplica) y otra con la parte web (recibir peticiones HTTP).
+3. Gradle llama a cada pieza subproyecto (en Maven, módulo; aquí usamos las dos palabras), y al conjunto, build multi-proyecto (multi-módulo).
+4. Con un solo comando (./gradlew test) se compila todo en el orden correcto.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Al principio todo cabe en un proyecto. Cuando crece, conviene **separarlo en piezas** que se compilan juntas pero
-tienen límites claros: una pieza con las reglas del negocio (cuánto descuento aplica) y otra con la parte web (recibir
-peticiones HTTP). Gradle llama a cada pieza **subproyecto** (en Maven, **módulo**; aquí usamos las dos palabras), y al conjunto,
-**build multi-proyecto** (multi-módulo). Con
-un solo comando (`./gradlew test`) se compila todo en el orden correcto.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Proyecto raíz:** no produce jar. Reparte en dos archivos los dos papeles que en Maven cumple el POM padre:
-  `settings.gradle.kts` es el **agregador** (`include(...)`: qué se construye junto; en Maven, `<modules>`) y el
-  `build.gradle.kts` de la raíz declara lo **común** (plugins con `apply false`, `group` y `version` en `subprojects`;
-  en Maven, lo que los hijos heredan con `<parent>`). Las versiones de Spring, JUnit y plugins salen del catálogo `libs`.
-- **Dependencia entre proyectos:** `implementation(project(":tienda-dominio"))` no lleva versión: siempre es el código
-  que tienes delante (en Maven, la versión del módulo hermano se fijaba en `dependencyManagement`).
-- **Grafo de tareas:** Gradle ordena el trabajo por las dependencias, no por el orden del `include`: verás
-  `:tienda-dominio:jar` antes que `:tienda-api:compileJava` aunque los listes al revés (en Maven, el *reactor*).
-- **Construcción parcial:** `:tienda-api:test` ejecuta esa tarea y **solo lo que necesita** (compila y empaqueta el
-  dominio, pero no corre sus tests; en Maven, `-pl tienda-api -am`). `:tienda-dominio:buildDependents` hace lo
-  contrario: «cambié el dominio, construye y prueba todo lo que depende de él» (en Maven, `-amd`).
-- **Solo el ejecutable aplica el plugin `org.springframework.boot`.** Su tarea `bootJar` empaqueta las clases en
-  `BOOT-INF/classes`; el dominio es una librería y produce un jar normal con la tarea `jar`. Si publicas una librería
-  como jar ejecutable, quien la consume no encuentra sus clases.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Estructura | Cuándo | Precio |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Un módulo | Servicios pequeños, un equipo | Los límites internos solo existen por convención de paquetes. |
-| Multi-proyecto de Gradle (este tema; en Maven, multi-módulo) | Separar dominio de infraestructura (arquitectura hexagonal), compartir un módulo de contratos | Más archivos de build que mantener; tentación de crear un módulo `common` que todos usan. |
-| Spring Modulith (Módulo 5) | Un monolito modular con límites verificados por tests | Los límites son lógicos (paquetes), no de compilación. |
-| Repositorios separados | Servicios con ciclos de despliegue independientes | Versionado y publicación de artefactos; cambios coordinados lentos. |
+| Multi-module Spring Boot projects se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Lo que el compilador te regala:** con módulos, `tienda-dominio` **no puede** importar Spring ni nada de `tienda-api`
-porque no lo tiene en su classpath. Es un *fitness function* gratis: la regla «el dominio no depende de la web» deja
-de ser una opinión.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Multi-module Spring Boot projects | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO:** no dividas por capas técnicas en microservicios ya pequeños (`-controller`, `-service`, `-repository`
-como módulos separados) ni crees un módulo `utils` compartido por varios microservicios: es el inicio del monolito
-distribuido (Módulo 30).
+#### ► CUÁNDO NO USAR ESTO
+El módulo common que todos usan:
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: multi-module spring boot projects funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Al principio todo cabe en un proyecto.
+- Cuando crece, conviene separarlo en piezas que se compilan juntas pero tienen límites claros: una pieza con las reglas del negocio (cuánto descuento aplica) y otra con la parte web (recibir peticiones HTTP).
+- Gradle llama a cada pieza subproyecto (en Maven, módulo; aquí usamos las dos palabras), y al conjunto, build multi-proyecto (multi-módulo).
+- Con un solo comando (./gradlew test) se compila todo en el orden correcto.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve multi-module spring boot projects en tu contexto?
+2. ¿Cómo sabrías que multi-module spring boot projects no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar multi-module spring boot projects?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Construcción guiada
+1. Construye todo y observa el orden de las tareas:
+
+```bash
+../gradlew build --console=plain
+```
+
+   **Output esperado (fragmento):**
+
+```text
+> Task :tienda-dominio:compileJava
+> Task :tienda-dominio:classes
+> Task :tienda-dominio:jar
+> Task :tienda-api:compileJava
+...
+> Task :tienda-api:bootJar
+...
+> Task :tienda-dominio:test
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [1] 50000, 0 PASSED
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [2] 100000, 5000 PASSED
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [3] 250000, 25000 PASSED
+...
+BUILD SUCCESSFUL in 12s
+```
+
+   Los segundos varían. **Captura comentada:** `:tienda-dominio:jar` aparece antes que `:tienda-api:compileJava`,
+   porque la API depende del dominio; la raíz no ejecuta ninguna tarea propia. Las líneas del dominio se copiaron de
+   una ejecución real con Gradle 8.14.3 y JUnit 5.10; las de `tienda-api` y el total con Gradle 9.9.2 están
+   pendientes de verificación en el Mac.
+
+2. Arranca la API y consúltala (en otra terminal):
+
+```bash
+java -jar tienda-api/build/libs/tienda-api-1.0.0.jar
+curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
+```
+
+   **Output esperado:** `25000`. Detén la app con `Ctrl+C`.
+
+3. Construye solo la API y lo que necesita:
+
+```bash
+../gradlew -q :tienda-api:test
+```
+
+   Termina sin errores y ejecuta el test de la API. Antes compila y empaqueta el dominio (lo necesita en el
+   classpath), pero **no** ejecuta sus 3 tests: Gradle solo corre lo que la tarea pedida necesita. Para ejecutar los 4
+   usa `../gradlew test`.
+
+4. Compara los dos jars: `ls -l tienda-dominio/build/libs/*.jar tienda-api/build/libs/*.jar`. El de la API pesa megas (lleva
+   Spring y Tomcat dentro); el del dominio, kilobytes. Junto al de la API verás `tienda-api-1.0.0-plain.jar`: el jar
+   normal, sin dependencias, que Gradle conserva con el clasificador `plain`. Medido el 2026-11-21 con Gradle 9.9.2 y
+   el plugin de Spring Boot (`./gradlew:f021-multimodulo:tienda-api:build`): `tienda-dominio-1.0.0.jar` 1.693 bytes ·
+   `tienda-api-1.0.0-plain.jar` 2.171 bytes · `tienda-api-1.0.0.jar` **19.992.406 bytes** (≈19 MB). Ese factor de
+   ~11.800× entre el jar gordo y el del dominio es justo lo que hace que un módulo de dominio se pueda reutilizar sin
+   arrastrar un servidor web.
+
+5. **Fallo deliberado:** en `tienda-dominio/build.gradle.kts`, dentro de `dependencies { }`, añade
+   `implementation(project(":tienda-api"))` y ejecuta `../gradlew build`. Lee el error (paso 12) y elimina la
+   dependencia.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Gradle 9.9.2 (wrapper) · Spring Boot 4.1.3 · JUnit Jupiter 6.0.3 · el dominio no usa Spring.
 
 `modulo-5/f021-multimodulo/settings.gradle.kts`:
@@ -2151,73 +1836,7 @@ class DescuentoController {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Construye todo y observa el orden de las tareas:
-
-```bash
-../gradlew build --console=plain
-```
-
-   **Output esperado (fragmento):**
-
-```text
-> Task :tienda-dominio:compileJava
-> Task :tienda-dominio:classes
-> Task :tienda-dominio:jar
-> Task :tienda-api:compileJava
-...
-> Task :tienda-api:bootJar
-...
-> Task :tienda-dominio:test
-
-PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [1] 50000, 0 PASSED
-
-PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [2] 100000, 5000 PASSED
-
-PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [3] 250000, 25000 PASSED
-...
-BUILD SUCCESSFUL in 12s
-```
-
-   Los segundos varían. **Captura comentada:** `:tienda-dominio:jar` aparece antes que `:tienda-api:compileJava`,
-   porque la API depende del dominio; la raíz no ejecuta ninguna tarea propia. Las líneas del dominio se copiaron de
-   una ejecución real con Gradle 8.14.3 y JUnit 5.10; las de `tienda-api` y el total con Gradle 9.9.2 están
-   pendientes de verificación en el Mac.
-
-2. Arranca la API y consúltala (en otra terminal):
-
-```bash
-java -jar tienda-api/build/libs/tienda-api-1.0.0.jar
-curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
-```
-
-   **Output esperado:** `25000`. Detén la app con `Ctrl+C`.
-
-3. Construye solo la API y lo que necesita:
-
-```bash
-../gradlew -q :tienda-api:test
-```
-
-   Termina sin errores y ejecuta el test de la API. Antes compila y empaqueta el dominio (lo necesita en el
-   classpath), pero **no** ejecuta sus 3 tests: Gradle solo corre lo que la tarea pedida necesita. Para ejecutar los 4
-   usa `../gradlew test`.
-
-4. Compara los dos jars: `ls -l tienda-dominio/build/libs/*.jar tienda-api/build/libs/*.jar`. El de la API pesa megas (lleva
-   Spring y Tomcat dentro); el del dominio, kilobytes. Junto al de la API verás `tienda-api-1.0.0-plain.jar`: el jar
-   normal, sin dependencias, que Gradle conserva con el clasificador `plain`. Medido el 2026-11-21 con Gradle 9.9.2 y
-   el plugin de Spring Boot (`./gradlew:f021-multimodulo:tienda-api:build`): `tienda-dominio-1.0.0.jar` 1.693 bytes ·
-   `tienda-api-1.0.0-plain.jar` 2.171 bytes · `tienda-api-1.0.0.jar` **19.992.406 bytes** (≈19 MB). Ese factor de
-   ~11.800× entre el jar gordo y el del dominio es justo lo que hace que un módulo de dominio se pueda reutilizar sin
-   arrastrar un servidor web.
-
-5. **Fallo deliberado:** en `tienda-dominio/build.gradle.kts`, dentro de `dependencies { }`, añade
-   `implementation(project(":tienda-api"))` y ejecuta `../gradlew build`. Lee el error (paso 12) y elimina la
-   dependencia.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f021-multimodulo/tienda-dominio/src/test/java/academia/tienda/dominio/PoliticaDescuentoTest.java`:
 
 ```java
@@ -2287,93 +1906,27 @@ class DescuentoControllerTest {
 API). En Maven era `-pl tienda-dominio -amd test`.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** alguien necesita «solo un detalle» de la API dentro del dominio, agrega la dependencia y nada compila.
-
-**Cómo se ve** (salida real de Gradle 8.14.3 con los dos módulos reducidos a Java puro; con Gradle 9.9.2 y el plugin
-de Spring Boot el detalle del texto puede variar —con esa combinación se ha reproducido el build correcto y la
-aparición de `tienda-api-1.0.0-plain.jar`, pero no este fallo en concreto—):
-
-```text
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Circular dependency between the following tasks:
-:tienda-api:classes
-\--- :tienda-api:compileJava
-     \--- :tienda-dominio:jar
-          +--- :tienda-dominio:classes
-          |    \--- :tienda-dominio:compileJava
-          |         \--- :tienda-api:jar
-          |              +--- :tienda-api:classes (*)
-          |              \--- :tienda-api:compileJava (*)
-          \--- :tienda-dominio:compileJava (*)
-
-(*) - details omitted (listed previously)
-```
-
-**Diagnóstico:** el árbol dibuja el ciclo: para compilar la API hace falta el jar del dominio, y para compilar el
-dominio hace falta el jar de la API. Gradle no puede decidir qué tarea ejecutar primero. (Maven lo dice con
-«The projects in the reactor contain a cyclic reference».)
-
-**Arreglo:** el dominio no conoce la API. Si el dominio necesita algo de fuera, define una **interfaz** en el dominio
-(un «puerto») y que la API la implemente; la flecha de dependencia sigue bajando.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«En un proyecto multi-módulo, ¿dónde aplicas el plugin de Spring Boot y por qué?»
-
-**Respuesta modelo:** solo en el módulo que produce la aplicación ejecutable. La tarea `bootJar` (en Maven, el goal
-`repackage` de `spring-boot-maven-plugin`) crea un *fat jar* con las clases en `BOOT-INF/classes` y las dependencias en
-`BOOT-INF/lib`. Si un módulo de librería se publica así, quien lo consume desde un repositorio no encuentra sus
-clases y falla con «package... does not exist». Las versiones de plugins y dependencias se centralizan (en Gradle, el
-catálogo de versiones y `apply false` en la raíz; en Maven, `pluginManagement`/`dependencyManagement` del padre), pero
-el plugin se **aplica** solo donde corresponde.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El módulo `common` que todos usan:**
-
-```text
-tienda-common   (DTOs, utilidades, excepciones, entidades JPA, clientes HTTP...)
-   ▲     ▲      ▲
-pedidos  pagos  inventario     ← tres microservicios atados al mismo jar
-```
-
-Cada cambio en `common` obliga a recompilar y redesplegar todos los servicios a la vez: es un monolito distribuido con
-pasos extra. Comparte solo **contratos** estables y versionados (por ejemplo, un esquema OpenAPI o Avro) y deja que
-cada servicio tenga su propio dominio.
-
----
 ### Perfiles y configuración externalizada
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 6 de 8 · Fase 1 · 2 h.
+#### ► DE QUÉ TRATA
+Configurar un mismo jar para desarrollo y producción con perfiles (application-prod.yml), variables de entorno y argumentos de línea de comandos, predecir qué valor gana según el orden de precedencia de Spring Boot y hacer fallar el arranque cuando falta un secreto obligatorio, c…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Configurar un mismo jar para desarrollo y producción con perfiles (application-prod.yml), variables de entorno y argumentos de línea de comandos, predecir qué valor gana según el orden de precedencia de Spring Boot y hacer fallar el arranque cuando falta un secreto obligatorio, comprobándolo con 5 tests.**
 
-- Módulo 0.4: YAML y variables de entorno (`export NOMBRE=valor`).
-- Lección 4: `@ConfigurationProperties` y propiedades `saludo.*`.
+#### ► POR QUÉ EXISTE ESTO
+Tu programa necesita datos que cambian según dónde corre: la dirección de la base de datos en tu portátil no es la de producción, y la contraseña de producción no puede estar escrita en el código. La regla de oro: el mismo programa, distinta configuración. Spring Boot lee la configuración de varios lugares (archivos, variables de entorno, argumentos) y los combina. Un perfil es un nombre (dev, prod) que activa un arc…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en perfiles y configuración externalizada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Configurar** un mismo jar para desarrollo y producción con perfiles (`application-prod.yml`), variables de entorno y
-argumentos de línea de comandos, **predecir** qué valor gana según el orden de precedencia de Spring Boot y
-**hacer fallar el arranque** cuando falta un secreto obligatorio, comprobándolo con 5 tests.
-
-#### 4. ANALOGÍA VISUAL
-
-Una **cafetera con cápsulas y un dial**. La máquina (tu jar) es siempre la misma. La **base del agua** es
-`application.yml`: lo que sirve para todos. La **cápsula** que insertas es el perfil (`dev`, `prod`): cambia el sabor
-sin cambiar la máquina. Encima, el **dial** de intensidad es la variable de entorno, y el **botón manual** que
-aprietas en el momento es el argumento `--tienda.descuento-maximo=7`. En el dibujo, cuatro capas apiladas como
-transparencias: abajo `application.yml`, encima `application-prod.yml`, encima las variables de entorno y arriba la
-línea de comandos; mirando desde arriba, ves el valor de la capa más alta que tenga algo escrito en ese lugar.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart BT
     A["application.yml<br/>descuento-maximo: 10<br/>bd-url: ...tienda_dev"] --> B["application-prod.yml<br/>(solo con perfil prod)<br/>descuento-maximo: 5<br/>bd-url: ${TIENDA_BD_URL:}"]
@@ -2385,56 +1938,48 @@ flowchart BT
     F -- "no" --> H["APPLICATION FAILED TO START"]
 ```
 
-**Texto alternativo:** pila de cuatro capas de abajo arriba: application.yml (descuento-maximo 10 y URL de
-desarrollo), application-prod.yml (solo con perfil prod: descuento-maximo 5 y bd-url tomada de TIENDA_BD_URL),
-variables de entorno (TIENDA_DESCUENTOMAXIMO=7 y TIENDA_BD_URL) y argumentos de línea de comandos
-(--tienda.descuento-maximo=3). La capa superior gana. Todo desemboca en el Environment, que se enlaza al record
-TiendaProperties; si la validación pasa, la app arranca; si no, muestra APPLICATION FAILED TO START.
+1. Tu programa necesita datos que cambian según dónde corre: la dirección de la base de datos en tu portátil no es la de producción, y la contraseña de producción no puede estar escrita en el código.
+2. La regla de oro: el mismo programa, distinta configuración.
+3. Spring Boot lee la configuración de varios lugares (archivos, variables de entorno, argumentos) y los combina.
+4. Un perfil es un nombre (dev, prod) que activa un archivo extra con los valores de ese entorno.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Tu programa necesita datos que **cambian según dónde corre**: la dirección de la base de datos en tu portátil no es la
-de producción, y la contraseña de producción no puede estar escrita en el código. La regla de oro: **el mismo
-programa, distinta configuración**. Spring Boot lee la configuración de varios lugares (archivos, variables de
-entorno, argumentos) y los combina. Un **perfil** es un nombre (`dev`, `prod`) que activa un archivo extra con los
-valores de ese entorno.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Archivos:** `application.yml` siempre; `application-{perfil}.yml` solo si el perfil está activo, y sus valores
-  ganan a los del archivo base. Se activa con `--spring.profiles.active=prod`, con la variable
-  `SPRING_PROFILES_ACTIVE=prod` o en tests con `@ActiveProfiles`.
-- **Precedencia (de menor a mayor, resumida):** valores por defecto → `application.yml` → `application-{perfil}.yml`
-  → archivos fuera del jar (`./config/application.yml`) → variables de entorno → propiedades del sistema
-  (`-Dclave=valor`) → argumentos `--clave=valor`. Los tests (`@SpringBootTest(properties =...)`) están por encima.
-- **Relaxed binding:** `tienda.descuento-maximo` en YAML, `descuentoMaximo` en Java y `TIENDA_DESCUENTOMAXIMO` en una
-  variable de entorno son la misma propiedad (puntos → `_`, sin guiones, mayúsculas).
-- **Placeholders:** `${TIENDA_BD_URL:}` lee otra propiedad o variable; lo que va después de `:` es el valor por
-  defecto (aquí, vacío).
-- **Validación:** `@Validated` + Bean Validation sobre un record `@ConfigurationProperties` hace que la app **no
-  arranque** con configuración inválida. Fallar al arrancar es mejor que fallar con el primer cliente.
-- **Un solo archivo con varios documentos:** en YAML puedes separar con `---` y
-  `spring.config.activate.on-profile: prod`; es lo mismo que el archivo separado.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Fuente de configuración | Fortaleza | Debilidad |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Archivos por perfil dentro del jar | Revisados en Git junto al código | Cambiar un valor exige nuevo build; nunca para secretos. |
-| Variables de entorno (12-Factor, Módulo 5) | Estándar en Docker y Kubernetes (`ConfigMap`, `Secret`) | Planas, sin tipos; cuesta ver el total de valores efectivos. |
-| Config Server (Módulo 7) | Centraliza y versiona la configuración de muchos servicios, recarga en caliente | Otro servicio crítico que operar. |
-| Gestor de secretos (Vault, Módulo 9) | Rotación, auditoría y *leases* | Integración y operación más complejas. |
+| Perfiles y configuración externalizada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Trade-offs de los perfiles:** pocos y por **entorno** (`dev`, `test`, `prod`), no por **funcionalidad**
-(`con-cache`, `sin-pagos`): para eso están las propiedades booleanas y la auto-configuración condicional (F020). Una
-explosión de perfiles combinados hace imposible saber qué corre en producción. Con imágenes nativas (F024) los perfiles
-que cambian beans deben fijarse al compilar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Perfiles y configuración externalizada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO:** no uses un perfil para cambiar el **comportamiento de negocio** (descuentos por campaña): eso es dato,
-va en la base de datos o en un *feature flag*.
+#### ► CUÁNDO NO USAR ESTO
+Secretos y lógica en perfiles:
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: perfiles y configuración externalizada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Tu programa necesita datos que cambian según dónde corre: la dirección de la base de datos en tu portátil no es la de producción, y la contraseña de producción no puede estar escrita en el código.
+- La regla de oro: el mismo programa, distinta configuración.
+- Spring Boot lee la configuración de varios lugares (archivos, variables de entorno, argumentos) y los combina.
+- Un perfil es un nombre (dev, prod) que activa un archivo extra con los valores de ese entorno.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve perfiles y configuración externalizada en tu contexto?
+2. ¿Cómo sabrías que perfiles y configuración externalizada no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar perfiles y configuración externalizada?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter` + `spring-boot-starter-validation`
 (Hibernate Validator 9.1).
 
@@ -2553,55 +2098,7 @@ public class PerfilesApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Compila y arranca sin perfil:
-
-```bash
-../gradlew -q bootJar
-java -jar build/libs/f022-perfiles-1.0.0.jar
-```
-
-   **Output esperado:**
-
-```text
-Perfiles=[] · moneda=COP · descuento-maximo=10 · bd-url=jdbc:postgresql://localhost:5432/tienda_dev
-```
-
-2. Producción con el secreto en una variable de entorno:
-
-```bash
-TIENDA_BD_URL=jdbc:postgresql://bd-prod:5432/tienda java -jar build/libs/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
-```
-
-   **Output esperado:**
-
-```text
-Perfiles=[prod] · moneda=COP · descuento-maximo=5 · bd-url=jdbc:postgresql://bd-prod:5432/tienda
-```
-
-3. Precedencia: la variable de entorno gana al archivo y el argumento gana a la variable:
-
-```bash
-TIENDA_DESCUENTOMAXIMO=7 java -jar build/libs/f022-perfiles-1.0.0.jar
-TIENDA_DESCUENTOMAXIMO=7 java -jar build/libs/f022-perfiles-1.0.0.jar --tienda.descuento-maximo=3
-```
-
-   **Output esperado:** la primera línea termina en `descuento-maximo=7 · bd-url=...tienda_dev` y la segunda en
-   `descuento-maximo=3 · bd-url=...tienda_dev`.
-
-4. **Fallo deliberado:** arranca `prod` **sin** la variable:
-
-```bash
-java -jar build/libs/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
-```
-
-   **Output esperado:** `APPLICATION FAILED TO START` con «Binding to target academia.perfiles.TiendaProperties
-   failed» y la propiedad `bd-url` vacía (detalle en el paso 12). **Captura comentada:** el proceso termina con
-   código distinto de 0 antes de abrir ninguna conexión: así se ve un *fail-fast* bien hecho.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f022-perfiles/src/test/java/academia/perfiles/PerfilesTest.java`:
 
 ```java
@@ -2677,100 +2174,27 @@ arranca con `--tienda.descuento-maximo=6`. ¿Qué valor ve la app?
 6: los argumentos de línea de comandos tienen más precedencia que las variables de entorno.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** en producción la app no arranca, o peor, arranca conectada a la base de desarrollo.
-
-**Cómo se ve** (cuando falta el secreto y la validación está activa):
-
-```text
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Binding to target academia.perfiles.TiendaProperties failed:
-
-    Property: tienda.bd-url
-    Value: ""
-    Origin: class path resource [application-prod.yml] - 6:11
-    Reason: must not be blank
-```
-
-(Con el sistema en español, Hibernate Validator escribe `Reason: no debe estar vacío`.)
-
-**Diagnóstico:** el perfil `prod` está activo (por eso se usa `application-prod.yml`), pero `TIENDA_BD_URL` no llegó
-al proceso: se exportó en otra terminal, se escribió con otro nombre o el `Secret` de Kubernetes no está montado.
-`Origin` dice exactamente qué archivo y línea aportó el valor vacío. El caso peor —arrancar contra la base de
-desarrollo— ocurre cuando el valor de desarrollo está en `application.yml` y el perfil **no** se activó; por eso
-`prod` sobrescribe `bd-url` con un valor que obliga a venir de fuera.
-
-**Arreglo:** exporta la variable en el mismo entorno del proceso (`env | grep TIENDA` para comprobarlo) y conserva la
-validación. Para ver de dónde sale cada valor, Actuator expone `/actuator/env` (protégelo: muestra configuración).
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo manejas la configuración de un microservicio en varios entornos sin reconstruir la imagen?»
-
-**Respuesta modelo:** construyo un único artefacto inmutable y le inyecto la configuración en el despliegue (factor
-III de 12-Factor). Los valores no sensibles por entorno van en variables de entorno o en un `ConfigMap`; los secretos,
-en un gestor de secretos o `Secret` montado, nunca en el repositorio. En el código los enlazo a records
-`@ConfigurationProperties` validados para fallar al arrancar si algo falta. Uso perfiles solo para diferencias
-estructurales de entorno, y conozco la precedencia (argumentos > propiedades del sistema > variables de entorno >
-archivos) para depurar qué valor gana.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Secretos y lógica en perfiles:**
-
-```yaml
-# application-prod.yml  ← en Git, visible para todo el que tenga acceso al repositorio
-spring:
-  datasource:
-    password: Sup3rS3creta!
-```
-
-```java
-if (Arrays.asList(entorno.getActiveProfiles()).contains("prod")) { cobrarDeVerdad(); } else { simularCobro(); }
-```
-
-La contraseña queda para siempre en el historial de Git, y el `if` por perfil hace que el código que pruebas no sea el
-que corre en producción. Usa `${VARIABLE}` para secretos y beans distintos por condición (`@ConditionalOnProperty`)
-para comportamientos distintos.
-
----
 ### CRaC (Coordinated Restore at Checkpoint)
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 7 de 8 · Fase 1 · 2 h servicios
-`crac-checkpoint` / `crac-restore` de `docker-compose.yml`.
+#### ► DE QUÉ TRATA
+Crear un checkpoint de una aplicación Spring Boot ya inicializada, restaurarla en un contenedor Linux y medir la diferencia entre el arranque normal y el restaurado; implementar un SmartLifecycle que cierra y reabre un recurso alrededor del checkpoint y comprobarlo con un test.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Crear un checkpoint de una aplicación Spring Boot ya inicializada, restaurarla en un contenedor Linux y medir la diferencia entre el arranque normal y el restaurado; implementar un SmartLifecycle que cierra y reabre un recurso alrededor del checkpoint y comprobarlo con un test.**
 
-- Lección 3: ciclo de vida de los beans y `ApplicationContext`.
-- Lección 6: arrancar el jar con propiedades `-D` y `--`.
-- Módulo 0.5: `docker compose build/run/up` y volúmenes.
+#### ► POR QUÉ EXISTE ESTO
+Un servicio Java tarda unos segundos en arrancar: carga miles de clases y prepara objetos. En la nube los servicios se apagan y prenden todo el tiempo (para ahorrar o para atender picos), y esos segundos se notan. CRaC permite «congelar» el programa ya arrancado y guardarlo en archivos; después lo «descongelas» y sigue como si nada en una fracción del tiempo. El checkpoint real solo funciona en Linux (Azul ofrece en…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en crac (coordinated restore at checkpoint) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Crear** un checkpoint de una aplicación Spring Boot ya inicializada, **restaurarla** en un contenedor Linux y
-**medir** la diferencia entre el arranque normal y el restaurado; **implementar** un `SmartLifecycle` que cierra y
-reabre un recurso alrededor del checkpoint y comprobarlo con un test.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **videojuego con «guardar partida»**. La primera vez tienes que pasar la pantalla de carga, el tutorial y elegir
-personaje (el arranque: cargar clases, crear beans, calentar la JVM). En el punto justo, **guardas la partida** (el
-checkpoint): se escribe en disco una foto exacta de la memoria. Mañana, en vez de empezar de cero, **cargas la
-partida** (restore) y apareces donde estabas en un instante. Pero hay cosas que no se pueden guardar en la foto: la
-**llamada telefónica** que tenías abierta con un amigo (un socket, una conexión a la BD). Antes de guardar cuelgas
-(`stop()`), y al cargar vuelves a marcar (`start()`). En el dibujo, una barra de carga larga tachada, un disquete con
-la etiqueta «checkpoint» y un teléfono que se cuelga antes del disquete y se vuelve a descolgar después.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant D as docker compose
@@ -2789,59 +2213,48 @@ sequenceDiagram
     S-->>D: atiende en :8080 en milisegundos
 ```
 
-**Texto alternativo:** diagrama de secuencia con cinco participantes. Docker Compose lanza una JVM con CRaC con la
-propiedad spring.context.checkpoint=onRefresh y la carpeta de checkpoint. Spring crea el contexto y los beans; en la
-fase onRefresh, antes de arrancar los componentes con ciclo de vida, pide el checkpoint. CRIU vuelca la memoria del
-proceso en archivos.img del volumen y el proceso termina. Luego Docker Compose lanza otra JVM con CRaCRestoreFrom,
-que carga la imagen; Spring ejecuta start() en cada Lifecycle (Tomcat y ConexionExterna) y la app atiende en el
-puerto 8080 en milisegundos.
+1. Un servicio Java tarda unos segundos en arrancar: carga miles de clases y prepara objetos.
+2. En la nube los servicios se apagan y prenden todo el tiempo (para ahorrar o para atender picos), y esos segundos se notan.
+3. CRaC permite «congelar» el programa ya arrancado y guardarlo en archivos; después lo «descongelas» y sigue como si nada en una fracción del tiempo.
+4. El checkpoint real solo funciona en Linux (Azul ofrece en macOS y Windows una simulación que sirve para desarrollar, no para medir), por e…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CRaC (Coordinated Restore at Checkpoint) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un servicio Java tarda unos segundos en arrancar: carga miles de clases y prepara objetos. En la nube los servicios se
-apagan y prenden todo el tiempo (para ahorrar o para atender picos), y esos segundos se notan. **CRaC** permite
-«congelar» el programa ya arrancado y guardarlo en archivos; después lo «descongelas» y sigue como si nada en una
-fracción del tiempo. El checkpoint real solo funciona en Linux (Azul ofrece en macOS y Windows una simulación
-que sirve para desarrollar, no para medir), por eso aquí lo haces dentro de Docker.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CRaC (Coordinated Restore at Checkpoint) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Checkpoint con secretos dentro, publicado en la imagen:
 
-- **Requisitos:** una JVM con CRaC (aquí `azul/zulu-openjdk:25-jdk-crac`; también la ofrece BellSoft Liberica), Linux
-  y la librería `org.crac:crac` (Boot 4.1.3 gestiona la 1.5.0; Spring exige 1.4.0 o superior). En una JVM sin CRaC la
-  librería no hace nada, así que el mismo jar corre en cualquier JDK.
-- **Por debajo:** CRaC usa **CRIU** (*Checkpoint/Restore In Userspace*) para volcar la memoria del proceso. Por eso el
-  contenedor necesita las capacidades `CHECKPOINT_RESTORE` y `SYS_PTRACE`.
-- **Dos modos en Spring:**
-  - **Automático al arrancar:** `-Dspring.context.checkpoint=onRefresh` crea el checkpoint en `LifecycleProcessor.onRefresh`,
-    antes de arrancar Tomcat y los demás `Lifecycle`. Es reproducible (sirve en un *pipeline*) pero la JVM no está
-    «caliente» (el JIT no ha optimizado nada).
-  - **Bajo demanda:** arrancas normal, calientas con tráfico y ejecutas `jcmd app.jar JDK.checkpoint`. Spring llama a
-    `stop()` de cada `Lifecycle`, se hace el checkpoint y tras el restore llama a `start()`. Restauras ya caliente.
-- **Recursos abiertos:** sockets, archivos y conexiones no pueden ir dentro de la imagen. Spring Boot gestiona los
-  suyos (Tomcat, pools de hilos, y Hikari se suspende); los tuyos los cierras y reabres con `SmartLifecycle`, como
-  `ConexionExterna`.
-- **Prueba sin Linux:** `-Dspring.context.exit=onRefresh` hace que la app salga en esa misma fase sin CRaC: sirve
-  para comprobar que el arranque llega hasta ahí.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: crac (coordinated restore at checkpoint) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Un servicio Java tarda unos segundos en arrancar: carga miles de clases y prepara objetos.
+- En la nube los servicios se apagan y prenden todo el tiempo (para ahorrar o para atender picos), y esos segundos se notan.
+- CRaC permite «congelar» el programa ya arrancado y guardarlo en archivos; después lo «descongelas» y sigue como si nada en una fracción del tiempo.
+- El checkpoint real solo funciona en Linux (Azul ofrece en macOS y Windows una simulación que sirve para desarrollar, no para medir), por e…
 
-| Técnica de arranque rápido | Arranque | Rendimiento pico | Restricciones |
-|---|---|---|---|
-| JVM normal | Segundos | Máximo tras calentar (JIT) | Ninguna |
-| CRaC (este tema) | Decenas de ms | Inmediato si el checkpoint fue «caliente» | Checkpoint real solo en Linux, JVM con CRaC, imagen ligada a CPU y SO parecidos; los archivos contienen la memoria (¡secretos!) |
-| AOT cache del proyecto Leyden (JEP 483, JDK 24+) | Del orden de 40 % menos (JEP 483 reporta 42 % en Spring PetClinic) | Igual que la JVM | Estándar del JDK, sin restricciones de SO; mejora menor |
-| GraalVM Native Image (F024) | Decenas de ms | Algo menor sin PGO | Mundo cerrado: reflexión y *proxies* deben declararse; compilación lenta |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve crac (coordinated restore at checkpoint) en tu contexto?
+2. ¿Cómo sabrías que crac (coordinated restore at checkpoint) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar crac (coordinated restore at checkpoint)?
 
-**Seguridad:** el checkpoint es un volcado de memoria: contiene contraseñas, claves y *tokens* que la app tuviera
-cargados. Trátalo como un secreto (no lo subas a un registro público) y, si puedes, carga los secretos **después** del
-restore. **Coherencia:** al restaurar, el reloj, el *hostname* y los números aleatorios ya generados vienen del pasado;
-con `@Scheduled(fixedRate =...)` se ejecutan de golpe todas las ejecuciones «perdidas» (usa `fixedDelay` o cron).
+</details>
 
-**Cuándo NO:** si el servicio corre siempre encendido (arranca una vez por semana) la complejidad no compensa; en
-macOS/Windows sin contenedores; o si tu organización no puede proteger los archivos del checkpoint.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 (Azul Zulu 25 con CRaC, imagen `azul/zulu-openjdk:25-jdk-crac`) · Spring Boot 4.1.3 ·
 `org.crac:crac` 1.5.0 (gestionado por Boot) · Docker Compose v5.
 
@@ -2995,48 +2408,7 @@ services:
     ports: ["8080:8080"]
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Mide el arranque normal en tu JDK (cualquier sistema):
-
-```bash
-./gradlew -q :f023-crac:bootJar
-java -jar f023-crac/build/libs/f023-crac-1.0.0.jar
-```
-
-   **Output esperado:** una línea `Conexión abierta (apertura #1)` y otra
-   `Started CracApp in X seconds (process running for Y)` con X del orden de 1–2 s. Anota X y detén con `Ctrl+C`.
-
-2. Crea el checkpoint en Docker:
-
-```bash
-docker compose --profile crac build crac-checkpoint
-docker compose --profile crac run --rm crac-checkpoint
-ls f023-crac/build/crac | head
-```
-
-   **Output esperado:** el contenedor arranca Spring, **no** imprime `Conexión abierta` (el checkpoint ocurre antes de
-   arrancar los `Lifecycle`) y termina; `ls` muestra archivos de imagen de CRIU (`*.img`) en `f023-crac/build/crac`.
-
-3. Restaura y consulta:
-
-```bash
-docker compose --profile crac up -d crac-restore
-docker compose --profile crac logs crac-restore | tail -3
-curl -s localhost:8080/hola | jq .
-docker compose --profile crac down
-```
-
-   **Output esperado:** en los logs, `Conexión abierta (apertura #1)` y una línea `Restored CracApp in 0.0… seconds`;
-   la respuesta tiene `"mensaje": "hola desde CRaC"`, `"conexionAbierta": true`, `"aperturas": 1` y `"jvm"` con el
-   proveedor Azul. **Captura comentada:** compara los segundos de `Restored` con los de `Started` del paso 1: suele
-   ser una diferencia de uno o dos órdenes de magnitud.
-
-4. **Fallo deliberado:** fuera de Docker, en tu JDK normal, ejecuta
-   `java -XX:CRaCCheckpointTo=/tmp/cr -jar f023-crac/build/libs/f023-crac-1.0.0.jar` y lee el error (paso 12).
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 Este test corre en cualquier JDK y sistema (simula lo que Spring hace alrededor del checkpoint):
 
 `modulo-5/f023-crac/src/test/java/academia/crac/CicloCheckpointTest.java`:
@@ -3093,75 +2465,23 @@ Tras el restore, Spring llama a `start()` por primera vez. En el modo bajo deman
 conexión ya estaba abierta: Spring llama a `stop()`, guarda y luego `start()`, y verías 2.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** intentas crear el checkpoint directamente en macOS, Windows o con un JDK normal.
-
-**Cómo se ve** (salida real con OpenJDK 25.0.5 sin CRaC):
-
-```text
-Unrecognized VM option 'CRaCCheckpointTo=/tmp/cr'
-Error: Could not create the Java Virtual Machine.
-Error: A fatal exception has occurred. Program will exit.
-```
-
-**Diagnóstico:** la opción `-XX:CRaCCheckpointTo` solo existe en JVM con CRaC (Azul Zulu CRaC, Liberica CRaC), y el
-checkpoint real exige Linux (en macOS y Windows, Zulu CRaC solo lo simula). Comprueba tu JVM con `java -version`: debe decir `Zulu` y la imagen debe tener `crac` en su etiqueta. Dentro
-de Docker, si ves errores de CRIU con «Operation not permitted», faltan las capacidades `CHECKPOINT_RESTORE` y
-`SYS_PTRACE`.
-
-**Arreglo:** usa el servicio `crac-checkpoint` del `docker-compose.yml` (imagen con CRaC y capacidades declaradas). En tu
-JDK local, para comprobar al menos que el arranque llega a la fase correcta, usa
-`java -Dspring.context.exit=onRefresh -jar f023-crac/build/libs/f023-crac-1.0.0.jar`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué diferencias hay entre CRaC y GraalVM Native Image para reducir el arranque de un servicio Spring Boot?»
-
-**Respuesta modelo:** CRaC conserva la JVM completa (JIT, GC, reflexión dinámica) y guarda una imagen de memoria de la
-aplicación ya inicializada; restaura en milisegundos y, si el checkpoint se hizo en caliente, con rendimiento pico
-inmediato, sin cambiar el código salvo cerrar/reabrir recursos. Exige Linux, una JVM con CRaC, privilegios de CRIU y
-proteger la imagen porque contiene memoria. Native Image compila a un ejecutable nativo con análisis de mundo cerrado:
-arranca en milisegundos y usa menos memoria, pero la reflexión, los recursos y los *proxies* deben declararse, la
-compilación es lenta y el rendimiento pico puede ser menor sin PGO. Elijo CRaC si necesito el rendimiento del JIT y
-la flexibilidad de la JVM; Native Image para funciones serverless o CLIs con memoria muy limitada.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Checkpoint con secretos dentro, publicado en la imagen:**
-
-```dockerfile
-FROM azul/zulu-openjdk:25-jdk-crac
-ENV SPRING_DATASOURCE_PASSWORD=Sup3rS3creta!      # el valor queda en la memoria volcada
-COPY build/crac /crac                             # la imagen del registro contiene el checkpoint
-CMD ["java", "-XX:CRaCRestoreFrom=/crac"]
-```
-
-Cualquiera con acceso al registro puede leer la memoria volcada. Mantén los checkpoints en almacenamiento privado y
-carga credenciales después del restore (por ejemplo, desde Vault en el `start()` de un `SmartLifecycle`).
-
----
 ### GraalVM Native Image
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 1, Lección 8 de 8 · Fase 1 · 2,5 h
-servicios `native-build` / `native-run` de `docker-compose.yml`.
+#### ► DE QUÉ TRATA
+Compilar una aplicación Spring Boot a ejecutable nativo con GraalVM 25, comparar su arranque y memoria con la JVM y declarar con RuntimeHintsRegistrar la reflexión que el análisis estático no puede ver, verificándolo con un test que inspecciona las pistas registradas.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Compilar una aplicación Spring Boot a ejecutable nativo con GraalVM 25, comparar su arranque y memoria con la JVM y declarar con RuntimeHintsRegistrar la reflexión que el análisis estático no puede ver, verificándolo con un test que inspecciona las pistas registradas.**
 
-- Lecciones 3, 4 y 6: beans, condiciones y perfiles (se evalúan al compilar en nativo).
-- Lección 7: por qué importa el tiempo de arranque.
-- Saber qué es la reflexión: crear un objeto a partir del **nombre** de su clase (`Class.forName`).
+#### ► POR QUÉ EXISTE ESTO
+Normalmente un programa Java necesita la JVM instalada para correr, y la JVM tarda un poco en arrancar. GraalVM Native Image traduce tu programa, con solo las partes del JDK que usa, a un ejecutable como los de C: un archivo que arranca casi instantáneamente y gasta menos memoria. El precio: la traducción tarda minutos y debe saber de antemano todo lo que tu programa va a usar.
 
-#### 3. OBJETIVO DE APRENDIZAJE
-
-**Compilar** una aplicación Spring Boot a ejecutable nativo con GraalVM 25, **comparar** su arranque y memoria con la
-JVM y **declarar** con `RuntimeHintsRegistrar` la reflexión que el análisis estático no puede ver, verificándolo con un
-test que inspecciona las pistas registradas.
-
-#### 4. ANALOGÍA VISUAL
-
+#### ► LA ANALOGÍA
 **Empacar para un viaje a una isla sin tiendas.** En la JVM viajas a una ciudad: si te falta algo, lo compras al
 llegar (carga clases cuando las necesita). Native Image es la isla: todo lo que no esté en la **maleta** al salir, no
 existe allá. Un ayudante (el análisis estático) recorre tu lista de actividades y empaca lo que ve escrito
@@ -3170,8 +2490,9 @@ en una propiedad), el ayudante no sabe qué empacar. La **nota pegada en la male
 veas en la lista») es el `RuntimeHintsRegistrar`. En el dibujo, una maleta compacta (el binario de ~decenas de MB que
 arranca en milisegundos) junto a un camión de mudanzas (la JVM con todo el JDK).
 
-#### 5. DIAGRAMA TÉCNICO
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S["Código + dependencias"] --> AOT["Spring AOT (process-aot)<br/>evalúa @Conditional, perfiles<br/>genera código de beans + hints"]
@@ -3184,59 +2505,51 @@ flowchart LR
     X["CalculadoraIva<br/>solo por Class.forName"] -. "sin hint: no entra" .-> NI
 ```
 
-**Texto alternativo:** flujo de izquierda a derecha. El código y sus dependencias pasan por Spring AOT, que evalúa
-condiciones y perfiles, genera el código de los beans y los hints. Los hints, junto con los que declara
-ImpuestosHints, forman la metadata de alcanzabilidad (reflexión, recursos y proxies). native-image de GraalVM 25 hace
-el análisis de mundo cerrado con el código generado y la metadata, y produce el ejecutable nativo que arranca en
-milisegundos sin JVM. Una flecha punteada indica que CalculadoraIva, usada solo por Class.forName, no entra al binario
-si no hay hint.
+1. Normalmente un programa Java necesita la JVM instalada para correr, y la JVM tarda un poco en arrancar.
+2. GraalVM Native Image traduce tu programa, con solo las partes del JDK que usa, a un ejecutable como los de C: un archivo que arranca casi instantáneamente y gasta menos memoria.
+3. El precio: la traducción tarda minutos y debe saber de antemano todo lo que tu programa va a usar.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| GraalVM Native Image se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Normalmente un programa Java necesita la JVM instalada para correr, y la JVM tarda un poco en arrancar. **GraalVM
-Native Image** traduce tu programa, con solo las partes del JDK que usa, a un **ejecutable** como los de C: un archivo
-que arranca casi instantáneamente y gasta menos memoria. El precio: la traducción tarda minutos y debe saber **de
-antemano** todo lo que tu programa va a usar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar GraalVM Native Image | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+«Native para todo» sin medir:
 
-- **Mundo cerrado:** `native-image` parte del `main` y sigue todas las llamadas posibles; lo que no alcanza, no lo
-  incluye. La reflexión, los recursos del classpath, los *proxies* dinámicos y la serialización deben declararse en
-  metadata (`META-INF/native-image/.../reachability-metadata.json`).
-- **Spring AOT:** con el plugin `org.graalvm.buildtools.native` aplicado, el plugin de Spring Boot ejecuta la tarea
-  `processAot` (en Maven, el goal `process-aot` del perfil `native`): arranca el contexto **en tiempo de
-  compilación**, evalúa las condiciones, genera código Java que crea los beans sin reflexión y escribe la metadata de
-  todo lo que Spring sabe que necesita. Por eso un `@ConditionalOnProperty` queda **fijo** al compilar.
-- **Tus pistas:** `RuntimeHintsRegistrar` + `@ImportRuntimeHints` para lo que Spring no puede deducir (aquí, una clase
-  cuyo nombre llega en `impuestos.calculadora`). Otras anotaciones: `@RegisterReflectionForBinding` para DTOs que
-  serializas a mano.
-- **Herramientas:** el plugin `org.graalvm.buildtools.native` (Native Build Tools) añade la tarea `nativeCompile`; el
-  binario queda en `build/native/nativeCompile/`. En Maven es el perfil `native` del `spring-boot-starter-parent`
-  (`./mvnw -Pnative native:compile`). `./gradlew nativeCompile` necesita GraalVM 25 con `native-image` y un compilador de C; en Docker usas
-  `ghcr.io/graalvm/native-image-community:25`. Alternativa sin GraalVM local: `./gradlew bootBuildImage`
-  (buildpacks de Paketo).
-- **Probar AOT en la JVM:** `java -Dspring.aot.enabled=true -jar...` usa el código generado sin compilar a nativo:
-  detecta temprano problemas de condiciones fijas.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: graalvm native image funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Normalmente un programa Java necesita la JVM instalada para correr, y la JVM tarda un poco en arrancar.
+- GraalVM Native Image traduce tu programa, con solo las partes del JDK que usa, a un ejecutable como los de C: un archivo que arranca casi instantáneamente y gasta menos memoria.
+- El precio: la traducción tarda minutos y debe saber de antemano todo lo que tu programa va a usar.
 
-| Criterio | JVM (JIT) | Native Image | CRaC (F023) |
-|---|---|---|---|
-| Arranque | Segundos | Decenas de ms | Decenas de ms |
-| Memoria en reposo | Mayor (JIT, metadatos de clases) | Mucho menor | Igual que la JVM |
-| Rendimiento pico | El mejor tras calentar | Algo menor; PGO (Oracle GraalVM) lo acerca | El de la JVM |
-| Tiempo de build | Segundos | Minutos y varios GB de RAM | Segundos + paso de checkpoint |
-| Reflexión dinámica, agentes Java | Libre | Declarada; muchos agentes (APM) no funcionan | Libre |
-| Depuración y perfiles | JFR, JMX, heap dumps completos | Limitados | JFR completo |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve graalvm native image en tu contexto?
+2. ¿Cómo sabrías que graalvm native image no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar graalvm native image?
 
-**Cuándo SÍ:** funciones *serverless* y *scale-to-zero* donde el arranque frío se cobra, CLIs, sidecars con poca
-memoria, muchas réplicas pequeñas en Kubernetes. **Cuándo NO:** servicios de larga vida con mucho tráfico (la JVM
-caliente rinde más), librerías con reflexión no declarada, equipos sin tiempo para mantener *hints* o pipelines que no
-pueden pagar minutos de compilación por cambio. Una compilación nativa por arquitectura: un binario de Linux ARM64 no
-corre en macOS ni en Linux x86_64.
+</details>
 
-#### 9. CÓDIGO EJECUTABLE
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Objetivo observable
+**Compilar** una aplicación Spring Boot a ejecutable nativo con GraalVM 25, **comparar** su arranque y memoria con la
+JVM y **declarar** con `RuntimeHintsRegistrar` la reflexión que el análisis estático no puede ver, verificándolo con un
+test que inspecciona las pistas registradas.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 · GraalVM Community 25 (imagen `ghcr.io/graalvm/native-image-community:25`) · Spring Boot 4.1.3
 (soporta GraalVM 25; Native Build Tools 1.1.18 fijadas en el catálogo de versiones) · Docker Compose v5.
 
@@ -3378,48 +2691,7 @@ public class NativoApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Línea base en la JVM:
-
-```bash
-./gradlew -q :f024-graalvm-native:bootJar
-java -jar f024-graalvm-native/build/libs/f024-graalvm-native-1.0.0.jar
-```
-
-   **Output esperado:** `Started NativoApp in X seconds`. En otra terminal,
-   `curl -s "localhost:8080/impuesto?base=100000" | jq.impuesto` responde `19000`. Anota X y detén con `Ctrl+C`.
-
-2. Compila el binario nativo dentro del contenedor de GraalVM (tarda varios minutos; Docker Desktop necesita al menos
-   8 GB de memoria asignada):
-
-```bash
-docker compose --profile native run --rm native-build
-file f024-graalvm-native/build/native/nativeCompile/f024-graalvm-native
-```
-
-   **Output esperado:** el build termina con `BUILD SUCCESSFUL` (pendiente de verificación en el Mac) tras las etapas numeradas de GraalVM (`[1/8] Initializing`
-   … `[8/8] Creating image`) y `file` describe un ejecutable ELF de Linux (ARM64 en Mac con Apple Silicon).
-
-3. Ejecuta el binario y compara:
-
-```bash
-docker compose --profile native up -d native-run
-docker compose --profile native logs native-run | grep Started
-curl -s "localhost:8081/impuesto?base=100000" | jq .
-docker compose --profile native down
-```
-
-   **Output esperado:** `Started NativoApp in 0.0… seconds` y la respuesta con `"impuesto": 19000` y
-   `"calculadora": "CalculadoraIva"`. **Captura comentada:** compara los segundos con los del paso 1; además, el
-   proceso no tiene JVM: `docker compose --profile native top native-run` muestra el ejecutable, no `java`.
-
-4. **Fallo deliberado:** comenta la línea `@ImportRuntimeHints(ImpuestosHints.class)` en `NativoApp`, repite los pasos 2
-   y 3 y observa que el binario no arranca (paso 12). Los tests en la JVM siguen en verde: la JVM no necesita la pista.
-   Restaura la línea.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `modulo-5/f024-graalvm-native/src/test/java/academia/nativo/NativoTest.java`:
 
 ```java
@@ -3481,45 +2753,4 @@ En la JVM la reflexión funciona siempre, así que el endpoint responde con o si
 para `CalculadoraIva`: falla en segundos, sin esperar minutos a un build nativo.
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** todo pasa en la JVM y en los tests, pero el ejecutable nativo falla al arrancar o en la primera petición.
-
-**Cómo se ve:** el log del binario termina con una excepción de reflexión sobre la clase que solo se usaba por nombre,
-por ejemplo `java.lang.ClassNotFoundException: academia.nativo.CalculadoraIva`, envuelta en un
-`BeanCreationException` de `nativoApp`.
-
-**Diagnóstico:** la clase nunca entró en el binario porque nada la referenciaba de forma estática. Para encontrar todo
-lo que falta de una vez, ejecuta la app en la JVM con el agente de trazado de GraalVM
-(`java -agentlib:native-image-agent=config-output-dir=agente -jar...`), recorre los flujos y revisa la metadata que
-genera.
-
-**Arreglo:** declara la pista (`hints.reflection().registerType(...)`) en un `RuntimeHintsRegistrar` importado con
-`@ImportRuntimeHints`, y cubre con un test que el registrar la contiene. Mejor aún: evita la reflexión si puedes (un
-`Map<String, Calculadora>` de beans elegido por propiedad funciona en ambos mundos).
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Tu servicio Spring Boot nativo ignora un cambio de `@ConditionalOnProperty` que hiciste con una variable de entorno en
-producción. ¿Por qué?»
-
-**Respuesta modelo:** con Native Image, Spring AOT evalúa las condiciones y los perfiles **al compilar** y genera el
-código de registro de beans ya resuelto; el binario no reevalúa `@Conditional` al arrancar. Las propiedades simples
-siguen leyéndose en ejecución (por eso un `@Value` cambia), pero qué beans existen quedó fijo. Soluciones: compilar con
-los valores del entorno de destino, mover la decisión a ejecución (un bean que consulta la propiedad en cada uso) o
-generar binarios por variante. Lo detecto antes de producción ejecutando en la JVM con `-Dspring.aot.enabled=true`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**«Native para todo» sin medir:**
-
-```text
-pipeline: cada commit → native:compile (12 min, 10 GB RAM) → imagen → desplegar
-servicio: corre 24/7 con 3 réplicas, arranca una vez por semana
-```
-
-Pagas minutos de build y la carga de mantener *hints* para ganar un arranque que casi nunca ocurre, y pierdes
-rendimiento pico y herramientas de diagnóstico. Decide con números: tiempo de arranque, memoria en reposo,
-*throughput* a carga real y frecuencia de arranques; aplica nativo donde el arranque frío cuesta dinero.
-
----
+</details>

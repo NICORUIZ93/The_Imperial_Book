@@ -5,19 +5,26 @@
 
 **Servidor del módulo:** en este módulo trabajas sobre todo con `npm test`, dentro del proyecto `mi-react` del módulo 0, que ya tiene Vitest, Testing Library, `user-event`, jsdom y `toBeInTheDocument` configurados («Prepara las pruebas» del módulo 0). Cada tema te da el componente y su prueba completos.
 
+
 ### Tema 1: Queries por rol, no por clase CSS · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a testear el botón "Confirmar entrega" de RutaFlow consultándolo por su rol accesible, en vez de por una clase CSS. Prerrequisitos: Módulo 3 completo.
 
-#### Paso 2 · Contexto y caso real
-El diseño de `BotonConfirmar` cambia de clase CSS varias veces por iteraciones de estilo (`btn-primary` → `btn-confirmar-v2`) sin que su comportamiento real cambie — un test que dependa de esa clase se rompería en cada rediseño cosmético.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a testear el botón "Confirmar entrega" de RutaFlow consultándolo por su rol accesible, en vez de por una clase CSS.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Testing Library consulta por rol y nombre accesible, como lo haría un usuario o un lector de pantalla — identificar al actor que hace de rey por su rol en la obra, no por el número de camerino.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama: Testing Library vs Testing tradicional**
+#### ► LA ANALOGÍA
+Piensa en queries por rol, no por clase css como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["Test: ¿Funciona el botón?"]
@@ -38,18 +45,62 @@ graph TD
     style E fill:#e8f5e9
 ```
 
-**¿Por qué es importante?** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable.
-**Conceptos clave:** `getByRole`, `getByText`, resiliencia a refactors.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Queries por rol, no por clase CSS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-React Testing Library promueve deliberadamente consultar el DOM renderizado de la misma forma en que un usuario real (o una tecnología asistiva como un lector de pantalla) identificaría un elemento: por su rol semántico de accesibilidad (`screen.getByRole('button', { name: /enviar/i })`) o por el texto visible que muestra (`screen.getByText(/enviado con éxito/i)`), evitando deliberadamente consultas basadas en detalles internos de implementación como nombres de clases CSS o la estructura exacta del árbol DOM interno (`getByClassName`, deliberadamente no ofrecido como API principal por la librería).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Queries por rol, no por clase CSS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Esta elección deliberada produce pruebas que sobreviven a refactors internos del componente que no cambian su comportamiento observable: si se reorganiza el HTML interno de un componente, o se renombra una clase CSS puramente por razones cosméticas, una prueba que consulta por rol/texto sigue pasando sin cambios, mientras que una prueba que dependiera de un selector CSS interno específico se rompería inmediatamente ante ese mismo cambio cosmético, aunque el comportamiento real del componente permanezca completamente intacto.
+#### ► CUÁNDO NO USAR ESTO
+No uses queries por rol, no por clase css por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** consultar por rol/texto es como identificar a alguien por su función visible en una obra de teatro (el actor que hace de rey) en vez de por el número de camerino que ocupa detrás del escenario: si cambia de camerino (un detalle interno irrelevante), sigue siendo identificable de la misma forma por su rol visible en la obra.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: queries por rol, no por clase css funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Implicación práctica:** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable del componente.
+#### ► LO QUE DEBES RECORDAR
+- Queries por rol, no por clase CSS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Código del ejemplo:**
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve queries por rol, no por clase css en tu contexto?
+2. ¿Cómo sabrías que queries por rol, no por clase css no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar queries por rol, no por clase css?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["Test: ¿Funciona el botón?"]
+    
+    B["Enfoque tradicional:<br/>getByClassName"]
+    C["Busca: .btn-primary<br/>si el CSS cambia<br/>el test falla"]
+    
+    D["Testing Library:<br/>getByRole + name"]
+    E["Busca: button + 'Confirmar'<br/>Independiente del CSS<br/>Refleja lo que ve el usuario"]
+    
+    A -->|Frágil| B
+    B -->|Problema| C
+    
+    A -->|Robusto| D
+    D -->|Ventaja| E
+    
+    style C fill:#ffebee
+    style E fill:#e8f5e9
+```
 
 ```jsx
 render(<Formulario />);
@@ -57,9 +108,6 @@ const boton = screen.getByRole('button', { name: /enviar/i }); // como lo "verí
 await userEvent.click(boton);
 expect(screen.getByText(/enviado con éxito/i)).toBeInTheDocument();
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-Crea el componente bajo prueba en `src/DetalleEnvio.jsx`:
 
 ```jsx
 import { useState } from 'react';
@@ -75,8 +123,6 @@ export default function DetalleEnvio({ envio }) {
   );
 }
 ```
-
-Y su prueba en `src/DetalleEnvio.test.jsx`:
 
 ```jsx
 import { render, screen } from '@testing-library/react'
@@ -94,43 +140,73 @@ it('confirma la entrega buscando el botón por su rol', async () => {
 })
 ```
 
-**Ejecuta la prueba** en tu proyecto `mi-react`:
-
 ```bash
 npm test
 ```
 
-Resultado esperado: el test encuentra el botón por su rol semántico (`button`) y su nombre accesible ("Confirmar entrega"), sin importar qué clase CSS tenga en ese momento, y confirma que el mensaje de éxito aparece tras el click: Vitest informa la prueba de `DetalleEnvio.test.jsx` como aprobada.
-
-#### Paso 5 · Práctica guiada
-Pista: escribe deliberadamente una segunda versión del mismo test usando `document.querySelector('.btn-primary')` en vez de `getByRole` — ese es el fallo deliberado: cambia la clase del botón de `DetalleEnvio` a `btn-confirmar-v2` (un rediseño puramente cosmético) y esa segunda versión del test se rompe inmediatamente, aunque el comportamiento real del botón no cambió en absoluto.
-
-#### Paso 6 · Práctica independiente
-Confirma que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún cambio después del rediseño, y documenta explícitamente qué detalle de implementación cambió (la clase CSS) frente a qué se mantuvo igual (el rol y el nombre accesible del botón). Aplica la consulta por rol a la pantalla de envíos del proyecto integrador RutaFlow y registra qué cambió tras el rediseño.
-
-#### Paso 7 · Cierre
-Entrega el test resiliente del Paso 4, la comparación con el selector de clase roto del Paso 5, y la confirmación del Paso 6; explica qué detalle de implementación cambió y por qué no debería haber roto ningún test de comportamiento. Siguiente paso: estudia cómo interceptar la llamada de red real con MSW. Errores comunes: consultar por clase CSS o estructura del DOM en vez de por rol/texto, usar `getByText` con un texto que cambia seguido por copywriting en vez de un rol estable, y usar `container.querySelector` como escape hatch habitual en vez de ocasional. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/intro/ y https://testing-library.com/docs/queries/byrole/.
+</details>
 
 ### Tema 2: Mock Service Worker (MSW) · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a interceptar con MSW la llamada real que `confirmarEntrega` hace a `/api/envios/:id/confirmar`, para testear el flujo completo sin un backend real corriendo. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Testear `DetalleEnvio` end-to-end exigiría tener un backend real corriendo con datos de prueba consistentes — un servidor real es lento, frágil, y comparte estado entre ejecuciones de tests distintas.
+#### ► DE QUÉ TRATA
+Al finalizar vas a interceptar con MSW la llamada real que confirmarEntrega hace a /api/envios/:id/confirmar, para testear el flujo completo sin un backend real corriendo. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-MSW intercepta peticiones a nivel de red; el código de producción hace sus peticiones exactamente igual que en producción, sin saber que está siendo interceptado — un servidor de pruebas que se hace pasar transparentemente por el real.
-**Conceptos clave:** interceptación a nivel de red, sin conocimiento del código de producción.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a interceptar con MSW la llamada real que confirmarEntrega hace a /api/envios/:id/confirmar, para testear el flujo completo sin un backend real corriendo.**
 
-MSW intercepta peticiones HTTP a nivel de red (registrando un service worker o, en entornos de prueba, interceptando directamente las llamadas de red del entorno de ejecución) en vez de parchear directamente la función `fetch` global del código de la aplicación (`vi.fn()` o un mock manual de `fetch`, un enfoque alternativo pero más frágil, dado que requiere que el mock replique exactamente la forma en que el código de producción invoca `fetch`); con MSW, el código de producción realiza sus peticiones exactamente igual que en producción real, sin ninguna modificación ni conocimiento de que está siendo interceptado, siendo el propio MSW el que intercepta esas peticiones a nivel de red antes de que lleguen a un servidor real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`setupServer(http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }])))` define un manejador que responde a peticiones GET hacia esa ruta específica con datos simulados; `server.listen()` activa la interceptación antes de que las pruebas corran, `server.resetHandlers()` restaura los manejadores por defecto entre pruebas individuales (evitando que un manejador personalizado definido en una prueba específica afecte accidentalmente a pruebas posteriores), y `server.close()` detiene la interceptación al finalizar toda la suite.
+#### ► LA ANALOGÍA
+Piensa en mock service worker (msw) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** MSW es como un servidor de pruebas que se hace pasar de forma completamente transparente por el servidor real en una red aislada, de modo que el código bajo prueba nunca se entera de que está hablando con un impostor, en vez de reemplazar directamente la línea telefónica del código bajo prueba con un cable falso que requiere modificar el propio código para usarlo.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mock service worker (msw) resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Código del ejemplo:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mock Service Worker (MSW) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mock Service Worker (MSW) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses mock service worker (msw) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mock service worker (msw) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Mock Service Worker (MSW) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mock service worker (msw) en tu contexto?
+2. ¿Cómo sabrías que mock service worker (msw) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mock service worker (msw)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 const server = setupServer(
   http.get('/api/usuarios', () => HttpResponse.json([{ id: 1, nombre: 'Ana' }]))
@@ -141,19 +217,9 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
 
-
-**Límites y decisión de uso:** MSW controla la red de la prueba, pero no demuestra que el backend real cumpla el contrato. Mantén pruebas contractuales o de integración y configura handlers que rechacen solicitudes no previstas para no ocultar rutas equivocadas.
-
-**¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
-
-#### Paso 4 · Demostración guiada desde cero
-Instala MSW como dependencia de desarrollo:
-
 ```bash
 npm install -D msw@3
 ```
-
-Reemplaza `src/DetalleEnvio.jsx` por esta versión, que llama de verdad a la red:
 
 ```jsx
 import { useState } from 'react';
@@ -182,8 +248,6 @@ export default function DetalleEnvio({ envio }) {
 }
 ```
 
-Y reemplaza `src/DetalleEnvio.test.jsx` por la prueba con MSW:
-
 ```jsx
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -206,53 +270,83 @@ it('muestra la confirmación que responde el servidor', async () => {
 })
 ```
 
-**Ejecuta la prueba** en tu proyecto `mi-react`:
-
 ```bash
 npm test
 ```
 
-Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada; la prueba encuentra «Entrega confirmada: entregado». `onUnhandledFrame: 'error'` hace fallar la prueba si el componente llama a una ruta sin handler (en MSW 2 la opción se llamaba `onUnhandledRequest`; MSW 3 la renombró).
-
-#### Paso 5 · Práctica guiada
-Pista: dentro de un test agrega `server.use(http.post('/api/envios/:id/confirmar', () => HttpResponse.error()))` para simular un fallo, y quita el `afterEach(() => server.resetHandlers())` global — ese es el fallo deliberado: ese handler de error queda activo y afecta a la PRÓXIMA prueba de la suite, que ahora falla inesperadamente aunque su propio código esté correcto.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agrega una prueba explícita del caso de error verificando que `DetalleEnvio` muestra «No pudimos confirmar la entrega. Intenta de nuevo.», no una pantalla en blanco. Simula con MSW el fallo del endpoint de entregas del proyecto integrador RutaFlow y prueba el camino de error.
-
-#### Paso 7 · Cierre
-Entrega el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explica por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
+</details>
 
 ### Tema 3: Testing de hooks personalizados · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a testear `useFiltroZona` (un hook personalizado que envuelve el store de Zustand del Módulo 7) con `renderHook`, sin necesidad de un componente visual. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`useFiltroZona` tiene su propia lógica (normalizar el nombre de zona a minúsculas antes de guardarlo) — testear eso envolviéndolo en un componente visual completo solo para invocar el hook sería innecesario.
+#### ► DE QUÉ TRATA
+Al finalizar vas a testear useFiltroZona (un hook personalizado que envuelve el store de Zustand del Módulo 7) con renderHook, sin necesidad de un componente visual. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`renderHook` prueba un hook aislado sin un componente dedicado; `act` garantiza que React procese completamente una actualización antes de la siguiente aserción — probar el motor en un banco de pruebas, sin montar la carrocería completa.
-**Conceptos clave:** `renderHook`, `act`, aislar la lógica del hook de un componente visual.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a testear useFiltroZona (un hook personalizado que envuelve el store de Zustand del Módulo 7) con renderHook, sin necesidad de un componente visual.**
 
-`renderHook(() => useContador())` permite probar un hook personalizado de forma aislada, sin necesidad de crear un componente de prueba dedicado únicamente para invocar ese hook y exponer indirectamente su resultado; el `result` devuelto expone `.current` con el valor actual retornado por el hook, actualizándose automáticamente entre renders sucesivos provocados dentro de la prueba. `act(() => result.current.incrementar())` envuelve cualquier interacción que dispare una actualización de estado dentro del hook, garantizando que React procese completamente esa actualización (incluyendo cualquier efecto asociado) antes de que la aserción siguiente se ejecute.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Probar hooks personalizados de forma aislada, sin envolverlos en un componente visual completo, mantiene la prueba enfocada específicamente en la lógica del hook (sus transiciones de estado, sus efectos), sin acoplar esa prueba a detalles de renderizado visual que no tienen relación real con la lógica que efectivamente se está verificando.
+#### ► LA ANALOGÍA
+Piensa en testing de hooks personalizados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** probar un hook con `renderHook` es como probar el motor de un vehículo en un banco de pruebas aislado, verificando su comportamiento sin necesidad de montar la carrocería completa del vehículo únicamente para poder encenderlo.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A[renderHook invoca el hook] --> B[result.current expone el valor actual]
+    B --> C{Interacción cambia estado?}
+    C -->|Sí| D[act envuelve la actualización]
+    D --> E[React procesa el update + efectos]
+    E --> B
+    C -->|No| F[Assert sobre result.current]
+```
 
-**Código del ejemplo:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Testing de hooks personalizados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Testing de hooks personalizados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses testing de hooks personalizados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: testing de hooks personalizados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Testing de hooks personalizados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve testing de hooks personalizados en tu contexto?
+2. ¿Cómo sabrías que testing de hooks personalizados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar testing de hooks personalizados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```jsx
 const { result } = renderHook(() => useContador());
 act(() => result.current.incrementar());
 expect(result.current.valor).toBe(1);
 ```
-
-#### Profundización · Diseño y decisiones de arquitectura
-**Cuándo NO usar `renderHook`:** si el hook depende fuertemente del árbol de contexto o del layout real (por ejemplo un hook que lee `getBoundingClientRect` de un elemento padre específico), aislarlo con `renderHook` produce un falso positivo — en ese caso conviene testear a través de un componente real con `render`, aceptando el costo extra de montar el árbol completo a cambio de una prueba fiel al comportamiento real en pantalla.
-
-En tu proyecto, el Paso 4 crea `src/hooks/useFiltroZona.test.jsx` y prueba el hook de forma aislada: su lógica (normalizar el texto de zona) no depende de ningún layout visual — justo el caso donde `renderHook` es la decisión correcta frente a un test de componente más costoso.
 
 ```mermaid
 flowchart LR
@@ -264,18 +358,9 @@ flowchart LR
     C -->|No| F[Assert sobre result.current]
 ```
 
-Ejercicio: cuando termines el Paso 4, ejecuta solo la suite de este hook (Vitest filtra por nombre de archivo) y compara su tiempo con el de `DetalleEnvio.test.jsx`:
 ```bash
 npm test -- useFiltroZona
 ```
-Resultado esperado: la suite pasa en milisegundos porque no monta ningún árbol de componentes — solo invoca el hook y verifica `result.current`.
-
----
-
-**¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
-
-#### Paso 4 · Demostración guiada desde cero
-Si no lo instalaste en el módulo 7, ejecuta `npm install zustand`. Crea el hook en `src/hooks/useFiltroZona.js`:
 
 ```js
 import { create } from 'zustand';
@@ -294,8 +379,6 @@ export function useFiltroZona() {
 }
 ```
 
-Y su prueba aislada en `src/hooks/useFiltroZona.test.jsx`:
-
 ```jsx
 import { act, renderHook } from '@testing-library/react'
 import { expect, it } from 'vitest'
@@ -308,47 +391,8 @@ it('normaliza la zona a minúsculas', () => {
 })
 ```
 
-**Ejecuta la prueba** en tu proyecto `mi-react`:
-
 ```bash
 npm test
 ```
 
-Resultado esperado: el test confirma que `useFiltroZona` normaliza `'NORTE'` a `'norte'` internamente, sin haber renderizado ningún componente visual — solo se invocó el hook y se inspeccionó su resultado.
-
-Vitest informa todas las suites del proyecto en verde, incluida `useFiltroZona.test.jsx`.
-
-#### Paso 5 · Práctica guiada
-Pista: quita `act(...)` y llama directamente `result.current.setZona('NORTE')` fuera de ese wrapper — ese es el fallo deliberado: React advierte en consola que una actualización no fue envuelta en `act(...)`, y en casos más complejos la aserción siguiente puede ejecutarse antes de que React termine de procesar la actualización, leyendo un valor todavía no actualizado.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `act`, y agrega una segunda prueba que confirme que llamar `setZona('')` (cadena vacía) hace que `useFiltroZona` vuelva al valor por defecto `'todas'`, en vez de guardar una cadena vacía inválida.
-
-**Proyecto integrador:** prueba el hook `useFiltroZona` de RutaFlow con `renderHook`, incluidos normalización, valor vacío y cambio de zona, sin montar la pantalla completa.
-
-#### Paso 7 · Cierre
-Entrega el test aislado del Paso 4, la advertencia de React por falta de `act` del Paso 5, y la segunda prueba del Paso 6; explica por qué testear este hook con `renderHook` en vez de envolverlo en un componente visual mantiene la prueba enfocada específicamente en su lógica de estado. Siguiente paso: cierra el módulo integrando los tres enfoques en la suite completa de RutaFlow. Errores comunes: envolver un hook en un componente visual completo solo para poder testearlo, no envolver actualizaciones de estado en `act`, y testear un hook personalizado únicamente a través de pruebas end-to-end de componentes, sin ninguna prueba aislada de su lógica. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/api/#renderhook y https://react.dev/reference/react/act.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** escribir una suite de pruebas completa de un flujo de formulario con fetching mockeado.
-
-**Requisitos previos:** Módulos 0-7 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Renderizar un componente y consultarlo por rol | Ver Tema 1 | No uses `getByClassName` |
-| 2 | Simular un clic con `userEvent` | Ver Tema 1 | Verifica el resultado visible |
-| 3 | Configurar MSW para interceptar una llamada | Ver Tema 2 | Sin red real |
-| 4 | Probar el flujo completo: formulario + envío + éxito | Ver Tema 2 | Verifica el mensaje final tras la respuesta mockeada |
-| 5 | Probar un hook personalizado con `renderHook` | Ver Tema 3 | Con `act` para las actualizaciones |
-
-**Verificación:** el laboratorio se considera exitoso si todas las pruebas consultan el DOM por rol/texto, si ninguna prueba depende de una petición de red real, y si el hook personalizado se prueba de forma aislada sin un componente visual innecesario.
-
-**Errores comunes y soluciones**
-
-- **Consultar por clase CSS en vez de por rol/texto.** Usa `getByRole`/`getByText` para pruebas resilientes a refactors.
-- **Olvidar `server.resetHandlers()` entre pruebas.** Sin él, un manejador personalizado de una prueba puede afectar a las siguientes.
-- **No envolver actualizaciones de estado del hook en `act`.** Sin `act`, la aserción puede ejecutarse antes de que React procese la actualización.
-
----
+</details>

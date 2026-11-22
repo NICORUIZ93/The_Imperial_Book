@@ -5,13 +5,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Publishers y Subscribers · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a conectar el campo de búsqueda de guía de RutaFlow a un `Publisher`, confirmando que cada letra tecleada emite un nuevo valor. Prerrequisitos: Módulo 6 completo.
-#### Paso 2 · Contexto y caso real
-El panel del operador de RutaFlow necesita filtrar la lista de envíos mientras alguien escribe una guía parcial ("RF-44") — eso es un flujo continuo de valores en el tiempo, no una única operación con un resultado final.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a conectar el campo de búsqueda de guía de RutaFlow a un Publisher, confirmando que cada letra tecleada emite un nuevo valor. Prerrequisitos: Módulo 6 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a conectar el campo de búsqueda de guía de RutaFlow a un Publisher, confirmando que cada letra tecleada emite un nuevo valor.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un Publisher emite valores continuamente; un Subscriber reacciona a cada emisión — una emisora de radio que transmite mientras está encendida, distinta de una llamada puntual (`async`) que produce una única respuesta.
 
 **¿Por qué es importante?** Porque un Publisher modela un flujo continuo de valores en el tiempo, no una única respuesta puntual, y sin `.store(in:)` la suscripción se cancela apenas sale de ámbito, dejando de reaccionar a cambios futuros.
@@ -52,7 +61,73 @@ $texto
 * Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, publica la posición del conductor y verifica el subscriber.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que publishers y subscribers resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Publishers y Subscribers se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Publishers y Subscribers | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses publishers y subscribers por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: publishers y subscribers funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Publishers y Subscribers existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve publishers y subscribers en tu contexto?
+2. ¿Cómo sabrías que publishers y subscribers no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar publishers y subscribers?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+class BuscadorViewModel: ObservableObject {
+    @Published var texto = ""
+    private var cancelables = Set<AnyCancellable>()
+
+    init() {
+        $texto
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] valor in self?.buscar(valor) }
+            .store(in: &cancelables)
+    }
+}
+```
+
+```swift
+$texto
+    .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+    .removeDuplicates()
+    .sink { valor in buscar(valor) }
+```
+
 ```swift
 import Combine
 
@@ -68,28 +143,27 @@ class BuscadorEnviosViewModel: ObservableObject {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: cada letra que se escribe en `textoBusqueda` imprime una línea nueva — `$textoBusqueda` emite un valor por cada cambio, no una sola vez al final.
-#### Paso 5 · Práctica guiada
-Pista: quitá `.store(in: &cancelables)` de la suscripción — ese es el fallo deliberado: la suscripción se cancela inmediatamente al salir de ámbito del `init`, y el `sink` nunca vuelve a imprimir nada aunque `textoBusqueda` siga cambiando.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `.store(in:)`, y agregá un segundo `sink` sobre el mismo `$textoBusqueda` que cuente cuántas letras tiene el texto actual — confirmá que ambos `sink` reciben cada emisión de forma independiente.
-#### Paso 7 · Cierre
-Entregá el Publisher emitiendo por cada letra del Paso 4, la suscripción perdida del Paso 5, y los dos `sink` independientes del Paso 6; explicá por qué una búsqueda en tiempo de escritura necesita un flujo continuo, no una función `async` puntual. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
+</details>
 
 ### Tema 2: Operadores: debounce y combineLatest · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a agregar `debounce` a la búsqueda de guía de RutaFlow (Tema 1) y a combinar texto + filtro de zona con `combineLatest`. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-El panel del operador dispara una consulta real a `ShipmentEvents` por cada letra escrita hoy — eso sobrecarga el backend sin necesidad; además, el operador también puede filtrar por zona, y ambos filtros (texto + zona) deben combinarse en una sola búsqueda.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a agregar debounce a la búsqueda de guía de RutaFlow (Tema 1) y a combinar texto + filtro de zona con combineLatest. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a agregar debounce a la búsqueda de guía de RutaFlow (Tema 1) y a combinar texto + filtro de zona con combineLatest.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `debounce` espera un silencio antes de emitir, como esperar a que alguien termine de hablar antes de responder; `combineLatest` reacciona a cualquiera de dos fuentes, siempre con el último valor conocido de la otra.
 
 **¿Por qué es importante?** Porque `debounce` evita disparar una búsqueda costosa en cada tecla individual, y `combineLatest` reacciona a cualquiera de dos fuentes de estado independientes sin tener que coordinar manualmente cuál cambió más recientemente.
@@ -112,8 +186,56 @@ Publishers.CombineLatest($filtro, $orden)
 
 **Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
 
-#### Paso 4 · Demostración guiada desde cero
-Reemplaza el contenido de `BuscadorEnviosViewModel.swift` (Tema 1) por esta versión:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que operadores: debounce y combinelatest resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Operadores: debounce y combineLatest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Operadores: debounce y combineLatest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses operadores: debounce y combinelatest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: operadores: debounce y combinelatest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Operadores: debounce y combineLatest existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve operadores: debounce y combinelatest en tu contexto?
+2. ¿Cómo sabrías que operadores: debounce y combinelatest no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar operadores: debounce y combinelatest?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+Publishers.CombineLatest($filtro, $orden)
+    .sink { filtro, orden in actualizarLista(filtro, orden) }
+    .store(in: &cancelables)
+```
 
 ```swift
 import Combine
@@ -138,49 +260,78 @@ class BuscadorEnviosViewModel: ObservableObject {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: escribir "RF-4471" letra por letra solo dispara UN `print` de búsqueda, 300ms después de la última letra; cambiar `zonaFiltro` sin tocar el texto vuelve a imprimir el filtro combinado, reusando el último texto conocido.
-#### Paso 5 · Práctica guiada
-Pista: quitá `.debounce(...)` de la primera cadena — ese es el fallo deliberado: ahora "buscando guía:" se imprime una vez por cada letra tecleada, siete veces para "RF-4471" en vez de una sola vez tras terminar de escribir, exactamente la sobrecarga de backend que `debounce` existe para evitar.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `debounce`, y medí cuánto tiempo real pasa entre la última letra tecleada y la emisión del valor con `debounce` — confirmando que es consistente con los 300ms configurados.
-#### Paso 7 · Cierre
-Entregá el debounce funcionando del Paso 4, la sobrecarga sin debounce del Paso 5, y la medición de tiempo del Paso 6; explicá por qué `combineLatest` no necesita que ambas fuentes cambien al mismo tiempo para producir un valor combinado útil. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
+</details>
 
 ### Tema 3: Combine vs async/await · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a decidir, para dos operaciones reales de RutaFlow, cuál necesita Combine y cuál debería ser simplemente `async`/`await`. Prerrequisitos: Tema 2 de este módulo, Módulo 4 completo.
-#### Paso 2 · Contexto y caso real
-Buscar envíos mientras el operador escribe (Temas 1-2) es un flujo continuo; confirmar una entrega (`confirmarEntrega`, Módulo 5) es una única operación con un resultado final — mezclar ambos modelos donde no corresponde complica el código sin necesidad.
-#### Paso 3 · Teoría, modelo mental y analogía
-`async`/`await` es un pedido puntual con una fecha de entrega esperada; Combine es un boletín periódico al que te suscribís — elegir mal entre los dos no rompe nada de inmediato, pero complica el código innecesariamente.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Porque forzar Combine sobre una operación puntual (como `confirmarEntrega`) agrega gestión de `AnyCancellable` que `async`/`await` nunca necesitó, mientras que un flujo continuo real sí requiere las herramientas de Combine.
-**Conceptos clave:** una operación puntual frente a un flujo continuo, cada uno con su herramienta apropiada.
+#### ► DE QUÉ TRATA
+Al finalizar vas a decidir, para dos operaciones reales de RutaFlow, cuál necesita Combine y cuál debería ser simplemente async/await. Prerrequisitos: Tema 2 de este módulo, Módulo 4 completo.
 
-Para una secuencia única de pasos asíncronos dependientes entre sí (cargar datos, luego procesar ese resultado, luego mostrar), `async`/`await` (Módulo 4) es considerablemente más simple de leer, dado que se expresa como código lineal secuencial; para streams continuos de valores que ocurren repetidamente a lo largo del tiempo (el texto de un campo cambiando con cada tecla, la ubicación GPS actualizándose periódicamente, notificaciones del sistema), Combine sigue siendo el modelo más natural, dado que estos casos de uso no encajan bien en el modelo de "una única operación con un resultado final" que `async`/`await` representa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a decidir, para dos operaciones reales de RutaFlow, cuál necesita Combine y cuál debería ser simplemente async/await.**
 
-Muchas APIs nativas de Apple (Core Location para actualizaciones de ubicación, `NotificationCenter` para eventos del sistema) todavía exponen Publishers de Combine de forma nativa, por lo que entender Combine sigue siendo necesario incluso en código nuevo que prefiere `async`/`await` para su propia lógica, simplemente para poder integrarse correctamente con esas APIs del sistema que exponen sus eventos de esa forma.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** elegir entre Combine y `async`/`await` es como elegir entre suscribirse a un boletín periódico (Combine, para actualizaciones recurrentes) o hacer un pedido puntual con una fecha de entrega esperada (`async`/`await`, para una operación única con un resultado final): ambos son mecanismos de comunicación asíncrona válidos, apropiados para necesidades distintas.
+#### ► LA ANALOGÍA
+Piensa en combine vs async/await como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implicación práctica:** Muchos equipos prefieren `async`/`await` para código nuevo que representa operaciones puntuales, reservando Combine específicamente para flujos continuos de eventos, y manteniendo el conocimiento de Combine necesario para integrarse con APIs de Apple que todavía exponen Publishers nativamente.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["¿La operación es un flujo\ncontinuo o un resultado único?"] -->|Flujo continuo| B["Combine\n($texto.debounce, Core Location)"]
+    A -->|Resultado único| C["async/await\n(confirmarEntrega)"]
+```
 
-**Diagrama:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Combine vs async/await se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Combine vs async/await | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses combine vs async/await por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: combine vs async/await funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Combine vs async/await existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve combine vs async/await en tu contexto?
+2. ¿Cómo sabrías que combine vs async/await no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar combine vs async/await?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 async/await  → una operación puntual con resultado final (cargar datos una vez)
 Combine      → flujo continuo de valores en el tiempo (texto cambiando, ubicación actualizándose)
 ```
-
-**Diagrama: decisión Combine vs async/await**
 
 ```mermaid
 flowchart TD
@@ -188,11 +339,6 @@ flowchart TD
     A -->|Resultado único| C["async/await\n(confirmarEntrega)"]
 ```
 
-Para comparar los dos modelos sin tocar tu app, este ejemplo corre como paquete ejecutable: un `PassthroughSubject` hace de campo de texto y `confirmarEntrega` simula la petición del Módulo 5.
-
----
-
-#### Paso 4 · Demostración guiada desde cero
 ```swift
 import Combine
 import Foundation
@@ -215,8 +361,6 @@ print(resultado)
 suscripcion.cancel()
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 # una sola vez, fuera de RutaFlowApp:
 mkdir Practica && cd Practica
@@ -225,41 +369,5 @@ rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main q
 # pega el código en Sources/Practica/main.swift
 swift run
 ```
-Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
-Resultado esperado: `swift run` imprime una sola vez `buscando guía: RF-4471` (el `debounce` descarta "R" y "RF") y después `RF-4471 entregado`. La búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
-#### Paso 5 · Práctica guiada
-Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.
-#### Paso 6 · Práctica independiente
-Identificá, en la app de RutaFlow, una tercera operación real que SÍ necesitaría Combine por ser un flujo continuo (pista: las actualizaciones de ubicación GPS del conductor, que llegan repetidamente mientras la app está abierta) y justificá por qué no encajaría bien como una única función `async`.
-
-**Proyecto integrador:** en el proyecto creado desde una carpeta vacía para este tema, construye `CentroOperacionesViewModel.swift` con dos operaciones independientes: búsqueda de guías mediante `$textoBusqueda.debounce` y confirmación de entrega mediante una función `async throws`. Crea un fake local en `ServicioOperacionesFalso.swift` que emita dos cambios de ubicación y devuelva una única confirmación. Desde `CentroOperacionesView.swift`, escribe dos guías, cambia el filtro y confirma una entrega: la búsqueda debe reaccionar a cada filtro usando la suscripción retenida, mientras la confirmación debe terminar con un solo resultado sin crear ningún `AnyCancellable` adicional.
-
-#### Paso 7 · Cierre
-Entregá la clasificación correcta del Paso 4, la complejidad innecesaria de forzar Combine del Paso 5, y la tercera operación identificada del Paso 6; explicá por qué algunas APIs de Apple (Core Location, NotificationCenter) siguen exponiendo Combine aunque tu propio código prefiera `async`/`await`. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir un buscador con debounce implementado con Combine.
-
-**Requisitos previos:** Módulo 6 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Declarar `@Published var texto` y observar con `sink` | Ver Tema 1 | En un `ObservableObject` |
-| 2 | Implementar `debounce` sobre los cambios de texto | Ver Tema 2 | Espera silencio antes de buscar |
-| 3 | Combinar dos Publishers con `combineLatest` | Ver Tema 2 | Reacciona a cualquiera de los dos |
-| 4 | Documentar cuándo seguir usando Combine | Ver Tema 3 | Frente a `async`/`await` |
-
-**Verificación:** el laboratorio se considera exitoso si el buscador no dispara una búsqueda en cada tecla individual (solo tras un breve silencio), y si `combineLatest` reacciona correctamente cuando cualquiera de las dos fuentes combinadas cambia.
-
-**Errores comunes y soluciones**
-
-- **Disparar la búsqueda en cada cambio de texto sin debounce.** Sobrecarga innecesariamente el backend con peticiones excesivas; usa `debounce`.
-- **Usar Combine para una secuencia única de pasos asíncronos dependientes.** Prefiere `async`/`await`, más simple de leer para ese caso.
-- **Olvidar `.store(in:)` una suscripción de Combine.** La suscripción se cancela inmediatamente al salir de ámbito si no se retiene.
-
----
-
-* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, compara la misma carga con Combine y async/await y elige una.
+</details>

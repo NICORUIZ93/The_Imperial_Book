@@ -5,20 +5,22 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
+
 ### Tema 1: Modelos de dominio y casos de uso · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás declarar un modelo de dominio en `commonMain` y un caso de uso que depende de una interfaz (no de una implementación concreta), y explicar por qué esa dependencia hacia la interfaz permite testear el caso de uso de forma aislada.
+#### ► DE QUÉ TRATA
+Al finalizar podrás declarar un modelo de dominio en commonMain y un caso de uso que depende de una interfaz (no de una implementación concreta), y explicar por qué esa dependencia hacia la interfaz permite testear el caso de uso de forma aislada.
 
-**Conocimiento previo:** `data class` (Módulo 0); source sets (Módulo 3).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás declarar un modelo de dominio en commonMain y un caso de uso que depende de una interfaz (no de una implementación concreta), y explicar por qué esa dependencia hacia la interfaz permite testear el caso de uso de forma aislada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un modelo `Tarea`/`Usuario`/`Pedido` compartido entre las apps Android e iOS de un mismo producto evita que "una tarea" signifique cosas sutilmente distintas en cada plataforma con el tiempo, un riesgo real cuando dos equipos mantienen definiciones separadas del mismo concepto.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `data class` compartida en `commonMain`, caso de uso dependiente de interfaz (no de implementación).
 
 `data class Tarea(val id: String, val titulo: String, val completada: Boolean)` en `commonMain` representa una entidad central sin ninguna dependencia hacia persistencia, red o UI de ninguna plataforma específica. `class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) { suspend operator fun invoke(): List<Tarea> = repositorio.obtenerTodas().filter { !it.completada } }` encapsula lógica de negocio dependiendo explícitamente de la INTERFAZ `TareaRepository`, no de ninguna implementación concreta — el mismo principio de inversión de dependencias visto para Spring (Módulo 0 del track Spring Boot), aquí manual, sin framework de IoC automático.
@@ -34,9 +36,59 @@ flowchart LR
   B -.->|implementación fake| D[FakeTareaRepository]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Dominio.kt` con este contenido:
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
+  B -.->|implementación real| C[TareaRepositoryImpl]
+  B -.->|implementación fake| D[FakeTareaRepository]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Modelos de dominio y casos de uso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Modelos de dominio y casos de uso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses modelos de dominio y casos de uso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: modelos de dominio y casos de uso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Modelos de dominio y casos de uso existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve modelos de dominio y casos de uso en tu contexto?
+2. ¿Cómo sabrías que modelos de dominio y casos de uso no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar modelos de dominio y casos de uso?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
+  B -.->|implementación real| C[TareaRepositoryImpl]
+  B -.->|implementación fake| D[FakeTareaRepository]
+```
 
 ```kotlin
 package com.academia.kmp
@@ -54,18 +106,12 @@ class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) {
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido de Kotlin Multiplatform con Gradle
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
-
-**Explicación línea por línea:** `data class Tarea(...)` define la entidad sin ninguna referencia a plataforma; `interface TareaRepository` declara el contrato (leer con `obtenerTodas` y escribir con `guardar`) sin especificar cómo se obtienen ni dónde se guardan los datos; es la única declaración de la interfaz en el proyecto: el Tema 2 la implementa, no la vuelve a declarar; `ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository)` recibe la interfaz como dependencia, no una clase concreta, por lo que puede funcionar con cualquier implementación que la satisfaga.
-
-Escribe un test que ejecute el caso de uso con dos implementaciones distintas de la interfaz (una fake en memoria, una simulando latencia real con `delay`), confirmando que el resultado no cambia, en `shared/src/commonTest/kotlin/com/academia/kmp/DominioTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -101,30 +147,11 @@ class DominioTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
-
-**Resultado esperado:** la prueba pasa en verde, confirmando que ambas implementaciones producen exactamente el mismo resultado filtrado, sin que `ObtenerTareasPendientesUseCase` cambie una sola línea según cuál implementación reciba.
-
-**Fallo deliberado:** cambia la firma de `ObtenerTareasPendientesUseCase` para que reciba directamente la implementación de prueba en vez de la interfaz (`private val repositorio: RepositorioEnMemoria`). `./gradlew :shared:compileKotlinMetadata` falla con `Unresolved reference 'RepositorioEnMemoria'`: el código de producción (`commonMain`) ni siquiera ve las clases de `commonTest`, y aunque las viera, la prueba con `RepositorioConLatencia()` dejaría de encajar — diagnostica confirmando que depender de una implementación concreta en vez de la interfaz acopla el caso de uso a esa implementación específica, exactamente lo que el principio de inversión de dependencias evita.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Declara `data class Usuario(val id: String, val nombre: String)` y una interfaz `UsuarioRepository` con `suspend fun obtenerPorId(id: String): Usuario?`.
-2. Escribe `class ObtenerUsuarioUseCase(private val repositorio: UsuarioRepository)` dependiendo de la interfaz.
-3. Crea dos implementaciones Kotlin de la interfaz (una fake con datos fijos, otra simulando latencia con `delay`) y confirma con un test que el caso de uso funciona igual con ambas.
-4. Escribe de memoria (sin mirar) un caso de uso de tu elección que dependa de una interfaz, con dos implementaciones distintas.
-
-**Pista:** identifica primero qué necesita el caso de uso (la forma de la interfaz), antes de pensar en cómo se implementará esa interfaz.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que el caso de uso dependa de la interfaz, no de una clase concreta:
 
 ```kotlin
 class GuardarTareaUseCase(private val repositorio: ____) {
@@ -132,40 +159,69 @@ class GuardarTareaUseCase(private val repositorio: ____) {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una `data class` y un caso de uso que dependa de una interfaz relacionada, sin ninguna referencia a una implementación concreta. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya declaras modelos de dominio sin dependencias de plataforma y casos de uso que dependen de interfaces, no de implementaciones concretas, confirmando con una medición real que el mismo caso de uso funciona idénticamente con un repositorio rápido (fake) o uno lento (real). El siguiente tema define esa interfaz de repositorio con sus dos implementaciones. Fuente oficial: [Kotlin docs — Introduce shared logic](https://kotlinlang.org/docs/multiplatform-share-on-platforms.html).
-
-**Errores comunes:** hacer que el caso de uso dependa de la implementación concreta del repositorio en vez de la interfaz; filtrar código específico de plataforma dentro de un modelo de dominio, rompiendo su portabilidad entre `commonMain` y cada plataforma.
-
-**Cuándo no usarlo:** para un script de un solo uso sin ninguna necesidad de testear ni sustituir implementaciones, envolver la lógica en un caso de uso con interfaz separada es complejidad innecesaria; resérvalo para lógica de negocio real que se reutiliza y necesita aislarse para pruebas.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Implementa confirmar entrega como caso de uso con precondiciones explícitas. Prueba guía ya entregada y evidencia ausente sin depender de la red ni de una interfaz móvil.
+</details>
 
 ### Tema 2: Repositorios con interfaz común · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás definir una interfaz de repositorio en `commonMain` con al menos dos implementaciones, y explicar por qué esto permite testear la lógica de negocio sin infraestructura real.
+#### ► DE QUÉ TRATA
+Al finalizar podrás definir una interfaz de repositorio en commonMain con al menos dos implementaciones, y explicar por qué esto permite testear la lógica de negocio sin infraestructura real.
 
-**Conocimiento previo:** Tema 1 de este módulo (casos de uso dependientes de interfaz).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir una interfaz de repositorio en commonMain con al menos dos implementaciones, y explicar por qué esto permite testear la lógica de negocio sin infraestructura real.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un `FakeTareaRepository` en memoria usado en los tests permite verificar la lógica de negocio sin tocar red ni base de datos real; sin una interfaz compartida, cada plataforma tendría que reimplementar su propio mecanismo de sustitución para pruebas por separado.
+#### ► LA ANALOGÍA
+Piensa en repositorios con interfaz común como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que repositorios con interfaz común resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** interfaz de repositorio en `commonMain`, implementación real frente a fake.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Repositorios con interfaz común se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`interface TareaRepository { suspend fun obtenerTodas(): List<Tarea>; suspend fun guardar(tarea: Tarea) }` define en `commonMain` el contrato completo, sin especificar cómo se obtienen o persisten los datos. `class TareaRepositoryImpl(private val api: ApiClient, private val db: TareaDao) : TareaRepository { ... }` proporciona una implementación real combinando fuentes de datos reales. Definir la interfaz con al menos dos implementaciones (real y fake) es lo que hace posible testear el caso de uso de forma completamente aislada.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Repositorios con interfaz común | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** una interfaz de repositorio compartida es un formulario estándar de solicitud de suministros que cualquier proveedor (real o simulado para práctica) puede completar de la misma forma, permitiendo entrenar personal con un proveedor de práctica sin involucrar al proveedor real.
+#### ► CUÁNDO NO USAR ESTO
+No uses repositorios con interfaz común por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: repositorios con interfaz común funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Repositorios con interfaz común existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve repositorios con interfaz común en tu contexto?
+2. ¿Cómo sabrías que repositorios con interfaz común no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar repositorios con interfaz común?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── interface TareaRepository ─────────────────────────────┐
 │  suspend fun obtenerTodas(): List<Tarea>                    │
@@ -177,10 +233,6 @@ Al finalizar podrás definir una interfaz de repositorio en `commonMain` con al 
 │ (api + db reales)    │                │ (en memoria, tests)   │
 └─────────────────┘                └─────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continúa en `academia-kmp`, con el `Dominio.kt` del Tema 1: allí ya están `Tarea` y la interfaz `TareaRepository`, que este tema implementa sin volver a declararla (dos `interface TareaRepository` en el mismo paquete no compilan: «Redeclaration»). Crea `shared/src/commonMain/kotlin/com/academia/kmp/Repositorio.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -196,18 +248,12 @@ class FakeTareaRepository(private val datos: MutableList<Tarea> = mutableListOf(
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido de Kotlin Multiplatform con Gradle
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
-
-**Explicación línea por línea:** `TareaRepository` (declarada en `Dominio.kt`) es el contrato; `TareaRepositoryImpl` lo implementa combinando fuentes reales (`api`, `db`); `FakeTareaRepository` lo implementa con una simple `MutableList` en memoria, sin ninguna dependencia externa, ideal para pruebas rápidas y deterministas.
-
-Escribe un test que ejercite ambas implementaciones con la misma secuencia de llamadas, confirmando que ambas satisfacen el contrato de forma intercambiable, en `shared/src/commonTest/kotlin/com/academia/kmp/RepositorioTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -227,30 +273,11 @@ class RepositorioTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
-
-**Resultado esperado:** la prueba pasa en verde: `FakeTareaRepository`, declarada como `TareaRepository` (el tipo de la interfaz, no de la clase concreta), guarda y devuelve exactamente la tarea guardada, confirmando que cualquier código escrito contra la interfaz funciona con esta implementación sin conocer su clase concreta.
-
-**Fallo deliberado:** cambia la firma de `guardar` en `FakeTareaRepository` para que reciba dos parámetros separados (`guardar(id: String, titulo: String)`) en vez de un solo `Tarea`, dejando la interfaz `TareaRepository` sin cambiar. `./gradlew :shared:compileKotlinMetadata` falla inmediatamente con `Class 'FakeTareaRepository' is not abstract and does not implement abstract member 'guardar'` — diagnostica confirmando que una interfaz compartida no es una convención de nombres: el compilador exige que toda implementación declarada como `: TareaRepository` tenga EXACTAMENTE la misma firma de métodos, rechazando en compilación cualquier divergencia.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un método `suspend fun eliminar(id: String)` a la interfaz y sus dos implementaciones.
-2. Confirma que ambas implementaciones (real simulada y fake) responden igual a la misma secuencia de llamadas `guardar` → `eliminar` → `obtenerTodas`.
-3. Crea una tercera implementación fake que simule un error (lanzando una excepción en `guardar`) y confirma que el código que la usa puede manejar ese caso.
-4. Escribe de memoria (sin mirar) una interfaz con dos métodos y sus dos implementaciones (real y fake).
-
-**Pista:** si al agregar un método a una implementación olvidas agregarlo a la otra, ya no comparten el mismo contrato aunque ambas se sigan llamando "repositorio".
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que `FakeTareaRepository` declare que implementa la interfaz:
 
 ```kotlin
 class FakeTareaRepository : ____ {
@@ -260,32 +287,23 @@ class FakeTareaRepository : ____ {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una interfaz de repositorio con dos métodos y una implementación fake en memoria que la satisfaga completamente. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya defines una interfaz de repositorio con al menos dos implementaciones que comparten exactamente el mismo contrato, confirmando que ambas producen resultados idénticos ante la misma secuencia de llamadas. El siguiente tema conecta ambas implementaciones a través de inyección de dependencias con Koin. Fuente oficial: [Kotlin docs — Interfaces](https://kotlinlang.org/docs/interfaces.html).
-
-**Errores comunes:** dejar que una implementación fake divergiera silenciosamente de la firma de la interfaz real; mezclar lógica de negocio dentro de la implementación del repositorio, en vez de mantenerla exclusivamente como acceso a datos.
-
-**Cuándo no usarlo:** para una fuente de datos que nunca necesitará sustituirse en pruebas ni cambiar de implementación (una constante de solo lectura embebida en el binario), una interfaz de repositorio completa es una capa de indirección innecesaria.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Define el repositorio por operaciones del dominio, no por detalles del cliente HTTP. Ejecuta las mismas pruebas de contrato contra un fake y contra el adaptador de persistencia del laboratorio.
+</details>
 
 ### Tema 3: Inyección de dependencias multiplataforma con Koin · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás distinguir entre una dependencia `single` (una única instancia compartida) y una `factory` (nueva instancia cada vez), y configurar Koin para resolver la cadena completa de dependencias una sola vez para todas las plataformas.
+#### ► DE QUÉ TRATA
+Al finalizar podrás distinguir entre una dependencia single (una única instancia compartida) y una factory (nueva instancia cada vez), y configurar Koin para resolver la cadena completa de dependencias una sola vez para todas las plataformas.
 
-**Conocimiento previo:** Tema 1 (casos de uso) y Tema 2 (repositorios) de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás distinguir entre una dependencia single (una única instancia compartida) y una factory (nueva instancia cada vez), y configurar Koin para resolver la cadena completa de dependencias una sola vez para todas las plataformas.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Sin un mecanismo de inyección de dependencias compartido, cada plataforma nativa gestionaría su propia conexión de dependencias por separado (Dagger/Hilt en Android, un patrón manual distinto en iOS), duplicando ese trabajo de conexión y arriesgando configuraciones divergentes entre plataformas.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `single` (instancia única compartida), `factory` (nueva instancia por solicitud), módulo de Koin en `commonMain`.
 
 `val sharedModule = module { single<TareaRepository> { TareaRepositoryImpl(get(), get()) }; factory { ObtenerTareasPendientesUseCase(get()) } }` configura Koin (un framework de DI ligero, sin generación de código en compilación) para resolver automáticamente la cadena de dependencias: `TareaRepository` se resuelve como una única instancia compartida (`single`), mientras `ObtenerTareasPendientesUseCase` se crea nueva cada vez que se solicita (`factory`). Koin funciona idénticamente en `commonMain` para todas las plataformas, sin un framework de DI distinto por plataforma.
@@ -302,9 +320,61 @@ flowchart LR
   D -->|instancia NUEVA| F[segunda solicitud]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/DiModule.kt` con este contenido:
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
+  A -->|misma instancia siempre| C[segunda solicitud]
+  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
+  D -->|instancia NUEVA| F[segunda solicitud]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Inyección de dependencias multiplataforma con Koin se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Inyección de dependencias multiplataforma con Koin | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses inyección de dependencias multiplataforma con koin por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: inyección de dependencias multiplataforma con koin funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Inyección de dependencias multiplataforma con Koin existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve inyección de dependencias multiplataforma con koin en tu contexto?
+2. ¿Cómo sabrías que inyección de dependencias multiplataforma con koin no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar inyección de dependencias multiplataforma con koin?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
+  A -->|misma instancia siempre| C[segunda solicitud]
+  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
+  D -->|instancia NUEVA| F[segunda solicitud]
+```
 
 ```kotlin
 package com.academia.kmp
@@ -317,18 +387,12 @@ val sharedModule = module {
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido de Kotlin Multiplatform con Gradle
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
-
-**Explicación línea por línea:** `single<TareaRepository> { ... }` le dice a Koin que construya esa implementación UNA SOLA VEZ y reutilice esa misma instancia en cada solicitud posterior; `factory { ObtenerTareasPendientesUseCase(get()) }` le dice a Koin que construya una instancia NUEVA cada vez que algo solicite `ObtenerTareasPendientesUseCase`, inyectando automáticamente el `TareaRepository` (`get()`) que corresponda.
-
-Escribe un test real que arranque Koin con este módulo y confirme la diferencia de identidad entre `single` y `factory`, en `shared/src/commonTest/kotlin/com/academia/kmp/DiModuleTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -366,30 +430,11 @@ class DiModuleTest : KoinTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido, arrancando Koin de verdad
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
-
-**Resultado esperado:** las dos pruebas pasan en verde: `TareaRepository` (declarado `single`) se resuelve como la MISMA instancia en ambas solicitudes; `ObtenerTareasPendientesUseCase` (declarado `factory`) se resuelve como una instancia DISTINTA cada vez, aunque ambas compartan la misma instancia única de `TareaRepository` inyectada internamente.
-
-**Fallo deliberado:** cambia `single<TareaRepository> { ... }` por `factory<TareaRepository> { ... }` en `sharedModule`, sin cambiar el resto. Vuelve a ejecutar `singleDevuelveSiempreLaMismaInstancia` — ahora falla, porque `repo1` y `repo2` son instancias distintas — diagnostica confirmando por qué elegir `factory` para algo que debería ser `single` (como una conexión a base de datos, que no debería recrearse en cada solicitud) desperdicia recursos y puede producir comportamiento inconsistente si distintas partes del código esperan compartir el mismo estado.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Registra un segundo `single` para una clase `ClienteHttp` y confirma que se resuelve como la misma instancia en múltiples solicitudes.
-2. Registra un segundo `factory` para una clase `Validador` y confirma que cada resolución produce una instancia distinta.
-3. Encadena dos `factory` que dependen entre sí (una `factory` que a su vez resuelve otra `factory`) y confirma que ambas producen instancias nuevas en cada resolución externa.
-4. Escribe de memoria (sin mirar) un `ContenedorDI` con un `single` y un `factory`, confirmando la diferencia de identidad de cada uno.
-
-**Pista:** pregúntate si el estado interno de la clase debería compartirse entre todos los que la usan (`single`) o si cada usuario debería tener su propia instancia independiente (`factory`).
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que `TareaRepository` se resuelva como una única instancia compartida:
 
 ```kotlin
 val sharedModule = module {
@@ -397,40 +442,69 @@ val sharedModule = module {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un módulo de Koin con un `single` y un `factory`, explicando en una frase cuándo usarías cada uno. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya distingues `single` de `factory` según si el estado debe compartirse o recrearse, y confirmas con un contenedor de DI real la diferencia de identidad entre ambos. El siguiente y último tema modela errores de dominio de forma explícita, sin depender de excepciones no tipadas. Fuente oficial: [Koin docs — Multiplatform](https://insert-koin.io/docs/reference/koin-mp/kmp).
-
-**Errores comunes:** usar `factory` para una dependencia costosa que debería compartirse (como una conexión de base de datos), recreándola innecesariamente en cada solicitud; duplicar la configuración de inyección de dependencias por plataforma en vez de declararla una única vez en `commonMain`.
-
-**Cuándo no usarlo:** para un proyecto pequeño con dos o tres dependencias sin ninguna necesidad real de sustitución en pruebas, construir las dependencias manualmente sin un framework como Koin puede ser más simple; introduce Koin cuando el grafo de dependencias crece lo suficiente para justificar la resolución automática.
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Ensambla repositorio y casos de uso en módulos de dependencias de prueba y producción. Verifica que una prueba compartida sustituye la red sin modificar la lógica de confirmación.
+</details>
 
 ### Tema 4: Modelado de errores de dominio con un tipo Result explícito · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás modelar el resultado de una operación que puede fallar con un tipo explícito (`Exito`/`Error`), y explicar por qué esto obliga al llamador a manejar el caso de error sin depender de excepciones no documentadas en la firma.
+#### ► DE QUÉ TRATA
+Al finalizar podrás modelar el resultado de una operación que puede fallar con un tipo explícito (Exito/Error), y explicar por qué esto obliga al llamador a manejar el caso de error sin depender de excepciones no documentadas en la firma.
 
-**Conocimiento previo:** sealed classes (Módulo 0, Tema 3); manejo de errores con `try`/`catch` (Módulo 2, Tema 3).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás modelar el resultado de una operación que puede fallar con un tipo explícito (Exito/Error), y explicar por qué esto obliga al llamador a manejar el caso de error sin depender de excepciones no documentadas en la firma.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Una función que lanza una excepción no documenta en su firma de tipo qué errores puede producir: el llamador debe "adivinar" o consultar documentación externa qué `catch` escribir. Un tipo `Result` explícito hace que el error posible sea parte visible del contrato, verificable por el compilador.
+#### ► LA ANALOGÍA
+Piensa en modelado de errores de dominio con un tipo result explícito como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que modelado de errores de dominio con un tipo result explícito resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** tipo `Result` explícito (`Exito`/`Error` como sealed class), contraste con excepciones no tipadas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Modelado de errores de dominio con un tipo Result explícito se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`sealed class Resultado<out T> { data class Exito<T>(val datos: T) : Resultado<T>(); data class Error(val mensaje: String) : Resultado<Nothing>() }` modela el resultado de una operación que puede fallar como un valor de retorno explícito, no como una excepción lanzada — el mismo `Resultado<T>` con `Exito`/`Error` que el Módulo 5 reutiliza para networking y que cruza hacia Swift en el Módulo 8. Una función `fun guardarTarea(tarea: Tarea): Resultado<Tarea>` documenta en su propia firma de tipo que la operación puede fallar, y el `when` exhaustivo (Módulo 0, Tema 3) que maneja el resultado obliga a cubrir ambos casos (`Exito`/`Error`) en tiempo de compilación — a diferencia de una función que simplemente lanza una excepción, cuyo tipo de error no aparece en ningún lado de la firma.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Modelado de errores de dominio con un tipo Result explícito | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** una función que lanza excepciones no documentadas es una entrega que puede fallar sin ningún aviso previo en el recibo; un tipo `Result` explícito es un recibo que declara desde el inicio "esta entrega puede resultar en éxito o en este conjunto específico de fallos posibles", permitiendo prepararse para ambos casos de antemano.
+#### ► CUÁNDO NO USAR ESTO
+No uses modelado de errores de dominio con un tipo result explícito por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: modelado de errores de dominio con un tipo result explícito funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Modelado de errores de dominio con un tipo Result explícito existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve modelado de errores de dominio con un tipo result explícito en tu contexto?
+2. ¿Cómo sabrías que modelado de errores de dominio con un tipo result explícito no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar modelado de errores de dominio con un tipo result explícito?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── fun guardarTarea(): Resultado<Tarea> ──────────────┐
 │  el tipo de retorno YA declara que puede fallar         │
@@ -441,10 +515,6 @@ Al finalizar podrás modelar el resultado de una operación que puede fallar con
 └─────────────┘                    └─────────────┘
    when exhaustivo obliga a manejar AMBOS casos
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Resultado.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -465,18 +535,12 @@ fun guardarTareaConExcepcion(tarea: Tarea, simularFalloRed: Boolean): Tarea {
 }
 ```
 
-Guarda el archivo y compila el módulo compartido:
-
 ```bash
 # compila el módulo compartido de Kotlin Multiplatform con Gradle
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
-
-**Explicación línea por línea:** `sealed class Resultado<out T>` con `Exito<T>` y `Error` modela exhaustivamente ambos desenlaces posibles — el mismo nombrado (`Exito`/`Error`, no `Ok`/`Err`) que el resto del track usa para `Resultado` (Módulo 5) y para `EstadoUI` (Módulo 0); `fun guardarTareaSegura(...): Resultado<Tarea>` declara en su TIPO DE RETORNO que la operación puede fallar, visible para cualquiera que lea la firma sin necesidad de leer el cuerpo de la función ni documentación externa; `guardarTareaConExcepcion` existe solo para contrastar el enfoque con excepciones no documentadas en la firma.
-
-Escribe un test que confirme el contraste entre ambos enfoques, en `shared/src/commonTest/kotlin/com/academia/kmp/ResultadoTest.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -512,30 +576,11 @@ class ResultadoTest {
 }
 ```
 
-Ejecuta el test real con Gradle:
-
 ```bash
 # ejecuta el test Kotlin del módulo compartido
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
-
-**Resultado esperado:** las tres pruebas pasan en verde: con `Exito`/`Error`, ambos casos (éxito y error) se manejan dentro del mismo `when` exhaustivo de `manejar`, sin ningún mecanismo adicional de captura; con `guardarTareaConExcepcion`, si nada envuelve la llamada en un `try`/`catch`, la excepción se propaga sin control — el test la captura explícitamente con `assertFailsWith` precisamente porque nada en la FIRMA de la función avisó que podía lanzarla.
-
-**Fallo deliberado:** en `manejar`, elimina la rama `is Resultado.Error -> ...`, dejando solo `is Resultado.Exito -> ...`. `./gradlew :shared:compileKotlinMetadata` falla con `'when' expression must be exhaustive` — diagnostica confirmando que, a diferencia de `guardarTareaConExcepcion` (donde el compilador nunca exige un `catch` para `IllegalStateException`, ya que no está documentada en la firma), el tipo `Resultado` explícito, combinado con un `when` exhaustivo, OBLIGA al compilador a rechazar código que olvida manejar el caso `Error`.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Declara `sealed class ResultadoLogin { data class Exito(val token: String) : ResultadoLogin(); data class Fallo(val razon: String) : ResultadoLogin() }` y una función que lo devuelva.
-2. Escribe un `when` exhaustivo que maneje ambos casos de `ResultadoLogin`, sin rama `else`.
-3. Convierte una función existente que lanza una excepción (de un módulo anterior) para que en su lugar devuelva un `Resultado` explícito.
-4. Escribe de memoria (sin mirar) un tipo `Resultado`/`Exito`/`Error` de tu elección con una función que lo use y un manejo exhaustivo del resultado.
-
-**Pista:** si una función puede fallar de más de una forma distinta, considera si `Error` necesita transportar información adicional (como un código o categoría de error), no solo un mensaje de texto genérico.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio para que la función declare en su firma que puede fallar:
 
 ```kotlin
 fun eliminarTarea(id: String): ____<Unit> {
@@ -544,67 +589,74 @@ fun eliminarTarea(id: String): ____<Unit> {
 }
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un tipo `Resultado` explícito con `Exito`/`Error`, una función que lo devuelva, y un manejo exhaustivo del resultado sin rama `else`. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya modelas el resultado de una operación que puede fallar con un tipo explícito visible en la firma, y confirmas con un contraste real por qué esto obliga al llamador a manejar el error sin depender de excepciones no documentadas. Esto cierra el módulo de lógica de negocio compartida; el siguiente módulo aplica estos modelos y casos de uso al networking compartido con Ktor Client. Fuente oficial: [Kotlin docs — Functional error handling](https://kotlinlang.org/docs/exception-handling.html).
-
-**Errores comunes:** seguir lanzando excepciones no documentadas para errores esperables del dominio (como "usuario no encontrado"), en vez de modelarlos como parte del tipo de retorno; olvidar manejar el caso `Error` porque no hay ningún `try`/`catch` que "obligue" visualmente a recordarlo (aunque el `when` exhaustivo si lo hace cumplir en compilación).
-
-**Cuándo no usarlo:** para errores verdaderamente excepcionales e irrecuperables (un error de programación, una memoria agotada), una excepción real sigue siendo apropiada; reserva `Resultado`/`Exito`/`Error` para fallos esperables del dominio que el código llamador debería manejar explícitamente como parte del flujo normal.
-
----
-
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Distingue entrega inexistente, falta de autorización y servicio temporalmente caído en el resultado común. Prueba cómo Android e iOS traducen cada variante sin inspeccionar mensajes de excepción.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una capa de dominio compartida (modelos + casos de uso) sin código específico de plataforma, con errores modelados explícitamente.
-
-**Requisitos previos:** Módulos 0-3 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Definir modelos de dominio en `commonMain` | Ver Tema 1 | `data class` de las entidades centrales |
-| 2 | Implementar un caso de uso dependiente de una interfaz | Ver Tema 1 | No de una implementación concreta |
-| 3 | Definir la interfaz de repositorio con dos implementaciones | Ver Tema 2 | Una real, una fake para tests |
-| 4 | Configurar Koin para inyectar la implementación correcta | Ver Tema 3 | Por plataforma |
-| 5 | Modelar un error de dominio con un tipo Resultado explícito | Ver Tema 4 | En vez de una excepción no documentada |
-
-**Verificación:** el laboratorio se considera exitoso si ningún archivo de la capa de dominio (`commonMain`) contiene código específico de Android o iOS, si el caso de uso puede probarse con la implementación fake del repositorio sin ninguna infraestructura real, y si al menos una operación que puede fallar declara ese fallo en su tipo de retorno.
-
-**Errores comunes y soluciones**
-
-- **Hacer que el caso de uso dependa de la implementación concreta del repositorio.** Depende siempre de la interfaz, no de la implementación específica.
-- **Duplicar la configuración de inyección de dependencias por plataforma.** Declara el módulo de Koin una única vez en `commonMain`.
-- **Filtrar código específico de plataforma dentro de un modelo de dominio.** Mantén los modelos de dominio completamente independientes de detalles de plataforma.
-- **Seguir lanzando excepciones no documentadas para errores esperables del dominio.** Modélalos con un tipo Resultado explícito visible en la firma.
-
----
-
-
-## Laboratorio de transferencia
+</details>
 
 ### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. **Prerrequisitos:** interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una oferta del proyecto integrador caduca a los 30 segundos. Una prueba que espera 30 segundos es lenta y puede fallar por el planificador. **¿Por qué es importante?** El tiempo forma parte de las entradas del caso de uso y debe controlarse en la prueba.
+#### ► DE QUÉ TRATA
+Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. Prerrequisitos: interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Inyectar una función de reloj separa la política «cuándo vence» del origen «qué hora es». Elegimos milisegundos y una frontera explícita: al alcanzar el vencimiento ya está caducada. **Analogía:** para probar una alarma, mueves las agujas de un reloj de prueba en lugar de esperar. El límite es que simular tiempo no prueba sincronización entre dispositivos ni un reloj de pared que retrocede.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible.**
 
-El ejemplo usa una función `() -> Long` sin depender de una versión concreta de una API de reloj. En una librería multiplataforma, documenta unidades, origen y si necesitas tiempo monotónico o un instante civil.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LA ANALOGÍA
+Piensa en tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global en tu contexto?
+2. ¿Cómo sabrías que tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir reloj-kotlin
 cd reloj-kotlin
 ```
-Crea `Vencimiento.kt`:
+
 ```kotlin
 class Oferta(private val venceEnMs: Long, private val ahoraMs: () -> Long) {
     fun vencida(): Boolean = ahoraMs() >= venceEnMs
@@ -623,19 +675,10 @@ fun main() {
     println("Antes, límite y después: correctos")
 }
 ```
+
 ```bash
 kotlinc Vencimiento.kt -include-runtime -d vencimiento.jar
 java -jar vencimiento.jar
 ```
-**Resultado esperado:** `Antes, límite y después: correctos`, sin esperas reales. Explica cada bloque: la clase recibe tiempo como dependencia y la prueba controla la variable capturada por la lambda. Si no tienes `kotlinc`, instala el compilador oficial; no confundas una ausencia de herramienta con un fallo del contrato.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia `>=` por `>`. Falla la comprobación del instante exacto. **Pista:** revisa qué prometiste que ocurría «al alcanzar» el plazo. Restaura y vuelve a ejecutar.
-
-#### Paso 6 · Práctica independiente
-Añade una función `restanteMs` que nunca devuelva valores negativos y comprueba antes, justo en y después del vencimiento. Conserva los casos en commonTest cuando lo lleves al proyecto KMP, sin introducir APIs de JVM en commonMain.
-
-#### Paso 7 · Cierre
-El siguiente paso es adaptar el origen de tiempo en cada plataforma y mantener la política común. **Errores comunes:** mezclar segundos y milisegundos, consultar el reloj global dentro de cada regla y usar sleep para pruebas de lógica. **Límites y decisión de uso:** el servidor debe decidir vencimientos con autoridad cuando haya dinero o asignación compartida; el reloj del cliente es una ayuda de UI.
-
-**Fuentes oficiales:** [Kotlin interfaces](https://kotlinlang.org/docs/interfaces.html) y [recomendación de inyectar Clock](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-clock/).
+</details>

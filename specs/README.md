@@ -24,3 +24,8 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiqu
 | [022](022-curso-microservicios-spring-boot-fase-1.md) | Curso Microservicios Spring Boot — Fase 1 | en curso |
 | [023](023-fase-2-maven-compose-y-presentacion-spring.md) | Fase 2 Spring, starter Maven/Compose y presentación | en curso |
 | [024](024-migracion-al-estandar-12-puntos.md) | Migración de las 16 rutas a los 12 puntos de la sección 4, una ruta por lote | en curso |
+| [025](025-correccion-de-fallas-revision.md) | Corrección de fallas detectadas en revisión | hecho |
+| [026](026-plan-de-accion-contra-las-fallas.md) | Plan de acción contra las fallas | en curso |
+| [027](027-libro-sin-laboratorios.md) | Libro sin laboratorios: del código descargable al libro virtual | en curso |
+| [028](028-diseno-3-cursos-independientes.md) | Diseño instruccional de 3 cursos independientes (Java, Spring Boot, Node.js) | en curso |
+| [029](029-estandar-editorial-plataforma.md) | Estándar editorial único de plataforma (Capa 1/Capa 2) aplicado a todos los cursos | en curso |

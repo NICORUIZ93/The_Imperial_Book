@@ -3,27 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto `demo-build` que sube el artefacto a S3. Prerrequisitos: Módulo 2 completo.
-#### Paso 2 · Contexto y caso real
-Cada cambio al servicio de seguimiento (el que expone la API detrás de `demo-alb`, Módulo 22) necesita compilarse de forma reproducible y producir un artefacto trazable antes de que CodeDeploy lo despliegue en los Temas siguientes.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un build de CodeBuild es una línea de ensamblaje real con entradas, fases y una salida sellada — no una simulación que fabrica un `SUCCEEDED` sin compilar nada.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `StartBuild`, fases de compilación, Docker-in-Docker, `docker cp`.
+#### ► DE QUÉ TRATA
+Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto demo-build que sube el artefacto a S3. Prerrequisitos: Módulo 2 completo.
 
-Cuando llamas a `StartBuild`, Floci no simula una compilación exitosa: extrae la imagen Docker configurada en el proyecto, inicia un contenedor real, inyecta tus archivos fuente dentro con `docker cp`, y ejecuta las fases de tu `buildspec.yml` —`install`, `pre_build`, `build`, `post_build`— de forma secuencial mediante `docker exec`, transmitiendo la salida en tiempo real a CloudWatch Logs bajo `/aws/codebuild/<proyecto>`. Al terminar, extrae los archivos de artefactos definidos y, si el proyecto está configurado con `artifacts.type=S3`, los sube automáticamente al bucket indicado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto demo-build que sube el artefacto a S3.**
 
-Este mecanismo de inyección y extracción vía API de copia de archivos de Docker —en vez de montajes de volumen (bind mounts)— es una decisión de diseño deliberada: funciona correctamente incluso cuando el propio Floci corre dentro de un contenedor Docker (un escenario Docker-in-Docker), algo que un simple bind mount no podría lograr de forma confiable porque el path del host no sería visible dentro del contenedor de Floci.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** CodeBuild en Floci es como un taller de ensamblaje real que recibe tus piezas por mensajería (`docker cp` de entrada), las ensambla siguiendo tus instrucciones exactas (las fases del buildspec), y te devuelve el producto terminado también por mensajería (`docker cp` de salida) — no es una maqueta de cómo se vería el ensamblaje, es el ensamblaje real.
+#### ► LA ANALOGÍA
+Piensa en codebuild — compilaciones reales dentro de contenedores docker como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Que la compilación sea real —no un `SUCCEEDED` fabricado— significa que un `buildspec.yml` que funciona en Floci tiene altísima probabilidad de funcionar igual en CodeBuild real: estás practicando con el mismo motor de ejecución, solo que en tu máquina.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que codebuild — compilaciones reales dentro de contenedores docker resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Practícalo tú:**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CodeBuild — compilaciones reales dentro de contenedores Docker se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CodeBuild — compilaciones reales dentro de contenedores Docker | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses codebuild — compilaciones reales dentro de contenedores docker por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: codebuild — compilaciones reales dentro de contenedores docker funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- CodeBuild — compilaciones reales dentro de contenedores Docker existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve codebuild — compilaciones reales dentro de contenedores docker en tu contexto?
+2. ¿Cómo sabrías que codebuild — compilaciones reales dentro de contenedores docker no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar codebuild — compilaciones reales dentro de contenedores docker?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 # archivo: src/labs/modulo-24/tema-1-codebuild-real.sh — ejecutar con: bash tema-1-codebuild-real.sh
 aws s3 mb s3://demo-artefactos
@@ -43,19 +84,6 @@ artifacts:
 aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus'
 ```
 
-`--source type=NO_SOURCE` le dice al proyecto que no traiga código de ningún repositorio (para este ejercicio aislado, el código llega directo en el buildspec); `--artifacts type=S3,location=...` es dónde CodeBuild sube el resultado; `--environment` describe el contenedor donde corre el build — su imagen Docker y cuánto cómputo asignarle; `--service-role` es el rol de IAM con el que CodeBuild opera. Al arrancar el build, `--project-name` elige qué proyecto ejecutar y `--buildspec-override` reemplaza, solo para esta ejecución, el `buildspec.yml` del proyecto por el texto que le pasás inline. Para consultar el resultado, `--ids` identifica qué compilación mirar. En resumen: `--source` es la bandera que fija de dónde viene el código, `--artifacts` es la bandera que fija dónde se sube el resultado, `--buildspec-override` es la bandera que reemplaza el buildspec para esa corrida, e `--ids` es la bandera que elige qué compilación consultar.
-
-**Resultado esperado:** tras sondear unos segundos, `buildStatus` pasa a `SUCCEEDED` y `aws s3 ls s3://demo-artefactos/` muestra `salida.txt` — la prueba de que un contenedor Alpine real ejecutó la fase `build`, no que Floci fabricó el resultado.
-
-**Modifica esto:** cambia el comando de la fase `build` para que falle deliberadamente (`exit 1`) y confirma que `buildStatus` pasa a `FAILED` en vez de `SUCCEEDED` — así verificas que Floci reporta fallos reales del contenedor, no solo éxitos.
-
-**Cuándo no usarlo:** no uses `NO_SOURCE` para un proyecto real con código versionado; ese tipo de origen solo sirve para practicar el buildspec en aislamiento, como en este ejercicio.
-
-**Cómo crece tu proyecto:** este pipeline compila el servicio de seguimiento y sube el artefacto listo para desplegar en los temas siguientes de este módulo.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Usa este mismo `buildspec.yml` real para compilar el servicio de seguimiento de RutaFlow en cada cambio, generando el artefacto con checksum que CodeDeploy desplegará en los próximos Temas.
-
-#### Paso 4 · Demostración guiada
 ```bash
 aws s3 mb s3://demo-artefactos
 aws codebuild create-project --name demo-build --source type=NO_SOURCE \
@@ -73,37 +101,70 @@ artifacts:
     - salida.txt' --query 'build.id' --output text)
 aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus'
 ```
-Resultado esperado: `buildStatus` pasa a `SUCCEEDED` y `aws s3 ls s3://demo-artefactos/` muestra `salida.txt` — un contenedor Alpine real ejecutó la fase `build`, no una simulación.
-#### Paso 5 · Práctica guiada
-Pista: cambiá el comando de la fase `build` por uno que falle (`exit 1`) — ese es el fallo deliberado: `buildStatus` pasa a `FAILED`, confirmando que Floci reporta el resultado real del contenedor, no un éxito fabricado de antemano.
-#### Paso 6 · Práctica independiente
-Corregí el comando y, además de `salida.txt`, generá un checksum del artefacto (`sha256sum salida.txt > salida.sha256`) agregándolo también a `artifacts.files`, para poder verificar más adelante que el artefacto desplegado es exactamente el que se compiló.
-#### Paso 7 · Cierre
-Entregá el build exitoso del Paso 4, el `FAILED` real del Paso 5, y el checksum agregado del Paso 6; explicá por qué que la compilación sea real (no fabricada) importa para confiar en que un buildspec que funciona en Floci va a funcionar igual en CodeBuild real. Siguiente paso: artefactos. Errores comunes: dependencias flotantes y builds no reproducibles. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html.
+
+</details>
 
 ### Tema 2: buildspec.yml — fases y artefactos · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
-#### Paso 2 · Contexto y caso real
-El pipeline debe saber qué ejecutar y qué entregar.
-#### Paso 3 · Teoría, modelo mental y analogía
-Phases son estaciones; artifacts son paquetes listos para transportar.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `phases`, `artifacts.files`, `artifacts.base-directory`, `buildspecOverride`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-Un `buildspec.yml` (o su equivalente enviado como `buildspecOverride` en la propia llamada a `StartBuild`) define listas de comandos para cada fase: `install` para dependencias del entorno, `pre_build` para pasos previos (login a un registro, por ejemplo), `build` para el comando de compilación principal, y `post_build` para pasos finales como empaquetar o notificar. La sección `artifacts.files` especifica qué archivos recolectar al terminar —soporta patrones glob como `**/*` o nombres específicos—, y `artifacts.base-directory` indica desde qué carpeta son relativas esas rutas, por defecto `$CODEBUILD_SRC_DIR`.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir fases y artefactos desde cero.**
 
-Cuando el tipo de artefactos es `S3`, el bucket destino debe existir de antemano —Floci no lo crea automáticamente—, y las rutas de los archivos subidos preservan la estructura relativa al directorio base configurado, exactamente como en AWS real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** las fases de un buildspec son como las etapas de una receta de cocina escritas explícitamente: primero reunir ingredientes (`install`), luego prepararlos (`pre_build`), cocinar (`build`), y finalmente emplatar (`post_build`) — cada fase asume que la anterior se completó correctamente.
+#### ► LA ANALOGÍA
+Piensa en buildspec.yml — fases y artefactos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Separar explícitamente las fases de un pipeline de build es lo que permite diagnosticar rápidamente en cuál de ellas falló una compilación, en vez de tener que revisar un script monolítico de principio a fin.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que buildspec.yml — fases y artefactos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Cuándo no usarlo:** no metas lógica de negocio compleja directamente en el buildspec; para pipelines grandes, invoca scripts versionados en tu repositorio desde cada fase en vez de inline.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| buildspec.yml — fases y artefactos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, escribe `buildspec.yml` con cuatro fases y un artefacto dentro de `dist/`, y lánzalo con el proyecto `demo-build` del Tema 1:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar buildspec.yml — fases y artefactos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses buildspec.yml — fases y artefactos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: buildspec.yml — fases y artefactos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- buildspec.yml — fases y artefactos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve buildspec.yml — fases y artefactos en tu contexto?
+2. ¿Cómo sabrías que buildspec.yml — fases y artefactos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar buildspec.yml — fases y artefactos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-buildspec && cd ejemplo-buildspec
 cat > buildspec.yml <<'EOF'
@@ -133,13 +194,6 @@ until [ "$(aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildCo
 aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus' --output text
 aws s3 ls s3://demo-artefactos/ --recursive
 ```
-Resultado esperado: el bucle termina cuando `buildComplete` es `True`, el estado es `SUCCEEDED` y `s3 ls` lista `app.txt` y `app.sha256`. Por `base-directory: dist` los archivos suben sin el prefijo `dist/`. `--buildspec-override` acepta un buildspec en línea o una ruta relativa al código fuente; como `demo-build` usa `NO_SOURCE` y no hay código fuente donde buscar esa ruta, se pasa el contenido con `"$(cat buildspec.yml)"`.
-#### Paso 5 · Práctica guiada
-Pista: apunta a una carpeta de artefactos inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Publica logs y artefacto.
-
-**Practícalo tú:**
 
 ```bash
 # archivo: src/labs/modulo-24/tema-2-fases.sh — ejecutar con: bash tema-2-fases.sh
@@ -163,24 +217,23 @@ artifacts:
     - build.log'
 ```
 
-**Resultado esperado:** los logs de CloudWatch bajo `/aws/codebuild/demo-build` muestran las cuatro fases ejecutadas en orden (`install`, `pre_build`, `build`, `post_build`); `build.log` sube a S3 con las dos líneas escritas por `build` y `post_build`.
-
-**Modifica esto:** haz que `pre_build` falle (`exit 1`) y confirma que `build` y `post_build` nunca se ejecutan — las fases son secuenciales y una falla detiene el pipeline.
-
-**Cómo crece tu proyecto:** estas cuatro fases son las que compilan, prueban y empaquetan cada servicio antes de que CodeDeploy lo despliegue.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Define las fases de instalación, prueba y empaquetado del consumidor en buildspec.yml. Provoca un test fallido y comprueba que no se produce un artefacto marcado como publicable.
-
-#### Paso 7 · Cierre
-Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: despliegue. Errores comunes: incluir archivos secretos y rutas relativas incorrectas. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html.
+</details>
 
 ### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear `demo-app`, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita actualizar el servicio de seguimiento sin interrumpir a los conductores que lo están usando en ese momento — eso exige elegir, antes que nada, qué tan gradual va a ser ese cambio.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear demo-app, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear demo-app, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El grupo de implementación es la flota a reemplazar; la configuración de despliegue decide qué tan rápido (o cuidadosamente) se reemplaza.
 
 **Conceptos clave:** `computePlatform`, grupo de implementación, configuración de despliegue, las 17 configuraciones integradas.
@@ -215,7 +268,61 @@ aws deploy list-deployment-configs --query "deploymentConfigsList" --output text
 
 **Cómo crece tu proyecto:** `demo-app` es la aplicación CodeDeploy que gestionará todos los despliegues canary de las funciones Lambda del proyecto integrador.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que codedeploy — aplicaciones, grupos y configuraciones predefinidas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CodeDeploy — aplicaciones, grupos y configuraciones predefinidas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CodeDeploy — aplicaciones, grupos y configuraciones predefinidas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses codedeploy — aplicaciones, grupos y configuraciones predefinidas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: codedeploy — aplicaciones, grupos y configuraciones predefinidas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- CodeDeploy — aplicaciones, grupos y configuraciones predefinidas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve codedeploy — aplicaciones, grupos y configuraciones predefinidas en tu contexto?
+2. ¿Cómo sabrías que codedeploy — aplicaciones, grupos y configuraciones predefinidas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar codedeploy — aplicaciones, grupos y configuraciones predefinidas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-24/tema-3-aplicacion-y-grupo.sh — ejecutar con: bash tema-3-aplicacion-y-grupo.sh
+aws deploy create-application --application-name demo-app --compute-platform Lambda
+aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
+  --deployment-config-name CodeDeployDefault.LambdaCanary10Percent5Minutes \
+  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
+  --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL
+aws deploy list-deployment-configs --query "deploymentConfigsList" --output text | wc -w
+```
+
 ```bash
 aws deploy create-application --application-name demo-app --compute-platform Lambda
 aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
@@ -223,21 +330,24 @@ aws deploy create-deployment-group --application-name demo-app --deployment-grou
   --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
   --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL
 ```
-Resultado esperado: `demo-app` y `demo-grupo` quedan creados usando la estrategia canary 10%/5 minutos — cualquier despliegue futuro sobre este grupo va a mover tráfico gradualmente, no de golpe.
-#### Paso 5 · Práctica guiada
-Pista: probá `aws deploy create-deployment-group --application-name demo-app --deployment-group-name grupo-ecs --deployment-config-name CodeDeployDefault.ECSAllAtOnce` sobre `demo-app` (creada con `--compute-platform Lambda`) — ese es el fallo deliberado: la configuración elegida es para ECS, incompatible con la plataforma de cómputo real de la aplicación, y la llamada se rechaza.
-#### Paso 6 · Práctica independiente
-Listá las 17 configuraciones predefinidas con `aws deploy list-deployment-configs`, y compará `LambdaCanary10Percent5Minutes` (lo que usa `demo-grupo`) contra `LambdaAllAtOnce` — documentá qué riesgo asumirías si cambiaras a esta última para el servicio de seguimiento.
-#### Paso 7 · Cierre
-Entregá `demo-app`/`demo-grupo` creados con canary, el error de plataforma incompatible del Paso 5, y la comparación de riesgo del Paso 6; explicá por qué elegir la estrategia de despliegue es una decisión de riesgo, no solo un parámetro técnico. Siguiente paso: hooks. Errores comunes: grupo sin healthcheck y ventanas de mantenimiento ausentes. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html.
+
+</details>
 
 ### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a mover el alias `live` del servicio de seguimiento de la versión 1 a la versión 2 con el canary de `demo-grupo` (Tema 3), y a confirmar que un hook fallido revierte solo. Prerrequisitos: Tema 3 de este módulo, Módulo 5 (versiones y alias).
-#### Paso 2 · Contexto y caso real
-Una nueva versión del servicio de seguimiento debe recibir tráfico progresivamente — y si algo sale mal a mitad de camino, RutaFlow necesita que el alias vuelva solo a la versión anterior, sin que alguien tenga que notarlo y revertirlo a mano de madrugada.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a mover el alias live del servicio de seguimiento de la versión 1 a la versión 2 con el canary de demo-grupo (Tema 3), y a confirmar que un hook fallido revierte solo. Prerrequisitos: Tema 3 de este módulo, Módulo 5 (versiones y alias).
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a mover el alias live del servicio de seguimiento de la versión 1 a la versión 2 con el canary de demo-grupo (Tema 3), y a confirmar que un hook fallido revierte solo.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El alias Lambda es el puntero que CodeDeploy mueve gradualmente; los lifecycle hooks son catadores que prueban cada lote antes de dejarlo avanzar al resto del tráfico.
 
 **Conceptos clave:** alias Lambda, `RoutingConfig`, lifecycle hook `BeforeAllowTraffic`/`AfterAllowTraffic`, reversión automática.
@@ -272,28 +382,83 @@ aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica dos versiones de la función de confirmación y usa un alias para seleccionar tráfico. Envía peticiones identificables, observa la versión ejecutada y practica volver a la anterior.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que despliegue blue/green de lambda — cambio de tráfico por alias resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Despliegue Blue/Green de Lambda — cambio de tráfico por alias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Despliegue Blue/Green de Lambda — cambio de tráfico por alias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses despliegue blue/green de lambda — cambio de tráfico por alias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: despliegue blue/green de lambda — cambio de tráfico por alias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Despliegue Blue/Green de Lambda — cambio de tráfico por alias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve despliegue blue/green de lambda — cambio de tráfico por alias en tu contexto?
+2. ¿Cómo sabrías que despliegue blue/green de lambda — cambio de tráfico por alias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar despliegue blue/green de lambda — cambio de tráfico por alias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-24/tema-4-canary-lambda.sh — ejecutar con: bash tema-4-canary-lambda.sh
+ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
+  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
+  --query 'deploymentId' --output text)
+aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
+```
+
 ```bash
 ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
   --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
   --query 'deploymentId' --output text)
 aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
 ```
-Resultado esperado: el estado pasa de `InProgress` (10% del tráfico en la versión 2 durante la ventana configurada) a `Succeeded`, con el alias `live` ya al 100% en la versión nueva.
-#### Paso 5 · Práctica guiada
-Pista: simulá un lifecycle hook fallido con `aws deploy put-lifecycle-event-hook-execution-status --deployment-id "$ID" --lifecycle-event-hook-execution-id <id> --status Failed` — ese es el fallo deliberado: CodeDeploy revierte automáticamente el alias `live` a la versión 1 y marca el despliegue completo como `Failed`, sin que vos tengas que deshacer nada manualmente.
-#### Paso 6 · Práctica independiente
-Confirmá con `aws lambda get-alias --function-name demo-tracking --name live` que, tras el rollback del Paso 5, el alias efectivamente volvió a `FunctionVersion: 1`; documentá cuánto tráfico real llegó a ver la versión 2 antes de la reversión (pista: el 10% configurado en la ventana de 5 minutos, nunca el 100%).
-#### Paso 7 · Cierre
-Entregá el despliegue canary exitoso del Paso 4, el rollback automático del Paso 5, y la confirmación del alias revertido del Paso 6; explicá por qué este patrón es más seguro que cambiar el alias a mano con un script propio. Siguiente paso: ECS. Errores comunes: no validar métricas y rollback manual tardío. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-lambda.html.
+
+</details>
 
 ### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de `demo-alb` (Módulo 22) para cambiar tráfico de azul a verde. Prerrequisitos: Módulo 22 completo, Módulo 14 (ECS).
-#### Paso 2 · Contexto y caso real
-El servicio de seguimiento corriendo en ECS (Módulo 14) debe probarse con un conjunto de tareas nuevo (verde) antes de que `demo-alb` le mande todo el tráfico real, sin apagar nunca el conjunto actual (azul) hasta confirmar que el nuevo funciona.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de demo-alb (Módulo 22) para cambiar tráfico de azul a verde. Prerrequisitos: Módulo 22 completo, Módulo 14 (ECS).
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de demo-alb (Módulo 22) para cambiar tráfico de azul a verde.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Blue/Green es mantener dos flotas completas y mover el letrero del listener hacia la nueva recién cuando está lista, en vez de reemplazar tareas una por una mientras siguen atendiendo tráfico real.
 
 **Conceptos clave:** conjunto de tareas verde, `TargetService`, promoción a PRIMARY, AppSpec.
@@ -337,54 +502,200 @@ aws deploy create-deployment-group --application-name demo-app-ecs --deployment-
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara dos revisiones del servicio de seguimiento con grupos objetivo separados. Cambia el listener en laboratorio y demuestra que puedes restaurar el destino anterior sin reconstruir la imagen.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que despliegue blue/green de ecs — cambio de tráfico por listener elb resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses despliegue blue/green de ecs — cambio de tráfico por listener elb por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: despliegue blue/green de ecs — cambio de tráfico por listener elb funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve despliegue blue/green de ecs — cambio de tráfico por listener elb en tu contexto?
+2. ¿Cómo sabrías que despliegue blue/green de ecs — cambio de tráfico por listener elb no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar despliegue blue/green de ecs — cambio de tráfico por listener elb?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-24/tema-5-blue-green-ecs.sh — ejecutar con: bash tema-5-blue-green-ecs.sh
+# El listener se recupera por nombre del ALB del Módulo 22 — no hace falta
+# haber conservado ninguna variable de esa sesión de terminal.
+LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+LISTENER_ARN=$(aws elbv2 describe-listeners --load-balancer-arn "$LB_ARN" --query 'Listeners[0].ListenerArn' --output text)
+
+aws deploy create-application --application-name demo-app-ecs --compute-platform ECS
+aws deploy create-deployment-group --application-name demo-app-ecs --deployment-group-name demo-grupo-ecs \
+  --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
+  --ecs-services serviceName=demo-service,clusterName=demo-cluster \
+  --load-balancer-info targetGroupPairInfoList='[{prodTrafficRoute={listenerArns=["'"$LISTENER_ARN"'"]},targetGroups=[{name=demo-objetivos-azul},{name=demo-objetivos-verde}]}]'
+```
+
 ```bash
 LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
 aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo-ecs \
   --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"arn:aws:ecs:us-east-1:000000000000:task-definition/rutaflow-planificador-task:2\"}}}]}"}'
 ```
-Resultado esperado: CodeDeploy crea un conjunto de tareas verde apuntando a la nueva definición, y empieza a desviar tráfico del listener de `demo-alb` hacia ese grupo objetivo verde según la estrategia configurada — el conjunto azul original sigue corriendo, intacto, mientras tanto.
-#### Paso 5 · Práctica guiada
-Pista: hacé que el healthcheck del grupo objetivo verde falle a propósito (por ejemplo, apuntándolo a un puerto que el contenedor nuevo no escucha) — ese es el fallo deliberado: CodeDeploy nunca promueve ese conjunto verde a `PRIMARY`, y el tráfico sigue sirviéndose desde el azul, sin que los clientes de RutaFlow noten nada.
-#### Paso 6 · Práctica independiente
-Corregí el healthcheck, confirmá que el conjunto verde se promueve a `PRIMARY` y el azul se elimina, y después documentá cómo sería un rollback manual si el problema se hubiera detectado recién después de la promoción completa (pista: ya no hay conjunto azul al que volver automáticamente, a diferencia de mientras el despliegue seguía en curso).
-#### Paso 7 · Cierre
-Entregá el despliegue Blue/Green en curso del Paso 4, el healthcheck fallido sin promoción del Paso 5, y la promoción exitosa más la reflexión de rollback del Paso 6; explicá por qué Blue/Green reduce el riesgo de downtime comparado con un despliegue in-place. Siguiente paso: observabilidad. Errores comunes: targets mezclados y rollback sin datos. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-ecs.html.
 
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** ejecutar una compilación real con CodeBuild que produce un artefacto en S3, y luego configurar un despliegue canary de Lambda con CodeDeploy, observando el cambio gradual de tráfico.
-
-**Requisitos previos:** el socket Docker montado en Floci, un bucket S3 existente para artefactos, y una función Lambda con un alias (`live`) apuntando a una versión publicada, de los Módulos 5 y 21.
+</details>
 
 ### Laboratorio 24.1 — Compilación real con CodeBuild
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea el bucket de artefactos | `aws s3 mb s3://mis-artefactos` | CodeBuild no crea el bucket automáticamente | Confirmación de creación |
-| 2 | Crea el proyecto | `aws codebuild create-project --name mi-build --source type=NO_SOURCE --artifacts type=S3,location=mis-artefactos --environment type=LINUX_CONTAINER,image=public.ecr.aws/docker/library/alpine:latest,computeType=BUILD_GENERAL1_SMALL --service-role arn:aws:iam::000000000000:role/codebuild-role` | Registra el proyecto con la imagen Docker que se usará para compilar | Confirmación con el ARN del proyecto |
-| 3 | Inicia una compilación con buildspec inline | `aws codebuild start-build --project-name mi-build --buildspec-override 'version: 0.2\nphases:\n build:\n commands:\n - echo hola desde Floci > salida.txt\nartifacts:\n files:\n - salida.txt'` | Lanza un contenedor Alpine real y ejecuta la fase `build` | Un `id` de compilación con estado `IN_PROGRESS` |
-| 4 | Sondea hasta que termine | `aws codebuild batch-get-builds --ids <id>` | Repite hasta que `buildComplete` sea `true` | `buildStatus: SUCCEEDED` |
-| 5 | Verifica el artefacto en S3 | `aws s3 ls s3://mis-artefactos/` | Confirma que `salida.txt` se subió automáticamente | Una fila con `salida.txt` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 24.1 — compilación real con codebuild con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 24.1 — compilación real con codebuild te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 24.1 — compilación real con codebuild como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 24.1 — compilación real con codebuild resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 24.1 — Compilación real con CodeBuild se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 24.1 — Compilación real con CodeBuild | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 24.1 — compilación real con codebuild por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 24.1 — compilación real con codebuild funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 24.1 — Compilación real con CodeBuild existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 24.1 — compilación real con codebuild en tu contexto?
+2. ¿Cómo sabrías que laboratorio 24.1 — compilación real con codebuild no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 24.1 — compilación real con codebuild?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 24.1 — compilación real con codebuild.
+
+</details>
 
 ### Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea la aplicación CodeDeploy | `aws deploy create-application --application-name mi-app-lambda --compute-platform Lambda` | Registra la aplicación para despliegues de Lambda | Confirmación con el `applicationId` |
-| 2 | Crea el grupo con estrategia canary | `aws deploy create-deployment-group --application-name mi-app-lambda --deployment-group-name mi-grupo --deployment-config-name CodeDeployDefault.LambdaCanary10Percent5Minutes --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL` | El 10% del tráfico va a la versión nueva durante 5 minutos antes de completar | Confirmación con el `deploymentGroupId` |
-| 3 | Inicia el despliegue | `aws deploy create-deployment --application-name mi-app-lambda --deployment-group-name mi-grupo --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"mi-funcion\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}'` | Comienza el cambio gradual de tráfico del alias `live` | Un `deploymentId` con estado `InProgress` |
-| 4 | Sondea el estado | `aws deploy get-deployment --deployment-id <id>` | Repite hasta ver `status: Succeeded` | El despliegue completa tras el intervalo canary |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Verificación:** el laboratorio se considera exitoso si `batch-get-builds` reporta `buildStatus: SUCCEEDED` y el archivo `salida.txt` existe realmente en el bucket S3, y si `get-deployment` reporta `status: Succeeded` para el despliegue Lambda, confirmando que el alias `live` terminó apuntando al 100% a la versión 2.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 24.2 — despliegue canary de lambda con codedeploy con foco en comprensión antes de implementación.
 
-**Errores comunes y soluciones**
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 24.2 — despliegue canary de lambda con codedeploy te permite tomar mejores decisiones técnicas.**
 
-- **`StartBuild` falla al no encontrar la imagen.** Verifica que la imagen especificada en `environment.image` sea accesible (una imagen pública de ECR o Docker Hub); revisa los logs de CodeBuild en CloudWatch bajo `/aws/codebuild/<proyecto>` para el error exacto.
-- **El artefacto no aparece en S3.** Confirma que el bucket existe antes de iniciar la compilación — CodeBuild no lo crea automáticamente — y que `artifacts.files` en tu buildspec realmente coincide con el nombre del archivo generado.
-- **El despliegue Lambda se queda en `InProgress` más tiempo del esperado.** Es el comportamiento correcto de una estrategia canary con ventana de 5 minutos: el emulador respeta intervalos reales aunque acortados respecto a AWS, así que espera el tiempo configurado antes de sondear de nuevo.
-- **`CreateDeploymentGroup` para ECS falla sin `loadBalancerInfo`.** Un grupo de implementación Blue/Green para ECS requiere `ecsServices` y `loadBalancerInfo` con los grupos objetivo azul/verde del Módulo 22 ya creados.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
----
+#### ► LA ANALOGÍA
+Piensa en laboratorio 24.2 — despliegue canary de lambda con codedeploy como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 24.2 — despliegue canary de lambda con codedeploy resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 24.2 — despliegue canary de lambda con codedeploy por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 24.2 — despliegue canary de lambda con codedeploy funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 24.2 — despliegue canary de lambda con codedeploy en tu contexto?
+2. ¿Cómo sabrías que laboratorio 24.2 — despliegue canary de lambda con codedeploy no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 24.2 — despliegue canary de lambda con codedeploy?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 24.2 — despliegue canary de lambda con codedeploy.
+
+</details>

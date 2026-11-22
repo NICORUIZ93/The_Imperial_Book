@@ -134,38 +134,27 @@ def conectar(variable: str = "REDIS_PORT", defecto: int = 6379) -> Redis:
 ```
 
 ---
+
+
 ### Caching con Redis: @Cacheable, @CacheEvict, TTL
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 4, Lección 1 de 4 · Fase 1 · 3 h.
+#### ► DE QUÉ TRATA
+Aplicar @Cacheable, @CacheEvict y TTL por caché con Redis en un servicio Spring Boot y medir su efecto; lo compruebas cuando los 3 tests de f037-cache-redis pasan: la segunda lectura no llega al repositorio, la clave productos::1 existe en Redis con un TTL de 60 s o menos, se bor…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Aplicar @Cacheable, @CacheEvict y TTL por caché con Redis en un servicio Spring Boot y medir su efecto; lo compruebas cuando los 3 tests de f037-cache-redis pasan: la segunda lectura no llega al repositorio, la clave productos::1 existe en Redis con un TTL de 60 s o menos, se borra al cambiar el precio y la caché «ofertas» se recarga tras 2 s.**
 
-- Módulo 1: beans, `@Service`, `@Configuration` y la idea de **proxy** (Spring envuelve tus beans).
-- Módulo 2: un `@RestController` con `@GetMapping` y `@PutMapping`.
-- Módulo 3: `@SpringBootTest` y AssertJ.
-- Docker Compose (Módulo 0.5) para el Redis del laboratorio.
+#### ► POR QUÉ EXISTE ESTO
+Pedir un dato a la base de datos cuesta tiempo. Si mil personas piden el mismo producto en un minuto, no tiene sentido preguntarle mil veces a la base: la primera respuesta se guarda en un sitio muy rápido (la caché) y las siguientes se sirven desde ahí.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en caching con redis: @cacheable, @cacheevict, ttl como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Aplicar** `@Cacheable`, `@CacheEvict` y TTL por caché con Redis en un servicio Spring Boot y **medir** su efecto;
-lo compruebas cuando los 3 tests de `f037-cache-redis` pasan: la segunda lectura no llega al repositorio, la clave
-`productos::1` existe en Redis con un TTL de 60 s o menos, se borra al cambiar el precio y la caché «ofertas» se
-recarga tras 2 s.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja una **biblioteca** con un **mostrador** y un **depósito** en el sótano. Cuando pides un libro por primera
-vez, el bibliotecario baja al depósito (200 ms de escaleras: la base de datos) y, al volver, deja una **copia en el
-estante del mostrador** con una **etiqueta de caducidad** pegada («vale hasta las 10:01»: el TTL). El siguiente que
-pide el mismo libro lo recibe al instante del estante (un *hit*). Si llega una **nueva edición**, el bibliotecario
-**retira la copia vieja** del estante (`@CacheEvict`) para que nadie se lleve la versión desactualizada. El estante
-tiene compartimentos con nombre («productos», «ofertas») y el compartimento de ofertas tiene etiquetas que caducan
-mucho antes.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente
@@ -190,70 +179,48 @@ sequenceDiagram
     P->>R: DEL productos::1 (@CacheEvict)
 ```
 
-**Texto alternativo:** diagrama de secuencia. El cliente llama a buscar(1); el proxy de caché de Spring pide a Redis
-la clave productos::1 y recibe nil (MISS); entonces ejecuta el método real, que consulta el repositorio lento, y
-guarda el resultado en Redis con un TTL de 60 000 ms. En la segunda llamada, Redis devuelve el valor (HIT) y el
-método no se ejecuta. Cuando el cliente llama a cambiarPrecio(1, 150), el proxy ejecuta el método y después borra
-productos::1 de Redis.
+1. **Redis** es un servidor que guarda datos en memoria: responde en microsegundos y lo comparten todas las
+2. **`@Cacheable`**: «antes de ejecutar este método, mira si ya tengo el resultado guardado».
+3. **`@CacheEvict`**: «este método cambia datos: borra la copia guardada».
+4. **TTL** (*time to live*, tiempo de vida): cuánto tiempo vale una copia antes de borrarse sola. Es tu red de
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Caching con Redis: @Cacheable, @CacheEvict, TTL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Pedir un dato a la base de datos cuesta tiempo. Si mil personas piden el mismo producto en un minuto, no tiene
-sentido preguntarle mil veces a la base: la primera respuesta se **guarda** en un sitio muy rápido (la **caché**) y
-las siguientes se sirven desde ahí.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Caching con Redis: @Cacheable, @CacheEvict, TTL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+La caché sin TTL ni invalidación («caché eterna»).
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: caching con redis: @cacheable, @cacheevict, ttl funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - **Redis** es un servidor que guarda datos en memoria: responde en microsegundos y lo comparten todas las
-  instancias de tu servicio.
 - **`@Cacheable`**: «antes de ejecutar este método, mira si ya tengo el resultado guardado».
 - **`@CacheEvict`**: «este método cambia datos: borra la copia guardada».
 - **TTL** (*time to live*, tiempo de vida): cuánto tiempo vale una copia antes de borrarse sola. Es tu red de
-  seguridad: aunque olvides borrar algo, como mucho estará desactualizado ese tiempo.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve caching con redis: @cacheable, @cacheevict, ttl en tu contexto?
+2. ¿Cómo sabrías que caching con redis: @cacheable, @cacheevict, ttl no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar caching con redis: @cacheable, @cacheevict, ttl?
 
-- **Activación.** `spring-boot-starter-cache` + `spring-boot-starter-data-redis` y `@EnableCaching` en una clase
-  `@Configuration` (la guía de Spring Boot recomienda no ponerla en la clase de `main`). Con Redis en el classpath,
-  Boot crea un `RedisCacheManager`; `spring.cache.type=redis` lo hace explícito.
-- **Claves.** Cada caché tiene nombre; la clave en Redis es `nombre::clave` (prefijo por defecto de
-  `RedisCacheConfiguration`), por ejemplo `productos::1`. `key = "#id"` es una expresión SpEL sobre los parámetros;
-  sin `key`, Spring usa todos los parámetros (`SimpleKey`).
-- **Valores.** El `RedisCacheManager` por defecto serializa con **serialización Java**: tus objetos deben
-  implementar `Serializable` (un `record` también). En Redis verás bytes, no JSON. Para guardar JSON defines tu
-  propio bean `RedisCacheConfiguration` con otro serializador.
-- **TTL.** Global: `spring.cache.redis.time-to-live=60s`. Por caché: un bean `RedisCacheManagerBuilderCustomizer`
-  con `withCacheConfiguration("ofertas", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(2)))`.
-  Redis guarda la clave con expiración (`PX`) y la borra él solo.
-- **Escrituras inmediatas.** Desde Spring Data Redis 4.0, con Lettuce, el `RedisCacheWriter` por defecto hace
-  `put`, `evict` y `clear` de forma **asíncrona**: el método anotado devuelve el control antes de que Redis haya
-  aplicado el cambio (la interfaz `RedisCacheWriter.evict` lo documenta: «Actual eviction may be performed in an
-  asynchronous or deferred fashion»). Si necesitas leer tu propia escritura justo después (un test, o un
-  `@CacheEvict` seguido de una lectura), crea el writer con `RedisCacheWriter.create(factory, w -> w.immediateWrites())`
-  y pásalo con `builder.cacheWriter(...)` en el `RedisCacheManagerBuilderCustomizer`, como hace `CacheConfig`.
-- **Otras anotaciones.** `@CachePut` ejecuta siempre el método y guarda el resultado (refresca);
-  `@CacheEvict(allEntries = true)` vacía la caché; `@Caching` combina varias; `unless = "#result == null"` evita
-  guardar ciertos resultados.
-- **El proxy.** Las anotaciones funcionan porque Spring envuelve el bean en un proxy. Una llamada desde **dentro** de
-  la misma clase (`this.buscar(id)`) no pasa por el proxy y **no usa la caché**.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Invalidar es el problema difícil.** `@CacheEvict` después de escribir deja una ventana: otra petición puede leer
-  el valor viejo de la base y volver a guardarlo justo después del borrado. Mitigaciones: TTL corto, borrar **antes
-  y después** (*double delete*), o publicar eventos de cambio (Módulo 11) para que todas las instancias invaliden.
-  Elige el TTL según **cuánto tiempo puede un usuario ver un dato viejo sin daño**, no según el rendimiento.
-- **Caché local frente a distribuida.** (1) Caffeine en memoria del proceso: nanosegundos, cero red, pero cada
-  instancia tiene su copia y se desincronizan. (2) Redis: una copia compartida, ~1 ms de red, un componente más que
-  operar. (3) Dos niveles (Caffeine con TTL de segundos delante de Redis): lo mejor de ambos y el doble de
-  invalidación. (4) Caché HTTP (`Cache-Control`, CDN): ni siquiera llega a tu servicio, solo para datos públicos.
-- **Memoria y expulsión.** Redis sin `maxmemory` crece hasta quedarse sin RAM. En producción fija `maxmemory` y una
-  política `maxmemory-policy` (por ejemplo `allkeys-lru`) para que expulse lo menos usado.
-- **Cuándo NO cachear:** datos que deben ser exactos en cada lectura (saldo de una cuenta antes de un pago), datos
-  que casi nunca se repiten (el *hit ratio* sería bajo y solo sumas latencia y complejidad) o respuestas
-  personalizadas por usuario con claves que explotan en número. Mide antes: si la base ya responde en 2 ms con un
-  índice, quizá lo que falta es el índice.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Lettuce 7.5.2** (gestionados por el
 BOM), **Redis 8.10.2** (`docker-compose.yml` del módulo). Proyecto completo en
 `f037-cache-redis`.
@@ -643,196 +610,27 @@ class CacheRedisTest {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta Redis y arranca la app:
-
-```bash
-docker compose up -d --wait redis
-cd f037-cache-redis && ../gradlew bootRun
-```
-
-2. En otra terminal, mide la primera y la segunda lectura:
-
-```bash
-curl -s -o /dev/null -w "%{time_total}\n" localhost:8080/productos/1
-curl -s -o /dev/null -w "%{time_total}\n" localhost:8080/productos/1
-```
-
-   **Output esperado:** la primera tarda algo más de 0,2 s (el repositorio duerme 200 ms) y la segunda unos pocos
-   milisegundos, por ejemplo `0.236117` y `0.004512` (los números exactos varían).
-
-3. Mira la clave en Redis (desde el código de este tema):
-
-```bash
-docker compose exec redis redis-cli --scan --pattern 'productos::*'
-docker compose exec redis redis-cli TTL productos::1
-```
-
-   **Output esperado:**
-
-```text
-productos::1
-(integer) 57
-```
-
-   **Captura comentada:** el TTL baja cada segundo desde 60. Si ejecutas `GET productos::1` verás bytes que empiezan
-   por `\xac\xed\x00\x05`: la marca de la serialización Java, no JSON.
-
-4. Cambia el precio y comprueba que la clave desaparece:
-
-```bash
-curl -s -X PUT "localhost:8080/productos/1/precio?valor=150"
-docker compose exec redis redis-cli TTL productos::1
-curl -s localhost:8080/productos/1; echo
-```
-
-   **Output esperado:**
-
-```text
-(integer) -2
-{"id":1,"nombre":"Teclado","precio":150}
-```
-
-   `-2` significa que la clave no existe: `@CacheEvict` la borró, y la siguiente lectura trajo el precio nuevo.
-   (`-1` significaría «existe pero sin TTL».)
-
-5. Con el mismo cliente mínimo de los simuladores puedes ver la mecánica de TTL de Redis sin Spring. Desde
-   `simuladores/`:
-
-```bash
-python3 -c "from resp import conectar; r=conectar(); print(r.ejecutar('SET','demo','x','EX',60), r.ejecutar('TTL','demo'), r.ejecutar('TTL','no-existe'))"
-```
-
-   **Output esperado** (real, ejecutado contra Redis 7.0.15): `OK 60 -2`.
-
-#### 11. VERIFICACIÓN
-
-Test que debe pasar (con `docker compose up -d --wait redis`):
-
-```bash
-../gradlew test
-```
-
-**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. El test del TTL tarda
-unos 2,5 s a propósito.
-
-**Pregunta de comprobación:** añades en `ProductoServicio` un método `buscarDos(long a, long b)` que hace
-`return List.of(buscar(a), buscar(b));`. ¿Usa la caché?
-
-<details>
-<summary>Respuesta</summary>
-
-No. `buscar(a)` dentro de la misma clase es una llamada a `this`, no al proxy que Spring puso alrededor del bean,
-así que `@Cacheable` no se aplica y cada llamada va al repositorio. Solución: llamar a `buscar` desde otro bean
-(por ejemplo, el controller) o mover la lógica a otra clase.
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** quitas `implements Serializable` de `Producto` (o cacheas una clase que no lo implementa) y la primera
-petición devuelve 500.
-
-**Cómo se ve** (cadena de causas en el log):
-
-```text
-org.springframework.data.redis.serializer.SerializationException: Cannot serialize
-Caused by: org.springframework.core.serializer.support.SerializationFailedException: Failed to serialize object using DefaultSerializer
-Caused by: java.lang.IllegalArgumentException: DefaultSerializer requires a Serializable payload but received an object of type [academia.cache.Producto]
-```
-
-(textos de `JdkSerializationRedisSerializer` en Spring Data Redis y de `SerializingConverter` y `DefaultSerializer`
-en Spring Framework).
-
-**Diagnóstico visual:** lee la **última** `Caused by`: nombra la clase que no se pudo convertir en bytes. Dibuja el
-camino del dato: método → proxy → serializador → Redis; el corte está en el serializador, no en Redis.
-
-**Arreglo:** `implements Serializable`, o configura un `RedisCacheConfiguration` con un serializador JSON y guarda
-DTOs pensados para la caché (no entidades JPA con relaciones perezosas).
-
-**Otro clásico, sin mensaje de error:** la caché «no hace nada» porque llamas al método `@Cacheable` desde la misma
-clase (pregunta de la sección 11). Se diagnostica con un contador como `RepositorioLento.consultas()` o con
-`redis-cli MONITOR`: si no aparece ningún `GET productos::…`, el proxy no intervino.
-
-**Tercer caso, propio de Spring Data Redis 4:** sin `immediateWrites()`, un test que comprueba la clave justo
-después de `@CacheEvict` falla de vez en cuando:
-
-```text
-java.lang.AssertionError:
-Expecting value to be false but was true
-```
-
-(salida real de `assertThat(redis.hasKey("productos::1")).isFalse()` en la primera versión de este laboratorio, en
-el Mac del autor). La eviction no se perdió: llegó a Redis milisegundos después, porque el writer por defecto escribe
-de forma asíncrona. Se diagnostica repitiendo la comprobación tras un `Thread.sleep(50)` (pasa) o con
-`redis-cli MONITOR` (el `DEL` aparece después del `EXISTS` del test). Arreglo: `immediateWrites()` en el writer, como
-en `CacheConfig`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo eliges el TTL de una caché y cómo invalidas cuando el dato cambia?»
-
-**Respuesta modelo:** el TTL lo decide el negocio: cuánto tiempo es aceptable que un usuario vea un dato viejo
-(segundos para stock, horas para un catálogo de categorías). Es la red de seguridad, no el mecanismo principal.
-Para invalidar, si la escritura pasa por mi servicio uso `@CacheEvict` (o `@CachePut` si quiero refrescar) en la
-misma operación; si el dato cambia en otro servicio, escucho un evento de cambio (Kafka o CDC con Debezium) y borro
-la clave. Conozco la carrera entre leer-viejo y borrar, y la mitigo con TTL corto o borrado doble. Añado jitter al
-TTL para que claves creadas juntas no caduquen juntas, fijo `maxmemory` y política de expulsión en Redis y mido el
-*hit ratio* para saber si la caché merece la pena.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**La caché sin TTL ni invalidación («caché eterna»).**
-
-```properties
-# MAL: sin spring.cache.redis.time-to-live -> las entradas no caducan nunca
-spring.cache.type=redis
-```
-
-```java
-@Cacheable("productos")            // y ningún @CacheEvict en los métodos que modifican productos
-public Producto buscar(long id) { ... }
-```
-
-Se ve en producción como «el cambio de precio no aparece hasta que reiniciamos Redis» y un Redis que no deja de
-crecer. Toda caché necesita un TTL y una forma de invalidar.
-
----
 ### Patrones: Read-Through, Write-Behind, Write-Through
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 4, Lección 2 de 4 · Fase 1 · 2,5 h
-`patrones.py`.
+#### ► DE QUÉ TRATA
+Implementar los patrones Read-Through, Write-Through y Write-Behind sobre Redis y PostgreSQL y comparar su consistencia, latencia y riesgo de pérdida de datos; lo compruebas cuando los 3 tests de f038-patrones-cache y los 3 de patrones de test_simuladores.py pasan, en particular…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar los patrones Read-Through, Write-Through y Write-Behind sobre Redis y PostgreSQL y comparar su consistencia, latencia y riesgo de pérdida de datos; lo compruebas cuando los 3 tests de f038-patrones-cache y los 3 de patrones de test_simuladores.py pasan, en particular cuando 100 cambios de precio llegan a la base en una escritura.**
 
-- Lección 1 de este módulo (Redis, TTL, `CacheManager` y claves `nombre::clave`).
-- Módulo 2: SQL `SELECT`/`UPDATE` y transacciones con PostgreSQL.
-- Saber qué es una cola (lista de tareas pendientes en orden de llegada).
+#### ► POR QUÉ EXISTE ESTO
+Hay dos sitios donde vive el mismo dato: la base de datos (lenta, pero segura: es la «verdad») y la caché (rápida, pero temporal). Los patrones responden a dos preguntas:
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en patrones: read-through, write-behind, write-through como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** los patrones Read-Through, Write-Through y Write-Behind sobre Redis y PostgreSQL y **comparar** su
-consistencia, latencia y riesgo de pérdida de datos; lo compruebas cuando los 3 tests de `f038-patrones-cache` y
-los 3 de patrones de `test_simuladores.py` pasan, en particular cuando 100 cambios de precio llegan a la base en
-**una** escritura.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja un **restaurante** con una **pizarra** en la entrada (la caché) y el **libro de cuentas** en la oficina (la
-base de datos).
-
-- **Read-Through:** el cliente solo mira la pizarra. Si el plato del día no está escrito, el **mesero** va a la
-  cocina, pregunta y lo escribe él mismo en la pizarra antes de contestar. El cliente nunca entra en la cocina.
-- **Write-Through:** cuando cambia un precio, el encargado lo anota **en el libro y en la pizarra** antes de decir
-  «listo». Lento, pero las dos coinciden siempre.
-- **Write-Behind:** el encargado cambia la pizarra al instante y deja un **papelito en una bandeja** («precio del
-  teclado: 200»). Al final de cada hora, el contador vacía la bandeja y apunta solo el **último** papel de cada
-  plato en el libro. Rapidísimo… y si alguien tira la bandeja a la basura antes de la hora, esos cambios se pierden.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     subgraph RT["Read-Through"]
@@ -851,65 +649,44 @@ flowchart TB
     end
 ```
 
-**Texto alternativo:** tres recuadros. Read-Through: la app pide a la caché con un cargador y solo en un MISS la
-caché consulta la base. Write-Through: la app escribe primero en la base y después en la caché, ambas de forma
-síncrona. Write-Behind: la app escribe en la caché y añade el cambio a una cola (Redis Stream); un trabajador
-programado lee la cola, agrupa los cambios y escribe un lote en la base.
+1. Hay dos sitios donde vive el mismo dato: la base de datos (lenta, pero segura: es la «verdad») y la caché (rápida, pero temporal).
+2. Los patrones responden a dos preguntas:
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Patrones: Read-Through, Write-Behind, Write-Through se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Hay dos sitios donde vive el mismo dato: la **base de datos** (lenta, pero segura: es la «verdad») y la **caché**
-(rápida, pero temporal). Los patrones responden a dos preguntas:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Patrones: Read-Through, Write-Behind, Write-Through | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. **Al leer**, ¿quién va a la base cuando la caché no tiene el dato? En **Read-Through**, la propia caché (tu código
-   solo habla con la caché).
-2. **Al escribir**, ¿cuándo se entera la base? En **Write-Through**, en el mismo momento (más lento, siempre
-   coherente). En **Write-Behind**, un poco después, en grupo (muy rápido, pero la base va por detrás y puedes
-   perder cambios si algo falla en medio).
+#### ► CUÁNDO NO USAR ESTO
+La caché como base de datos. Se ve así: el servicio escribe solo en Redis (write-behind sin cola, o con una cola en memoria) y la base «ya se actualizará»:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: patrones: read-through, write-behind, write-through funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Cache-aside frente a Read-Through.** En *cache-aside* tu código hace `GET`; si no está, consulta la base y hace
-  `SET`. En *read-through* entregas a la caché un **cargador** y ella hace todo: en Spring, `Cache.get(clave,
-  Callable)`. `@Cacheable` es cache-aside escrito por el framework; `@Cacheable(sync = true)` usa precisamente
-  `Cache.get(clave, cargador)`.
-- **Write-Through.** La operación termina cuando base **y** caché tienen el valor nuevo (`UPDATE` y luego
-  `cache.put`). Ojo: en Spring Data Redis 4 con Lettuce, `cache.put` es asíncrono por defecto; para cumplir la
-  promesa del patrón, `CacheConfig` configura el writer con `immediateWrites()` (Lección 1, sección 7). Lecturas posteriores son *hits* con el dato correcto. Coste: cada escritura paga la latencia de
-  ambas. Si usas transacciones, pon la caché **después del commit**: Spring ofrece `TransactionAwareCacheDecorator`
-  (o `transactionAware()` en el `RedisCacheManager`) para retrasar el `put` hasta que la transacción confirma.
-- **Write-Behind (write-back).** La escritura actualiza la caché y deja el cambio en una **cola duradera**; aquí un
-  **Redis Stream** (`XADD cola:precios * id 1 precio 200`). Un `@Scheduled` lee (`XRANGE`), **agrupa** (se queda con
-  el último precio por producto), escribe **un lote en una transacción** y, solo si la base confirmó, borra lo
-  procesado (`XDEL`). Si la base falla, la cola sigue intacta y se reintenta.
-- **Medición.** En `simuladores/patrones.py`, 101 escrituras de la aplicación tardan unos 10 ms con write-behind
-  (no esperan a la base) y llegan a la base en 1 sola escritura.
+#### ► LO QUE DEBES RECORDAR
+- Hay dos sitios donde vive el mismo dato: la base de datos (lenta, pero segura: es la «verdad») y la caché (rápida, pero temporal).
+- Los patrones responden a dos preguntas:
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve patrones: read-through, write-behind, write-through en tu contexto?
+2. ¿Cómo sabrías que patrones: read-through, write-behind, write-through no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar patrones: read-through, write-behind, write-through?
 
-| Patrón | Latencia de escritura | Consistencia caché/base | Riesgo | Úsalo cuando |
-|---|---|---|---|---|
-| Cache-aside | — (solo lectura) | eventual (TTL/evict) | lecturas viejas tras escribir | por defecto; la mayoría de servicios |
-| Read-Through | — | igual que cache-aside | el cargador oculta errores de la base | quieres centralizar la carga y protegerla (`sync`) |
-| Write-Through | alta (base + caché) | fuerte tras cada escritura | escrituras más lentas; caché llena de datos que nadie lee | lees mucho lo que acabas de escribir |
-| Write-Behind | mínima | la base va por detrás | **pérdida de datos** si la cola no es duradera; orden y duplicados | contadores, métricas, estados de alta frecuencia donde perder segundos es aceptable |
+</details>
 
-- **Durabilidad de la cola.** Con una cola en memoria del proceso, un reinicio pierde cambios. Con Redis Stream
-  sobrevive al reinicio del servicio, pero no a la pérdida de Redis si no tiene persistencia (AOF con
-  `appendfsync everysec` pierde como mucho ~1 s). Para datos de negocio que no pueden perderse, la alternativa
-  correcta suele ser escribir en la base y propagar con **Outbox + CDC** (Módulo 25), no write-behind.
-- **Varios trabajadores.** Con varias instancias, usa *consumer groups* de Redis Streams (`XREADGROUP`, `XACK`) para
-  que cada entrada la procese una sola instancia, y diseña la escritura de forma **idempotente** (último valor gana,
-  con versión o marca de tiempo).
-- **Alternativas.** Además de los cuatro patrones de la tabla: (1) *Refresh-ahead*: recargar antes de que caduque
-  (reduce *misses* en claves calientes). (2) Bases con caché integrada (por ejemplo, el *buffer pool* de PostgreSQL o
-  réplicas de lectura): a veces basta con eso. (3) Proyecciones materializadas alimentadas por eventos (CQRS,
-  Módulo 22).
-- **Cuándo NO usar write-behind:** pagos, inventario que se reserva, cualquier dato con obligaciones legales o que
-  otros servicios leen directamente de la base esperando verlo al instante.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **driver PostgreSQL 42.7.14**, imágenes
 **`redis:8.10.2`** y **`postgres:18.7`**. Proyecto en el código de este tema.
 
@@ -1416,238 +1193,27 @@ if __name__ == "__main__":
     r.cerrar()
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta la infraestructura y ejecuta el simulador:
-
-```bash
-docker compose up -d --wait
-cd simuladores && python3 patrones.py
-```
-
-   **Output esperado** (real; los milisegundos de la última línea varían):
-
-```text
-READ-THROUGH   lecturas: ['MISS', 'HIT', 'HIT'] -> la base se consultó 1 vez
-WRITE-THROUGH  caché: Teclado|120 (HIT) | base: Teclado|120 | escrituras en base: 1
-WRITE-BEHIND   antes de vaciar -> caché: Teclado|200 | base: Teclado|100 | pendientes en cola: 101
-WRITE-BEHIND   después de vaciar -> base: Teclado|200 | pendientes: 0 | 101 cambios en 1 escritura de base
-WRITE-BEHIND   101 escrituras de la aplicación tardaron 10 ms (sin esperar a la base)
-```
-
-   **Captura comentada:** la tercera línea es la esencia del write-behind: durante un tiempo la caché dice 200 y la
-   base 100. Cualquier proceso que lea la base directamente (un informe, otro servicio) verá el valor viejo.
-
-2. Mira la cola mientras tiene datos. En una terminal deja la app Spring corriendo con un intervalo largo:
-
-```bash
-cd ../f038-patrones-cache
-../gradlew bootRun --args=--write-behind.intervalo-ms=60000
-```
-
-   y en otra, escribe directamente en el stream y míralo:
-
-```bash
-docker compose exec redis redis-cli XADD cola:precios '*' id 1 precio 175
-docker compose exec redis redis-cli XLEN cola:precios
-```
-
-   **Output esperado:** un identificador del tipo `1763590000000-0` y `(integer) 1`. Cuando pase el intervalo,
-   el trabajador vaciará la cola: `XLEN` vuelve a `(integer) 0` y en PostgreSQL
-   (`docker compose exec postgres psql -U tienda -c "SELECT precio FROM producto WHERE id = 1"`) verás `175`.
-
-3. **Simula la pérdida.** Repite el `XADD`, detén Redis antes de que pase el intervalo y vuelve a arrancarlo:
-
-```bash
-docker compose exec redis redis-cli XADD cola:precios '*' id 1 precio 999
-docker compose restart redis
-docker compose exec redis redis-cli XLEN cola:precios
-```
-
-   **Output esperado:** `(integer) 0`. El Redis del laboratorio no tiene persistencia: el cambio a 999 **nunca
-   llegará a la base**. Esa es la ventana de pérdida del write-behind; con AOF activado se reduciría a ~1 s.
-
-#### 11. VERIFICACIÓN
-
-Tests que deben pasar (con `docker compose up -d --wait`):
-
-```bash
-(cd simuladores && python3 -m unittest -v test_simuladores.PatronesTest)
-(cd f038-patrones-cache && ../gradlew test)
-```
-
-**Output esperado:** `Ran 3 tests … OK` (real, ejecutado aquí) y 3 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
-
-`simuladores/test_simuladores.py`:
-
-```python
-"""Tests de los simuladores del Módulo 4 (necesitan los Redis de docker-compose.yml).
-
-Uso:  python3 -m unittest -v test_simuladores      (desde esta carpeta)
-"""
-import threading
-import unittest
-
-import patrones
-import redlock_fencing
-import stampede
-from resp import conectar
-
-class PatronesTest(unittest.TestCase):
-    def setUp(self):
-        self.r = conectar()
-
-    def tearDown(self):
-        self.r.cerrar()
-
-    def test_read_through_consulta_la_base_una_sola_vez(self):
-        rt = patrones.demo_read_through(self.r)
-        self.assertEqual(["MISS", "HIT", "HIT"], rt["estados"])
-        self.assertEqual(1, rt["lecturas_bd"])
-
-    def test_write_through_deja_cache_y_base_iguales(self):
-        wt = patrones.demo_write_through(self.r)
-        self.assertEqual(("Teclado|120", "HIT"), (wt["valor"], wt["estado"]))
-        self.assertEqual("Teclado|120", wt["precio_bd"])
-
-    def test_write_behind_agrupa_101_cambios_en_una_escritura(self):
-        wb = patrones.demo_write_behind(self.r)
-        self.assertEqual("Teclado|100", wb["antes"]["bd"])      # la base va por detrás
-        self.assertEqual(101, wb["antes"]["pendientes"])
-        self.assertEqual("Teclado|200", wb["despues"]["bd"])
-        self.assertEqual(1, wb["escrituras_bd"])
-
-class RedlockTest(unittest.TestCase):
-    def test_quorum_de_dos_sobre_tres(self):
-        a, b, c = redlock_fencing.escenario_mayoria()
-        self.assertEqual((3, 2, 1), (a["nodos"], b["nodos"], c["nodos"]))
-        self.assertIsNotNone(a["valor"]); self.assertIsNotNone(b["valor"]); self.assertIsNone(c["valor"])
-
-    def test_sin_fencing_la_escritura_tardia_pisa_a_b(self):
-        s = redlock_fencing.escenario_pausa(con_fencing=False)
-        self.assertEqual("total=100 (A, tarde)", s["final"])
-
-    def test_con_fencing_el_almacen_rechaza_el_token_viejo(self):
-        s = redlock_fencing.escenario_pausa(con_fencing=True)
-        self.assertLess(s["token_a"], s["token_b"])
-        self.assertEqual((1, 0), (s["acepta_b"], s["acepta_a"]))
-        self.assertEqual("total=200 (B)", s["final"])
-        self.assertEqual(0, s["liberados_por_a"])
-
-class StampedeTest(unittest.TestCase):
-    def test_sin_proteccion_todos_van_a_la_base(self):
-        self.assertEqual(stampede.HILOS, stampede.carrera(stampede.sin_proteccion, 11)["consultas"])
-
-    def test_con_candado_solo_uno_va_a_la_base(self):
-        res = stampede.carrera(stampede.con_candado, 12)
-        self.assertEqual((1, stampede.HILOS), (res["consultas"], res["respuestas"]))
-
-    def test_si_el_ganador_muere_el_ttl_del_candado_evita_el_bloqueo_eterno(self):
-        res = stampede.carrera(stampede.con_candado, 13, primer_ganador_muere=threading.Event(), ttl_candado_ms=500)
-        self.assertEqual((2, stampede.HILOS - 1), (res["consultas"], res["respuestas"]))
-
-if __name__ == "__main__":
-    unittest.main()
-```
-
-**Pregunta de comprobación:** en `WriteBehind.vaciarCola()`, ¿por qué se borra la cola **después** de
-`bd.cambiarPrecios(...)` y no antes?
-
-<details>
-<summary>Respuesta</summary>
-
-Porque si la base falla (caída, *timeout*), las entradas siguen en la cola y el siguiente ciclo las reintenta: se
-garantiza «al menos una vez». Si se borraran antes, un fallo de la base perdería los cambios. El precio de este
-orden es que, si el proceso muere entre el `UPDATE` y el `XDEL`, el lote se aplicará dos veces; por eso la escritura
-debe ser idempotente (aquí lo es: «poner el precio en 200» dos veces da el mismo resultado).
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** con Write-Through dentro de una transacción, la caché queda con un precio que **no existe** en la base.
-
-**Cómo se ve:** no hay excepción. El `UPDATE` y el `cache.put(...)` se ejecutan dentro de un método
-`@Transactional`; después del `put`, otra sentencia de la misma transacción falla (por ejemplo, una restricción
-`CHECK`) y se hace *rollback*. La API responde 500, la base conserva `100` y Redis ya tiene `120`. Lo que verías (ilustración: este escenario no
-forma parte del laboratorio, que no usa `@Transactional` en `WriteThrough`):
-
-```text
-$ docker compose exec postgres psql -U tienda -t -c "SELECT precio FROM producto WHERE id = 1"
-     100
-$ curl -s localhost:8080/productos/1     # servido desde la caché
-{"id":1,"nombre":"Teclado","precio":120}
-```
-
-**Diagnóstico visual:** dibuja una línea de tiempo con dos carriles (base y caché): el `put` en el carril de la
-caché ocurre **antes** del final de la transacción; el *rollback* solo deshace el carril de la base.
-
-**Arreglo:** escribe en la caché **después del commit**: `RedisCacheManager.builder(...).transactionAware()`, un
-`TransactionAwareCacheDecorator`, o `@TransactionalEventListener(phase = AFTER_COMMIT)`; o, más simple, invalida
-(`@CacheEvict`) en lugar de escribir.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Explica la diferencia entre write-through y write-behind y cuándo usarías cada uno.»
-
-**Respuesta modelo:** en write-through la escritura no termina hasta que la base y la caché tienen el valor, así
-que las lecturas inmediatas son coherentes, a cambio de pagar la latencia de ambas en cada escritura. En
-write-behind la aplicación escribe en la caché y en una cola, y un proceso vuelca a la base en lotes: escrituras muy
-rápidas y menos carga en la base (se pueden agrupar cambios), pero la base va por detrás y hay una ventana de
-pérdida si la cola no es duradera, además de problemas de orden y duplicados. Uso write-through cuando leo mucho lo
-que acabo de escribir y necesito coherencia; write-behind para datos de alta frecuencia donde perder unos segundos
-es aceptable (contadores, últimas posiciones). Para datos de negocio críticos prefiero escribir en la base y
-propagar con outbox.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**La caché como base de datos.** Se ve así: el servicio escribe solo en Redis (write-behind sin cola, o con una cola
-en memoria) y la base «ya se actualizará»:
-
-```java
-// MAL: la única copia del pedido vive en Redis hasta que alguien la persista
-redis.opsForValue().set("pedido:" + id, json);       // sin TTL, sin cola duradera, sin AOF
-pendientes.add(id);                                   // List en memoria del proceso
-```
-
-Un reinicio del pod o de Redis borra pedidos confirmados al cliente. La caché es una **copia** para leer rápido;
-la fuente de verdad debe ser duradera.
-
----
 ### Distributed Locking con Redlock y Fencing Tokens
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 4, Lección 3 de 4 · Fase 1 · 3 h
-`redlock_fencing.py`.
+#### ► DE QUÉ TRATA
+Implementar un candado distribuido con el algoritmo Redlock sobre 3 nodos Redis y demostrar, con un cliente pausado más allá del TTL, por qué solo un *fencing token* comprobado por el recurso protegido evita la corrupción; lo compruebas cuando los 4 tests de f039-redlock-fencing…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar un candado distribuido con el algoritmo Redlock sobre 3 nodos Redis y demostrar, con un cliente pausado más allá del TTL, por qué solo un *fencing token* comprobado por el recurso protegido evita la corrupción; lo compruebas cuando los 4 tests de f039-redlock-fencing y los 3 de Redlock de test_simuladores.py pasan, y el escenario «SIN fencing» muestra la escritura de B perdida mientras el «CON fencing» la conserva.**
 
-- Lecciones 1 y 2 de este módulo (comandos `GET`, `SET`, TTL en Redis).
-- Módulo 1: hilos virtuales y la idea de que dos cosas pueden ocurrir «a la vez».
-- Saber que un programa puede **pausarse** sin avisar (recolector de basura, máquina sobrecargada, red lenta).
+#### ► POR QUÉ EXISTE ESTO
+Cuando tu servicio corre en varias copias (instancias), a veces solo una debe hacer algo a la vez: cerrar la factura del día, cobrar un pedido, generar un informe. Un candado distribuido es un «está ocupado» que todas las copias ven. Con Redis se hace con un comando: «guarda esta clave solo si no existe, y bórrala sola en 30 segundos».
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en distributed locking con redlock y fencing tokens como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** un candado distribuido con el algoritmo Redlock sobre 3 nodos Redis y **demostrar**, con un cliente
-pausado más allá del TTL, por qué solo un *fencing token* comprobado por el recurso protegido evita la corrupción;
-lo compruebas cuando los 4 tests de `f039-redlock-fencing` y los 3 de Redlock de `test_simuladores.py` pasan, y el
-escenario «SIN fencing» muestra la escritura de B perdida mientras el «CON fencing» la conserva.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja un **baño de un tren con una llave colgada de un bloque de madera** (el candado). Para que nadie se quede
-con la llave para siempre, la llave **se autodestruye a los 5 minutos** (el TTL). La empresa, para no depender de un
-solo bloque, cuelga **tres bloques en tres vagones** distintos: tienes el baño solo si consigues **al menos dos de
-las tres llaves** (Redlock: mayoría).
-
-Ahora la parte importante: un pasajero, A, toma las llaves… y **se queda dormido** de pie diez minutos. Sus llaves
-se autodestruyen, B toma unas nuevas y entra. A despierta, **cree que aún tiene el turno** y abre la puerta. ¿Quién
-lo detiene? Solo la **puerta**, si lleva un **contador de turnos**: cada llave lleva un número impreso que siempre
-crece (33, 34…); la puerta recuerda el último número que dejó pasar (34) y **rechaza** cualquier llave con un número
-menor (33). Ese número es el *fencing token*.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant A as Cliente A
@@ -1671,67 +1237,46 @@ sequenceDiagram
     L-->>A: 0 nodos (el candado de B sigue vivo)
 ```
 
-**Texto alternativo:** diagrama de secuencia. El cliente A toma el candado en los tres nodos con SET NX PX de 300 ms
-y obtiene el token 1 del contador. A sufre una pausa de 500 ms; mientras, el TTL vence y el candado desaparece. El
-cliente B toma el candado y obtiene el token 2, escribe en el almacén con el token 2 y el almacén acepta. Cuando A
-despierta y escribe con el token 1, el almacén la rechaza porque 1 no es mayor que 2. Al intentar liberar, A no
-borra nada porque el valor guardado ya no es el suyo.
+1. Cuando tu servicio corre en varias copias (instancias), a veces solo una debe hacer algo a la vez: cerrar la factura del día, cobrar un pedido, generar un informe.
+2. Un candado distribuido es un «está ocupado» que todas las copias ven.
+3. Con Redis se hace con un comando: «guarda esta clave solo si no existe, y bórrala sola en 30 segundos».
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Distributed Locking con Redlock y Fencing Tokens se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando tu servicio corre en varias copias (instancias), a veces solo **una** debe hacer algo a la vez: cerrar la
-factura del día, cobrar un pedido, generar un informe. Un **candado distribuido** es un «está ocupado» que todas las
-copias ven. Con Redis se hace con un comando: «guarda esta clave **solo si no existe**, y bórrala sola en 30
-segundos».
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Distributed Locking con Redlock y Fencing Tokens | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Problema: una copia puede **quedarse congelada** un rato (el ordenador está ocupado, la red tarda) y, cuando
-despierta, su candado ya caducó y otra copia está trabajando. Ella no lo sabe. Por eso, además del candado, cada
-turno recibe un **número que siempre crece** (el *fencing token*), y el sistema que guarda los datos **rechaza** a
-quien llegue con un número viejo.
+#### ► CUÁNDO NO USAR ESTO
+«Tengo el candado, luego puedo escribir». Código que confía ciegamente en el candado durante una operación larga:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: distributed locking con redlock y fencing tokens funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Candado en un solo Redis.** `SET recurso <valor-aleatorio> NX PX 30000`: `NX` = solo si no existe, `PX` = TTL
-  en milisegundos. El valor aleatorio identifica al dueño. Para liberar, un **script Lua** atómico:
-  `if GET == mi_valor then DEL`. Un `DEL` a secas podría borrar el candado de **otro** si el tuyo ya caducó.
-- **Redlock** (algoritmo publicado por Redis en https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/):
-  con N nodos **independientes** (sin réplica entre ellos; N = 5 recomendado, 3 en el laboratorio):
-  1. anota la hora; 2. intenta `SET NX PX` en cada nodo con un *timeout* corto (100 ms aquí) para no atascarte en
-  un nodo caído; 3. tienes el candado si lo conseguiste en la **mayoría** (N/2 + 1) y el tiempo transcurrido es menor
-  que el TTL; 4. su **validez** es `TTL − transcurrido − deriva` (deriva = 1 % del TTL + 2 ms en la implementación
-  de referencia); 5. si fallas, liberas en **todos** los nodos.
-- **En Spring.** `StringRedisTemplate.opsForValue().setIfAbsent(clave, valor, Duration)` envía `SET … NX PX`;
-  `execute(RedisScript, claves, args)` ejecuta el Lua. La clase `Redlock` del laboratorio crea un
-  `LettuceConnectionFactory` por nodo con *timeouts* de 100 ms.
-- **Fencing token.** Un número estrictamente creciente que obtienes **después** de tomar el candado (`INCR
-  fencing:recurso`) y que envías con cada escritura. El **recurso** (la base, el almacén) guarda el último token
-  aceptado y rechaza los menores o iguales, de forma atómica (aquí, otro Lua; en SQL,
-  `UPDATE … SET token =:t WHERE id =:id AND token <:t`).
+#### ► LO QUE DEBES RECORDAR
+- Cuando tu servicio corre en varias copias (instancias), a veces solo una debe hacer algo a la vez: cerrar la factura del día, cobrar un pedido, generar un informe.
+- Un candado distribuido es un «está ocupado» que todas las copias ven.
+- Con Redis se hace con un comando: «guarda esta clave solo si no existe, y bórrala sola en 30 segundos».
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve distributed locking con redlock y fencing tokens en tu contexto?
+2. ¿Cómo sabrías que distributed locking con redlock y fencing tokens no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar distributed locking con redlock y fencing tokens?
 
-- **El debate Redlock.** Martin Kleppmann
-  (https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html) mostró que Redlock depende de
-  supuestos de tiempo (pausas acotadas, relojes que no saltan) que un sistema real no garantiza, y que **no genera
-  fencing tokens**: ningún candado basado en TTL puede impedir que un cliente pausado actúe tarde. Salvatore
-  Sanfilippo respondió defendiendo su uso con relojes monotónicos y TTL generosos. Conclusión práctica: usa un
-  candado por TTL para **eficiencia** (evitar trabajo duplicado, donde un duplicado ocasional es tolerable) y, si un
-  duplicado sería **incorrecto**, añade fencing en el recurso o usa un sistema con consenso.
-- **De dónde sale el token.** En el laboratorio, de un `INCR` en un Redis: si ese Redis pierde datos, el contador
-  podría retroceder. En producción, sácalo de algo con consenso o duradero: la revisión de etcd, el `zxid` de
-  ZooKeeper o una secuencia/columna de versión de la **propia** base que proteges (lo más simple y sólido).
-- **Alternativas.** (1) Un solo Redis con `SET NX PX`: simple; si Redis cae o hace *failover* con réplica asíncrona,
-  dos clientes pueden tener el candado. (2) Redlock: tolera la caída de una minoría de nodos; más piezas, mismos
-  límites de tiempo. (3) etcd/ZooKeeper/Consul: consenso, *leases* y tokens nativos; más operación. (4) Candados de
-  la base (`SELECT … FOR UPDATE`, `pg_advisory_lock`) o **concurrencia optimista** con columna de versión: si el
-  recurso es una base, a menudo es lo correcto y no necesitas Redis. (5) Librerías: Redisson (incluye `RLock`; su
-  `RedissonRedLock` está obsoleto) o `RedisLockRegistry` de Spring Integration (un solo Redis).
-- **Cuándo NO:** si puedes diseñar la operación como **idempotente** (clave de idempotencia, `INSERT … ON CONFLICT`)
-  o dejar que la base serialice con una restricción única, no necesitas candado distribuido. Y nunca para
-  operaciones largas sin renovar el TTL (*watchdog*).
+</details>
 
-#### 9. CÓDIGO EJECUTABLE
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código de referencia / ejecutable
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Lettuce 7.5.2**, imágenes
 **`redis:8.10.2`** (4 instancias). Sin librerías de candados: el algoritmo se ve entero. Proyecto en
 `f039-redlock-fencing`.
@@ -2248,157 +1793,27 @@ if __name__ == "__main__":
     print(f"Liberación segura  -> A intentó soltar tras expirar: borró {s['liberados_por_a']} candados (el de B sigue vivo)")
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta los 4 Redis y ejecuta el simulador:
-
-```bash
-docker compose up -d --wait redis redis-a redis-b redis-c
-cd simuladores && python3 redlock_fencing.py
-```
-
-   **Output esperado** (real; la validez puede variar en uno o dos milisegundos):
-
-```text
-3 nodos vivos      -> candado: SÍ (3/3 nodos, validez 987 ms de 1000)
-1 nodo caído       -> candado: SÍ (2/3 nodos, quorum 2)
-2 nodos caídos     -> candado: NO (1/3 nodos, quorum 2)
-SIN fencing token  -> A y B creyeron tener el candado; valor final: 'total=100 (A, tarde)'  <- se perdió la escritura de B
-CON fencing token  -> token A=1, token B=2; almacén acepta B: 1, acepta A: 0; valor final: 'total=200 (B)'
-Liberación segura  -> A intentó soltar tras expirar: borró 0 candados (el de B sigue vivo)
-```
-
-   **Captura comentada:** la línea «SIN fencing token» es el fallo que el candado **no puede** evitar: A y B
-   tuvieron el candado en momentos distintos, pero A actuó tarde. Solo el almacén, comparando tokens, lo detiene.
-   La validez de 987 ms sale de 1000 − ~1 ms de red − 12 ms de deriva.
-
-2. Mira el candado y su TTL a mano en un nodo:
-
-```bash
-cd ..
-docker compose exec redis-a redis-cli SET lock:demo yo NX PX 30000
-docker compose exec redis-a redis-cli SET lock:demo otro NX PX 30000
-docker compose exec redis-a redis-cli PTTL lock:demo
-```
-
-   **Output esperado:** `OK`, después `(nil)` (el segundo cliente no lo obtiene) y un número cercano a `30000`.
-
-3. **Rompe la mayoría.** Detén dos nodos y repite el simulador:
-
-```bash
-docker compose stop redis-b redis-c
-cd simuladores && python3 -c "import redlock_fencing as r; print(r.Redlock().adquirir('lock:x', 1000))"
-cd .. && docker compose start redis-b redis-c
-```
-
-   **Output esperado:** `{'valor': None, 'nodos': 1, 'validez_ms': 0}`: con 1 de 3 no hay candado. El servicio
-   debe tratarlo como «no puedo trabajar ahora», no como permiso.
-
-#### 11. VERIFICACIÓN
-
-Tests que deben pasar (con los 4 Redis levantados):
-
-```bash
-(cd simuladores && python3 -m unittest -v test_simuladores.RedlockTest)
-(cd f039-redlock-fencing && ../gradlew test)
-```
-
-**Output esperado:** `Ran 3 tests … OK` (real) y 4 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
-
-**Pregunta de comprobación:** si el almacén comprobara `token >= último` en vez de `token > último`, ¿qué fallaría?
-
-<details>
-<summary>Respuesta</summary>
-
-Dos escrituras con el **mismo** token serían aceptadas. Si un cliente reintenta tras un *timeout* de red, no pasa
-nada grave (es el mismo dueño), pero si por un error el mismo token llegara a dos dueños, ambos escribirían. Con
-`>` cada token habilita una sola «generación» de escrituras posteriores a la del token anterior; si necesitas
-varias escrituras por turno, compara `>=` para el mismo dueño y registra también su identidad.
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** a veces, un cliente borra el candado de **otro** y dos trabajadores procesan la misma factura.
-
-**Cómo se ve** (salida real de `redis-cli MONITOR` en un nodo; cada línea es la hora, la base, el cliente y el
-comando; los comentarios con `<-` se añadieron después):
-
-```text
-1795142566.226016 [0 127.0.0.1:42878] "SET" "lock:factura" "a1f3" "NX" "PX" "300"   <- A toma el candado
-1795142566.634236 [0 127.0.0.1:42880] "SET" "lock:factura" "9c42" "NX" "PX" "300"   <- 400 ms después: B lo obtiene
-1795142566.638350 [0 127.0.0.1:42894] "DEL" "lock:factura"                         <- A suelta con DEL a secas: borra el de B
-1795142566.642626 [0 127.0.0.1:42902] "SET" "lock:factura" "77be" "NX" "PX" "300"   <- C entra mientras B sigue trabajando
-```
-
-**Diagnóstico visual:** dibuja la línea de tiempo de cada cliente con su candado como una barra: la barra de A se
-corta por el TTL, la de B empieza, y el `DEL` de A corta la de B. Busca en el código un `delete(clave)` o `DEL`
-sin comprobar el valor.
-
-**Arreglo:** libera siempre con el script Lua que compara el valor (`if GET == ARGV[1] then DEL`), como
-`Redlock.liberar`. Y que el TTL sea mayor que la duración normal de la tarea (o renuévalo), porque aun con la
-liberación segura un TTL demasiado corto deja a dos clientes trabajando a la vez.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Es seguro Redlock para garantizar exclusión mutua? ¿Qué harías si un duplicado fuera inaceptable?»
-
-**Respuesta modelo:** Redlock da exclusión mutua solo bajo supuestos de tiempo: que las pausas de los procesos y
-los saltos de reloj sean mucho menores que el TTL. Un cliente que se pausa más que el TTL sigue creyendo que tiene
-el candado, y Redlock no genera fencing tokens para que el recurso lo detecte. Por eso lo uso para eficiencia (no
-repetir trabajo) donde un duplicado ocasional es tolerable. Si un duplicado es inaceptable, hago que el recurso
-proteja su propia corrección: un fencing token creciente (de una secuencia de la base, etcd o ZooKeeper) que el
-almacén compara atómicamente, o concurrencia optimista con columna de versión, o una restricción única que haga la
-operación idempotente. Si necesito un candado con consenso, uso etcd o ZooKeeper.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**«Tengo el candado, luego puedo escribir».** Código que confía ciegamente en el candado durante una operación
-larga:
-
-```java
-// MAL: nada impide que el candado caduque en mitad del trabajo
-if (redlock.adquirir("lock:cierre", Duration.ofSeconds(10)).adquirido()) {
-    var datos = calcularCierreDelDia();          // a veces tarda 40 s (GC, base lenta)
-    baseDeDatos.guardarCierre(datos);            // sin token: puede pisar al siguiente dueño
-}
-```
-
-En el diagrama se ve como dos barras de «trabajando» que se solapan en el tiempo. Pasa el token a la escritura, haz
-la operación idempotente, o reduce lo que se hace bajo el candado.
-
----
 ### Cache stampede y solución con locks
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 4, Lección 4 de 4 · Fase 1 · 2 h
-`stampede.py`.
+#### ► DE QUÉ TRATA
+Reproducir una estampida de caché con 50 peticiones simultáneas sobre una clave fría y resolverla con un candado por clave en Redis y TTL con *jitter*; lo compruebas cuando el test muestra que, sin protección, más de la mitad de las peticiones van a la base y, con candado, exacta…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Reproducir una estampida de caché con 50 peticiones simultáneas sobre una clave fría y resolverla con un candado por clave en Redis y TTL con *jitter*; lo compruebas cuando el test muestra que, sin protección, más de la mitad de las peticiones van a la base y, con candado, exactamente 1, y el simulador lo confirma con 50 frente a 1.**
 
-- Lección 1 de este módulo (cache-aside, TTL).
-- Lección 3 de este módulo (`SET NX PX` y liberación segura con Lua).
-- Módulo 1: hilos virtuales (`Executors.newVirtualThreadPerTaskExecutor()`).
+#### ► POR QUÉ EXISTE ESTO
+Una caché funciona muy bien… hasta el instante en que un dato muy pedido caduca (o el servicio arranca con la caché vacía). En ese instante, todas las peticiones que llegan juntas ven «no está» y todas van a la base a la vez. La base, que normalmente recibe pocas consultas gracias a la caché, recibe de golpe cientos: se pone lenta, las peticiones se acumulan y puede caerse. Eso es una estampida (*cache stampede* o *t…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en cache stampede y solución con locks como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Reproducir** una estampida de caché con 50 peticiones simultáneas sobre una clave fría y **resolverla** con un
-candado por clave en Redis y TTL con *jitter*; lo compruebas cuando el test muestra que, sin protección, más de la
-mitad de las peticiones van a la base y, con candado, exactamente **1**, y el simulador lo confirma con 50 frente a 1.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja una **panadería a las 7:00**. En el mostrador hay una bandeja (la caché) que se vacía cuando el pan caduca.
-Llegan **50 clientes a la vez** y la bandeja está vacía. Sin orden, **los 50 entran a la cocina** y cada uno pide al
-panadero una hornada completa: la cocina colapsa (la estampida). Con orden, en la puerta de la cocina hay **una sola
-ficha de «hornada en curso»** colgada de un gancho (el candado): el primero la toma y entra; los otros 49 ven el
-gancho vacío y **esperan junto al mostrador**, mirando la bandeja cada pocos segundos. Sale una hornada, se llena la
-bandeja y todos se sirven. Si el panadero se desmaya con la ficha en el bolsillo, la ficha **se evapora sola** a los
-dos minutos (TTL del candado) y otro cliente puede entrar. Y para que mañana no se vacíen todas las bandejas a la
-misma hora, cada bandeja caduca a una hora un poco distinta (*jitter*).
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     subgraph SIN["Sin protección"]
@@ -2417,66 +1832,48 @@ flowchart TB
     end
 ```
 
-**Texto alternativo:** dos recuadros. Sin protección: 50 peticiones hacen GET de la clave, las 50 reciben MISS y
-las 50 consultan la base. Con candado: las 50 hacen GET y reciben MISS; intentan SET NX PX sobre la clave de
-candado; una gana, vuelve a comprobar la caché, consulta la base una vez, guarda el valor con TTL con jitter y
-libera el candado con Lua. Las 49 que pierden esperan 20 ms y vuelven al GET, donde encuentran el valor.
+1. Una caché funciona muy bien… hasta el instante en que un dato muy pedido caduca (o el servicio arranca con la caché vacía).
+2. En ese instante, todas las peticiones que llegan juntas ven «no está» y todas van a la base a la vez.
+3. La base, que normalmente recibe pocas consultas gracias a la caché, recibe de golpe cientos: se pone lenta, las peticiones se acumulan y puede caerse.
+4. Eso es una estampida (*cache stampede* o *thundering herd*).
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cache stampede y solución con locks se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una caché funciona muy bien… hasta el instante en que un dato muy pedido **caduca** (o el servicio arranca con la
-caché vacía). En ese instante, todas las peticiones que llegan juntas ven «no está» y **todas** van a la base a la
-vez. La base, que normalmente recibe pocas consultas gracias a la caché, recibe de golpe cientos: se pone lenta, las
-peticiones se acumulan y puede caerse. Eso es una **estampida** (*cache stampede* o *thundering herd*).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cache stampede y solución con locks | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-La solución: que **solo una** petición vaya a la base a rellenar la caché y las demás **esperen** un momento y lean
-el resultado. Para que solo una vaya se usa un **candado** en Redis, como el de la lección anterior.
+#### ► CUÁNDO NO USAR ESTO
+El candado global para «arreglar» la estampida.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cache stampede y solución con locks funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Candado por clave.** `lock:<clave>` con `SET NX PX`: la petición que lo obtiene carga; las demás esperan
-  (`sleep` corto) y reintentan el `GET`. El candado es **por clave**: cargar el producto 2 no bloquea al 3.
-- **Doble comprobación.** Tras ganar el candado, vuelve a hacer `GET`: otro hilo pudo rellenar la caché entre tu
-  `MISS` y tu `SET NX`.
-- **TTL del candado.** Mayor que lo que tarda la carga (si caduca durante la carga, entra un segundo cargador) y
-  menor que la paciencia del cliente (si el cargador muere, los demás no deben esperar para siempre). Liberación con
-  Lua, comparando el valor.
-- **Límite de espera.** Los perdedores esperan como mucho `PACIENCIA` (5 s) y luego fallan con un error claro, en
-  lugar de colgar la petición.
-- **Jitter.** `conJitter(ttl)` devuelve el TTL ± 10 % al azar: claves creadas juntas (tras un despliegue o una
-  carga masiva) no caducan en el mismo segundo.
-- **¿Y `@Cacheable(sync = true)`?** Hace que Spring llame a `Cache.get(clave, cargador)`. Con Redis, la protección
-  depende del `RedisCacheWriter`: en el código de Spring Data Redis, `DefaultRedisCacheWriter.get(nombre, clave,
-  cargador, …)` solo bloquea si el *writer* se creó con bloqueo (`RedisCacheWriter.lockingRedisCacheWriter(...)`),
-  y ese bloqueo es **por caché entera** (clave `<nombre>~lock`), no por entrada. Con el *writer* por defecto (sin
-  bloqueo) no evita la estampida entre instancias. Por eso este laboratorio implementa el candado por clave a mano.
+#### ► LO QUE DEBES RECORDAR
+- Una caché funciona muy bien… hasta el instante en que un dato muy pedido caduca (o el servicio arranca con la caché vacía).
+- En ese instante, todas las peticiones que llegan juntas ven «no está» y todas van a la base a la vez.
+- La base, que normalmente recibe pocas consultas gracias a la caché, recibe de golpe cientos: se pone lenta, las peticiones se acumulan y puede caerse.
+- Eso es una estampida (*cache stampede* o *thundering herd*).
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cache stampede y solución con locks en tu contexto?
+2. ¿Cómo sabrías que cache stampede y solución con locks no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cache stampede y solución con locks?
 
-- **Alternativas.**
-  1. **Candado por clave** (este laboratorio): 1 carga por clave en todo el clúster; añade latencia de espera a los
-     perdedores y dependencia de Redis para el candado.
-  2. **Expiración temprana probabilística** (*XFetch*, Vattani et al., 2015): cada lector decide al azar, con
-     probabilidad creciente al acercarse el vencimiento, recalcular **antes** de que caduque; sin candados y sin
-     esperas, pero puede haber unas pocas recargas duplicadas.
-  3. **Servir lo viejo mientras se recarga** (*stale-while-revalidate*): guardas el valor con un «vence lógico» más
-     corto que el TTL real; el primero que lo ve vencido recarga en segundo plano (con candado) y los demás reciben el
-     valor viejo al instante. Cero esperas, a cambio de servir datos algo desactualizados.
-  4. **Refresh-ahead / precalentamiento**: un proceso recarga las claves calientes antes de que venzan o al
-  desplegar.
-  5. **Coalescencia local** (*single-flight*): dentro de una instancia, un `ConcurrentHashMap<clave,
-     CompletableFuture>` (o Caffeine `AsyncLoadingCache`) hace que los hilos esperen la misma carga; no coordina
-     entre instancias, pero reduce N×hilos a N instancias, sin red.
-- **Combínalas.** Lo habitual en producción: jitter siempre, single-flight local, y candado distribuido o
-  stale-while-revalidate para las claves más calientes.
-- **Protege también la base.** Aunque la caché falle, un *bulkhead* o un límite de conexiones (Módulo 8) evita que
-  una estampida la tumbe.
-- **Cuándo NO hace falta:** claves con poco tráfico concurrente (la estampida es de 2 o 3 peticiones), cargas
-  baratas (milisegundos) o datos que precalientas siempre. Un candado distribuido en cada lectura añade latencia y
-  un punto de fallo: úsalo donde la carga sea cara **y** la clave esté caliente.
+</details>
 
-#### 9. CÓDIGO EJECUTABLE
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código de referencia / ejecutable
 Versiones: **JDK 25** (hilos virtuales en el test), **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**,
 **Lettuce 7.5.2**, imagen **`redis:8.10.2`**. Proyecto en el código de este tema.
 
@@ -2874,119 +2271,4 @@ if __name__ == "__main__":
           f"a la base (el candado expiró a los 500 ms y otro hilo recargó) en {c['ms']:.0f} ms")
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta el simulador:
-
-```bash
-docker compose up -d --wait redis
-cd simuladores && python3 stampede.py
-```
-
-   **Output esperado** (real; los milisegundos varían):
-
-```text
-SIN protección  -> 50 respuestas, 50 consultas a la base
-CON candado     -> 50 respuestas, 1 consulta a la base
-Ganador muere   -> 49 respuestas, 1 hilo muerto, 2 consultas a la base (el candado expiró a los 500 ms y otro hilo recargó) en 734 ms
-```
-
-   **Captura comentada:** la tercera línea prueba el TTL del candado: el primer ganador consultó la base y «murió» sin
-   escribir ni soltar; los demás esperaron hasta que el candado caducó (500 ms), uno de ellos recargó (2.ª consulta)
-   y los 49 restantes respondieron. Sin TTL en el candado, esos 49 hilos habrían esperado para siempre.
-
-2. Ejecuta los tests de Spring y observa los contadores impresos:
-
-```bash
-cd ../f040-cache-stampede && ../gradlew test
-```
-
-   **Output esperado:** en la salida de los tests, `SIN protección: 50 consultas a la base` (puede salir algo menos
-   en una máquina muy cargada; el test exige más de 25) y `CON candado: 1 consulta a la base`, y al final
-   22 líneas `PASSED` (una por test) (2 tests más 20 repeticiones del test de jitter).
-
-3. **Mira la estampida en Redis.** En otra terminal, antes del paso 2:
-
-```bash
-docker compose exec redis redis-cli MONITOR | grep -c '"lock:catalogo::2"'
-```
-
-   Pulsa Ctrl+C cuando terminen los tests. **Output esperado:** cientos de intentos `SET lock:catalogo::2 … NX PX
-   2000` (uno por cada vuelta de espera de los 49 perdedores), pero un solo `SET catalogo::2` con valor.
-
-#### 11. VERIFICACIÓN
-
-Tests que deben pasar (con `docker compose up -d --wait redis`):
-
-```bash
-(cd simuladores && python3 -m unittest -v test_simuladores.StampedeTest)
-(cd f040-cache-stampede && ../gradlew test)
-```
-
-**Output esperado:** `Ran 3 tests … OK` (real) y 22 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
-
-**Pregunta de comprobación:** en `CargadorConCandado`, ¿qué pasaría si quitaras la segunda llamada a
-`redis.opsForValue().get(clave)` (la doble comprobación) dentro del bloque del ganador?
-
-<details>
-<summary>Respuesta</summary>
-
-Un hilo que vio `MISS` justo antes de que el primer ganador escribiera y soltara el candado podría ganar el
-candado **después**, y volvería a consultar la base aunque el valor ya esté en la caché. El resultado seguiría
-siendo correcto, pero la base recibiría consultas de más (2, 3…) en lugar de exactamente 1. La doble comprobación
-cierra esa ventana.
 </details>
-
-#### 12. ERROR COMÚN
-
-**Síntoma:** pones el candado, pero con un TTL **menor** que lo que tarda la carga (por ejemplo `PX 100` con una
-consulta de 200 ms): sigues viendo varias consultas a la base y, con mala suerte, valores escritos dos veces.
-
-**Cómo se ve** (simulador con el TTL del candado reducido a 100 ms; ejecuta desde `simuladores/`):
-
-```bash
-python3 -c "import stampede as s; print(s.carrera(s.con_candado, 7, ttl_candado_ms=100)['consultas'])"
-```
-
-```text
-2
-```
-
-**Diagnóstico visual:** dibuja la barra del candado (100 ms) bajo la barra de la carga (200 ms): el candado se
-evapora a mitad de la carga, otro hilo lo toma y entra en la cocina mientras el primero aún hornea. En
-`redis-cli MONITOR` verás un segundo `SET lock:… NX PX 100` con respuesta OK antes del `SET` del valor.
-
-**Arreglo:** TTL del candado = duración máxima esperada de la carga con margen (aquí 2 s para 200 ms), o renovarlo
-mientras se carga; y mide la duración real de la carga (p99) antes de elegirlo.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Tu servicio cae cada vez que caduca la clave del catálogo de portada. ¿Qué está pasando y cómo lo resuelves?»
-
-**Respuesta modelo:** es una estampida de caché: al caducar una clave muy caliente, todas las peticiones
-concurrentes ven *miss* y van a la base a la vez, que se satura. Lo confirmo con métricas (picos de consultas y
-latencia de la base alineados con el vencimiento del TTL). Lo resuelvo por capas: jitter en el TTL para que no
-caduquen juntas; coalescencia local (single-flight) para que en cada instancia solo un hilo cargue; y, para esa clave,
-un candado por clave en Redis con doble comprobación y TTL del candado mayor que la carga, o mejor aún
-stale-while-revalidate para no hacer esperar a nadie, o refresco anticipado. Además protejo la base con un límite
-de concurrencia para que una estampida no la tumbe.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El candado global para «arreglar» la estampida.**
-
-```java
-// MAL: un único candado para TODA la caché, y sin TTL
-synchronized (CatalogoServicio.class) {                     // o SET lock:catalogo sin PX
-    String valor = redis.opsForValue().get(clave);
-    if (valor == null) { valor = base.descripcion(id); redis.opsForValue().set(clave, valor); }
-    return valor;
-}
-```
-
-En una instancia serializa **todas** las claves (cargar el producto 2 bloquea las lecturas del 3, aunque estén en
-caché); en el clúster, si el candado no tiene TTL, un proceso que muere lo deja tomado para siempre. Se ve como una
-cola de hilos esperando en el *thread dump* y la latencia de todas las rutas subiendo a la vez. El candado debe ser
-por clave, con TTL y solo en el camino del *miss*.
-
----

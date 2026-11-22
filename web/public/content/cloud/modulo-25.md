@@ -3,13 +3,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: AWS Config — rastrear reglas sobre tus recursos · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar la regla que, contra AWS real, vigilaría que el bucket de evidencias de entrega de RutaFlow (`pruebas-entrega`, Módulo 2) siempre tenga versionado activo. Prerrequisitos: Módulo 2 completo.
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita saber si alguien, por error, desactiva el versionado de `pruebas-entrega` — sin que un humano tenga que revisar la configuración de ese bucket manualmente cada semana.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a declarar la regla que, contra AWS real, vigilaría que el bucket de evidencias de entrega de RutaFlow (pruebas-entrega, Módulo 2) siempre tenga versionado activo. Prerrequisitos: Módulo 2 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a declarar la regla que, contra AWS real, vigilaría que el bucket de evidencias de entrega de RutaFlow (pruebas-entrega, Módulo 2) siempre tenga versionado activo.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Una regla de Config es un checklist ("este bucket debe tener versionado"); el grabador conserva evidencia de qué recursos existen; el estado de cumplimiento agrupa el resultado de aplicar el checklist a cada uno.
 
 **Conceptos clave:** regla de configuración, grabador de configuración, paquete de conformidad, estado de cumplimiento.
@@ -43,26 +52,80 @@ aws configservice describe-compliance-by-config-rule --config-rule-names demo-s3
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Define una regla de configuración para los recursos de evidencias. Introduce una desviación controlada y registra tanto el resultado de evaluación como la corrección aplicada al recurso afectado.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que aws config — rastrear reglas sobre tus recursos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| AWS Config — rastrear reglas sobre tus recursos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar AWS Config — rastrear reglas sobre tus recursos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses aws config — rastrear reglas sobre tus recursos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: aws config — rastrear reglas sobre tus recursos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- AWS Config — rastrear reglas sobre tus recursos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve aws config — rastrear reglas sobre tus recursos en tu contexto?
+2. ¿Cómo sabrías que aws config — rastrear reglas sobre tus recursos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar aws config — rastrear reglas sobre tus recursos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-1-config-rule.sh — ejecutar con: bash tema-1-config-rule.sh
+aws configservice put-config-rule --config-rule '{"ConfigRuleName":"demo-s3-versionado","Source":{"Owner":"AWS","SourceIdentifier":"S3_BUCKET_VERSIONING_ENABLED"}}'
+aws configservice describe-config-rules --query "ConfigRules[?ConfigRuleName=='demo-s3-versionado']"
+aws configservice describe-compliance-by-config-rule --config-rule-names demo-s3-versionado
+```
+
 ```bash
 aws configservice put-config-rule --config-rule '{"ConfigRuleName":"pruebas-entrega-versionado","Source":{"Owner":"AWS","SourceIdentifier":"S3_BUCKET_VERSIONING_ENABLED"}}'
 aws configservice describe-config-rules --query "ConfigRules[?ConfigRuleName=='pruebas-entrega-versionado']"
 ```
-Resultado esperado: la regla queda registrada y consultable — lista para que, contra AWS real, Config la evalúe automáticamente sobre cada bucket de la cuenta, incluyendo `pruebas-entrega`.
-#### Paso 5 · Práctica guiada
-Pista: corré `aws configservice describe-compliance-by-config-rule --config-rule-names pruebas-entrega-versionado` esperando ver `COMPLIANT` o `NON_COMPLIANT` — ese es el fallo deliberado (o más bien, la limitación real que advierte este Tema): la respuesta es siempre `INSUFFICIENT_DATA`, porque Floci nunca evalúa si `pruebas-entrega` realmente tiene versionado activo, solo gestiona el plano de la regla en sí.
-#### Paso 6 · Práctica independiente
-Agrupá esta regla dentro de un paquete de conformidad (`put-conformance-pack`) junto a una segunda regla imaginaria sobre cifrado, y documentá por escrito quién sería el responsable de revisar manualmente el cumplimiento real mientras Floci no lo evalúe.
-#### Paso 7 · Cierre
-Entregá la regla creada, el `INSUFFICIENT_DATA` del Paso 5, y el paquete de conformidad del Paso 6; explicá por qué `INSUFFICIENT_DATA` nunca debería reportarse como "cumple" en ningún dashboard real. Siguiente paso: AppConfig. Errores comunes: reglas sin responsable y falsos positivos. Fuente oficial: https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html.
+
+</details>
 
 ### Tema 2: AppConfig — desplegar configuración sin redeployar código · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a crear un feature flag real para activar el modo mantenimiento del servicio de seguimiento (Módulo 24), sin recompilar ni redesplegar nada. Prerrequisitos: Módulo 24 completo.
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita poder apagar temporalmente el servicio de seguimiento (por ejemplo, durante una migración de `ShipmentEvents`) en minutos, no esperando un ciclo completo de CI/CD para cambiar una sola bandera.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear un feature flag real para activar el modo mantenimiento del servicio de seguimiento (Módulo 24), sin recompilar ni redesplegar nada.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 AppConfig es un archivador por aplicación, entorno y perfil: cada cambio de configuración queda versionado y auditable, como un despliegue de código, no como sobrescribir un archivo a mano.
 
 **Conceptos clave:** aplicación, entorno, perfil de configuración, estrategia de despliegue.
@@ -99,7 +162,61 @@ aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Controla la activación de un proveedor de notificaciones mediante configuración versionada. Prueba un despliegue gradual y una reversión manteniendo el mismo artefacto de aplicación.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que appconfig — desplegar configuración sin redeployar código resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| AppConfig — desplegar configuración sin redeployar código se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar AppConfig — desplegar configuración sin redeployar código | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses appconfig — desplegar configuración sin redeployar código por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: appconfig — desplegar configuración sin redeployar código funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- AppConfig — desplegar configuración sin redeployar código existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve appconfig — desplegar configuración sin redeployar código en tu contexto?
+2. ¿Cómo sabrías que appconfig — desplegar configuración sin redeployar código no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar appconfig — desplegar configuración sin redeployar código?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-2-appconfig.sh — ejecutar con: bash tema-2-appconfig.sh
+APP_ID=$(aws appconfig create-application --name demo-config --query 'Id' --output text)
+ENV_ID=$(aws appconfig create-environment --application-id "$APP_ID" --name dev --query 'Id' --output text)
+PROFILE_ID=$(aws appconfig create-configuration-profile --application-id "$APP_ID" \
+  --name feature-flags --location-uri hosted --type AWS.Freeform --query 'Id' --output text)
+aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
+  --configuration-profile-id "$PROFILE_ID" --content '{"modo_mantenimiento": false}' --content-type application/json
+```
+
 ```bash
 APP_ID=$(aws appconfig create-application --name demo-config --query 'Id' --output text)
 ENV_ID=$(aws appconfig create-environment --application-id "$APP_ID" --name dev --query 'Id' --output text)
@@ -108,21 +225,24 @@ PROFILE_ID=$(aws appconfig create-configuration-profile --application-id "$APP_I
 aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
   --configuration-profile-id "$PROFILE_ID" --content '{"modo_mantenimiento": false}' --content-type application/json
 ```
-Resultado esperado: la versión 1 de la configuración queda registrada con `modo_mantenimiento: false` — el feature flag ya existe, aunque todavía no se desplegó a ningún entorno.
-#### Paso 5 · Práctica guiada
-Pista: intentá publicar un contenido JSON mal formado (`--content '{modo_mantenimiento: false'`, sin cerrar llaves ni comillas) como una nueva versión — ese es el fallo deliberado: la llamada se rechaza antes de crear la versión, porque AppConfig exige que el contenido sea JSON válido según el `--content-type` declarado.
-#### Paso 6 · Práctica independiente
-Creá una segunda versión con `"modo_mantenimiento": true`, desplegala al entorno `dev` con una estrategia inmediata, y simulá un rollback desplegando de nuevo la versión 1 — confirmá que ambas versiones siguen existiendo por separado, nunca se sobrescriben.
-#### Paso 7 · Cierre
-Entregá la aplicación/entorno/perfil creados, el JSON inválido rechazado del Paso 5, y el despliegue más rollback del Paso 6; explicá por qué separar "cambios de configuración" de "cambios de código" permite reaccionar en minutos. Siguiente paso: sesiones. Errores comunes: configuración global y sin validación. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html.
+
+</details>
 
 ### Tema 3: AppConfigData — el plano de datos que consume tu aplicación · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a leer el feature flag del Tema 2 exactamente como lo leería el servicio de seguimiento en ejecución, sin reiniciarse. Prerrequisitos: Tema 2 de este módulo.
-#### Paso 2 · Contexto y caso real
-El servicio de seguimiento necesita enterarse de que `modo_mantenimiento` cambió a `true` sin que nadie lo reinicie — el plano de gestión (Tema 2) y el plano de datos que consume la aplicación son dos cosas distintas.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a leer el feature flag del Tema 2 exactamente como lo leería el servicio de seguimiento en ejecución, sin reiniciarse.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 La sesión de AppConfigData entrega un token; cada consulta posterior con ese token devuelve solo lo que cambió desde la última vez, como suscribirte a las actualizaciones de un documento en vez de redescargarlo entero.
 
 **Conceptos clave:** sesión de configuración, `GetLatestConfiguration`, token de configuración.
@@ -163,8 +283,65 @@ aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Haz que el consumidor consulte configuración usando el protocolo del plano de datos. Registra versión y renovación de la sesión sin interpretar una respuesta sin cambios como una configuración vacía.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que appconfigdata — el plano de datos que consume tu aplicación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| AppConfigData — el plano de datos que consume tu aplicación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar AppConfigData — el plano de datos que consume tu aplicación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses appconfigdata — el plano de datos que consume tu aplicación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: appconfigdata — el plano de datos que consume tu aplicación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- AppConfigData — el plano de datos que consume tu aplicación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve appconfigdata — el plano de datos que consume tu aplicación en tu contexto?
+2. ¿Cómo sabrías que appconfigdata — el plano de datos que consume tu aplicación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar appconfigdata — el plano de datos que consume tu aplicación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-3-appconfigdata.sh — ejecutar con: bash tema-3-appconfigdata.sh
+# Los tres IDs se recuperan por nombre, no de la sesión de terminal del Tema 2.
+APP_ID=$(aws appconfig list-applications --query "Items[?Name=='demo-config'].Id | [0]" --output text)
+ENV_ID=$(aws appconfig list-environments --application-id "$APP_ID" --query "Items[?Name=='dev'].Id | [0]" --output text)
+PROFILE_ID=$(aws appconfig list-configuration-profiles --application-id "$APP_ID" \
+  --query "Items[?Name=='feature-flags'].Id | [0]" --output text)
+
+TOKEN=$(aws appconfigdata start-configuration-session \
+  --application-identifier "$APP_ID" --environment-identifier "$ENV_ID" \
+  --configuration-profile-identifier "$PROFILE_ID" --query InitialConfigurationToken --output text)
+aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -175,21 +352,24 @@ TOKEN=$(aws appconfigdata start-configuration-session \
   --configuration-profile-identifier "$PROFILE_ID" --query InitialConfigurationToken --output text)
 aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
 ```
-Resultado esperado: tras el despliegue del Tema 2, `get-latest-configuration` devuelve el JSON real (`{"modo_mantenimiento": false}` o `true`, según la versión desplegada) junto con un nuevo token para la siguiente consulta.
-#### Paso 5 · Práctica guiada
-Pista: guardá el token de la respuesta anterior, y llamá `get-latest-configuration` DOS VECES con el mismo token viejo (sin usar el token nuevo que cada respuesta te devuelve) — ese es el fallo deliberado: reusar un token ya consumido no te da la configuración más reciente de forma confiable, porque el protocolo espera que siempre avances al token que la última respuesta te entregó.
-#### Paso 6 · Práctica independiente
-Llamá `get-latest-configuration` dos veces seguidas con el token correcto (encadenando cada nuevo token) sin que nadie despliegue nada entre medio, y confirmá que la segunda respuesta viene vacía — ahorrando ancho de banda cuando no hay novedades.
-#### Paso 7 · Cierre
-Entregá la lectura real del flag del Paso 4, el error de reusar un token viejo del Paso 5, y la respuesta vacía por no-cambio del Paso 6; explicá por qué el servicio de seguimiento debería abrir una sola sesión y reusar el token, no abrir una sesión nueva en cada petición. Siguiente paso: backups. Errores comunes: polling excesivo y tokens compartidos. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-retrieving-simplified.html.
+
+</details>
 
 ### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a centralizar el respaldo diario de `ShipmentEvents` (Módulo 4) en un plan de AWS Backup, en vez de gestionar snapshots sueltos servicio por servicio. Prerrequisitos: Módulo 4 completo.
-#### Paso 2 · Contexto y caso real
-RutaFlow necesita recuperar `ShipmentEvents` tras un incidente sin depender de que alguien se acuerde de respaldar esa tabla específica a mano, mientras otros equipos gestionan por separado los respaldos de RDS o S3.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a centralizar el respaldo diario de ShipmentEvents (Módulo 4) en un plan de AWS Backup, en vez de gestionar snapshots sueltos servicio por servicio. Prerrequisitos: Módulo 4 completo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a centralizar el respaldo diario de ShipmentEvents (Módulo 4) en un plan de AWS Backup, en vez de gestionar snapshots sueltos servicio por servicio.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Una bóveda guarda los puntos de recuperación; un plan define cuándo y con qué frecuencia respaldar; una selección asigna recursos concretos (por ARN) a ese plan — una sola póliza en vez de varias independientes por servicio.
 
 **Conceptos clave:** bóveda de respaldo, plan de respaldo, selección de recursos, punto de recuperación.
@@ -226,7 +406,61 @@ aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selectio
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asigna retención y objetivos de recuperación a los datos de entregas. Selecciona los recursos cubiertos y demuestra una restauración de prueba; una política creada sin recuperación observada no cierra el incremento.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que aws backup — centralizar la política de respaldo de múltiples servicios resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| AWS Backup — centralizar la política de respaldo de múltiples servicios se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar AWS Backup — centralizar la política de respaldo de múltiples servicios | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses aws backup — centralizar la política de respaldo de múltiples servicios por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: aws backup — centralizar la política de respaldo de múltiples servicios funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- AWS Backup — centralizar la política de respaldo de múltiples servicios existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve aws backup — centralizar la política de respaldo de múltiples servicios en tu contexto?
+2. ¿Cómo sabrías que aws backup — centralizar la política de respaldo de múltiples servicios no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar aws backup — centralizar la política de respaldo de múltiples servicios?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-4-backup-plan.sh — ejecutar con: bash tema-4-backup-plan.sh
+aws backup create-backup-vault --backup-vault-name demo-boveda
+PLAN_ID=$(aws backup create-backup-plan --backup-plan \
+  '{"BackupPlanName":"demo-diario","Rules":[{"RuleName":"diario","TargetBackupVaultName":"demo-boveda","ScheduleExpression":"cron(0 12 * * ? *)"}]}' \
+  --query 'BackupPlanId' --output text)
+aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selection \
+  '{"SelectionName":"tablas-demo","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas"]}'
+```
+
 ```bash
 aws backup create-backup-vault --backup-vault-name demo-boveda
 PLAN_ID=$(aws backup create-backup-plan --backup-plan \
@@ -235,21 +469,24 @@ PLAN_ID=$(aws backup create-backup-plan --backup-plan \
 aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selection \
   '{"SelectionName":"shipment-events","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"]}'
 ```
-Resultado esperado: la bóveda, el plan y la selección quedan creados y encadenados — `ShipmentEvents` ahora tiene un respaldo diario automático a las 12:00, sin que nadie tenga que ejecutarlo a mano.
-#### Paso 5 · Práctica guiada
-Pista: creá un segundo plan de respaldo pero olvidá agregarle una `backup-selection` con ningún recurso — ese es el fallo deliberado: el plan existe y corre según su cron, pero como no protege ningún recurso real, nunca genera ningún punto de recuperación; un plan sin selección es, en la práctica, un plan que no respalda nada.
-#### Paso 6 · Práctica independiente
-Documentá, para `ShipmentEvents`, qué retención tendría sentido (pista: `Lifecycle.DeleteAfterDays` en la regla del plan) y qué RPO/RTO reales implicaría un cron diario a las 12:00 si el incidente ocurriera a las 11:59.
-#### Paso 7 · Cierre
-Entregá el plan y selección creados sobre `ShipmentEvents`, el plan sin recursos del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué centralizar el respaldo reduce el riesgo de que un servicio quede sin protección por descuido. Siguiente paso: jobs. Errores comunes: backup sin restore y selección incompleta. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html.
+
+</details>
 
 ### Tema 5: El ciclo de vida de un trabajo de respaldo · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a disparar un respaldo bajo demanda de `ShipmentEvents` antes de una migración riesgosa, sin esperar al cron diario del Tema 4. Prerrequisitos: Tema 4 de este módulo.
-#### Paso 2 · Contexto y caso real
-Antes de aplicar una migración de esquema arriesgada sobre `ShipmentEvents` (como las del Módulo 13, pero aplicadas acá a DynamoDB), RutaFlow necesita un punto de recuperación fresco AHORA, no el que generó el cron a las 12:00 de ayer.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a disparar un respaldo bajo demanda de ShipmentEvents antes de una migración riesgosa, sin esperar al cron diario del Tema 4. Prerrequisitos: Tema 4 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a disparar un respaldo bajo demanda de ShipmentEvents antes de una migración riesgosa, sin esperar al cron diario del Tema 4.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El estado del job de respaldo es un semáforo (`CREATED → RUNNING → COMPLETED`) que te dice si ya es seguro continuar con la migración o si todavía hay que esperar.
 
 **Conceptos clave:** `CREATED → RUNNING → COMPLETED`, punto de recuperación, `StopBackupJob`.
@@ -288,8 +525,61 @@ aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'Number
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue un trabajo de respaldo desde solicitud hasta estado terminal. Simula o registra un fallo y comprueba que la automatización no anuncia éxito mientras el trabajo continúe pendiente.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que el ciclo de vida de un trabajo de respaldo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El ciclo de vida de un trabajo de respaldo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El ciclo de vida de un trabajo de respaldo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el ciclo de vida de un trabajo de respaldo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el ciclo de vida de un trabajo de respaldo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El ciclo de vida de un trabajo de respaldo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el ciclo de vida de un trabajo de respaldo en tu contexto?
+2. ¿Cómo sabrías que el ciclo de vida de un trabajo de respaldo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el ciclo de vida de un trabajo de respaldo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-5-ciclo-de-vida.sh — ejecutar con: bash tema-5-ciclo-de-vida.sh
+JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
+  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas \
+  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
+sleep 4
+aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
+aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -301,74 +591,205 @@ JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
 sleep 4
 aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
 ```
-Resultado esperado: el estado pasa de `CREATED` a `RUNNING` y, tras unos segundos, a `COMPLETED` — recién en ese momento, no antes, es seguro decir que el punto de recuperación de `ShipmentEvents` ya existe y la migración riesgosa puede empezar.
-#### Paso 5 · Práctica guiada
-Pista: iniciá un segundo job y, mientras todavía está en `RUNNING`, corré `aws backup stop-backup-job --backup-job-id <ese-id>` — ese es el fallo deliberado si lo hacés pensando que podés "pausar y reanudar": el job queda cancelado por completo, no pausado; si todavía necesitás ese respaldo, hay que iniciar un job nuevo desde cero.
-#### Paso 6 · Práctica independiente
-Confirmá con `describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'` que el contador subió por el job `COMPLETED` del Paso 4, y después intentá borrar `demo-boveda` con `delete-backup-vault` — confirmá el error `InvalidRequestException`, porque ahora sí hay un punto de recuperación real protegiéndola.
-#### Paso 7 · Cierre
-Entregá el job completado del Paso 4, la cancelación irreversible del Paso 5, y la bóveda protegida del Paso 6; explicá por qué asumir éxito apenas se crea el job (en vez de esperar `COMPLETED`) sería un error antes de empezar una migración riesgosa. Siguiente paso: continuidad. Errores comunes: asumir éxito por creación y no revisar estado final. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/working-with-backups.html.
 
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** desplegar un cambio de configuración dinámica con AppConfig sin tocar código, y crear un plan de respaldo en AWS Backup que protege una tabla DynamoDB con un trabajo bajo demanda.
-
-**Requisitos previos:** una tabla DynamoDB existente (puedes reutilizar la del Módulo 4) y un rol IAM de ejemplo para el plan de respaldo.
+</details>
 
 ### Laboratorio 25.1 — Configuración dinámica con AppConfig
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea la aplicación y el entorno | `aws appconfig create-application --name mi-app` luego `aws appconfig create-environment --application-id <app-id> --name dev` | Define el contenedor lógico y el entorno de despliegue | IDs de aplicación y entorno |
-| 2 | Crea el perfil y la versión de configuración | `aws appconfig create-configuration-profile --application-id <app-id> --name mi-perfil --location-uri hosted --type AWS.Freeform` luego `aws appconfig create-hosted-configuration-version --application-id <app-id> --configuration-profile-id <perfil-id> --content '{"modo_mantenimiento": false}' --content-type application/json` | El contenido real que se desplegará | Un `VersionNumber` |
-| 3 | Crea una estrategia de despliegue inmediata | `aws appconfig create-deployment-strategy --name inmediata --deployment-duration-in-minutes 0 --growth-factor 100 --final-bake-time-in-minutes 0` | Define que el cambio se aplique de una sola vez, sin gradualidad | Un `DeploymentStrategyId` |
-| 4 | Despliega la configuración | `aws appconfig start-deployment --application-id <app-id> --environment-id <env-id> --configuration-profile-id <perfil-id> --configuration-version 1 --deployment-strategy-id <estrategia-id>` | Publica la versión 1 en el entorno `dev` | Estado del despliegue |
-| 5 | Recupérala desde el plano de datos | `TOKEN=$(aws appconfigdata start-configuration-session --application-identifier <app-id> --environment-identifier <env-id> --configuration-profile-identifier <perfil-id> --query InitialConfigurationToken --output text)` luego `aws appconfigdata get-latest-configuration --configuration-token $TOKEN` | Simula cómo tu aplicación leería la configuración en ejecución | El JSON `{"modo_mantenimiento": false}` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 25.1 — configuración dinámica con appconfig con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 25.1 — configuración dinámica con appconfig te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 25.1 — configuración dinámica con appconfig como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 25.1 — configuración dinámica con appconfig resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 25.1 — Configuración dinámica con AppConfig se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 25.1 — Configuración dinámica con AppConfig | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 25.1 — configuración dinámica con appconfig por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 25.1 — configuración dinámica con appconfig funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 25.1 — Configuración dinámica con AppConfig existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 25.1 — configuración dinámica con appconfig en tu contexto?
+2. ¿Cómo sabrías que laboratorio 25.1 — configuración dinámica con appconfig no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 25.1 — configuración dinámica con appconfig?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 25.1 — configuración dinámica con appconfig.
+
+</details>
 
 ### Laboratorio 25.2 — Plan de respaldo para DynamoDB
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Crea la bóveda | `aws backup create-backup-vault --backup-vault-name mi-boveda` | El destino donde se almacenarán los puntos de recuperación | Confirmación de la bóveda |
-| 2 | Crea el plan con una regla diaria | `aws backup create-backup-plan --backup-plan '{"BackupPlanName":"respaldo-diario","Rules":[{"RuleName":"diario","TargetBackupVaultName":"mi-boveda","ScheduleExpression":"cron(0 12 * * ? *)"}]}'` | Define la política de respaldo programado | Un `BackupPlanId` |
-| 3 | Asigna tu tabla DynamoDB al plan | `aws backup create-backup-selection --backup-plan-id <plan-id> --backup-selection '{"SelectionName":"mis-tablas","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/mi-tabla"]}'` | Conecta el recurso real con la política del plan | Un `SelectionId` |
-| 4 | Inicia un respaldo bajo demanda | `aws backup start-backup-job --backup-vault-name mi-boveda --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/mi-tabla --iam-role-arn arn:aws:iam::000000000000:role/backup-role` | No esperas al cron; respaldas ahora mismo | Un `BackupJobId` con estado `CREATED` |
-| 5 | Sondea hasta `COMPLETED` | `aws backup describe-backup-job --backup-job-id <job-id>` | Confirma la transición de estados | `State: COMPLETED` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Verificación:** el laboratorio se considera exitoso si `get-latest-configuration` devuelve el JSON exacto que desplegaste con AppConfig, y si `describe-backup-job` reporta `State: COMPLETED` con un punto de recuperación visible en `list-recovery-points-by-backup-vault` para tu bóveda.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 25.2 — plan de respaldo para dynamodb con foco en comprensión antes de implementación.
 
-**Errores comunes y soluciones**
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 25.2 — plan de respaldo para dynamodb te permite tomar mejores decisiones técnicas.**
 
-- **`GetLatestConfiguration` devuelve vacío en la primera llamada.** Es el comportamiento esperado si no hubo cambios desde el token inicial de la sesión; asegúrate de haber ejecutado `start-deployment` antes de abrir la sesión, o abre una sesión nueva después del despliegue.
-- **`DeleteBackupVault` falla con `InvalidRequestException`.** La bóveda todavía contiene puntos de recuperación; elimínalos primero con `delete-recovery-point`, o acepta que una bóveda usada no se puede borrar hasta vaciarla — el mismo principio de protección contra pérdida accidental de datos.
-- **`create-backup-selection` falla silenciosamente sin asignar recursos.** Verifica que el ARN del recurso esté completo y correctamente formado; un ARN mal escrito no lanza un error de validación fuerte en todos los casos, pero tampoco protegerá el recurso real.
-- **El estado de cumplimiento en Config siempre es `INSUFFICIENT_DATA`.** Es el comportamiento documentado de Floci: la evaluación real de cumplimiento no está implementada; usa este servicio para practicar el flujo de gestión de reglas, no para validar cumplimiento real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
----
+#### ► LA ANALOGÍA
+Piensa en laboratorio 25.2 — plan de respaldo para dynamodb como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-## Laboratorio de transferencia
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 25.2 — plan de respaldo para dynamodb resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 25.2 — Plan de respaldo para DynamoDB se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 25.2 — Plan de respaldo para DynamoDB | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 25.2 — plan de respaldo para dynamodb por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 25.2 — plan de respaldo para dynamodb funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 25.2 — Plan de respaldo para DynamoDB existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 25.2 — plan de respaldo para dynamodb en tu contexto?
+2. ¿Cómo sabrías que laboratorio 25.2 — plan de respaldo para dynamodb no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 25.2 — plan de respaldo para dynamodb?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 25.2 — plan de respaldo para dynamodb.
+
+</details>
 
 ### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup · Avanzado · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. **Prerrequisitos:** archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El proyecto integrador de cloud guarda entregas, pero ver una copia en un listado no demuestra que pueda recuperarse. **¿Por qué es importante?** Una restauración debe comprobar datos, permisos, dependencias y tiempo de recuperación; empezaremos comprobando contenido sin tocar el original.
+#### ► DE QUÉ TRATA
+Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. Prerrequisitos: archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-RPO expresa cuántos datos puedes perder por antigüedad de la copia; RTO expresa cuánto tiempo puedes tardar en recuperar el servicio. Un hash SHA-256 permite comparar bytes, pero no prueba por sí solo que el contenido sea válido para el negocio. La recuperación necesita además abrir el archivo, validar estructura y ensayar el consumidor.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash.**
 
-**Analogía:** tener una llave de repuesto sirve si abre la puerta. El límite es que una llave no recupera todo un edificio: este ejercicio no restaura red, identidad, configuración ni una base de datos administrada.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LA ANALOGÍA
+Piensa en simulacro de restauración: comprobar contenido, no solo la existencia del backup como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que simulacro de restauración: comprobar contenido, no solo la existencia del backup resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Simulacro de restauración: comprobar contenido, no solo la existencia del backup se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Simulacro de restauración: comprobar contenido, no solo la existencia del backup | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses simulacro de restauración: comprobar contenido, no solo la existencia del backup por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: simulacro de restauración: comprobar contenido, no solo la existencia del backup funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Simulacro de restauración: comprobar contenido, no solo la existencia del backup existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve simulacro de restauración: comprobar contenido, no solo la existencia del backup en tu contexto?
+2. ¿Cómo sabrías que simulacro de restauración: comprobar contenido, no solo la existencia del backup no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar simulacro de restauración: comprobar contenido, no solo la existencia del backup?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir simulacro-backup
 cd simulacro-backup
 ```
-Crea `restaurar.py`:
+
 ```python
 from pathlib import Path
 import hashlib
@@ -393,18 +814,9 @@ backup.write_text('[]', encoding='utf-8')
 assert hashlib.sha256(backup.read_bytes()).hexdigest() != expected
 print('Corrupción detectada')
 ```
+
 ```bash
 python3 restaurar.py
 ```
-Windows puede usar `py restaurar.py`. **Resultado esperado:** `Contenido y estructura recuperados: ENV-42` y `Corrupción detectada`. Explica cada bloque: creación del dato, copia, restauración aislada, comparación y validación del caso de negocio. La última escritura altera solo el backup del laboratorio.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** mueve `backup.write_text('[]', encoding='utf-8')` antes de copiar a `restored`. La comparación dispara un error antes de aceptar una recuperación vacía. **Pista:** no recalcules `expected` desde la copia sospechosa; conserva una referencia independiente.
-
-#### Paso 6 · Práctica independiente
-Añade un campo de versión y rechaza una copia que no lo incluya, aunque sea JSON válido. Mide cuánto tardas en restaurar y verificar. Define un RPO y un RTO para un caso pequeño y explica qué datos y pasos faltaría medir en cloud real.
-
-#### Paso 7 · Cierre
-El siguiente paso es ensayar la exportación/restauración del servicio concreto en un entorno aislado. **Errores comunes:** restaurar encima del origen, confundir JSON válido con datos completos y guardar referencia y copia sin protección independiente. **Límites y decisión de uso:** el ejercicio valida archivos locales, no AWS Backup, snapshots consistentes, cifrado ni recuperación regional.
-
-**Fuentes oficiales:** [AWS recuperación y continuidad](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html) y [Python hashlib](https://docs.python.org/3/library/hashlib.html).
+</details>

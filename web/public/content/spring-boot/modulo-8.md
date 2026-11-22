@@ -4,23 +4,91 @@
 
 Este módulo completa el mapa de integraciones de Spring identificado en las capturas. Cada capacidad se introduce con una prueba observable y un límite importante: el scheduler local no coordina instancias, los eventos en memoria no son durables, SMTP puede fallar y las cachés necesitan invalidación.
 
+
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** un `@Scheduled` revisa pedidos vencidos en H2; un evento Spring actualiza una métrica; Caffeine cachea una tarifa y el test observa la invalidación.
-- **Caso RutaFlow:** al confirmar un envío, la API debe guardar el estado aunque el broker, SMTP o Redis no respondan. Usa el outbox para el evento que debe sobrevivir reinicios, procesa la notificación fuera de la transacción y mide el resultado de caché entre instancias.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Este módulo demuestra el comportamiento dentro de una aplicación Spring. El módulo 10 desarrolla Kafka entre procesos; `@TransactionalEventListener` no sustituye al outbox y un evento local no es mensajería durable.
+#### ► DE QUÉ TRATA
+Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
+2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
+
+</details>
 
 ### Tema 1: Scheduling y tareas periódicas · Intermedio · 35 min
 
-**Meta:** elegir entre fixed delay y cron, delegar una tarea a un servicio y probar su llamada sin esperar el reloj.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Evidencia final:** un test confirma que Spring registró la tarea y que el método llama el servicio; una nota explica qué pasa si hay varias réplicas.
+#### ► DE QUÉ TRATA
+Este tema te guía por scheduling y tareas periódicas con foco en comprensión antes de implementación.
 
-**¿Por qué es importante?** revisar pedidos pendientes en intervalos evita depender de que una persona recuerde ejecutar el proceso; probarlo sin esperar minutos hace que el feedback sea rápido.
+#### ► LA IDEA EN UNA FRASE
+**Entender scheduling y tareas periódicas te permite tomar mejores decisiones técnicas.**
 
-**Modelo mental:** el scheduler es un despertador. Despierta al método; el método delega el trabajo real a un servicio.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en scheduling y tareas periódicas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   Reloj[Scheduler] --> Metodo[revisarPendientes]
@@ -28,30 +96,54 @@ flowchart LR
   Servicio --> Resultado[marca vencidos]
 ```
 
-#### Subtema 1.1 · Elige cuándo debe volver a correr · 8 min
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Scheduling y tareas periódicas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Contexto:** una revisión que debe ocurrir cinco minutos después de terminar no tiene la misma regla que una tarea que inicia cada cinco minutos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Scheduling y tareas periódicas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Hazlo tú:** abre `PedidosScheduler.java`. Lee `fixedDelayString` y los valores en `application.yml`:
+#### ► CUÁNDO NO USAR ESTO
+No uses scheduling y tareas periódicas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: scheduling y tareas periódicas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Scheduling y tareas periódicas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve scheduling y tareas periódicas en tu contexto?
+2. ¿Cómo sabrías que scheduling y tareas periódicas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar scheduling y tareas periódicas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  Reloj[Scheduler] --> Metodo[revisarPendientes]
+  Metodo --> Servicio[RevisionPedidos]
+  Servicio --> Resultado[marca vencidos]
+```
 
 ```java
 @Scheduled(fixedDelayString = "${app.revision.delay-ms}",
            initialDelayString = "${app.revision.initial-delay-ms}")
 ```
-
-**Resultado esperado:** el intervalo se lee de configuración y la primera ejecución espera el tiempo inicial.
-
-**Fallo deliberado:** cambia `fixedDelayString` a `fixedRateString`. **Diagnóstico:** ahora el reloj mide de inicio a inicio, aunque la ejecución anterior siga trabajando. Vuelve a `fixedDelayString` para el caso del laboratorio.
-
-**Entiende:** fixed delay espera que termine una ejecución; fixed rate mide entre inicios. Cron sirve para horarios de calendario y debe declarar zona cuando el horario local importe.
-
-**Cierra:** elige una de las tres opciones para revisar pendientes de RutaFlow y escribe en una frase por qué encaja.
-
-#### Subtema 1.2 · Conecta el disparo con el trabajo real · 8 min
-
-**Contexto:** mantener la consulta del negocio dentro del método programado dificulta probarla y cambiar el disparador.
-
-**Hazlo tú:** abre `PedidosScheduler.java` y `RevisionPedidos.java`:
 
 ```java
 public void revisarPendientes() {
@@ -59,68 +151,77 @@ public void revisarPendientes() {
 }
 ```
 
-Sigue la llamada desde scheduler hasta servicio. Ejecuta desde el código de este tema:
-
 ```bash
 ./mvnw -q test
 ```
-
-**Resultado esperado:** la tarea registrada apunta al método del scheduler, que delega una vez al servicio.
-
-**Fallo deliberado:** comenta `revision.marcarVencidos()`. **Diagnóstico:** el test del contador queda en cero. Restaura la llamada.
-
-**Entiende:** el reloj decide cuándo empezar; el servicio define qué significa “pedido vencido”. Mantenerlos separados permite probar las reglas aparte.
-
-**Cierra:** anota cuál regla de vencimiento agregarías al servicio del proyecto integrador RutaFlow.
-
-#### Subtema 1.3 · Comprueba la tarea sin dormir en el test · 8 min
-
-**Contexto:** un test no debe esperar cinco minutos para revisar una tarea periódica.
-
-**Hazlo tú:** abre `PedidosSchedulerTest.java`. Los valores de prueba alargan la demora para que el reloj no dispare la tarea durante el test; `ScheduledTaskHolder` confirma que la tarea quedó registrada y el test invoca directamente el método.
 
 ```bash
 ./mvnw -q -Dtest=PedidosSchedulerTest test
 ```
 
-**Resultado esperado:** pasa una prueba, cuenta una tarea registrada y el servicio registra una llamada.
-
-**Fallo deliberado:** quita `@EnableScheduling` de `SchedulingApplication`. **Diagnóstico:** Spring no registra la tarea y el test detecta cero. Restáuralo.
-
-**Entiende:** esta prueba comprueba registro y delegación; no espera al reloj ni demuestra la precisión de un cron de producción.
-
-**Cierra:** guarda el test como evidencia del proyecto integrador RutaFlow y especifica qué parte cubre.
-
-#### Subtema 1.4 · Evita duplicados al desplegar varias réplicas · 10 min
-
-**Contexto:** si hay tres copias de la aplicación, cada proceso puede registrar su propio scheduler.
-
-**Hazlo tú:** en el código de este tema, crea una nota para dos réplicas que intentan tomar `pedido-42`. Escribe qué reclamo atómico deja a una sola procesar la fila y qué ve la segunda. Ejecuta `./mvnw -q test` para confirmar que el lab local solo cubre registro y delegación.
-
-**Resultado esperado:** la tarea local puede ocurrir una vez por réplica; la regla de negocio impide aplicar dos veces el mismo cambio.
-
-**Fallo deliberado:** despliega dos instancias sin coordinación sobre el mismo pedido. **Diagnóstico:** ambas pueden procesar la fila. La anotación `@Scheduled` no comparte un lock entre procesos.
-
-**Entiende:** un scheduler local no es cola durable ni coordinador de cluster. Para trabajo largo y reanudable, evalúa Spring Batch; para ejecución coordinada, usa un lock distribuido o reclama filas con una operación atómica.
-
-**Cierra:** documenta una opción de coordinación y su evidencia en RutaFlow. El laboratorio usa un contador en memoria; no simula PostgreSQL, scheduler distribuido ni carga real.
-
-**Fuentes primarias:** [Spring Framework: scheduling y `@Scheduled`](https://docs.spring.io/spring-framework/reference/integration/scheduling.html); [Spring Boot: ejecución y scheduler](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html).
+</details>
 
 ### Tema 2: Eventos locales, eventos transaccionales y mensajería · Intermedio · 40 min
 
-**Meta:** distinguir un aviso dentro del proceso, una acción posterior al commit y un mensaje que debe sobrevivir al reinicio.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Notificar antes de guardar puede anunciar un envío que no existe; confiar solo en el aviso local puede perderlo si el proceso se cierra.
+#### ► DE QUÉ TRATA
+Este tema te guía por eventos locales, eventos transaccionales y mensajería con foco en comprensión antes de implementación.
 
-**Evidencia final:** para el proyecto integrador RutaFlow, explica qué se guarda junto al envío, qué puede publicarse de nuevo y cómo el consumidor evita repetir el efecto.
+#### ► LA IDEA EN UNA FRASE
+**Entender eventos locales, eventos transaccionales y mensajería te permite tomar mejores decisiones técnicas.**
 
-#### Subtema 2.1 · Sigue el evento dentro de la aplicación · 8 min
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Contexto:** al aceptar una imagen, RutaFlow debe guardar sus metadatos y pedir una notificación sin acoplar el servicio al proveedor push.
+#### ► LA ANALOGÍA
+Piensa en eventos locales, eventos transaccionales y mensajería como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Hazlo tú:** abre `UploadService.java` y sigue `publishEvent` hasta `PushAfterCommitListener.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que eventos locales, eventos transaccionales y mensajería resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Eventos locales, eventos transaccionales y mensajería se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Eventos locales, eventos transaccionales y mensajería | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses eventos locales, eventos transaccionales y mensajería por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: eventos locales, eventos transaccionales y mensajería funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Eventos locales, eventos transaccionales y mensajería existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve eventos locales, eventos transaccionales y mensajería en tu contexto?
+2. ¿Cómo sabrías que eventos locales, eventos transaccionales y mensajería no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar eventos locales, eventos transaccionales y mensajería?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 public void afterCommit(UploadAccepted event) { gateway.send(event); }
@@ -130,37 +231,9 @@ public void afterCommit(UploadAccepted event) { gateway.send(event); }
 ./mvnw -q -Dtest=UploadPushIntegrationTest#imagenValidaSeGuardaYNotificaDespuesDelCommit test
 ```
 
-**Resultado esperado:** la prueba confirma que se guardan archivo y metadatos, y se envía una notificación.
-
-**Fallo deliberado:** cambia temporalmente `@TransactionalEventListener` por `@EventListener` y ejecuta `UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush`. **Diagnóstico:** el test observa la notificación antes de que la transacción exterior haga rollback. Restablece la anotación.
-
-**Entiende:** `ApplicationEventPublisher` conecta componentes del mismo proceso; el evento no queda guardado ni llega por sí mismo a otra aplicación.
-
-**Cierra:** dibuja las tres llamadas desde el servicio hasta el gateway y señala en cuál línea sale el proceso a un proveedor externo.
-
-#### Subtema 2.2 · Comprueba qué significa “después del commit” · 8 min
-
-**Contexto:** el listener no debe anunciar una operación que la base de datos terminó revirtiendo.
-
-**Hazlo tú:** abre `UploadPushIntegrationTest.java` y ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush test
 ```
-
-**Resultado esperado:** no queda fila, archivo ni push. La anotación espera al commit, pero la llamada externa todavía vive en el mismo proceso.
-
-**Fallo deliberado:** quita `@TransactionalEventListener` o cambia la fase por `BEFORE_COMMIT`. **Diagnóstico:** el listener puede ejecutarse antes del rollback; vuelve a `AFTER_COMMIT` y repite la prueba.
-
-**Entiende:** `AFTER_COMMIT` evita publicar antes de confirmar SQL; queda una ventana entre el commit y la ejecución del listener. Si el proceso cae allí, esta notificación local puede perderse. La opción `fallbackExecution` no es necesaria aquí; por defecto el listener necesita una transacción activa.
-
-**Cierra:** escribe una oración que describa qué protege la prueba y qué no puede proteger.
-
-#### Subtema 2.3 · Guarda el evento junto con el envío · 10 min
-
-**Contexto:** si el mensaje debe sobrevivir al reinicio, guardar solo el envío y luego llamar Kafka deja una ventana en la que el envío existe pero el evento se pierde.
-
-**Hazlo tú:** abre `CrearEnvioService.java` y comprueba que ambos `INSERT` están dentro del mismo método `@Transactional`. Ejecuta desde el código de este tema:
 
 ```java
 @Transactional
@@ -180,78 +253,75 @@ public EnvioCreado crear(String referencia) {
 ./mvnw -q -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
 ```
 
-**Resultado esperado:** el test fuerza el fallo del `INSERT` outbox y verifica que también se revierte el envío.
-
-**Fallo deliberado:** elimina temporalmente el `INSERT INTO outbox_event` y repite el test. **Diagnóstico:** ya no ocurre la violación SQL esperada y la prueba falla: el registro de negocio quedó sin su evento. Restaura el `INSERT`.
-
-**Entiende:** la base de datos confirma los dos registros juntos. `OutboxDispatcher.java` los busca después, espera el ACK de Kafka y recién entonces marca `published_at`; el proceso puede caer tras el ACK y antes de marcar la fila.
-
-**Cierra:** compara `published_at IS NULL` antes y después de ejecutar `dispatcherPublicaYMarcaSoloDespuesDelAck`.
-
-#### Subtema 2.4 · Repite la entrega sin repetir el efecto · 10 min
-
-**Contexto:** si el ACK de Kafka llegó pero falló la marca SQL, el dispatcher volverá a enviar el evento. El consumidor debe tolerar esa entrega repetida.
-
-**Hazlo tú:** abre `InboxProcessor.java` y el test `EnvioEventPublisherTest.java`. Ejecuta:
-
 ```java
 if (existente != null && existente > 0) return false;
 jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)",
         evento.eventId(), clock.instant());
 ```
 
-```bash
-./mvnw -q -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
-./mvnw -q -Dtest=EnvioEventPublisherTest#replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion test
-```
-
-**Resultado esperado:** el segundo manejo del mismo `event_id` no repite el efecto; el replay puede observar dos entregas y una sola proyección.
-
-**Fallo deliberado:** quita la comprobación/registro de `event_id` en `InboxProcessor`. **Diagnóstico:** la prueba de inbox deja de poder ignorar el duplicado (o choca con la restricción única); restaura la deduplicación.
-
-**Entiende:** outbox + Kafka permite reintentos con entrega al menos una vez. La tabla inbox hace idempotente el efecto de negocio; no convierte el dispatcher en exactly-once. **Límite:** el laboratorio usa H2 y Kafka embebido, no reclama filas con lease y no debe correr con varios dispatchers.
-
-**Cierra:** entrega el resultado de los dos tests y marca en un diagrama el commit SQL, ACK de Kafka, marca `published_at` y deduplicación inbox.
-
-**Fuentes primarias:** [Spring Framework: eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html); [Spring for Apache Kafka: transacciones](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html).
+</details>
 
 ### Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 40 min
 
-**Meta:** preparar un correo, proteger la configuración SMTP y reintentar una notificación fallida sin retrasar el guardado del envío.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** SMTP es otro servicio remoto: puede tardar, fallar o aceptar el mensaje justo antes de que se pierda la respuesta.
+#### ► DE QUÉ TRATA
+Este tema te guía por correo con spring mail y entrega recuperable con foco en comprensión antes de implementación.
 
-**Evidencia final:** tests que inspeccionan el mensaje, comprueban el rollback conjunto y observan reintentos con límite.
+#### ► LA IDEA EN UNA FRASE
+**Entender correo con spring mail y entrega recuperable te permite tomar mejores decisiones técnicas.**
 
-#### Subtema 3.1 · Construye el mensaje y revísalo sin enviar correo · 8 min
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Contexto:** queremos revisar destinatario, asunto y texto antes de depender de una cuenta SMTP.
+#### ► LA ANALOGÍA
+Piensa en correo con spring mail y entrega recuperable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Hazlo tú:** abre `JavaMailCorreoGateway.java` y su test `JavaMailCorreoGatewayTest.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que correo con spring mail y entrega recuperable resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-```java
-SimpleMailMessage message = new SimpleMailMessage();
-message.setFrom(remitente);
-message.setTo(correo.destinatario());
-message.setSubject(correo.asunto());
-message.setText(correo.texto());
-sender.send(message);
-```
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Correo con Spring Mail y entrega recuperable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```bash
-./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
-```
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Correo con Spring Mail y entrega recuperable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Resultado esperado:** una prueba confirma remitente, destinatario, asunto y referencia; usa un `JavaMailSender` simulado, así que no contacta SMTP.
+#### ► CUÁNDO NO USAR ESTO
+No uses correo con spring mail y entrega recuperable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Fallo deliberado:** cambia el asunto por `Envío cancelado`. **Diagnóstico:** el test detecta que el texto enviado no coincide con la confirmación; restaura el asunto.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: correo con spring mail y entrega recuperable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Entiende:** `SimpleMailMessage` sirve para texto simple. Si necesitas HTML o archivos adjuntos, Spring ofrece `MimeMessage`; usa esa forma solo cuando el mensaje lo requiera.
+#### ► LO QUE DEBES RECORDAR
+- Correo con Spring Mail y entrega recuperable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Cierra:** indica qué campo del test protegería a un cliente de recibir un mensaje equivocado.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve correo con spring mail y entrega recuperable en tu contexto?
+2. ¿Cómo sabrías que correo con spring mail y entrega recuperable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar correo con spring mail y entrega recuperable?
 
-#### Subtema 3.2 · Configura SMTP fuera del código · 8 min
+</details>
 
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código de referencia / ejecutable
 **Contexto:** el servidor de salida (SMTP) y sus credenciales cambian entre tu equipo, pruebas y producción; el código debe poder moverse sin editarlo.
 
 **Hazlo tú:** abre `application.yml`:
@@ -282,77 +352,69 @@ Ejecuta la prueba sin servidor:
 
 **Cierra:** anota qué tres valores configurarías en el servicio de despliegue sin guardarlos en Git.
 
-#### Subtema 3.3 · Guarda el envío y la notificación juntos · 10 min
-
-**Contexto:** si el envío se confirma y el proceso se cierra antes de llamar SMTP, la confirmación debe quedar esperando en una fila recuperable.
-
-**Hazlo tú:** abre `ConfirmarEnvioService.java`:
-
-```java
-@Transactional
-public UUID confirmar(String referencia, String destinatario) {
-    UUID envioId = UUID.randomUUID();
-    jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
-    jdbc.update("""
-            INSERT INTO correo_outbox
-                (event_id, envio_id, destinatario, asunto, cuerpo, next_attempt_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """, eventId, envioId, destinatario, asunto, texto, clock.instant());
-    return envioId;
-}
-```
-
-En el código de este tema, ejecuta las pruebas de transacción y reintento:
-
-```bash
-./mvnw -q -Dtest=MailOutboxTest#confirmacionYCorreoPendienteSeGuardanEnLaMismaTransaccion test
-./mvnw -q -Dtest=MailOutboxTest#falloTransitorioSeReintentaDespuesYQuedaMarcadoComoEnviado test
-```
-
-**Resultado esperado:** si falla insertar el correo, también se revierte el envío; ante un fallo transitorio se guarda el contador y la hora del próximo intento.
-
-**Fallo deliberado:** quita `@Transactional` y repite la primera prueba. **Diagnóstico:** queda el envío aunque el outbox no se insertó; restaura la anotación.
-
-**Entiende:** outbox significa “bandeja de salida”: es una fila pendiente, no una llamada SMTP. El dispatcher contacta SMTP después de que la transacción del envío terminó.
-
-**Cierra:** explica por qué la espera y reintento ocurren fuera de la transacción que creó el envío.
-
-#### Subtema 3.4 · Limita los reintentos y conserva evidencia útil · 10 min
-
-**Contexto:** repetir para siempre tapa errores permanentes y puede llenar la cola.
-
-**Hazlo tú:** abre `MailOutboxDispatcher.java` y ejecuta:
-
-```bash
-./mvnw -q -Dtest=MailOutboxTest#agotaTresIntentosYConservaElErrorSinSeguirEnviando test
-```
-
-**Resultado esperado:** tras tres fallos, la fila queda apartada para revisión (`dead_lettered_at`) con un tipo de error; no sigue enviándose.
-
-**Fallo deliberado:** cambia `MAX_INTENTOS` de 3 a 1. **Diagnóstico:** la prueba observa que se aparta tras el primer error, antes de probar la recuperación; restaura el límite.
-
-**Entiende:** la espera crece de 30 a 60 segundos y luego llega al límite. Un timeout no siempre dice si el proveedor recibió el correo; si lo recibió y la aplicación reintenta, puede llegar duplicado. SMTP no promete exactamente una entrega; este laboratorio no simula una respuesta perdida tras aceptación.
-
-**Cierra:** para el proyecto integrador RutaFlow, adjunta los resultados de los tres tests y acuerda qué equipo revisa las filas apartadas. No uses correo síncrono dentro de la transacción HTTP crítica ni guardes mensajes sensibles más tiempo del necesario.
-
-**Fuentes primarias:** [Spring Boot: envío de correo y timeouts SMTP](https://docs.spring.io/spring-boot/reference/io/email.html); [Spring Framework: `JavaMailSender`, `SimpleMailMessage` y MIME](https://docs.spring.io/spring-framework/reference/integration/email.html).
+</details>
 
 ### Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 45 min
 
-**Meta:** cachear consultas repetidas, invalidar una tarifa que cambió y elegir entre memoria local y un almacén compartido.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** la segunda lectura puede evitar trabajo repetido, pero una copia vieja puede mostrar una tarifa equivocada.
+#### ► DE QUÉ TRATA
+Este tema te guía por caché con spring cache, caffeine y redis con foco en comprensión antes de implementación.
 
-**Evidencia final:** tests que cuentan lecturas, separan zonas, verifican invalidación y leen los límites de tamaño y duración configurados.
+#### ► LA IDEA EN UNA FRASE
+**Entender caché con spring cache, caffeine y redis te permite tomar mejores decisiones técnicas.**
 
-**Práctica:** elige una consulta del catálogo de RutaFlow y define su clave, duración, tamaño máximo y regla de invalidación.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Subtema 4.1 · Comprueba qué trabajo ahorra una caché · 7 min
+#### ► LA ANALOGÍA
+Piensa en caché con spring cache, caffeine y redis como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Contexto:** la tarifa de una zona se consulta varias veces y el repositorio de ejemplo cuenta cada lectura.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que caché con spring cache, caffeine y redis resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Hazlo tú:** abre `TarifaService.java`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Caché con Spring Cache, Caffeine y Redis se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Caché con Spring Cache, Caffeine y Redis | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses caché con spring cache, caffeine y redis por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: caché con spring cache, caffeine y redis funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Caché con Spring Cache, Caffeine y Redis existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve caché con spring cache, caffeine y redis en tu contexto?
+2. ¿Cómo sabrías que caché con spring cache, caffeine y redis no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar caché con spring cache, caffeine y redis?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 @Cacheable(cacheNames = "tarifas", key = "#zona")
 public Tarifa buscar(String zona) {
@@ -364,22 +426,6 @@ public Tarifa buscar(String zona) {
 ```bash
 ./mvnw -q -Dtest=TarifaServiceTest#segundaConsultaReutilizaLaTarifaCacheada test
 ```
-
-**Resultado esperado:** dos llamadas a `buscar("NORTE")` devuelven 1200 centavos y el repositorio se consulta una sola vez.
-
-**Fallo deliberado:** quita `@Cacheable` y repite el test. **Diagnóstico:** el contador sube a dos; restaura la anotación.
-
-**Entiende:** `@EnableCaching` conecta las anotaciones con el proveedor. En una lectura repetida, Spring encuentra la clave y devuelve la copia guardada sin volver a ejecutar el método.
-
-Spring intercepta las llamadas recibidas desde otro componente. Una llamada como `this.buscar("NORTE")` dentro del propio servicio no pasa por ese intermediario; la anotación no se aplica en ese recorrido.
-
-**Cierra:** diferencia con tus palabras una primera lectura que no encuentra copia y una segunda que sí la encuentra.
-
-#### Subtema 4.2 · Invalida o reemplaza la copia al actualizar · 10 min
-
-**Contexto:** NORTE y SUR tienen tarifas diferentes; cambiar una tarifa no debe devolver el valor anterior.
-
-**Hazlo tú:** compara la clave de `@Cacheable` con `@CacheEvict` en `TarifaService.java` y ejecuta los dos tests de zona e invalidación:
 
 ```java
 @CacheEvict(cacheNames = "tarifas", key = "#tarifa.zona")
@@ -399,22 +445,6 @@ public Tarifa actualizarYCachear(Tarifa tarifa) {
 ./mvnw -q -Dtest=TarifaServiceTest#cachePutActualizaLaCopiaSinOtraLecturaDelRepositorio test
 ```
 
-**Resultado esperado:** NORTE devuelve 1200, SUR 900; al cambiar NORTE a 1350, la próxima consulta devuelve 1350 y vuelve al repositorio.
-
-**Fallo deliberado:** quita `@CacheEvict`. **Diagnóstico:** tras guardar 1350, la búsqueda todavía devuelve 1200; restaura la invalidación con la misma clave `#tarifa.zona`.
-
-**Entiende:** la clave debe representar todos los datos que cambian la respuesta. En una aplicación multi-tenant añade también el identificador del cliente; la clave del ejemplo solo usa zona.
-
-`@CacheEvict` elimina la copia y deja que la próxima lectura consulte el repositorio. `@CachePut` ejecuta la escritura siempre y guarda su resultado en caché: el tercer test obtiene 1350 sin otra lectura del repositorio. Este catálogo vive en memoria; con una base de datos transaccional, coordina la invalidación con el commit y contempla lectores concurrentes que podrían volver a guardar un valor viejo.
-
-**Cierra:** anota qué otra parte incluirías en la clave si cada cliente de RutaFlow mantiene su propio catálogo.
-
-#### Subtema 4.3 · Pon un límite de memoria y de antigüedad · 8 min
-
-**Contexto:** sin límite, una caché local puede crecer; sin expiración, una tarifa vieja puede quedarse hasta que alguien la invalide.
-
-**Hazlo tú:** abre `application.yml` y ejecuta:
-
 ```yaml
 spring:
   cache:
@@ -428,158 +458,87 @@ spring:
 ./mvnw -q -Dtest=TarifaServiceTest#proveedorTieneLimiteDeEntradasYExpiracionConfigurados test
 ```
 
-**Resultado esperado:** el test lee el máximo de 1000 entradas y el vencimiento cinco minutos después de escribir la tarifa.
-
-**Fallo deliberado:** cambia `maximumSize=1000` por `maximumSize=10`. **Diagnóstico:** el test reporta el límite configurado y falla; restaura 1000 o define un límite apropiado para tu catálogo.
-
-**Entiende:** `maximumSize` limita entradas; `expireAfterWrite` (vencimiento tras escribir) cuenta desde que se crea o cambia una entrada, no desde cada lectura. En el test se valida la política, sin esperar cinco minutos.
-
-**Cierra:** para el proyecto integrador RutaFlow, estima un límite y cuánto tiempo aceptas mostrar la tarifa guardada.
-
-#### Subtema 4.4 · Mide las lecturas que realmente evitas · 8 min
-
-**Contexto:** una caché que casi nunca encuentra la clave añade memoria y trabajo sin evitar muchas consultas. Un *hit* encuentra una copia; un *miss* obliga a cargarla.
-
-**Hazlo tú:** abre `src/test/java/academia/rutaflow/cache/TarifaServiceTest.java`, método `metricasDistinguenAciertoYFalloDeCache`. Actuator conecta Caffeine con el registro de métricas de Micrometer; `recordStats` activa sus contadores:
-
-```java
-var aciertos = metricas.get("cache.gets")
-        .tags("cache", "tarifas", "result", "hit").functionCounter();
-```
-
-```bash
-./mvnw -q -Dtest=TarifaServiceTest#metricasDistinguenAciertoYFalloDeCache test
-```
-
-**Resultado esperado:** dos consultas a NORTE añaden un miss y un hit. El test compara incrementos porque limpiar las entradas no reinicia las estadísticas.
-
-**Fallo deliberado:** elimina `recordStats` de `src/main/resources/application.yml` y repite la prueba. **Diagnóstico:** los contadores dejan de registrar las lecturas; restaura la opción.
-
-**Entiende:** un miss es normal. Muchos misses simultáneos para la misma clave pueden causar una avalancha de recargas (*cache stampede*). `@Cacheable(sync = true)` permite coordinar la carga según el proveedor; con Caffeine esa coordinación pertenece al proceso. Estos tests secuenciales no demuestran coordinación entre réplicas ni rendimiento bajo carga. Evita etiquetas métricas por usuario o pedido, que crearían demasiadas series.
-
-**Cierra:** como ejercicio independiente, añade CENTRO con 1100 centavos a `CatalogoTarifaRepository.java`; amplía `cadaZonaTieneSuPropiaEntrada` con dos lecturas a CENTRO y espera tres lecturas totales del repositorio. Ejecuta ese test y explica por qué la segunda consulta no lo incrementa.
-
-#### Subtema 4.5 · Comprueba una caché compartida en Redis · 12 min
-
-**Contexto:** Caffeine guarda una copia en cada proceso; Redis permite que varias réplicas lean el mismo almacén remoto.
-
-**Hazlo tú:** compara `application.yml` con `application-redis.yml`. La primera fuerza Caffeine; la segunda cambia el proveedor y configura Redis:
-
-```yaml
-spring:
-  cache:
-    type: redis
-    cache-names: tarifas
-    redis:
-      time-to-live: 5m
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-```
-
-Abre también `src/main/java/academia/rutaflow/cache/RedisWriteConfiguration.java`: personaliza el writer con `RedisCacheWriter.create(connectionFactory, config -> config.immediateWrites())`, conservando TTL y prefijo definidos por Boot. El segundo gestor del test usa la misma política. En Spring Data Redis 4 con Lettuce, escritura e invalidación pueden terminar después del retorno del método; este laboratorio exige visibilidad inmediata y elige esperar la operación. Esa espera bloquea al llamador y no convierte caché y base de datos en una transacción.
-
-Abre `src/test/java/academia/rutaflow/cache/RedisTarifaTest.java`. La prueba crea dos gestores de caché con el mismo prefijo único para comprobar que comparten valores e invalidación. Arranca un Redis de laboratorio en el puerto 16379 (puedes sustituir `podman` por `docker`):
-
-```bash
-podman run --rm -d --name rutaflow-cache-lab -p 127.0.0.1:16379:6379 docker.io/library/redis:7.4-alpine
-podman exec rutaflow-cache-lab redis-cli ping
-REDIS_PORT=16379 ./mvnw -q -Dredis.integration=true -Dtest=RedisTarifaTest test
-podman stop rutaflow-cache-lab
-```
-
-Si ya tienes `redis-server`, puedes iniciarlo en otra terminal con `redis-server --bind 127.0.0.1 --port 16379 --save "" --appendonly no` y ejecutar el mismo comando Maven; detenlo con Ctrl+C. La suite local `./mvnw -q clean test` ejecuta seis pruebas Caffeine y omite Redis hasta que pases `-Dredis.integration=true`.
-
-**Resultado esperado:** Redis responde `PONG`; el segundo gestor lee 1200, la entrada tiene entre 1 y 300 segundos de vida, la actualización elimina esa copia y la siguiente lectura comparte 1350. El test limpia solo su clave, sin borrar otras cachés.
-
-**Fallo deliberado:** detén tu servidor Redis y repite el comando Maven de integración. **Diagnóstico:** aparece `RedisConnectionFailureException`; vuelve a arrancar el servicio en el puerto configurado.
-
-**Entiende:** Redis comparte la caché entre réplicas que apuntan al mismo servidor, pero añade red, disponibilidad y reglas de serialización. Mantén el prefijo de clave de caché; separa claves por tenant y no caches datos sensibles sin aislamiento.
-
-El ejemplo usa el serializador Java predeterminado, por eso `Tarifa` implementa `Serializable`. En un sistema con versiones distintas de la aplicación define un formato compatible y prueba su evolución. El repositorio de este lab es local: compartir la caché no convierte sus datos de origen en una base de datos compartida.
-
-**Cierra:** elige Caffeine o Redis para el catálogo de RutaFlow y documenta qué harás si Redis no responde: consultar el origen con límites o devolver un error controlado. No añadas un fallback silencioso a autorización. La prueba usa dos gestores en una JVM; no mide carga, pérdida de red durante una escritura ni varias JVM con una base de datos real.
-
-**Fuentes primarias:** [Spring Boot: proveedores, Caffeine y Redis](https://docs.spring.io/spring-boot/reference/io/caching.html); [Spring Data Redis: TTL, prefijos y serialización](https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html); [Spring Boot: conexión Redis](https://docs.spring.io/spring-boot/reference/data/nosql.html); [Spring Data Redis: migración y escrituras inmediatas](https://docs.spring.io/spring-data/redis/reference/upgrading.html).
-
-Consulta también [Spring Framework: `@CachePut`, proxies y carga sincronizada](https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html) y [Spring Boot: métricas de caché](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
-**Hito del tema:** conserva (1) las seis pruebas locales correctas, (2) la predicción y el fallo al quitar la invalidación, (3) el ejercicio CENTRO con contador comprobado y (4) una decisión de proveedor con clave, TTL y respuesta ante indisponibilidad. Adjunta por separado el resultado Redis si lo ejecutaste; omitirlo no demuestra integración compartida. Sigue con M9 T1 para limitar el trabajo en segundo plano.
+</details>
 
 ### Tema 5: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 30 min
 
-**¿Por qué es importante?** confundir un mensaje aceptado con un resultado correcto puede registrar entregas inexistentes; el adaptador debe reconocer contratos y fallos antes de tocar el dominio.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Meta:** extraer un identificador de un mensaje local SOAP 1.2, distinguir namespace de prefijo y rechazar versión, identificador o respuesta de fallo incorrectos. **Prerrequisitos:** HTTP, XML básico y funciones del track Fundamentos. Duración: 30 min. No necesitas Java ni Maven para este ejemplo de contrato.
+#### ► DE QUÉ TRATA
+Este tema te guía por integraciones empresariales, soap y fronteras de protocolo con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender integraciones empresariales, soap y fronteras de protocolo te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en integraciones empresariales, soap y fronteras de protocolo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que integraciones empresariales, soap y fronteras de protocolo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Integraciones empresariales, SOAP y fronteras de protocolo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Integraciones empresariales, SOAP y fronteras de protocolo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses integraciones empresariales, soap y fronteras de protocolo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: integraciones empresariales, soap y fronteras de protocolo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Integraciones empresariales, SOAP y fronteras de protocolo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve integraciones empresariales, soap y fronteras de protocolo en tu contexto?
+2. ¿Cómo sabrías que integraciones empresariales, soap y fronteras de protocolo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar integraciones empresariales, soap y fronteras de protocolo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 cp -R soap-contract-rutaflow practica-soap
 cd practica-soap
 python3 -m unittest -v
 ```
 
-**Resultado esperado:** cuatro pruebas correctas. El código usa Python 3 sin dependencias. **Evidencia final:** salida del identificador, prefijo cambiado sin romper el contrato y rechazos observados. No es un servidor SOAP ni una implementación de Spring Web Services.
-
-#### Subtema 5.1 · Lee un contrato antes de adaptar el dominio · 7 min
-
-**Contexto:** un socio de RutaFlow envía XML; el adaptador debe extraer la identidad del envío antes de llamar al caso de uso. **Analogía:** como traducir un formulario, primero reconoce sus campos y luego aplica las reglas del negocio.
-
-**Hazlo tú:** abre `soap_contrato.py` (original en el código de este tema) en tu copia. `MENSAJE` contiene el sobre `Envelope`, un cuerpo `Body` y la operación `ConsultarEnvio` con su `id`. Ejecuta desde `practica-soap`:
-
 ```bash
 python3 soap_contrato.py
 python3 -m unittest test_soap_contrato.ContratoTest.test_extrae_identificador -v
 ```
 
-**Resultado esperado:** `Consultar envío: ENV-42` y una prueba correcta. Sigue `ET.fromstring`, la búsqueda de `Body` y `findtext`: convierten el literal a un árbol, encuentran el cuerpo y extraen el texto de la operación.
-
-**Fallo deliberado:** en `soap_contrato.py`, cambia `<r:id>` y `</r:id>` por `<r:codigo>` y `</r:codigo>`. **Diagnóstico:** `findtext` no encuentra el campo contratado y aparece `ValueError: Falta id del envío`. Restaura ambas etiquetas.
-
-**Entiende:** SOAP define el mensaje; el dominio decide qué significa consultar ese envío y si está autorizado. Que exista un identificador no prueba su existencia ni permiso de lectura. Este código solo analiza un literal local confiable; no valida un esquema ni acepta XML de usuarios.
-
-**Cierra:** conserva la salida y dibuja adaptador → caso de uso → repositorio. Señala dónde ubicarías autorización antes de consultar datos.
-
-#### Subtema 5.2 · Separa prefijo de namespace y versión · 7 min
-
-**Contexto:** dos socios pueden escribir prefijos distintos para el mismo vocabulario XML. La identidad se determina por el URI del namespace y el nombre local, no por las letras visibles antes de los dos puntos.
-
-**Hazlo tú:** abre `test_soap_contrato.py` (original en el código de este tema) y sigue `test_prefijo_no_cambia_identidad`. Cambia `s` por `env` en la declaración y etiquetas manteniendo el URI. Ejecuta:
-
 ```bash
 python3 -m unittest test_soap_contrato.ContratoTest.test_prefijo_no_cambia_identidad -v
 ```
 
-**Resultado esperado:** sigue extrayendo ENV-42. La notación `f"{{{SOAP}}}Body"` busca el nombre expandido que construye ElementTree; las llaves representan el URI, no el prefijo del documento.
-
-**Fallo deliberado:** en `soap_contrato.py`, cambia solo el URI del literal `MENSAJE` al namespace SOAP 1.1 `http://schemas.xmlsoap.org/soap/envelope/`, manteniendo `SOAP` como SOAP 1.2. **Diagnóstico:** `consultar_id` rechaza la raíz por versión; restaura el literal. Ejecuta también `python3 -m unittest test_soap_contrato.ContratoTest.test_rechaza_version_y_id_vacio -v`.
-
-**Entiende:** cambiar el prefijo conserva significado; cambiar el namespace puede cambiar el protocolo. No adaptes un cliente a SOAP 1.1 cambiando una cadena sin revisar binding, cabeceras y contrato WSDL. Un WSDL describe interfaz y tipos; no se inventa la dirección del servicio desde el nombre de una operación.
-
-**Cierra:** registra un cambio que conserva el contrato y otro que lo rompe, con sus resultados reales y la corrección aplicada.
-
-#### Subtema 5.3 · Rechaza campos vacíos y respuestas Fault · 8 min
-
-**Contexto:** un mensaje bien formado puede indicar fallo o carecer de datos obligatorios. Convertirlo a una respuesta de éxito escondería el problema del socio.
-
-**Hazlo tú:** abre las validaciones de `soap_contrato.py` (original en el código de este tema) y ejecuta ambos casos negativos desde tu carpeta:
-
 ```bash
 python3 -m unittest test_soap_contrato.ContratoTest.test_rechaza_version_y_id_vacio test_soap_contrato.ContratoTest.test_fault_no_se_convierte_en_exito -v
 ```
-
-**Resultado esperado:** dos pruebas correctas porque observan `ValueError`. La primera comprueba versión y texto vacío después de `strip`; la segunda detecta `Fault` antes de buscar el identificador. El Fault mínimo de prueba enseña el rechazo; no demuestra conformidad con todo el esquema SOAP.
-
-**Fallo deliberado:** elimina el bloque que comprueba `body.find(...Fault...)` de `soap_contrato.py`. **Diagnóstico:** la prueba de Fault recibe «Falta id» en lugar del fallo de protocolo y falla; restaura el bloque. No trates ambos errores como la misma causa.
-
-**Entiende:** clasifica fallo de transporte, fallo de protocolo y fallo de negocio por separado. Este parser no ejecuta HTTP y no permite concluir que HTTP 200 equivalga a éxito. Para XML externo hacen falta parser/configuración adecuados, límites de tamaño y profundidad, y validación de contrato; este ejercicio no acredita esas defensas.
-
-**Cierra:** guarda ambos diagnósticos e indica qué error puede corregir el usuario y cuál requiere investigar la integración. No añadas un reintento indiscriminado para datos inválidos.
-
-#### Subtema 5.4 · Define garantías del adaptador del proyecto · 8 min
-
-**Contexto:** REST, SOAP, SFTP y SMTP resuelven problemas distintos. El adaptador de RutaFlow conserva correlación y traduce resultados sin prometer más de lo observado.
-
-**Hazlo tú:** crea `decision-integracion.md` en `practica-soap` con esta tabla inicial y complétala con una decisión para el socio:
 
 ```markdown
 | Canal | Evidencia mínima | Lo que falta comprobar |
@@ -594,62 +553,82 @@ Correlación: conservar un identificador en petición, resultado y diagnóstico.
 Reintentos: definir errores transitorios y evitar duplicar efectos.
 ```
 
-Ejecuta en tu carpeta de trabajo y abre `decision-integracion.md`:
-
 ```bash
 python3 -m unittest -v
 ```
 
-**Resultado esperado:** cuatro pruebas correctas y una decisión que distingue aceptación de procesamiento final. SFTP usa SSH y no equivale a FTP ni FTPS; una operación de lectura no demuestra entrega de archivos.
-
-**Fallo deliberado:** escribe en la fila SMTP «aceptado implica entregado». **Diagnóstico:** las pruebas XML seguirán pasando porque no prueban correo; detecta el error comparando con el laboratorio outbox de M8 T3 y corrige la garantía. Una suite parcial no valida toda la tabla.
-
-**Entiende:** probar el adaptador local es un primer paso. Timeouts, credenciales, host key y tamaño de mensajes dependen del canal y del socio. No conectes todavía este parser local a entradas externas ni declares interoperabilidad por cuatro tests.
-
-**Cierra:** como ejercicio independiente, añade un test de `Body` ausente y otro de namespace de operación incorrecto en `test_soap_contrato.py`. Espera rechazo en ambos, ejecútalos y explica qué contrato incumple cada mensaje. Después documenta qué evidencia necesitarías del socio para probar una integración real.
-
-**Transferencia al proyecto integrador RutaFlow:** conserva el adaptador separado del caso de uso y registra las garantías pendientes antes de conectarlo a un socio.
-
-**Hito del tema:** conserva (1) extracción ejecutada, (2) equivalencia de prefijos y rechazo de versión, (3) diagnóstico de vacío y Fault y (4) tabla de garantías con tus dos pruebas nuevas. El ejemplo publicado verifica cuatro tests locales, no un endpoint, seguridad XML ni interoperabilidad. El siguiente bloque introduce Spring AI conservando autorización fuera del modelo.
-
-**Fuente primaria:** [W3C: SOAP 1.2, mensajes y Fault](https://www.w3.org/TR/soap12-part1/).
+</details>
 
 ### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 35 min
 
-**Meta:** ejecutar ChatClient con un modelo controlado, invocar un callback real y demostrar que dos sesiones no comparten permisos. **Prerrequisitos:** interfaces Java, JUnit, JSON y autorización por recurso de M18. Duración: 35–40 min.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** una respuesta convincente no acredita permiso para consultar una entrega. En el proyecto integrador RutaFlow, el servidor conserva la identidad y la decisión de autorización aunque el modelo proponga argumentos.
+#### ► DE QUÉ TRATA
+Este tema te guía por spring ai: chatclient y herramientas con autorización fuera del modelo con foco en comprensión antes de implementación.
 
-**Preparación:** JDK 25 y repositorio. Desde su raíz copia el laboratorio a una carpeta nueva:
+#### ► LA IDEA EN UNA FRASE
+**Entender spring ai: chatclient y herramientas con autorización fuera del modelo te permite tomar mejores decisiones técnicas.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en spring ai: chatclient y herramientas con autorización fuera del modelo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que spring ai: chatclient y herramientas con autorización fuera del modelo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Spring AI: ChatClient y herramientas con autorización fuera del modelo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Spring AI: ChatClient y herramientas con autorización fuera del modelo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses spring ai: chatclient y herramientas con autorización fuera del modelo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: spring ai: chatclient y herramientas con autorización fuera del modelo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Spring AI: ChatClient y herramientas con autorización fuera del modelo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve spring ai: chatclient y herramientas con autorización fuera del modelo en tu contexto?
+2. ¿Cómo sabrías que spring ai: chatclient y herramientas con autorización fuera del modelo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar spring ai: chatclient y herramientas con autorización fuera del modelo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 cp -R spring-ai practica-spring-ai
 cd practica-spring-ai
 ./mvnw -q clean test
 ```
 
-**Resultado esperado:** ocho pruebas correctas: cuatro de herramientas y cuatro del tema siguiente. El wrapper incluido descarga Maven; la primera ejecución puede necesitar red para dependencias. No hacen falta claves ni pago a un proveedor. Spring AI 2.0.2 y Boot 4.0.9 están fijados; este tema conserva esas versiones compatibles en lugar de tomar versiones de una publicación social.
-
-#### Subtema 6.1 · Separa ChatClient del modelo · 9 min
-
-**Contexto:** ChatClient construye la solicitud y adapta la respuesta. ChatModel es la interfaz del componente que responde. **Analogía:** el cliente prepara un formulario y un mostrador lo atiende; la interfaz permite cambiar quién atiende. En esta práctica el mostrador está programado, no razona ni aprende.
-
-**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java`. El método `chatClientUsaElModeloSustituible` crea un ChatModel con una lambda: comprueba que la solicitud contiene ENV-42 y devuelve una respuesta fija. Ejecuta desde `practica-spring-ai`:
-
 ```bash
 ./mvnw -q -Dtest=ChatToolsTest#chatClientUsaElModeloSustituible test
 ```
-
-**Resultado esperado:** una prueba correcta y respuesta `Estado: creado` comprobada por la aserción. No esperes ver una conversación en terminal: el test inspecciona el resultado. Lee `.prompt().user(...).call().content()`: prepara mensajes, asigna el texto del usuario, llama al modelo y extrae contenido.
-
-**Fallo deliberado:** en el test cambia solo el texto enviado por `.user(...)` de ENV-42 a ENV-99. **Diagnóstico:** el modelo controlado exige ENV-42 y la aserción interna falla; restaura el texto. No cambies también la expectativa, porque perderías el contraste.
-
-**Entiende:** esta prueba valida el contrato cliente/modelo sin variabilidad ni credenciales. No mide precisión, latencia o coste de un LLM. Para probar selección automática de herramientas hace falta otro recorrido: aquí el callback se ejecuta directamente en el siguiente subtema.
-
-<details>
-<summary>Archivos completos del laboratorio para contrastar tu copia</summary>
-
-El archivo de construcción es `pom.xml` dentro de la carpeta copiada; no crees otro directorio `spring-ai` por dentro.
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
@@ -660,8 +639,6 @@ El archivo de construcción es `pom.xml` dentro de la carpeta copiada; no crees 
   <dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency></dependencies>
 </project>
 ```
-
-El archivo de prueba completo es `src/test/java/academia/ChatToolsTest.java`:
 
 ```java
 package academia;
@@ -724,94 +701,80 @@ class ChatToolsTest {
 }
 ```
 
-</details>
-
-**Cierra:** guarda el resultado del test y explica qué piezas son reales (ChatClient y mensajes) y cuál está controlada (ChatModel). No presentes la cadena fija como una respuesta evaluada de IA.
-
-#### Subtema 6.2 · Autoriza antes de consultar el envío · 9 min
-
-**Contexto:** la herramienta permite consultar un estado; el argumento `envioId` puede referirse a un envío ajeno. La descripción de `@Tool` comunica intención, pero la condición Java ejecuta el control.
-
-**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y sigue `Consulta.estado`: consulta `enviosPermitidos` antes de devolver `creado`. `MethodToolCallbackProvider` construye un callback a partir del objeto y `.call(...)` convierte el argumento JSON a la llamada Java. Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=ChatToolsTest#callbackRealRespetaLaFronteraDeAutorizacion test
 ```
-
-**Resultado esperado:** ENV-42 devuelve `creado`; ENV-ajeno lanza una excepción y el test pasa porque exige ese rechazo. No se lee una base de datos; el estado es fijo después de la autorización.
-
-**Fallo deliberado:** elimina la línea que lanza `IllegalArgumentException` si el conjunto no contiene el envío. **Diagnóstico:** ENV-ajeno devuelve estado y falla la aserción que exige excepción. Restaura la línea antes de seguir.
-
-**Entiende:** el callback es real, pero se invoca directamente; no hemos probado que un modelo lo elija, forme JSON válido o se detenga. En el proyecto integrador la identidad viene de una sesión autenticada del servidor. Nunca conviertas un `usuario` propuesto por el modelo en autoridad para consultar datos.
-
-**Cierra:** conserva autorización positiva, rechazo ajeno y fallo corregido. Identifica el punto del servicio donde aplicarías el mismo control antes de acceder a un repositorio real.
-
-#### Subtema 6.3 · Aísla permisos entre dos sesiones · 9 min
-
-**Contexto:** comprobar solo ENV-42 con un permiso fijo puede ocultar contaminación entre usuarios. Aquí dos objetos Consulta representan contextos de sesión diferentes: Ana puede leer ENV-42 y Bruno ENV-99.
-
-**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y lee `dosSesionesNoCompartenPermisos`. El constructor copia el conjunto recibido con `Set.copyOf`; cada objeto mantiene sus permisos. Ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=ChatToolsTest#dosSesionesNoCompartenPermisos test
 ```
 
-**Resultado esperado:** cada sesión lee su envío y ambas lecturas cruzadas fallan. Son cuatro comprobaciones dentro de un test, no cuatro tests distintos.
-
-**Fallo deliberado:** cambia el constructor para que ambas instancias reciban `Set.of("ENV-42", "ENV-99")`. **Diagnóstico:** los accesos cruzados dejan de rechazarse; restaura `Set.copyOf(enviosPermitidos)`.
-
-**Entiende:** la independencia del objeto no implementa login ni valida una cookie. El servidor debe construir el contexto desde identidad verificada y evitar reutilizar como singleton un objeto con permisos personales. Un permiso también puede revocarse: copiarlo no define cómo se actualiza durante una sesión larga.
-
-**Cierra:** como ejercicio independiente, crea una tercera sesión sin permisos y demuestra rechazo de los dos envíos. Después describe cómo verificarías revocación contra el servicio real de autorización, sin aceptar la identidad en los argumentos del modelo.
-
-#### Subtema 6.4 · Revisa qué argumentos puede proponer el modelo · 8 min
-
-**Contexto:** el esquema de entrada describe los campos de la herramienta. Reducir argumentos evita delegar decisiones que corresponden al servidor, aunque el esquema por sí solo tampoco autoriza una operación.
-
-**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y ejecuta:
-
-```bash
-./mvnw -q -Dtest=ChatToolsTest#contratoNoSolicitaIdentidadAlModelo test
-```
-
-**Resultado esperado:** el esquema contiene `envioId` y no contiene campos `usuario` ni `empresa`. Inspecciona `callback.getToolDefinition().inputSchema()` temporalmente en el depurador o imprime ese valor localmente para reconocer el contrato JSON.
-
-**Fallo deliberado:** añade un argumento `String usuario` a `estado` sin modificar el cuerpo. **Diagnóstico:** el esquema ahora solicita identidad y falla la expectativa del test; restaura la firma original. No uses ese argumento para sustituir la sesión.
-
-**Entiende:** comprobar nombres en el esquema solo controla este contrato concreto. No demuestra validación exhaustiva de JSON, rate limiting, timeout, auditoría ni seguridad del conjunto de herramientas. Una herramienta de escritura exige reglas de negocio propias antes de ejecutar efectos; añadirla a un prompt no resuelve esas reglas.
-
-**Cierra:** registra los argumentos permitidos y los datos que aporta exclusivamente el servidor. En el proyecto integrador conserva la herramienta como lectura hasta probar autorización, límites y tratamiento de fallos de la dependencia real.
-
-**Hito del tema:** conserva las cuatro pruebas correctas, un rechazo ajeno, la demostración de permisos separados y el esquema revisado. Explica el fallo que provocaste y corregiste. No se ha contactado un LLM ni probado selección automática, streaming, facturación o persistencia. Sigue con M8 T6 para decidir qué documentos pueden llegar al contexto.
-
-**Fuentes primarias:** [ChatClient](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [herramientas y ejecución](https://docs.spring.io/spring-ai/reference/api/tools.html), [compatibilidad Spring AI/Boot](https://docs.spring.io/spring-ai/reference/getting-started.html).
+</details>
 
 ### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 40 min
 
-**Meta:** filtrar documentos por empresa, excluir contexto sin evidencia y conservar referencias antes de generar una respuesta. **Prerrequisitos:** M8 T5, colecciones, metadatos y JUnit. Duración: 35–40 min.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** recuperar un documento relevante de otra empresa sigue siendo una fuga. En el proyecto integrador RutaFlow, la autorización debe actuar antes de entregar contexto al modelo.
+#### ► DE QUÉ TRATA
+Este tema te guía por rag desde la frontera de datos: recuperar evidencia autorizada antes de generar con foco en comprensión antes de implementación.
 
-#### Subtema 7.1 · Filtra la empresa antes de construir contexto · 9 min
+#### ► LA IDEA EN UNA FRASE
+**Entender rag desde la frontera de datos: recuperar evidencia autorizada antes de generar te permite tomar mejores decisiones técnicas.**
 
-**Contexto:** RAG añade documentos recuperados al contexto de una solicitud. Un flujo completo incluye ingestión, particionado, recuperación y generación. Aquí aislamos la frontera de recuperación con búsqueda literal; no usamos embeddings ni vector store.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java`. En `recuperar`, sigue el filtro `empresaAutorizada.equals(...)`, la búsqueda de texto y el límite. Ejecuta desde tu copia:
+#### ► LA ANALOGÍA
+Piensa en rag desde la frontera de datos: recuperar evidencia autorizada antes de generar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rag desde la frontera de datos: recuperar evidencia autorizada antes de generar resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+Contexto: no todas las preguntas tienen respuesta en el corpus. Generar texto sin reconocer esa ausencia puede convertir una suposición en una afirmación sobre la empresa.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rag desde la frontera de datos: recuperar evidencia autorizada antes de generar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rag desde la frontera de datos: recuperar evidencia autorizada antes de generar en tu contexto?
+2. ¿Cómo sabrías que rag desde la frontera de datos: recuperar evidencia autorizada antes de generar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rag desde la frontera de datos: recuperar evidencia autorizada antes de generar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 ./mvnw -q -Dtest=RagScopeTest#filtraAntesDeConstruirContexto test
 ```
-
-**Resultado esperado:** el documento de A aparece y el de B se excluye, aunque ambos contienen «Reembolso». `Document` conserva texto y metadatos; el campo `empresa` expresa una etiqueta de acceso que el backend debe haber asignado de forma confiable.
-
-**Fallo deliberado:** quita el filtro por empresa de `recuperar`. **Diagnóstico:** la colección contiene también el documento de B y la prueba falla. Restaura el filtro; no intentes compensarlo añadiendo «ignora datos de B» al prompt.
-
-**Entiende:**analogía:** en una biblioteca, encontrar la sección adecuada no da permiso para abrir cualquier expediente. El límite de esa comparación es que también hay que controlar ingestión, cambios de permisos y almacenamiento. El parámetro `empresaAutorizada` debe venir de la sesión del servidor; este test lo suministra directamente y no implementa autenticación.
-
-<details>
-<summary>Código completo de la recuperación local y sus cuatro pruebas</summary>
-
-Conserva este archivo como `src/test/java/academia/RagScopeTest.java`; comparte el `pom.xml` del tema anterior.
 
 ```java
 package academia;
@@ -862,87 +825,39 @@ class RagScopeTest {
 }
 ```
 
-</details>
-
-**Cierra:** conserva la colección autorizada, el fallo al quitar el filtro y su corrección. Explica por qué filtrar después de enviar el contexto al modelo llega demasiado tarde.
-
-#### Subtema 7.2 · Conserva un resultado vacío cuando no hay evidencia · 8 min
-
-**Contexto:** no todas las preguntas tienen respuesta en el corpus. Generar texto sin reconocer esa ausencia puede convertir una suposición en una afirmación sobre la empresa.
-
-**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java` y lee `sinEvidenciaNoSeInventaContexto`. Ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=RagScopeTest#sinEvidenciaNoSeInventaContexto test
 ```
-
-**Resultado esperado:** pregunta vacía y término ausente producen una lista vacía. El test no llama a un generador; solo verifica que el recuperador no inventa documentos. La salida de búsqueda no equivale a una respuesta validada.
-
-**Fallo deliberado:** cambia la rama `termino.isBlank()` por `return corpus;`. **Diagnóstico:** la pregunta vacía recibe el documento de prueba, aunque no debería recuperar nada, y el test falla. Restaura `return List.of()`. El corpus no vacío permite distinguir vacío por política de vacío por falta de documentos.
-
-**Entiende:** esta prueba muestra por qué debes elegir entradas que distingan el comportamiento correcto del incorrecto. En una integración real define abstención o solicitud de más datos cuando no hay evidencia autorizada. Esa política debe comprobarse antes de atribuir una respuesta al conocimiento de la empresa.
-
-**Cierra:** guarda el resultado del caso con corpus no vacío para pregunta vacía. Como ejercicio independiente añade una búsqueda que solo coincide con B y exige vacío para A; comprueba que relevancia y autorización se aplican juntas.
-
-#### Subtema 7.3 · Limita resultados después de filtrar y conserva IDs · 10 min
-
-**Contexto:** limitar primero puede consumir todos los espacios con documentos ajenos y ocultar evidencia válida. Además, conservar IDs permite rastrear de dónde salió el contexto seleccionado.
-
-**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java`. `filtraAntesDeLimitarYConservaReferencias` coloca dos documentos de B antes de tres de A. Ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=RagScopeTest#filtraAntesDeLimitarYConservaReferencias test
 ```
 
-**Resultado esperado:** exactamente `a-1` y `a-2`, ambos de A, aun buscando REEMBOLSO en mayúsculas. `Locale.ROOT` hace explícita la normalización; `.limit(2)` actúa sobre documentos ya permitidos y coincidentes.
-
-**Fallo deliberado:** mueve `.limit(2)` inmediatamente después de `corpus.stream()`. **Diagnóstico:** solo inspeccionas los dos documentos iniciales de B, que luego se excluyen, y el resultado queda vacío. Restaura el orden filtro de permisos → coincidencia → límite.
-
-**Entiende:** el orden del corpus decide cuáles aparecen aquí; no hay ranking semántico. Un embedding representa contenido como un vector y un vector store puede buscar similitud, pero esos componentes no se ejecutan en este laboratorio. Conservar un ID facilita trazabilidad; no demuestra que el documento sea correcto, vigente o que respalde la afirmación generada.
-
-**Cierra:** registra IDs y textos recuperados. Añade una versión o fecha al corpus de tu proyecto integrador y explica qué volverías a evaluar al cambiar documentos, particionado o modelo de embeddings.
-
-#### Subtema 7.4 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min
-
-**Contexto:** un documento sin etiqueta de empresa no debe compartirse por defecto. También puede contener instrucciones maliciosas: estar autorizado para leer texto no le otorga autoridad para cambiar permisos o ejecutar herramientas.
-
-**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java` y ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=RagScopeTest#documentoSinEmpresaNoSeCompartePorDefecto test
 ```
 
-**Resultado esperado:** la lista queda vacía para el documento sin `empresa`. La comparación con A no coincide con un metadato ausente.
-
-**Fallo deliberado:** cambia el filtro para permitir documentos con `get("empresa") == null` además de los de A. **Diagnóstico:** el documento sin propietario aparece y el test falla; restaura el filtro estricto.
-
-**Entiende:** no se ha demostrado resistencia a prompt injection: el test no ejecuta un modelo ni interpreta instrucciones del documento. Para la siguiente fase con VectorStore y QuestionAnswerAdvisor define primero filtros de sesión, corpus con IDs conocidos, modelo/dimensiones de embeddings, topK y umbral. Mide recuperación por separado de fidelidad de la respuesta; registra coste y latencia solo cuando exista ejecución real.
-
-**Cierra:** crea `evaluacion-rag.md` en tu copia con cinco preguntas: respondible por A, solo respondible por B, sin respuesta, evidencia contradictoria y documento con instrucción maliciosa. Para cada una declara IDs permitidos y cuándo abstenerse. No marques los cinco casos como aprobados hasta ejecutar la integración correspondiente.
-
-**Hito del tema:** conserva filtrado por empresa, ausencia de evidencia, selección de IDs con límite posterior y exclusión sin propietario. Adjunta tu caso independiente y plan de evaluación. Las cuatro pruebas publicadas verifican fronteras locales; no acreditan búsqueda vectorial, generación ni seguridad completa de un sistema RAG.
-
-**Fuente primaria:** [Spring AI: RAG, QuestionAnswerAdvisor y filtros](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
+</details>
 
 ### Tema 8: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un `ChatClient` sin copiar su código. **Prerrequisitos:** el Tema 6 de este módulo (ChatClient y herramientas con `@Tool`), REST con Spring MVC y JDK 25 o superior.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-En el Tema 6 la herramienta vivía dentro de la misma aplicación que el chat. Ahora el equipo de soporte, un asistente de escritorio y un agente de IA quieren consultar el estado de un envío. Si cada uno copia el código de la herramienta, tendrás tres versiones distintas de la misma regla. **MCP** (Model Context Protocol) es un protocolo abierto para que un servidor publique herramientas, recursos y prompts, y para que cualquier cliente compatible los descubra y los llame. **¿Por qué es importante?** Una sola herramienta, una sola regla de autorización y un solo lugar para corregirla.
+#### ► DE QUÉ TRATA
+Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un ChatClient sin copiar su código. Prerrequisitos: el Tema 6 de este módulo (ChatClient y herramientas con @Tool), REST con Spring MVC y JDK 25 o s…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Conceptos clave:** servidor MCP, cliente MCP, herramienta (`tool`), descubrimiento (`tools/list`), invocación (`tools/call`), transporte Streamable HTTP.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un ChatClient sin copiar su código.**
 
-Piensa en tres piezas. El **servidor MCP** es tu aplicación Spring Boot: publica métodos anotados con `@McpTool`. El **cliente MCP** es otra aplicación (o un IDE, o un agente) que se conecta al servidor. Primero pregunta qué herramientas hay (`tools/list`) y recibe nombre, descripción y el esquema JSON de los parámetros. Después llama a una (`tools/call`) con argumentos. El modelo de IA nunca entra a tu base de datos: solo pide que se ejecute una herramienta, y es tu servidor el que decide si la ejecuta.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Analogía:** un servidor MCP es como el menú de un restaurante con los ingredientes de cada plato. El cliente lee el menú (descubrimiento) y pide un plato con sus opciones (invocación). La cocina sigue decidiendo qué sirve y a quién. La analogía se rompe en un punto: el menú de MCP se lee en tiempo de ejecución, así que una herramienta nueva aparece sin cambiar el código del cliente.
+#### ► LA ANALOGÍA
+Piensa en model context protocol (mcp) con spring ai: exponer y consumir herramientas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Límite de uso:** por defecto los transportes HTTP de MCP **no tienen autenticación**: cualquiera que alcance el endpoint puede listar e invocar todas las herramientas. No lo expongas fuera de `localhost` sin Spring Security delante.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente MCP (ChatClient)
@@ -956,10 +871,55 @@ sequenceDiagram
     S-->>C: "Estado: CREADO"
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea dos proyectos con Spring Initializr (Spring Boot 4, Java 25): `rutaflow-mcp-server` y `rutaflow-mcp-client`.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `rutaflow-mcp-server/pom.xml` (dependencia que agrega el servidor; la versión la fija el BOM de Spring AI 2.0):
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses model context protocol (mcp) con spring ai: exponer y consumir herramientas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: model context protocol (mcp) con spring ai: exponer y consumir herramientas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve model context protocol (mcp) con spring ai: exponer y consumir herramientas en tu contexto?
+2. ¿Cómo sabrías que model context protocol (mcp) con spring ai: exponer y consumir herramientas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar model context protocol (mcp) con spring ai: exponer y consumir herramientas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant C as Cliente MCP (ChatClient)
+    participant S as Servidor MCP (Spring Boot)
+    participant D as Servicio de envíos
+    C->>S: POST /mcp tools/list
+    S-->>C: estado_envio(codigo) + esquema JSON
+    C->>S: POST /mcp tools/call estado_envio {codigo: ENV-42}
+    S->>D: autoriza y consulta ENV-42
+    D-->>S: CREADO
+    S-->>C: "Estado: CREADO"
+```
 
 ```xml
 <dependency>
@@ -967,8 +927,6 @@ Archivo `rutaflow-mcp-server/pom.xml` (dependencia que agrega el servidor; la ve
   <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
 </dependency>
 ```
-
-Archivo `rutaflow-mcp-server/src/main/resources/application.yml`:
 
 ```yaml
 spring:
@@ -982,8 +940,6 @@ spring:
         annotation-scanner:
           enabled: true
 ```
-
-Archivo `rutaflow-mcp-server/src/main/java/academia/EnvioTools.java`:
 
 ```java
 package academia;
@@ -1011,18 +967,10 @@ class EnvioTools {
 }
 ```
 
-Arranca el servidor y prueba el descubrimiento con el inspector oficial de MCP, desde otra terminal:
-
 ```bash
 cd rutaflow-mcp-server && ./mvnw spring-boot:run
 npx @modelcontextprotocol/inspector
 ```
-
-En el inspector elige transporte **Streamable HTTP**, URL `http://localhost:8080/mcp`, pulsa **List Tools** y luego llama `estado_envio` con `codigo = ENV-42`.
-
-**Resultado esperado:** la lista muestra `estado_envio` con su descripción y un esquema que exige `codigo` de tipo `string`; la llamada responde `Estado: CREADO`.
-
-Ahora el cliente. Archivo `rutaflow-mcp-client/src/main/resources/application.yml`:
 
 ```yaml
 server:
@@ -1038,51 +986,4 @@ spring:
               url: http://localhost:8080   # el endpoint /mcp es el valor por defecto
 ```
 
-Archivo `rutaflow-mcp-client/src/main/java/academia/AsistenteController.java` (el cliente necesita además el starter `spring-ai-starter-mcp-client` y el starter del modelo que uses, que crea el `ChatClient.Builder`):
-
-```java
-package academia;
-
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-class AsistenteController {
-
-    private final ChatClient chatClient;
-
-    // Las herramientas llegan del servidor MCP: este proyecto no contiene el código de EnvioTools.
-    AsistenteController(ChatClient.Builder builder, SyncMcpToolCallbackProvider herramientasMcp) {
-        this.chatClient = builder.defaultToolCallbacks(herramientasMcp).build();
-    }
-
-    @GetMapping("/preguntar")
-    String preguntar(@RequestParam String q) {
-        return chatClient.prompt(q).call().content();
-    }
-}
-```
-
-```bash
-curl "http://localhost:8081/preguntar?q=¿En%20qué%20estado%20está%20ENV-42?"
-```
-
-**Explicación por bloques:** el starter `spring-ai-starter-mcp-server-webmvc` publica el endpoint `POST /mcp`; `annotation-scanner.enabled` hace que Spring encuentre `@McpTool` y genere el esquema JSON a partir de la firma del método y de `@McpToolParam`; en el cliente, la conexión `rutaflow` descubre las herramientas al arrancar y `SyncMcpToolCallbackProvider` las entrega al `ChatClient` como si fueran locales.
-
-**Fallo deliberado:** apaga el servidor y vuelve a arrancar el cliente. **Diagnóstico:** el cliente falla al iniciar porque no puede inicializar la conexión MCP `rutaflow`; el síntoma no es una mala respuesta del modelo sino un error de conexión. Levanta el servidor y repite. Segundo fallo: llama `estado_envio` con `ENV-99` desde el inspector: recibes el error `Envío no encontrado: ENV-99`, que demuestra que la regla está en el servidor.
-
-#### Paso 5 · Práctica guiada
-Agrega una segunda herramienta `envios_por_estado(estado)` que devuelva los códigos con ese estado. **Pista:** no toques el cliente; reinícialo y comprueba en el inspector que la herramienta nueva aparece sola en `tools/list`.
-
-#### Paso 6 · Práctica independiente
-Protege el endpoint `/mcp` del servidor con Spring Security (por ejemplo, un token en una cabecera) y demuestra con el inspector que sin token `tools/list` responde 401 y con token responde la lista.
-
-#### Paso 7 · Cierre
-Entregá la lista de herramientas vista en el inspector, la respuesta `Estado: CREADO`, el error del cliente con el servidor apagado y el 401 del Paso 6. Explicá con tus palabras por qué MCP evita copiar herramientas entre aplicaciones. **Errores comunes:** dejar `/mcp` público, devolver texto inventado cuando el dato no existe en vez de un error, y confiar en que el modelo decida permisos. **Cuándo no usarlo:** si la herramienta solo la usa una aplicación, el `@Tool` local del Tema 6 es más simple. **Siguiente paso:** el proyecto integrador expone sus consultas de envíos por MCP.
-
-**Transferencia al proyecto integrador «RutaFlow»:** publica `estado_envio` desde el servicio de envíos como servidor MCP protegido y consúmelo desde el asistente de soporte.
-
-**Fuente oficial:** [Spring AI — MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html) y [MCP Client Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html).
+</details>

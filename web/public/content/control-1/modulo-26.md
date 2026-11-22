@@ -16,22 +16,68 @@ En el módulo 25 ubicaste los polos con \(u = -Kx\), suponiendo que mides todo e
 
 ## Aprende construyendo
 
+
 ### Tema 1: El observador de orden completo · Avanzado · 35 min
 
-**¿Por qué es importante?** Sin \(x\) no hay realimentación de estados. Derivar \(y\) para obtener \(\dot y = x_2\) amplifica el ruido; el observador lo evita. **Modelo mental:** el observador es una copia de la planta que se corrige con la diferencia entre la salida medida y la que predice.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** diseña \(L\) para que el error de estimación tenga polos en \(-10\) (doble), unas tres veces más rápidos que el controlador. **Límite:** el observador supone que conoces \(A\), \(B\) y \(C\); si el modelo está mal, la estimación tiene error permanente.
+#### ► DE QUÉ TRATA
+Este tema te guía por el observador de orden completo con foco en comprensión antes de implementación.
 
-#### Subtema 1.1: Comprueba que copiar la planta no basta · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender el observador de orden completo te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La copia sin corrección \(\dot{\hat x} = A\hat x + Bu\) tiene error \(e = x - \hat x\) con \(\dot e = Ae\): el error se apaga solo con los polos de la planta (y si la planta es inestable, crece).
+#### ► LA ANALOGÍA
+Piensa en el observador de orden completo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que el observador de orden completo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Guarda en `academia-labs/control-1/observador.py`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El observador de orden completo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El observador de orden completo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el observador de orden completo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el observador de orden completo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El observador de orden completo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el observador de orden completo en tu contexto?
+2. ¿Cómo sabrías que el observador de orden completo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el observador de orden completo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 # observador.py
 import numpy as np
@@ -48,32 +94,6 @@ for tt in (1, 2, 3):
     print(f"copia t={tt}: |e| =", round(float(np.linalg.norm(copia.states[:, tt * 1000])), 3))
 ```
 
-**Resultado esperado:** `copia t=1: |e| = 0.759`, `copia t=2: |e| = 0.344` y `copia t=3: |e| = 0.136`.
-
-**Fallo deliberado:** cambia `A` por una planta inestable, `[[0, 1], [2, -1]]`. **Resultado observado:** \(|e|\) pasa de 1 a 2,53 en \(t = 1\) s y a 18,94 en \(t = 3\) s. **Diagnóstico:** la copia hereda los polos de la planta (aquí uno en \(+1\)); sin corrección el error nunca se apaga.
-
-**3. Entiende**
-
-Tres segundos después, la copia todavía se equivoca en un 14 % del error inicial. Lo que falta es usar la medición: si \(y \ne C\hat x\), la estimación está mal y hay que corregirla.
-
-**4. Cierra**
-
-Anota cuánto tarda la copia en bajar el error a la mitad (entre 1 y 2 s).
-
-#### Subtema 1.2: Calcula L igualando coeficientes · 15 min
-
-**1. Contexto**
-
-El observador de Luenberger agrega una corrección proporcional al error de salida:
-
-\[\dot{\hat x} = A\hat x + Bu + L\,(y - C\hat x) \quad\Rightarrow\quad \dot e = (A - LC)\,e\]
-
-Ahora los polos del error son los valores propios de \(A - LC\), y \(L\) los ubica.
-
-**2. Hazlo tú**
-
-Guarda en `observador_l.py`:
-
 ```python
 # observador_l.py
 import sympy as sp
@@ -88,30 +108,6 @@ deseado = sp.expand((s + 10) ** 2)
 print("L =", sp.solve(sp.Poly(caracteristico - deseado, s).all_coeffs(), [l1, l2]))
 ```
 
-**Resultado esperado:** `det(sI - A + LC) = 3*l1 + l2 + s**2 + s*(l1 + 3) + 2` y `L = {l1: 17, l2: 47}`.
-
-**Fallo deliberado:** escribe `A - C * L` (orden invertido). **Resultado observado:** `ShapeError`, porque \(C\) es \(1\times2\) y \(L\) es \(2\times1\): \(CL\) es un escalar \(1\times1\). **Diagnóstico:** el término es \(LC\), una matriz \(2\times2\) que se resta de \(A\).
-
-**3. Entiende**
-
-\[A - LC = \begin{bmatrix} -l_1 & 1 \\ -2 - l_2 & -3 \end{bmatrix} \Rightarrow s^2 + (3 + l_1)s + (3l_1 + l_2 + 2)\]
-
-Con \((s+10)^2 = s^2 + 20s + 100\): \(l_1 = 17\) y \(l_2 = 100 - 51 - 2 = 47\). Igual que \(K\) necesitaba controlabilidad, \(L\) necesita observabilidad: si \(\mathcal O\) no tiene rango completo, algún coeficiente no depende de \(L\).
-
-**4. Cierra**
-
-Registra \(L = [17\ \ 47]^T\).
-
-#### Subtema 1.3: Usa la dualidad con python-control · 10 min
-
-**1. Contexto**
-
-Los valores propios de \(A - LC\) son los de \((A - LC)^T = A^T - C^TL^T\): es un problema de ubicación de polos para el par \((A^T, C^T)\) con ganancia \(L^T\).
-
-**2. Hazlo tú**
-
-Añade al final de `observador.py`:
-
 ```python
 L = np.reshape(ct.acker(A.T, C.T, [-10, -10]), (2, 1))
 print("L =", L.ravel().tolist())
@@ -119,61 +115,66 @@ print("polos del error:", np.linalg.eigvals(A - L @ C).real.round(6).tolist())
 print("L con place en -10 y -12:", ct.place(A.T, C.T, [-10, -12]).T.ravel().round(6).tolist())
 ```
 
-**Resultado esperado:** `L = [17.0, 47.0]`, `polos del error: [-10.0, -10.0]` y `L con place en -10 y -12: [19.0, 61.0]`.
-
-**Fallo deliberado:** escribe `ct.acker(A, C, [-10, -10])`. **Resultado observado:** `ControlDimension: state-space matrix B has the wrong number of rows`. **Diagnóstico:** python-control rechaza \(C\) como matriz de entrada. Para observadores transpón: `acker(A.T, C.T, ...)` y vuelve a transponer el resultado.
-
-**3. Entiende**
-
-Regla práctica: los polos del observador se ponen de 2 a 6 veces más rápidos que los del controlador. Aquí el controlador tiene \(\sigma = 3\) y el observador \(\sigma = 10\).
-
-**4. Cierra**
-
-Comprueba que obtuviste el mismo \(L\) a mano y con `acker`.
-
-#### Ejercicios del tema
-
-1. Para el motor \(A = \begin{bmatrix}0&1\\0&-4\end{bmatrix}\), \(C = [1\ 0]\), halla \(L\) con polos del error en \(-20\) (doble).
-
-   <details><summary>Solución</summary>
-
-   \(A - LC = \begin{bmatrix}-l_1 & 1\\ -l_2 & -4\end{bmatrix}\), polinomio \(s^2 + (4 + l_1)s + (4l_1 + l_2)\). Con \(s^2 + 40s + 400\): \(l_1 = 36\), \(l_2 = 400 - 144 = 256\). `ct.acker(A.T, C.T, [-20, -20])` da `[36, 256]`.
-
-   </details>
-
-2. ¿Se puede diseñar un observador para \(A = \operatorname{diag}(-1, -2)\) con \(C = [0\ 1]\)?
-
-   <details><summary>Solución</summary>
-
-   No con polos arbitrarios: el par no es observable (módulo 25). El polo en \(-1\) del error no depende de \(L\). Como es estable, el error de ese estado igual se apaga, pero a la velocidad de la planta (el sistema es detectable).
-
-   </details>
-
-**Hito del tema:**
-
-- [ ] Mostré que la copia sin corrección converge con los polos de la planta.
-- [ ] Calculé \(L = [17\ \ 47]^T\) igualando coeficientes.
-- [ ] Obtuve el mismo \(L\) por dualidad con `acker`.
-- [ ] Diagnostiqué el orden \(LC\) frente a \(CL\).
-
-**Fuentes oficiales:** [acker y place, python-control](https://python-control.readthedocs.io/en/latest/generated/control.place_acker.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
+</details>
 
 ### Tema 2: Elige la velocidad del observador · Avanzado · 30 min
 
-**¿Por qué es importante?** Un observador rápido converge pronto pero amplifica el ruido del sensor; uno lento filtra el ruido pero entrega estimaciones viejas. **Modelo mental:** \(L\) grande significa «confío mucho en el sensor».
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** compara un observador rápido (polos en \(-10\)) con uno lento (polos en \(-1\)). **Límite:** el ruido se modela aquí como una senoidal de alta frecuencia; un análisis completo usa el filtro de Kalman (fuera de este curso).
+#### ► DE QUÉ TRATA
+Este tema te guía por elige la velocidad del observador con foco en comprensión antes de implementación.
 
-#### Subtema 2.1: Simula la convergencia · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender elige la velocidad del observador te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La planta parte de \(x(0) = [1\ \ 0]^T\) y el observador de \(\hat x(0) = 0\): no sabe dónde está la planta.
+#### ► LA ANALOGÍA
+Piensa en elige la velocidad del observador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+![Estado x1 y su estimación con un observador rápido y uno lento](content/figures/control-1/observador-error.svg)
 
-Guarda en `convergencia.py`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Elige la velocidad del observador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Elige la velocidad del observador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses elige la velocidad del observador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: elige la velocidad del observador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Elige la velocidad del observador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve elige la velocidad del observador en tu contexto?
+2. ¿Cómo sabrías que elige la velocidad del observador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar elige la velocidad del observador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 # convergencia.py
 import numpy as np
@@ -198,36 +199,10 @@ for nombre, polos in (("rapido", [-10, -10]), ("lento", [-1, -1])):
     print(nombre, "L =", L.ravel().tolist(), "|e| en t=0.5:", round(float(norma[500]), 3), "en t=1:", round(float(norma[1000]), 3))
 ```
 
-**Resultado esperado:**
-
 ```text
 rapido L = [17.0, 47.0] |e| en t=0.5: 0.166 en t=1: 0.002
 lento L = [-1.0, 2.0] |e| en t=0.5: 1.716 en t=1: 1.839
 ```
-
-**Fallo deliberado:** elige polos del observador más lentos que la planta, como el caso `lento`. **Resultado observado:** en \(t = 1\) s el error es mayor que el inicial y mayor que el de la copia sin corrección (0,759). **Diagnóstico:** un observador más lento que la planta es peor que no corregir; sus polos deben ser más rápidos que los de la planta y que los del controlador.
-
-**3. Entiende**
-
-![Estado x1 y su estimación con un observador rápido y uno lento](content/figures/control-1/observador-error.svg)
-
-*Con polos en \(-10\) la estimación alcanza a \(x_1\) antes de 0,5 s; con polos en \(-1\) se aleja.*
-
-Con polos en \(-10\) el error cae al 0,2 % en un segundo. Al principio la norma del error sube (pico de unos 1,8 cerca de \(t = 0{,}1\) s) porque la corrección grande sacude primero la estimación de la velocidad: es el precio de la rapidez.
-
-**4. Cierra**
-
-Anota \(|e|\) de los dos observadores en \(t = 1\) s.
-
-#### Subtema 2.2: Mide cuánto ruido deja pasar · 10 min
-
-**1. Contexto**
-
-Si el sensor mide \(y + n\), el error cumple \(\dot e = (A - LC)e - Ln\). La función de transferencia de \(n\) al error de \(x_1\) dice cuánto ruido llega a la estimación.
-
-**2. Hazlo tú**
-
-Añade a `convergencia.py`:
 
 ```python
 for nombre, polos in (("rapido", [-10, -10]), ("lento", [-1, -1])):
@@ -235,28 +210,6 @@ for nombre, polos in (("rapido", [-10, -10]), ("lento", [-1, -1])):
     ruido_a_error = ct.ss(A - L @ C, -L, np.array([[1.0, 0]]), 0)
     print(nombre, "ganancia del ruido en w=100:", round(abs(ruido_a_error(100j)), 4))
 ```
-
-**Resultado esperado:** `rapido ganancia del ruido en w=100: 0.1686` y `lento ganancia del ruido en w=100: 0.01`.
-
-**Fallo deliberado:** compara las ganancias en \(\omega = 1\) rad/s. **Diagnóstico:** a baja frecuencia las dos dejan pasar casi todo (0,98 y 0,71) porque ahí el «ruido» se confunde con la señal. El ruido de un sensor suele ser de alta frecuencia: evalúalo donde está.
-
-**3. Entiende**
-
-El observador rápido deja pasar 17 veces más ruido de 100 rad/s. Por eso no se ponen los polos del observador arbitrariamente lejos: de 2 a 6 veces la velocidad del controlador es un compromiso entre convergencia y ruido.
-
-**4. Cierra**
-
-Escribe en una línea el compromiso que elegiste para tu planta.
-
-#### Subtema 2.3: Compara con derivar la salida · 10 min
-
-**1. Contexto**
-
-La alternativa ingenua a un observador es \(\hat x_2 = \dot y\). Un derivador tiene ganancia \(\omega\): crece sin límite con la frecuencia.
-
-**2. Hazlo tú**
-
-Añade a `convergencia.py`:
 
 ```python
 derivador = ct.tf([1, 0], [1])
@@ -266,63 +219,69 @@ print("derivador en w=100:", abs(derivador(100j)))
 print("observador (estado x2) en w=100:", round(abs(ruido_a_x2(100j)), 3))
 ```
 
-**Resultado esperado:** `derivador en w=100: 100.0` y `observador (estado x2) en w=100: 0.465`.
-
-**Fallo deliberado:** compara con la ganancia del observador para \(x_1\) (0,1686). **Diagnóstico:** la comparación justa es con el mismo estado que se quiere reconstruir, la velocidad \(x_2\).
-
-**3. Entiende**
-
-Derivar multiplica el ruido de 100 rad/s por 100; el observador, por menos de 0,5. El observador es un derivador «filtrado» que además usa el modelo y la entrada \(u\).
-
-**4. Cierra**
-
-Anota las dos ganancias y concluye cuál usarías con un encoder ruidoso.
-
-#### Ejercicios del tema
-
-1. ¿Qué pasa con la ganancia del ruido si llevas los polos del observador a \(-30\) (doble)?
-
-   <details><summary>Solución</summary>
-
-   \(L\) crece (\(l_1 = 57\), \(l_2 = 900 - 171 - 2 = 727\)) y la ganancia del ruido en alta frecuencia aumenta: el observador converge más rápido pero se vuelve más sensible al sensor.
-
-   </details>
-
-2. ¿Por qué el observador recibe \(u\) además de \(y\)?
-
-   <details><summary>Solución</summary>
-
-   Para que su predicción siga a la planta cuando cambia la entrada. Sin el término \(Bu\), cada cambio de \(u\) produciría un error de estimación que solo la corrección \(L\) podría eliminar.
-
-   </details>
-
-**Hito del tema:**
-
-- [ ] Simulé la convergencia de un observador rápido y uno lento.
-- [ ] Mostré que un observador más lento que la planta empeora la estimación.
-- [ ] Medí la ganancia del ruido de alta frecuencia en los dos casos.
-- [ ] Comparé el observador con un derivador puro.
-
-**Fuentes oficiales:** [initial_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.initial_response.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
+</details>
 
 ### Tema 3: Controlador con observador · Avanzado · 35 min
 
-**¿Por qué es importante?** El controlador final usa \(u = -K\hat x + \bar N r\). Hay que saber si juntar controlador y observador conserva los polos que diseñaste por separado, y cómo se implementa el conjunto. **Modelo mental:** el principio de separación dice que puedes diseñar \(K\) y \(L\) por separado y sumar sus polos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** une \(K = [23\ \ 3]\), \(L = [17\ \ 47]^T\) y \(\bar N = 25\). **Límite:** la separación vale con el modelo exacto; los márgenes del Subtema 3.2 dicen cuánto error de modelo tolera.
+#### ► DE QUÉ TRATA
+Este tema te guía por controlador con observador con foco en comprensión antes de implementación.
 
-#### Subtema 3.1: Comprueba el principio de separación · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender controlador con observador te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Con \(u = -K\hat x\) y \(\hat x = x - e\), el sistema completo en coordenadas \((x, e)\) es triangular por bloques:
+#### ► LA ANALOGÍA
+Piensa en controlador con observador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-\[\begin{bmatrix}\dot x\\ \dot e\end{bmatrix} = \begin{bmatrix} A - BK & BK \\ 0 & A - LC \end{bmatrix}\begin{bmatrix}x\\ e\end{bmatrix}\]
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que controlador con observador resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**2. Hazlo tú**
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Controlador con observador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Guarda en `separacion.py`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Controlador con observador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses controlador con observador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: controlador con observador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Controlador con observador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve controlador con observador en tu contexto?
+2. ¿Cómo sabrías que controlador con observador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar controlador con observador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 # separacion.py
 import numpy as np
@@ -347,32 +306,6 @@ info = ct.step_info(T)
 print("Mp =", round(info["Overshoot"], 1), "% ts =", round(info["SettlingTime"], 1), "s")
 ```
 
-**Resultado esperado:** `partes reales: [-10.0, -10.0, -3.0, -3.0]`, `partes imaginarias: [0.0, 0.0, -4.0, 4.0]` y `Mp = 9.5 % ts = 1.2 s`.
-
-**Fallo deliberado:** en `B_cl` pon `np.vstack([B * N_bar, np.zeros((2, 1))])` (el observador no recibe \(u\)). **Diagnóstico:** el observador deja de saber qué entrada se aplicó; la referencia excita el error de estimación y la respuesta cambia: `ct.dcgain` pasa de 1 a 1,74 y la salida ya no sigue a \(r\).
-
-**3. Entiende**
-
-Los polos son la unión de los del controlador (\(-3 \pm 4j\)) y los del observador (\(-10, -10\)). Ante la referencia, la respuesta es la misma que con estados medidos (\(M_p \approx 9{,}5\,\%\)): los modos del observador no se excitan con \(r\) porque el observador recibe la misma \(u\) que la planta.
-
-**4. Cierra**
-
-Anota los cuatro polos y la respuesta.
-
-#### Subtema 3.2: Obtén el compensador equivalente · 15 min
-
-**1. Contexto**
-
-De \(y\) a \(u\), el conjunto observador + \(K\) es una función de transferencia:
-
-\[C(s) = K\,(sI - A + BK + LC)^{-1}L\]
-
-Es un compensador dinámico que se puede implementar como cualquier otro y analizar con Bode.
-
-**2. Hazlo tú**
-
-Añade a `separacion.py`:
-
 ```python
 compensador = ct.tf(ct.ss(A - B @ K - L @ C, L, K, 0))
 print(compensador)
@@ -380,30 +313,6 @@ G = ct.tf(ct.ss(A, B, C, 0))
 gm, pm, _, wc = ct.margin(compensador * G)
 print("MF =", round(pm, 1), "MG =", round(20 * np.log10(gm), 1), "dB en wc =", round(wc, 2))
 ```
-
-**Resultado esperado:** la función `(532 s + 2152)/(s^2 + 23 s + 174)` y `MF = 58.1 MG = 16.1 dB en wc = 3.69`.
-
-**Fallo deliberado:** usa `ct.ss(A - L @ C, L, K, 0)` (sin \(-BK\)). **Resultado observado:** el denominador pasa a ser \(s^2 + 20s + 100\), el polinomio del observador. **Diagnóstico:** ese no es el compensador del lazo: el observador debe incluir el término \(Bu = -BK\hat x\) porque \(u\) sale de \(\hat x\).
-
-**3. Entiende**
-
-\[C(s) = \frac{532\,s + 2152}{s^2 + 23s + 174} = \frac{532\,(s + 4{,}05)}{(s + 11{,}5)^2 + 6{,}46^2}\]
-
-Es un adelanto de segundo orden: cero en \(-4{,}05\) y polos complejos en \(-11{,}5 \pm 6{,}46j\). Lo que diseñaste en estados equivale a un compensador clásico con \(MF = 58^\circ\) y \(MG = 16\) dB: tolera bien errores de modelo.
-
-**4. Cierra**
-
-Registra \(C(s)\) y sus márgenes. Ahora puedes implementarlo con op-amps o en un microcontrolador.
-
-#### Subtema 3.3: Prueba la robustez ante un error de modelo · 10 min
-
-**1. Contexto**
-
-Si la planta real tiene un coeficiente distinto, el observador ya no es exacto. Los márgenes predicen que el lazo aguanta; compruébalo.
-
-**2. Hazlo tú**
-
-Añade a `separacion.py`:
 
 ```python
 A_real = np.array([[0.0, 1], [-2.5, -3]])  # rigidez 25 % mayor
@@ -413,41 +322,4 @@ print("polos con error de modelo:", np.round(np.sort_complex(np.linalg.eigvals(A
 print("ganancia estatica:", round(float(ct.dcgain(T_real)), 4))
 ```
 
-**Resultado esperado:** `polos con error de modelo: [(-10.046-0.573j), (-10.046+0.573j), (-2.954-4.102j), (-2.954+4.102j)]` y `ganancia estatica: 0.9664`.
-
-**Fallo deliberado:** espera ganancia estática 1. **Diagnóstico:** \(\bar N\) se calculó con el modelo nominal; con la planta real la salida no llega a la referencia. El remedio es el integrador del ejercicio 2 del módulo 25.
-
-**3. Entiende**
-
-La estabilidad se conserva (márgenes amplios), pero el seguimiento exacto no: la realimentación de estados con \(\bar N\) no es robusta en estado estacionario.
-
-**4. Cierra**
-
-Anota la ganancia estática (0,9664) y el error relativo: 3,4 % de error permanente.
-
-#### Ejercicios del tema
-
-1. Para el motor del ejercicio del Tema 1 (\(K = [32\ \ 4]\), \(L = [36\ \ 256]^T\)), ¿cuáles son los polos del sistema completo?
-
-   <details><summary>Solución</summary>
-
-   Por separación: \(-4 \pm 4j\) (controlador) y \(-20, -20\) (observador).
-
-   </details>
-
-2. ¿Por qué el compensador equivalente tiene orden 2 si el controlador \(K\) es una ganancia?
-
-   <details><summary>Solución</summary>
-
-   Porque el observador tiene dos estados. \(C(s)\) tiene el orden del observador; un observador de orden reducido (que solo estima lo que no se mide) daría un compensador de orden 1.
-
-   </details>
-
-**Hito del tema:**
-
-- [ ] Comprobé que los polos del conjunto son la unión de los de \(K\) y \(L\).
-- [ ] Obtuve el compensador equivalente y sus márgenes.
-- [ ] Diagnostiqué el observador sin la entrada \(u\).
-- [ ] Probé el efecto de un error de modelo en la estabilidad y en el error.
-
-**Fuentes oficiales:** [ss y tf, python-control](https://python-control.readthedocs.io/en/latest/generated/control.ss.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
+</details>

@@ -3,18 +3,69 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: ThemeData con Material 3 · Básico · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a centralizar el `ThemeData` de RutaFlow con Material 3 y `colorSchemeSeed`, confirmando que un solo color base deriva un esquema completo coherente en toda la app. Prerrequisitos: Módulo 9 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Distintas pantallas de RutaFlow definieron sus propios colores hardcodeados por separado — un botón "Confirmar" se ve de un azul distinto en cada pantalla, sin ninguna coherencia visual real.
+#### ► DE QUÉ TRATA
+Al finalizar vas a centralizar el ThemeData de RutaFlow con Material 3 y colorSchemeSeed, confirmando que un solo color base deriva un esquema completo coherente en toda la app. Prerrequisitos: Módulo 9 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un `ThemeData` centralizado garantiza coherencia visual sin repetir configuración en cada widget; `colorSchemeSeed` deriva automáticamente un esquema completo a partir de un único color base.
-**Conceptos clave:** un único esquema de diseño centralizado, coherencia visual en toda la app.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a centralizar el ThemeData de RutaFlow con Material 3 y colorSchemeSeed, confirmando que un solo color base deriva un esquema completo coherente en toda la app.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en themedata con material 3 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["colorSchemeSeed: Colors.indigo"] --> B["ColorScheme completo\n(primary, secondary, surface...)"]
+    B --> C["Cada widget de la app\nlee del Theme central"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| ThemeData con Material 3 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar ThemeData con Material 3 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses themedata con material 3 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: themedata con material 3 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- ThemeData con Material 3 existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve themedata con material 3 en tu contexto?
+2. ¿Cómo sabrías que themedata con material 3 no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar themedata con material 3?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 MaterialApp(
   theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
@@ -23,25 +74,12 @@ MaterialApp(
 )
 ```
 
-Definir un `ThemeData` centralizado en el punto de entrada de la app (colores, tipografía, formas de componentes) garantiza coherencia visual exacta en toda la aplicación, sin necesidad de especificar manualmente esos mismos valores repetidamente en cada widget individual; `colorSchemeSeed` genera automáticamente un esquema de colores Material 3 completo y armónico a partir de un único color base, aplicando las reglas de diseño de Material Design 3 para derivar variantes apropiadas de ese color para distintos contextos (superficies, contenedores, texto sobre cada superficie) sin que el desarrollador tenga que definir manualmente cada variante individual.
-
-`ThemeMode.system` hace que la app siga automáticamente la preferencia de modo claro/oscuro configurada a nivel del sistema operativo del dispositivo, en vez de requerir que el usuario configure ese ajuste por separado dentro de cada app individual, una expectativa de UX cada vez más establecida en apps móviles modernas.
-
-**Analogía:** un `ThemeData` centralizado es como un manual de identidad visual corporativa único aplicado consistentemente en toda una organización, en vez de que cada departamento defina sus propios colores y tipografías de forma independiente y potencialmente inconsistente entre sí.
-
-**¿Por qué es importante?** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget, y `ThemeMode.system` respeta automáticamente la preferencia de modo oscuro/claro del sistema operativo del usuario.
-
-**Diagrama: un color base deriva todo el esquema**
-
 ```mermaid
 flowchart LR
     A["colorSchemeSeed: Colors.indigo"] --> B["ColorScheme completo\n(primary, secondary, surface...)"]
     B --> C["Cada widget de la app\nlee del Theme central"]
 ```
 
-En el proyecto integrador RutaFlow, el `ThemeData` vive en `lib/core/app_theme.dart`, aplicado desde `lib/main.dart`. Límite de la decisión: no conviene centralizar en `ThemeData` un color que es intencionalmente distinto en un único lugar puntual (como un color de marca de un socio externo en una sola pantalla) — ahí definirlo localmente es correcto; `ThemeData` centraliza específicamente lo que debe ser consistente en toda la app.
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 import 'package:flutter/material.dart';
 
@@ -63,39 +101,77 @@ class PantallaConfirmar extends StatelessWidget {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: cada botón "Confirmar" en toda la app usa automáticamente el mismo tono derivado de `Colors.indigo`, sin que ningún widget individual especifique su propio color hardcodeado — cambiar `colorSchemeSeed` en un solo lugar actualiza el color en toda la app.
-
-#### Paso 5 · Práctica guiada
-Pista: en `DetalleEnvio`, usá `Container(color: Color(0xFF3F51B5))` con un valor hexadecimal hardcodeado para el botón de confirmar, en vez de dejar que el `Theme` central lo defina — ese es el fallo deliberado: cambiá `colorSchemeSeed` a `Colors.teal` en el `ThemeData` central, y confirmá que todos los botones de la app cambian de color excepto ese específico, que queda visualmente desincronizado del resto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el color hardcodeado y usando `Theme.of(context).colorScheme.primary` (o el estilo por defecto de `ElevatedButton`), confirmando que ahora ese botón también sigue los cambios del `ThemeData` central.
-
-#### Paso 7 · Cierre
-Entregá el `ThemeData` centralizado del Paso 4, la desincronización por color hardcodeado del Paso 5, y la corrección del Paso 6; explicá por qué hardcodear un color en un widget individual rompe la garantía de coherencia que `ThemeData` centralizado existe para dar. Siguiente paso: estudia cómo adaptar widgets entre Material y Cupertino. Errores comunes: hardcodear colores en widgets individuales en vez de leerlos del tema central, no definir `darkTheme` dejando la app sin un modo oscuro coherente, y no probar que `ThemeMode.system` efectivamente responde al cambio de preferencia del sistema. Fuentes oficiales: https://docs.flutter.dev/ui/design/material y https://api.flutter.dev/flutter/material/ThemeData-class.html.
-**Implicación práctica:** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget.
+</details>
 
 ### Tema 2: Adaptación Material vs Cupertino · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar `CupertinoButton` en iOS y `ElevatedButton` en Android, detectando la plataforma en tiempo de ejecución. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un conductor que usa RutaFlow en un iPhone espera que los controles se comporten y se vean como los del resto de sus apps de iOS; mostrar siempre el mismo botón Material en ambas plataformas hace que la app se sienta genérica en iOS.
+#### ► DE QUÉ TRATA
+Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar CupertinoButton en iOS y ElevatedButton en Android, detectando la plataforma en tiempo de ejecución. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Detectar la plataforma en tiempo de ejecución y mostrar el widget correspondiente para un mismo componente lógico hace que la app se sienta nativa en cada sistema.
-**Conceptos clave:** detectar la plataforma y mostrar el widget nativo correspondiente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar CupertinoButton en iOS y ElevatedButton en Android, detectando la plataforma en tiempo de ejecución.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en adaptación material vs cupertino como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["botonConfirmar()"] --> B{"Platform.isIOS?"}
+    B -->|true| C["CupertinoButton.filled"]
+    B -->|false| D["ElevatedButton"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Adaptación Material vs Cupertino se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Adaptación Material vs Cupertino | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses adaptación material vs cupertino por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: adaptación material vs cupertino funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Adaptación Material vs Cupertino existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve adaptación material vs cupertino en tu contexto?
+2. ¿Cómo sabrías que adaptación material vs cupertino no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar adaptación material vs cupertino?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'dart:io';
 
@@ -107,16 +183,6 @@ Widget botonAdaptativo() => Platform.isIOS
     : ElevatedButton(child: Text('Continuar'), onPressed: () {});
 ```
 
-Detectar la plataforma en tiempo de ejecución (`Platform.isIOS`) y mostrar el widget de diseño correspondiente (Cupertino para iOS, el conjunto de widgets que imita las convenciones visuales de Apple; Material para Android, siguiendo las convenciones de Google) para un mismo componente lógico hace que la app se sienta considerablemente menos "genérica" y más integrada en cada sistema operativo, dado que los usuarios de cada plataforma tienen expectativas visuales y de interacción específicas formadas por el uso constante de otras apps nativas de esa misma plataforma (Material en Android, Cupertino en iOS), que una app que ignora completamente esta distinción y muestra siempre el mismo estilo en ambas plataformas no cumple.
-
-Esta decisión de "una sola base de código Dart, pero apariencia adaptada según la plataforma detectada" es exactamente la promesa central de Flutter en su forma más cuidadosamente implementada: compartir la lógica y estructura general de la app en Dart, mientras se adapta selectivamente la presentación visual de componentes específicos según las convenciones nativas esperadas de cada plataforma de destino.
-
-**Analogía:** adaptar Material/Cupertino según la plataforma es como un guía turístico bilingüe que no solo traduce el idioma sino que también adapta sutilmente su comportamiento y protocolo según las costumbres culturales específicas de cada audiencia, resultando en una experiencia que se percibe genuinamente adaptada en vez de una traducción literal aplicada indiscriminadamente sin ninguna consideración cultural.
-
-**¿Por qué es importante?** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo con las expectativas visuales y de interacción específicas que los usuarios de cada plataforma ya tienen formadas por el uso de otras apps nativas.
-
-**Diagrama: adaptación por plataforma**
-
 ```mermaid
 flowchart TD
     A["botonConfirmar()"] --> B{"Platform.isIOS?"}
@@ -124,9 +190,6 @@ flowchart TD
     B -->|false| D["ElevatedButton"]
 ```
 
-En el proyecto integrador RutaFlow, `botonConfirmar()` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene adaptar Material/Cupertino en cada widget individual de la app — eso multiplica el costo de mantenimiento; reservá la adaptación explícita para componentes de alto tránsito donde la diferencia visual realmente importa (botones primarios, navegación), y dejá que el resto use el estilo Material consistente definido en `ThemeData`.
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 import 'dart:io';
 
@@ -142,39 +205,78 @@ Widget botonConfirmar() => Platform.isIOS
 void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: botonConfirmar()))));
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: corriendo la app en un simulador de iOS, el botón se ve como un `CupertinoButton` nativo; corriendo exactamente el mismo código Dart en un emulador de Android, el mismo botón lógico se renderiza como `ElevatedButton` con las convenciones de Material.
-
-#### Paso 5 · Práctica guiada
-Pista: envolvé ese widget condicional dentro de un widget test y corré la suite completa en CI (que corre en Linux, donde `Platform.isIOS` siempre es `false`) — ese es el fallo deliberado: el test que verifica específicamente el camino `CupertinoButton` nunca se ejecuta realmente en CI, porque `Platform.isIOS` depende del sistema operativo donde corre el test, dejando ese camino sin cobertura real.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 usando `debugDefaultTargetPlatformOverride` dentro del widget test para forzar `TargetPlatform.iOS`, confirmando que ahora el camino `CupertinoButton` sí se ejecuta y se verifica en CI sin importar el sistema operativo real.
-
-#### Paso 7 · Cierre
-Entregá el botón adaptativo del Paso 4, el camino sin cobertura real en CI del Paso 5, y el override de plataforma en test del Paso 6; explicá por qué `Platform.isIOS` depende del sistema operativo real de ejecución, y por qué eso exige un mecanismo distinto para testear el camino Cupertino desde una máquina de CI que no es Apple. Siguiente paso: estudia Semantics y dark mode. Errores comunes: no testear ambos caminos de un widget adaptativo, asumir que el mismo estilo visual funciona igual de bien en ambas plataformas, y usar `Platform.isIOS` en código que corre en la web. Fuentes oficiales: https://docs.flutter.dev/ui/adaptive-responsive/platform-adaptations y https://api.flutter.dev/flutter/cupertino/CupertinoButton-class.html.
-**Implicación práctica:** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo las expectativas visuales que los usuarios ya tienen formadas.
+</details>
 
 ### Tema 3: Accesibilidad con Semantics y dark mode · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a agregar `Semantics` al ícono de "eliminar envío" de RutaFlow, y a probar la pantalla explícitamente en modo oscuro para detectar contrastes insuficientes. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El botón de eliminar un envío usa solo un ícono de tacho de basura sin texto visible — nadie confirmó todavía qué anuncia TalkBack o VoiceOver al llegar a ese botón, ni si el color de ese ícono sigue siendo visible en modo oscuro.
+#### ► DE QUÉ TRATA
+Al finalizar vas a agregar Semantics al ícono de "eliminar envío" de RutaFlow, y a probar la pantalla explícitamente en modo oscuro para detectar contrastes insuficientes. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Sin `Semantics` con un `label` explícito, un lector de pantalla lee un ícono sin texto como "botón" genérico; probar ambos modos de color explícitamente revela contrastes insuficientes que no se notarían probando solo uno.
-**Conceptos clave:** verificación activa con el lector de pantalla real, no asunción por inspección visual.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a agregar Semantics al ícono de "eliminar envío" de RutaFlow, y a probar la pantalla explícitamente en modo oscuro para detectar contrastes insuficientes.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en accesibilidad con semantics y dark mode como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["Botón eliminar envío"] --> B["Semantics(label: 'Eliminar envío')"]
+    B --> C["TalkBack/VoiceOver anuncia la acción"]
+    A --> D["Theme.of(context).colorScheme.onSurface"]
+    D --> E["Visible en modo claro Y oscuro"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Accesibilidad con Semantics y dark mode se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Accesibilidad con Semantics y dark mode | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses accesibilidad con semantics y dark mode por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: accesibilidad con semantics y dark mode funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Accesibilidad con Semantics y dark mode existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve accesibilidad con semantics y dark mode en tu contexto?
+2. ¿Cómo sabrías que accesibilidad con semantics y dark mode no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad con semantics y dark mode?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 Semantics(
   label: 'Eliminar tarea',
@@ -183,19 +285,9 @@ Semantics(
 )
 ```
 
-Sin `Semantics` con un `label` explícito, TalkBack (Android) o VoiceOver (iOS) leen un ícono interactivo sin texto visible simplemente como "botón" genérico, sin ninguna indicación de qué acción específica realiza ese botón concreto; activar un lector de pantalla en la propia app y navegarla exclusivamente con gestos de accesibilidad (sin mirar directamente la pantalla) revela rápidamente estos huecos de accesibilidad de una forma que ninguna inspección puramente visual del diseño, por cuidadosa que sea, puede detectar, exactamente el mismo principio de verificación activa estudiado con TalkBack en Android (Módulo 10 de ese track) y VoiceOver en iOS (Módulo 10 de ese track), aplicado aquí de forma unificada mediante el widget `Semantics` de Flutter, que internamente se traduce hacia el mecanismo de accesibilidad nativo apropiado de cada plataforma.
-
 ```dart
 final esOscuro = Theme.of(context).brightness == Brightness.dark;
 ```
-
-Probar la app explícitamente en ambos modos (claro y oscuro) en un dispositivo real, en vez de asumir que "se ve bien" en un modo implica automáticamente que también se ve bien en el otro, revela problemas concretos como contrastes de color insuficientes (texto oscuro sobre fondo oscuro por un color hardcodeado que ignora el tema activo) o iconografía que se vuelve invisible o difícil de distinguir en el modo no probado explícitamente.
-
-**Analogía:** navegar la propia app solo con un lector de pantalla activado es como intentar usar el propio producto con los ojos vendados, revelando qué tan bien funciona genuinamente para alguien que depende completamente del tacto y del sonido; probar ambos modos de color explícitamente es como revisar un documento impreso tanto en tinta clara como oscura antes de asumir que es legible en cualquiera de las dos condiciones.
-
-**¿Por qué es importante?** Activar un lector de pantalla en la propia app revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color explícitamente revela contrastes insuficientes o iconografía invisible que no se notarían probando solo uno de los dos modos.
-
-**Diagrama: verificación en ambos ejes**
 
 ```mermaid
 flowchart TD
@@ -205,11 +297,6 @@ flowchart TD
     D --> E["Visible en modo claro Y oscuro"]
 ```
 
-En el proyecto integrador RutaFlow, este botón vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene agregar un `label` de `Semantics` a un ícono puramente decorativo sin ninguna acción asociada — ahí `excludeSemantics: true` es la opción correcta, para no confundir al lector de pantalla con un elemento que no hace nada; reservá `Semantics` con `label` para elementos interactivos sin texto visible.
-
----
-
-#### Paso 4 · Demostración guiada desde cero
 ```dart
 import 'package:flutter/material.dart';
 
@@ -244,46 +331,10 @@ class _ListaEnviosState extends State<ListaEnvios> {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: activando TalkBack o VoiceOver y navegando hasta ese botón, el lector anuncia "Eliminar envío, botón" — no "botón" genérico sin ninguna indicación de qué acción realiza.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá el `Semantics` y fijá el color del ícono como `Colors.grey.shade800` sin verificar el tema activo — ese es el fallo deliberado: con VoiceOver activado, el botón se anuncia genéricamente sin indicación de qué hace; y en modo oscuro, ese gris oscuro hardcodeado se vuelve casi invisible contra el fondo oscuro, aunque se veía bien en modo claro.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `Semantics` con su label, y reemplazando el color hardcodeado por `Theme.of(context).colorScheme.onSurface`, confirmando visualmente en un dispositivo real que el ícono es visible en ambos modos.
-
-#### Paso 7 · Cierre
-Entregá el `Semantics` agregado del Paso 4, el ícono invisible en modo oscuro detectado en el Paso 5, y la corrección con color adaptativo del Paso 6; explicá por qué un color hardcodeado puede verse perfecto en el modo que probaste, pero fallar silenciosamente en el modo que no probaste. Siguiente paso: cerrá el módulo integrando theming, adaptación de plataforma y accesibilidad en el proyecto completo. Errores comunes: dejar íconos interactivos sin `Semantics`, hardcodear colores que ignoran el tema activo, y probar la app solo en el modo de color que coincide con la preferencia personal de quien la desarrolla. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/accessibility y https://api.flutter.dev/flutter/widgets/Semantics-class.html.
-**Implicación práctica:** Activar un lector de pantalla revela huecos de accesibilidad que una inspección visual no puede detectar; probar ambos modos de color revela contrastes insuficientes que no se notarían probando solo uno.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app con theming consistente, dark mode y accesibilidad auditada.
-
-**Requisitos previos:** Módulo 9 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Definir un `ThemeData` con Material 3 | Ver Tema 1 | Colores y tipografía consistentes |
-| 2 | Adaptar un widget según la plataforma | Ver Tema 2 | Cupertino en iOS, Material en Android |
-| 3 | Agregar `Semantics` a elementos sin texto | Ver Tema 3 | Soporte de TalkBack/VoiceOver |
-| 4 | Implementar dark mode completo | Ver Tema 3 | Probado en ambos modos en dispositivo real |
-
-**Verificación:** el laboratorio se considera exitoso si el lector de pantalla describe correctamente todos los elementos interactivos sin texto visible, y si la app se ve correctamente sin contrastes insuficientes en ambos modos de color.
-
-**Errores comunes y soluciones**
-
-- **Repetir configuración de colores/tipografía en cada widget individual en vez de centralizarla en `ThemeData`.** Centraliza para coherencia y mantenibilidad.
-- **Ignorar la distinción Material/Cupertino asumiendo que el mismo estilo funciona igual de bien en ambas plataformas.** Adapta componentes clave según la plataforma detectada.
-- **Probar solo un modo de color (claro u oscuro) y asumir que el otro funciona igual.** Prueba explícitamente ambos en dispositivo real.
-
----
+</details>

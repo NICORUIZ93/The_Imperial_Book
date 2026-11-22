@@ -1,0 +1,4 @@
+com/academia/orders/OrderController.class
+com/academia/orders/InventoryRemote.class
+com/academia/orders/OrderApplication.class
+com/academia/orders/InventoryClient.class

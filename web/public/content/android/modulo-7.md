@@ -29,28 +29,68 @@
 >
 > **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
 
+
 ### Tema 1: Configuración básica de Hilt · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás anotar una `Application` y un `ViewModel` con Hilt, y explicar por qué la inyección de dependencias evita que cada clase conozca cómo construir sus propias dependencias.
+#### ► DE QUÉ TRATA
+Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar por qué la inyección de dependencias evita que cada clase conozca cómo construir sus propias dependencias.
 
-**Conocimiento previo:** `ViewModel` (Módulo 1); repositorios (Módulo 6 de este track).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar por qué la inyección de dependencias evita que cada clase conozca cómo construir sus propias dependencias.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Hilt resuelve el acoplamiento de que cada clase deba conocer cómo construir sus propias dependencias, centralizando ese conocimiento y permitiendo cambiar implementaciones (por ejemplo, para tests) sin modificar el código que las consume.
+#### ► LA ANALOGÍA
+Piensa en configuración básica de hilt como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que configuración básica de hilt resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** generación de código en tiempo de compilación, grafo de dependencias completo.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Configuración básica de Hilt se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Hilt (construido sobre Dagger) requiere anotar la clase `Application` con `@HiltAndroidApp` para inicializar el contenedor de dependencias raíz, y cada `ViewModel` que participe con `@HiltViewModel`, permitiendo que Hilt construya automáticamente sus dependencias marcando el constructor con `@Inject`. Sin inyección de dependencias, cada clase que necesita un `TareaRepository` tendría que saber exactamente cómo construirlo, duplicando ese conocimiento en cada punto de uso; con Hilt, ese conocimiento vive centralizado (los módulos, Tema 2).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Configuración básica de Hilt | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** Hilt es como un servicio de entrega centralizado que sabe exactamente cómo fabricar y entregar cada componente que un empleado necesita, en vez de que cada empleado fabrique sus propias herramientas desde cero.
+#### ► CUÁNDO NO USAR ESTO
+No uses configuración básica de hilt por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: configuración básica de hilt funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Configuración básica de Hilt existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve configuración básica de hilt en tu contexto?
+2. ¿Cómo sabrías que configuración básica de hilt no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar configuración básica de hilt?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── SIN inyección de dependencias ─────────────┐
 │ class TareasViewModel {                          │
@@ -63,10 +103,6 @@ Hilt (construido sobre Dagger) requiere anotar la clase `Application` con `@Hilt
 │ )                                                      │
 └───────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/MiApp.kt`, y modela el mismo principio de construcción centralizada en Python para verificarlo en ejecución real antes de confiar en la generación de código de Hilt:
 
 ```bash
 # Este script python3 modela el mismo grafo de dependencias para verificar el principio
@@ -91,10 +127,6 @@ class TareasViewModelInyectado @Inject constructor(
 EOF
 ./gradlew :app:compileDebugKotlin
 ```
-
-**Explicación línea por línea:** `@HiltAndroidApp` en `MiApp` inicializa el contenedor de dependencias raíz de toda la aplicación; `@HiltViewModel` junto con `@Inject constructor(private val repo: TareaRepository)` le dice a Hilt que construya automáticamente `TareasViewModelInyectado`, resolviendo `TareaRepository` desde el grafo de dependencias sin que el desarrollador escriba ese código de construcción manualmente.
-
-Modela el mismo grafo de dependencias en Python puro (sin ningún framework) para confirmar, en ejecución real, que un contenedor centralizado resuelve dependencias sin que el consumidor las construya:
 
 ```bash
 python3 -c "
@@ -121,52 +153,69 @@ print('ViewModel obtuvo sus tareas vía la dependencia inyectada:', view_model.r
 "
 ```
 
-**Resultado esperado:** `TareasViewModel` recibe una instancia ya construida de `TareaRepository` a través de su constructor, sin invocar `TareaRepository()` en ningún lugar de su propio código, confirmando en ejecución real el mismo principio que `@Inject constructor` aplica en Kotlin: el consumidor declara qué necesita, no cómo construirlo.
-
-**Verificación real en Android.** Ejecuta `./gradlew :app:compileDebugKotlin` justo después de crear `MiApp.kt`. **Resultado esperado en este punto:** falla en compilación con un error de Dagger del tipo `[Dagger/MissingBinding] com.academia.android.TareaRepository cannot be provided without an @Provides-annotated method`. No es un fallo del ejemplo: Hilt comprueba el grafo completo al compilar y todavía nadie le ha dicho cómo construir `TareaRepository`. El Tema 2 añade ese enlace con `@Binds`; al terminarlo, la misma orden compila.
-
-**Fallo deliberado:** modifica `TareasViewModel` para que construya `TareaRepository()` directamente dentro de su propio `__init__` en vez de recibirlo como parámetro (`self.repo = TareaRepository()`). Ejecuta de nuevo — el código "funciona" igual de bien en este caso simple, pero ahora `TareasViewModel` conoce y depende directamente de la clase concreta `TareaRepository` — diagnostica confirmando el problema real: si `TareaRepository` necesitara más adelante un parámetro de configuración (una URL, un token), CADA lugar que la construya directamente tendría que actualizarse, mientras que con inyección de dependencias solo el contenedor centralizado necesita ese cambio.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una segunda dependencia a `TareasViewModel` (una clase `ServicioDeNotificaciones` simulada) y confirma que el `ContenedorDeDependencias` la resuelve de la misma forma que `TareaRepository`, sin que `TareasViewModel` la construya directamente. **Pista:** agrega un segundo parámetro al constructor y un segundo `contenedor.resolver(...)` antes de instanciar el ViewModel.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una frase qué cambiaría en tu código si `TareaRepository` pasara de tener un constructor sin parámetros a necesitar una URL de API, comparando cuántos lugares tendrías que modificar con inyección de dependencias frente a sin ella.
-
-#### Paso 7 · Cierre
-
-Ya anotas una `Application` y un `ViewModel` con Hilt, y explicas por qué centralizar la construcción de dependencias reduce el acoplamiento. El siguiente tema cubre cómo declarar explícitamente cómo construir dependencias externas o mapear interfaces a implementaciones. Fuente oficial: [Android Developers — Dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android).
-
-**Errores comunes:** instanciar manualmente una dependencia dentro de una clase en vez de recibirla inyectada, reintroduciendo el acoplamiento que Hilt evita; olvidar anotar la clase `Application` con `@HiltAndroidApp`, lo cual hace que Hilt no pueda inicializar el contenedor raíz.
-
-**Cuándo no usarlo:** para un script o prototipo de un solo archivo sin ninguna dependencia real que inyectar, adoptar Hilt es una complejidad innecesaria; su valor aparece con un grafo de dependencias no trivial compartido entre varias clases.
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Inyecta el repositorio de entregas en el ViewModel. Sustitúyelo en pruebas sin modificar la pantalla y comprueba que la versión de producción utiliza la implementación persistente configurada.
+</details>
 
 ### Tema 2: @Provides y @Binds · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás decidir entre `@Provides` y `@Binds` según si una dependencia es una clase externa o una interfaz propia con implementación inyectable.
+#### ► DE QUÉ TRATA
+Al finalizar podrás decidir entre @Provides y @Binds según si una dependencia es una clase externa o una interfaz propia con implementación inyectable.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás decidir entre @Provides y @Binds según si una dependencia es una clase externa o una interfaz propia con implementación inyectable.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** `@Provides` permite construir dependencias externas no anotables directamente; `@Binds` mapea eficientemente una interfaz a su implementación cuando esta última ya es constructible por Hilt, manteniendo el resto de la app desacoplado de la implementación concreta.
+#### ► LA ANALOGÍA
+Piensa en @provides y @binds como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que @provides y @binds resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** dos formas de declarar cómo construir una dependencia, según si la clase es propia o externa.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| @Provides y @Binds se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`@Provides` se usa cuando la dependencia es una clase externa que no se puede anotar con `@Inject` directamente (como `Retrofit`, de una librería de terceros): un método dentro de un `@Module` describe explícitamente cómo construirla. `@Binds` se usa para mapear una interfaz (`TareaRepository`) a su implementación concreta (`TareaRepositoryImpl`) cuando esa implementación sí puede anotarse con `@Inject`: es una declaración más eficiente que simplemente le dice a Hilt qué implementación entregar cuando alguien pida la interfaz.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar @Provides y @Binds | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** `@Provides` es como una receta explícita que alguien debe seguir para fabricar un componente externo sin instrucciones propias de ensamblaje; `@Binds` es simplemente una etiqueta que dice "cuando pidan este producto genérico, entrega esta marca específica", sin necesitar una receta completa porque el producto ya sabe fabricarse a sí mismo.
+#### ► CUÁNDO NO USAR ESTO
+No uses @provides y @binds por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: @provides y @binds funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- @Provides y @Binds existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve @provides y @binds en tu contexto?
+2. ¿Cómo sabrías que @provides y @binds no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar @provides y @binds?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── @Provides (clase EXTERNA, sin @Inject propio) ──┐
 │ @Provides fun provideRetrofit(): Retrofit =            │
@@ -177,10 +226,6 @@ Al finalizar podrás decidir entre `@Provides` y `@Binds` según si una dependen
 │   impl: TareaRepositoryImpl): TareaRepository                    │
 └─────────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
 
 ```bash
 # Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
@@ -230,10 +275,6 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `provideApiService()` construye explícitamente el `ApiService` de Retrofit (una interfaz que genera Retrofit y que Hilt no puede construir por constructor); `DatabaseModule` hace lo mismo con `AppDatabase` y `TareaDao`, que crea Room; `bindTareaRepository` simplemente declara la asociación entre la interfaz `TareaRepository` y su implementación `TareaRepositoryImpl` (Módulo 6), sin escribir código adicional de construcción, porque `TareaRepositoryImpl` ya tiene su propio constructor `@Inject`. Para que esto compile, el constructor de `TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService)` definido en el Módulo 6 debe anotarse ahora como `@Inject constructor(...)`: con `TareaDao` y `ApiService` provistos por los dos módulos de arriba (Hilt no los sabe construir solo: sin esos `@Provides` la compilación falla con `[Dagger/MissingBinding]`), eso es todo lo que Hilt necesita para construir `TareaRepositoryImpl` automáticamente al resolver la interfaz `TareaRepository`.
-
-Modela ambos patrones en Python, confirmando en ejecución real la diferencia entre "construir explícitamente" y "simplemente mapear":
-
 ```bash
 python3 -c "
 class Retrofit:
@@ -267,50 +308,69 @@ print('TareaRepository resuelto vía @Binds:', repo.obtener())
 "
 ```
 
-**Resultado esperado:** `provide_retrofit()` ejecuta lógica de construcción real (invoca el constructor con un parámetro); `bind_tarea_repository()` no construye nada, solo retorna la misma instancia ya construida, con el tipo de retorno declarado como la interfaz (`TareaRepository`), confirmando que `@Binds` es puramente una declaración de mapeo, no una fábrica.
-
-**Fallo deliberado:** intenta escribir un `@Provides` (en vez de `@Binds`) para `TareaRepository` que invoque manualmente `TareaRepositoryImpl()` sin ningún parámetro adicional (`@Provides fun provideTareaRepository(): TareaRepository = TareaRepositoryImpl()`, redundante frente a simplemente usar `@Binds`). En Kotlin real, esto compila y funciona, pero es código innecesario: Hilt ya sabe construir `TareaRepositoryImpl` porque tiene su propio `@Inject constructor` — diagnostica confirmando que usar `@Provides` donde `@Binds` bastaría no es un error de compilación, pero sí una redundancia que el linting de Hilt suele señalar como código que puede simplificarse.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un segundo `@Provides` a `NetworkModule` para un `OkHttpClient` con los interceptores del Módulo 5, y confirma con el script Python equivalente que también requiere lógica de construcción explícita (no un simple mapeo). **Pista:** sigue el mismo patrón de `provide_retrofit()`, ahora construyendo un objeto que representa `OkHttpClient`.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una frase por qué `@Binds` requiere que el método sea `abstract` dentro de una clase también `abstract` (a diferencia de `@Provides`, que es un método concreto dentro de un `object`), relacionándolo con que `@Binds` nunca ejecuta código propio, solo declara una asociación de tipos.
-
-#### Paso 7 · Cierre
-
-Ya decides entre `@Provides` y `@Binds` según si una dependencia es externa o una interfaz propia, evitando código de construcción redundante. El siguiente tema cubre los scopes que controlan cuánto tiempo vive cada dependencia, y cómo reemplazarlas en tests. Fuente oficial: [Android Developers — Hilt modules](https://developer.android.com/training/dependency-injection/hilt-android#hilt-modules).
-
-**Errores comunes:** usar `@Provides` para una clase que ya se puede anotar con `@Inject` directamente, generando código redundante; olvidar `@InstallIn(SingletonComponent::class)`, dejando el módulo sin instalar en ningún componente del grafo.
-
-**Cuándo no usarlo:** para una dependencia que nunca varía entre entornos (test, producción) ni necesita ninguna configuración externa, y que ya es directamente instanciable con `@Inject`, ni `@Provides` ni `@Binds` son necesarios: el propio `@Inject constructor` de la clase basta.
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Proporciona el cliente HTTP y enlaza la interfaz del repositorio con su implementación. Una prueba debe resolver el grafo y consultar una guía falsa sin construir dependencias dentro del composable.
+</details>
 
 ### Tema 3: Scopes y testing con Hilt · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás elegir el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazar un módulo real por uno de test.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás elegir el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazar un módulo real por uno de test.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Elegir el scope correcto evita recrear objetos costosos innecesariamente o retenerlos más tiempo del necesario; `@UninstallModules` permite testear con dependencias fake sin modificar el código de producción bajo prueba.
+#### ► LA ANALOGÍA
+Piensa en scopes y testing con hilt como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que scopes y testing con hilt resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** tiempo de vida controlado por scope, reemplazo de módulos reales por fakes en tests.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Scopes y testing con Hilt se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`@Singleton` vincula una dependencia al `SingletonComponent`, viviendo mientras la app entera vive; `@ViewModelScoped` vincula una dependencia al ciclo de vida de un `ViewModel` específico. Elegir el scope correcto evita dos problemas opuestos: recrear innecesariamente un objeto costoso (scope demasiado corto), o retenerlo más tiempo del necesario (scope demasiado amplio). `@UninstallModules` permite reemplazar por completo un módulo de producción por uno de test equivalente, sin modificar el código bajo prueba.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Scopes y testing con Hilt | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** los scopes de Hilt son como distintos tipos de contrato de alquiler: uno de larga duración para toda la vida del edificio (`@Singleton`), y uno de corto plazo que se renueva junto con cada inquilino específico (`@ViewModelScoped`); `@UninstallModules` es como reemplazar temporalmente el proveedor real de un servicio por uno de práctica durante un simulacro.
+#### ► CUÁNDO NO USAR ESTO
+No uses scopes y testing con hilt por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: scopes y testing con hilt funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Scopes y testing con Hilt existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve scopes y testing con hilt en tu contexto?
+2. ¿Cómo sabrías que scopes y testing con hilt no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar scopes y testing con hilt?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── @Singleton ──────────────────────┐
 │  UNA instancia, vive mientras la app vive │
@@ -323,10 +383,6 @@ Al finalizar podrás elegir el scope correcto para una dependencia según su tie
 │  reemplaza el módulo real por uno de test       │
 └───────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `academia-android`, crea una **prueba instrumentada** (las pruebas viven en `src/androidTest` o `src/test`, nunca en `src/main`, que es el código que se empaqueta en la app). Hilt necesita además un *runner* que arranque la app de pruebas `HiltTestApplication` en lugar de `MiApp`:
 
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
@@ -389,19 +445,9 @@ class TareasFlowTest {
 EOF
 ```
 
-En `app/build.gradle.kts`, dentro de `android { defaultConfig { } }`, cambia el runner a `testInstrumentationRunner = "com.academia.android.HiltTestRunner"` y añade `androidTestImplementation(libs.kotlinx.coroutines.test)` a `dependencies { }`. Con el emulador encendido, ejecuta:
-
 ```bash
 ./gradlew :app:connectedDebugAndroidTest
 ```
-
-**Resultado esperado:** `BUILD SUCCESSFUL` y el informe en `app/build/reports/androidTests/connected/` con `usaElApiServiceDePrueba` en verde: la prueba recibió el `ApiService` falso sin tocar `NetworkModule` ni el código de producción. Si `ApiService` del Módulo 5 tiene más funciones (por ejemplo, `obtenerTarea(id)` de su práctica guiada), impleméntalas también en el objeto falso.
-
-**Explicación línea por línea:** `HiltTestRunner` sustituye `MiApp` por `HiltTestApplication` durante las pruebas; `@HiltAndroidTest` y `HiltAndroidRule` generan un grafo de Hilt propio para esta clase; `@UninstallModules(NetworkModule::class)` quita el módulo de producción y `NetworkModuleDePrueba` provee en su lugar un `ApiService` falso, de modo que `hiltRule.inject()` rellena `api` con él.
-
-El script Python siguiente es un **modelo** del efecto de los scopes (no ejecuta Hilt):
-
-Modela, contando instancias reales creadas, la diferencia entre `@Singleton` y un scope sin caché (equivalente a `@ViewModelScoped` con múltiples ViewModels):
 
 ```bash
 python3 -c "
@@ -436,50 +482,4 @@ print('SIN singleton (scope corto), construcciones tras 5 solicitudes:', ObjetoC
 "
 ```
 
-**Resultado esperado:** con el contenedor `@Singleton`, solo se construye 1 instancia sin importar cuántas veces se solicite; sin esa caché, se construyen 5 instancias nuevas para las mismas 5 solicitudes, confirmando en ejecución real por qué elegir `@Singleton` para un objeto costoso (como `Retrofit` o `AppDatabase`) evita reconstruirlo innecesariamente.
-
-**Fallo deliberado:** marca `AppDatabase` (Módulo 6) como si tuviera un scope corto en vez de `@Singleton` (simulado usando `ContenedorSinCache` para la base de datos). Cada "solicitud" abriría una nueva conexión a la misma base de datos SQLite física — diagnostica confirmando el problema real que un scope mal elegido causaría: múltiples conexiones simultáneas e innecesarias a la misma base de datos, cuando una única instancia compartida (`@Singleton`) sería tanto más eficiente como más correcta para un recurso que debe ser único durante toda la vida de la app.
-
-#### Paso 5 · Práctica guiada
-
-Extiende el script de conteo de instancias para simular tres `ViewModel` distintos, cada uno con su propia dependencia `@ViewModelScoped` (una instancia nueva por `ViewModel`, pero reutilizada dentro del mismo), y confirma que el conteo total de construcciones es 3, no 1 ni 5. **Pista:** necesitas un contenedor por instancia de `ViewModel`, no uno global compartido como en `ContenedorSingleton`.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una frase por qué reemplazar `NetworkModule` con `@UninstallModules` en un test es preferible a modificar temporalmente el código de producción para que apunte a un servidor de pruebas y luego revertir ese cambio manualmente antes de cada commit.
-
-#### Paso 7 · Cierre
-
-Ya eliges el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazas módulos completos por versiones de test sin tocar el código de producción. Esto cierra el módulo de inyección de dependencias; el siguiente módulo del track aborda Material Design y theming. Fuente oficial: [Android Developers — Hilt testing guide](https://developer.android.com/training/dependency-injection/hilt-testing).
-
-**Errores comunes:** elegir `@Singleton` para una dependencia que debería vivir solo mientras un `ViewModel` específico vive, reteniéndola más tiempo del necesario; modificar código de producción temporalmente para apuntar a un entorno de test en vez de usar `@UninstallModules`.
-
-**Cuándo no usarlo:** para una dependencia extremadamente barata de construir y sin ningún estado compartido relevante (una función pura simple), ningún scope especial es necesario; el scope por defecto (sin anotación, una nueva instancia cada vez) es suficiente y evita la complejidad adicional de gestionar su ciclo de vida explícitamente.
-
----
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Comprueba el alcance del repositorio compartido entre lista y detalle. En pruebas instala un reemplazo controlado y demuestra que una actualización se observa en ambas pantallas sin crear almacenes independientes.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una app con todas sus dependencias (repos, servicios) inyectadas vía Hilt.
-
-**Requisitos previos:** Módulo 6 completado.
-
-| Paso | Acción | Código/Comando | Explicación |
-|---|---|---|---|
-| 1 | Anotar `Application` y un `ViewModel` con Hilt | Ver Tema 1 | `@HiltAndroidApp`, `@HiltViewModel` |
-| 2 | Inyectar un repositorio con `@Inject` en el constructor | Ver Tema 1 | Sin instanciación manual |
-| 3 | Crear un `@Module` con `@Provides` para Retrofit | Ver Tema 2 | Clase externa no anotable |
-| 4 | Usar `@Binds` para mapear interfaz a implementación | Ver Tema 2 | Repositorio propio |
-| 5 | Configurar un módulo de test con `@UninstallModules` | Ver Tema 3 | Reemplaza dependencia real por fake |
-
-**Verificación:** el laboratorio se considera exitoso si ninguna clase de la app instancia manualmente sus dependencias (todo llega vía constructor inyectado por Hilt), y si el test instrumentado corre correctamente con el módulo real reemplazado por uno de test.
-
-**Errores comunes y soluciones**
-
-- **Usar `@Provides` para una clase que ya se puede anotar con `@Inject` directamente.** Prefiere `@Inject` en el constructor cuando sea posible; usa `@Provides` solo para clases externas.
-- **Elegir `@Singleton` para una dependencia que debería vivir solo mientras un `ViewModel` específico vive.** Retiene el objeto más tiempo del necesario; usa `@ViewModelScoped`.
-- **Instanciar manualmente una dependencia dentro de una clase en vez de inyectarla.** Reintroduce el acoplamiento que Hilt está diseñado para evitar.
-
----
+</details>

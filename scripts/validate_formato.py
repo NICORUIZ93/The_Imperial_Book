@@ -24,6 +24,9 @@ SECCIONES = ["Ubicación y prerrequisitos", "Objetivo", "Por qué importa", "Ana
 FICHA_14 = ["UBICACIÓN", "PRERREQUISITOS", "OBJETIVO DE APRENDIZAJE", "ANALOGÍA VISUAL", "DIAGRAMA TÉCNICO",
             "EXPLICACIÓN NIVEL 0", "EXPLICACIÓN INTERMEDIA", "EXPLICACIÓN MAESTRA", "CÓDIGO EJECUTABLE",
             "MINI-LABORATORIO", "VERIFICACIÓN", "ERROR COMÚN", "PREGUNTA DE ENTREVISTA", "ANTI-PATRÓN RELACIONADO"]
+EDITORIAL = ["DE QUÉ TRATA", "LA IDEA EN UNA FRASE", "POR QUÉ EXISTE ESTO", "LA ANALOGÍA", "CÓMO FUNCIONA",
+             "LO QUE PUEDE SALIR MAL", "TRADE-OFFS", "CUÁNDO NO USAR ESTO", "DE VUELTA A LA ANALOGÍA",
+             "LO QUE DEBES RECORDAR", "PREGUNTAS PARA PENSAR"]
 
 
 def norm(t: str) -> str:
@@ -38,18 +41,31 @@ def temas(curso: str, texto: str):
         yield m.group(1).strip(), texto[m.end(): ms[i + 1].start() if i + 1 < len(ms) else len(texto)]
 
 
-def revisar(curso: str, titulo: str, cuerpo: str) -> list[str]:
+def revisar(curso: str, titulo: str, cuerpo: str, editorial: bool=False) -> list[str]:
     faltas = []
-    encabezados = [norm(re.sub(r"^\d+\.\s*", "", h)) for h in re.findall(r"^#### (.+)$", cuerpo, re.M)]
+    encabezados = [norm(re.sub(r"^\d+\.\s*", "", h).replace('►','').strip()) for h in re.findall(r"^#### (.+)$", cuerpo, re.M)]
+    if editorial or "Capa 1 — Lectura" in cuerpo or "Capa 1 - Lectura" in cuerpo:
+        esperadas = EDITORIAL
+        pos = -1
+        for sec in esperadas:
+            n = norm(sec)
+            try:
+                pidx = next(i for i, h in enumerate(encabezados) if n in h and i > pos)
+                pos = pidx
+            except StopIteration:
+                faltas.append(f"sección «{sec}»")
+        if "Capa 2 — Construcción" not in cuerpo and "Capa 2 - Construcción" not in cuerpo and "<summary><strong>Capa 2" not in cuerpo:
+            faltas.append("Capa 2 — Construcción")
+        return faltas
     esperadas = FICHA_14 if curso == "microservices" else SECCIONES
     pos = -1
-    for s in esperadas:
-        n = norm(s)
+    for sec in esperadas:
+        n = norm(sec)
         try:
-            p = next(i for i, h in enumerate(encabezados) if h.startswith(n) and i > pos)
-            pos = p
+            pidx = next(i for i, h in enumerate(encabezados) if h.startswith(n) and i > pos)
+            pos = pidx
         except StopIteration:
-            faltas.append(f"sección «{s}»")
+            faltas.append(f"sección «{sec}»")
     if curso != "microservices" and len(titulo.split(" · ")) < 3:
         faltas.append("nivel y minutos en el encabezado")
     if "```mermaid" not in cuerpo and "![" not in cuerpo:
@@ -60,13 +76,14 @@ def revisar(curso: str, titulo: str, cuerpo: str) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true"); ap.add_argument("--write", action="store_true")
+    ap.add_argument("--editorial", action="store_true", help="valida estándar editorial Capa 1/Capa 2")
     a = ap.parse_args()
     filas, detalle = [], {}
     for d in sorted(p for p in CONTENT.iterdir() if p.is_dir() and any(p.glob("modulo-*.md"))):
         total = ok = 0; falt = {}
         for f in sorted(d.glob("modulo-*.md"), key=lambda p: int(re.search(r"(\d+)", p.stem).group(1))):
             for titulo, cuerpo in temas(d.name, f.read_text(encoding="utf-8")):
-                total += 1; fs = revisar(d.name, titulo, cuerpo)
+                total += 1; fs = revisar(d.name, titulo, cuerpo, editorial=a.editorial)
                 if fs:
                     for x in fs: falt[x] = falt.get(x, 0) + 1
                 else:
@@ -85,6 +102,13 @@ def main() -> int:
                           "Cursos declarados «en formato»: " + (", ".join(declarados) or "ninguno todavía") + ".\n\n" + "\n".join(lineas) + "\n", encoding="utf-8")
     if a.check:
         por_curso = {c: (t, ok) for c, t, ok in filas}
+        if a.editorial:
+            malos = [c for c, t, ok in filas if t and t != ok]
+            if malos:
+                print("validate_formato --editorial: cursos no cumplen 100%: " + ", ".join(malos))
+                return 1
+            print(f"validate_formato --editorial: ok ({len(filas)} cursos)")
+            return 0
         # Un curso declarado sin temas reconocidos no puede aprobar por vacío (specs/025 C6).
         malos = [c for c in declarados
                  if c not in por_curso or por_curso[c][0] == 0 or por_curso[c][0] != por_curso[c][1]]

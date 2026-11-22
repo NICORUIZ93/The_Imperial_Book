@@ -36,39 +36,27 @@ cuelgues o cortes, y de ahí al inventario en el 9000. Un experimento de caos (t
 una línea punteada.
 
 ---
+
+
 ### Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 8, Lección 1 de 4 · Fase 1 · 3 h: `jdk/Patrones.java` (con
-`jdk/Inventario.java` y `jdk/ProxyDeFallos.java`), `f057-resilience4j/` y `simular-fallo.sh`.
+#### ► DE QUÉ TRATA
+Aplicar los cinco patrones de Resilience4j a las llamadas de pedidos al inventario y verificar su efecto bajo fallos inyectados, de modo que los 5 tests de PatronesTest pasen y puedas explicar el recorrido CLOSED → OPEN → HALF_OPEN → CLOSED a partir de la salida de jdk/Patrones.j…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Aplicar los cinco patrones de Resilience4j a las llamadas de pedidos al inventario y verificar su efecto bajo fallos inyectados, de modo que los 5 tests de PatronesTest pasen y puedas explicar el recorrido CLOSED → OPEN → HALF_OPEN → CLOSED a partir de la salida de jdk/Patrones.java.**
 
-- Módulo 6: `RestClient`; Módulo 1: hilos virtuales, `CompletableFuture`, beans y proxies de Spring (la anotación
-  funciona porque Spring envuelve tu bean).
-- Módulo 7: varias instancias, balanceo; Módulo 0.4: códigos 429, 503 y 504.
-- Saber leer un `application.yml` con listas y duraciones (`500ms`, `2s`).
+#### ► POR QUÉ EXISTE ESTO
+Cuando tu servicio llama a otro, pueden pasar tres cosas malas: que el otro no conteste (caído), que conteste muy tarde (lento) o que conteste con error. Si tu servicio se queda esperando o insiste sin control, se llena de peticiones atascadas y termina cayéndose también: el fallo se contagia en cascada.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en resilience4j: circuit breaker, retry, ratelimiter, bulkhead, timelimiter como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Aplicar** los cinco patrones de Resilience4j a las llamadas de `pedidos` al inventario y **verificar** su efecto
-bajo fallos inyectados, de modo que los 5 tests de `PatronesTest` pasen y puedas **explicar** el recorrido
-CLOSED → OPEN → HALF_OPEN → CLOSED a partir de la salida de `jdk/Patrones.java`.
-
-#### 4. ANALOGÍA VISUAL
-
-El **tablero eléctrico de una casa**, ampliado. El **breaker** (Circuit Breaker) salta cuando hay demasiados
-cortocircuitos seguidos y deja la línea sin corriente un rato; después dejas pasar un poquito de corriente de prueba
-y, si aguanta, lo subes del todo. Al lado, un **timbre que insistes en tocar** tres veces, esperando un poco más cada
-vez (Retry). En la puerta, un **portero que deja entrar solo 3 personas por minuto** (RateLimiter). Dentro, la casa
-está dividida en **compartimentos estancos** como un barco: si se inunda la cocina, el agua no pasa al resto
-(Bulkhead). Y en la estufa, un **temporizador de cocina** que apaga el fogón a los 5 minutos aunque la olla no esté
-lista (TimeLimiter). Dibuja el tablero con un breaker abajo, un timbre, un portero con contador, un casco de barco con
-mamparos y un temporizador.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
     [*] --> CLOSED
@@ -83,27 +71,6 @@ stateDiagram-v2
     end note
 ```
 
-```mermaid
-flowchart LR
-    L["llamada"] --> RT["Retry<br/>(exterior)"] --> CB["CircuitBreaker"] --> RL["RateLimiter"] --> TL["TimeLimiter"] --> BH["Bulkhead"] --> F["inventario"]
-```
-
-**Texto alternativo:** primer diagrama, máquina de estados del circuit breaker. Empieza en CLOSED. Pasa a OPEN cuando
-la tasa de fallos o de llamadas lentas alcanza el umbral habiendo al menos el número mínimo de llamadas. De OPEN pasa
-a HALF_OPEN cuando transcurre el tiempo de espera y llega una llamada. De HALF_OPEN vuelve a CLOSED si las llamadas de
-prueba permitidas van bien, o a OPEN si fallan. Una nota indica que en OPEN se rechaza al instante con
-CallNotPermittedException sin llamar al servicio. Segundo diagrama: el orden por defecto de los aspectos de
-Resilience4j, de fuera hacia dentro: Retry, CircuitBreaker, RateLimiter, TimeLimiter, Bulkhead y finalmente la
-llamada al inventario.
-
-#### 6. EXPLICACIÓN NIVEL 0
-
-Cuando tu servicio llama a otro, pueden pasar tres cosas malas: que el otro **no conteste** (caído), que conteste
-**muy tarde** (lento) o que conteste **con error**. Si tu servicio se queda esperando o insiste sin control, se llena
-de peticiones atascadas y termina cayéndose también: el fallo se **contagia** en cascada.
-
-Resilience4j es una librería con cinco protecciones que pones alrededor de cada llamada:
-
 | Patrón | Pregunta que responde | Qué hace |
 |---|---|---|
 | **Retry** | ¿Fue un fallo pasajero? | Repite la llamada unas pocas veces, esperando entre intentos. |
@@ -112,79 +79,136 @@ Resilience4j es una librería con cinco protecciones que pones alrededor de cada
 | **Bulkhead** | ¿Me está ocupando demasiados recursos? | Limita cuántas llamadas simultáneas puede haber hacia ese servicio. |
 | **TimeLimiter** | ¿Tarda demasiado? | Corta la espera al pasar un tiempo máximo. |
 
-En Spring las activas con una anotación sobre el método (`@CircuitBreaker(name = "inventario")`) y las configuras en
-`application.yml`.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-**Instalación en Spring Boot 4:** `io.github.resilience4j:resilience4j-spring-boot4:2.4.0` (la versión 2.4.0 añadió
-soporte de Spring Boot 4) + `spring-boot-starter-aspectj` (las anotaciones son aspectos) + Actuator (endpoints y
-salud). Cada anotación lleva un `name` que apunta a `resilience4j.<patrón>.instances.<name>` en el YAML.
-
-**Circuit Breaker.** Guarda el resultado de las últimas llamadas en una **ventana deslizante** por número
-(`COUNT_BASED`, `sliding-window-size`) o por tiempo (`TIME_BASED`, en segundos). Con al menos
-`minimum-number-of-calls`, si el porcentaje de fallos ≥ `failure-rate-threshold` (o el de llamadas más lentas que
-`slow-call-duration-threshold` ≥ `slow-call-rate-threshold`) pasa a **OPEN**: rechaza al instante con
-`CallNotPermittedException`. Tras `wait-duration-in-open-state` pasa a **HALF_OPEN** y deja pasar
-`permitted-number-of-calls-in-half-open-state` llamadas de prueba. Valores por defecto: ventana 100, mínimo 100,
-umbral 50 %, 60 s abierto, 10 de prueba, lenta a partir de 60 s. `record-exceptions` / `ignore-exceptions` deciden qué
-cuenta como fallo (un 404 no debería abrir el circuito).
-
-**Retry.** `max-attempts` (cuenta el primer intento: 3 = 1 + 2 reintentos), `wait-duration`, backoff exponencial
-(`enable-exponential-backoff`, `exponential-backoff-multiplier`), `retry-exceptions` / `ignore-exceptions`. Reintenta
-solo operaciones **idempotentes** y errores **transitorios** (5xx, timeouts), nunca 4xx.
-
-**RateLimiter.** `limit-for-period` permisos cada `limit-refresh-period`; si no hay permiso espera hasta
-`timeout-duration` y luego lanza `RequestNotPermitted`. Protege al **otro** servicio (o una cuota de una API externa).
-
-**Bulkhead.** `SEMAPHORE` (por defecto): `max-concurrent-calls` llamadas a la vez, espera hasta `max-wait-duration`,
-luego `BulkheadFullException`. `THREADPOOL`: un pool propio por dependencia. Protege **tus** recursos: un inventario
-lento no puede ocupar todos tus hilos y conexiones.
-
-**TimeLimiter.** Para métodos que devuelven `CompletableFuture` (o tipos reactivos): `timeout-duration` y
-`cancel-running-future`. Al vencer, el futuro termina con `TimeoutException`.
-
-**Orden de los aspectos** (por defecto): `Retry ( CircuitBreaker ( RateLimiter ( TimeLimiter ( Bulkhead ( llamada ) ) ) ) )`.
-Retry es el más exterior: cada reintento pasa por el circuit breaker y cuenta en su ventana. El **fallback** (método
-alternativo con la misma firma + un parámetro de excepción) se pone en la anotación **exterior** que quieras que lo
-use (ver el error común).
-
-**Observar:** `/actuator/circuitbreakers`, `/actuator/circuitbreakerevents`, `/actuator/retries`… y, con
-`register-health-indicator: true` y `management.health.circuitbreakers.enabled: true`, el estado del circuito en
-`/actuator/health` (CLOSED = UP, OPEN = DOWN, HALF_OPEN = UNKNOWN).
-
-#### 8. EXPLICACIÓN MAESTRA
-
-**Combinaciones con sentido:** Retry + Circuit Breaker es la base (reintentos para lo pasajero, circuito para lo
-persistente); Bulkhead por dependencia evita que una dependencia lenta agote el servidor; TimeLimiter o, mejor, el
-timeout del propio cliente HTTP, porque **cancelar un `CompletableFuture` no interrumpe la tarea que lo produce**:
-`cancel-running-future: true` marca el futuro como cancelado, pero una llamada bloqueante de `RestClient` dentro de
-`supplyAsync` sigue hasta su *read timeout*. Por eso el código del laboratorio pone `setReadTimeout` en el cliente y
-`jdk/Patrones.java` cancela con `HttpClient.sendAsync(...).cancel(true)`, que sí aborta la petición.
-
-**Amplificación de reintentos:** con 3 servicios en cadena y 3 intentos en cada uno, un fallo al final genera
-3 × 3 × 3 = 27 llamadas. Reintenta en **un** solo nivel (normalmente el más cercano al fallo), usa *jitter* para que
-los clientes no reintenten sincronizados y un **presupuesto de reintentos** (no más del 10–20 % del tráfico). Ojo
-también con los reintentos ocultos: el `HttpClient` del JDK reintentó por su cuenta peticiones GET cuyas conexiones
-cortó `ProxyDeFallos` (lo observamos al escribir `jdk/Patrones.java`: dos cortes y una respuesta buena dentro de una
-sola llamada a `send`), así que tu Retry podía multiplicarse sin que lo vieras.
-
-| Alternativa | Ventaja | Coste |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Resilience4j (anotaciones o API funcional) | Ligera, modular, métricas Micrometer | Configuración por servicio en cada aplicación |
-| Spring Cloud CircuitBreaker | Abstracción sobre Resilience4j (cambiar de implementación sin tocar código) | Solo cubre circuit breaker, time limiter y bulkhead |
-| Spring Framework 7 `@Retryable` / `@ConcurrencyLimit` (con `@EnableResilientMethods`) | Sin dependencias extra: reintento y límite de concurrencia | Sin circuit breaker ni rate limiter |
-| *Service mesh* (Istio/Envoy: *outlier detection*, reintentos, timeouts) | Sin código, igual para todos los lenguajes | Menos contexto de negocio (no hay fallback con caché) |
-| Hystrix | — | En mantenimiento desde 2018: no lo uses en proyectos nuevos |
+| Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Cuándo NO usarlos.** No pongas circuit breaker a una llamada **local** o a la base de datos propia con su pool (el
-pool ya limita y tiene timeouts). No reintentes operaciones **no idempotentes** (un cobro) sin clave de idempotencia
-(Módulo 25). No uses RateLimiter para protegerte de tus usuarios en cada servicio: eso va en el gateway. Y no copies
-los valores por defecto: con `minimum-number-of-calls: 100` y poco tráfico, el circuito nunca se abre; dimensiona la
-ventana con tu tráfico real.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► CUÁNDO NO USAR ESTO
+Reintentar todo, en todas las capas, sin timeout:
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: resilience4j: circuit breaker, retry, ratelimiter, bulkhead, timelimiter funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cuando tu servicio llama a otro, pueden pasar tres cosas malas: que el otro no conteste (caído), que conteste muy tarde (lento) o que conteste con error.
+- Si tu servicio se queda esperando o insiste sin control, se llena de peticiones atascadas y termina cayéndose también: el fallo se contagia en cascada.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve resilience4j: circuit breaker, retry, ratelimiter, bulkhead, timelimiter en tu contexto?
+2. ¿Cómo sabrías que resilience4j: circuit breaker, retry, ratelimiter, bulkhead, timelimiter no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar resilience4j: circuit breaker, retry, ratelimiter, bulkhead, timelimiter?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Construcción guiada
+**Simulación del fallo (JDK, sin Docker).** `jdk/Patrones.java` arranca el inventario y `ProxyDeFallos` delante, y
+para cada patrón inyecta un fallo: latencia de 2000 ms (TimeLimiter), dos respuestas 503 (Retry), puerto cerrado
+(CircuitBreaker), latencia de 800 ms con 5 llamadas simultáneas (Bulkhead) y 5 llamadas seguidas (RateLimiter).
+
+1. Ejecuta:
+
+```bash
+java jdk/Patrones.java
+```
+
+   **Output esperado** (ejecutado con JDK 25.0.5; los milisegundos varían):
+
+```text
+== TimeLimiter (límite 500 ms) · fallo inyectado: latencia 2000 ms
+   resultado=TimeoutException tras 506 ms (sin límite habrías esperado 2000 ms)
+== Retry (3 intentos, espera 100 ms x2 + jitter) · fallo inyectado: 2 respuestas 503 seguidas
+   intento 1: ErrorDelServidor HTTP 503
+   intento 2: ErrorDelServidor HTTP 503
+   intento 3: OK {"sku":"7","stock":12}
+== CircuitBreaker · fallo inyectado: inventario caído (puerto cerrado)
+   llamada 1 [CLOSED] ConnectException (4 ms)
+   llamada 2 [CLOSED] ConnectException (1 ms)
+   llamada 3 [CLOSED] ConnectException (1 ms)
+   -> el circuito pasa a OPEN
+   llamada 4 [OPEN] ConnectException (2 ms)
+   llamada 5 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
+   llamada 6 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
+   llamada 7 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
+   ...el inventario vuelve; esperamos 1 s
+   -> el circuito pasa a HALF_OPEN
+   llamada 8 [HALF_OPEN] OK {"sku":"7","stock":12}
+   -> el circuito pasa a CLOSED
+   llamada 9 [CLOSED] OK {"sku":"7","stock":12}
+== Bulkhead (2 llamadas concurrentes, espera máxima 0) · fallo inyectado: latencia 800 ms
+   resultados=[OK, OK, BulkheadFull, BulkheadFull, BulkheadFull] en 828 ms: 3 rechazadas al instante, el resto del servicio sigue libre
+== RateLimiter (3 llamadas por periodo de 1 s, espera máxima 0) · 5 llamadas seguidas
+   resultados=[OK, OK, OK, RequestNotPermitted, RequestNotPermitted]
+OK: los 5 patrones se comportaron como se esperaba
+```
+
+   **Comportamiento observado:** el TimeLimiter corta a los ~500 ms en vez de esperar 2 s. El Retry absorbe dos
+   errores pasajeros. El circuito se abre con la 4.ª llamada fallida (ventana de 4, 100 % de fallos) y las llamadas
+   5–7 se rechazan en **0 ms** sin tocar la red; cuando el inventario vuelve, una llamada en HALF_OPEN sale bien y la
+   segunda lo cierra. El Bulkhead rechaza al instante 3 de 5 llamadas lentas y el RateLimiter, 2 de 5.
+
+**Simulación del fallo con Toxiproxy (Docker).** Ahora el servicio Spring de verdad, con el inventario detrás de
+Toxiproxy.
+
+2. Levanta la infraestructura y el servicio:
+
+```bash
+docker compose up -d --wait
+cd f057-resilience4j && ../gradlew -q bootRun &
+cd ..
+curl -s localhost:8080/pedidos/stock/7; echo
+```
+
+   **Output esperado:** `{"sku":"7","stock":12,"fuente":null}`.
+
+3. Tumba el inventario con `simular-fallo.sh` (el script de Toxiproxy de este módulo) y llama 4 veces:
+
+```bash
+./simular-fallo.sh caido
+for i in 1 2 3 4; do curl -s localhost:8080/pedidos/stock/7; echo; done
+curl -s localhost:8080/actuator/health | jq '.components.circuitBreakers.details.inventario.details.state'
+```
+
+   **Output esperado:** la primera respuesta termina en `"fuente":"fallback: ResourceAccessException"` (tras 3
+   intentos, ~300 ms de esperas), las tres siguientes en `"fuente":"fallback: CallNotPermittedException"` (en la
+   segunda, el 4.º fallo abre el circuito) y casi instantáneas; el estado es `"OPEN"`. **Captura descrita:** en `/actuator/circuitbreakerevents` ves eventos `ERROR` y un
+   `STATE_TRANSITION` `CLOSED_TO_OPEN`.
+
+4. Recupera el inventario, espera 2 s y llama dos veces:
+
+```bash
+./simular-fallo.sh sano
+sleep 2; for i in 1 2; do curl -s localhost:8080/pedidos/stock/7; echo; done
+```
+
+   **Output esperado:** `{"sku":"7","stock":12,"fuente":null}` dos veces y el circuito de nuevo en `CLOSED`
+   (transiciones `OPEN_TO_HALF_OPEN` y `HALF_OPEN_TO_CLOSED`).
+
+5. Latencia y TimeLimiter/Bulkhead:
+
+```bash
+./simular-fallo.sh lento 2000
+curl -s -w ' %{http_code} %{time_total}s\n' localhost:8080/pedidos/limite/7
+for i in 1 2 3; do curl -s -o /dev/null -w '%{http_code}\n' localhost:8080/pedidos/aislado/7 & done; wait
+./simular-fallo.sh sano
+```
+
+   **Output esperado:** `{"error":"INVENTARIO_LENTO"} 504` en ~0,5 s; de las tres llamadas simultáneas, dos `200`
+   (tras ~2 s) y un `503`. Termina con `kill %1` y `docker compose down`.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Resilience4j 2.4.0 (`resilience4j-spring-boot4`), Spring Cloud
 2025.1.4 (solo el BOM).
 
@@ -939,104 +963,7 @@ public class PedidosApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-**Simulación del fallo (JDK, sin Docker).** `jdk/Patrones.java` arranca el inventario y `ProxyDeFallos` delante, y
-para cada patrón inyecta un fallo: latencia de 2000 ms (TimeLimiter), dos respuestas 503 (Retry), puerto cerrado
-(CircuitBreaker), latencia de 800 ms con 5 llamadas simultáneas (Bulkhead) y 5 llamadas seguidas (RateLimiter).
-
-1. Ejecuta:
-
-```bash
-java jdk/Patrones.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5; los milisegundos varían):
-
-```text
-== TimeLimiter (límite 500 ms) · fallo inyectado: latencia 2000 ms
-   resultado=TimeoutException tras 506 ms (sin límite habrías esperado 2000 ms)
-== Retry (3 intentos, espera 100 ms x2 + jitter) · fallo inyectado: 2 respuestas 503 seguidas
-   intento 1: ErrorDelServidor HTTP 503
-   intento 2: ErrorDelServidor HTTP 503
-   intento 3: OK {"sku":"7","stock":12}
-== CircuitBreaker · fallo inyectado: inventario caído (puerto cerrado)
-   llamada 1 [CLOSED] ConnectException (4 ms)
-   llamada 2 [CLOSED] ConnectException (1 ms)
-   llamada 3 [CLOSED] ConnectException (1 ms)
-   -> el circuito pasa a OPEN
-   llamada 4 [OPEN] ConnectException (2 ms)
-   llamada 5 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
-   llamada 6 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
-   llamada 7 [OPEN] IllegalStateException: CallNotPermitted (0 ms)
-   ...el inventario vuelve; esperamos 1 s
-   -> el circuito pasa a HALF_OPEN
-   llamada 8 [HALF_OPEN] OK {"sku":"7","stock":12}
-   -> el circuito pasa a CLOSED
-   llamada 9 [CLOSED] OK {"sku":"7","stock":12}
-== Bulkhead (2 llamadas concurrentes, espera máxima 0) · fallo inyectado: latencia 800 ms
-   resultados=[OK, OK, BulkheadFull, BulkheadFull, BulkheadFull] en 828 ms: 3 rechazadas al instante, el resto del servicio sigue libre
-== RateLimiter (3 llamadas por periodo de 1 s, espera máxima 0) · 5 llamadas seguidas
-   resultados=[OK, OK, OK, RequestNotPermitted, RequestNotPermitted]
-OK: los 5 patrones se comportaron como se esperaba
-```
-
-   **Comportamiento observado:** el TimeLimiter corta a los ~500 ms en vez de esperar 2 s. El Retry absorbe dos
-   errores pasajeros. El circuito se abre con la 4.ª llamada fallida (ventana de 4, 100 % de fallos) y las llamadas
-   5–7 se rechazan en **0 ms** sin tocar la red; cuando el inventario vuelve, una llamada en HALF_OPEN sale bien y la
-   segunda lo cierra. El Bulkhead rechaza al instante 3 de 5 llamadas lentas y el RateLimiter, 2 de 5.
-
-**Simulación del fallo con Toxiproxy (Docker).** Ahora el servicio Spring de verdad, con el inventario detrás de
-Toxiproxy.
-
-2. Levanta la infraestructura y el servicio:
-
-```bash
-docker compose up -d --wait
-cd f057-resilience4j && ../gradlew -q bootRun &
-cd ..
-curl -s localhost:8080/pedidos/stock/7; echo
-```
-
-   **Output esperado:** `{"sku":"7","stock":12,"fuente":null}`.
-
-3. Tumba el inventario con `simular-fallo.sh` (el script de Toxiproxy de este módulo) y llama 4 veces:
-
-```bash
-./simular-fallo.sh caido
-for i in 1 2 3 4; do curl -s localhost:8080/pedidos/stock/7; echo; done
-curl -s localhost:8080/actuator/health | jq '.components.circuitBreakers.details.inventario.details.state'
-```
-
-   **Output esperado:** la primera respuesta termina en `"fuente":"fallback: ResourceAccessException"` (tras 3
-   intentos, ~300 ms de esperas), las tres siguientes en `"fuente":"fallback: CallNotPermittedException"` (en la
-   segunda, el 4.º fallo abre el circuito) y casi instantáneas; el estado es `"OPEN"`. **Captura descrita:** en `/actuator/circuitbreakerevents` ves eventos `ERROR` y un
-   `STATE_TRANSITION` `CLOSED_TO_OPEN`.
-
-4. Recupera el inventario, espera 2 s y llama dos veces:
-
-```bash
-./simular-fallo.sh sano
-sleep 2; for i in 1 2; do curl -s localhost:8080/pedidos/stock/7; echo; done
-```
-
-   **Output esperado:** `{"sku":"7","stock":12,"fuente":null}` dos veces y el circuito de nuevo en `CLOSED`
-   (transiciones `OPEN_TO_HALF_OPEN` y `HALF_OPEN_TO_CLOSED`).
-
-5. Latencia y TimeLimiter/Bulkhead:
-
-```bash
-./simular-fallo.sh lento 2000
-curl -s -w ' %{http_code} %{time_total}s\n' localhost:8080/pedidos/limite/7
-for i in 1 2 3; do curl -s -o /dev/null -w '%{http_code}\n' localhost:8080/pedidos/aislado/7 & done; wait
-./simular-fallo.sh sano
-```
-
-   **Output esperado:** `{"error":"INVENTARIO_LENTO"} 504` en ~0,5 s; de las tres llamadas simultáneas, dos `200`
-   (tras ~2 s) y un `503`. Termina con `kill %1` y `docker compose down`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f057-resilience4j/src/test/java/academia/resiliencia/PatronesTest.java` usa un inventario falso
 (`InventarioFalso.java`, un `HttpServer` del JDK al que le programas latencia, N errores 503 o caída total) y comprueba
 cada patrón:
@@ -1171,92 +1098,27 @@ recibe `CallNotPermittedException`, que el Retry ignora (está en `ignore-except
 fallback. Es lo que comprueba `circuitBreakerSeAbreYDejaDeLlamarAlInventario`.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** configuraste Retry con 3 intentos, pero ante un error pasajero el servicio responde el fallback al
-primer fallo; el inventario recibe **una** sola petición.
-
-**Cómo se ve:**
-
-```java
-@Retry(name = "inventario")
-@CircuitBreaker(name = "inventario", fallbackMethod = "stockDesconocido")   // fallback en el aspecto INTERIOR
-public Stock consultar(String sku) { ... }
-```
-
-Con `inventario.fallarProximas.set(2)` la respuesta es `Stock[sku=7, stock=null, fuente=fallback:
-ServiceUnavailable]` (la excepción es `HttpServerErrorException.ServiceUnavailable`) y `inventario.atendidas` vale 1.
-En `/actuator/metrics/resilience4j.retry.calls` sube el `kind` `successful_without_retry`: para el Retry la llamada
-«fue bien».
-
-**Diagnóstico visual:** dibuja las capas: `Retry( CircuitBreaker+fallback( llamada ) )`. El fallback del circuito
-convierte el error en un resultado normal **antes** de que el Retry lo vea, así que no hay nada que reintentar.
-
-**Arreglo:** pon el `fallbackMethod` en la anotación más **exterior** (`@Retry`, como en `InventarioCliente`), o
-cambia el orden con `resilience4j.retry.retry-aspect-order` / `circuit-breaker-aspect-order` si de verdad quieres otra
-composición. Y añade `CallNotPermittedException` a `ignore-exceptions` del Retry: reintentar contra un circuito
-abierto solo gasta tiempo.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Tu servicio llama a un proveedor de pagos que a veces tarda 30 s. ¿Qué patrones aplicas y con qué valores?»
-
-**Respuesta modelo:** primero un **timeout** en el cliente HTTP alineado con el presupuesto del caso de uso (por
-ejemplo 2 s, no 30). Un **bulkhead** dedicado al proveedor para que sus lentitudes no agoten los hilos que atienden
-otras funciones. Un **circuit breaker** que cuente también las llamadas lentas (`slow-call-duration-threshold` cercano
-al timeout) para dejar de insistir cuando el proveedor está degradado. **Retry** solo si la operación es idempotente:
-en un cobro, únicamente con clave de idempotencia y pocos intentos con backoff y jitter; si no, mejor registrar el
-pago como «pendiente» y conciliar (fallback de negocio). Mediría p99 y tasa de rechazos por patrón para ajustar, y
-definiría qué ve el usuario en cada caso (no un 500 genérico).
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Reintentar todo, en todas las capas, sin timeout:**
-
-```yaml
-resilience4j.retry.instances.inventario:
-  max-attempts: 10          # y lo mismo en el gateway, en el BFF y en pedidos
-  wait-duration: 0          # sin espera ni jitter
-  # sin ignore-exceptions: también reintenta 400, 404 y CallNotPermittedException
-```
-
-Se ve así en un incidente: el inventario empieza a ir lento, cada capa multiplica las peticiones por 10 (con tres
-capas, hasta 1000 por cada petición original), el inventario termina de caerse por la avalancha (*retry storm*) y
-cuando intenta volver lo tumba la cola acumulada. Pocos intentos, backoff con jitter, reintentos en una sola capa,
-nunca sobre 4xx ni sobre un circuito abierto, y siempre con timeout.
-
----
 ### Timeouts en cascada y presupuesto de latencia
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 8, Lección 2 de 4 · Fase 1 · 2,5 h: `jdk/Presupuesto.java`,
-`f058-presupuesto/` y `simular-fallo.sh`.
+#### ► DE QUÉ TRATA
+Calcular un presupuesto de latencia de extremo a extremo y propagarlo como deadline absoluto entre servicios, de modo que con el inventario 1,5 s lento el cliente reciba una respuesta degradada en menos de 1000 ms (3 tests de PresupuestoTest), y detectar en una traza los timeouts…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Calcular un presupuesto de latencia de extremo a extremo y propagarlo como deadline absoluto entre servicios, de modo que con el inventario 1,5 s lento el cliente reciba una respuesta degradada en menos de 1000 ms (3 tests de PresupuestoTest), y detectar en una traza los timeouts «al revés» que dejan trabajo huérfano.**
 
-- Tema anterior (TimeLimiter y la diferencia entre cortar la espera y cancelar el trabajo).
-- Módulo 7, ficha del BFF (BFF que compone llamadas) y Módulo 0.4 (cabeceras HTTP, códigos 504).
-- Saber qué es un instante *epoch* en milisegundos (`System.currentTimeMillis()`).
+#### ► POR QUÉ EXISTE ESTO
+Un timeout es el tiempo máximo que un programa espera una respuesta antes de rendirse. Cuando una petición atraviesa varios servicios (cliente → BFF → pedidos → inventario), cada uno espera al siguiente. Si cada servicio elige su timeout por su cuenta, puede pasar que el cliente ya se haya ido mientras los servicios de atrás siguen trabajando para nadie, gastando hilos, conexiones y base de datos.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en timeouts en cascada y presupuesto de latencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Calcular** un presupuesto de latencia de extremo a extremo y **propagarlo** como deadline absoluto entre servicios,
-de modo que con el inventario 1,5 s lento el cliente reciba una respuesta degradada en menos de 1000 ms (3 tests de
-`PresupuestoTest`), y **detectar** en una traza los timeouts «al revés» que dejan trabajo huérfano.
-
-#### 4. ANALOGÍA VISUAL
-
-Una **carrera de relevos con un solo cronómetro**. El público (el cliente) solo espera 1 minuto: si no ves llegar al
-último corredor en ese minuto, te vas. Mal hecho, cada corredor tiene su propio reloj «generoso» de 2 o 3 minutos y
-nadie mira el reloj del público: el equipo termina la carrera ante un estadio vacío (**trabajo huérfano**). Bien
-hecho, el **testigo lleva pegado el reloj del público**: cada corredor mira cuánto queda, se guarda unos segundos para
-pasar el testigo y, si el tiempo no alcanza, entrega lo que tiene (respuesta degradada) antes de que el público se vaya.
-Dibuja tres corredores; en la versión mala cada uno con un reloj distinto, en la buena un único reloj de cuenta
-regresiva pegado al testigo.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente (espera 1000 ms)
@@ -1280,72 +1142,46 @@ sequenceDiagram
     B-->>C: 200 degradado en t=905
 ```
 
-**Texto alternativo:** diagrama de secuencia con cliente (espera 1000 ms), BFF, pedidos e inventario (1500 ms de
-latencia extra). Escenario A, timeouts al revés: el cliente llama con timeout 1000, el BFF con 2000, pedidos con 3000.
-En t=1000 el cliente se rinde, pero el inventario responde en t=1500 y pedidos y BFF siguen respondiendo a nadie.
-Escenario B, deadline absoluto D = t0 + 1000 en la cabecera X-Deadline: el BFF pasa D-50 a pedidos y pedidos D-100 al
-inventario, cada uno con timeout igual a lo que le queda. En t=900 vence pedidos y responde 504; el BFF responde 200
-degradado en t=905, antes de que el cliente se rinda.
+1. Un timeout es el tiempo máximo que un programa espera una respuesta antes de rendirse.
+2. Cuando una petición atraviesa varios servicios (cliente → BFF → pedidos → inventario), cada uno espera al siguiente.
+3. Si cada servicio elige su timeout por su cuenta, puede pasar que el cliente ya se haya ido mientras los servicios de atrás siguen trabajando para nadie, gastando hilos, conexiones y base de datos.
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Un **timeout** es el tiempo máximo que un programa espera una respuesta antes de rendirse. Cuando una petición
-atraviesa varios servicios (cliente → BFF → pedidos → inventario), cada uno espera al siguiente. Si cada servicio
-elige su timeout por su cuenta, puede pasar que el cliente ya se haya ido mientras los servicios de atrás siguen
-trabajando para nadie, gastando hilos, conexiones y base de datos.
-
-El **presupuesto de latencia** es la idea de que el tiempo total lo decide quien espera (el cliente), y ese tiempo se
-**reparte** entre todos los saltos. La forma más robusta de repartirlo es enviar, junto con la petición, la **hora
-límite** (*deadline*): «necesito la respuesta antes de las 10:00:01.000». Cada servicio calcula cuánto le queda y no
-espera más que eso.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-**Regla de los timeouts en cascada:** el timeout de cada salto debe ser **menor** que el de quien lo llama, menos lo
-que ese llamador necesita para componer su respuesta: `timeout(B→P) < timeout(C→B) − reserva(B)`. Con timeouts
-fijos esto se rompe en cuanto alguien cambia un valor o se añade un reintento (3 intentos × 1 s ya son 3 s).
-
-**Deadline propagado** (lo que hace gRPC con `grpc-timeout` y lo que el laboratorio hace con `X-Deadline`):
-
-1. El primer servicio fija `D = ahora + presupuesto` (800 ms por defecto en `f058-presupuesto`) o lo lee de la
-   cabecera si el cliente lo envió.
-2. Antes de llamar: `restante = D − ahora − reserva`. Si `restante ≤ 0`, **no llama**: responde 504 `SIN_PRESUPUESTO`
-   (escenario C).
-3. Llama con `timeout = restante` y envía `X-Deadline: D − reserva`: el siguiente salto tiene un plazo más corto y
-   contesta antes de que tú te rindas.
-4. Si vence, decide: respuesta **degradada** (si el dato no es crítico, tema 3) o error 504.
-
-**Por qué un instante absoluto y no «te quedan 800 ms»:** un valor relativo pierde el tiempo que la petición pasó en
-colas y en la red. El absoluto lo descuenta solo; a cambio exige relojes sincronizados (NTP), así que conviene una
-reserva de unos milisegundos. gRPC envía la duración relativa y cada salto la convierte a absoluta al recibirla.
-
-**En Spring:** `JdkClientHttpRequestFactory.setReadTimeout(Duration)` fija el timeout de la respuesta. Como el valor
-cambia en cada petición, `BffController` crea la fábrica por llamada sobre un `HttpClient` compartido (barato: las
-conexiones se reutilizan). Con el *connect timeout* separado y corto (300 ms) detectas antes un destino caído.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-**Presupuesto a partir del SLO.** Si el objetivo es «p99 < 1 s» para la pantalla de pedido, el presupuesto se reparte
-entre saltos según sus latencias normales (p99 medido) y deja margen: gateway 20 ms, BFF 50 ms de composición,
-pedidos 300 ms, inventario 200 ms… El resto es margen para un reintento **solo si cabe** (un retry que no cabe en el
-presupuesto no debe intentarse). Mide la latencia **de cola** (p99, p99,9), no la media: con 5 llamadas en paralelo,
-la probabilidad de que al menos una caiga en su p99 es 1 − 0,99⁵ ≈ 4,9 %.
-
-| Técnica | Ventaja | Coste |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Timeouts fijos decrecientes por salto | Simple, sin cabeceras | Se desalinean con cada cambio; no descuentan colas |
-| Deadline propagado (cabecera o gRPC) | El total queda acotado aunque cambie la topología | Todos los servicios deben leerlo y respetarlo; relojes sincronizados |
-| *Hedged requests* (segunda petición si la primera tarda más que el p95) | Recorta la cola de latencia | Más carga; solo para lecturas idempotentes |
-| Cancelación propagada (gRPC, `Context`) | Libera trabajo río abajo al rendirse | Hay que comprobar la cancelación en el código |
+| Timeouts en cascada y presupuesto de latencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Cuándo NO propagar un deadline.** En trabajo **asíncrono** (un mensaje en Kafka que se procesa en minutos) el
-deadline del usuario no aplica: el consumidor tiene su propio límite. Tampoco en operaciones que deben completarse
-aunque el cliente se vaya (confirmar un pago ya enviado al proveedor): ahí el timeout protege recursos, pero el
-trabajo se termina y se concilia. Y no lo uses como excusa para timeouts enormes: el presupuesto lo marca la
-experiencia del usuario, no la paciencia del servicio más lento.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Timeouts en cascada y presupuesto de latencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► CUÁNDO NO USAR ESTO
+Timeouts infinitos o «por si acaso»:
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: timeouts en cascada y presupuesto de latencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Un timeout es el tiempo máximo que un programa espera una respuesta antes de rendirse.
+- Cuando una petición atraviesa varios servicios (cliente → BFF → pedidos → inventario), cada uno espera al siguiente.
+- Si cada servicio elige su timeout por su cuenta, puede pasar que el cliente ya se haya ido mientras los servicios de atrás siguen trabajando para nadie, gastando hilos, conexiones y base de datos.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve timeouts en cascada y presupuesto de latencia en tu contexto?
+2. ¿Cómo sabrías que timeouts en cascada y presupuesto de latencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar timeouts en cascada y presupuesto de latencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3 (`RestClient` con `JdkClientHttpRequestFactory`).
 
 **La cascada completa con JDK puro** — `modulo-12/jdk/Presupuesto.java` (usa `Inventario.java` y `ProxyDeFallos.java`
@@ -1670,73 +1506,7 @@ public class BffApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-**Simulación del fallo (JDK, sin Docker).** `jdk/Presupuesto.java` monta la cadena cliente → bff → pedidos →
-inventario, pone `ProxyDeFallos` delante del inventario con `latencia(1500)` y ejecuta los tres escenarios.
-
-1. Ejecuta:
-
-```bash
-java jdk/Presupuesto.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5; los milisegundos varían unos pocos):
-
-```text
-== A) Timeouts al revés: cliente 1000 ms < bff 2000 ms < pedidos 3000 ms
-    1007 ms  cliente  timeout: el cliente se rindió
-    1509 ms  pedidos  responde 200
-    1511 ms  bff      responde 200
-== B) Presupuesto propagado: X-Deadline = ahora + 1000 ms
-     900 ms  pedidos  responde 504
-     902 ms  bff      responde 200
-     904 ms  cliente  200 {"pedido":1,"stock":null,"degradado":true}
-== C) Presupuesto agotado al llegar: X-Deadline = hace 10 ms
-       3 ms  bff      responde 504
-       8 ms  cliente  504 {"error":"SIN_PRESUPUESTO"}
-   llamadas que llegaron al inventario: 0
-OK: el presupuesto propagado mantiene la respuesta dentro del plazo
-```
-
-   **Comportamiento observado:** en A el cliente se rinde a los 1007 ms, pero pedidos y el BFF siguen hasta los
-   1511 ms: medio segundo de trabajo (hilos, conexiones) para una respuesta que nadie lee. En B pedidos vence a los
-   900 ms (deadline − 100), el BFF degrada a los 902 ms y el cliente recibe un 200 marcado como `degradado` a los
-   904 ms, dentro de su segundo. En C nadie llama al inventario.
-
-**Simulación del fallo con Toxiproxy (Docker).** El BFF de Spring llama a «pedidos»; para no levantar otro servicio,
-apúntalo directamente al inventario a través de Toxiproxy (la ruta `/pedidos/1` no existe en el inventario, pero con
-el fallo inyectado el BFF ni siquiera llega a recibir respuesta):
-
-2. Arranca y comprueba el presupuesto por defecto (800 ms):
-
-```bash
-docker compose up -d --wait
-cd f058-presupuesto && PEDIDOS_URL=http://localhost:21212 ../gradlew -q bootRun &
-cd ..
-./simular-fallo.sh lento 1500
-curl -s -w ' %{time_total}s\n' localhost:8090/bff/pedidos/1
-```
-
-   **Output esperado:** `{"pedido":1,"degradado":true} 0.75…s` (el orden de las claves puede variar): el BFF se rinde
-   a los 800 − 50 = 750 ms.
-
-3. Con deadline explícito de 300 ms y con uno vencido (`date` de macOS no da milisegundos, así que los calcula
-   Python):
-
-```bash
-ahora_ms() { python3 -c 'import time; print(int(time.time() * 1000))'; }
-curl -s -w ' %{time_total}s\n' -H "X-Deadline: $(( $(ahora_ms) + 300 ))" localhost:8090/bff/pedidos/1
-curl -s -w ' %{http_code}\n' -H "X-Deadline: $(( $(ahora_ms) - 10 ))" localhost:8090/bff/pedidos/1
-./simular-fallo.sh sano
-```
-
-   **Output esperado:** la primera, `{"pedido":1,"degradado":true}` en algo menos de 0,3 s (300 − 50 de reserva, más
-   lo que tarda en arrancar Python); la segunda, `{"error":"SIN_PRESUPUESTO"} 504` al instante. Termina con `kill %1`
-   y `docker compose down`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f058-presupuesto/src/test/java/academia/presupuesto/PresupuestoTest.java` simula «pedidos» con 1500 ms de latencia
 y anota el `X-Deadline` que le llega:
 
@@ -1847,87 +1617,27 @@ presupuesto de 1,5 s propagado: el gateway fija el deadline, el BFF intenta solo
 completo (normalmente 1 intento + 1 reintento como mucho) y pedidos usa `deadline − reserva` para el inventario.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** los usuarios ven timeouts, pero los paneles de los servicios internos muestran respuestas 200 lentas, y
-bajo carga los servicios internos se saturan aunque «nadie» los esté usando.
-
-**Cómo se ve** (escenario A de `jdk/Presupuesto.java`, salida real):
-
-```text
-    1007 ms  cliente  timeout: el cliente se rindió
-    1509 ms  pedidos  responde 200
-    1511 ms  bff      responde 200
-```
-
-En una traza distribuida (Módulo 10) se ve el *span* del cliente terminado en error a los 1000 ms y, **debajo y más
-largos que su padre**, los *spans* de BFF y pedidos terminando en 200 a los 1,5 s.
-
-**Diagnóstico:** busca hijos que duran más que su padre: es la firma de timeouts al revés. Compara la configuración
-de cada salto (`response-timeout` del gateway, `setReadTimeout` de cada cliente, `timeout-duration` de TimeLimiter) y
-suma los reintentos.
-
-**Arreglo:** propaga un deadline (como `BffController`) o, como mínimo, ordena los timeouts de forma estrictamente
-decreciente descontando reintentos y reserva. Y no hagas trabajo si el presupuesto ya se agotó (escenario C).
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo eliges el timeout de una llamada entre microservicios?»
-
-**Respuesta modelo:** no lo elijo aislado. Parto del SLO de la operación de cara al usuario (por ejemplo p99 < 1 s),
-lo reparto entre los saltos según su latencia medida (p99, no la media) y dejo reserva para componer la respuesta. El
-timeout de cada llamada es «lo que queda del presupuesto», idealmente propagado como deadline (gRPC lo trae; en HTTP,
-una cabecera). Separo *connect timeout* (corto, detecta destinos caídos) de *read timeout*. Si hay reintentos, cada
-intento debe caber en lo que queda y solo se reintenta si cabe. Y al vencer, decido explícitamente entre degradar y
-fallar con 504.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Timeouts infinitos o «por si acaso»:**
-
-```java
-var fabrica = new JdkClientHttpRequestFactory();    // sin setReadTimeout: espera lo que haga falta
-RestClient rest = RestClient.builder().requestFactory(fabrica).build();
-// ...y en otro servicio, "para que no falle":
-fabrica.setReadTimeout(Duration.ofMinutes(5));
-```
-
-Se ve así: un inventario que se cuelga deja cada petición esperando indefinidamente; con hilos limitados (o un pool de
-conexiones de 50), al minuto el servicio que llama ya no atiende a nadie y el fallo sube por la cadena. Todo cliente
-HTTP lleva *connect* y *read timeout* explícitos, derivados del presupuesto.
-
----
 ### Fallback strategies
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 8, Lección 3 de 4 · Fase 1 · 2 h: `jdk/Fallbacks.java`,
-`f059-fallbacks/` y `simular-fallo.sh`.
+#### ► DE QUÉ TRATA
+Elegir la estrategia de fallback adecuada para cada dependencia según su criticidad (valor por defecto, último valor bueno, fuente alternativa o fallar rápido) e implementarla con fallbacks de Resilience4j por tipo de excepción, de modo que los 4 tests de FallbacksTest pasen y ca…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Elegir la estrategia de fallback adecuada para cada dependencia según su criticidad (valor por defecto, último valor bueno, fuente alternativa o fallar rápido) e implementarla con fallbacks de Resilience4j por tipo de excepción, de modo que los 4 tests de FallbacksTest pasen y cada respuesta degradada diga de dónde salió el dato.**
 
-- fichas 1 y 2 de este módulo (circuit breaker, `fallbackMethod`, presupuesto y respuestas degradadas).
-- Módulo 4: caché y datos obsoletos (TTL); Módulo 2: `@ExceptionHandler` y códigos HTTP.
-- Distinguir lectura de escritura (consultar stock frente a reservar stock).
+#### ► POR QUÉ EXISTE ESTO
+Un fallback («plan B») es lo que tu servicio responde cuando no pudo obtener la respuesta real porque otro servicio falló. En vez de mostrar un error al usuario, puedes darle algo útil: el último dato que conocías, un valor neutro («disponibilidad: consultar») o el dato de otra fuente.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en fallback strategies como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Elegir** la estrategia de fallback adecuada para cada dependencia según su criticidad (valor por defecto, último
-valor bueno, fuente alternativa o fallar rápido) e **implementarla** con fallbacks de Resilience4j por tipo de
-excepción, de modo que los 4 tests de `FallbacksTest` pasen y cada respuesta degradada diga de dónde salió el dato.
-
-#### 4. ANALOGÍA VISUAL
-
-El **panel de llegadas de un aeropuerto** cuando se cae el sistema de la aerolínea. Para un vuelo, el panel muestra la
-última hora conocida con la etiqueta «actualizado hace 5 min» (**último valor bueno**). Para otro que nunca tuvo
-datos, muestra «consulte en el mostrador» (**valor por defecto explícito**). El personal llama por radio a la torre
-de control para confirmar una puerta (**fuente alternativa**). Pero en el **mostrador de embarque** nadie inventa que
-tu asiento está confirmado: si el sistema de reservas no responde, te dicen «no puedo emitir el pase ahora, vuelva en
-10 minutos» (**fallar rápido**). Lo que nunca verás es un panel que pone «a tiempo» a un vuelo del que no sabe nada
-(**fallback mentiroso**). Dibuja el panel con tres filas distintas y, al lado, el mostrador con un cartel de «espere».
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     F["Falló la llamada al inventario"] --> Q1{"¿Operación de escritura<br/>o dato crítico?<br/>(reservar, cobrar)"}
@@ -1942,68 +1652,44 @@ flowchart TD
     DF --> M
 ```
 
-**Texto alternativo:** árbol de decisión que empieza en «falló la llamada al inventario». Primera pregunta: ¿es una
-operación de escritura o un dato crítico, como reservar o cobrar? Si sí, fallar rápido con 503 y Retry-After, nunca
-inventar éxito. Si es una lectura, segunda pregunta: ¿tengo un valor reciente guardado? Si sí, devolver el último
-valor bueno marcado con fuente cache y su edad. Si no, tercera pregunta: ¿hay otra fuente como una réplica u otra
-región? Si sí, usarla marcada como replica; si no, devolver un valor por defecto explícito (stock nulo, fuente
-defecto). Las tres ramas de lectura terminan en «marca la respuesta degradada y cuenta la métrica».
+1. Un fallback («plan B») es lo que tu servicio responde cuando no pudo obtener la respuesta real porque otro servicio falló.
+2. En vez de mostrar un error al usuario, puedes darle algo útil: el último dato que conocías, un valor neutro («disponibilidad: consultar») o el dato de otra fuente.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Fallback strategies se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un **fallback** («plan B») es lo que tu servicio responde cuando no pudo obtener la respuesta real porque otro
-servicio falló. En vez de mostrar un error al usuario, puedes darle algo útil: el último dato que conocías, un valor
-neutro («disponibilidad: consultar») o el dato de otra fuente.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Fallback strategies | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Pero un plan B tiene dos reglas: **decir la verdad** (marcar que el dato es aproximado o viejo) y **no usarse para lo
-crítico**. Si el usuario quiere pagar o reservar y el servicio no responde, lo honesto es decir «ahora no se puede,
-intenta en un momento», no fingir que funcionó.
+#### ► CUÁNDO NO USAR ESTO
+El fallback que «arregla» una escritura:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: fallback strategies funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Las estrategias** (todas en `jdk/Fallbacks.java`):
+#### ► LO QUE DEBES RECORDAR
+- Un fallback («plan B») es lo que tu servicio responde cuando no pudo obtener la respuesta real porque otro servicio falló.
+- En vez de mostrar un error al usuario, puedes darle algo útil: el último dato que conocías, un valor neutro («disponibilidad: consultar») o el dato de otra fuente.
 
-| Estrategia | Respuesta | Bien para | Riesgo |
-|---|---|---|---|
-| Valor por defecto explícito | `stock: null`, `fuente: defecto` | Datos opcionales de la pantalla | Que el cliente no sepa interpretar `null` |
-| Último valor bueno (caché) | el dato + `fuente: cache` + edad | Datos que cambian despacio (catálogo, precios mostrados) | Mostrar algo demasiado viejo: pon un límite de edad |
-| Fuente alternativa | réplica de lectura, otra región, proveedor secundario | Lecturas importantes | La alternativa también puede fallar (y recibe de golpe toda la carga) |
-| Degradar la funcionalidad | ocultar la sección de reseñas, desactivar «recomendados» | Funciones no esenciales | Que el producto decida qué es esencial, no el código |
-| Fallar rápido | 503 + `Retry-After`, mensaje claro | Escrituras y datos críticos (reservas, pagos, permisos) | Ninguno: es la opción honesta |
-| Encolar para después | «pedido recibido, confirmaremos» | Escrituras que admiten asincronía | Requiere idempotencia y conciliación (Módulos 11 y 25) |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve fallback strategies en tu contexto?
+2. ¿Cómo sabrías que fallback strategies no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar fallback strategies?
 
-**Con Resilience4j:** `fallbackMethod = "respaldo"` apunta a un método de la **misma clase** con la misma firma más un
-parámetro de excepción. Puedes declarar varios con distintos tipos de excepción y Resilience4j elige el más cercano al
-error real: en `InventarioServicio`, `respaldo(String, CallNotPermittedException)` se usa cuando el circuito está
-abierto y `respaldo(String, Exception)` para todo lo demás. La operación crítica (`reservar`) tiene
-`@CircuitBreaker` **sin** fallback: el error sube y el `@ExceptionHandler` lo convierte en 503 con `Retry-After`.
+</details>
 
-**Siempre:** marca la respuesta (`fuente`, `degradado`, edad), cuenta una métrica (`fallbacks_total{estrategia=...}`)
-y alerta si el porcentaje de respuestas degradadas sube: un fallback silencioso puede esconder una caída durante días.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 8. EXPLICACIÓN MAESTRA
-
-**El fallback también es código que falla.** Se ejecuta justo cuando el sistema está bajo estrés y se prueba poco: si
-el fallback consulta otra base de datos que también está saturada, lo empeora (fallo en cascada por el plan B). Reglas:
-el fallback debe ser **más barato y más fiable** que la ruta normal (memoria local antes que otra red), tener su propio
-timeout y probarse con inyección de fallos (tema 4). La «fuente alternativa» recibe de golpe todo el tráfico: dimensiónala
-o protégela con su propio bulkhead.
-
-**Consistencia y negocio.** Mostrar un stock de hace 5 minutos está bien en la ficha de producto, no en el último paso
-de la compra. La decisión de qué se degrada es de **producto**, no técnica: documenta por dependencia «crítica /
-degradable / opcional» y qué ve el usuario en cada caso. Netflix popularizó la idea con fallbacks por función (si cae
-el servicio de recomendaciones personalizadas, muestra las populares).
-
-**Alternativas al fallback en el código:** *stale-if-error* en la caché HTTP (RFC 5861) o en la CDN (servir la
-versión vieja si el origen falla), degradación en el cliente (la app oculta la sección si el campo viene nulo),
-*feature flags* para apagar funciones costosas durante un incidente.
-
-**Cuándo NO usar fallback:** en escrituras con efectos (cobrar, reservar, enviar un correo), en datos de autorización
-(si no puedes comprobar un permiso, la respuesta es **denegar**, nunca permitir), y cuando el dato degradado puede
-causar un daño mayor que el error (un precio viejo en el checkout que luego no honras).
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Resilience4j 2.4.0 (`resilience4j-spring-boot4`).
 
 **Las cinco estrategias con JDK puro** — `modulo-12/jdk/Fallbacks.java` (usa `Inventario.java` y `ProxyDeFallos.java`):
@@ -2329,69 +2015,7 @@ public class FallbacksApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-**Simulación del fallo (JDK, sin Docker).** `jdk/Fallbacks.java` consulta el inventario sano (llena la caché), cierra
-el puerto del proxy con `proxy.caer()` y aplica cada estrategia.
-
-1. Ejecuta:
-
-```bash
-java jdk/Fallbacks.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5):
-
-```text
-== Inventario sano
-   consulta normal          -> {"sku":"7","stock":12}
-== Inventario caído (fallo inyectado: puerto cerrado)
-   1) valor por defecto     -> {"sku":"7","stock":null,"fuente":"defecto"}
-   2) último valor bueno    -> {"sku":"7","stock":12,"fuente":"cache","edad_ms":300}
-   3) fuente alternativa    -> {"sku":"7","stock":12,"fuente":"replica"}
-   4) reservar (crítico)    -> 503 {"error":"INVENTARIO_NO_DISPONIBLE","reintentar_en_s":30} en 2 ms
-   5) ANTI-PATRÓN mentiroso -> {"sku":"7","stock":99}   <- nadie sabe que es falso
-OK: cada fallback dice de dónde sale el dato; lo crítico falla rápido
-```
-
-   **Comportamiento observado:** con el inventario caído, cada lectura devuelve algo útil **y marcado**; la caché dice
-   la edad del dato (300 ms). La reserva falla en 2 ms con un mensaje que dice cuándo reintentar. El fallback mentiroso
-   devuelve un 99 indistinguible de un dato real.
-
-**Simulación del fallo con Toxiproxy (Docker).**
-
-2. Arranca y llena la caché:
-
-```bash
-docker compose up -d --wait
-cd f059-fallbacks && ../gradlew -q bootRun &
-cd ..
-curl -s localhost:8080/productos/7/stock; echo
-```
-
-   **Output esperado:** `{"sku":"7","stock":12,"fuente":"inventario","edadMs":0}` (el orden de las claves puede
-   variar).
-
-3. Tumba el inventario y consulta un producto conocido, uno desconocido y una reserva:
-
-```bash
-./simular-fallo.sh caido
-curl -s localhost:8080/productos/7/stock; echo
-curl -s localhost:8080/productos/99/stock; echo
-curl -s -i -X POST 'localhost:8080/productos/7/reservas?unidades=1' | sed -n '1p;/Retry-After/p;$p'
-```
-
-   **Output esperado:** el 7 con `"fuente":"cache"` y su `edadMs`; el 99 con `"stock":null,"fuente":"defecto"`; la
-   reserva con `HTTP/1.1 503`, `Retry-After: 30` y `{"error":"INVENTARIO_NO_DISPONIBLE",...}`.
-
-4. Observa el fallback específico del circuito abierto. Tras el paso 3 la ventana de 4 llamadas tiene 1 éxito y
-   3 fallos (75 % ≥ 50 %): el circuito ya está abierto, así que `curl -s localhost:8080/productos/7/stock` responde
-   `"fuente":"cache (circuito abierto)"` al instante, sin intentar la red. Recupera con `./simular-fallo.sh sano`, espera 5 s
-   (`wait-duration-in-open-state`) y la consulta vuelve a `"fuente":"inventario"`. Termina con `kill %1` y
-   `docker compose down`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f059-fallbacks/src/test/java/academia/fallbacks/FallbacksTest.java`:
 
 ```java
@@ -2484,85 +2108,27 @@ pudieron revocar el permiso. Usar la caché de permisos solo es aceptable con un
 explícita de seguridad.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** durante una caída del inventario los clientes compraron productos agotados; los paneles no mostraron
-errores porque todas las respuestas fueron 200.
-
-**Cómo se ve** (salida real de `jdk/Fallbacks.java`, estrategia 5):
-
-```text
-   5) ANTI-PATRÓN mentiroso -> {"sku":"7","stock":99}   <- nadie sabe que es falso
-```
-
-**Diagnóstico:** el fallback devuelve un dato inventado con la misma forma que uno real; ni el cliente ni los paneles
-pueden distinguirlo. **Diagnóstico visual:** en el panel de métricas, la tasa de errores del servicio en 0 % y la de
-llamadas al inventario fallidas en 100 % al mismo tiempo: alguien está tapando el fallo.
-
-**Arreglo:** marca siempre el origen (`fuente`, `degradado`, edad), usa `null`/«desconocido» en lugar de inventar,
-falla rápido en lo crítico y emite una métrica por fallback ejecutado con alerta cuando supere un umbral.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo diseñas la degradación de una página de producto que depende de 6 servicios?»
-
-**Respuesta modelo:** clasifico cada dependencia con producto: críticas (catálogo: sin él no hay página → error o
-página de error amable), degradables (precio e inventario: último valor bueno con edad máxima y aviso «sujeto a
-confirmación»; el checkout vuelve a validar en vivo) y opcionales (reseñas, recomendaciones: se ocultan o se
-sustituyen por populares). Cada llamada con timeout dentro del presupuesto, circuit breaker y un fallback barato
-(memoria local). La respuesta lleva marcas de degradación que el cliente sabe pintar, y hay métricas y alertas por
-fallback. Lo pruebo inyectando fallos de cada dependencia (Toxiproxy) antes de que ocurran en producción.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El fallback que «arregla» una escritura:**
-
-```java
-@CircuitBreaker(name = "pagos", fallbackMethod = "pagoOk")
-public Recibo cobrar(Pedido p) { return pagos.cobrar(p); }
-
-Recibo pagoOk(Pedido p, Exception e) {
-    return new Recibo(p.id(), "APROBADO");      // ¡el dinero nunca se cobró!
-}
-```
-
-Se ve así: pedidos despachados sin cobro, conciliaciones que no cuadran y nadie que se entere hasta fin de mes. En una
-escritura crítica no hay fallback que finja éxito: fallas rápido o encolas el cobro como «pendiente» con idempotencia
-y lo dices al cliente.
-
----
 ### Chaos Engineering con Toxiproxy
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 8, Lección 4 de 4 · Fase 1 · 2,5 h: `jdk/Caos.java`,
-`caos/experimento.sh`, `simular-fallo.sh`, `toxiproxy.json`, `docker-compose.yml` y `f060-caos/`
-(Testcontainers + Toxiproxy).
+#### ► DE QUÉ TRATA
+Ejecutar un experimento de caos completo (estado estable, hipótesis, inyección acotada con Toxiproxy, medición, reversión y conclusión) que refute la hipótesis contra un BFF sin protección y la confirme contra uno con timeout y fallback, y automatizarlo como test (ExperimentoCaos…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Ejecutar un experimento de caos completo (estado estable, hipótesis, inyección acotada con Toxiproxy, medición, reversión y conclusión) que refute la hipótesis contra un BFF sin protección y la confirme contra uno con timeout y fallback, y automatizarlo como test (ExperimentoCaosTest) que falla si la resiliencia se pierde.**
 
-- Los tres temas anteriores (patrones, presupuesto y fallbacks).
-- Módulo 3: Testcontainers; Módulo 0.5: Docker Compose; Módulo 0.4: `curl` y JSON.
-- Saber qué es un percentil (p95: el 95 % de las peticiones tarda menos que ese valor).
+#### ► POR QUÉ EXISTE ESTO
+Chaos Engineering («ingeniería del caos») es romper tu sistema a propósito, poco y con cuidado, para descubrir sus debilidades antes de que las descubra un fallo real a las 3 de la mañana. No es romper cosas al azar: es un experimento científico. Dices qué debería pasar («aunque el inventario vaya lento, la página de producto responde rápido»), provocas el problema, mides y comparas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en chaos engineering con toxiproxy como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Ejecutar** un experimento de caos completo (estado estable, hipótesis, inyección acotada con Toxiproxy, medición,
-reversión y conclusión) que **refute** la hipótesis contra un BFF sin protección y la **confirme** contra uno con
-timeout y fallback, y **automatizarlo** como test (`ExperimentoCaosTest`) que falla si la resiliencia se pierde.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **simulacro de incendio** en un edificio. No se prende fuego de verdad al edificio entero: se anuncia una
-hipótesis («evacuamos en menos de 4 minutos»), se mide primero un día normal, se activa la alarma **en un solo piso**
-(radio de explosión acotado), se cronometra, hay un responsable con un silbato que **detiene el simulacro** si alguien
-se lastima (condición de aborto), y al final se apaga la alarma y se escribe qué falló (la puerta de emergencia
-trabada). Toxiproxy es la **máquina de humo** que se coloca en el pasillo entre dos oficinas: decide cuánto humo
-(latencia), si cierra la puerta (caída) o si deja la puerta entreabierta sin dejar pasar a nadie (cuelgue). Dibuja el
-edificio con un solo piso con humo, un cronómetro y el silbato.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph EXP["Experimento (caos/experimento.sh o ExperimentoCaosTest)"]
@@ -2578,75 +2144,46 @@ flowchart LR
     E1 -. "curl" .-> BFF
 ```
 
-**Texto alternativo:** a la izquierda, los seis pasos del experimento en cadena: medir el estado estable (p95 y
-errores), formular la hipótesis (p95 menor que 300 ms y cero errores), inyectar con POST a /proxies/inventario/toxics
-una latencia de 600 ms, medir con el fallo, revertir siempre borrando el toxic (con un trap) y concluir si la hipótesis
-se confirma o se refuta. A la derecha, el BFF de producto en el puerto 8080 llama a localhost:21212, donde Toxiproxy
-tiene el proxy «inventario» (API en el 8474) que reenvía a inventario:9000. Líneas punteadas: el paso 3 usa la API de
-Toxiproxy y el paso 1 mide el BFF con curl.
+1. Chaos Engineering («ingeniería del caos») es romper tu sistema a propósito, poco y con cuidado, para descubrir sus debilidades antes de que las descubra un fallo real a las 3 de la mañana.
+2. No es romper cosas al azar: es un experimento científico.
+3. Dices qué debería pasar («aunque el inventario vaya lento, la página de producto responde rápido»), provocas el problema, mides y comparas.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Chaos Engineering con Toxiproxy se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Chaos Engineering** («ingeniería del caos») es romper tu sistema **a propósito, poco y con cuidado**, para descubrir
-sus debilidades antes de que las descubra un fallo real a las 3 de la mañana. No es romper cosas al azar: es un
-**experimento científico**. Dices qué debería pasar («aunque el inventario vaya lento, la página de producto responde
-rápido»), provocas el problema, mides y comparas.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Chaos Engineering con Toxiproxy | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Toxiproxy** es una herramienta de Shopify que se pone **entre** dos servicios, como un tubo por el que pasa toda la
-conversación. Con una orden puedes hacer que ese tubo vaya lento, se corte o se quede mudo, sin tocar el código de
-ninguno de los dos.
+#### ► CUÁNDO NO USAR ESTO
+Caos sin hipótesis ni reversión:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: chaos engineering con toxiproxy funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Toxiproxy 2.13.0** es un proxy TCP con una API HTTP en el puerto **8474**:
+#### ► LO QUE DEBES RECORDAR
+- Chaos Engineering («ingeniería del caos») es romper tu sistema a propósito, poco y con cuidado, para descubrir sus debilidades antes de que las descubra un fallo real a las 3 de la mañana.
+- No es romper cosas al azar: es un experimento científico.
+- Dices qué debería pasar («aunque el inventario vaya lento, la página de producto responde rápido»), provocas el problema, mides y comparas.
 
-- **Proxies:** `POST /proxies` con `{"name","listen","upstream","enabled"}`, o al arrancar con `-config archivo.json`
-  (el laboratorio crea `inventario`: escucha en `0.0.0.0:21212` y reenvía a `inventario:9000`). Apagar uno:
-  `POST /proxies/inventario` con `{"enabled": false}` (conexión rechazada). `POST /reset` reactiva todos y borra los
-  *toxics*.
-- **Toxics:** `POST /proxies/{proxy}/toxics` con `name`, `type`, `stream` (`downstream`: la respuesta; `upstream`: la
-  petición), `toxicity` (probabilidad 0–1 de aplicarse a cada conexión) y `attributes`. Tipos: `latency` (`latency`,
-  `jitter` en ms), `timeout` (cierra tras `timeout` ms; con 0 retiene los datos y nunca responde), `bandwidth` (`rate`
-  en KB/s), `slow_close`, `reset_peer` (cierra con RST), `limit_data`, `slicer`. Borrar: `DELETE
-  /proxies/{proxy}/toxics/{nombre}`.
-- **CLI:** `toxiproxy-cli toxic add -t latency -a latency=1000 inventario`. **En tests:** el módulo de
-  Testcontainers `ToxiproxyContainer` + el cliente `toxiproxy-java`.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve chaos engineering con toxiproxy en tu contexto?
+2. ¿Cómo sabrías que chaos engineering con toxiproxy no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar chaos engineering con toxiproxy?
 
-**Los pasos de un experimento** (*Principles of Chaos Engineering*):
+</details>
 
-1. **Estado estable:** una métrica de negocio o de experiencia medible (p95, tasa de errores, pedidos por minuto).
-2. **Hipótesis:** «con el fallo X, el estado estable se mantiene» (con umbrales numéricos).
-3. **Inyección con radio acotado:** un proxy, un porcentaje de tráfico, una zona; nunca todo.
-4. **Medición** durante el fallo, con **condición de aborto** (si los errores pasan de un umbral, se revierte ya).
-5. **Reversión garantizada** (`trap` en bash, `finally` en Java).
-6. **Conclusión:** si se refuta, encontraste una debilidad: corrígela y repite el experimento.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-`jdk/Caos.java` hace los seis pasos contra dos versiones del BFF con `ProxyDeFallos` (sin Docker);
-`caos/experimento.sh` los hace contra el BFF de Spring con Toxiproxy real; `ExperimentoCaosTest` los convierte en un
-test que corre en cada build.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-**Niveles de madurez:** (1) inyección en tests de integración (Toxiproxy + Testcontainers): barato, repetible, en cada
-PR; (2) *game days* en un entorno de pruebas con tráfico sintético; (3) experimentos en producción con radio mínimo y
-aborto automático (Chaos Monkey, AWS Fault Injection Service, Gremlin, Chaos Mesh/Litmus en Kubernetes). Empieza por el
-nivel 1: la mayoría de las debilidades (timeouts ausentes, fallbacks que no funcionan) aparecen ahí.
-
-| Herramienta | Nivel donde actúa | Ventaja | Límite |
-|---|---|---|---|
-| Toxiproxy | Red TCP entre dos servicios | Determinista, API simple, ideal en tests | No entiende HTTP (no inyecta un 503) |
-| `tc netem` (Linux) | Interfaz de red del host/contenedor | Pérdida de paquetes, reordenamiento | Requiere privilegios; afecta a todo el tráfico de la interfaz |
-| Envoy/Istio *fault injection* | HTTP en el *service mesh* | Inyecta 503 o retrasos por ruta y porcentaje | Necesita mesh |
-| Chaos Mesh / Litmus | Kubernetes (pods, nodos, red, disco) | Experimentos declarativos y programados | Operación del propio sistema de caos |
-| Chaos Monkey / AWS FIS | Instancias y servicios de la nube | Fallos reales de infraestructura | Producción: exige madurez y observabilidad |
-
-**Cuándo NO hacerlo.** Sin observabilidad (no podrás medir el estado estable ni ver qué pasó), sin un mecanismo de
-reversión probado, en producción sin aprobación ni comunicación al equipo de guardia, o con debilidades **ya
-conocidas** sin corregir (no necesitas un experimento para confirmar que no hay timeouts: arréglalo primero). Y nunca
-en un sistema que ya está en incidente.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS, Spring Boot 4.1.3, Toxiproxy 2.13.0 (`ghcr.io/shopify/toxiproxy:2.13.0`), Testcontainers
 2.0.5 (`testcontainers-toxiproxy`), toxiproxy-java 2.1.11, imagen `eclipse-temurin:25-jdk` para el inventario.
 
@@ -3012,83 +2549,7 @@ inventario:
   timeout: 200ms
 ```
 
-#### 10. MINI-LABORATORIO
-
-**Simulación del fallo (JDK, sin Docker).**
-
-1. Ejecuta el experimento contra las dos versiones del BFF:
-
-```bash
-java jdk/Caos.java
-```
-
-   **Output esperado** (ejecutado con JDK 25.0.5; los milisegundos varían):
-
-```text
-== Experimento contra BFF v1 sin protección
-   1. estado estable:  p95=8 ms, errores=0, degradadas=0 de 10
-   2. hipótesis: con +600 ms en inventario, p95 < 300 ms y 0 errores
-   3. inyectado: latencia de 600 ms en inventario (radio: solo ese proxy)
-   4. con el fallo:    p95=622 ms, errores=0, degradadas=0 de 10
-   5. tras revertir:   p95=9 ms, errores=0, degradadas=0 de 10
-   6. hipótesis REFUTADA: hay una debilidad que corregir
-== Experimento contra BFF v2 timeout 200 ms + último valor bueno
-   1. estado estable:  p95=5 ms, errores=0, degradadas=0 de 10
-   2. hipótesis: con +600 ms en inventario, p95 < 300 ms y 0 errores
-   3. inyectado: latencia de 600 ms en inventario (radio: solo ese proxy)
-   4. con el fallo:    p95=209 ms, errores=0, degradadas=10 de 10
-   5. tras revertir:   p95=6 ms, errores=0, degradadas=0 de 10
-   6. hipótesis CONFIRMADA
-OK: el experimento encontró la debilidad de v1 y confirmó que v2 la corrige
-```
-
-   **Comportamiento observado:** v1 hereda toda la latencia del inventario (p95 de 8 ms a 622 ms): sin errores, pero
-   lento; el experimento lo detecta aunque ningún monitor de errores lo haría. v2 corta a los 200 ms y responde con el
-   último stock conocido: p95 de 209 ms y 10 de 10 respuestas marcadas como degradadas. Tras revertir, las dos
-   vuelven a la normalidad.
-
-**Simulación del fallo con Toxiproxy (Docker).**
-
-2. Levanta inventario + Toxiproxy y comprueba el proxy:
-
-```bash
-docker compose up -d --wait
-curl -s localhost:8474/proxies/inventario; echo
-curl -s localhost:21212/stock/7; echo
-```
-
-   **Output esperado:** un JSON con `"name":"inventario"`, `"listen":"[::]:21212"` o `"0.0.0.0:21212"`,
-   `"upstream":"inventario:9000"`, `"enabled":true` y `"toxics":[]`; después `{"sku":"7","stock":12}`.
-
-3. Prueba cada tipo de fallo midiendo con `curl`:
-
-```bash
-t() { curl -s -o /dev/null -w '%{http_code} %{time_total}s\n' --max-time 5 localhost:21212/stock/7; }
-t                                      # 200 0.00Xs
-./simular-fallo.sh lento 1500 >/dev/null; t; ./simular-fallo.sh sano >/dev/null    # 200 1.5Xs
-./simular-fallo.sh caido >/dev/null;      t; ./simular-fallo.sh sano >/dev/null    # 000 (conexión rechazada)
-./simular-fallo.sh cuelga >/dev/null;     t; ./simular-fallo.sh sano >/dev/null    # 000 5.0Xs (--max-time)
-```
-
-   **Output esperado:** lo indicado en cada comentario. **Captura descrita:** con `lento`, `GET
-   /proxies/inventario` muestra el toxic `{"name":"lento","type":"latency","stream":"downstream",...}`; tras `sano`,
-   `"toxics":[]`.
-
-4. El experimento contra el BFF de Spring (v2):
-
-```bash
-cd f060-caos && ../gradlew -q bootRun &
-cd ..
-caos/experimento.sh 600 300
-```
-
-   **Output esperado:** las seis líneas del experimento terminando en `6. hipótesis CONFIRMADA`, con `degradadas=20/20`
-   en el paso 4 y `p95` alrededor de 200–250 ms. Ahora rompe la protección: detén el BFF (`kill %1`), arráncalo
-   con `(cd f060-caos &&../gradlew -q bootRun --args=--inventario.timeout=5s &)` y repite: el paso 4 da un p95 de unos 600 ms y `6. hipótesis REFUTADA` (código de salida
-   1). Termina con `kill %1` y `docker compose down`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f060-caos/src/test/java/academia/caos/ExperimentoCaosTest.java` convierte el experimento en un test: Toxiproxy en un
 contenedor, el inventario falso en la JVM del test (expuesto al contenedor con `Testcontainers.exposeHostPorts`) y el
 BFF de Spring apuntando al proxy:
@@ -3208,49 +2669,4 @@ proxy, así que la «confirmación» es falsa. Comprueba la URL configurada (`in
 válido incluye verificar que el fallo realmente afectó a la ruta medida (por ejemplo, que en v1 la latencia sí sube).
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** el experimento sale «CONFIRMADO» siempre, incluso con la versión sin protección.
-
-**Cómo se ve:** el BFF arrancó sin `INVENTARIO_URL` y en otro entorno su valor por defecto apunta al inventario
-directo (`http://localhost:9000`). `caos/experimento.sh` imprime en el paso 4 el mismo p95 que en el estado estable y
-`degradadas=0/20`. **Diagnóstico visual:** en el paso 4, «con el fallo» y «estado estable» son casi idénticos; en un
-experimento real algo **tiene** que cambiar (la latencia o las respuestas degradadas).
-
-**Diagnóstico:** comprueba por dónde pasa el tráfico: `docker compose logs toxiproxy` registra cada conexión aceptada
-por el proxy (`Accepted client`), y `curl -s localhost:8474/metrics` expone métricas Prometheus de Toxiproxy. Si no hay
-actividad durante el experimento, el servicio no usa el proxy.
-
-**Arreglo:** apunta el servicio al puerto del proxy (21212), añade al experimento un «control» que verifique que el
-fallo se nota (como hace `jdk/Caos.java` con v1, que debe refutarse) y no des por buena una hipótesis sin ver el
-efecto del fallo.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo introducirías Chaos Engineering en un equipo que nunca lo ha hecho?»
-
-**Respuesta modelo:** empezaría pequeño y en el pipeline: tests de integración con Toxiproxy y Testcontainers que
-inyecten latencia y caídas en cada dependencia y verifiquen timeouts y fallbacks; eso encuentra la mayoría de los
-problemas sin riesgo. Después, *game days* en un entorno de pruebas: hipótesis escrita, estado estable medido con la
-observabilidad existente, radio acotado, condición de aborto y reversión ensayada, y un informe con acciones. Solo con
-eso maduro pasaría a experimentos en producción con un porcentaje mínimo de tráfico, aborto automático por SLO y
-el equipo de guardia avisado. El objetivo no es romper cosas, es ganar confianza medible.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Caos sin hipótesis ni reversión:**
-
-```bash
-# "Probemos qué pasa": en producción, sin medir antes, sin trap, sin avisar
-curl -X POST http://toxiproxy-prod:8474/proxies/pagos/toxics \
-  -d '{"name":"x","type":"timeout","attributes":{"timeout":0}}'
-# ...el script falla en la línea siguiente y el toxic queda puesto
-```
-
-Se ve así: un incidente real autoinfligido que nadie sabe diagnosticar (el equipo de guardia no sabe que hay un toxic
-activo), sin datos para aprender nada porque no hubo estado estable ni hipótesis. Siempre: hipótesis escrita, medición
-antes y durante, radio mínimo, `trap` o `finally` que revierte, condición de aborto y aviso al equipo.
-
----
-
-**Siguiente módulo:** Módulo 9 · Seguridad (`modulo-13.md`).
+</details>

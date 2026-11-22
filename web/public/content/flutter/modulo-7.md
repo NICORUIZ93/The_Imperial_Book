@@ -3,15 +3,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: MethodChannel · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear un `MethodChannel` que consulte el nivel de batería del dispositivo (el Paso 3 lo introduce con un canal más simple que lee la versión del sistema operativo), implementado tanto en Android (Kotlin) como en iOS (Swift). Prerrequisitos: Módulo 6 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Flutter no tiene acceso directo a las APIs nativas de batería de cada sistema operativo — necesitás un puente explícito que invoque código Kotlin en Android y Swift en iOS, cada uno con su propia forma de leer ese dato, para avisarle al conductor que cargue el teléfono antes de iniciar una ruta larga.
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear un MethodChannel que consulte el nivel de batería del dispositivo (el Paso 3 lo introduce con un canal más simple que lee la versión del sistema operativo), implementado tanto en Android (Kotlin) como en iOS (Swift). Prerrequisitos: Módulo 6 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear un MethodChannel que consulte el nivel de batería del dispositivo (el Paso 3 lo introduce con un canal más simple que lee la versión del sistema operativo), implementado tanto en Android (Kotlin) como en iOS (Swift).**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un `MethodChannel` establece un canal bidireccional identificado por un nombre único; `invokeMethod` desde Dart envía la invocación, y `setMethodCallHandler` en el lado nativo responde.
 **Conceptos clave:** puente de comunicación bidireccional entre Dart y el código nativo de cada plataforma.
 
@@ -72,7 +79,98 @@ En el proyecto integrador RutaFlow, practicá este patrón creando tu propio can
 
 **¿Por qué es importante?** El `MethodChannel` es el puente explícito necesario porque Dart no tiene acceso directo a las APIs nativas de cada sistema operativo, requiriendo implementación por separado en cada plataforma.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant Dart
+    participant Android as Kotlin (Android)
+    participant iOS as Swift (iOS)
+    Dart->>Android: invokeMethod('obtenerNivelBateria')
+    Android-->>Dart: result.success(nivel)
+    Dart->>iOS: invokeMethod('obtenerNivelBateria')
+    iOS-->>Dart: result(nivel)
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| MethodChannel se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar MethodChannel | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses methodchannel por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: methodchannel funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- MethodChannel existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve methodchannel en tu contexto?
+2. ¿Cómo sabrías que methodchannel no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar methodchannel?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+// Dart
+const canal = MethodChannel('com.miapp/sistema');
+final version = await canal.invokeMethod<String>('obtenerVersionSO');
+```
+
+```kotlin
+// Android (Kotlin)
+MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.miapp/sistema")
+    .setMethodCallHandler { call, result ->
+        if (call.method == "obtenerVersionSO") result.success(Build.VERSION.RELEASE)
+    }
+```
+
+```swift
+// iOS (Swift)
+let canal = FlutterMethodChannel(name: "com.miapp/sistema", binaryMessenger: controller.binaryMessenger)
+canal.setMethodCallHandler { call, result in
+    if call.method == "obtenerVersionSO" { result(UIDevice.current.systemVersion) }
+}
+```
+
+```
+Dart: invokeMethod('obtenerVersionSO')
+   ↓
+Kotlin (Android) / Swift (iOS): setMethodCallHandler procesa y responde
+   ↓
+Dart: recibe el resultado de vuelta
+```
+
+```mermaid
+sequenceDiagram
+    participant Dart
+    participant Android as Kotlin (Android)
+    participant iOS as Swift (iOS)
+    Dart->>Android: invokeMethod('obtenerNivelBateria')
+    Android-->>Dart: result.success(nivel)
+    Dart->>iOS: invokeMethod('obtenerNivelBateria')
+    iOS-->>Dart: result(nivel)
+```
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,117 +211,69 @@ class _PantallaBateriaState extends State<PantallaBateria> {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
-
-Reemplaza `android/app/src/main/kotlin/<tu/paquete>/MainActivity.kt` (conserva la línea `package` que generó `flutter create`):
-
-```kotlin
-import android.content.Context
-import android.os.BatteryManager
-import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
-
-class MainActivity : FlutterActivity() {
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rutaflow/bateria")
-            .setMethodCallHandler { call, result ->
-                if (call.method == "obtenerNivelBateria") {
-                    val nivel = obtenerNivelReal()
-                    if (nivel != -1) result.success(nivel)
-                    else result.error("NO_DISPONIBLE", "Nivel de batería no disponible.", null)
-                } else {
-                    result.notImplemented()
-                }
-            }
-    }
-
-    private fun obtenerNivelReal(): Int {
-        val bateria = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-        return bateria.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-    }
-}
-```
-
-Y en iOS, `ios/Runner/AppDelegate.swift` (plantilla de Flutter 3.41+ con `UISceneDelegate`, según la guía oficial):
-
-```swift
-import Flutter
-import UIKit
-
-@main
-@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
-  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
-    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-
-    let canal = FlutterMethodChannel(
-      name: "com.rutaflow/bateria",
-      binaryMessenger: engineBridge.applicationRegistrar.messenger()
-    )
-    canal.setMethodCallHandler { [weak self] call, result in
-      guard call.method == "obtenerNivelBateria" else {
-        result(FlutterMethodNotImplemented)
-        return
-      }
-      self?.obtenerNivelReal(result: result)
-    }
-  }
-
-  private func obtenerNivelReal(result: FlutterResult) {
-    let dispositivo = UIDevice.current
-    dispositivo.isBatteryMonitoringEnabled = true
-    if dispositivo.batteryState == .unknown {
-      result(FlutterError(code: "NO_DISPONIBLE", message: "Nivel de batería no disponible.", details: nil))
-    } else {
-      result(Int(dispositivo.batteryLevel * 100))
-    }
-  }
-}
-```
-
-Si tu `AppDelegate.swift` generado es distinto (versiones anteriores a 3.41), conserva su estructura y agrega solo el canal; la guía oficial muestra ambas variantes: https://docs.flutter.dev/platform-integration/platform-channels. Para canales con tipos verificados en ambos lados, el paquete oficial `pigeon` genera este código por ti.
-
-Resultado esperado: llamar a `canal.invokeMethod<int>('obtenerNivelBateria')` desde Dart dispara la lógica nativa de Android, que lee el nivel real de batería del dispositivo y lo devuelve a Dart de forma asíncrona.
-
-#### Paso 5 · Práctica guiada
-Pista: implementá el `setMethodCallHandler` únicamente en Android, pero probá la app en un dispositivo iOS sin implementar el lado Swift — ese es el fallo deliberado: `invokeMethod` lanza una excepción `MissingPluginException` en tiempo de ejecución en iOS, porque no hay ningún handler nativo registrado del lado de esa plataforma para ese canal.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 implementando también el `FlutterMethodChannel` del lado de Swift, y agregá un manejo explícito del caso en que `call.method` no coincide con ningún método conocido, en vez de dejarlo sin respuesta.
-
-#### Paso 7 · Cierre
-Entregá el MethodChannel funcionando en ambas plataformas del Paso 4, el `MissingPluginException` provocado en el Paso 5, y el manejo de método desconocido del Paso 6; explicá por qué un `MethodChannel` requiere implementación explícita en cada plataforma, sin que implementarlo en una sea suficiente para la otra. Siguiente paso: estudia plugins federados. Errores comunes: implementar el lado nativo en una sola plataforma y asumir que funciona en ambas, no manejar el caso de un método invocado que no existe del lado nativo, y usar `MethodChannel` para algo que ya resuelve un plugin publicado en pub.dev. Fuentes oficiales: https://docs.flutter.dev/platform-integration/platform-channels y https://api.flutter.dev/flutter/services/MethodChannel-class.html.
+</details>
 
 ### Tema 2: Plugins federados · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a evaluar la estructura de `geolocator` (un plugin federado real) para entender cómo RutaFlow podría agregar soporte de una plataforma nueva sin tocar el paquete principal. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-RutaFlow usa geolocalización en Android e iOS hoy; si más adelante alguien quisiera agregar soporte para Flutter Web, necesitaría poder hacerlo sin modificar ni romper las implementaciones de Android/iOS ya probadas en producción.
+#### ► DE QUÉ TRATA
+Al finalizar vas a evaluar la estructura de geolocator (un plugin federado real) para entender cómo RutaFlow podría agregar soporte de una plataforma nueva sin tocar el paquete principal. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un plugin federado separa la interfaz Dart pública de las implementaciones concretas por plataforma, cada una en su propio paquete independiente.
-**Conceptos clave:** separación de la interfaz Dart de las implementaciones específicas por plataforma.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a evaluar la estructura de geolocator (un plugin federado real) para entender cómo RutaFlow podría agregar soporte de una plataforma nueva sin tocar el paquete principal.**
 
-Un plugin federado separa formalmente la interfaz Dart pública (el conjunto de métodos y tipos que el desarrollador Flutter consume, independiente de la plataforma) de las implementaciones concretas específicas de cada plataforma (Android, iOS, web, cada una en su propio paquete separado que implementa esa misma interfaz), permitiendo que la comunidad agregue soporte para una plataforma nueva (por ejemplo, una implementación para Linux o Windows) sin necesidad de modificar el paquete principal ni las implementaciones ya existentes de otras plataformas, dado que cada implementación específica de plataforma vive de forma completamente independiente y aislada de las demás.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Esta arquitectura de plugin federado es especialmente valiosa para el ecosistema de paquetes de terceros de Flutter, donde un mismo plugin popular (por ejemplo, uno de geolocalización o de cámara) necesita mantener implementaciones nativas correctas y actualizadas para múltiples plataformas simultáneamente: separar esas implementaciones en paquetes independientes permite que distintos mantenedores, potencialmente sin ninguna relación directa entre sí, contribuyan y actualicen cada implementación de plataforma de forma independiente sin coordinar cambios en un único paquete monolítico compartido.
+#### ► LA ANALOGÍA
+Piensa en plugins federados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** un plugin federado es como un estándar de enchufe eléctrico universal definido de forma independiente de la implementación local específica de cada país (voltaje, forma física del conector): el estándar general permite que cualquier fabricante local implemente su propia versión conforme a las especificidades de su región, sin necesidad de coordinar cambios con los fabricantes de otras regiones.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que plugins federados resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** Un plugin federado permite agregar soporte para una plataforma nueva sin modificar el paquete principal ni las implementaciones existentes de otras plataformas, facilitando que la comunidad contribuya implementaciones específicas de forma independiente y descentralizada.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Plugins federados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Diagrama:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Plugins federados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses plugins federados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: plugins federados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Plugins federados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve plugins federados en tu contexto?
+2. ¿Cómo sabrías que plugins federados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar plugins federados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Paquete principal (interfaz Dart)
    ├── Implementación Android (paquete separado)
@@ -231,9 +281,6 @@ Paquete principal (interfaz Dart)
    └── Implementación web (paquete separado, agregable sin tocar los demás)
 ```
 
-En el proyecto integrador RutaFlow, la geolocalización de `lib/features/journey/presentation/journey_controller.dart` depende de `geolocator` como ejemplo real de esta arquitectura federada. Práctica: verificá en pub.dev qué paquetes de implementación federada usa una dependencia de tu proyecto propio.
-
-#### Paso 4 · Demostración guiada desde cero
 ```text
 geolocator (interfaz Dart pública)
   ├── geolocator_android (implementación Android, paquete separado)
@@ -241,36 +288,29 @@ geolocator (interfaz Dart pública)
   └── geolocator_web (implementación web, agregable sin tocar los demás)
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: inspeccionando pub.dev, cada implementación de plataforma de `geolocator` vive en su propio paquete versionado independientemente — actualizar `geolocator_android` no exige ni afecta ninguna modificación en `geolocator_apple`.
-
-#### Paso 5 · Práctica guiada
-Pista: imaginá que el equipo de RutaFlow decide "simplificar" copiando toda la lógica de `geolocator_android` directamente dentro del código de la app, en vez de depender del paquete federado — ese es el fallo deliberado: ahora RutaFlow tiene que mantener manualmente esa integración nativa cada vez que Android cambia sus APIs de ubicación, perdiendo las correcciones que la comunidad ya mantiene en el paquete federado real.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 explicando por escrito por qué depender del paquete federado permite recibir actualizaciones de la comunidad sin esfuerzo propio, y verificá en pub.dev qué plataformas tiene actualmente soportadas `geolocator`.
-
-#### Paso 7 · Cierre
-Entregá la estructura federada analizada del Paso 4, la decisión de copiar código desaconsejada en el Paso 5, y tu explicación del Paso 6; explicá por qué la arquitectura federada permite que la comunidad contribuya implementaciones de plataforma de forma independiente y descentralizada. Siguiente paso: estudia permisos de plataforma y cuándo escribir un platform channel propio. Errores comunes: copiar la lógica de un plugin federado en vez de depender de él, asumir que todas las plataformas de un plugin federado tienen el mismo nivel de soporte sin verificarlo, y modificar directamente el código de un paquete de terceros en vez de contribuir al repositorio real. Fuentes oficiales: https://docs.flutter.dev/packages-and-plugins/developing-packages#federated-plugins y https://pub.dev/packages/geolocator.
-**Implicación práctica:** Un plugin federado permite agregar soporte para una plataforma nueva sin modificar el paquete principal ni las implementaciones existentes de otras plataformas.
+</details>
 
 ### Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a solicitar el permiso de cámara para que el conductor pueda fotografiar una evidencia de entrega, manejando explícitamente tanto la concesión como el rechazo. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Si el conductor rechaza el permiso de cámara y la app simplemente intenta abrir la cámara igual sin verificar el resultado, puede crashear o quedar en un estado confuso sin ninguna explicación visible.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a solicitar el permiso de cámara para que el conductor pueda fotografiar una evidencia de entrega, manejando explícitamente tanto la concesión como el rechazo.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Solicitar un permiso sensible requiere manejar explícitamente ambos resultados posibles: concedido y denegado, mostrando un mensaje apropiado en el segundo caso.
 **Conceptos clave:** manejo explícito del rechazo, búsqueda de un plugin existente antes de construir uno propio.
 
@@ -299,7 +339,67 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, esta solicitud de permiso vive en `lib/features/delivery_proof/presentation/delivery_proof_page.dart`.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["Permission.camera.request()"] --> B{"Resultado"}
+    B -->|isGranted| C["abrirCamara()"]
+    B -->|isDenied| D["mostrarMensajePermisoDenegado()"]
+    B -->|isPermanentlyDenied| E["Botón: abrir configuración del sistema"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Permisos de plataforma y cuándo escribir un platform channel propio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Permisos de plataforma y cuándo escribir un platform channel propio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses permisos de plataforma y cuándo escribir un platform channel propio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: permisos de plataforma y cuándo escribir un platform channel propio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Permisos de plataforma y cuándo escribir un platform channel propio existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve permisos de plataforma y cuándo escribir un platform channel propio en tu contexto?
+2. ¿Cómo sabrías que permisos de plataforma y cuándo escribir un platform channel propio no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar permisos de plataforma y cuándo escribir un platform channel propio?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+final estado = await Permission.camera.request();
+if (estado.isGranted) { abrirCamara(); } else { mostrarMensajePermisoDenegado(); }
+```
+
+```mermaid
+flowchart TD
+    A["Permission.camera.request()"] --> B{"Resultado"}
+    B -->|isGranted| C["abrirCamara()"]
+    B -->|isDenied| D["mostrarMensajePermisoDenegado()"]
+    B -->|isPermanentlyDenied| E["Botón: abrir configuración del sistema"]
+```
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -339,37 +439,30 @@ class _PantallaEvidenciaState extends State<PantallaEvidencia> {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter pub add permission_handler
 flutter run
 ```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: si el conductor concede el permiso, la cámara se abre normalmente; si lo rechaza, la app muestra un mensaje explicando por qué no puede fotografiar la evidencia, en vez de intentar abrir la cámara igual o quedar sin ninguna respuesta visible.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá el `else` y dejá solo `if (estado.isGranted) { abrirCamara(); }` — ese es el fallo deliberado: si el conductor rechaza el permiso, la app simplemente no hace nada en absoluto, sin ningún mensaje ni indicio de por qué el botón de "Fotografiar evidencia" no tuvo ningún efecto visible.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `else` con un mensaje explícito, y agregá un tercer caso para `estado.isPermanentlyDenied`, ofreciendo un botón que abra la configuración del sistema directamente.
-
-#### Paso 7 · Cierre
-Entregá el manejo de concesión/rechazo del Paso 4, el silencio sin feedback provocado en el Paso 5, y el tercer caso de rechazo permanente del Paso 6; explicá por qué un permiso denegado nunca debería dejar a la app sin ninguna respuesta visible para el usuario. Siguiente paso: estudia cámara, galería y carga multipart de una evidencia. Errores comunes: no manejar el caso de permiso denegado, no distinguir rechazo simple de rechazo permanente, y escribir un platform channel propio para pedir un permiso que un plugin ya publicado resuelve. Fuentes oficiales: https://pub.dev/packages/permission_handler y https://docs.flutter.dev/platform-integration/platform-channels.
-**Implicación práctica:** Manejar explícitamente el caso de permiso denegado evita fallos silenciosos; escribir un platform channel propio solo se justifica cuando no existe ya un plugin publicado que resuelva la necesidad.
+</details>
 
 ### Tema 4: Cámara, galería y carga multipart de una evidencia · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir el flujo de "evidencia de entrega": el conductor toma una fotografía, el dominio la valida (tamaño, formato) y el repositorio la sube con una clave de idempotencia. Prerrequisitos: Módulo 5 completo, `image_picker` instalado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una foto visible en pantalla todavía no es una evidencia persistida — capturar, validar y transferir son responsabilidades distintas que no deberían vivir todas juntas dentro de la misma pantalla.
+#### ► DE QUÉ TRATA
+Al finalizar vas a construir el flujo de "evidencia de entrega": el conductor toma una fotografía, el dominio la valida (tamaño, formato) y el repositorio la sube con una clave de idempotencia. Prerrequisitos: Módulo 5 completo, image_picker instalado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a construir el flujo de "evidencia de entrega": el conductor toma una fotografía, el dominio la valida (tamaño, formato) y el repositorio la sube con una clave de idempotencia.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 El dominio no depende de `XFile` ni de Dio; valida bytes, tamaño y MIME de forma aislada; el repositorio traduce ese contrato a HTTP con una clave de idempotencia para que reintentar no duplique la evidencia.
 **Conceptos clave:** `XFile`, permiso contextual, validación local, puerto de dominio, `FormData`, progreso, idempotencia y archivo temporal.
 
@@ -528,83 +621,188 @@ sequenceDiagram
 
 **¿Por qué es importante?** Una foto visible en pantalla todavía no es una evidencia persistida; separar selección, validación y carga permite probar reglas sin cámara real y reintentar con seguridad.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  actor C as Conductor
+  participant UI as DeliveryProofPage
+  participant P as ImagePicker
+  participant D as DeliveryProof
+  participant API as API de entregas
+  C->>UI: tomar fotografía
+  UI->>P: pickImage(camera)
+  P-->>UI: XFile o cancelación
+  UI->>D: validar bytes, tamaño y MIME
+  UI->>API: multipart + Idempotency-Key
+  API-->>UI: 201 + URL de evidencia
+  UI-->>C: confirmación y miniatura
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cámara, galería y carga multipart de una evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cámara, galería y carga multipart de una evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses cámara, galería y carga multipart de una evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cámara, galería y carga multipart de una evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cámara, galería y carga multipart de una evidencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cámara, galería y carga multipart de una evidencia en tu contexto?
+2. ¿Cómo sabrías que cámara, galería y carga multipart de una evidencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cámara, galería y carga multipart de una evidencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+flutter pub add image_picker dio mime http_parser
+```
+
+```text
+lib/features/delivery_proof/
+├── domain/delivery_proof.dart
+├── domain/delivery_proof_repository.dart
+├── application/attach_delivery_proof.dart
+├── infrastructure/image_picker_proof_source.dart
+├── infrastructure/dio_delivery_proof_repository.dart
+└── presentation/delivery_proof_page.dart
+```
+
 ```dart
 import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
 
 final class DeliveryProof {
   DeliveryProof({required this.bytes, required this.fileName, required this.mimeType}) {
     if (bytes.isEmpty) throw ArgumentError('La imagen está vacía');
-    if (bytes.lengthInBytes > 5 * 1024 * 1024) throw ArgumentError('La imagen supera 5 MB');
-    if (!{'image/jpeg', 'image/png'}.contains(mimeType)) throw ArgumentError('Formato no permitido: $mimeType');
+    if (bytes.lengthInBytes > 5 * 1024 * 1024) {
+      throw ArgumentError('La imagen supera 5 MB');
+    }
+    if (!{'image/jpeg', 'image/png'}.contains(mimeType)) {
+      throw ArgumentError('Formato no permitido: $mimeType');
+    }
   }
+
   final Uint8List bytes;
   final String fileName;
   final String mimeType;
 }
+```
 
-String probar(int tamano, String mimeType) {
-  try {
-    DeliveryProof(bytes: Uint8List(tamano), fileName: 'evidencia', mimeType: mimeType);
-    return 'aceptada';
-  } on ArgumentError catch (e) {
-    return 'rechazada: ${e.message}';
+```dart
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+
+import '../domain/delivery_proof.dart';
+
+final class ImagePickerProofSource {
+  ImagePickerProofSource(this._picker);
+  final ImagePicker _picker;
+
+  Future<DeliveryProof?> capture() async {
+    final file = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 82,
+      maxWidth: 1920,
+    );
+    if (file == null) return null;
+    final bytes = await file.readAsBytes();
+    return DeliveryProof(
+      bytes: bytes,
+      fileName: file.name,
+      mimeType: lookupMimeType(file.name, headerBytes: bytes) ?? '',
+    );
   }
 }
+```
 
-void main() => runApp(MaterialApp(
-      home: Scaffold(
-        body: SafeArea(
-          child: Column(children: [
-            Text('1 MB JPEG: ${probar(1024 * 1024, 'image/jpeg')}'),
-            Text('6 MB JPEG: ${probar(6 * 1024 * 1024, 'image/jpeg')}'),
-            Text('1 MB GIF: ${probar(1024 * 1024, 'image/gif')}'),
-          ]),
+```dart
+import 'delivery_proof.dart';
+
+abstract interface class DeliveryProofRepository {
+  Future<Uri> upload({
+    required String deliveryId,
+    required DeliveryProof proof,
+    required String idempotencyKey,
+    required void Function(double progress) onProgress,
+  });
+}
+```
+
+```dart
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+
+import '../domain/delivery_proof.dart';
+import '../domain/delivery_proof_repository.dart';
+
+final class DioDeliveryProofRepository implements DeliveryProofRepository {
+  DioDeliveryProofRepository(this._dio);
+  final Dio _dio;
+
+  @override
+  Future<Uri> upload({
+    required String deliveryId,
+    required DeliveryProof proof,
+    required String idempotencyKey,
+    required void Function(double) onProgress,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/deliveries/$deliveryId/proof',
+      data: FormData.fromMap({
+        'file': MultipartFile.fromBytes(
+          proof.bytes,
+          filename: proof.fileName,
+          contentType: MediaType.parse(proof.mimeType),
         ),
-      ),
-    ));
+      }),
+      options: Options(headers: {'Idempotency-Key': idempotencyKey}),
+      onSendProgress: (sent, total) => onProgress(total == 0 ? 0 : sent / total),
+    );
+    return Uri.parse(response.data!['url'] as String);
+  }
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
-
-Resultado esperado: construir un `DeliveryProof` con una imagen de 6 MB (o un tipo MIME no permitido) lanza un `ArgumentError` inmediatamente en el dominio, antes de que esos bytes lleguen siquiera a considerarse para una subida por red.
-
-#### Paso 5 · Práctica guiada
-Pista: activá modo avión cuando la carga llegue aproximadamente al 50% sin una clave de idempotencia estable del lado del repositorio — ese es el fallo deliberado: reintentar la subida desde cero después de recuperar la conexión puede crear una segunda evidencia en el servidor para la misma entrega, en vez de completar o reemplazar la que se cortó a la mitad.
-
-#### Paso 6 · Práctica independiente
-Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` en el reintento, y que la interfaz conserva la fotografía localmente para ese reintento, sin marcar la entrega como completada hasta recibir la confirmación `201` real del servidor.
-
-#### Paso 7 · Cierre
-Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.
+</details>
 
 ### Tema 5: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min
 
-**Prerrequisito:** temas «Permisos de plataforma y cuándo escribir un plugin propio» de este módulo y «Offline-first y Firebase» (módulo 6).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** programar una tarea periódica con el paquete `workmanager` que suba entregas pendientes con restricciones de red, y entender qué permite cada sistema operativo.
+#### ► DE QUÉ TRATA
+Agrega workmanager con flutter pub add workmanager. En iOS, sigue la configuración del paquete (Background Modes y BGTaskSchedulerPermittedIdentifiers). Prueba primero en Android, donde es más predecible.
 
-**¿Por qué es importante?** El conductor no vuelve a abrir la app para sincronizar. Con trabajo en segundo plano, las entregas pendientes se suben cuando hay red. Pero Android e iOS limitan mucho este trabajo, y hay que diseñar con esos límites.
+#### ► LA IDEA EN UNA FRASE
+**Agrega workmanager con flutter pub add workmanager.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Agrega `workmanager` con `flutter pub add workmanager`. En iOS, sigue la configuración del paquete (Background Modes y `BGTaskSchedulerPermittedIdentifiers`). Prueba primero en Android, donde es más predecible.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow tenía conductores que terminaban la jornada con entregas sin subir, porque confirmaban sin señal y no volvían a abrir la app. La tarea periódica las sube cuando el teléfono recupera red.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** isolate en segundo plano, `callbackDispatcher`, `@pragma('vm:entry-point')`, tarea periódica, restricciones, WorkManager (Android), BGTaskScheduler (iOS).
 
 El paquete `workmanager` usa **WorkManager** en Android y **BGTaskScheduler** en iOS.
@@ -633,127 +831,78 @@ flowchart LR
     U -->|"true / false"| S
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `lib/main.dart`:
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:workmanager/workmanager.dart';
-
-const tareaSincronizar = 'co.rutaflow.sincronizar';
-
-@pragma('vm:entry-point') // evita que el compilador quite esta función
-void callbackDispatcher() {
-  Workmanager().executeTask((tarea, datos) async {
-    if (tarea != tareaSincronizar) return true;
-    try {
-      // Isolate nuevo: abre de nuevo la base y el cliente HTTP aquí.
-      final pendientes = ['ENV-42', 'ENV-43'];
-      for (final codigo in pendientes) {
-        debugPrint('subiendo $codigo'); // el servidor ignora repetidos por código
-      }
-      return true; // éxito
-    } catch (_) {
-      return false; // el sistema reintenta más tarde
-    }
-  });
-}
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Workmanager().initialize(callbackDispatcher);
-  await Workmanager().registerPeriodicTask(
-    'sincronizacion-entregas', tareaSincronizar,
-    frequency: const Duration(minutes: 15),
-    constraints: Constraints(networkType: NetworkType.connected),
-    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep, // no duplicar al reabrir la app
-  );
-  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
-}
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["main: Workmanager.initialize"] --> R["registerPeriodicTask<br/>15 min, red conectada"]
+    R --> S{"Sistema: hay red y es buen momento"}
+    S --> I["isolate nuevo: callbackDispatcher"]
+    I --> U["sube pendientes (idempotente)"]
+    U -->|"true / false"| S
 ```
 
-Ejecútalo:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```bash
-flutter run
-# Android: fuerza la tarea sin esperar 15 minutos
-adb shell cmd jobscheduler run -f co.rutaflow.app 1
-adb logcat -s flutter
-```
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Explicación por bloques:** `callbackDispatcher` es el punto de entrada del isolate en segundo plano: la anotación `@pragma` impide que el árbol de compilación la elimine. Dentro, `executeTask` recibe el nombre de la tarea y devuelve `true` si salió bien o `false` para que el sistema reintente. En `main`, `initialize` registra el despachador y `registerPeriodicTask` programa la tarea cada 15 minutos (el mínimo de Android) solo con red, sin duplicarla si ya existe. El comando de `adb` fuerza la ejecución para probar.
+#### ► CUÁNDO NO USAR ESTO
+No uses trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Resultado esperado:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-```text
-Tras forzar el trabajo en Android, Logcat muestra:
-I flutter : subiendo ENV-42
-I flutter : subiendo ENV-43
-```
+#### ► LO QUE DEBES RECORDAR
+- Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** quita `@pragma('vm:entry-point')` y compila en modo release (`flutter run --release`). **Error esperado:** la tarea no corre y Logcat muestra un error de que no se encontró el punto de entrada del callback. **Diagnóstico:** en release, el compilador elimina funciones que no ve usadas. La anotación las conserva.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada en tu contexto?
+2. ¿Cómo sabrías que trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada?
 
-#### Paso 5 · Práctica guiada
+</details>
 
-1. **Reproducción:** fuerza la tarea con `adb` y lee Logcat.
-2. **Variación:** apaga la red del emulador, fuerza la tarea y explica por qué no corre.
-3. **Diagnóstico:** reproduce el fallo deliberado en release.
-4. **Integración:** registra una tarea de una sola vez (`registerOneOffTask`) al confirmar una entrega sin señal.
-5. **Diseño:** escribe qué diría la app al conductor sobre cuándo se suben sus entregas en iOS.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Pista:** si en iOS «nunca corre», recuerda que el sistema decide; prueba con el depurador de Xcode como en el track de iOS.
+#### Objetivo observable
+Agrega `workmanager` con `flutter pub add workmanager`. En iOS, sigue la configuración del paquete (Background Modes y `BGTaskSchedulerPermittedIdentifiers`). Prueba primero en Android, donde es más predecible.
 
-#### Paso 6 · Práctica independiente
-
-Guarda en `SharedPreferences` (desde el isolate de fondo) la hora de la última sincronización exitosa y muéstrala en la app.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué la tarea corre en un isolate nuevo.
-- [ ] Forzaste la tarea y viste la subida.
-- [ ] Reprodujiste el fallo sin `@pragma` en release.
-- [ ] Tu sincronización es idempotente.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, usar estado de la UI dentro de la tarea y no hacer idempotente la subida. **Siguiente paso:** el módulo 11 prepara los builds de release donde este comportamiento importa.
-
-**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow, con restricción de red y subida idempotente.
-
-**Fuente oficial:** [pub.dev — workmanager](https://pub.dev/packages/workmanager) y [Flutter — Background processes](https://docs.flutter.dev/packages-and-plugins/background-processes).
+</details>
 
 ### Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Avanzado · 20 min
 
-**Prerrequisito:** temas «MethodChannel» y «Plugins federados» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** crear un módulo Flutter, mostrarlo desde una app Android nativa con un `FlutterEngine` precalentado y pasarle datos con un `MethodChannel`.
+#### ► DE QUÉ TRATA
+Necesitas Flutter y Android Studio con una app Android existente (Kotlin). Crea el módulo junto a ella: flutter create --template module modulo_seguimiento.
 
-**¿Por qué es importante?** Muchas empresas no reescriben su app de una vez. Con add-to-app agregan pantallas nuevas en Flutter dentro de la app nativa y migran por partes.
+#### ► LA IDEA EN UNA FRASE
+**Necesitas Flutter y Android Studio con una app Android existente (Kotlin).**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Necesitas Flutter y Android Studio con una app Android existente (Kotlin). Crea el módulo junto a ella: `flutter create --template module modulo_seguimiento`.
+#### ► LA ANALOGÍA
+Piensa en add-to-app: integrar una pantalla flutter en una app android o ios existente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-La app nativa de clientes de RutaFlow (Android, Kotlin) necesitaba una pantalla de seguimiento nueva. El equipo de Flutter ya la tenía hecha para la app del conductor. Con add-to-app la reutilizaron sin reescribir la app de clientes.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** módulo Flutter, `FlutterEngine`, `FlutterEngineCache`, precalentamiento, `FlutterActivity`, punto de entrada, `MethodChannel`.
-
-Un **módulo Flutter** es un proyecto que no es una app completa: se incluye dentro de una app nativa.
-
-- El **`FlutterEngine`** ejecuta el código Dart. Crearlo tarda; por eso se **precalienta** al iniciar la app nativa y se guarda en `FlutterEngineCache`.
-- `FlutterActivity.withCachedEngine(id)` muestra la pantalla Flutter usando ese motor.
-- Un **`MethodChannel`** con el mismo nombre en los dos lados pasa datos (el código del envío) y devuelve resultados.
-- La ruta inicial (`setInitialRoute`) elige qué pantalla mostrar.
-
-En Android, el módulo se incluye en `settings.gradle` del proyecto nativo; en iOS, con CocoaPods o como frameworks precompilados.
-
-**Analogía:** add-to-app es instalar una cocina nueva dentro de un restaurante que ya funciona: la cocina tiene sus propios fogones (el motor) y una ventanilla (el canal) para recibir pedidos. La analogía falla en que encender los fogones tarda: por eso se encienden antes de abrir.
-
-**Límite de uso:** cada motor consume memoria; no crees uno por pantalla (usa `FlutterEngineGroup` si necesitas varios). El tamaño de la app nativa crece con el motor de Flutter.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant N as App nativa (Kotlin)
@@ -765,17 +914,59 @@ sequenceDiagram
     F-->>N: resultado: cerrar
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `app-clientes/settings.gradle.kts`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses add-to-app: integrar una pantalla flutter en una app android o ios existente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: add-to-app: integrar una pantalla flutter en una app android o ios existente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve add-to-app: integrar una pantalla flutter en una app android o ios existente en tu contexto?
+2. ¿Cómo sabrías que add-to-app: integrar una pantalla flutter en una app android o ios existente no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar add-to-app: integrar una pantalla flutter en una app android o ios existente?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant N as App nativa (Kotlin)
+    participant E as FlutterEngine (precalentado)
+    participant F as Pantalla Flutter
+    N->>E: al iniciar: crea motor y lo cachea
+    N->>F: FlutterActivity.withCachedEngine("seguimiento")
+    N->>E: MethodChannel: mostrar(ENV-42)
+    F-->>N: resultado: cerrar
+```
 
 ```kotlin
 // Incluye el módulo Flutter que vive junto al proyecto nativo.
 val filePath = settingsDir.parentFile.toString() + "/modulo_seguimiento/.android/include_flutter.groovy"
 apply(from = File(filePath))
 ```
-
-Archivo `app-clientes/app/src/main/java/co/rutaflow/clientes/ClientesApp.kt`:
 
 ```kotlin
 package co.rutaflow.clientes
@@ -797,8 +988,6 @@ class ClientesApp : Application() {
 }
 ```
 
-Archivo `app-clientes/app/src/main/java/co/rutaflow/clientes/DetalleActivity.kt`:
-
 ```kotlin
 package co.rutaflow.clientes
 
@@ -815,8 +1004,6 @@ class DetalleActivity : AppCompatActivity() {
     }
 }
 ```
-
-Archivo `modulo_seguimiento/lib/main.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -840,74 +1027,9 @@ void main() {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd modulo_seguimiento && flutter pub get && cd ..
 cd app-clientes && ./gradlew installDebug
 ```
 
-**Explicación por bloques:** `settings.gradle.kts` incluye el módulo Flutter en el build de Gradle de la app nativa. `ClientesApp` crea el motor al iniciar, fija la ruta `/seguimiento`, ejecuta `main` de Dart y lo guarda en la caché con el id `seguimiento`. `DetalleActivity` envía el código por el `MethodChannel` y abre la pantalla Flutter con el motor ya listo. En Dart, el manejador del canal actualiza un `ValueNotifier` y la pantalla lo muestra.
-
-**Resultado esperado:**
-
-```text
-Al tocar «Ver seguimiento» de ENV-42 en la app nativa, se abre sin pantalla en blanco una pantalla Flutter con el título «Seguimiento» y el texto «Envío ENV-42».
-Al volver atrás, se regresa a la actividad nativa.
-```
-
-**Fallo deliberado:** quita el precalentamiento y usa `FlutterActivity.createDefaultIntent(this)`. **Error esperado:** la primera vez se ve una pantalla en blanco por uno o dos segundos y el canal no recibe el código, porque el motor aún no existía al llamar `invokeMethod`. **Diagnóstico:** precalienta y cachea el motor, y envía datos después de crearlo.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** abre la pantalla y mide el tiempo con y sin motor precalentado.
-2. **Variación:** devuelve un resultado de Flutter a Kotlin («calificó 5 estrellas») con `canal.invokeMethod` desde Dart.
-3. **Diagnóstico:** reproduce el fallo deliberado sin precalentar.
-4. **Integración:** integra el mismo módulo en una app iOS con CocoaPods (`flutter_application_path` en el Podfile).
-5. **Diseño:** escribe un plan de migración por pantallas de la app de clientes y el criterio para pasar cada una a Flutter.
-
-**Pista:** si el canal «no recibe nada», revisa que el nombre sea idéntico en Kotlin y Dart y que el motor exista antes de enviar.
-
-#### Paso 6 · Práctica independiente
-
-Muestra la pantalla Flutter dentro de un `FlutterFragment` en una pestaña de la app nativa en lugar de una actividad completa.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué es un `FlutterEngine` y por qué se precalienta.
-- [ ] La pantalla Flutter abre desde la app nativa con el código correcto.
-- [ ] Reprodujiste la pantalla en blanco sin precalentar.
-- [ ] Tienes un plan de migración por partes.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear un motor por pantalla, enviar datos antes de crear el motor y usar nombres de canal distintos. **Siguiente paso:** el tema siguiente ejecuta trabajo en segundo plano desde Flutter.
-
-**Transferencia al proyecto integrador «RutaFlow»:** integra la pantalla de seguimiento de Flutter en la app nativa de clientes de RutaFlow con un motor precalentado.
-
-**Fuente oficial:** [Flutter — Add Flutter to an existing app](https://docs.flutter.dev/add-to-app) y [Flutter — Add a Flutter screen to an Android app](https://docs.flutter.dev/add-to-app/android/add-flutter-screen).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir un platform channel propio que invoca una API nativa simple desde Dart.
-
-**Requisitos previos:** Módulo 6 completado, entorno con Android Studio y Xcode configurados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Crear un `MethodChannel` simple en Dart | Ver Tema 1 | Ej. obtener la versión del SO |
-| 2 | Implementar el lado Android (Kotlin) | Ver Tema 1 | Responde a la invocación |
-| 3 | Implementar el lado iOS (Swift) | Ver Tema 1 | Mismo `MethodChannel` |
-| 4 | Solicitar un permiso de plataforma | Ver Tema 3 | Maneja el rechazo del usuario |
-| 5 | Capturar y subir una evidencia | Ver Tema 4 | Valida, previsualiza y muestra progreso multipart |
-| 6 | Cortar la red durante la carga | Ver Tema 4 | Conserva la evidencia y reintenta con idempotencia |
-
-**Verificación:** el laboratorio se considera exitoso si el `MethodChannel` invoca correctamente el código nativo en ambas plataformas (Android e iOS) y devuelve el resultado esperado a Dart, y si el flujo de permisos maneja correctamente tanto la concesión como el rechazo.
-
-**Errores comunes y soluciones**
-
-- **Escribir un platform channel propio sin buscar primero un plugin existente en pub.dev.** Ahorra esfuerzo verificando primero si ya existe una solución mantenida por la comunidad.
-- **Olvidar implementar el lado nativo en alguna de las dos plataformas.** El `MethodChannel` requiere implementación explícita en ambos lados (Kotlin e Swift) para funcionar en ambas plataformas.
-- **No manejar el caso de permiso denegado.** Muestra un mensaje apropiado en vez de fallar silenciosamente o crashear.
-- **Marcar la entrega completa cuando solo existe una foto local.** Espera la confirmación del backend y conserva un estado pendiente recuperable.
-- **Confiar únicamente en la extensión del archivo.** Valida tipo, firma, tamaño y autorización también en el servidor.
-
----
+</details>

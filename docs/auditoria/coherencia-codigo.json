@@ -1,5 +1,5 @@
 {
-  "temas_medidos": 1608,
+  "temas_medidos": 1421,
   "comprobaciones": {
     "C1": "ruta usada que ningún tema del curso crea y que no existe en el repo",
     "C2": "la carpeta que crean los comandos no es donde vive el código",
@@ -10,20 +10,20 @@
   },
   "resumen": {
     "C1": {
-      "temas_con_incidencia": 52,
-      "incidencias": 80
+      "temas_con_incidencia": 368,
+      "incidencias": 477
     },
     "C2": {
-      "temas_con_incidencia": 17,
-      "incidencias": 17
+      "temas_con_incidencia": 29,
+      "incidencias": 29
     },
     "C3": {
-      "temas_con_incidencia": 1,
-      "incidencias": 4
+      "temas_con_incidencia": 4,
+      "incidencias": 15
     },
     "C4": {
-      "temas_con_incidencia": 265,
-      "incidencias": 366
+      "temas_con_incidencia": 584,
+      "incidencias": 848
     },
     "C5": {
       "temas_con_incidencia": 0,
@@ -34,85 +34,85 @@
       "incidencias": 0
     }
   },
-  "temas_sin_incidencia": 1289,
+  "temas_sin_incidencia": 741,
   "por_curso": {
     "android": {
-      "C1": 0,
-      "C2": 0,
-      "C3": 0,
-      "C4": 1,
-      "C5": 0,
-      "C6": 0
-    },
-    "angular": {
       "C1": 4,
-      "C2": 0,
-      "C3": 0,
-      "C4": 31,
-      "C5": 0,
-      "C6": 0
-    },
-    "cloud": {
-      "C1": 3,
-      "C2": 0,
-      "C3": 0,
-      "C4": 10,
-      "C5": 0,
-      "C6": 0
-    },
-    "control-1": {
-      "C1": 0,
-      "C2": 0,
-      "C3": 0,
-      "C4": 0,
-      "C5": 0,
-      "C6": 0
-    },
-    "devops": {
-      "C1": 9,
       "C2": 1,
-      "C3": 0,
-      "C4": 5,
-      "C5": 0,
-      "C6": 0
-    },
-    "flutter": {
-      "C1": 1,
-      "C2": 2,
       "C3": 0,
       "C4": 3,
       "C5": 0,
       "C6": 0
     },
-    "foundations": {
-      "C1": 2,
+    "angular": {
+      "C1": 7,
+      "C2": 0,
+      "C3": 1,
+      "C4": 38,
+      "C5": 0,
+      "C6": 0
+    },
+    "cloud": {
+      "C1": 18,
       "C2": 0,
       "C3": 0,
-      "C4": 36,
+      "C4": 28,
+      "C5": 0,
+      "C6": 0
+    },
+    "control-1": {
+      "C1": 18,
+      "C2": 0,
+      "C3": 0,
+      "C4": 22,
+      "C5": 0,
+      "C6": 0
+    },
+    "devops": {
+      "C1": 57,
+      "C2": 5,
+      "C3": 2,
+      "C4": 34,
+      "C5": 0,
+      "C6": 0
+    },
+    "flutter": {
+      "C1": 7,
+      "C2": 2,
+      "C3": 0,
+      "C4": 14,
+      "C5": 0,
+      "C6": 0
+    },
+    "foundations": {
+      "C1": 69,
+      "C2": 0,
+      "C3": 0,
+      "C4": 103,
       "C5": 0,
       "C6": 0
     },
     "ios": {
-      "C1": 7,
-      "C2": 0,
-      "C3": 4,
-      "C4": 63,
+      "C1": 9,
+      "C2": 3,
+      "C3": 10,
+      "C4": 88,
       "C5": 0,
       "C6": 0
     },
     "java": {
-      "C1": 1,
+      "C1": 103,
       "C2": 2,
       "C3": 0,
-      "C4": 7,
+      "C4": 118,
       "C5": 0,
       "C6": 0
     },
     "javascript": {
-      "C1": 14,
-      "C2": 9,
-      "C3": 0,
-      "C4": 16,
+      "C1": 78,
+      "C2": 14,
+      "C3": 2,
+      "C4": 66,
       "C5": 0,
       "C6": 0
     },
@@ -120,47 +120,47 @@
       "C1": 1,
       "C2": 0,
       "C3": 0,
-      "C4": 7,
-      "C5": 0,
-      "C6": 0
-    },
-    "microservices": {
-      "C1": 35,
-      "C2": 1,
-      "C3": 0,
-      "C4": 52,
-      "C5": 0,
-      "C6": 0
-    },
-    "node": {
-      "C1": 0,
-      "C2": 1,
-      "C3": 0,
       "C4": 13,
       "C5": 0,
       "C6": 0
     },
-    "react": {
+    "microservices": {
       "C1": 0,
+      "C2": 0,
+      "C3": 0,
+      "C4": 0,
+      "C5": 0,
+      "C6": 0
+    },
+    "node": {
+      "C1": 80,
       "C2": 1,
       "C3": 0,
-      "C4": 67,
+      "C4": 120,
+      "C5": 0,
+      "C6": 0
+    },
+    "react": {
+      "C1": 3,
+      "C2": 1,
+      "C3": 0,
+      "C4": 66,
       "C5": 0,
       "C6": 0
     },
     "rutaflow": {
-      "C1": 0,
+      "C1": 10,
       "C2": 0,
       "C3": 0,
-      "C4": 10,
+      "C4": 15,
       "C5": 0,
       "C6": 0
     },
     "spring-boot": {
-      "C1": 3,
+      "C1": 13,
       "C2": 0,
       "C3": 0,
-      "C4": 45,
+      "C4": 120,
       "C5": 0,
       "C6": 0
     }
@@ -177,7 +177,7 @@
     "java": 120,
     "javascript": 92,
     "kotlin-multiplatform": 66,
-    "microservices": 187,
+    "microservices": 0,
     "node": 78,
     "react": 64,
     "rutaflow": 29,

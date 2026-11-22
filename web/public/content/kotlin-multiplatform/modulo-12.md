@@ -5,29 +5,72 @@ La app integradora demuestra que el código común compila y funciona. Un produc
 
 ## Aprende construyendo
 
+
 ### Tema 1: La mejor frontera compartida es deliberadamente pequeña · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a diseñar una facade `TaskClient` mínima en `commonMain` que exponga solo lo que Android e iOS necesitan consumir, sin filtrar tipos internos del dominio. Prerrequisitos: Módulo 11 completado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo expuso directamente desde `commonMain` todos los tipos internos del repositorio y del cliente HTTP "para no tener que escribir una capa extra" — meses después, cualquier refactor interno de esos tipos rompe la compilación de Swift en el proyecto iOS, aunque la lógica de negocio real no cambió.
+#### ► DE QUÉ TRATA
+Al finalizar vas a diseñar una facade TaskClient mínima en commonMain que exponga solo lo que Android e iOS necesitan consumir, sin filtrar tipos internos del dominio. Prerrequisitos: Módulo 11 completado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`expect/actual` funciona bien para primitivas pequeñas (reloj, UUID); para servicios complejos, una interfaz en common con adaptación inyectada hace las dependencias visibles y testeables. Una facade exportada evita que tipos internos se conviertan accidentalmente en contrato Swift. La analogía es un tratado entre países: cuantas más reglas locales intenta imponer, más traductores y excepciones necesita.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a diseñar una facade TaskClient mínima en commonMain que exponga solo lo que Android e iOS necesitan consumir, sin filtrar tipos internos del dominio.**
 
-**Conceptos clave:** shared kernel, platform boundary, expect/actual, interface, DTO, domain model, Swift export, Objective-C interop, suspend, Flow, cancellation, error mapping, facade y semantic ownership.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-KMP no exige compartir todo. Comparte reglas de negocio, protocolos y datos cuya semántica es común. Mantén navegación, permisos, lifecycle, UI y servicios profundamente nativos detrás de interfaces cuando sus modelos difieren. Si fuerzas una abstracción universal, cada plataforma termina simulando a la otra.
+#### ► LA ANALOGÍA
+Piensa en la mejor frontera compartida es deliberadamente pequeña como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`expect/actual` funciona bien para primitivas pequeñas como reloj o UUID. Para servicios complejos, una interfaz en common y adaptación inyectada hace dependencias visibles y testeables. Una facade exportada evita que cientos de tipos internos se conviertan accidentalmente en contrato Swift.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    Android[androidApp] --> Facade[TaskClient facade minima]
+    IOS[iosApp Swift] --> Facade
+    Facade --> Repo[TareaRepositoryImpl internal]
+    Facade -.nunca expone.-> Ktor[HttpClient interno]
+    Facade -.nunca expone.-> SQL[SQLDelight interno]
+```
 
-Una API Kotlin elegante puede exportarse incómoda a Swift: sobrecargas, genéricos, default arguments, sealed hierarchies y nombres de paquetes se mapean con restricciones. Inspecciona la interfaz generada y escribe un wrapper Swift si mejora ergonomía. Swift export promete mapeo más directo, pero si la herramienta usada está en estado Alpha debe permanecer detrás de experimento y no ser requisito único de producción.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| La mejor frontera compartida es deliberadamente pequeña se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-No exportes excepciones internas como contrato implícito. Modela resultados esperables y traduce defectos inesperados a una frontera documentada. Conserva causas en telemetría privada. En Swift, comprueba cómo se mapean errores y nullability; el consumidor no debe adivinar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar La mejor frontera compartida es deliberadamente pequeña | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-La cancelación debe cruzar la frontera. Una pantalla Swift que desaparece cancela su `Task`; el adaptador cancela el Job Kotlin. Un callback que ignora cancelación seguirá red, retendrá ViewModel y escribirá estado obsoleto. Para Flow, define lifecycle de colección, backpressure/conflation y hilo de callbacks.
+#### ► CUÁNDO NO USAR ESTO
+No uses la mejor frontera compartida es deliberadamente pequeña por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: la mejor frontera compartida es deliberadamente pequeña funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- La mejor frontera compartida es deliberadamente pequeña existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve la mejor frontera compartida es deliberadamente pequeña en tu contexto?
+2. ¿Cómo sabrías que la mejor frontera compartida es deliberadamente pequeña no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar la mejor frontera compartida es deliberadamente pequeña?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 final class TaskScreenModel: ObservableObject {
     private var observation: Cancellable?
@@ -43,12 +86,6 @@ final class TaskScreenModel: ObservableObject {
 }
 ```
 
-**Analogía:** el módulo compartido es un tratado entre países. Cuantas más reglas locales intenta imponer, más traductores y excepciones necesita. Un tratado pequeño y estable facilita cooperación.
-
-**Casos de uso reales:** facade de dominio, reloj nativo, permisos, Flow hacia Swift, error HTTP, cancelación de búsqueda, wrapper Swift y migración de interop.
-
-**Diagrama:**
-
 ```text
 Android UI -> adapter Kotlin --\
                               facade shared -> dominio/repositorios
@@ -56,8 +93,6 @@ iOS SwiftUI -> wrapper Swift --/        |
                           interfaces de plataforma (clock, secure store)
 cancelación/lifecycle deben cruzar en ambas direcciones
 ```
-
-Crea `TaskClient` en `shared/src/commonMain/kotlin/com/academia/kmp/TaskClient.kt` y aplica la misma frontera a tu `SyncEngine` de RutaFlow, en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt`: `Outbox` y `DeliveryApi` deben ser interfaces mínimas, no las implementaciones completas de Ktor o SQLDelight.
 
 ```mermaid
 flowchart LR
@@ -68,11 +103,6 @@ flowchart LR
     Facade -.nunca expone.-> SQL[SQLDelight interno]
 ```
 
-**Cuándo no conviene** una facade tan estricta: en un prototipo de un solo desarrollador sin consumidor Swift todavío, exponer directamente los tipos del repositorio ahorra una capa de traducción que nadie va a usar todavía; la frontera mínima paga su costo de diseño recién cuando existe un segundo consumidor real (otra plataforma, otro equipo) del que proteger ese cambio interno — es el mismo trade-off de "YAGNI" frente a diseñar para un futuro consumidor que todavía no existe.
-
-**¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
-
-#### Paso 4 · Demostración guiada desde cero
 ```kotlin
 public interface TaskClient {
     public suspend fun task(id: TaskId): TaskResult
@@ -87,67 +117,82 @@ public sealed interface TaskResult {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: Swift consume únicamente `TaskClient`, `TaskResult` y `TaskSummary` — ningún tipo interno del repositorio, del cliente Ktor ni de SQLDelight aparece en la superficie exportada, de modo que un refactor interno de esas capas no rompe la compilación de la app iOS.
-
-#### Paso 5 · Práctica guiada
-Pista: marcá como `public` (en vez de `internal`) la clase `TareaRepositoryImpl` completa del Módulo 11, para que el equipo iOS "pueda acceder directamente a los detalles si los necesita". Ese es el fallo deliberado: ahora `TareaRepositoryImpl`, `HttpClient` y los tipos de SQLDelight forman parte de la API pública exportada a Swift, y el día que el equipo reemplaza Ktor internamente por otra librería HTTP, ese cambio "interno" rompe la compilación del proyecto iOS.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo únicamente la interfaz `TaskClient` como facade pública, e inspeccionando la API exportada (el dump ABI del Tema 3) para confirmar que ningún tipo de infraestructura aparece en la superficie pública.
-
-**Proyecto integrador:** define una facade `EnvioClient` para RutaFlow que exponga solo estados de dominio y mantenga Ktor, SQLDelight y las implementaciones fuera de la API consumida por Swift.
-
-#### Paso 7 · Cierre
-Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
+</details>
 
 ### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a implementar un `TaskSubscription: AutoCloseable` que cancele explícitamente su `Job` al cerrarse, evitando que una pantalla de iOS retenida indefinidamente siga consumiendo un `Flow` compartido. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Después de navegar repetidamente hacia y desde la pantalla de tareas en la app iOS, el equipo nota que el consumo de memoria crece de forma sostenida — cada pantalla cerrada debería liberar sus recursos, pero algo las retiene.
+#### ► DE QUÉ TRATA
+Al finalizar vas a implementar un TaskSubscription: AutoCloseable que cancele explícitamente su Job al cerrarse, evitando que una pantalla de iOS retenida indefinidamente siga consumiendo un Flow compartido. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Swift usa ARC y Kotlin usa un GC trazador; un ciclo puede cruzar runtimes (el modelo Swift retiene el wrapper Kotlin, Kotlin conserva un callback, la closure captura fuertemente el modelo) y cada runtime ve referencias válidas por separado, así que ninguno libera nada. La analogía es dos administradores de edificios que eliminan habitaciones sin ocupantes, pero un pasillo entre ambos edificios puede mantenerlos ocupados sin que ninguno sepa que el ciclo ya no sirve.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a implementar un TaskSubscription: AutoCloseable que cancele explícitamente su Job al cerrarse, evitando que una pantalla de iOS retenida indefinidamente siga consumiendo un Flow compartido.**
 
-**Conceptos clave:** shared heap, tracing GC, root, stable reference, callback, closure, ARC, retain cycle, resource ownership, Closeable, pinning, C pointer, dispatcher, thread confinement y leak test.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Kotlin/Native moderno usa heap compartido y GC trazador; objetos pueden accederse desde varios hilos. Esto elimina muchas restricciones del memory manager legacy, pero no vuelve seguro el estado mutable ni administra recursos externos. Coroutines aún ejecutan sobre threads y requieren sincronización para invariantes.
+#### ► LA ANALOGÍA
+Piensa en garbage collection no cierra sockets ni rompe ciclos externos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Swift/Objective-C usa ARC. Un ciclo puede cruzar runtimes: Swift model retiene wrapper Kotlin, Kotlin conserva callback, closure captura fuertemente model. Cada runtime ve referencias válidas. Diseña ownership: quién inicia, quién cancela, quién libera y cuándo. Captura débil donde corresponde y ofrece handle cancelable explícito.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    SwiftVM[Swift ViewModel] -->|retiene| Wrapper[wrapper Kotlin]
+    Wrapper -->|retiene callback| Closure[closure Swift]
+    Closure -->|captura fuerte| SwiftVM
+    Close[subscription.close en deinit] -.rompe el ciclo.-> Wrapper
+```
 
-Scopes globales y StateFlows de singleton pueden retener pantallas indefinidamente. No uses `GlobalScope`; recibe scope con lifecycle o crea scope propietario con `close/cancel`. Una función suspend termina/cancela con su caller; un producer compartido documenta su vida.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Garbage collection no cierra sockets ni rompe ciclos externos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-GC no cierra SQLDelight driver, file descriptor, socket, native handle o C allocation a tiempo. Usa `use`, `try/finally` y ownership explícito. Finalizers/cleaners son respaldo, no flujo normal.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Garbage collection no cierra sockets ni rompe ciclos externos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Interop C puede exigir puntear memoria mientras llamada nativa conserva dirección. `usePinned` limita ventana; no guardes puntero después del bloque. Copiar puede ser más seguro que retener buffer Kotlin. Documenta thread affinity de APIs Apple; entrega actualizaciones UI en Main y no bloquees ese dispatcher.
+#### ► CUÁNDO NO USAR ESTO
+No uses garbage collection no cierra sockets ni rompe ciclos externos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Mide, no repitas mitos. Logs y métricas de GC Kotlin/Native, Instruments, allocations Android y pruebas repetidas revelan retención. Fuerza un escenario 100 veces y compara heap/objetos tras colección, manteniendo en cuenta caches legítimas.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: garbage collection no cierra sockets ni rompe ciclos externos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Analogía:** dos administradores de edificios eliminan habitaciones sin ocupantes, pero un pasillo entre edificios puede mantener ambos ocupados y ninguno sabe que el ciclo ya no sirve. Hace falta cerrar explícitamente el acceso.
+#### ► LO QUE DEBES RECORDAR
+- Garbage collection no cierra sockets ni rompe ciclos externos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**¿Por qué es importante?** porque fugas cross-runtime aparecen tras navegación repetida y son difíciles de atribuir; compilar para iOS no prueba ownership correcto.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve garbage collection no cierra sockets ni rompe ciclos externos en tu contexto?
+2. ¿Cómo sabrías que garbage collection no cierra sockets ni rompe ciclos externos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar garbage collection no cierra sockets ni rompe ciclos externos?
 
-**Casos de uso reales:** callback Swift, Flow observado, scope singleton, SQL driver, NSURLSession/Ktor engine, puntero C, listener nativo y ViewModel retenido.
+</details>
 
-**Diagrama:**
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código y verificación
 ```text
 Swift ViewModel -> Kotlin client -> callback closure -> Swift ViewModel
        ARC                GC                  captura fuerte
 cancel handle + weak capture + lifecycle -> romper ciclo
 GC Kotlin != close(driver/socket/native handle)
 ```
-
-`TaskSubscription` vive en `shared/src/commonMain/kotlin/com/academia/kmp/TaskSubscription.kt`. El ciclo cruzado entre runtimes que ninguno de los dos recolectores detecta por sí solo:
 
 ```mermaid
 flowchart LR
@@ -157,9 +202,6 @@ flowchart LR
     Close[subscription.close en deinit] -.rompe el ciclo.-> Wrapper
 ```
 
-Este mismo cuidado con el ciclo de vida de recursos es el que exige el proyecto integrador RutaFlow al consumir `SyncEngine.drain()`: si la pantalla que inició el `drain()` desaparece sin cancelar su `CoroutineScope`, el intento de sincronización sigue corriendo en segundo plano aunque ya nadie observe el resultado, el mismo tipo de fuga que `TaskSubscription.close()` evita explícitamente aquí.
-
-#### Paso 4 · Demostración guiada desde cero
 ```kotlin
 public class TaskSubscription internal constructor(
     private val job: Job,
@@ -175,33 +217,27 @@ public fun TaskClient.subscribe(
 )
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: llamar a `subscription.close()` desde el `deinit` de Swift cancela explícitamente el `Job` de Kotlin, deteniendo la colección del `Flow` y rompiendo el ciclo de referencias cruzado entre ambos runtimes, en vez de esperar a que algún recolector de basura lo resuelva por su cuenta.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la llamada a `observation?.cancel()` del `deinit` de `TaskScreenModel` en Swift "porque ARC debería limpiar todo solo al liberar el objeto". Ese es el fallo deliberado: al navegar repetidamente hacia y desde la pantalla 100 veces, cada `TaskSubscription` sigue activa indefinidamente porque la closure del callback sigue capturando fuertemente el modelo Swift, y el heap de la app crece de forma medible y sostenida con cada navegación.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `observation?.cancel()` en el `deinit`, y repetí la navegación 100 veces midiendo el conteo de objetos activos antes y después del cambio (con Instruments o los logs del GC de Kotlin/Native) para confirmar que ya no crece de forma sostenida.
-
-#### Paso 7 · Cierre
-Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Límites y decisión de uso: cerrar el `Job` no libera por sí solo un recurso nativo que el flujo abrió; el dueño de ese recurso debe cerrarlo en el mismo `close()` o quedar documentado como responsabilidad del adaptador. Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/.
+</details>
 
 ### Tema 3: Un artefacto compatible necesita más que el mismo número de versión · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a activar la validación binaria del plugin de Kotlin (`abiValidation`) para que `check` falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 25 y Gradle 9.7+ para el ejemplo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo publicó una nueva versión del módulo compartido con el mismo número de versión semántica "menor" esperado, pero cambió silenciosamente el orden de los parámetros de una función pública — el consumidor Android recompiló sin problema, pero el consumidor iOS, que todavía no había actualizado, empezó a fallar en producción con datos corruptos.
+#### ► DE QUÉ TRATA
+Al finalizar vas a activar la validación binaria del plugin de Kotlin (abiValidation) para que check falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 25 y Gradle 9.7+ para el ejemplo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a activar la validación binaria del plugin de Kotlin (abiValidation) para que check falle ante cualquier cambio de API no aprobado explícitamente.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 La compatibilidad de fuente significa que el consumidor recompila; la binaria, que un binario ya compilado enlaza; la conductual, que obtiene el significado esperado — podés conservar la firma y romper el comportamiento cambiando orden, threading o un valor default. La analogía es mantener el mismo conector físico sin garantizar el mismo voltaje ni protocolo.
 
 **Conceptos clave:** source compatibility, binary compatibility, behavioral compatibility, API dump, KLib, ABI, semantic versioning, XCFramework, Maven publication, checksum, schema, migration, serialization y deprecation.
@@ -252,18 +288,84 @@ flowchart TD
 
 Tu proyecto RutaFlow ilustra el mismo riesgo sin `abiValidation`: si el `SyncEngine` que creas en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt` cambiara el orden de los parámetros de `drain()` sin que ningún check lo detecte, un consumidor Android que todavía no recompiló contra la nueva versión podría enlazar en runtime contra una firma distinta a la que espera. **Cuándo no conviene** activar `abiValidation` desde el primer commit: en un módulo compartido que todavía no tiene ningún consumidor externo publicado (solo se consume por fuente, dentro del mismo build), el dump de API es puro overhead de mantenimiento sin ningún consumidor al que proteger — conviene activarlo recién cuando el artefacto se publica como dependencia binaria real, no antes.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** crea una **carpeta vacía** con un módulo Kotlin Multiplatform mínimo y su configuración de ABI; el dump queda dentro de esa misma carpeta.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    Dump[dump ABI aprobado] --> Check[gradlew shared:checkKotlinAbi]
+    NuevaAPI[nueva firma publica] --> Check
+    Check -->|coincide| Pasa[CI verde]
+    Check -->|difiere sin aprobar| Falla[CI falla explicito]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Un artefacto compatible necesita más que el mismo número de versión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Un artefacto compatible necesita más que el mismo número de versión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses un artefacto compatible necesita más que el mismo número de versión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: un artefacto compatible necesita más que el mismo número de versión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Un artefacto compatible necesita más que el mismo número de versión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve un artefacto compatible necesita más que el mismo número de versión en tu contexto?
+2. ¿Cómo sabrías que un artefacto compatible necesita más que el mismo número de versión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar un artefacto compatible necesita más que el mismo número de versión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```kotlin
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation()
+}
+```
+
+```text
+API source -> updateKotlinAbi/checkKotlinAbi -> ABI/KLib
+                          `-> consumer compile Android + Swift
+schemas N-2 -> migraciones -> datos actuales
+tag inmutable -> Maven targets + XCFramework -> apps de prueba -> publicar
+```
+
+```mermaid
+flowchart TD
+    Dump[dump ABI aprobado] --> Check[gradlew shared:checkKotlinAbi]
+    NuevaAPI[nueva firma publica] --> Check
+    Check -->|coincide| Pasa[CI verde]
+    Check -->|difiere sin aprobar| Falla[CI falla explicito]
+```
+
 ```bash
 mkdir -p ejemplo-abi/src/commonMain/kotlin/academia && cd ejemplo-abi
 ```
 
-Crea `settings.gradle.kts` con este contenido completo:
 ```kotlin
 rootProject.name = "ejemplo-abi"
 ```
 
-Crea `build.gradle.kts` con este contenido completo:
 ```kotlin
 plugins {
     kotlin("multiplatform") version "2.4.21"
@@ -280,49 +382,69 @@ kotlin {
 }
 ```
 
-Crea `src/commonMain/kotlin/academia/Api.kt` con este contenido completo:
-```kotlin
-package academia
-
-public fun saludo(nombre: String): String = "Hola, $nombre"
-```
-
-**Ejecuta la validación** (requiere JDK 25 y Gradle 9.7+; la primera ejecución descarga el plugin):
-```bash
-gradle updateKotlinAbi
-gradle checkKotlinAbi
-```
-
-Resultado esperado: `updateKotlinAbi` genera el dump ABI de `saludo` y `checkKotlinAbi` termina en `BUILD SUCCESSFUL` sin cambios. Si cambiás la firma a `saludo(nombre: String, idioma: String)` sin volver a ejecutar `updateKotlinAbi`, `checkKotlinAbi` falla y señala la firma modificada; ese es el cambio que un consumidor ya compilado no puede absorber.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** quitá `abiValidation()` del bloque `kotlin { }` (o no lo actives) "porque todavía no tenemos tiempo de revisar el dump completo" y agregá un parámetro sin valor default a `saludo`. `gradle check` vuelve a pasar sin ninguna advertencia, y recién se descubre que rompió la compatibilidad binaria cuando el consumidor iOS (que todavía no recompiló contra la nueva versión) falla en producción. **Pista:** el dump es el contrato que el compilador no puede inferir por ti.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `abiValidation()`, generando el dump inicial aprobado del estado actual de la API con `gradle updateKotlinAbi`, y agregando `gradle checkKotlinAbi` como paso obligatorio del pipeline de CI (Módulo 10) antes de publicar cualquier versión nueva.
-
-#### Paso 7 · Cierre
-Entregá la validación binaria activada del Paso 4, el cambio de API no detectado del Paso 5, y el `checkKotlinAbi` integrado a CI del Paso 6; explicá por qué un `check` en verde sin validación de ABI no es evidencia de compatibilidad binaria real. Siguiente paso: preparate para diagnosticar un fallo compartido que se manifiesta distinto en cada plataforma. Errores comunes: confiar en el número de versión semántica sin validar ABI automáticamente, tratar un `check` verde como garantía de compatibilidad conductual (no solo binaria), y no ejecutar consumidores reales de Android e iOS contra el artefacto publicado antes de confirmar un release. Límites y decisión de uso: el dump cubre la superficie binaria, no los datos ya persistidos ni los mensajes en vuelo; las migraciones de esquema y serialización se verifican aparte. Fuentes oficiales: https://kotlinlang.org/docs/jvm-api-guidelines-backward-compatibility.html y https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html.
-
-**Proyecto integrador:** genera y aprueba el dump ABI de `EnvioClient`, añade `checkKotlinAbi` al pipeline de RutaFlow y demuestra que un parámetro nuevo sin default bloquea la publicación.
+</details>
 
 ### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a inyectar una interfaz `Diagnostics` en `commonMain` y provocar el mismo fallo compartido en ambas apps para confirmar que puede simbolizarse con mapping/dSYM en cada plataforma. Prerrequisitos: Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un crash reportado desde la app iOS muestra un stack trace de frames de Kotlin/Native sin ningún nombre de función legible, mientras que el mismo defecto en Android sí muestra un stack claro con mapping de ProGuard — el equipo no puede confirmar si es el mismo bug sin símbolos de ambas plataformas.
+#### ► DE QUÉ TRATA
+Al finalizar vas a inyectar una interfaz Diagnostics en commonMain y provocar el mismo fallo compartido en ambas apps para confirmar que puede simbolizarse con mapping/dSYM en cada plataforma. Prerrequisitos: Tema 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un defecto en `commonMain` puede aparecer como un stack Kotlin distinto en Android y frames Kotlin/Native en iOS; sin mapping de Android y dSYM/debug symbols del framework exacto por versión, la ofuscación vuelve los grupos de crashes inútiles. La analogía es una misma pieza defectuosa que viaja en dos vehículos y produce ruidos distintos — el número de lote y el manual de diagnóstico permiten encontrar la causa compartida sin confundir síntomas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a inyectar una interfaz Diagnostics en commonMain y provocar el mismo fallo compartido en ambas apps para confirmar que puede simbolizarse con mapping/dSYM en cada plataforma.**
 
-**Conceptos clave:** crash, stack trace, symbolication, dSYM, mapping, source map, correlation ID, privacy, breadcrumb, metric, target matrix, canary, staged rollout, compatibility window y rollback.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un defecto common puede aparecer como stack Kotlin distinto en Android y frames Kotlin/Native en iOS. Conserva mapping de Android y dSYM/debug symbols del framework exacto por versión. Sin símbolos, ofuscación/optimización vuelve grupos inútiles. Incluye versión SDK, app, target, OS y build ID.
+#### ► LA ANALOGÍA
+Piensa en un fallo compartido necesita símbolos y contexto de ambas plataformas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-La telemetría compartida define eventos semánticos y deja a adaptadores elegir proveedor nativo. No hagas que common dependa directamente de Firebase/Sentry si eso fuerza SDK y privacidad en todas las plataformas. Inyecta interfaz y limita campos.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que un fallo compartido necesita símbolos y contexto de ambas plataformas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Un fallo compartido necesita símbolos y contexto de ambas plataformas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Un fallo compartido necesita símbolos y contexto de ambas plataformas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses un fallo compartido necesita símbolos y contexto de ambas plataformas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: un fallo compartido necesita símbolos y contexto de ambas plataformas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Un fallo compartido necesita símbolos y contexto de ambas plataformas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve un fallo compartido necesita símbolos y contexto de ambas plataformas en tu contexto?
+2. ¿Cómo sabrías que un fallo compartido necesita símbolos y contexto de ambas plataformas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar un fallo compartido necesita símbolos y contexto de ambas plataformas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 public interface Diagnostics {
     public fun record(
@@ -333,22 +455,6 @@ public interface Diagnostics {
 
 public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
 ```
-
-No uses entity/user ID como labels métricos; correlation ID aleatorio permite conectar cliente/backend sin PII. Redacta URL, token, payload y SQL. Consentimiento y retención pueden variar por plataforma/país.
-
-La matriz CI prueba versiones Kotlin/Gradle/JDK/Xcode mínimas soportadas, simuladores y dispositivos representativos. No es viable toda combinación; prioriza límites y consumidores reales. Nightly puede ampliar. Un upgrade de Kotlin/Native requiere revisar tamaño, startup, GC y ABI, no solo tests common.
-
-Publica SDK antes que apps consumidoras, manteniendo ventana compatible. Android staged rollout y TestFlight no son atómicos. El backend acepta versiones antiguas; los nuevos campos son aditivos. Rollback de una app no revierte DB local ni framework ya incorporado. Prepara forward fix y feature flag seguro para aislar funcionalidad compartida.
-
-Un postmortem separa defecto common, manifestación por plataforma, detección, impacto y acciones. La métrica de “porcentaje compartido” no es objetivo; mide lead time, defectos duplicados, tamaño, crashes y satisfacción nativa.
-
-**Analogía:** una misma pieza defectuosa viaja en dos vehículos y produce ruidos distintos. El número de lote y manual de diagnóstico permiten encontrar la causa compartida sin confundir síntomas.
-
-**¿Por qué es importante?** porque optimización y bridges cambian stacks, y releases asíncronos dejan múltiples combinaciones en campo.
-
-**Casos de uso reales:** crash solo iOS, mapping perdido, GC regression, SDK N con app N-2, backend nuevo, feature flag, staged rollout y privacidad de analytics.
-
-**Diagrama:**
 
 ```text
 common failure -> Android stack + mapping --\
@@ -357,9 +463,6 @@ SDK release -> compatibility window -> Android/iOS rollouts independientes
 metrics por sdk/app/OS -> promover | detener | forward fix
 ```
 
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Provoca una excepción controlada en una operación compartida llamada desde iOS. Conserva versión y símbolos de depuración que permitan ubicar la línea Kotlin sin registrar datos personales del envío.
-
-#### Paso 4 · Demostración guiada desde cero
 ```kotlin
 public interface Diagnostics {
     public fun record(
@@ -371,79 +474,203 @@ public interface Diagnostics {
 public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: al provocar deliberadamente un `SYNC_FAILED` en ambas apps (forzando un conflicto de sincronización del Módulo 11), cada adaptador nativo registra el evento con su propio proveedor de telemetría, y ambos reportes pueden correlacionarse por `build ID` aunque los stacks nativos se vean completamente distintos entre sí.
-
-#### Paso 5 · Práctica guiada
-Pista: archivá los símbolos (dSYM) de la app iOS solo para los releases "importantes", no para cada build subida a TestFlight "para ahorrar espacio de almacenamiento". Ese es el fallo deliberado: un crash reportado desde una build intermedia (no marcada como "importante") llega sin su dSYM correspondiente, y el stack trace queda compuesto enteramente de direcciones de memoria sin nombres de función, sin ninguna forma de identificar qué parte del código compartido falló.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 archivando el dSYM de cada build subida a TestFlight (no solo las "importantes"), indexado por su build ID exacto, y verificá que el crash simulado del Paso 4 ahora se simboliza completamente al subir ese dSYM específico a la herramienta de diagnóstico.
-
-#### Paso 7 · Cierre
-Entregá la interfaz `Diagnostics` del Paso 4, el crash no simbolizable del Paso 5, y el archivo completo de dSYM por build ID del Paso 6; explicá por qué "ahorrar espacio" archivando símbolos solo de releases importantes elimina la capacidad de diagnosticar exactamente los crashes intermedios que más necesitan contexto. Siguiente paso: cerrá el proyecto del módulo preparando un plan de release con ventana de compatibilidad y rollback. Errores comunes: no archivar dSYM/mapping de cada build distribuida, hacer que `commonMain` dependa directamente de un SDK de analytics específico de plataforma, y usar un ID de usuario como label de métrica en vez de un correlation ID anónimo. Fuentes oficiales: https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information y https://developer.android.com/studio/build/shrink-code.
-**Implicación práctica:** La optimización y los bridges entre runtimes cambian los stacks, y los releases asíncronos entre plataformas dejan múltiples combinaciones de versiones en campo al mismo tiempo.
-
-## Revisión oficial de plataforma — julio de 2026
+</details>
 
 ### Kotlin 2.4 y estado real de cada target
 
-La línea revisada es **Kotlin 2.4**. Compose Multiplatform se considera estable en Android, iOS y escritorio; web basado en **Wasm** continúa con un nivel de estabilidad diferente y debe aislarse. **Swift export** mejora la superficie consumida desde Swift, pero requiere revisar tipos compatibles, nombres, errores, concurrencia y evolución binaria. Actualiza Kotlin, Gradle, Android Gradle Plugin, Xcode y bibliotecas kotlinx como una matriz, no como números independientes.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Aplicación al proyecto:** exporta una API mínima a Swift, prueba compatibilidad de fuente/binario y cancelación, compila todos los targets en CI y etiqueta cualquier uso Wasm con su nivel de estabilidad y fallback.
+#### ► DE QUÉ TRATA
+Este tema te guía por kotlin 2.4 y estado real de cada target con foco en comprensión antes de implementación.
 
-## Laboratorio práctico
+#### ► LA IDEA EN UNA FRASE
+**Entender kotlin 2.4 y estado real de cada target te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en kotlin 2.4 y estado real de cada target como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que kotlin 2.4 y estado real de cada target resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Kotlin 2.4 y estado real de cada target se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Kotlin 2.4 y estado real de cada target | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses kotlin 2.4 y estado real de cada target por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: kotlin 2.4 y estado real de cada target funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Kotlin 2.4 y estado real de cada target existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve kotlin 2.4 y estado real de cada target en tu contexto?
+2. ¿Cómo sabrías que kotlin 2.4 y estado real de cada target no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar kotlin 2.4 y estado real de cada target?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar kotlin 2.4 y estado real de cada target.
+
+</details>
 
 ### Proyecto: SDK compartido estable y operable
 
-Evoluciona el módulo `shared` del proyecto 11 como si dos equipos distintos lo consumieran.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Lista API pública actual y consumidores. Marca qué debe ser common y mueve dos detalles nativos fuera.
-2. Crea facade pequeña y wrappers Android/Swift. Inspecciona headers/API exportada y corrige nombres, nullability y errores.
-3. Conecta cancelación de una búsqueda desde Swift Task/Android lifecycle hasta Job/Ktor; prueba respuesta tardía.
-4. Introduce un ciclo Swift→Kotlin→callback→Swift y una suscripción no cancelada. Repite navegación, mide y corrige.
-5. Audita drivers, clients y handles; añade ownership/close y tests de liberación.
-6. Activa API dump/check. Rompe firma, data class e interfaz para comprobar gates.
-7. Crea migraciones SQL/JSON desde N-2 con datos reales, enums desconocidos y rollback/forward fix.
-8. Publica snapshot Maven y XCFramework/paquete Swift con checksums. Consume desde repositorio en apps mínimas limpias.
-9. Configura matriz CI: common, Android, targets Apple, consumidor Swift, ABI y migraciones.
-10. Inyecta Diagnostics, provoca el mismo fallo en ambas apps y simboliza con mapping/dSYM.
-11. Diseña release SDK→backend→apps con ventana compatible, canary/TestFlight, staged rollout, flag y postmortem.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto: sdk compartido estable y operable con foco en comprensión antes de implementación.
 
-**Verificación:** entrega diagrama de frontera, superficie API, pruebas de cancelación/retención, dumps ABI, migraciones N-2, coordenadas/artefactos inmutables, builds consumidores y stacks simbolizados. Un cambio incompatible o símbolo ausente debe detener CI/release.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto: sdk compartido estable y operable te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- Compartir UI/lifecycle por porcentaje: comparte semántica estable y mide coste total.
-- Exportar modelo interno entero: facade y DTO mínimo reducen ABI y acoplamiento.
-- Ignorar cancelación Swift: devuelve handle o integra Task y cancela Job/engine.
-- Confiar en GC para drivers: ownership y close explícitos.
-- Validar solo commonTest: compila/ejecuta consumers reales por target.
-- Sobrescribir artefacto publicado: coordenadas inmutables y versión nueva.
-- API check verde igual a compatibilidad: añade pruebas conductuales y schemas.
-- Crash sin dSYM/mapping: archiva símbolos por build ID antes de distribuir.
+#### ► LA ANALOGÍA
+Piensa en proyecto: sdk compartido estable y operable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
-## Atlas completo de temas oficiales
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto: sdk compartido estable y operable resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Derivado de la [documentación oficial](https://kotlinlang.org/docs/multiplatform/get-started.html), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**
-
-| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Kotlin | `null safety` · `data classes` · `sealed types` · `genéricos` · `coroutines` · `Flow` · `serialization` · `time e IO` | sync |
-| Estructura | `targets` · `source sets` · `commonMain y commonTest` · `expect/actual` · `Gradle` · `version catalogs` · `convention plugins` | sync |
-| Datos | `HTTP client` · `almacenamiento` · `SQLDelight` · `repositorios` · `caché` · `offline-first` · `sincronización` · `errores tipados` | sync |
-| UI | `Compose Multiplatform` · `estado` · `recursos` · `localización` · `navegación` · `deep links` · `accesibilidad` · `UI testing` | sync |
-| Interop | `Swift export` · `Objective-C` · `UIKit y SwiftUI` · `Android` · `JVM` · `JS y Wasm` · `C interop` · `ownership` | sync |
-| Entrega | `XCFramework` · `publicación` · `compatibilidad binaria` · `Hot Reload` · `benchmarks` · `CI multi-target` · `seguridad` | sync |
+| Proyecto: SDK compartido estable y operable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto: SDK compartido estable y operable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto: sdk compartido estable y operable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto: sdk compartido estable y operable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto: SDK compartido estable y operable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto: sdk compartido estable y operable en tu contexto?
+2. ¿Cómo sabrías que proyecto: sdk compartido estable y operable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto: sdk compartido estable y operable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: sdk compartido estable y operable.
+
+</details>
 
 ### Método de estudio y proyecto de ampliación
 
-Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
+2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
+
+</details>

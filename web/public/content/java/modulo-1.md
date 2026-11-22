@@ -3,20 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 35 min
 
-**Duración estimada:** 35 min.
-**¿Por qué es importante?** Las clases agrupan datos y operaciones; la encapsulación permite impedir que una guía de entrega quede en un estado imposible.
-**Prerrequisitos:** M0 T1. Proyecto continuo: crear el modelo inicial de una guía del motor de asignación. Trabaja desde `java-motor-poo/` con JDK 21 o posterior.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 1.1: Crea una clase e instancia objetos · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por clases, objetos, constructores y encapsulación con foco en comprensión antes de implementación.
 
-**1. Contexto**
-El motor recibe muchas guías. Una clase describe qué datos guarda cada guía y permite crear varias con esa misma forma.
+#### ► LA IDEA EN UNA FRASE
+**Entender clases, objetos, constructores y encapsulación te permite tomar mejores decisiones técnicas.**
 
-**2. Hazlo tú**
-Crea `java-motor-poo/src/Guia.java`:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en clases, objetos, constructores y encapsulación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que clases, objetos, constructores y encapsulación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Clases, objetos, constructores y encapsulación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Clases, objetos, constructores y encapsulación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses clases, objetos, constructores y encapsulación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: clases, objetos, constructores y encapsulación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Clases, objetos, constructores y encapsulación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve clases, objetos, constructores y encapsulación en tu contexto?
+2. ¿Cómo sabrías que clases, objetos, constructores y encapsulación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar clases, objetos, constructores y encapsulación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public final class Guia {
     String numero;
@@ -36,31 +84,11 @@ public final class Guia {
 }
 ```
 
-Desde `java-motor-poo/`, ejecuta:
-
 ```bash
 mkdir -p out
 javac -d out src/Guia.java
 java -cp out Guia
 ```
-
-**Resultado esperado:** `RF-101 -> Medellin` y `RF-102 -> Envigado`.
-
-**Fallo deliberado:** cambia `new Guia("RF-101", "Medellin")` por `new Guia("RF-101")`. **Error esperado:** `javac` indica que el constructor requiere dos argumentos. **Diagnóstico:** definimos un constructor con número y destino; la llamada debe entregar ambos.
-
-**3. Entiende**
-`Guia` es la clase; `primera` y `segunda` son objetos distintos creados con `new`. El constructor recibe valores iniciales y asigna esos valores a cada objeto.
-
-**4. Cierra**
-Señala cuáles dos líneas crean los objetos y qué diferencia sus datos.
-
-#### Subtema 1.2: Protege los datos con encapsulación · 10 min
-
-**1. Contexto**
-Si cualquier código puede reemplazar el destino directamente, una guía puede cambiar sin pasar por las reglas del modelo.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo (nota que ya no tiene `main`: lo movemos a una clase aparte para probar el acceso desde afuera):
 
 ```java
 public final class Guia {
@@ -86,8 +114,6 @@ public final class Guia {
 }
 ```
 
-Crea también `java-motor-poo/src/Principal.java`:
-
 ```java
 public final class Principal {
     public static void main(String[] args) {
@@ -98,30 +124,10 @@ public final class Principal {
 }
 ```
 
-Desde `java-motor-poo/`, compila ambos archivos y ejecuta `Principal`:
-
 ```bash
 javac -d out src/Guia.java src/Principal.java
 java -cp out Principal
 ```
-
-**Resultado esperado:** `RF-101 -> Envigado`.
-
-**Fallo deliberado:** agrega en `Principal.main` la línea `guia.destino = "Otro";` y vuelve a compilar. **Error esperado:** `destino has private access in Guia`. **Diagnóstico:** `private` bloquea el acceso desde cualquier clase distinta a `Guia`; como `Principal` es una clase separada, el compilador rechaza tocar `destino` directamente y obliga a pasar por `cambiarDestino`. (Si el intento de acceso estuviera dentro de la propia clase `Guia`, `private` no bloquearía nada —ese acceso siempre es válido desde adentro—; sería el modificador `final` el que impediría reasignar `numero`, con un mensaje distinto: `cannot assign a value to final variable numero`.)
-
-**3. Entiende**
-Los campos privados esconden el estado interno **de otras clases**, no de la propia clase que los declara: el bloqueo de `private` solo se activa al cruzar la frontera de la clase. Los métodos públicos forman una interfaz pequeña para que ese código externo lea datos o pida un cambio; no hace falta publicar cada campo.
-
-**4. Cierra**
-Identifica qué campo no se puede cambiar desde fuera y qué método permite cambiar el destino sin romper el encapsulamiento.
-
-#### Subtema 1.3: Rechaza guías inválidas desde el constructor · 15 min
-
-**1. Contexto**
-La guía debe tener identificador y destino. Rechazar esos datos al crearla evita que el resto del programa tenga que revisar el mismo error una y otra vez.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo:
 
 ```java
 public final class Guia {
@@ -161,48 +167,69 @@ public final class Guia {
 }
 ```
 
-Desde `java-motor-poo/`, ejecuta:
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-**Resultado esperado:** `RF-101 -> Medellin` y `Rechazada: El numero es obligatorio`.
-
-**Fallo deliberado:** quita el primer `if` del constructor y ejecuta de nuevo. **Error esperado:** la guía con número vacío se imprime como si fuera válida. **Diagnóstico:** sin validar en el punto de creación, ningún método impide construir el estado inválido; restaura la condición y vuelve a ejecutar.
-
-**3. Entiende**
-Una regla que siempre debe cumplirse es un invariante. El constructor la comprueba antes de asignar el estado y el método de cambio aplica una validación equivalente cuando ese estado se actualiza.
-
-**4. Cierra**
-Entrega el archivo, la salida válida y el fallo reproducido. Para una clase que solo transporta datos sin reglas propias puede bastar una validación en la frontera; protege aquí el modelo porque el número y destino son necesarios para operar la guía.
-
-**Hito del tema:**
-
-- [ ] Creé dos objetos distintos a partir de `Guia`.
-- [ ] Protegí campos privados y leí datos mediante métodos públicos.
-- [ ] Rechacé valores vacíos al construir y al cambiar el destino.
-- [ ] Reproduje un estado inválido al quitar la validación y expliqué la causa.
-
-**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/) y [herencia y clases en Java](https://docs.oracle.com/javase/tutorial/java/IandI/).
-
-**Proyecto integrador:** `Guia` es el primer modelo real del motor de asignación de entregas; los módulos siguientes construyen sobre esta clase protegida. **Práctica:** modifica `Guia.java` para agregar un campo `pesoKg` validado (rechaza valores menores o iguales a cero en el constructor) y repite la ejecución para comprobar que el rechazo funciona igual que con el número vacío.
+</details>
 
 ### Tema 2: Herencia y sobreescritura · Intermedio · 40 min
 
-**Duración estimada:** 40 min.
-**¿Por qué es importante?** La herencia expresa una relación entre tipos y el polimorfismo permite que una misma operación use el comportamiento del objeto concreto. También practicarás cómo el compilador verifica una sobreescritura y cómo una herramienta de auditoría puede leer metadatos de un método.
-**Prerrequisitos:** M1 T1. Proyecto continuo: el motor permitirá distintos tipos de vehículo y dejará preparada una acción de entrega auditable.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 2.1: Extiende una clase y hereda su comportamiento · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por herencia y sobreescritura con foco en comprensión antes de implementación.
 
-**1. Contexto**
-Una bicicleta de reparto comparte con otros vehículos un identificador y una operación de entrega.
+#### ► LA IDEA EN UNA FRASE
+**Entender herencia y sobreescritura te permite tomar mejores decisiones técnicas.**
 
-**2. Hazlo tú**
-Crea `java-motor-poo/src/EntregaDemo.java` con este archivo completo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en herencia y sobreescritura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que herencia y sobreescritura resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Herencia y sobreescritura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Herencia y sobreescritura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses herencia y sobreescritura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: herencia y sobreescritura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Herencia y sobreescritura existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve herencia y sobreescritura en tu contexto?
+2. ¿Cómo sabrías que herencia y sobreescritura no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar herencia y sobreescritura?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 class Vehiculo {
     String codigo;
@@ -222,31 +249,11 @@ public class EntregaDemo {
 }
 ```
 
-Desde `java-motor-poo/`, ejecuta:
-
 ```bash
 mkdir -p out
 javac -d out src/EntregaDemo.java
 java -cp out EntregaDemo
 ```
-
-**Resultado esperado:** `BI-7 entrega paquete`.
-
-**Fallo deliberado:** cambia `super(codigo)` por `super()`. **Error esperado:** el constructor de `Vehiculo` requiere un `String`. **Diagnóstico:** como definimos un constructor propio en la clase base, la subclase debe llamarlo con `super(codigo)`.
-
-**3. Entiende**
-`extends` declara que `Bicicleta` es una clase más específica de `Vehiculo`. `super(codigo)` llama al constructor base para inicializar el código compartido; la subclase hereda `entregar()`.
-
-**4. Cierra**
-Dibuja la relación entre ambas clases y marca qué inicializa el constructor base.
-
-#### Subtema 2.2: Sobrescribe una operación · 10 min
-
-**1. Contexto**
-Una bicicleta y una furgoneta pueden completar la misma tarea de formas diferentes; el nombre de la operación común permite tratarlas de manera uniforme.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
 
 ```java
 class Vehiculo {
@@ -268,26 +275,6 @@ public class EntregaDemo {
     }
 }
 ```
-
-Compila y ejecuta con los comandos del subtema 2.1.
-
-**Resultado esperado:** `BI-7 entrega en bicicleta`.
-
-**Fallo deliberado:** cambia el nombre del método de la subclase a `entregarr` y deja `@Override`. **Error esperado:** `method does not override or implement a method from a supertype`. **Diagnóstico:** los nombres no coinciden; `@Override` hace que el compilador detecte el error de escritura.
-
-**3. Entiende**
-Sobrescribir reemplaza el comportamiento heredado para esa subclase. `@Override` no crea el polimorfismo; le pide al compilador que compruebe que realmente estás sobrescribiendo un método existente.
-
-**4. Cierra**
-Entrega la salida y el error del nombre mal escrito, luego restaura `entregar`.
-
-#### Subtema 2.3: Observa el polimorfismo con varios vehículos · 10 min
-
-**1. Contexto**
-El asignador puede operar sobre una lista de vehículos sin preguntar en cada línea qué clase concreta recibió.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
 
 ```java
 import java.util.List;
@@ -319,30 +306,10 @@ public class EntregaDemo {
 }
 ```
 
-Compila y ejecuta:
-
 ```bash
 javac -d out src/EntregaDemo.java
 java -cp out EntregaDemo
 ```
-
-**Resultado esperado:** `BI-7 entrega en bicicleta` y `FU-2 entrega en furgoneta`.
-
-**Fallo deliberado:** quita `@Override` y cambia accidentalmente el método de `Furgoneta` a `entregarr`. **Error esperado:** la lista imprime para esa furgoneta el comportamiento base `FU-2 entrega paquete`. **Diagnóstico:** sin `@Override`, el método nuevo compila pero no reemplaza `entregar`; restaura la anotación para que el compilador detecte el fallo.
-
-**3. Entiende**
-La variable tiene tipo `Vehiculo`, pero cada objeto conserva su tipo concreto. Java selecciona el método sobrescrito según el objeto en tiempo de ejecución.
-
-**4. Cierra**
-Explica por qué el ciclo `for` no necesita distinguir bicicleta de furgoneta y conserva la salida de ambas.
-
-#### Subtema 2.4: Declara una anotación que pueda leer una auditoría · 10 min
-
-**1. Contexto**
-Un interceptor puede leer metadatos de `confirmar` para registrar una acción sensible sin mezclar esa tarea con la regla de negocio.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/EntregaDemo.java` por este archivo completo:
 
 ```java
 import java.lang.annotation.Retention;
@@ -371,48 +338,69 @@ public class EntregaDemo {
 }
 ```
 
-Desde `java-motor-poo/`, compila y ejecuta:
-
-```bash
-javac -d out src/EntregaDemo.java
-java -cp out EntregaDemo
-```
-
-**Resultado esperado:** `confirmar-entrega`.
-
-**Fallo deliberado:** elimina `@Retention(RetentionPolicy.RUNTIME)` y ejecuta otra vez. **Error esperado:** `NullPointerException` al leer `marca.accion()`, porque la reflexión devuelve `null`. **Diagnóstico:** sin retención `RUNTIME`, la anotación no está disponible para inspección durante la ejecución; restaura la política y vuelve a ejecutar.
-
-**3. Entiende**
-Una anotación describe metadatos; no hace nada por sí sola. `@Target` limita su uso a métodos y `@Retention(RUNTIME)` permite que un interceptor la descubra mediante reflexión. Una acción aislada también puede invocar una auditoría directa; la anotación tiene sentido cuando un componente común interpreta muchas marcas.
-
-**4. Cierra**
-Entrega la salida, la excepción reproducida y una frase que explique qué componente debe leer la anotación para que tenga efecto.
-
-**Hito del tema:**
-
-- [ ] Extendí `Vehiculo` y llamé al constructor base con `super`.
-- [ ] Sobrescribí `entregar` y usé `@Override` para descubrir un error de escritura.
-- [ ] Ejecuté una lista de tipos distintos y observé despacho polimórfico.
-- [ ] Leí `@Auditable` con reflexión y expliqué para qué sirve `RUNTIME`.
-
-**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/), [herencia en Java](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) y [política de retención de anotaciones](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html).
-
-**Transferencia al proyecto integrador:** sustituye distintos tipos de vehículo mediante un mismo ciclo de asignación y registra qué acción queda marcada para auditoría. **Límite:** hereda solo cuando la subclase es realmente un tipo más específico del padre (una bicicleta "es un" vehículo); si solo quieres reutilizar código sin esa relación "es-un", usa composición en vez de herencia. **Práctica:** modifica `Bicicleta` (o el vehículo del ejercicio) para agregar un tercer tipo `Dron` que sobrescriba `entregar` con su propio mensaje, y confirma el despacho polimórfico al recorrer la lista de vehículos.
+</details>
 
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 35 min
 
-**Duración estimada:** 35 min.
-**¿Por qué es importante?** Una interfaz expresa qué operación ofrece un tipo; una clase abstracta permite compartir estado o código cuando las clases sí tienen una base común.
-**Prerrequisitos:** M1 T2. Proyecto continuo: definir el contrato con que el motor programa entregas y compartir solo los datos que todas necesitan.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 3.1: Define un contrato con una interfaz · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por interfaces, clases abstractas y cuándo usar cada una con foco en comprensión antes de implementación.
 
-**1. Contexto**
-El motor debe solicitar confirmación de entrega tanto a una clase local como a un adaptador externo sin conocer sus detalles internos.
+#### ► LA IDEA EN UNA FRASE
+**Entender interfaces, clases abstractas y cuándo usar cada una te permite tomar mejores decisiones técnicas.**
 
-**2. Hazlo tú**
-Crea `java-motor-poo/src/ContratoDemo.java` con este archivo completo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en interfaces, clases abstractas y cuándo usar cada una como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que interfaces, clases abstractas y cuándo usar cada una resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Interfaces, clases abstractas y cuándo usar cada una se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Interfaces, clases abstractas y cuándo usar cada una | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses interfaces, clases abstractas y cuándo usar cada una por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: interfaces, clases abstractas y cuándo usar cada una funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Interfaces, clases abstractas y cuándo usar cada una existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve interfaces, clases abstractas y cuándo usar cada una en tu contexto?
+2. ¿Cómo sabrías que interfaces, clases abstractas y cuándo usar cada una no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar interfaces, clases abstractas y cuándo usar cada una?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 interface Confirmable {
     String confirmar();
@@ -438,31 +426,11 @@ public class ContratoDemo {
 }
 ```
 
-Desde `java-motor-poo/`, ejecuta:
-
 ```bash
 mkdir -p out
 javac -d out src/ContratoDemo.java
 java -cp out ContratoDemo
 ```
-
-**Resultado esperado:** `Entrega local confirmada` y `Confirmación recibida del móvil`.
-
-**Fallo deliberado:** cambia `implements Confirmable` por `extends Confirmable` en `EntregaLocal`. **Error esperado:** `no interface expected here`. **Diagnóstico:** las clases implementan interfaces con `implements`; `extends` se usa para extender otra clase.
-
-**3. Entiende**
-La interfaz declara el método que ambas implementaciones deben ofrecer. `procesar` depende del contrato, así que puede aceptar cualquier implementación sin cambiar su código.
-
-**4. Cierra**
-Agrega una implementación `ConfirmacionPrueba` y comprueba que `procesar` funciona sin editarse.
-
-#### Subtema 3.2: Comparte estado y comportamiento con una clase abstracta · 10 min
-
-**1. Contexto**
-Las dos modalidades de envío comparten el identificador y la validación de una guía, aunque cada una calcula distinto el tiempo estimado.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/ContratoDemo.java` por este archivo completo:
 
 ```java
 abstract class ServicioEntrega {
@@ -491,26 +459,6 @@ public class ContratoDemo {
     }
 }
 ```
-
-Compila y ejecuta con los mismos comandos del subtema 3.1.
-
-**Resultado esperado:** `RF-201: 45 min`.
-
-**Fallo deliberado:** cambia `new EntregaLocal("RF-201")` por `new ServicioEntrega("RF-201")`. **Error esperado:** `ServicioEntrega is abstract; cannot be instantiated`. **Diagnóstico:** la clase base deja pendiente `minutosEstimados`; crea una subclase concreta que complete ese método.
-
-**3. Entiende**
-La clase abstracta comparte el campo validado `guia` y el método `resumen`. Cada modalidad debe implementar la operación que depende del tipo de servicio.
-
-**4. Cierra**
-Marca qué parte se reutiliza y qué método queda a cargo de cada tipo de entrega.
-
-#### Subtema 3.3: Combina contrato e implementación compartida · 15 min
-
-**1. Contexto**
-El motor puede depender de un contrato desacoplado y, cuando dos servicios comparten estado real, reutilizar una base abstracta que también cumple ese contrato.
-
-**2. Hazlo tú**
-Reemplaza `java-motor-poo/src/ContratoDemo.java` por este archivo completo:
 
 ```java
 import java.util.List;
@@ -549,48 +497,74 @@ public class ContratoDemo {
 }
 ```
 
-Desde `java-motor-poo/`, compila y ejecuta:
-
 ```bash
 javac -d out src/ContratoDemo.java
 java -cp out ContratoDemo
 ```
 
-**Resultado esperado:** `RF-201 confirmada en 45 min` y `RF-202 confirmada en 20 min`.
-
-**Fallo deliberado:** quita `minutosEstimados()` de `EntregaExpress`. **Error esperado:** `EntregaExpress is not abstract and does not override abstract method minutosEstimados()`. **Diagnóstico:** una clase concreta debe completar todos los métodos abstractos heredados.
-
-**3. Entiende**
-El consumidor recibe `Confirmable`, una capacidad que puede cumplir cualquier objeto. La clase abstracta agrega estado común a esta familia concreta de servicios; el contrato por sí solo no obliga a heredar esa base.
-
-**4. Cierra**
-Entrega el archivo y la salida. Justifica por qué `Confirmable` es una interfaz y por qué `ServicioEntrega` sí tiene sentido como clase abstracta.
-
-**Hito del tema:**
-
-- [ ] Implementé una interfaz en dos clases sin relación de herencia entre sí.
-- [ ] Usé una clase abstracta para compartir estado validado y un método común.
-- [ ] Combiné ambos tipos en un consumidor que depende del contrato.
-- [ ] Reproduje el error por no implementar un método abstracto.
-
-**Fuentes oficiales:** [interfaces en dev.java](https://dev.java/learn/interfaces/) y [clases abstractas e interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html).
-
-**Transferencia al proyecto integrador:** define un contrato de asignación que admita una implementación real y una falsa para practicar sin heredar datos innecesarios. **Práctica:** modifica `ServicioEntrega` para agregar un segundo método abstracto `costoBase()` y crea una tercera implementación concreta que lo complete junto con `minutosEstimados()`.
+</details>
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min
 
-**Duración estimada:** 35 min.
-**¿Por qué es importante?** La sobrecarga ofrece varias formas de llamar a una operación; la sobreescritura cambia el comportamiento heredado. Los modificadores limitan quién puede usar cada parte del modelo.
-**Prerrequisitos:** M1 T2 y M1 T3. Proyecto continuo: calcular tarifas de entrega y proteger los datos de una guía.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 4.1: Sobrecarga según los parámetros · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por sobrecarga vs sobreescritura, y modificadores de acceso con foco en comprensión antes de implementación.
 
-**1. Contexto**
-El motor calcula una tarifa con distancias enteras o decimales y conserva un nombre de operación fácil de recordar.
+#### ► LA IDEA EN UNA FRASE
+**Entender sobrecarga vs sobreescritura, y modificadores de acceso te permite tomar mejores decisiones técnicas.**
 
-**2. Hazlo tú**
-Crea el archivo java-motor-poo/src/TarifaDemo.java:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en sobrecarga vs sobreescritura, y modificadores de acceso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sobrecarga vs sobreescritura, y modificadores de acceso resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sobrecarga vs sobreescritura, y modificadores de acceso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sobrecarga vs sobreescritura, y modificadores de acceso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses sobrecarga vs sobreescritura, y modificadores de acceso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sobrecarga vs sobreescritura, y modificadores de acceso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Sobrecarga vs sobreescritura, y modificadores de acceso existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sobrecarga vs sobreescritura, y modificadores de acceso en tu contexto?
+2. ¿Cómo sabrías que sobrecarga vs sobreescritura, y modificadores de acceso no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sobrecarga vs sobreescritura, y modificadores de acceso?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 class Tarifa {
     static int calcular(int kilometros) { return kilometros * 1200; }
@@ -605,31 +579,11 @@ public class TarifaDemo {
 }
 ```
 
-Desde java-motor-poo/, compila y ejecuta:
-
 ```bash
 mkdir -p out
 javac -d out src/TarifaDemo.java
 java -cp out TarifaDemo
 ```
-
-**Resultado esperado:** 3600 y 3000.0.
-
-**Fallo deliberado:** agrega una variante calcular(int) que solo cambie el tipo de retorno. **Error esperado:** method calcular(int) is already defined. **Diagnóstico:** el tipo de retorno por sí solo no diferencia dos métodos; cambia la cantidad o los tipos de parámetros.
-
-**3. Entiende**
-Las variantes comparten nombre, pero tienen parámetros distintos. El compilador selecciona una según los argumentos de la llamada.
-
-**4. Cierra**
-Anota qué firma se eligió en cada llamada y qué la distingue.
-
-#### Subtema 4.2: Compara sobrecarga y sobreescritura · 10 min
-
-**1. Contexto**
-Al investigar una llamada, distingue si el compilador eligió otra firma o si un objeto de una subclase cambió la implementación heredada.
-
-**2. Hazlo tú**
-Reemplaza java-motor-poo/src/TarifaDemo.java:
 
 ```java
 class Calculador {
@@ -652,26 +606,6 @@ public class TarifaDemo {
 }
 ```
 
-Compila y ejecuta con los comandos del subtema 4.1.
-
-**Resultado esperado:** express=3 y decimal=2.5.
-
-**Fallo deliberado:** elimina @Override y escribe calcularr en la variante entera. **Resultado erróneo esperado:** base=3. **Diagnóstico:** creaste otro método; no reemplaza calcular. Restaura el nombre y usa @Override para que el compilador detecte errores de firma.
-
-**3. Entiende**
-calcular(int) sobrescribe la firma heredada y el objeto decide la implementación durante la ejecución. calcular(double) es una sobrecarga, elegida por los argumentos al compilar.
-
-**4. Cierra**
-Clasifica cada llamada y explica si su selección ocurre por firma o por tipo real del objeto.
-
-#### Subtema 4.3: Restringe el acceso a los datos · 15 min
-
-**1. Contexto**
-El identificador de una guía debe permanecer privado; el paquete puede compartir un contador interno y una subclase puede especializar el estado protegido.
-
-**2. Hazlo tú**
-Crea java-motor-poo/src/modelo/Guia.java:
-
 ```java
 package modelo;
 
@@ -685,8 +619,6 @@ public class Guia {
 }
 ```
 
-Crea java-motor-poo/src/modelo/Control.java:
-
 ```java
 package modelo;
 
@@ -698,8 +630,6 @@ public class Control {
     }
 }
 ```
-
-Crea java-motor-poo/src/app/Bicicleta.java:
 
 ```java
 package app;
@@ -719,51 +649,69 @@ public class Bicicleta extends Guia {
 }
 ```
 
-Desde java-motor-poo/, compila y ejecuta:
-
-```bash
-javac -d out src/modelo/Guia.java src/modelo/Control.java src/app/Bicicleta.java
-java -cp out modelo.Control
-java -cp out app.Bicicleta
-```
-
-**Resultado esperado:** RF-301 intentos=1 y RF-302 estado=lista.
-
-**Fallo deliberado:** en Bicicleta, intenta leer new Guia("RF-303").estado. **Error esperado:** estado has protected access in Guia. **Diagnóstico:** fuera del paquete, una subclase puede usar el miembro protegido en el contexto de su herencia; una instancia arbitraria de la clase base no queda abierta al acceso.
-
-**3. Entiende**
-private limita el miembro a su clase; sin modificador (package-private) lo comparte dentro del paquete; protected permite acceso en el paquete y en subclases con las reglas de Java; public expone el miembro desde otros paquetes. El método numero() da acceso controlado al campo privado.
-
-**4. Cierra**
-Ordena los cuatro niveles de menor a mayor alcance y explica por qué leer estado desde this es válido, pero leerlo desde la instancia base no.
-
-**Hito del tema:**
-
-- [ ] Sobrecargué un método con parámetros distintos y comprobé que cambiar solo el retorno no basta.
-- [ ] Comparé una sobrecarga con una sobreescritura.
-- [ ] Probé private y package-private dentro del paquete.
-- [ ] Usé protected desde una subclase externa y describí cuándo conviene public.
-
-**Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/), [sobrecarga y sobreescritura](https://docs.oracle.com/javase/tutorial/java/IandI/override.html) y [modificadores de acceso de Java](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html).
-
-**Transferencia al proyecto integrador:** conserva una interfaz pública pequeña para operar el motor y mantén privados los datos que solo el modelo debe cambiar.
+</details>
 
 ### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 35 min
 
-**Prerrequisitos:** Temas 1 y 4 de este módulo (constructores, encapsulación y sobreescritura). Los records se usan desde el Módulo 2; las jerarquías `sealed` que los combinan están en el Módulo 7.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
+#### ► DE QUÉ TRATA
+Este tema te guía por record — modelos inmutables sin boilerplate con foco en comprensión antes de implementación.
 
-#### Subtema 5.1: Construye un record de guía · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender record — modelos inmutables sin boilerplate te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El centro de despacho recibe número y peso de cada paquete. No se debe poder crear una guía vacía ni con peso cero.
+#### ► LA ANALOGÍA
+Piensa en record — modelos inmutables sin boilerplate como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que record — modelos inmutables sin boilerplate resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Crea `src/Guia.java`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| record — modelos inmutables sin boilerplate se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar record — modelos inmutables sin boilerplate | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses record — modelos inmutables sin boilerplate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: record — modelos inmutables sin boilerplate funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- record — modelos inmutables sin boilerplate existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve record — modelos inmutables sin boilerplate en tu contexto?
+2. ¿Cómo sabrías que record — modelos inmutables sin boilerplate no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar record — modelos inmutables sin boilerplate?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public record Guia(String numero, double pesoKg) {
     public Guia {
@@ -776,97 +724,84 @@ public record Guia(String numero, double pesoKg) {
 }
 ```
 
-Desde la raíz ejecuta:
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
 
 ```bash
 javac -d out src/Guia.java
 java -cp out Guia
 ```
 
-**Resultado esperado:** imprime `Guia[numero=RT-1, pesoKg=2.5]`.
-
-**Fallo deliberado:** crea `new Guia("", 0)`. **Diagnóstico:** el constructor compacto valida antes de que exista un objeto inválido.
-
-**3. Entiende**
-
-`record` genera constructor, accesores, `equals`, `hashCode` y `toString`; el constructor compacto sirve para validar los componentes.
-
-**4. Cierra**
-
-Guarda la salida válida y el error de validación.
-
-#### Subtema 5.2: Comprueba igualdad por valor · 10 min
-
-**1. Contexto**
-
-Dos servicios pueden construir dos objetos distintos que representen la misma guía; el sistema debe compararlos por sus datos.
-
-**2. Hazlo tú**
-
-En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta:
-
 ```bash
 javac -d out src/Guia.java
 java -cp out Guia
 ```
 
-**Resultado esperado:** `equals` imprime `true`; `==` imprime `false` porque son objetos diferentes.
-
-**Fallo deliberado:** compara solo con `==`. **Diagnóstico:** esa operación compara identidad, no los componentes que describen la guía.
-
-**3. Entiende**
-
-La igualdad generada por el record usa sus componentes. Si un componente mutable se guarda dentro, el record no vuelve inmutable ese objeto interno.
-
-**4. Cierra**
-
-Anota qué comparación usarías en un `Set<Guia>` y por qué.
-
-#### Subtema 5.3: Produce una versión actualizada · 10 min
-
-**1. Contexto**
-
-La guía no se modifica en sitio cuando cambia el peso medido: se emite un nuevo valor para conservar las referencias anteriores.
-
-**2. Hazlo tú**
-
-En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta:
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-**Resultado esperado:** `2.5` y `3.0`; el objeto original conserva sus datos.
-
-**Fallo deliberado:** intenta asignar `original.pesoKg = 3.0`. **Diagnóstico:** los componentes no tienen setters; construye un valor nuevo.
-
-**3. Entiende**
-
-Usa records para valores que se describen por sus datos. Una entidad con identidad persistente y cambios durante su ciclo de vida puede necesitar una clase tradicional.
-
-**4. Cierra**
-
-Entrega los dos valores y explica por qué elegiste record. Fuente: [records en Dev.java](https://dev.java/learn/classes-objects/records/).
-
-**Proyecto integrador:** el motor de asignación de entregas representa cada guía como un `record` inmutable, igual que en este tema, para poder comparar y compartir guías entre hilos sin riesgo de mutación. **Límite:** usa `record` para un valor que se describe completamente por sus componentes; si la guía necesita identidad propia que persiste aunque cambien sus datos (por ejemplo, un historial de estados a lo largo del tiempo), modélala como una clase tradicional con identidad, no como record.
+</details>
 
 ### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de `super(...)` · Intermedio · 30 min
 
-**Duración estimada:** 30 min.
-**¿Por qué es importante?** Hasta Java 24, `super(...)` o `this(...)` tenía que ser la **primera** instrucción del constructor. Para validar un argumento antes de pasarlo a la clase padre había que inventar métodos estáticos auxiliares, y un campo de la subclase quedaba sin inicializar si el constructor padre llamaba a un método sobrescrito. Java 25 (JEP 513) permite código antes de `super(...)` con reglas precisas. Es una novedad del lenguaje que evalúa la certificación de Java 25.
-**Prerrequisitos:** Tema 1 (constructores) y Tema 2 (herencia, `super` y sobrescritura) de este módulo. Usa JDK 25.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 6.1: Valida el argumento antes de construir la clase padre · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por constructores flexibles (java 25): validar y preparar antes de `super(...)` con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender constructores flexibles (java 25): validar y preparar antes de `super(...)` te permite tomar mejores decisiones técnicas.**
 
-Una `Moto` es un `Vehiculo` con capacidad máxima de 30 kg. Si el valor es inválido, no tiene sentido construir primero la parte de `Vehiculo`.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en constructores flexibles (java 25): validar y preparar antes de `super(...)` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crea `java-motor/src/ConstructorFlexible.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que constructores flexibles (java 25): validar y preparar antes de `super(...)` resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Constructores flexibles (Java 25): validar y preparar antes de `super(...)` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Constructores flexibles (Java 25): validar y preparar antes de `super(...)` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses constructores flexibles (java 25): validar y preparar antes de `super(...)` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: constructores flexibles (java 25): validar y preparar antes de `super(...)` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Constructores flexibles (Java 25): validar y preparar antes de `super(...)` existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve constructores flexibles (java 25): validar y preparar antes de `super(...)` en tu contexto?
+2. ¿Cómo sabrías que constructores flexibles (java 25): validar y preparar antes de `super(...)` no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar constructores flexibles (java 25): validar y preparar antes de `super(...)`?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 class Vehiculo {
     private final String placa;
@@ -913,73 +848,10 @@ public class ConstructorFlexible {
 }
 ```
 
-Desde `java-motor`, ejecuta `java src/ConstructorFlexible.java`.
-
-**Resultado esperado:**
-
 ```text
 Vehiculo creado: ABC12D (25 kg) con caja
 Rechazada: Una moto lleva hasta 30 kg: 80
 ```
-
-**Fallo deliberado:** compila para Java 21: `javac --release 21 -d out src/ConstructorFlexible.java`. **Error esperado:** `error: flexible constructors is not supported in -source 21`. **Diagnóstico:** el código antes de `super(...)` es Java 25; en 21 debes mover la validación a un método `static` que se llame dentro del argumento de `super(...)`.
-
-**3. Entiende**
-
-Las instrucciones antes de `super(...)` forman el **prólogo** del constructor. Allí puedes validar argumentos, calcular valores en variables locales y **asignar** campos de la propia clase. La segunda moto se rechaza antes de que exista ninguna parte del objeto.
-
-**4. Cierra**
-
-Señala en el archivo las tres líneas del prólogo y qué hace cada una.
-
-#### Subtema 6.2: Corrige un campo que el padre veía sin inicializar · 10 min
-
-**1. Contexto**
-
-El constructor de `Vehiculo` llama a `descripcion()`, que `Moto` sobrescribe y que lee `conCaja`. Con el orden de Java 21 (campo asignado **después** de `super`), el padre ve el valor por defecto `false`.
-
-**2. Hazlo tú**
-
-En `Moto`, mueve `this.conCaja = conCaja;` para que quede **después** de `super(normalizada, capacidadKg);` y ejecuta de nuevo `java src/ConstructorFlexible.java`.
-
-**Resultado esperado (fallo deliberado):** `Vehiculo creado: ABC12D (25 kg) sin caja`, aunque pediste `true`.
-
-**Diagnóstico:** el constructor de `Vehiculo` ejecutó la versión sobrescrita de `descripcion()` cuando `conCaja` todavía valía `false`. Vuelve a poner la asignación **antes** de `super(...)` y comprueba que imprime `con caja`.
-
-**3. Entiende**
-
-Durante la construcción, Java ejecuta primero el constructor del padre. Si este llama a un método sobrescrito, el método corre en la subclase antes de que su constructor termine. Asignar campos en el prólogo resuelve este caso. **Límite:** la regla clásica sigue vigente: evita llamar a métodos sobrescribibles desde un constructor; el prólogo es una red de seguridad, no un permiso.
-
-**4. Cierra**
-
-Guarda las dos salidas (`sin caja` y `con caja`) y explica en una línea por qué difieren.
-
-#### Subtema 6.3: Reconoce lo que el prólogo no permite · 8 min
-
-**1. Contexto**
-
-El prólogo existe **antes** de que el objeto esté listo; el compilador impide usarlo como si ya lo estuviera.
-
-**2. Hazlo tú**
-
-En el constructor de `Moto`, añade antes de `super(...)` la línea `System.out.println(descripcion());` y compila con `javac -d out src/ConstructorFlexible.java`.
-
-**Resultado esperado (fallo deliberado):** `error: cannot reference descripcion() before supertype constructor has been called`.
-
-**Diagnóstico:** en el prólogo no puedes llamar métodos de instancia, leer campos ni pasar `this` a otro método; solo asignar campos propios y trabajar con argumentos y variables locales. Borra la línea.
-
-**3. Entiende**
-
-Regla para recordar: en el prólogo, `this` solo puede aparecer a la izquierda de una asignación a un campo de esta clase. Todo lo demás espera a que `super(...)` termine.
-
-**4. Cierra**
-
-Escribe una lista de dos columnas: "permitido en el prólogo" y "prohibido en el prólogo".
-
-**Ejercicio:** crea `Camion extends Vehiculo` cuyo constructor reciba la capacidad en **toneladas** (`double`) y la convierta a kilogramos enteros antes de llamar a `super`, rechazando valores menores o iguales a cero. Escribe el prólogo antes de abrir la solución.
-
-<details>
-<summary>Solución</summary>
 
 ```java
 class Camion extends Vehiculo {
@@ -993,41 +865,4 @@ class Camion extends Vehiculo {
 }
 ```
 
-`new Camion("TRK001", 2.5)` imprime `Vehiculo creado: TRK001 (2500 kg)`. En Java 21 habrías escrito `super(placa, aKilos(toneladas))` con un método `static int aKilos(double)` que validara y convirtiera.
-
 </details>
-
-**Hito del tema:**
-
-- [ ] Validé y normalicé argumentos antes de `super(...)` y provoqué el error con `--release 21`.
-- [ ] Reproduje el campo `sin caja` al asignarlo después de `super` y lo corregí en el prólogo.
-- [ ] Provoqué el error de llamar a un método de instancia en el prólogo.
-- [ ] Expliqué qué está permitido y qué no antes de `super(...)`.
-
-**Fuentes oficiales:** [JEP 513: Flexible Constructor Bodies](https://openjdk.org/jeps/513) y [Java Language Specification 25, §8.8.7](https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html#jls-8.8.7).
-
-**Proyecto integrador:** valida en el prólogo los vehículos del motor de entregas. **Límite:** si el motor debe compilar también con JDK 21, usa la variante con método `static` del ejercicio.
-
-## Construcción guiada del capítulo
-
-**Objetivo del laboratorio:** construir una jerarquía de clases con herencia, una interfaz y una clase abstracta.
-
-**Requisitos previos:** Módulo 0 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Construir `Guia` con invariantes en el constructor | Ver Tema 1 | Impide número y destino vacíos |
-| 2 | Extender `Vehiculo` y sobrescribir `entregar()` | Ver Tema 2 | Verifica despacho polimórfico |
-| 3 | Combinar `Confirmable` con `ServicioEntrega` abstracto | Ver Tema 3 | Separa capacidad común de estado compartido |
-| 4 | Sobrecargar `calcular()` y contrastarlo con `@Override` | Ver Tema 4 | Distingue selección por firma y tipo real |
-| 5 | Revisar acceso de campos en `Guia` y `Bicicleta` | Ver Tema 4 | Contrasta `private`, package-private y `protected` |
-
-**Verificación:** el laboratorio se considera exitoso si el motor procesa servicios mediante `Confirmable`, comparte el dato de guía solo donde corresponde y demuestra la diferencia entre sobrecarga, sobreescritura y alcance de los miembros.
-
-**Errores comunes y soluciones**
-
-- **Confundir sobrecarga con sobreescritura.** La sobrecarga define métodos con firmas distintas en la misma clase; la sobreescritura redefine un método heredado con la misma firma exacta.
-- **Usar una clase abstracta cuando una interfaz sería más apropiada.** Si no hay comportamiento compartido real entre subclases no relacionadas, prefiere una interfaz.
-- **Olvidar `@Override` al sobreescribir un método.** Sin ella, el compilador no verifica que efectivamente estás sobreescribiendo un método existente con la firma correcta.
-
----

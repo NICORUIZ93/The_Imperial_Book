@@ -2,35 +2,77 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: node:test — test runner nativo sin dependencias · Intermedio · 40 min
 
-**Prerrequisito:** Node LTS y JavaScript con módulos ES.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** ejecutar pruebas con `node:test` y `node:assert/strict`, sin dependencias de testing, y comprobar en el resumen que el número de pruebas descubiertas sea mayor que cero.
+#### ► DE QUÉ TRATA
+Este tema te guía por node:test — test runner nativo sin dependencias con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender node:test — test runner nativo sin dependencias te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** un script pequeño no siempre justifica instalar un framework completo. Node incluye runner, aserciones, mocks y reporteros; usar esas capacidades reduce dependencias cuando son suficientes.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`node:test` expone `test`, `describe` e `it`; `node:assert/strict` ofrece aserciones estrictas. `node --test` descubre archivos según convenciones como `*.test.js`, `test-*.js` y archivos dentro de directorios `test`. Un código de salida exitoso no basta para acreditar cobertura: si el runner descubre cero archivos puede terminar sin error. Hay que leer el resumen y exigir `# tests` mayor que cero, especialmente en CI.
+#### ► LA ANALOGÍA
+Piensa en node:test — test runner nativo sin dependencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El runner nativo es apropiado para scripts y herramientas pequeñas. Vitest conserva ventajas cuando necesitas su ecosistema, integración con Vite o experiencia de desarrollo. La elección no implica que una alternativa sea universalmente superior.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Command[node --test] --> Discover[Descubrir archivos de prueba]
+  Discover --> Cases[Ejecutar node:test]
+  Cases --> Assertions[node:assert/strict]
+  Assertions --> Summary[Revisar tests y failures]
+  Summary -->|tests igual a cero| Fail[Corregir descubrimiento]
+```
 
-**Analogía:** para un ajuste pequeño, usa el destornillador que ya viene en la caja; comprueba después que realmente apretaste el tornillo, no solo que la herramienta no mostró una alarma.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| node:test — test runner nativo sin dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** `node:test`, `node:assert/strict`, descubrimiento por convención, resumen `# tests`, cero dependencias de testing y selección de runner.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar node:test — test runner nativo sin dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Practica
+#### ► CUÁNDO NO USAR ESTO
+No uses node:test — test runner nativo sin dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Empieza en una carpeta vacía y crea todos los archivos manualmente:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: node:test — test runner nativo sin dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- node:test — test runner nativo sin dependencias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve node:test — test runner nativo sin dependencias en tu contexto?
+2. ¿Cómo sabrías que node:test — test runner nativo sin dependencias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar node:test — test runner nativo sin dependencias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-node-test
 cd practica-node-test
 mkdir src test
 ```
-
-Crea `package.json`, sin `dependencies` ni `devDependencies`:
 
 ```json
 {
@@ -44,15 +86,11 @@ Crea `package.json`, sin `dependencies` ni `devDependencies`:
 }
 ```
 
-Crea `src/sumar.js`:
-
 ```js
 export function sumar(a, b) {
   return a + b;
 }
 ```
-
-Crea `src/sumar.test.js`:
 
 ```js
 import { test } from "node:test";
@@ -64,101 +102,36 @@ test("suma dos valores", () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 npm test
 ```
-
-**Resultado esperado:** el resumen TAP incluye `# tests 1`, `# pass 1` y `# fail 0`. El dato decisivo es que se descubrió una prueba; no basta con que el comando termine.
-
-**Fallo deliberado y corrección:** renombra temporalmente el archivo:
 
 ```bash
 mv src/sumar.test.js src/sumarPrueba.js
 npm test
 ```
 
-Observa `# tests 0` aunque el proceso pueda terminar con código de salida `0`. Después restaura el nombre y verifica de nuevo el recuento:
-
-```bash
-mv src/sumarPrueba.js src/sumar.test.js
-npm test
-```
-
-##### Práctica guiada
-
-Crea `src/restar.js`:
-
-```js
-export function restar(a, b) {
-  return a - b;
-}
-```
-
-Crea `test/restar.js`, deliberadamente sin sufijo `.test` porque está dentro de `test/`:
-
-```js
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { restar } from "../src/restar.js";
-
-test("resta dos valores", () => {
-  assert.strictEqual(restar(7, 2), 5);
-});
-```
-
-Ejecuta `npm test` y comprueba `# tests 2`, `# pass 2` y `# fail 0`. Así verificas que ambos archivos fueron descubiertos.
-
-##### Ejercicio independiente
-
-Sin importar pruebas de otros proyectos, crea `src/esPar.js` y `test/esPar.js` para una función que determine si un entero es par. Incluye casos para `0`, un negativo par y un impar. Ejecuta `node --test --test-reporter=spec` y verifica en su resumen `tests 3` y `pass 3`. Escribe una frase sobre qué ganas al no instalar dependencias y qué comodidad de Vitest podrías perder en una aplicación mayor.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] `package.json` no declara dependencias de testing.
-- [ ] Las aserciones usan `node:assert/strict` y las pruebas `node:test`.
-- [ ] `node --test` descubre los archivos por nombre o por ubicación en `test/`.
-- [ ] El resumen final confirma un número de pruebas mayor que cero y ningún fallo.
-- [ ] El caso renombrado produjo `# tests 0` y se corrigió restaurando la convención.
-
-**Errores comunes:** confiar solo en el código de salida; ignorar el recuento de pruebas; romper las convenciones de descubrimiento; importar desde rutas incorrectas; elegir el runner nativo sin valorar las necesidades reales de mocks, watch o ecosistema.
-
-```mermaid
-flowchart LR
-  Command[node --test] --> Discover[Descubrir archivos de prueba]
-  Discover --> Cases[Ejecutar node:test]
-  Cases --> Assertions[node:assert/strict]
-  Assertions --> Summary[Revisar tests y failures]
-  Summary -->|tests igual a cero| Fail[Corregir descubrimiento]
-```
-
-**Cuándo elegir el runner nativo:** `node:test` reduce dependencias para suites compatibles con sus mocks, hooks y reporteros. Si el proyecto necesita integración directa con Vite, plugins o un flujo de watch específico, compara ese coste con Vitest; no migres solo por el nombre ni confundas compatibilidad del runner con cobertura de la aplicación.
-
-**Fuentes oficiales:** [Node.js: Test runner](https://nodejs.org/api/test.html) y [Node.js: Assert](https://nodejs.org/api/assert.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** prueba una regla pura de envíos con `node:test` y haz que el pipeline falle si el reporte no demuestra que descubrió pruebas. Conserva Vitest donde sus capacidades aporten un beneficio concreto.
+</details>
 
 ### Tema 2: TDD práctico: rojo, verde y refactor con node:test · Avanzado · 45 min
 
-**Prerrequisito:** Node LTS, aserciones básicas y capacidad para ejecutar `node --test`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** desarrollar una regla de tarifas mediante ciclos observables rojo → verde → refactor, incluyendo el borde de diez envíos y validaciones de entrada, sin borrar trabajo para reiniciar el ejercicio.
+#### ► DE QUÉ TRATA
+Este tema te guía por tdd práctico: rojo, verde y refactor con node:test con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender tdd práctico: rojo, verde y refactor con node:test te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** los errores de límite pueden pasar desapercibidos hasta afectar facturación. Escribir primero el comportamiento obliga a definir el contrato y aporta evidencia de que la prueba detecta su ausencia.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-TDD repite tres momentos. En **rojo**, agregas una prueba para el siguiente comportamiento y la ves fallar por la razón esperada. En **verde**, escribes el mínimo código que la satisface sin romper las anteriores. En **refactor**, mejoras nombres o estructura manteniendo la suite verde. Una prueba que nunca falló no ha demostrado que pueda atrapar la regresión.
+#### ► LA ANALOGÍA
+Piensa en tdd práctico: rojo, verde y refactor con node:test como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El caso `enviosMes >= 10` distingue el borde exacto de `> 10`. No hace falta borrar un archivo terminado para practicar: empieza con una función mínima y agrega cada comportamiento en orden. En prototipos descartables o cuando el contrato todavía se explora, puede ser más útil experimentar primero y fijar después las pruebas.
-
-**Analogía:** marca en el suelo dónde irá cada mueble antes de traerlo; si no encaja, lo descubres antes de cargarlo. Una vez colocado, puedes ordenar la habitación sin mover las paredes.
-
-**Conceptos clave:** rojo, verde, refactor, comportamiento incremental, caso límite, prueba previa, `node:test` y red de regresión.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     R[Rojo: prueba que falla] --> V[Verde: código mínimo]
@@ -166,16 +139,54 @@ flowchart LR
     F --> R
 ```
 
-#### Practica
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| TDD práctico: rojo, verde y refactor con node:test se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea un proyecto nuevo desde una carpeta vacía:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar TDD práctico: rojo, verde y refactor con node:test | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tdd práctico: rojo, verde y refactor con node:test por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tdd práctico: rojo, verde y refactor con node:test funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- TDD práctico: rojo, verde y refactor con node:test existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tdd práctico: rojo, verde y refactor con node:test en tu contexto?
+2. ¿Cómo sabrías que tdd práctico: rojo, verde y refactor con node:test no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tdd práctico: rojo, verde y refactor con node:test?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    R[Rojo: prueba que falla] --> V[Verde: código mínimo]
+    V --> F[Refactor con pruebas en verde]
+    F --> R
+```
 
 ```bash
 mkdir practica-tdd-tarifas
 cd practica-tdd-tarifas
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -189,8 +200,6 @@ Crea `package.json`:
 }
 ```
 
-**Primer rojo.** Crea `tarifa.test.js` con una sola prueba:
-
 ```js
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -201,17 +210,11 @@ test("cobra la base de la ciudad más 1200 por kilo iniciado", () => {
 });
 ```
 
-Crea `tarifa.js` con un punto de partida explícito, no un archivo vacío ambiguo:
-
 ```js
 export function tarifa() {
   throw new Error("Comportamiento aún no implementado");
 }
 ```
-
-Ejecuta `npm test`. **Rojo esperado:** la prueba falla con `Comportamiento aún no implementado`; el error confirma que llegó a la función que vas a desarrollar.
-
-**Primer verde.** Reemplaza el contenido de `tarifa.js` por el mínimo cálculo que satisface el contrato inicial:
 
 ```js
 export function tarifa({ ciudad, kilos }) {
@@ -220,130 +223,27 @@ export function tarifa({ ciudad, kilos }) {
 }
 ```
 
-Ejecuta `npm test`: debe aparecer `pass 1` y `fail 0`.
-
-**Primer refactor.** Con la prueba verde, nombra las reglas sin cambiar el resultado:
-
-```js
-const BASE = { Bogotá: 5000, Medellín: 7000 };
-const PRECIO_KILO = 1200;
-
-export function tarifa({ ciudad, kilos }) {
-  const base = BASE[ciudad];
-  return base + Math.ceil(kilos) * PRECIO_KILO;
-}
-```
-
-Vuelve a ejecutar la suite antes de agregar comportamiento.
-
-**Siguientes ciclos.** Añade una prueba a la vez a `tarifa.test.js`, ejecuta y observa el rojo, implementa el mínimo cambio y refactoriza solo en verde. El orden es: descuento desde diez envíos, kilos no positivos y ciudad sin cobertura. El archivo de pruebas completo queda así:
-
-```js
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { tarifa } from "./tarifa.js";
-
-test("cobra la base de la ciudad más 1200 por kilo iniciado", () => {
-  assert.equal(tarifa({ ciudad: "Bogotá", kilos: 2.5 }), 8600);
-});
-
-test("aplica 10 % de descuento desde 10 envíos en el mes", () => {
-  assert.equal(tarifa({ ciudad: "Bogotá", kilos: 1, enviosMes: 10 }), 5580);
-});
-
-test("rechaza kilos no positivos", () => {
-  assert.throws(() => tarifa({ ciudad: "Bogotá", kilos: 0 }), RangeError);
-});
-
-test("rechaza ciudades sin cobertura", () => {
-  assert.throws(() => tarifa({ ciudad: "Leticia", kilos: 1 }), /Sin cobertura/);
-});
-```
-
-Después de los ciclos correspondientes, `tarifa.js` debe expresar esta implementación:
-
-```js
-const BASE = { Bogotá: 5000, Medellín: 7000 };
-const PRECIO_KILO = 1200;
-const DESCUENTO_FRECUENTE = 0.1;
-
-export function tarifa({ ciudad, kilos, enviosMes = 0 }) {
-  if (!(ciudad in BASE)) throw new Error(`Sin cobertura en ${ciudad}`);
-  if (kilos <= 0) throw new RangeError("kilos debe ser positivo");
-
-  const bruto = BASE[ciudad] + Math.ceil(kilos) * PRECIO_KILO;
-  const descuento = enviosMes >= 10 ? DESCUENTO_FRECUENTE : 0;
-  return Math.round(bruto * (1 - descuento));
-}
-```
-
-Ejecuta `npm test`. **Resultado esperado:** el resumen muestra `tests 4`, `pass 4` y `fail 0`. Si añadiste las pruebas de una en una, conserva en tus notas el fallo observado antes de cada implementación; no borres el resultado final para simular el proceso.
-
-**Fallo deliberado y corrección:** con las cuatro pruebas verdes, cambia `enviosMes >= 10` por `enviosMes > 10`. La prueba del descuento debe informar `actual: 6200` y `expected: 5580`. Restaura `>= 10` y ejecuta otra vez para cerrar el ciclo en verde.
-
-##### Práctica guiada
-
-Desarrolla con TDD la regla «los envíos de más de 20 kg pagan un recargo fijo de 8000». Escribe primero una prueba con `21` kg y calcula el total esperado a partir de las reglas existentes. Mírala fallar, agrega la condición mínima y, cuando todo pase, extrae `8000` a `RECARGO_PESADO`. Añade después el borde de `20` kg, que no debe pagar recargo.
-
-##### Ejercicio independiente
-
-En archivos nuevos `franja.js` y `franja.test.js` de este mismo proyecto, desarrolla `franjaEntrega(hora)` con TDD. El contrato es `mañana` para `7 <= hora < 12`, `tarde` para `12 <= hora < 19` y `fuera de horario` en el resto. Empieza por `7`, `12` y `19`, agrega un horario nocturno y registra un rojo, un verde y un refactor para cada incremento.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] Cada comportamiento nuevo tiene evidencia de un fallo anterior a su implementación.
-- [ ] El código mínimo hizo pasar la prueba antes de cada refactor.
-- [ ] La suite final descubre al menos las cuatro pruebas de tarifa y no tiene fallos.
-- [ ] Los bordes `9` y `10` envíos, o `20` y `21` kg en la práctica guiada, distinguen la comparación correcta.
-- [ ] El cambio deliberado de `>=` a `>` fue detectado y corregido sin eliminar las pruebas.
-- [ ] `franjaEntrega` cubre los tres límites horarios definidos.
-
-**Errores comunes:** escribir primero producción y justificarla después; aceptar un rojo causado por una importación equivocada como prueba del comportamiento; refactorizar con la suite roja; probar solo un lado del límite; borrar el trabajo final para reiniciar TDD; añadir varias reglas sin observar ciclos individuales.
-
-Ejecuta cada ciclo desde la carpeta del proyecto con un comando reproducible:
-
-```bash
-npm test
-```
-
-**Fuentes oficiales:** [Node.js: Test runner](https://nodejs.org/api/test.html) y [Martin Fowler: Test Driven Development](https://martinfowler.com/bliki/TestDrivenDevelopment.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas. Define primero los bordes y conserva las pruebas como especificación ejecutable mientras refactorizas.
+</details>
 
 ### Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Avanzado · 35 min
 
-**Prerrequisito:** tema «node:test — test runner nativo sin dependencias» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** medir la cobertura de tus pruebas con `--experimental-test-coverage`, entender por qué la cobertura de líneas puede engañar y hacer fallar el pipeline con un umbral de ramas.
+#### ► DE QUÉ TRATA
+Este tema te guía por cobertura de pruebas con node:test: líneas, ramas y umbrales con foco en comprensión antes de implementación.
 
-**¿Por qué es importante?** La cobertura muestra qué código nunca se ejecutó en las pruebas. No prueba que el código sea correcto, pero sí revela caminos que nadie probó, como el manejo de errores.
+#### ► LA IDEA EN UNA FRASE
+**Entender cobertura de pruebas con node:test: líneas, ramas y umbrales te permite tomar mejores decisiones técnicas.**
 
-#### Aprende
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Objetivo y preparación.**
+#### ► LA ANALOGÍA
+Piensa en cobertura de pruebas con node:test: líneas, ramas y umbrales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Usa Node.js 22 o superior (el umbral `--test-coverage-branches` llegó en Node 22.8). Crea la carpeta `academia-labs/node/cobertura`.
-
-**Contexto y caso real.**
-
-El cálculo de tarifas de RutaFlow tenía «100 % de cobertura». Aun así, un envío urgente se cobró mal en producción. El reporte de líneas estaba en 100 %, pero el de ramas mostraba que nadie había probado el caso urgente.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** cobertura de líneas, cobertura de ramas, cobertura de funciones, umbral, `--experimental-test-coverage`, `--test-coverage-branches`.
-
-- **Líneas:** qué líneas se ejecutaron al menos una vez.
-- **Ramas:** qué caminos de cada decisión (`if`, `?:`, `&&`, valores por defecto) se recorrieron. Un `if` tiene dos ramas: verdadero y falso.
-- **Funciones:** qué funciones se llamaron.
-
-Una línea como `if (urgente) return base * 2;` cuenta como **ejecutada** aunque `urgente` nunca haya sido verdadero. Por eso la cobertura de ramas es más honesta. Un **umbral** convierte la medición en una regla: si baja de cierto porcentaje, el comando termina con código 1 y el pipeline falla.
-
-**Analogía:** la cobertura de líneas dice qué calles del mapa recorriste; la de ramas dice si en cada cruce probaste girar a ambos lados. La analogía falla en que haber pasado por un cruce no garantiza que llegaste al lugar correcto: eso lo comprueban las aserciones.
-
-**Límite de uso:** 100 % de cobertura no significa ausencia de errores: una prueba sin aserciones también cubre. No persigas el número en código trivial; úsalo para encontrar caminos importantes sin probar.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     T["tarifa(kilos, urgente)"] --> D{"kilos <= 0"}
@@ -353,11 +253,51 @@ flowchart TB
     U -->|"no: probado"| B["base"]
 ```
 
-#### Practica
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cobertura de pruebas con node:test: líneas, ramas y umbrales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Demostración guiada desde cero.**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cobertura de pruebas con node:test: líneas, ramas y umbrales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Archivo `academia-labs/node/cobertura/tarifa.mjs`:
+#### ► CUÁNDO NO USAR ESTO
+No uses cobertura de pruebas con node:test: líneas, ramas y umbrales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cobertura de pruebas con node:test: líneas, ramas y umbrales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cobertura de pruebas con node:test: líneas, ramas y umbrales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cobertura de pruebas con node:test: líneas, ramas y umbrales en tu contexto?
+2. ¿Cómo sabrías que cobertura de pruebas con node:test: líneas, ramas y umbrales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cobertura de pruebas con node:test: líneas, ramas y umbrales?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    T["tarifa(kilos, urgente)"] --> D{"kilos <= 0"}
+    D -->|"sí: sin probar"| E["RangeError"]
+    D -->|"no: probado"| U{"urgente"}
+    U -->|"sí: sin probar"| X["base * 2"]
+    U -->|"no: probado"| B["base"]
+```
 
 ```js
 export function tarifa(kilos, urgente = false) {
@@ -367,8 +307,6 @@ export function tarifa(kilos, urgente = false) {
   return base;
 }
 ```
-
-Archivo `academia-labs/node/cobertura/tarifa.test.mjs`:
 
 ```js
 import { test } from 'node:test';
@@ -380,18 +318,10 @@ test('tarifa normal', () => {
 });
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/node/cobertura
 node --test --experimental-test-coverage --test-reporter=spec tarifa.test.mjs
 ```
-
-**Explicación por bloques:** `tarifa.mjs` tiene dos decisiones: el peso inválido y el envío urgente. La única prueba usa 2 kilos sin urgencia, así que recorre solo un lado de cada decisión. El reporte muestra 100 % de líneas, porque las dos líneas con `if` se ejecutaron, pero 50 % de ramas: el error y el caso urgente nunca corrieron. La duración de la prueba cambia en cada ejecución; el resto del reporte debe coincidir.
-
-![Captura de terminal: la prueba pasa y el reporte muestra tarifa.mjs con 100 % de líneas pero 50 % de ramas](content/figures/node/cobertura-node-test.svg)
-
-**Resultado esperado:**
 
 ```text
 ✔ tarifa normal
@@ -400,66 +330,74 @@ node --test --experimental-test-coverage --test-reporter=spec tarifa.test.mjs
 ℹ tarifa.mjs      | 100.00 |    50.00 |  100.00 |
 ```
 
-**Fallo deliberado:** agrega `--test-coverage-branches=80` al comando. **Error esperado:** el comando termina con código 1 y el reporte dice `66.67% branch coverage does not meet threshold of 80%` (el porcentaje incluye el archivo de prueba). **Diagnóstico:** el umbral funciona: hay caminos sin probar. Escribe las pruebas del caso urgente y del peso inválido hasta pasar el umbral.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el comando y localiza las columnas de líneas y ramas.
-2. **Variación:** agrega una prueba para `tarifa(2, true)` y observa cómo sube la cobertura de ramas.
-3. **Diagnóstico:** reproduce el fallo deliberado con el umbral y revisa el código de salida con `echo $?`.
-4. **Integración:** agrega `assert.throws(() => tarifa(0), RangeError)` y llega a 100 % de ramas.
-5. **Diseño:** escribe una prueba que cubra todo pero no compruebe nada (sin `assert`) y explica por qué la cobertura no la detecta.
-
-**Pista:** mira la columna de ramas antes que la de líneas: ahí aparecen los casos olvidados.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Agrega en `package.json` el script `"test:cov": "node --test --experimental-test-coverage --test-coverage-branches=90"` y úsalo en un proyecto propio. Excluye los archivos de prueba del reporte con `--test-coverage-exclude`.
-
-**Checklist de salida.**
-
-- [ ] Explicas la diferencia entre cobertura de líneas y de ramas.
-- [ ] El reporte muestra 100 % de líneas y 50 % de ramas en `tarifa.mjs`.
-- [ ] Hiciste fallar el comando con un umbral.
-- [ ] Sabes por qué 100 % no significa «sin errores».
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** mirar solo la cobertura de líneas, escribir pruebas sin aserciones para subir el número y exigir 100 % en código trivial. **Siguiente paso:** el tema «TDD práctico» usa estas mediciones para guiar qué prueba escribir después.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el CI de RutaFlow, ejecuta las pruebas con cobertura y un umbral de ramas de 80 % para el módulo de tarifas.
-
-**Fuente oficial:** [Node.js — Test runner: collecting code coverage](https://nodejs.org/api/test.html#collecting-code-coverage).
+</details>
 
 ### Tema 4: Vitest y Supertest — pruebas de integración HTTP reales · Avanzado · 45 min
 
-**Prerrequisito:** Node LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** escribir y ejecutar pruebas que comprueben el estado y el cuerpo de respuestas HTTP de una aplicación Express, incluida una validación fallida, sin mantener un servidor escuchando en un puerto.
+#### ► DE QUÉ TRATA
+Este tema te guía por vitest y supertest — pruebas de integración http reales con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender vitest y supertest — pruebas de integración http reales te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una prueba de una función aislada no detecta necesariamente errores de routing, serialización JSON o middleware. Una prueba de integración HTTP ejercita esas piezas juntas y comprueba el contrato que recibirá un cliente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Supertest recibe la instancia de Express y ejecuta la petición contra ella. Para estas pruebas no hace falta llamar a `app.listen()` ni dejar un servidor permanente: `await request(app).get("/health")` permite comprobar la aplicación sin administrar un puerto abierto durante la suite. Vitest aporta el runner y las aserciones; Supertest aporta el cliente HTTP de prueba.
+#### ► LA ANALOGÍA
+Piensa en vitest y supertest — pruebas de integración http reales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El contrato observable incluye el código de estado, el cuerpo y, cuando sea relevante, las cabeceras. Conviene probar tanto el camino feliz como los errores esperados: una suite que solo comprueba respuestas `200` puede dejar sin cubrir validaciones y regresiones de manejo de errores. Cada prueba debe controlar sus datos y no depender del orden de ejecución.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que vitest y supertest — pruebas de integración http reales resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** probar funciones por separado es revisar los engranajes de un reloj; usar Supertest es dar cuerda al reloj ensamblado y comprobar la hora, sin abrir la relojería al público.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Vitest y Supertest — pruebas de integración HTTP reales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** integración HTTP, aplicación Express sin `listen` permanente, contrato observable, estado, cuerpo JSON, camino feliz y error esperado.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Vitest y Supertest — pruebas de integración HTTP reales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Practica
+#### ► CUÁNDO NO USAR ESTO
+No uses vitest y supertest — pruebas de integración http reales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Empieza en una carpeta vacía. Este proyecto no utiliza archivos de otros temas ni ejemplos del repositorio.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: vitest y supertest — pruebas de integración http reales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Vitest y Supertest — pruebas de integración HTTP reales existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve vitest y supertest — pruebas de integración http reales en tu contexto?
+2. ¿Cómo sabrías que vitest y supertest — pruebas de integración http reales no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar vitest y supertest — pruebas de integración http reales?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-vitest-http
 cd practica-vitest-http
 mkdir src test
 ```
-
-Crea manualmente `package.json`:
 
 ```json
 {
@@ -473,14 +411,10 @@ Crea manualmente `package.json`:
 }
 ```
 
-Instala las dependencias y conserva el `package-lock.json` generado:
-
 ```bash
 npm install express
 npm install --save-dev vitest supertest
 ```
-
-Crea `src/app.js`. La aplicación se exporta sin llamar a `listen`:
 
 ```js
 import express from "express";
@@ -500,8 +434,6 @@ app.post("/tareas", (req, res) => {
   return res.status(201).json({ id: 1, titulo: titulo.trim() });
 });
 ```
-
-Crea `test/app.test.js`:
 
 ```js
 import request from "supertest";
@@ -527,69 +459,82 @@ describe("contrato HTTP", () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 npm test
 ```
 
-**Resultado esperado:** Vitest informa dos pruebas aprobadas y ninguna fallida. No necesitas iniciar `node src/app.js` ni reservar un puerto.
-
-**Fallo deliberado y corrección:** en `src/app.js`, cambia temporalmente `{ status: "ok" }` por `{ status: "ready" }` y ejecuta `npm test`. Observa la diferencia entre el cuerpo esperado y el recibido. Después restaura `ok` y repite el comando hasta volver a verde; así compruebas que la aserción detecta una regresión real.
-
-##### Práctica guiada
-
-Añade a `test/app.test.js` una prueba para el alta válida. Debe enviar `{ "titulo": " Preparar pedido " }`, esperar `201` y comprobar exactamente `{ id: 1, titulo: "Preparar pedido" }`. La pista es verificar también que `express.json()` y el recorte del texto forman parte del contrato.
-
-##### Ejercicio independiente
-
-En este mismo proyecto, añade una ruta `GET /tareas/:id` que devuelva `404` y `{ "error": "tarea no encontrada" }` para un identificador desconocido. Escribe primero la prueba, implementa después la ruta y explica en una frase qué regresión detecta cada uno de los cuatro casos de la suite.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] `npm test` ejecuta al menos cuatro pruebas y termina sin fallos.
-- [ ] Las pruebas importan `app` y no requieren `app.listen()` ni un servidor permanente.
-- [ ] Hay aserciones específicas de estado y cuerpo para una respuesta válida y otra inválida.
-- [ ] El fallo deliberado produjo una diferencia legible y desapareció al corregir el código.
-- [ ] Ninguna prueba depende del resultado o del orden de otra.
-
-**Errores comunes:** abrir puertos innecesarios; compartir estado mutable; usar aserciones tan amplias que acepten cuerpos incorrectos; olvidar `await`; probar detalles privados en vez del contrato HTTP; probar únicamente el camino feliz.
-
-**Fuentes oficiales:** [Vitest](https://vitest.dev/guide/), [Supertest](https://github.com/ladjs/supertest) y [Express: Hello World](https://expressjs.com/en/starter/hello-world.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** prueba por HTTP el alta, la consulta y la confirmación de una entrega. Aísla los datos por caso y verifica tanto el cuerpo de confirmación como el efecto persistido.
+</details>
 
 ### Tema 5: Testcontainers — bases de datos de prueba reales y efímeras · Avanzado · 45 min
 
-**Prerrequisito:** Node LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** ejecutar una prueba de integración que cree una tabla, inserte y consulte datos en PostgreSQL real, con una imagen fijada y cierre del cliente y del contenedor en `afterAll`.
+#### ► DE QUÉ TRATA
+Este tema te guía por testcontainers — bases de datos de prueba reales y efímeras con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender testcontainers — bases de datos de prueba reales y efímeras te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** un mock de base de datos puede aceptar una consulta que el motor real rechaza. PostgreSQL aplica tipos, restricciones, transacciones y códigos de error concretos; probar contra él detecta incompatibilidades que una simulación puede ocultar.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Testcontainers inicia infraestructura real con un ciclo de vida controlado por la suite. Una base efímera evita que una ejecución herede datos de otra y reduce la interferencia entre procesos. La imagen debe fijarse, por ejemplo `postgres:16-alpine`, para que una ejecución futura no cambie de motor por resolver `latest`.
+#### ► LA ANALOGÍA
+Piensa en testcontainers — bases de datos de prueba reales y efímeras como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El contenedor se crea en `beforeAll`; la conexión y el contenedor se cierran con `await` en `afterAll`. El cierre condicional permite limpiar incluso cuando el arranque falló antes de asignar todas las variables. Esta técnica está destinada a pruebas que necesitan el motor real: para lógica pura sin persistencia, una función o un doble sencillo suele dar feedback más rápido.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Test[Test de integración] --> Start[Iniciar PostgreSQL fijado]
+  Start --> Schema[Crear esquema limpio]
+  Schema --> Query[Probar restricciones y transacciones reales]
+  Query --> Assert[Verificar resultados]
+  Assert --> Finally[Cerrar cliente y contenedor]
+```
 
-**Analogía:** es montar un laboratorio desechable para un experimento y desmontarlo al terminar, en lugar de compartir siempre un laboratorio cuyo estado desconoces.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Testcontainers — bases de datos de prueba reales y efímeras se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** contenedor efímero, imagen fijada, PostgreSQL real, aislamiento, `beforeAll`, `afterAll`, conexión temporal y restricciones del motor.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Testcontainers — bases de datos de prueba reales y efímeras | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Practica
+#### ► CUÁNDO NO USAR ESTO
+No uses testcontainers — bases de datos de prueba reales y efímeras por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Empieza en una carpeta vacía y crea un proyecto nuevo, sin reutilizar configuración de otros temas.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: testcontainers — bases de datos de prueba reales y efímeras funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Testcontainers — bases de datos de prueba reales y efímeras existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve testcontainers — bases de datos de prueba reales y efímeras en tu contexto?
+2. ¿Cómo sabrías que testcontainers — bases de datos de prueba reales y efímeras no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar testcontainers — bases de datos de prueba reales y efímeras?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-testcontainers
 cd practica-testcontainers
 mkdir test
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -603,20 +548,14 @@ Crea `package.json`:
 }
 ```
 
-Instala las dependencias:
-
 ```bash
 npm install pg
 npm install --save-dev vitest @testcontainers/postgresql
 ```
 
-Comprueba que Docker responde antes de ejecutar las pruebas:
-
 ```bash
 docker info
 ```
-
-Crea `test/postgres.test.js`. La espera explícita del cierre y las guardas de `afterAll` son parte del ejemplo, no detalles opcionales:
 
 ```js
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
@@ -661,80 +600,82 @@ describe("PostgreSQL efímero", () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 npm test
 ```
 
-**Resultado esperado:** se descarga la imagen fijada si no estaba disponible, PostgreSQL inicia, una prueba pasa y el cliente y el contenedor se cierran. La primera descarga puede tardar más que las siguientes ejecuciones.
-
-**Fallo deliberado y corrección:** cambia temporalmente la imagen a `postgres:imagen-inexistente` y ejecuta `npm test`. El arranque fallará al resolver o descargar la imagen; no es un error de la consulta. Restaura exactamente `postgres:16-alpine` y repite la prueba. Las guardas de `afterAll` evitan que una variable sin inicializar provoque un segundo error de limpieza.
-
-##### Práctica guiada
-
-Añade una segunda prueba que inserte `{ titulo: "Recoger" }` y la recupere por `id`. Antes de cada prueba, limpia la tabla con un `beforeEach` que ejecute `TRUNCATE TABLE tareas RESTART IDENTITY`; importa `beforeEach` desde Vitest. Comprueba que el identificador de la primera fila vuelve a ser `1` y que las pruebas no dependen del orden.
-
-##### Ejercicio independiente
-
-Añade una prueba que inserte dos veces el mismo título. La segunda operación debe comprobarse con una aserción de rechazo cuyo error tenga la propiedad PostgreSQL `code: "23505"`. Después de la suite, usa `docker ps` para confirmar que el contenedor de prueba ya no está en ejecución; no detengas contenedores ajenos a este proyecto.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] La configuración usa `postgres:16-alpine`, no `latest` ni una etiqueta variable.
-- [ ] La prueba ejecuta `CREATE TABLE`, `INSERT` y `SELECT` contra PostgreSQL real.
-- [ ] `afterAll` espera el cierre del cliente y del contenedor y tolera un arranque incompleto.
-- [ ] La restricción `UNIQUE` produce una aserción sobre el error `23505`.
-- [ ] Dos ejecuciones sucesivas comienzan con datos limpios y no dejan el contenedor activo.
-
-**Errores comunes:** dejar clientes o contenedores vivos; usar `latest`; depender del orden de las pruebas; compartir volúmenes o bases persistentes; guardar credenciales en el repositorio; usar contenedores para lógica que no toca infraestructura.
-
-```mermaid
-flowchart LR
-  Test[Test de integración] --> Start[Iniciar PostgreSQL fijado]
-  Start --> Schema[Crear esquema limpio]
-  Schema --> Query[Probar restricciones y transacciones reales]
-  Query --> Assert[Verificar resultados]
-  Assert --> Finally[Cerrar cliente y contenedor]
-```
-
-**Cuándo usar Testcontainers:** elige una base real efímera cuando la conducta depende del dialecto, restricciones, transacciones o migraciones. Para una regla de dominio pura, no arranques PostgreSQL: prueba la regla aislada. Un contenedor local tampoco comprueba por sí solo la base administrada de producción, sus extensiones ni su configuración de red.
-
-**Fuentes oficiales:** [Testcontainers para Node](https://node.testcontainers.org/), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [API de Vitest](https://vitest.dev/api/).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta las migraciones y las consultas de entregas contra un PostgreSQL efímero en CI. Aísla cada corrida y verifica restricciones y transacciones que un mock no reproduce con fidelidad.
+</details>
 
 ### Tema 6: Mocks de servicios externos y CI · Avanzado · 45 min
 
-**Prerrequisito:** Node LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** probar el uso del contrato de un proveedor sin red, incluir respuestas de éxito y fallo, y definir un workflow de GitHub Actions que instale con `npm ci` y ejecute la suite.
+#### ► DE QUÉ TRATA
+Este tema te guía por mocks de servicios externos y ci con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender mocks de servicios externos y ci te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una API de mapas, correo o pagos puede ser lenta, costosa o no estar disponible en CI. Una prueba del código propio no debe generar cargos ni depender de la conectividad de ese día.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un mock es un doble controlado: define la respuesta de la dependencia y permite verificar los argumentos con los que fue llamada. No demuestra que el proveedor real funcione. El doble debe respetar el contrato documentado y devolver datos posibles; las pruebas de contrato o integración con el proveedor son una capa distinta.
+#### ► LA ANALOGÍA
+Piensa en mocks de servicios externos y ci como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En CI, `npm ci` instala exactamente el árbol descrito por el lockfile y `npm test` ejecuta la verificación. Un proyecto con pruebas de base real puede iniciar Testcontainers dentro de esa suite. Guardar un workflow en el disco o validar su YAML localmente **no publica el workflow ni demuestra que se haya ejecutado en GitHub**: solo después de enviarlo a un repositorio remoto y abrir la ejecución en Actions puedes comprobar el resultado de CI.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Test[Test de regla propia] --> Port[Puerto del proveedor]
+  Port --> Fake[Fake controlado sin red]
+  Fake -->|éxito, timeout o error| Result[Resultado observable]
+  Result --> Assert[Aserciones de argumentos y llamadas]
+  Assert --> CI[npm ci y suite en CI]
+```
 
-**Analogía:** el mock es un simulador de vuelo para entrenar decisiones controladas; CI es la revisión repetible antes de autorizar el vuelo. Ninguno sustituye por sí solo una comprobación del sistema externo real cuando esa comprobación sea necesaria.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mocks de servicios externos y CI se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** `vi.fn`, contrato externo, determinismo, error y timeout simulados, `npm ci`, lockfile, GitHub Actions y evidencia de ejecución remota.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mocks de servicios externos y CI | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Practica
+#### ► CUÁNDO NO USAR ESTO
+No uses mocks de servicios externos y ci por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Crea un proyecto nuevo desde una carpeta vacía:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mocks de servicios externos y ci funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Mocks de servicios externos y CI existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mocks de servicios externos y ci en tu contexto?
+2. ¿Cómo sabrías que mocks de servicios externos y ci no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mocks de servicios externos y ci?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-mocks-ci
 cd practica-mocks-ci
 mkdir -p src test .github/workflows
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -748,13 +689,9 @@ Crea `package.json`:
 }
 ```
 
-Instala Vitest para generar también el lockfile:
-
 ```bash
 npm install --save-dev vitest
 ```
-
-Crea `src/rutas.js`:
 
 ```js
 export async function calcularRuta(cliente, origen, destino) {
@@ -765,8 +702,6 @@ export async function calcularRuta(cliente, origen, destino) {
   return respuesta.distanceKm;
 }
 ```
-
-Crea `test/rutas.test.js`:
 
 ```js
 import { describe, expect, it, vi } from "vitest";
@@ -793,12 +728,6 @@ describe("calcularRuta", () => {
 });
 ```
 
-Ejecuta `npm test`. **Resultado esperado:** dos pruebas aprobadas, sin acceso a red ni secretos del proveedor.
-
-**Fallo deliberado y corrección:** sustituye temporalmente el primer valor simulado por `{ ok: false, distanceKm: 4.2 }`. La primera prueba debe fallar porque el código propio rechaza la respuesta, no porque la red falle. Restaura `ok: true` y vuelve a ejecutar la suite. Si en cambio quisieras probar la rama de proveedor no disponible, conserva `ok: false` y cambia la expectativa a `rejects.toThrow("Proveedor de rutas no disponible")`; no ocultes el error devolviendo una distancia cero.
-
-Crea `.github/workflows/ci.yml`:
-
 ```yaml
 name: CI
 
@@ -819,72 +748,74 @@ jobs:
       - run: npm test
 ```
 
-El archivo local es solo la definición. Para verificar CI, crea o utiliza un repositorio remoto propio, envía esta rama y abre la ejecución en **Actions**. Comprueba allí los registros de `npm ci` y `npm test`; no presentes una lectura local del YAML como una ejecución remota.
-
-##### Práctica guiada
-
-Añade una prueba para `mockResolvedValue({ ok: false })` que espere el mensaje `Proveedor de rutas no disponible`. Después escribe una variante con `mockRejectedValue(new Error("ETIMEDOUT"))` y comprueba que el timeout se propaga. La política de reintento debe probarse aparte: si la implementas, verifica el número de llamadas sin esperar tiempos reales.
-
-##### Ejercicio independiente
-
-Implementa en `src/reintentos.js` una función `conUnReintento(operacion)` que ejecute la operación, repita una única vez si rechaza y devuelva el primer resultado válido. Añade pruebas para éxito al primer intento, éxito al segundo y doble fallo. Documenta por qué esta suite no necesita secretos y qué aspecto del proveedor real queda fuera de su alcance.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] Ninguna prueba unitaria accede a la red ni necesita credenciales externas.
-- [ ] Se verifican tanto los argumentos como el número de llamadas al mock.
-- [ ] Las ramas de éxito, respuesta no válida, timeout y reintento tienen expectativas explícitas.
-- [ ] `npm ci` dispone de un `package-lock.json` coherente y el workflow ejecuta `npm test`.
-- [ ] La evidencia de CI procede de una ejecución visible en GitHub Actions, no de la mera creación local del YAML.
-
-**Errores comunes:** simular la función propia que se quiere probar; inventar respuestas imposibles; no verificar argumentos; llamar a la red en pruebas unitarias; hacer CI dependiente de secretos innecesarios; confundir escribir o ejecutar herramientas locales con publicar y observar un workflow remoto.
-
-```mermaid
-flowchart LR
-  Test[Test de regla propia] --> Port[Puerto del proveedor]
-  Port --> Fake[Fake controlado sin red]
-  Fake -->|éxito, timeout o error| Result[Resultado observable]
-  Result --> Assert[Aserciones de argumentos y llamadas]
-  Assert --> CI[npm ci y suite en CI]
-```
-
-**Cuándo usar un mock:** sustituye un proveedor lento, costoso o inaccesible para fijar respuestas y verificar cómo lo usa tu código. No simules la función bajo prueba ni tomes el fake como prueba de que el proveedor real conserva su contrato; para eso necesitas una comprobación separada contra el contrato o un entorno de integración controlado.
-
-**Fuentes oficiales:** [Vitest: mocking](https://vitest.dev/guide/mocking), [GitHub Actions con Node.js](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs) y [Martin Fowler: Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** sustituye el notificador externo por un doble o servidor controlado en CI. Prueba timeout y respuesta inválida, y comprueba que el comportamiento propio no dependa de la disponibilidad del tercero.
+</details>
 
 ### Tema 7: Alternativas de testing y debugging · Avanzado · 45 min
 
-**Prerrequisito:** Node LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** clasificar riesgos entre pruebas unitarias, de integración y E2E, y usar `--inspect-brk` con un breakpoint para inspeccionar un fallo que después quedará cubierto por una prueba automatizada.
+#### ► DE QUÉ TRATA
+Este tema te guía por alternativas de testing y debugging con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender alternativas de testing y debugging te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** cada capa compra confianza a un costo distinto. Una suite compuesta solo por E2E suele ser lenta y difícil de diagnosticar; una compuesta solo por pruebas aisladas puede omitir fallos de composición.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Las pruebas unitarias ejercitan una regla pequeña con feedback rápido. Las de integración comprueban límites reales, como HTTP o SQL. Las E2E recorren un flujo desde la interfaz o cliente hasta los sistemas que intervienen. La pirámide práctica recomienda muchas pruebas pequeñas, menos integraciones y pocas E2E, ajustada al riesgo y no a una cuota rígida.
+#### ► LA ANALOGÍA
+Piensa en alternativas de testing y debugging como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Vitest y Jest integran runner, aserciones y mocks. Mocha se centra en organizar y ejecutar, y suele combinarse con Chai y Sinon. Elegir una herramienta depende del ecosistema existente y de las necesidades del proyecto, no de moda. Para depurar, `--inspect` o `--inspect-brk` habilita el inspector de Node; Chrome DevTools permite breakpoints, inspección de variables y ejecución paso a paso. El debugger explica un estado puntual, pero no reemplaza una aserción repetible.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que alternativas de testing y debugging resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** revisa las piezas de una bicicleta por separado, después el conjunto ensamblado y por último un recorrido en carretera. El inspector es el microscopio para examinar una pieza cuando algo no encaja.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Alternativas de testing y debugging se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:** pirámide de pruebas, unitarias, integración, E2E, Jest, Mocha/Chai/Sinon, Vitest, `--inspect-brk`, Chrome DevTools y reproducción mínima.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Alternativas de testing y debugging | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Practica
+#### ► CUÁNDO NO USAR ESTO
+No uses alternativas de testing y debugging por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Crea otro proyecto desde una carpeta vacía, sin copiar archivos anteriores:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: alternativas de testing y debugging funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Alternativas de testing y debugging existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve alternativas de testing y debugging en tu contexto?
+2. ¿Cómo sabrías que alternativas de testing y debugging no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar alternativas de testing y debugging?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-debug-testing
 cd practica-debug-testing
 mkdir src test
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -898,21 +829,15 @@ Crea `package.json`:
 }
 ```
 
-Instala el runner:
-
 ```bash
 npm install --save-dev vitest
 ```
-
-Crea `src/sumar.js`:
 
 ```js
 export function sumar(a, b) {
   return a + b;
 }
 ```
-
-Crea `test/sumar.test.js`:
 
 ```js
 import { expect, it } from "vitest";
@@ -922,8 +847,6 @@ it("suma dos valores", () => {
   expect(sumar(2, 3)).toBe(5);
 });
 ```
-
-Crea `src/debug.js`, un punto de entrada pequeño para observar el mismo comportamiento:
 
 ```js
 import { sumar } from "./sumar.js";
@@ -935,63 +858,74 @@ debugger;
 console.log({ a, b, resultado });
 ```
 
-Ejecuta primero la prueba:
-
-```bash
-npm test
-```
-
-Después inicia el proceso pausado antes de ejecutar el código:
-
-```bash
-node --inspect-brk src/debug.js
-```
-
-En Chrome abre `chrome://inspect`, selecciona **inspect** para ese proceso y continúa hasta el `debugger`. Inspecciona `a`, `b` y `resultado`; cierra el proceso al terminar. **Resultado esperado:** la prueba pasa y, con el inspector, puedes observar `resultado === 5` antes del `console.log`.
-
-**Fallo deliberado y corrección:** cambia temporalmente la expectativa de `5` a `6`. Vitest mostrará el valor esperado y el recibido. Usa el breakpoint si necesitas inspeccionar los operandos, restaura después la expectativa correcta `5` y elimina el archivo `src/debug.js` solo cuando ya no necesites esa reproducción manual; conserva la prueba automatizada.
-
-##### Práctica guiada
-
-Añade una prueba para `sumar(-4, 1)` con resultado `-3`. Reproduce primero la entrada en el inspector si lo necesitas y deja después el caso límite expresado como aserción. No dejes `debugger` en código de producción.
-
-##### Ejercicio independiente
-
-Clasifica estos tres riesgos de una tienda y justifica costo, velocidad y confianza: el cálculo de impuestos, la creación de un pedido mediante HTTP con PostgreSQL y la compra completa desde el navegador. Indica una prueba concreta para cada capa y qué fallo seguiría sin detectar si eliminaras las otras dos.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] Cada riesgo clasificado tiene una razón de costo y confianza, no solo una etiqueta.
-- [ ] Existe al menos una aserción para el caso normal y otra para números negativos.
-- [ ] Pudiste pausar Node en un breakpoint e inspeccionar variables desde Chrome DevTools.
-- [ ] El fallo deliberado quedó corregido y la suite volvió a verde.
-- [ ] La reproducción manual se convirtió en una prueba repetible sin esperas humanas.
-
-**Errores comunes:** usar solo E2E; dejar `debugger` en producción; escribir aserciones frágiles; confundir cobertura con calidad; depurar sin una entrada mínima reproducible; sustituir pruebas por inspección manual.
-
-**Fuentes oficiales:** [Node.js: debugging](https://nodejs.org/en/learn/getting-started/debugging), [Vitest](https://vitest.dev/guide/) y [Martin Fowler: The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** reproduce un fallo de confirmación con una entrada mínima y un breakpoint. Conserva después una prueba automatizada que detecte la regresión sin inspector ni intervención manual.
-
-## Laboratorio práctico: suite independiente para una API de entregas
-
-**Al terminar podrás:** construir desde cero una API pequeña con pruebas HTTP y PostgreSQL real, aislar un notificador externo, ejecutar además pruebas nativas y definir CI con evidencia de descubrimiento.
-
-**Prerrequisito:** Node 22 o una versión LTS compatible, npm, Git y Docker en ejecución. No abras ni copies archivos de los proyectos anteriores.
+</details>
 
 ### Proyecto y configuración
 
-Empieza en una carpeta vacía:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto y configuración con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto y configuración te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en proyecto y configuración como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto y configuración resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto y configuración se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto y configuración | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto y configuración por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto y configuración funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto y configuración existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto y configuración en tu contexto?
+2. ¿Cómo sabrías que proyecto y configuración no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto y configuración?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir laboratorio-entregas-testing
 cd laboratorio-entregas-testing
 mkdir -p src test scripts herramienta .github/workflows
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -1006,14 +940,10 @@ Crea `package.json`:
 }
 ```
 
-Instala las dependencias y conserva el lockfile:
-
 ```bash
 npm install express pg
 npm install --save-dev vitest supertest @testcontainers/postgresql
 ```
-
-Crea `vitest.config.js` para que Vitest ejecute únicamente su suite y no intente descubrir el archivo reservado a `node:test`:
 
 ```js
 import { defineConfig } from "vitest/config";
@@ -1025,10 +955,69 @@ export default defineConfig({
 });
 ```
 
+</details>
+
 ### Aplicación y persistencia
 
-Crea `src/repositorio.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por aplicación y persistencia con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender aplicación y persistencia te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en aplicación y persistencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que aplicación y persistencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Aplicación y persistencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Aplicación y persistencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses aplicación y persistencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: aplicación y persistencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Aplicación y persistencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve aplicación y persistencia en tu contexto?
+2. ¿Cómo sabrías que aplicación y persistencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar aplicación y persistencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 export function crearRepositorio(client) {
   return {
@@ -1058,8 +1047,6 @@ export function crearRepositorio(client) {
   };
 }
 ```
-
-Crea `src/app.js`. Recibe las dependencias para que las pruebas controlen el notificador y la base:
 
 ```js
 import express from "express";
@@ -1112,8 +1099,6 @@ export function crearApp({ repositorio, notificar }) {
 }
 ```
 
-No hay `listen`: Supertest ejercita la aplicación directamente. Crea `src/notificaciones.js` para el contrato externo:
-
 ```js
 export async function notificarEntrega(cliente, entrega) {
   const respuesta = await cliente.enviar({
@@ -1127,10 +1112,69 @@ export async function notificarEntrega(cliente, entrega) {
 }
 ```
 
+</details>
+
 ### Integración HTTP con PostgreSQL efímero
 
-Crea `test/entregas.test.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por integración http con postgresql efímero con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender integración http con postgresql efímero te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en integración http con postgresql efímero como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que integración http con postgresql efímero resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Integración HTTP con PostgreSQL efímero se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Integración HTTP con PostgreSQL efímero | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses integración http con postgresql efímero por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: integración http con postgresql efímero funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Integración HTTP con PostgreSQL efímero existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve integración http con postgresql efímero en tu contexto?
+2. ¿Cómo sabrías que integración http con postgresql efímero no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar integración http con postgresql efímero?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import pg from "pg";
@@ -1208,12 +1252,69 @@ describe("API de entregas", () => {
 });
 ```
 
-`crearApp` configura `express.json()` antes de las rutas, por lo que los cuerpos JSON ya están disponibles en los manejadores. Las pruebas no inician un servidor ni comparten el notificador con otros proyectos.
+</details>
 
 ### Prueba del servicio externo sin red
 
-Crea `test/notificaciones.test.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por prueba del servicio externo sin red con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender prueba del servicio externo sin red te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en prueba del servicio externo sin red como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que prueba del servicio externo sin red resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Prueba del servicio externo sin red se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Prueba del servicio externo sin red | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses prueba del servicio externo sin red por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: prueba del servicio externo sin red funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Prueba del servicio externo sin red existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve prueba del servicio externo sin red en tu contexto?
+2. ¿Cómo sabrías que prueba del servicio externo sin red no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar prueba del servicio externo sin red?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 import { describe, expect, it, vi } from "vitest";
 import { notificarEntrega } from "../src/notificaciones.js";
@@ -1248,10 +1349,69 @@ describe("notificarEntrega", () => {
 });
 ```
 
+</details>
+
 ### Prueba nativa y comprobación de descubrimiento
 
-La herramienta nativa tiene su propio manifiesto y no instala dependencias. Crea `herramienta/package.json`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por prueba nativa y comprobación de descubrimiento con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender prueba nativa y comprobación de descubrimiento te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en prueba nativa y comprobación de descubrimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que prueba nativa y comprobación de descubrimiento resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Prueba nativa y comprobación de descubrimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Prueba nativa y comprobación de descubrimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses prueba nativa y comprobación de descubrimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: prueba nativa y comprobación de descubrimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Prueba nativa y comprobación de descubrimiento existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve prueba nativa y comprobación de descubrimiento en tu contexto?
+2. ¿Cómo sabrías que prueba nativa y comprobación de descubrimiento no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar prueba nativa y comprobación de descubrimiento?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```json
 {
   "name": "herramienta-nativa-entregas",
@@ -1261,15 +1421,11 @@ La herramienta nativa tiene su propio manifiesto y no instala dependencias. Crea
 }
 ```
 
-Crea `herramienta/estado.js`:
-
 ```js
 export function puedeConfirmar(estado) {
   return estado === "pendiente";
 }
 ```
-
-Crea `herramienta/estado.test.js`:
 
 ```js
 import { test } from "node:test";
@@ -1284,8 +1440,6 @@ test("una entrega confirmada no se confirma dos veces", () => {
   assert.equal(puedeConfirmar("confirmada"), false);
 });
 ```
-
-Crea `scripts/verificar-pruebas-nativas.mjs`. Este script conserva el código de salida del runner y además exige un recuento positivo:
 
 ```js
 import { spawnSync } from "node:child_process";
@@ -1312,20 +1466,73 @@ if (descubiertas === 0) {
 }
 ```
 
+</details>
+
 ### Ejecución, fallo diagnosticado y CI
 
-Ejecuta por separado:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por ejecución, fallo diagnosticado y ci con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender ejecución, fallo diagnosticado y ci te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en ejecución, fallo diagnosticado y ci como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que ejecución, fallo diagnosticado y ci resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ejecución, fallo diagnosticado y CI se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ejecución, fallo diagnosticado y CI | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses ejecución, fallo diagnosticado y ci por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ejecución, fallo diagnosticado y ci funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Ejecución, fallo diagnosticado y CI existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ejecución, fallo diagnosticado y ci en tu contexto?
+2. ¿Cómo sabrías que ejecución, fallo diagnosticado y ci no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ejecución, fallo diagnosticado y ci?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 npm run test:native
 npm test
 ```
-
-**Resultado esperado:** el comando nativo muestra `# tests 2`, `# pass 2` y `# fail 0`; Vitest muestra cinco pruebas aprobadas entre integración y notificador. PostgreSQL se cierra al terminar. No hay llamadas reales al proveedor.
-
-**Fallo deliberado y corrección:** cambia en la prueba de creación la expectativa `creada.status` de `201` a `200` y ejecuta `npm test`. Supertest mostrará la discrepancia HTTP. Restaura `201` y vuelve a verde. Después renombra temporalmente `herramienta/estado.test.js` a `herramienta/estadoPrueba.js`: `npm run test:native` debe fallar con `node --test no descubrió pruebas`; restaura el nombre y comprueba nuevamente `# tests 2`.
-
-Crea `.github/workflows/ci.yml`:
 
 ```yaml
 name: CI
@@ -1348,20 +1555,69 @@ jobs:
       - run: npm test
 ```
 
-El archivo queda listo localmente, pero CI solo está verificado cuando envías el proyecto a un repositorio remoto y la ejecución de **Actions** termina correctamente. Revisa allí que el paso nativo descubra dos pruebas y que el paso Vitest inicie y cierre PostgreSQL.
+</details>
 
 ### Ejercicio independiente y salida
 
-Añade con TDD el endpoint `POST /entregas/:id/cancelar`: debe devolver `200` con una entrega cuyo estado sea `cancelada`, o `404` si no existe. Amplía el esquema y el repositorio sin romper el flujo de confirmación, agrega primero las pruebas y no simules el efecto en memoria: consúltalo después en PostgreSQL.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Checklist del laboratorio:**
+#### ► DE QUÉ TRATA
+Este tema te guía por ejercicio independiente y salida con foco en comprensión antes de implementación.
 
-- [ ] Todos los archivos y manifiestos fueron creados dentro de este proyecto independiente.
-- [ ] Supertest comprueba validación, creación, consulta y confirmación sin `listen` permanente.
-- [ ] PostgreSQL usa una imagen fijada, datos reales y cierre fiable del cliente y contenedor.
-- [ ] El notificador externo está aislado y cubre éxito, timeout y rechazo.
-- [ ] El script nativo falla si `node --test` descubre cero pruebas.
-- [ ] CI ejecuta instalación reproducible y ambas suites; su evidencia se consulta en GitHub Actions.
-- [ ] La cancelación independiente persiste su efecto y mantiene verdes los flujos anteriores.
+#### ► LA IDEA EN UNA FRASE
+**Entender ejercicio independiente y salida te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones:** usa Testcontainers en vez de una base compartida; espera todos los cierres; aísla servicios externos; cubre errores además del camino feliz; no confundas un YAML local con CI publicado; no aceptes un código de salida `0` como prueba de que el runner nativo descubrió archivos.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en ejercicio independiente y salida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que ejercicio independiente y salida resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ejercicio independiente y salida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ejercicio independiente y salida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses ejercicio independiente y salida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ejercicio independiente y salida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Ejercicio independiente y salida existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ejercicio independiente y salida en tu contexto?
+2. ¿Cómo sabrías que ejercicio independiente y salida no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ejercicio independiente y salida?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar ejercicio independiente y salida.
+
+</details>

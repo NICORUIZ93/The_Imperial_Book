@@ -11,88 +11,68 @@ Los diagramas reales tienen lazos dentro de lazos y señales que se cruzan. Aqu�
 
 ## Aprende construyendo
 
+
 ### Tema 1: Reglas para mover bloques en un diagrama · Intermedio · 45 min
 
-**¿Por qué es importante?** Mover bloques correctamente permite simplificar diagramas que no se pueden reducir con solo serie y paralelo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por reglas para mover bloques en un diagrama con foco en comprensión antes de implementación.
 
-> **Idea clave.** Mover un bloque es válido si cada señal sigue llegando al mismo lugar multiplicada por lo mismo. Para compensar, agregas el bloque (o su inverso) en la rama que cambió.
+#### ► LA IDEA EN UNA FRASE
+**Entender reglas para mover bloques en un diagrama te permite tomar mejores decisiones técnicas.**
 
-| Movimiento | Antes | Después | Por qué |
-|---|---|---|---|
-| Punto de suma hacia adelante de \(G\) | \(Y = G(A \pm B)\) | \(Y = GA \pm GB\): agrega \(G\) en la rama \(B\) | Distributiva |
-| Punto de suma hacia atrás de \(G\) | \(Y = GA \pm B\) | \(Y = G\left(A \pm \tfrac{B}{G}\right)\): agrega \(1/G\) en la rama \(B\) | Factor común |
-| Bifurcación hacia adelante de \(G\) | Se toma \(A\) antes de \(G\) | Se toma \(GA\) y se pasa por \(1/G\) | \(\tfrac1G\cdot GA = A\) |
-| Bifurcación hacia atrás de \(G\) | Se toma \(GA\) después de \(G\) | Se toma \(A\) y se pasa por \(G\) | Misma señal |
-| Realimentación no unitaria a unitaria | \(\dfrac{G}{1+GH}\) | \(\dfrac{1}{H}\cdot\dfrac{GH}{1+GH}\) | Álgebra |
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Ejemplo 1 · Lazos entrelazados por reducción · *Intermedio*
+#### ► LA ANALOGÍA
+Piensa en reglas para mover bloques en un diagrama como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Enunciado.** \(R \to\) suma 1 \(\to G_1 \to\) suma 2 \(\to G_2 \to G_3 \to Y\). Realimentación \(H_1\) desde la salida de \(G_2\) a la suma 2; realimentación unitaria desde \(Y\) a la suma 1.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que reglas para mover bloques en un diagrama resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-1. Lazo interno (\(G_2\) con \(H_1\)): \(\dfrac{G_2}{1+G_2H_1}\).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Reglas para mover bloques en un diagrama se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-   **¿Por qué?** Es un lazo completo que no depende de los demás bloques.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Reglas para mover bloques en un diagrama | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-2. Serie con \(G_1\) y \(G_3\): \(\dfrac{G_1G_2G_3}{1+G_2H_1}\).
+#### ► CUÁNDO NO USAR ESTO
+No uses reglas para mover bloques en un diagrama por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** Los tres bloques quedan uno tras otro.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: reglas para mover bloques en un diagrama funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-3. Lazo externo unitario: \(\dfrac{N}{D+N} = \dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\).
+#### ► LO QUE DEBES RECORDAR
+- Reglas para mover bloques en un diagrama existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Truco del módulo 5.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve reglas para mover bloques en un diagrama en tu contexto?
+2. ¿Cómo sabrías que reglas para mover bloques en un diagrama no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar reglas para mover bloques en un diagrama?
 
-**Resultado:** \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\)
+</details>
 
-#### Más ejemplos resueltos
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Mover un punto de suma hacia la izquierda · *Intermedio*
-
-**Enunciado.** Un sumador recibe \(G_1R\) y \(D\). Llévalo antes de \(G_1\).
-
-1. Para conservar la salida, \(D\) debe dividirse por \(G_1\): el sumador queda con \(R\) y \(D/G_1\), y luego \(G_1\).
-
-   **¿Por qué?** La salida antes era \(G_1R + D\); ahora es \(G_1(R + D/G_1) = G_1R + D\): idéntica.
-
-**Resultado.** El diagrama cambia de forma pero la relación entre entradas y salida es la misma.
-
-#### Ejemplo 3 · Mover un punto de toma hacia adelante · *Intermedio*
-
-**Enunciado.** Se toma la señal \(X\) antes de \(G_2\). Pásala después de \(G_2\).
-
-1. Después de \(G_2\) la señal es \(G_2X\); para recuperar \(X\) se agrega un bloque \(1/G_2\) en la rama tomada.
-
-   **¿Por qué?** Toda regla de movimiento exige que cada señal conserve su valor.
-
-**Resultado.** El diagrama cambia de forma pero la relación entre entradas y salida es la misma.
-
-#### Ejemplo 4 · Mover un sumador hacia la derecha · *Intermedio*
-
-**Enunciado.** Un sumador \(R - B\) entra a \(G_1\). Pásalo después de \(G_1\).
-
-1. Ahora entran \(G_1R\) y \(G_1B\): la rama \(B\) necesita un bloque \(G_1\).
-
-   **¿Por qué?** \(G_1(R-B) = G_1R - G_1B\) por linealidad.
-
-**Resultado.** El diagrama cambia de forma pero la relación entre entradas y salida es la misma.
-
-#### Ejemplo 5 · Lazo menor dentro de un lazo mayor · *Intermedio*
-
-**Enunciado.** \(G_2\) tiene realimentación \(H\) y todo está en serie con \(G_1\) y realimentación unitaria.
-
-1. Primero reduce el lazo interno: \(G_2/(1+G_2H)\). Luego queda un lazo simple con \(G_1G_2/(1+G_2H)\).
-
-   **¿Por qué?** Siempre se reducen primero los lazos que no se cruzan con otros.
-
-**Resultado.** \(T = \frac{G_{1} G_{2}}{G_{1} G_{2} + G_{2} H + 1}\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 5 (lazo menor dentro de un lazo mayor).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, simplify
@@ -103,110 +83,73 @@ T = simplify(interno / (1 + interno))
 print("T:", T)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `T: G1*G2/(G1*G2 + G2*H + 1)`, igual al resultado del Ejemplo 5.
-
-#### Practica
-
-repite el Ejemplo 1 (tres bloques, dos realimentaciones) construyendo `T` paso a paso con sympy y confirma \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** estas reglas de movimiento valen para diagramas de una sola entrada y una sola salida (SISO); con varias entradas (referencia y perturbación juntas, Tema 4) hay que aplicar superposición, no mover bloques a ciegas.
+</details>
 
 ### Tema 2: Grafos de flujo de señal · Intermedio · 45 min
 
-**¿Por qué es importante?** El grafo de flujo de señal es la representación que usa la regla de Mason; sin él no puedes contar caminos y lazos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por grafos de flujo de señal con foco en comprensión antes de implementación.
 
-Un grafo de flujo de señal es otra forma de dibujar lo mismo: las señales son **nodos** y los bloques son **ramas** con su ganancia. Un punto de suma es un nodo al que llegan varias ramas. Vocabulario:
+#### ► LA IDEA EN UNA FRASE
+**Entender grafos de flujo de señal te permite tomar mejores decisiones técnicas.**
 
-- **Trayectoria directa:** camino de la entrada a la salida sin pasar dos veces por el mismo nodo. Su ganancia \(P_k\) es el producto de sus ramas.
-- **Lazo:** camino cerrado que vuelve al nodo de partida. Su ganancia \(L_i\) es el producto de sus ramas, *incluido el signo menos* de la realimentación negativa.
-- **Lazos que no se tocan:** no comparten ningún nodo.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Más ejemplos resueltos
+#### ► LA ANALOGÍA
+Piensa en grafos de flujo de señal como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que grafos de flujo de señal resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Ejemplo 1 · Dibujar el grafo: \(x_2 = 3x_1 - x_3\), \(x_3 = 2x_2\) · *Intermedio*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Grafos de flujo de señal se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Enunciado.** Construye el grafo de flujo de señal de \(x_2 = 3x_1 - x_3\), \(x_3 = 2x_2\).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Grafos de flujo de señal | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
+#### ► CUÁNDO NO USAR ESTO
+No uses grafos de flujo de señal por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** Un grafo de flujo de señal es otra forma de escribir las ecuaciones: nodo = señal, rama = multiplicación.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: grafos de flujo de señal funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-2. Nodos \(x_1, x_2, x_3\); ramas \(x_1\to x_2\) (ganancia 3), \(x_3\to x_2\) (−1) y \(x_2\to x_3\) (2).
+#### ► LO QUE DEBES RECORDAR
+- Grafos de flujo de señal existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve grafos de flujo de señal en tu contexto?
+2. ¿Cómo sabrías que grafos de flujo de señal no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar grafos de flujo de señal?
 
-**Resultado.** Un lazo \(x_2\to x_3\to x_2\) con ganancia \(2\cdot(-1) = -2\).
+</details>
 
-#### Ejemplo 2 · Dibujar el grafo: Lazo \(G\) con realimentación \(H\) · *Intermedio*
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Enunciado.** Construye el grafo de flujo de señal de Lazo \(G\) con realimentación \(H\).
-
-1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
-
-   **¿Por qué?** Un grafo de flujo de señal es otra forma de escribir las ecuaciones: nodo = señal, rama = multiplicación.
-
-2. Nodos \(R, E, Y\); ramas \(R\to E\) (1), \(E\to Y\) (\(G\)), \(Y\to E\) (\(-H\)).
-
-   **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
-
-**Resultado.** Un lazo de ganancia \(-GH\) y un camino directo \(G\).
-
-#### Ejemplo 3 · Dibujar el grafo: Dos bloques en serie con realimentación de cada uno · *Intermedio*
-
-**Enunciado.** Construye el grafo de flujo de señal de dos bloques en serie con realimentación de cada uno, donde \(H_2\) **realimenta al nodo \(X\)** (la salida de \(G_1\)): \(E = R - H_1X\), \(X = G_1E - H_2Y\), \(Y = G_2X\).
-
-1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
-
-   **¿Por qué?** Un grafo de flujo de señal es otra forma de escribir las ecuaciones: nodo = señal, rama = multiplicación.
-
-2. Ramas \(E\to X\) (\(G_1\)), \(X\to Y\) (\(G_2\)), \(X\to E\) (\(-H_1\)), \(Y\to X\) (\(-H_2\)).
-
-   **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
-
-**Resultado.** Dos lazos: \(-G_1H_1\) y \(-G_2H_2\); se tocan porque comparten el nodo \(X\). Compáralo con el Ejemplo 2 de la regla de Mason (lazos locales independientes): allí cada bloque tiene su propio sumador, así que los lazos no comparten ningún nodo y no se tocan.
-
-#### Ejemplo 4 · Dibujar el grafo: Entrada con perturbación · *Intermedio*
-
-**Enunciado.** Construye el grafo de flujo de señal de Entrada con perturbación.
-
-1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
-
-   **¿Por qué?** Un grafo de flujo de señal es otra forma de escribir las ecuaciones: nodo = señal, rama = multiplicación.
-
-2. Ramas \(R\to E\) (1), \(E\to U\) (\(C\)), \(U\to Y\) (\(P\)), \(D\to Y\) (1), \(Y\to E\) (−1).
-
-   **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
-
-**Resultado.** Un lazo \(-CP\); dos entradas (\(R\) y \(D\)) con caminos directos \(CP\) y 1.
-
-#### Ejemplo 5 · Dibujar el grafo: Ecuaciones de un circuito RC en cascada · *Intermedio*
-
-**Enunciado.** Construye el grafo de flujo de señal de Ecuaciones de un circuito RC en cascada.
-
-1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
-
-   **¿Por qué?** Un grafo de flujo de señal es otra forma de escribir las ecuaciones: nodo = señal, rama = multiplicación.
-
-2. \(V_1 = \tfrac{1}{RCs}(V_i - V_1) - \tfrac{1}{RCs}(V_1 - V_o)\), \(V_o = \tfrac{1}{RCs}(V_1 - V_o)\).
-
-   **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
-
-**Resultado.** Tres lazos: dos propios de cada etapa y uno que conecta las etapas.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 resolviendo el sistema de ecuaciones del grafo.
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, Eq, solve
@@ -216,168 +159,73 @@ sol = solve([Eq(x2, 3 * x1 - x3), Eq(x3, 2 * x2)], [x2, x3])
 print("x2/x1:", sol[x2] / x1)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `x2/x1: 1`, lo que coincide con Mason: \(P/(1-L) = 3/(1-(-2)) = 1\), usando el lazo de ganancia \(-2\) del Ejemplo 1.
-
-#### Practica
-
-arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que \(Y/R = G/(1+GH)\) con `H` simbólico. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** este método de resolver el sistema lineal de nodos es exacto pero no escala a mano para grafos grandes; por eso existe la regla de Mason (Tema 3), que cuenta trayectorias y lazos sin resolver el sistema completo.
+</details>
 
 ### Tema 3: Regla de Mason · Intermedio · 45 min
 
-**¿Por qué es importante?** Mason resuelve de una vez diagramas con varios lazos, donde la reducción paso a paso es larga y propensa a errores.
-
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
-
-\[T = \frac{Y}{R} = \frac{1}{\Delta}\sum_k P_k\,\Delta_k\]
-
-    
-
-\[\Delta = 1 - \sum L_i + \sum L_iL_j - \sum L_iL_jL_k + \cdots\]
-
-*\(\sum L_i\): todos los lazos. \(\sum L_iL_j\): productos de pares de lazos que no se tocan. \(\sum L_iL_jL_k\): tríos que no se tocan, etc. \(\Delta_k\): el mismo \(\Delta\) pero solo con los lazos que no tocan la trayectoria \(k\).*
-
-#### Demostración en el caso de un lazo (y por qué Δ tiene esa forma)
-
-1. Con una sola trayectoria \(P = G\) y un solo lazo \(L = -GH\) que la toca: \(\Delta = 1 - L = 1 + GH\) y \(\Delta_1 = 1\). Mason da \(\dfrac{G}{1+GH}\), la fórmula del módulo 5.
-2. Con dos lazos que no se tocan, \(L_1\) y \(L_2\), en cascada: cada uno por separado da \(\dfrac{1}{1-L_1}\) y \(\dfrac{1}{1-L_2}\). En serie se multiplican: \(\dfrac{1}{(1-L_1)(1-L_2)} = \dfrac{1}{1 - L_1 - L_2 + L_1L_2}\). Ahí aparece el término \(+L_1L_2\) de los lazos que no se tocan.
-3. En general, \(\Delta\) es el determinante del sistema de ecuaciones lineales de los nodos, y la regla de Mason es la regla de Cramer aplicada a ese sistema.
-
-∎
-
-**Procedimiento**
-
-1. Identifica todas las trayectorias directas y calcula sus ganancias \(P_k\).
-2. Identifica todos los lazos y sus ganancias \(L_i\), con signo.
-3. Busca pares (y tríos) de lazos que no se tocan.
-4. Calcula \(\Delta\) y cada \(\Delta_k\) (quita los lazos que tocan la trayectoria \(k\)).
-5. Aplica la fórmula.
-
-#### Ejemplo 1 · El mismo sistema con Mason · *Intermedio*
-
-> **Qué cambia respecto al anterior:** Misma pregunta, otro método. Sirve para comprobar.
-
-**Enunciado.** Resuelve el Ejemplo 1 con la regla de Mason.
-
-1. Trayectorias de \(R\) a \(Y\): solo una, \(P_1 = G_1G_2G_3\).
-
-   **¿Por qué?** Es el único camino que va hacia adelante.
-
-2. Lazos: \(L_1 = -G_2H_1\) y \(L_2 = -G_1G_2G_3\).
-
-   **¿Por qué?** Ambos con signo menos porque las dos realimentaciones son negativas.
-
-3. ¿Se tocan? Sí, los dos pasan por \(G_2\). No hay productos de pares.
-
-   **¿Por qué?** Solo los lazos que no comparten nodos aportan productos.
-
-4. \(\Delta = 1 - (L_1+L_2) = 1 + G_2H_1 + G_1G_2G_3\). Ambos tocan \(P_1\): \(\Delta_1 = 1\).
-
-   **¿Por qué?** Fórmula de \(\Delta\).
-
-**Resultado:** El mismo resultado que por reducción
-
-#### Ejemplo 2 · Lazos que no se tocan · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** Ahora hay lazos que no se tocan.
-
-**Enunciado.** Lazos locales independientes: \(G_1\) con realimentación \(H_1\) y su propio sumador (\(E_1 = R - H_1X_1\), \(X_1 = G_1E_1\)), seguido de \(G_2\) con realimentación \(H_2\) y otro sumador (\(E_2 = X_1 - H_2Y\), \(Y = G_2E_2\)). A diferencia del Ejemplo 3 del grafo, \(H_2\) llega a \(E_2\), no a \(X_1\).
-
-1. \(P_1 = G_1G_2\). Lazos \(L_1 = -G_1H_1\) y \(L_2 = -G_2H_2\).
-
-   **¿Por qué?** Cada subsistema tiene su lazo.
-
-2. No se tocan (no comparten nodos), así que aparece el producto \(L_1L_2 = G_1G_2H_1H_2\).
-
-   **¿Por qué?** Por eso existe el término \(+\sum L_iL_j\).
-
-3. \(\Delta = 1 + G_1H_1 + G_2H_2 + G_1G_2H_1H_2\), \(\Delta_1 = 1\).
-
-   **¿Por qué?** Fórmula.
-
-4. Verificación: \((1+G_1H_1)(1+G_2H_2)\) da lo mismo al expandir.
-
-   **¿Por qué?** Es el producto de los dos lazos cerrados en serie.
-
-**Resultado:** \(T = \dfrac{G_1G_2}{(1+G_1H_1)(1+G_2H_2)}\)
-
-#### Ejemplo 3 · Dos trayectorias · *Nivel parcial*
-
-> **Qué cambia respecto al anterior:** Ahora hay dos trayectorias directas.
-
-**Enunciado.** Desde la suma, la señal va a \(Y\) por \(G_1\) y por \(G_2\) a la vez. Realimentación \(H\) desde \(Y\).
-
-1. \(P_1 = G_1\), \(P_2 = G_2\).
-
-   **¿Por qué?** Hay dos caminos de \(R\) a \(Y\).
-
-2. Lazos \(L_1 = -G_1H\), \(L_2 = -G_2H\). Se tocan.
-
-   **¿Por qué?** Comparten la suma y \(Y\).
-
-3. \(\Delta = 1 + G_1H + G_2H\), \(\Delta_1 = \Delta_2 = 1\).
-
-   **¿Por qué?** Los dos lazos tocan las dos trayectorias.
-
-**Resultado:** \(T = \dfrac{G_1+G_2}{1+(G_1+G_2)H}\)
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 4 · Mason con dos lazos que se tocan · *Intermedio*
-
-**Enunciado.** Camino directo \(G_1G_2\); lazos \(-G_1H_1\) y \(-G_2H_2\) que comparten un nodo.
-
-1. \(\Delta = 1 - (L_1 + L_2) = 1 + G_1H_1 + G_2H_2\).
-
-   **¿Por qué?** Como los lazos se tocan, no hay producto de lazos disjuntos.
-
-2. \(\Delta_1 = 1\): el camino directo toca ambos lazos.
-
-   **¿Por qué?** Se eliminan los lazos que tocan el camino.
-
-**Resultado.** \(T = \dfrac{G_1G_2}{1 + G_1H_1 + G_2H_2}\).
-
-#### Ejemplo 5 · Mason con dos lazos que no se tocan · *Avanzado*
-
-**Enunciado.** Camino directo \(G_1G_2G_3\); lazos \(L_1=-G_1H_1\) (en el primer tramo) y \(L_2=-G_3H_2\) (en el último tramo), sin nodos comunes.
-
-1. \(\Delta = 1 - (L_1+L_2) + L_1L_2 = 1 + G_1H_1 + G_3H_2 + G_1H_1G_3H_2\).
-
-   **¿Por qué?** Cuando dos lazos no se tocan aparece el término del producto.
-
-2. \(\Delta_1 = 1\).
-
-   **¿Por qué?** El camino directo toca los dos lazos.
-
-**Resultado.** \(T = \dfrac{G_1G_2G_3}{(1+G_1H_1)(1+G_3H_2)}\): el denominador se factoriza, como si fueran dos lazos independientes en serie.
-
-#### Ejemplo 6 · Mason con dos caminos directos · *Avanzado*
-
-**Enunciado.** Caminos \(P_1 = G_1G_2\) y \(P_2 = G_3\) (en paralelo); un lazo \(-G_2H_1\) que solo toca \(P_1\).
-
-1. \(\Delta = 1 + G_2H_1\).
-
-   **¿Por qué?** Un solo lazo.
-
-2. \(\Delta_1 = 1\) (\(P_1\) toca el lazo) y \(\Delta_2 = 1 + G_2H_1\) (\(P_2\) no lo toca).
-
-   **¿Por qué?** Para cada camino se quitan los lazos que lo tocan.
-
-**Resultado.** \(T = \dfrac{G_1G_2 + G_3(1+G_2H_1)}{1+G_2H_1}\).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (lazos que no se tocan).
-
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por regla de mason con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender regla de mason te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en regla de mason como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que regla de mason resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Regla de Mason se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Regla de Mason | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses regla de mason por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: regla de mason funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Regla de Mason existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve regla de mason en tu contexto?
+2. ¿Cómo sabrías que regla de mason no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar regla de mason?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, simplify
@@ -391,56 +239,73 @@ print("T:", T)
 print("coincide_con_factorizado:", simplify((1 + G1 * H1) * (1 + G2 * H2) - delta) == 0)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `coincide_con_factorizado: True`, confirmando que \(\Delta = (1+G_1H_1)(1+G_2H_2)\) como dice el Ejemplo 2.
-
-#### Practica
-
-cambia `L1, L2` por lazos que sí se tocan (por ejemplo ambos con el factor `G2`) y comprueba que ya no se puede factorizar igual. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** el término \(+L_iL_j\) de \(\Delta\) solo aparece entre lazos que **no comparten ningún nodo**; contar un producto entre lazos que sí se tocan es el error más común de Mason (ver "Errores comunes" más abajo).
+</details>
 
 ### Tema 4: Referencia y perturbación juntas · Intermedio · 45 min
 
-**¿Por qué es importante?** Calcular el efecto de una perturbación muestra con números por qué vale la pena cerrar el lazo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por referencia y perturbación juntas con foco en comprensión antes de implementación.
 
-Con varias entradas se usa superposición: se calcula la salida para cada entrada con las demás en cero, y se suman.
+#### ► LA IDEA EN UNA FRASE
+**Entender referencia y perturbación juntas te permite tomar mejores decisiones técnicas.**
 
-#### Ejemplo 1 · Referencia y perturbación · *Nivel parcial*
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-> **Qué cambia respecto al anterior:** Hay dos entradas.
+#### ► LA ANALOGÍA
+Piensa en referencia y perturbación juntas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Enunciado.** \(C = K\), \(G = \dfrac{1}{s+1}\), realimentación unitaria. Una perturbación \(D\) se suma a la entrada de la planta. Halla \(Y\) y el efecto de un escalón de \(D\) con \(K=9\).
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que referencia y perturbación juntas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-1. Con \(D = 0\): \(\dfrac{Y}{R} = \dfrac{KG}{1+KG} = \dfrac{K}{s+1+K}\).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Referencia y perturbación juntas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-   **¿Por qué?** Superposición: una entrada a la vez.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Referencia y perturbación juntas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-2. Con \(R = 0\): el camino de \(D\) a \(Y\) es solo \(G\); el lazo sigue siendo \(-KG\). \(\dfrac YD = \dfrac{G}{1+KG} = \dfrac{1}{s+1+K}\).
+#### ► CUÁNDO NO USAR ESTO
+No uses referencia y perturbación juntas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** Mason con \(P_1 = G\).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: referencia y perturbación juntas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-3. Escalón en \(D\) con \(K = 9\): \(y(\infty) = \dfrac{1}{0+1+9} = 0{,}1\).
+#### ► LO QUE DEBES RECORDAR
+- Referencia y perturbación juntas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Valor final \(= G(0)\) de esta función.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve referencia y perturbación juntas en tu contexto?
+2. ¿Cómo sabrías que referencia y perturbación juntas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar referencia y perturbación juntas?
 
-4. Sin control: \(y(\infty) = G(0) = 1\).
+</details>
 
-   **¿Por qué?** Para comparar el efecto del lazo.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Resultado:** La perturbación queda reducida 10 veces
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el valor final de \(Y/D\) con \(K=9\).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, limit
@@ -450,101 +315,8 @@ YoD = 1 / (s + 1 + K)
 print("y_D_infinito:", limit(YoD, s, 0).subs(K, 9))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `y_D_infinito: 1/10`, igual al Ejemplo 1 (la perturbación queda reducida 10 veces).
-
-#### Practica
-
-cambia `K` a 99 y confirma que la reducción pasa a ser de 100 veces (compara con el Tema 1 de este capítulo). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la superposición exige que el sistema sea lineal; con un actuador que satura (por ejemplo, una válvula que no puede abrir más del 100%), la salida real ante \(R\) y \(D\) juntos ya no es la suma de los efectos por separado.
-
-#### Errores comunes
-
-- Olvidar el signo menos en la ganancia de los lazos con realimentación negativa.
-- Contar como “que no se tocan” dos lazos que comparten un nodo.
-- Olvidar los \(\Delta_k\) cuando hay lazos que no tocan una trayectoria.
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Referencia y perturbación con \(C = 10\), \(P = \frac{1}{s + 1}\) · *Básico*
-
-**Enunciado.** La perturbación entra a la entrada de la planta. Halla \(Y\) en función de \(R\) y \(D\) y el efecto final de un escalón de perturbación.
-
-1. \(Y = \dfrac{CP}{1+CP}R + \dfrac{P}{1+CP}D\).
-
-   **¿Por qué?** Superposición: se calcula el efecto de cada entrada con la otra en cero (sistema lineal).
-
-2. \(\tfrac{Y}{D} = \frac{1}{s + 11}\).
-
-   **¿Por qué?** Mismo denominador \(1+CP\): ambas entradas comparten los polos del lazo.
-
-**Resultado.** Ante un escalón unitario de perturbación, \(y_D(\infty) = \frac{1}{11}\); sin control habría sido \(1\), así que el lazo la reduce \(11\) veces.
-
-#### Ejemplo 3 · Referencia y perturbación con \(C = 5\), \(P = \frac{2}{s \left(s + 4\right)}\) · *Intermedio*
-
-**Enunciado.** La perturbación entra a la entrada de la planta. Halla \(Y\) en función de \(R\) y \(D\) y el efecto final de un escalón de perturbación.
-
-1. \(Y = \dfrac{CP}{1+CP}R + \dfrac{P}{1+CP}D\).
-
-   **¿Por qué?** Superposición: se calcula el efecto de cada entrada con la otra en cero (sistema lineal).
-
-2. \(\tfrac{Y}{D} = \frac{2}{s \left(s + 4\right) + 10}\).
-
-   **¿Por qué?** Mismo denominador \(1+CP\): ambas entradas comparten los polos del lazo.
-
-**Resultado.** Ante un escalón unitario de perturbación, \(y_D(\infty) = \frac{1}{5}\); sin control, la salida crecería sin límite (la planta integra), así que el lazo la acota.
-
-#### Ejemplo 4 · Referencia y perturbación con \(C = 2 + \frac{1}{s}\), \(P = \frac{1}{s + 2}\) · *Intermedio*
-
-**Enunciado.** La perturbación entra a la entrada de la planta. Halla \(Y\) en función de \(R\) y \(D\) y el efecto final de un escalón de perturbación.
-
-1. \(Y = \dfrac{CP}{1+CP}R + \dfrac{P}{1+CP}D\).
-
-   **¿Por qué?** Superposición: se calcula el efecto de cada entrada con la otra en cero (sistema lineal).
-
-2. \(\tfrac{Y}{D} = \frac{s}{s^{2} + 4 s + 1}\).
-
-   **¿Por qué?** Mismo denominador \(1+CP\): ambas entradas comparten los polos del lazo.
-
-**Resultado.** Ante un escalón unitario de perturbación, \(y_D(\infty) = 0\): la acción integral la elimina por completo.
-
-#### Ejemplo 5 · Referencia y perturbación con \(C = 20\), \(P = \frac{1}{s + 5}\) · *Básico*
-
-**Enunciado.** La perturbación entra a la entrada de la planta. Halla \(Y\) en función de \(R\) y \(D\) y el efecto final de un escalón de perturbación.
-
-1. \(Y = \dfrac{CP}{1+CP}R + \dfrac{P}{1+CP}D\).
-
-   **¿Por qué?** Superposición: se calcula el efecto de cada entrada con la otra en cero (sistema lineal).
-
-2. \(\tfrac{Y}{D} = \frac{1}{s + 25}\).
-
-   **¿Por qué?** Mismo denominador \(1+CP\): ambas entradas comparten los polos del lazo.
-
-**Resultado.** Ante un escalón unitario de perturbación, \(y_D(\infty) = \frac{1}{25}\); sin control habría sido \(\frac{1}{5}\), así que el lazo la reduce \(5\) veces.
-
-#### Práctica para resolver sola o solo
-
-- **1.**\(G_1 = \dfrac1s\), \(G_2 = \dfrac{1}{s+1}\), \(H_1 = 2\) (lazo interno sobre \(G_2\)), lazo externo unitario. \(T\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\dfrac{1}{s^2+3s+1}\) (Ejemplo 5 del módulo 5).
-  
-  </details>
-
-- **2.**Con Mason: \(P_1 = G_1G_2\), \(P_2 = G_3\), un lazo \(L_1 = -G_2H\) que toca \(P_1\) pero no \(P_2\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\Delta = 1+G_2H\), \(\Delta_1 = 1\), \(\Delta_2 = 1+G_2H\): \(T = \dfrac{G_1G_2 + G_3(1+G_2H)}{1+G_2H}\).
-  
-  </details>
-
+</details>

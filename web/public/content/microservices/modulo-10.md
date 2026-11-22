@@ -31,42 +31,26 @@ contiene el tema 4 (RabbitMQ y Kafka). Los temas 3 y 4 llevan al tema 5, sync vs
 
 ---
 
+
 ### REST síncrono: RestTemplate, WebClient, OpenFeign
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 6, Lección 1 de 5 · Fase 1 · `web/public/content/microservices/modulo-10.md`
+#### ► DE QUÉ TRATA
+Implementar la misma llamada entre servicios con RestTemplate, WebClient, OpenFeign y RestClient con @HttpExchange, configurar timeouts explícitos y explicar cómo cada cliente trata un 404 y una respuesta lenta; lo compruebas cuando ClientesRestTest pasa 3 de 3.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar la misma llamada entre servicios con RestTemplate, WebClient, OpenFeign y RestClient con @HttpExchange, configurar timeouts explícitos y explicar cómo cada cliente trata un 404 y una respuesta lenta; lo compruebas cuando ClientesRestTest pasa 3 de 3.**
 
-- HTTP (métodos, códigos, cabeceras) y JSON (Módulo 0.4).
-- Spring MVC, records como DTO y Jackson (Módulo 2).
-- `@SpringBootTest` y `@DynamicPropertySource` (Módulo 3).
+#### ► POR QUÉ EXISTE ESTO
+Cuando el servicio de pedidos necesita saber cuántas unidades quedan, le pregunta al servicio de inventario por HTTP, igual que tu navegador le pregunta a una página web. Es síncrono porque pedidos espera la respuesta antes de seguir.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en rest síncrono: resttemplate, webclient, openfeign como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** la misma llamada entre servicios con RestTemplate, WebClient, OpenFeign y RestClient con
-`@HttpExchange`, **configurar** timeouts explícitos y **explicar** cómo cada cliente trata un 404 y una respuesta
-lenta; lo compruebas cuando `ClientesRestTest` pasa 3 de 3.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja **cuatro formas de pedir un dato por teléfono** al almacén:
-
-1. **RestTemplate:** un teléfono fijo de disco. Marcas, esperas en la línea sin poder hacer nada más hasta que
-   contesten. Funciona, es conocido por todos y ya no le agregan funciones.
-2. **WebClient:** dejas el mensaje y te devuelven la llamada. Mientras tanto atiendes a otros clientes; el teléfono
-   suena cuando la respuesta está lista (un `Mono`, «una respuesta que llegará»).
-3. **OpenFeign:** una **secretaria** con una libreta de contactos: tú le dices «consulta existencias de CAFE» y ella sabe
-   el número, marca y te trae la respuesta. Solo escribiste la tarjeta de contacto (una interfaz).
-4. **RestClient + `@HttpExchange`:** la versión moderna de la secretaria que ya viene con Spring, sin contratar a una
-   agencia externa.
-
-Encima de los cuatro teléfonos, un **reloj de arena** pegado a cada uno: el timeout. Sin él, puedes quedarte en la
-línea para siempre.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente HTTP
@@ -83,62 +67,94 @@ sequenceDiagram
     end
 ```
 
-**Texto alternativo:** diagrama de secuencia con tres participantes. El cliente pide al servicio de pedidos la
-disponibilidad de CAFE; pedidos llama a inventario con un timeout de 500 ms. Si inventario responde a tiempo, devuelve
-200 con el JSON y pedidos lo reenvía al cliente. Si tarda más de 500 ms, pedidos corta la llamada con una excepción de
-timeout y responde 500; el Módulo 8 enseña a responder mejor con fallback y circuit breaker.
+1. Cuando el servicio de pedidos necesita saber cuántas unidades quedan, le pregunta al servicio de inventario por HTTP, igual que tu navegador le pregunta a una página web.
+2. Es síncrono porque pedidos espera la respuesta antes de seguir.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| REST síncrono: RestTemplate, WebClient, OpenFeign se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando el servicio de **pedidos** necesita saber cuántas unidades quedan, le **pregunta** al servicio de
-**inventario** por HTTP, igual que tu navegador le pregunta a una página web. Es **síncrono** porque pedidos espera la
-respuesta antes de seguir.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar REST síncrono: RestTemplate, WebClient, OpenFeign | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-En Spring hay varias herramientas («clientes HTTP») para hacer esa pregunta desde Java: **RestTemplate** (la clásica),
-**WebClient** (la que no bloquea), **OpenFeign** (escribes una interfaz y se genera sola) y **RestClient** con
-interfaces `@HttpExchange` (la recomendada hoy para código nuevo). Todas convierten el JSON de la respuesta en un
-objeto Java, aquí el record `Existencia`.
+#### ► CUÁNDO NO USAR ESTO
+Cadena de llamadas síncronas (*chatty services*):
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rest síncrono: resttemplate, webclient, openfeign funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-| Cliente | Estilo | Viene de | 404 se convierte en | Timeout en el lab |
-|---|---|---|---|---|
-| `RestTemplate` | métodos (`getForObject`), bloqueante | Spring Framework (en mantenimiento) | `HttpClientErrorException.NotFound` | `RestTemplateBuilder.connectTimeout/readTimeout` |
-| `WebClient` | fluido, **no bloqueante** (`Mono`/`Flux`) | Spring WebFlux | `WebClientResponseException.NotFound` (al suscribirse) | `.timeout(Duration)` del `Mono` |
-| OpenFeign | interfaz declarativa | Spring Cloud OpenFeign | `FeignException.NotFound` | `spring.cloud.openfeign.client.config.<nombre>.read-timeout` |
-| `RestClient` + `@HttpExchange` | interfaz declarativa sobre cliente fluido, bloqueante | Spring Framework 7 | `HttpClientErrorException.NotFound` | `spring.http.serviceclient.<grupo>.read-timeout` |
+#### ► LO QUE DEBES RECORDAR
+- Cuando el servicio de pedidos necesita saber cuántas unidades quedan, le pregunta al servicio de inventario por HTTP, igual que tu navegador le pregunta a una página web.
+- Es síncrono porque pedidos espera la respuesta antes de seguir.
 
-- **Spring Boot 4 separa los clientes en *starters*:** `spring-boot-starter-restclient` (RestTemplateBuilder,
-  RestClient.Builder y grupos `@HttpExchange`) y `spring-boot-starter-webclient` (WebClient.Builder sobre Reactor
-  Netty). Inyecta siempre los *builders* de Boot: traen Jackson, observabilidad y SSL configurados.
-- **`@ImportHttpServices(group = "inventario", types = InventarioHttp.class)`** registra la interfaz como bean; su URL
-  base sale de `spring.http.serviceclient.inventario.base-url`.
-- **`@EnableFeignClients` + `@FeignClient(name = "inventario", url = "${inventario.url}")`**: Spring Cloud genera la
-  implementación. El nombre sirve también para el balanceo con Service Discovery (Módulo 7).
-- **`block()`** en el controlador MVC solo está para comparar los cuatro clientes en el mismo endpoint; en una
-  aplicación WebFlux devolverías el `Mono` directamente.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rest síncrono: resttemplate, webclient, openfeign en tu contexto?
+2. ¿Cómo sabrías que rest síncrono: resttemplate, webclient, openfeign no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rest síncrono: resttemplate, webclient, openfeign?
 
-#### 8. EXPLICACIÓN MAESTRA
+</details>
 
-- **¿Cuál elegir hoy?** Para servicios Spring MVC nuevos: `RestClient` (fluido) o interfaces `@HttpExchange` (declarativo)
-  con hilos virtuales (Módulo 1) si necesitas mucha concurrencia. `WebClient` cuando toda la aplicación es reactiva o
-  necesitas *streaming* y composición de muchas llamadas concurrentes. OpenFeign sigue siendo común en código
-  existente con Spring Cloud, pero el propio proyecto lo considera *feature-complete*; las interfaces HTTP de Spring
-  Framework cubren su caso de uso sin dependencia extra. RestTemplate: mantenlo donde ya está, no lo uses en código
-  nuevo.
-- **Timeouts en cascada:** si pedidos espera 5 s a inventario y el cliente de pedidos espera 3 s, pedidos sigue
-  trabajando para nadie. Cada salto debe tener un timeout **menor** que el de quien lo llama (presupuesto de latencia,
-  Módulo 8).
-- **Reintentos:** solo en operaciones idempotentes (GET, PUT) y con *backoff* y *jitter*; un POST reintentado sin clave
-  de idempotencia puede crear dos pedidos.
-- **Alternativas al REST síncrono:** gRPC (contrato binario y *streaming*, tema 2), GraphQL (el cliente elige los
-  campos, tema 3) o mensajería (no esperas, tema 4).
-- **Cuándo NO usar una llamada síncrona:** cuando el llamador no necesita la respuesta para continuar (notificar,
-  auditar, actualizar copias), o cuando encadenarías más de 2 o 3 saltos síncronos en la misma petición del usuario: la
-  disponibilidad se multiplica y la latencia se suma (tema 5).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
+#### Construcción guiada
+1. Arranca el inventario falso (solo JDK) y compruébalo con `curl`:
+   ```bash
+   java inventario-falso/InventarioFalso.java 9091 &
+   curl -s localhost:9091/inventario/CAFE; echo
+   curl -s -o /dev/null -w "%{http_code}\n" localhost:9091/inventario/TE
+   ```
+2. Arranca el servicio de pedidos en otra terminal y pide lo mismo con los cuatro clientes:
+   ```bash
+   ../gradlew -q bootRun
+   for c in resttemplate webclient feign httpexchange; do
+     curl -s "localhost:8080/pedidos/disponibilidad/CAFE?cliente=$c"; echo "  <- $c"
+   done
+   ```
+3. **Rómpelo a propósito:** pide el SKU lento, `curl -s -o /dev/null -w "%{http_code} en %{time_total}s\n"
+   "localhost:8080/pedidos/disponibilidad/LENTO?cliente=feign"`, y repite con
+   `INVENTARIO_URL=http://localhost:9999` (un puerto donde no hay nadie).
 
+**Output esperado:**
+
+Paso 1 (salida real con JDK 25.0.5; las dos primeras líneas son de `curl`, las demás del inventario falso):
+
+```text
+{"sku":"CAFE","disponibles":12}
+404
+Exception in thread "main" java.net.BindException: Address already in use
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Net.java:522)
+	inventario: GET CAFE
+inventario: GET TE
+nelImpl.netBind(ServerSocketChannelImpl.java:335)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:297)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:80)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(ServerImpl.java:147)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(HttpServerImpl.java:45)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(DefaultHttpServerProvider.java:35)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(HttpServer.java:152)
+	at InventarioFalso.main(InventarioFalso.java:16)
+bash: line 1: kill: (25568) - No such process
+```
+
+- Paso 2: cuatro líneas iguales, `{"sku":"CAFE","disponibles":12}  <- resttemplate` y así con `webclient`, `feign` y
+  `httpexchange`.
+- Paso 3: `500 en 0.5…s`: la llamada se corta a los ~500 ms aunque el inventario tarda 2 s, y el log de pedidos
+  muestra la excepción del cliente (con Feign, un `feign.RetryableException` por *read timeout*). Con el puerto vacío,
+  la respuesta es 500 casi inmediata y el log muestra `Connection refused`.
+
+**Captura comentada:** el tiempo del paso 3 es la prueba de que el timeout funciona: sin él, cada petición de un usuario
+quedaría ocupando un hilo de pedidos durante los 2 s (o para siempre, si inventario se cuelga).
+
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3.1.8, Reactor Netty), **Spring Cloud
 2025.1.4** (Spring Cloud OpenFeign 5.0.4; Spring Cloud Commons 5.0.4 declara compatibles Spring Boot 4.0.x y 4.1.x).
 > **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
@@ -489,59 +505,7 @@ public class InventarioFalso {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Arranca el inventario falso (solo JDK) y compruébalo con `curl`:
-   ```bash
-   java inventario-falso/InventarioFalso.java 9091 &
-   curl -s localhost:9091/inventario/CAFE; echo
-   curl -s -o /dev/null -w "%{http_code}\n" localhost:9091/inventario/TE
-   ```
-2. Arranca el servicio de pedidos en otra terminal y pide lo mismo con los cuatro clientes:
-   ```bash
-   ../gradlew -q bootRun
-   for c in resttemplate webclient feign httpexchange; do
-     curl -s "localhost:8080/pedidos/disponibilidad/CAFE?cliente=$c"; echo "  <- $c"
-   done
-   ```
-3. **Rómpelo a propósito:** pide el SKU lento, `curl -s -o /dev/null -w "%{http_code} en %{time_total}s\n"
-   "localhost:8080/pedidos/disponibilidad/LENTO?cliente=feign"`, y repite con
-   `INVENTARIO_URL=http://localhost:9999` (un puerto donde no hay nadie).
-
-**Output esperado:**
-
-Paso 1 (salida real con JDK 25.0.5; las dos primeras líneas son de `curl`, las demás del inventario falso):
-
-```text
-{"sku":"CAFE","disponibles":12}
-404
-Exception in thread "main" java.net.BindException: Address already in use
-	at java.base/sun.nio.ch.Net.bind0(Native Method)
-	at java.base/sun.nio.ch.Net.bind(Net.java:522)
-	inventario: GET CAFE
-inventario: GET TE
-nelImpl.netBind(ServerSocketChannelImpl.java:335)
-	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:297)
-	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:80)
-	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(ServerImpl.java:147)
-	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(HttpServerImpl.java:45)
-	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(DefaultHttpServerProvider.java:35)
-	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(HttpServer.java:152)
-	at InventarioFalso.main(InventarioFalso.java:16)
-bash: line 1: kill: (25568) - No such process
-```
-
-- Paso 2: cuatro líneas iguales, `{"sku":"CAFE","disponibles":12}  <- resttemplate` y así con `webclient`, `feign` y
-  `httpexchange`.
-- Paso 3: `500 en 0.5…s`: la llamada se corta a los ~500 ms aunque el inventario tarda 2 s, y el log de pedidos
-  muestra la excepción del cliente (con Feign, un `feign.RetryableException` por *read timeout*). Con el puerto vacío,
-  la respuesta es 500 casi inmediata y el log muestra `Connection refused`.
-
-**Captura comentada:** el tiempo del paso 3 es la prueba de que el timeout funciona: sin él, cada petición de un usuario
-quedaría ocupando un hilo de pedidos durante los 2 s (o para siempre, si inventario se cuelga).
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```bash
 ../gradlew test
 ```
@@ -646,74 +610,27 @@ comprobación:** ¿por qué el test de timeout de WebClient usa `hasRootCauseIns
 `isInstanceOf`? *(Porque `block()` envuelve la excepción comprobada `TimeoutException` del `Mono` en una excepción no
 comprobada; la causa original queda dentro.)*
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** en producción, cuando inventario se pone lento, **pedidos también deja de responder**, aunque su CPU está
-casi en cero. **Cómo se ve:** los *thread dumps* de pedidos muestran cientos de hilos `http-nio-8080-exec-*` en estado
-`RUNNABLE` dentro de `java.net.SocketInputStream.read` (o esperando en el cliente HTTP); el pool de Tomcat se agota y
-las peticiones nuevas hacen cola. **Diagnóstico:** un cliente HTTP creado con `new RestTemplate()` o sin timeouts de
-lectura espera indefinidamente. Revisa cómo se construye cada cliente y busca `readTimeout`, `.timeout(` o
-`read-timeout`. **Arreglo:** usa los *builders* de Spring Boot y declara timeouts de conexión y lectura en cada cliente
-(como en este laboratorio); en el Módulo 8 añadirás circuit breaker y *bulkhead*.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«RestTemplate, WebClient, OpenFeign o RestClient: ¿cuál usarías en un microservicio Spring Boot nuevo y por qué?»
-
-**Respuesta modelo:** en un servicio MVC nuevo usaría RestClient, o interfaces `@HttpExchange` sobre RestClient si
-quiero un cliente declarativo; son parte de Spring Framework, Spring Boot los configura (Jackson, observabilidad, SSL,
-timeouts por propiedades) y con hilos virtuales el modelo bloqueante escala bien. WebClient lo reservo para
-aplicaciones reactivas o para *streaming*/fan-out con muchas llamadas concurrentes. OpenFeign lo mantengo en código
-existente con Spring Cloud, sabiendo que está en modo *feature-complete*. RestTemplate solo en código heredado. En
-todos: timeouts explícitos, reintentos solo en operaciones idempotentes y propagación de trazas.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Cadena de llamadas síncronas (*chatty services*):**
-
-```text
-cliente → pedidos → inventario → precios → impuestos → descuentos   (5 saltos síncronos por petición)
-latencia ≈ suma de los 5 · disponibilidad ≈ producto de los 5
-```
-
-Se ve en una traza distribuida como una escalera larga de *spans* uno debajo del otro, y en un diagrama como servicios
-que no pueden responder nada sin preguntarle a otros cuatro. Reduce saltos: agrupa lo que siempre se consulta junto,
-guarda copias locales alimentadas por eventos o pasa a comunicación asíncrona donde no necesitas la respuesta.
-
----
+</details>
 
 ### gRPC: Protocol Buffers, servicios, streaming
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 6, Lección 2 de 5 · Fase 1.
+#### ► DE QUÉ TRATA
+Definir un contrato en Protocol Buffers con una llamada unaria, una de *streaming* del servidor y una de *streaming* del cliente, implementarlo con el soporte gRPC de Spring Boot 4.1 y explicar por qué los números de campo son el contrato; lo compruebas cuando InventarioGrpcTest…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Definir un contrato en Protocol Buffers con una llamada unaria, una de *streaming* del servidor y una de *streaming* del cliente, implementarlo con el soporte gRPC de Spring Boot 4.1 y explicar por qué los números de campo son el contrato; lo compruebas cuando InventarioGrpcTest pasa 4 de 4 y demo-binario.sh muestra el mensaje de 8 bytes.**
 
-- REST síncrono y timeouts (tema 1).
-- Interfaces, clases anónimas y `CompletableFuture` en Java (Módulo 1).
-- Qué es un contrato entre servicios (Módulo 5).
+#### ► POR QUÉ EXISTE ESTO
+gRPC es otra forma de que un servicio le pida algo a otro, creada por Google. En lugar de escribir URLs y JSON a mano, escribes un contrato en un archivo .proto: qué funciones ofrece el servicio y qué datos lleva cada mensaje. Una herramienta (protoc) genera el código del cliente y del servidor a partir de ese archivo.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en grpc: protocol buffers, servicios, streaming como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Definir** un contrato en Protocol Buffers con una llamada unaria, una de *streaming* del servidor y una de
-*streaming* del cliente, **implementarlo** con el soporte gRPC de Spring Boot 4.1 y **explicar** por qué los números de
-campo son el contrato; lo compruebas cuando `InventarioGrpcTest` pasa 4 de 4 y `demo-binario.sh` muestra el mensaje de
-8 bytes.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja **una oficina de correos con formularios prediseñados**. En REST con JSON, cada carta es una hoja en blanco
-escrita a mano: «Querido inventario, el sku es CAFE...», legible por cualquiera pero larga. En gRPC, ambos lados tienen
-el **mismo talonario de formularios** (el archivo `.proto`) con casillas numeradas: casilla 1 = sku, casilla 2 =
-disponibles. La carta solo lleva «1: CAFE · 2: 12», mucho más corta, y viaja por un **tubo neumático** (HTTP/2) que
-permite varias cosas a la vez: mandar una carta y recibir una respuesta (unario), mandar una carta y recibir un rollo
-continuo de notas (*streaming* del servidor) o ir echando muchas notas al tubo y recibir un solo recibo al final
-(*streaming* del cliente). Si alguien reimprime el talonario cambiando el número de las casillas, las cartas viejas se
-leen mal sin que nadie lo note.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente (stub generado)
@@ -732,64 +649,46 @@ sequenceDiagram
     S-->>C: ResumenReservas(2 reservas, 5 unidades)
 ```
 
-**Texto alternativo:** diagrama de secuencia entre un cliente con stub generado y el servicio gRPC de Spring Boot en el
-puerto 9090, sobre HTTP/2 con mensajes Protocol Buffers. Primero una llamada unaria: Consultar CAFE devuelve CAFE con 12.
-Después SeguirExistencias: el servidor envía tres mensajes (12, 11 y 10) y cierra el stream. Por último ReservarLote: el
-cliente envía dos reservas (CAFE 2 y TAZA 3), cierra su stream y recibe un resumen con 2 reservas y 5 unidades.
+1. gRPC es otra forma de que un servicio le pida algo a otro, creada por Google.
+2. En lugar de escribir URLs y JSON a mano, escribes un contrato en un archivo .proto: qué funciones ofrece el servicio y qué datos lleva cada mensaje.
+3. Una herramienta (protoc) genera el código del cliente y del servidor a partir de ese archivo.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| gRPC: Protocol Buffers, servicios, streaming se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**gRPC** es otra forma de que un servicio le pida algo a otro, creada por Google. En lugar de escribir URLs y JSON a
-mano, escribes un **contrato** en un archivo `.proto`: qué funciones ofrece el servicio y qué datos lleva cada mensaje.
-Una herramienta (`protoc`) **genera el código** del cliente y del servidor a partir de ese archivo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar gRPC: Protocol Buffers, servicios, streaming | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Los datos viajan en **Protocol Buffers**, un formato **binario** (ceros y unos, no texto) más pequeño y rápido de
-procesar que JSON. Además gRPC usa HTTP/2, que permite **streaming**: enviar muchos mensajes por la misma conexión, en
-una o en ambas direcciones.
+#### ► CUÁNDO NO USAR ESTO
+Reutilizar o renumerar campos del .proto:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: grpc: protocol buffers, servicios, streaming funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **El `.proto`:** `service Inventario` declara tres RPC; `stream` delante del tipo de retorno significa *streaming*
-  del servidor y delante del parámetro, *streaming* del cliente (con `stream` en ambos sería bidireccional). Cada campo
-  tiene un **número** (`string sku = 1;`) que es su identidad en el binario.
-- **El binario:** `Existencia{sku:"CAFE", disponibles:12}` ocupa **8 bytes** (`0a 04 43 41 46 45 10 0c`): `0a` = campo 1
-  de tipo texto, `04` = longitud, `43 41 46 45` = «CAFE», `10` = campo 2 entero, `0c` = 12. El mismo dato en JSON ocupa
-  31 bytes.
-- **Generación en Gradle:** el plugin `com.google.protobuf` (0.9.6) lee `src/main/proto`. El plugin de Spring Boot 4.1
-  reacciona a él y configura `protoc` y `protoc-gen-grpc-java` con las versiones del BOM, así que en el
-  `build.gradle.kts` solo se activa (`protobuf { plugins { create("grpc") } }`). En Maven lo hace el
-  `protobuf-maven-plugin` de io.github.ascopes, configurado por el *parent* de Boot. Genera `InventarioGrpc` (stubs y `InventarioImplBase`) y las clases de mensajes en
-  `academia.grpc.proto`.
-- **Servidor:** `spring-boot-starter-grpc-server` arranca un servidor Netty en `spring.grpc.server.port` y registra todo
-  bean `BindableService` (tu clase que extiende `InventarioImplBase`). También activa el servicio de **reflexión** (para
-  que herramientas como `grpcurl` descubran los servicios) y el de *health*.
-- **Errores:** no hay códigos HTTP sino **Status**: `NOT_FOUND`, `INVALID_ARGUMENT`, `DEADLINE_EXCEEDED`,
-  `UNAVAILABLE`... Se envían con `respuesta.onError(Status.NOT_FOUND.withDescription(...).asRuntimeException())`.
-- **Deadlines:** el cliente fija cuánto espera (`withDeadlineAfter(2, SECONDS)`) y el plazo viaja al servidor, que
-  puede dejar de trabajar si ya venció.
-- **Tests:** `@AutoConfigureTestGrpcTransport` arranca servidor y canal **en proceso** (sin puertos);
-  `GrpcChannelFactory.createChannel(...)` da el canal para crear stubs.
+#### ► LO QUE DEBES RECORDAR
+- gRPC es otra forma de que un servicio le pida algo a otro, creada por Google.
+- En lugar de escribir URLs y JSON a mano, escribes un contrato en un archivo .proto: qué funciones ofrece el servicio y qué datos lleva cada mensaje.
+- Una herramienta (protoc) genera el código del cliente y del servidor a partir de ese archivo.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve grpc: protocol buffers, servicios, streaming en tu contexto?
+2. ¿Cómo sabrías que grpc: protocol buffers, servicios, streaming no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar grpc: protocol buffers, servicios, streaming?
 
-- **Cuándo brilla gRPC:** comunicación interna servicio a servicio con alto volumen o baja latencia, contratos estrictos
-  compartidos entre lenguajes (Java, Go, Node: Módulo 18), *streaming* real (telemetría, cotizaciones, chats) y
-  *deadlines* propagados.
-- **Costos:** no lo consume un navegador directamente (necesitas gRPC-Web o un *transcoding* a JSON), la depuración
-  requiere herramientas (`grpcurl`, reflexión), algunos balanceadores L4 no reparten bien HTTP/2 de larga duración
-  (el balanceo debe ser L7 o del lado del cliente) y el binario no se lee a simple vista.
-- **Evolución del contrato:** se pueden **agregar** campos con números nuevos y **dejar de usar** campos (marcándolos
-  `reserved`); nunca cambiar el número ni el tipo de un campo existente. Herramientas como `buf breaking` detectan
-  cambios incompatibles en CI.
-- **Alternativas:** REST/JSON con OpenAPI (universal, legible, cacheable), GraphQL (consultas flexibles para clientes
-  de interfaz) y mensajería (cuando no necesitas respuesta). Muchas arquitecturas exponen REST o GraphQL hacia fuera y
-  usan gRPC dentro.
-- **Cuándo NO:** APIs públicas para terceros o navegadores, equipos sin experiencia en HTTP/2 y Protocol Buffers con
-  pocas llamadas entre servicios (el beneficio de rendimiento no compensa la curva), o cuando el cuello de botella es la
-  base de datos y no la serialización.
+</details>
 
-#### 9. CÓDIGO EJECUTABLE
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (soporte gRPC nativo desde 4.1: Spring gRPC 1.1.2, grpc-java 1.84.1,
 Protobuf Java 4.36.2, gestionados por el BOM; plugin de Gradle `com.google.protobuf` 0.9.6). `f048-grpc/build.gradle.kts`:
 
@@ -1092,64 +991,7 @@ message Existencia {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Mira el mensaje en el cable y el efecto de cambiar los números de campo:
-   ```bash
-   ./protobuf/demo-binario.sh
-   ```
-2. Genera el código y arranca el servidor gRPC:
-   ```bash
-   ../gradlew -q compileJava        # genera build/generated/sources/proto
-   ../gradlew -q bootRun
-   ```
-3. En otra terminal, ejecuta el cliente de consola:
-   ```bash
-   ../gradlew -q bootRun -Pprincipal=academia.grpc.ClienteDeConsola
-   ```
-4. (Opcional, con `grpcurl` instalado) explora el servidor por reflexión:
-   `grpcurl -plaintext localhost:9090 list` y
-   `grpcurl -plaintext -d '{"sku":"CAFE"}' localhost:9090 academia.inventario.v1.Inventario/SeguirExistencias`.
-
-**Output esperado:**
-
-Paso 1 (salida real, con el entorno virtual que crea el script la primera vez; tu primera línea muestra la versión del
-`protoc` que encontró: el de Homebrew, el que descargó Gradle o el de grpcio-tools 1.84.1, `libprotoc 35.1`):
-
-```text
-== Creando protobuf/.venv con grpcio-tools 1.84.1 (solo la primera vez)
-== protoc: libprotoc 35.1
-== Bytes en el cable (8 bytes):
- 0a 04 43 41 46 45 10 0c
-== El mismo dato en JSON (31 bytes):
-{"sku":"CAFE","disponibles":12}
-== Leído con el contrato correcto:
-sku: "CAFE"
-disponibles: 12
-== Leído con el contrato v2 (números cambiados): sku y disponibles quedan vacíos, todo va a campos desconocidos
-1: "CAFE"
-2: 12
-```
-
-- Paso 2: el log de Spring Boot termina con `Started GrpcApp in ... seconds` y una línea del servidor gRPC indicando el
-  puerto 9090.
-- Paso 3:
-  ```text
-  Unario   -> CAFE = 12
-  Stream   -> CAFE = 12
-  Stream   -> CAFE = 11
-  Stream   -> CAFE = 10
-  Error    -> NOT_FOUND: sku desconocido: TE
-  ```
-- Paso 4: `list` muestra `academia.inventario.v1.Inventario` junto a los servicios de reflexión y de *health*; la
-  segunda orden imprime tres objetos JSON, `{"sku": "CAFE", "disponibles": 12}`, luego 11 y 10.
-
-**Captura comentada:** en el paso 1, con el contrato v2 los datos **no se pierden con un error**, se pierden en silencio:
-`protoc` no reconoce los campos (el tipo del cable no coincide con el del nuevo número) y los deja como desconocidos
-`1:` y `2:`, de modo que `sku` y `disponibles` quedan vacíos. En Java leerías `""` y `0`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```bash
 ../gradlew test
 ```
@@ -1238,76 +1080,27 @@ comprobación:** necesitas agregar el campo `bodega` a `Existencia`. ¿Qué núm
 los clientes viejos ignoran el campo desconocido y los nuevos reciben `""` de los servidores viejos; reutilizar 1 o 2
 rompería a todos.)*
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** el cliente recibe `io.grpc.StatusRuntimeException: UNIMPLEMENTED: Method not found:
-academia.inventario.Inventario/Consultar` aunque el servidor está arriba. **Cómo se ve:** el servidor no registra
-ningún error; el cliente falla en la primera llamada. **Diagnóstico:** el nombre completo del método incluye el
-`package` del `.proto`. El cliente se generó con una copia del contrato cuyo `package` es distinto
-(`academia.inventario` frente a `academia.inventario.v1`). Compara con `grpcurl -plaintext localhost:9090 list` lo que el
-servidor expone. **Arreglo:** una sola fuente del `.proto` (un repositorio o artefacto de contratos versionado) de la que
-generan cliente y servidor, y control de cambios incompatibles en CI. El otro clásico, `UNAVAILABLE: io exception`,
-significa que no hay servidor en esa dirección o que el cliente usa TLS y el servidor texto plano (o al revés).
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cuándo elegirías gRPC en lugar de REST para comunicar dos microservicios?»
-
-**Respuesta modelo:** para comunicación interna con muchas llamadas o requisitos de latencia, contratos tipados
-compartidos entre equipos y lenguajes, y casos de *streaming*. Protocol Buffers da mensajes pequeños y generación de
-código, HTTP/2 multiplexa y permite *streaming* en ambos sentidos, y los *deadlines* se propagan. A cambio, necesito
-balanceo L7 o del lado del cliente, herramientas para depurar y disciplina de compatibilidad (no cambiar números de
-campo, usar `reserved`). Para APIs públicas, navegadores o integraciones simples seguiría con REST/JSON, a menudo
-exponiendo REST fuera y gRPC dentro.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Reutilizar o renumerar campos del `.proto`:**
-
-```protobuf
-message Existencia {
-  int32 disponibles = 1;   // ✘ antes el 1 era sku
-  // string bodega = 2;    // ✘ campo borrado sin «reserved 2;» y su número se reusa mañana
-}
-```
-
-Se ve como un *diff* inocente en una revisión de código y, en producción, como datos que llegan vacíos o con valores
-absurdos solo entre versiones distintas del cliente y el servidor. Marca los campos retirados con `reserved` (número y
-nombre) y agrega siempre números nuevos.
-
----
+</details>
 
 ### GraphQL con Spring for GraphQL
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 6, Lección 3 de 5 · Fase 1.
+#### ► DE QUÉ TRATA
+Definir un esquema GraphQL con consultas y una mutación, resolverlo con @QueryMapping, @MutationMapping y @BatchMapping, y demostrar que el cliente recibe solo los campos pedidos y que las reseñas se cargan sin N+1; lo compruebas cuando CatalogoGraphQlTest pasa 4 de 4.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Definir un esquema GraphQL con consultas y una mutación, resolverlo con @QueryMapping, @MutationMapping y @BatchMapping, y demostrar que el cliente recibe solo los campos pedidos y que las reseñas se cargan sin N+1; lo compruebas cuando CatalogoGraphQlTest pasa 4 de 4.**
 
-- REST y JSON (tema 1 y Módulo 0.4).
-- Controladores de Spring y records (Módulo 2).
-- Tests de *slice* de Spring Boot (`@WebMvcTest`, Módulo 3): `@GraphQlTest` es la versión para GraphQL.
+#### ► POR QUÉ EXISTE ESTO
+GraphQL es un lenguaje para pedir datos a un servidor en el que el cliente decide qué campos quiere. Hay una sola dirección (/graphql) y un esquema que describe todo lo que se puede pedir, con sus tipos. Una consulta se parece a la forma de la respuesta:
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en graphql con spring for graphql como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Definir** un esquema GraphQL con consultas y una mutación, **resolverlo** con `@QueryMapping`, `@MutationMapping` y
-`@BatchMapping`, y **demostrar** que el cliente recibe solo los campos pedidos y que las reseñas se cargan sin N+1; lo
-compruebas cuando `CatalogoGraphQlTest` pasa 4 de 4.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja **dos restaurantes**. En el primero (REST) hay **menús fijos**: el «combo producto» trae siempre nombre, precio,
-foto, descripción, reseñas y proveedor, aunque solo quieras el precio; y si quieres el producto **y** sus reseñas,
-pides dos combos en dos filas distintas. En el segundo (GraphQL) hay un **buffet con plato vacío**: tomas una hoja de
-pedido (la consulta), marcas exactamente «nombre y precio del CAFE» o «sku de todos los productos y las estrellas de
-sus reseñas», la entregas en **una sola ventanilla** (`/graphql`) y te sirven un plato con justo eso. Detrás del
-mostrador, un **mesero eficiente** junta las reseñas de todos los platos en **un solo viaje** a la cocina de reseñas en
-lugar de ir una vez por plato (`@BatchMapping`). Pegado en la pared, el **menú completo de lo que existe** (el esquema):
-si pides «costo», que no está en la pared, te lo devuelven antes de cocinar nada.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     CL["Cliente<br/>POST /graphql<br/>{ productos { sku resenas { estrellas } } }"] --> V{"Validación<br/>contra schema.graphqls"}
@@ -1319,60 +1112,46 @@ flowchart LR
     B --> R["data: solo los campos pedidos"]
 ```
 
-**Texto alternativo:** un cliente envía por POST a /graphql una consulta que pide sku de los productos y estrellas de sus
-reseñas. La consulta se valida contra schema.graphqls: si pide un campo inexistente, se responde con un error de
-validación. Si es válida, @QueryMapping productos() lee el catálogo y @BatchMapping resenas recibe la lista completa de
-productos y hace una sola llamada al servicio de reseñas. La respuesta contiene solo los campos pedidos.
+1. GraphQL es un lenguaje para pedir datos a un servidor en el que el cliente decide qué campos quiere.
+2. Hay una sola dirección (/graphql) y un esquema que describe todo lo que se puede pedir, con sus tipos.
+3. Una consulta se parece a la forma de la respuesta:
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| GraphQL con Spring for GraphQL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**GraphQL** es un lenguaje para pedir datos a un servidor en el que **el cliente decide qué campos quiere**. Hay una sola
-dirección (`/graphql`) y un **esquema** que describe todo lo que se puede pedir, con sus tipos. Una consulta se parece
-a la forma de la respuesta:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar GraphQL con Spring for GraphQL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-```graphql
-{ producto(sku: "CAFE") { nombre precio } }
-```
+#### ► CUÁNDO NO USAR ESTO
+Exponer el modelo de la base de datos tal cual como esquema GraphQL:
 
-devuelve `{"data":{"producto":{"nombre":"Café de Huila 500 g","precio":32000}}}`. Para **cambiar** datos se usan
-**mutaciones**. Es muy útil para pantallas (web, móvil) que necesitan combinar datos de varios lugares en una sola
-petición.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: graphql con spring for graphql funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► LO QUE DEBES RECORDAR
+- GraphQL es un lenguaje para pedir datos a un servidor en el que el cliente decide qué campos quiere.
+- Hay una sola dirección (/graphql) y un esquema que describe todo lo que se puede pedir, con sus tipos.
+- Una consulta se parece a la forma de la respuesta:
 
-- **Esquema primero:** Spring for GraphQL carga los archivos `.graphqls` de `src/main/resources/graphql/` y, al
-  arrancar, **inspecciona** que cada campo tenga un resolvedor (o una propiedad con el mismo nombre en el record).
-- **Resolvedores:** `@QueryMapping productos()` resuelve `Query.productos`; `@Argument String sku` recibe argumentos;
-  `@MutationMapping calificar(...)` resuelve la mutación. Los campos simples (`nombre`, `precio`) salen de los
-  componentes del record `Producto`.
-- **N+1:** si `Producto.resenas` se resolviera producto por producto, una lista de 50 productos haría 50 llamadas al
-  servicio de reseñas. `@BatchMapping` recibe **todos** los productos de la respuesta y devuelve un
-  `Map<Producto, List<Resena>>`: 1 llamada. El test lo comprueba contando llamadas.
-- **Errores:** una consulta inválida (campo inexistente) no se ejecuta y devuelve `errors` con tipo `ValidationError`;
-  una excepción en un resolvedor devuelve `data` parcial (el campo en `null`) y un error con la ruta (`path`) del campo.
-  La respuesta HTTP suele ser **200** aunque haya errores: hay que leer `errors`.
-- **Transporte:** con `spring-boot-starter-webmvc`, el endpoint es `POST /graphql`; con
-  `spring.graphql.graphiql.enabled=true` tienes un editor web en `/graphiql`.
-- **Tests:** `@GraphQlTest(CatalogoController.class)` carga el esquema y el controlador sin servidor HTTP;
-  `GraphQlTester` ejecuta documentos y navega la respuesta con `path(...)`.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve graphql con spring for graphql en tu contexto?
+2. ¿Cómo sabrías que graphql con spring for graphql no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar graphql con spring for graphql?
 
-#### 8. EXPLICACIÓN MAESTRA
+</details>
 
-- **GraphQL como BFF o gateway de composición:** muy útil delante de varios microservicios para que cada pantalla haga
-  una sola petición (Módulo 7, BFF). Para un grafo entre muchos equipos existen enfoques federados (Apollo Federation,
-  Módulo 18).
-- **Costos y riesgos:** caché HTTP difícil (todo es POST a una URL), consultas maliciosas o accidentales muy profundas
-  o costosas (limita profundidad y complejidad, usa *persisted queries*), autorización por campo y observabilidad por
-  resolvedor, no por URL.
-- **Alternativas:** REST con recursos bien diseñados (simple, cacheable, universal); REST con parámetros de campos
-  (`?fields=nombre,precio`); gRPC entre servicios internos. GraphQL tiene sentido cuando **muchos clientes distintos**
-  necesitan **formas distintas** de los mismos datos.
-- **Cuándo NO:** comunicación servicio a servicio dentro del *backend* (prefiere REST o gRPC con contratos más
-  simples), APIs con un solo consumidor y pantallas estables, cargas de archivos o descargas binarias, o equipos sin
-  capacidad de operar límites de costo de consultas.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring for GraphQL 2.0.7 y graphql-java 25.1, gestionados).
 `f049-graphql/build.gradle.kts`:
 
@@ -1605,42 +1384,7 @@ public class GraphQlApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Arranca el servicio:
-   ```bash
-   ../gradlew -q bootRun
-   ```
-2. En otra terminal, envía tres documentos con `curl`:
-   ```bash
-   curl -s localhost:8080/graphql -H 'Content-Type: application/json' \
-     -d '{"query":"{ producto(sku: \"CAFE\") { nombre precio } }"}'; echo
-   curl -s localhost:8080/graphql -H 'Content-Type: application/json' \
-     -d '{"query":"{ productos { sku resenas { estrellas } } }"}'; echo
-   curl -s localhost:8080/graphql -H 'Content-Type: application/json' \
-     -d '{"query":"{ productos { sku costo } }"}'; echo
-   ```
-3. Abre `http://localhost:8080/graphiql`, escribe `{ productos { nombre } }` y usa el autocompletado: el editor conoce
-   el esquema por introspección.
-
-**Output esperado:**
-
-```text
-{"data":{"producto":{"nombre":"Café de Huila 500 g","precio":32000}}}
-{"data":{"productos":[{"sku":"CAFE","resenas":[{"estrellas":5},{"estrellas":4}]},{"sku":"TAZA","resenas":[{"estrellas":3}]},{"sku":"FILTRO","resenas":[]}]}}
-```
-
-La tercera respuesta no trae `data` sino `errors` con un objeto cuyo `message` es el de graphql-java 25 para un campo
-indefinido (menciona `costo` y el tipo `Producto`) y cuya extensión `classification` es `ValidationError`.
-
-**Captura comentada:** la primera respuesta tiene **solo** `nombre` y `precio`, aunque `Producto` tiene cuatro campos.
-`FILTRO` aparece con `resenas: []`: el `@BatchMapping` debe devolver una entrada para cada producto, aunque sea vacía.
-(Antes de escribir el código, el esquema y las cuatro consultas del test se validaron con la librería de referencia
-`graphql` 16 para JavaScript: tres válidas y la de `costo` rechazada con «Cannot query field "costo" on type
-"Producto".»; graphql-java formula el mismo error con otras palabras.)
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```bash
 ../gradlew test
 ```
@@ -1713,77 +1457,27 @@ class CatalogoGraphQlTest {
 comprobación:** si quitas `@BatchMapping` y resuelves `resenas` con un `@SchemaMapping` que consulta producto por
 producto, ¿qué test falla y con qué número? *(El de una sola llamada: el contador sube 3, uno por producto.)*
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** la aplicación arranca, pero un campo siempre llega en `null` (o la consulta falla con un error de tipo no
-nulo) aunque el dato existe. **Cómo se ve:** al arrancar, Spring for GraphQL registra en el log un informe de
-**inspección del esquema** que lista los campos sin resolvedor (*unmapped fields*), por ejemplo `Producto.resenas`, y
-la respuesta trae `"resenas": null` o un error para un `[Resena!]!`. **Diagnóstico:** el nombre del método o del
-componente del record no coincide con el campo del esquema (`resenias` frente a `resenas`), o el método está en una
-clase sin `@Controller`. Lee el informe de inspección del arranque. **Arreglo:** alinea nombres o usa
-`@SchemaMapping(typeName = "Producto", field = "resenas")` de forma explícita.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué es el problema N+1 en GraphQL y cómo lo resuelves en Spring for GraphQL?»
-
-**Respuesta modelo:** ocurre cuando un campo de una lista se resuelve elemento por elemento: una consulta trae N
-productos (1 llamada) y luego, por cada uno, se piden sus reseñas (N llamadas). En Spring for GraphQL se resuelve con
-`@BatchMapping` (o registrando un `DataLoader`), que agrupa las claves de todos los elementos de la respuesta y hace
-una sola llamada por lote, devolviendo un mapa de padre a hijos. Además pondría límites de profundidad y complejidad
-para que un cliente no dispare consultas costosas, y mediría la latencia por resolvedor.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Exponer el modelo de la base de datos tal cual como esquema GraphQL:**
-
-```graphql
-# ✘ generado desde las tablas
-type ProductoEntity { id_producto: Int  fk_proveedor: Int  flg_activo: String  usr_mod: String  resenaEntities: [ResenaEntity] }
-```
-
-Se ve como un esquema con nombres de columnas, llaves foráneas y banderas internas, y como clientes acoplados a cada
-cambio de tabla. Diseña el esquema desde las necesidades de los clientes (lenguaje del dominio, tipos no nulos donde
-corresponda) y trátalo como un contrato que evoluciona agregando campos y marcando los viejos con `@deprecated`.
-
----
+</details>
 
 ### Mensajería asíncrona: RabbitMQ y Kafka (introducción)
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 6, Lección 4 de 5 · Fase 1
-`docker-compose.yml` en la carpeta del módulo). Se profundiza en el Módulo 11 (mensajería avanzada).
+#### ► DE QUÉ TRATA
+Publicar y consumir un evento con RabbitMQ (exchange, binding, cola) y con Kafka (topic, partición, grupo de consumidores) desde Spring Boot, y explicar la diferencia de modelo entre ambos; lo compruebas cuando MensajeriaTest pasa 3 de 3 con los brokers del Docker Compose.
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Publicar y consumir un evento con RabbitMQ (exchange, binding, cola) y con Kafka (topic, partición, grupo de consumidores) desde Spring Boot, y explicar la diferencia de modelo entre ambos; lo compruebas cuando MensajeriaTest pasa 3 de 3 con los brokers del Docker Compose.**
 
-- Eventos de dominio y database-per-service (Módulo 5).
-- Docker Compose y `curl` (Fase 0).
-- Beans, `@Configuration` y `@SpringBootTest` (Módulos 1 y 3).
+#### ► POR QUÉ EXISTE ESTO
+En la mensajería asíncrona, un servicio no llama a otro: deja un mensaje en un intermediario (el broker) y sigue con su trabajo. El otro servicio lo recoge cuando puede. Si el receptor está caído, el broker guarda el mensaje hasta que vuelva.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en mensajería asíncrona: rabbitmq y kafka (introducción) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Publicar** y **consumir** un evento con RabbitMQ (exchange, binding, cola) y con Kafka (topic, partición, grupo de
-consumidores) desde Spring Boot, y **explicar** la diferencia de modelo entre ambos; lo compruebas cuando
-`MensajeriaTest` pasa 3 de 3 con los brokers del Docker Compose.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja dos formas de repartir avisos en una empresa:
-
-1. **RabbitMQ: una oficina de correos con casilleros.** El servicio de Pedidos deja un sobre en la **ventanilla**
-   «pedidos» (el *exchange*) con la etiqueta «pedido.creado» (la *routing key*). Un empleado mira una **tabla de
-   reparto** (los *bindings*) y mete una copia en el **casillero** de Facturación (la cola). Cuando Facturación saca el
-   sobre y firma el recibo (*ack*), el sobre **desaparece** del casillero.
-2. **Kafka: un libro de actas encuadernado.** Pedidos **escribe una línea nueva** al final de uno de los tres tomos del
-   libro «pedidos» (el topic y sus particiones); el tomo lo decide la clave del pedido, así todo lo de un mismo cliente
-   queda en el mismo tomo y en orden. Nadie arranca hojas: cada lector (grupo de consumidores) lleva **su propio
-   separador** (el *offset*) y lee a su ritmo; un lector nuevo puede empezar desde la primera página.
-
-En ambas escenas, Pedidos **no espera** a que Facturación lea: deja el aviso y vuelve a atender clientes.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     P["Servicio pedidos<br/>Publicador"]
@@ -1801,68 +1495,44 @@ flowchart LR
     T1 -- "@KafkaListener grupo 'facturacion'<br/>(offset propio, el log se conserva)" --> F
 ```
 
-**Texto alternativo:** el servicio de pedidos publica por dos caminos. En RabbitMQ envía al exchange directo «pedidos»
-con la routing key pedido.creado; un binding lo copia a la cola facturacion.pedidos, de donde lo consume un
-@RabbitListener del servicio de facturación y el mensaje se borra al confirmarse. En Kafka envía al topic «pedidos»,
-que tiene tres particiones; la clave del pedido elige la partición (en el dibujo, la 1), y un @KafkaListener del grupo
-facturacion lee con su propio offset mientras el log se conserva.
+1. **RabbitMQ** funciona como un **cartero**: recibe mensajes, los reparte en **colas** según reglas y los borra cuando
+2. **Kafka** funciona como un **registro histórico**: guarda los mensajes en orden en un **log** durante un tiempo
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-En la **mensajería asíncrona**, un servicio no llama a otro: **deja un mensaje** en un intermediario (el **broker**) y
-sigue con su trabajo. El otro servicio lo recoge cuando puede. Si el receptor está caído, el broker **guarda** el
-mensaje hasta que vuelva.
-
-- **RabbitMQ** funciona como un **cartero**: recibe mensajes, los reparte en **colas** según reglas y los borra cuando
-  el receptor confirma que los procesó.
-- **Kafka** funciona como un **registro histórico**: guarda los mensajes en orden en un **log** durante un tiempo
-  configurable; cada grupo de lectores avanza a su ritmo y puede volver a leer.
-
-Ambos se usan para avisar «pasó algo» (un **evento**) a uno o muchos servicios.
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-| Concepto | RabbitMQ (AMQP 0-9-1) | Kafka |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Dónde publicas | *exchange* + *routing key* | *topic* (+ clave opcional) |
-| Dónde se guarda | colas; el mensaje se **borra** al confirmarse | log particionado; se **conserva** según la retención |
-| Varios interesados | una cola por interesado, cada una con su binding | un **grupo de consumidores** por interesado |
-| Orden | por cola | por **partición** (misma clave → misma partición) |
-| Reprocesar el pasado | no (salvo *streams* de RabbitMQ) | sí: mover el *offset* |
-| Escala del consumo | varios consumidores compiten por una cola | hasta un consumidor por partición dentro del grupo |
+| Mensajería asíncrona: RabbitMQ y Kafka (introducción) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-En Spring Boot 4.1:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mensajería asíncrona: RabbitMQ y Kafka (introducción) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-- `spring-boot-starter-amqp`: `RabbitTemplate.convertAndSend(exchange, routingKey, mensaje)` y
-  `@RabbitListener(queues = ...)`. Los beans `DirectExchange`, `Queue` y `Binding` se **declaran** en el broker al
-  arrancar.
-- `spring-boot-starter-kafka`: `KafkaTemplate.send(topic, clave, valor)` devuelve un `CompletableFuture<SendResult>`
-  (en el laboratorio se espera con `get(10, SECONDS)` para conocer la partición) y `@KafkaListener(topics = ...)` usa el
-  `group-id` de las propiedades. El bean `NewTopic` crea el topic con 3 particiones. Por defecto Boot usa
-  `StringSerializer`/`StringDeserializer`, por eso los mensajes del laboratorio son texto.
-- `spring.kafka.consumer.auto-offset-reset=earliest`: un grupo **nuevo** empieza desde el principio del topic (el valor
-  por defecto de Kafka es `latest`).
+#### ► CUÁNDO NO USAR ESTO
+Petición-respuesta disfrazada sobre el broker:
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mensajería asíncrona: rabbitmq y kafka (introducción) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-- **Elegir broker:** RabbitMQ brilla en enrutamiento flexible (direct, topic, fanout, headers), colas de trabajo con
-  prioridad y TTL, y latencia baja con volúmenes moderados. Kafka brilla en alto volumen, orden por clave, reprocesamiento
-  (*replay*), múltiples consumidores independientes de un mismo flujo y *event sourcing*/CDC. Alternativas: NATS (ligero,
-  Módulos 11 y 18), Pulsar, o servicios gestionados (Amazon SQS/SNS, Google Pub/Sub).
-- **Garantías de entrega:** por defecto ambos dan **al menos una vez**: un consumidor puede recibir un duplicado (por
-  ejemplo, si se cae antes de confirmar). Diseña consumidores **idempotentes** (Módulos 22 y 25). En el productor,
-  RabbitMQ ofrece *publisher confirms* y Kafka `acks=all` e idempotencia del productor (Módulo 11).
-- **Escritura doble:** guardar en tu base y publicar en el broker son dos operaciones; si la segunda falla, pierdes el
-  evento. La solución es el patrón *outbox* (Módulo 25).
-- **Esquemas:** con texto o JSON sin contrato, cualquier productor puede romper a los consumidores. En sistemas reales
-  se versionan los mensajes (Avro/Protobuf con Schema Registry, Módulo 11).
-- **Cuándo NO usar mensajería:** cuando el usuario necesita la respuesta ya (consultar saldo), cuando el flujo es tan
-  simple que un broker más es infraestructura sin beneficio, o para disfrazar una llamada síncrona (publicar y quedarse
-  esperando la respuesta en otra cola). También es un error usar Kafka como cola de tareas con prioridades o RabbitMQ como
-  almacenamiento histórico.
+#### ► LO QUE DEBES RECORDAR
+- **RabbitMQ** funciona como un **cartero**: recibe mensajes, los reparte en **colas** según reglas y los borra cuando
+- **Kafka** funciona como un **registro histórico**: guarda los mensajes en orden en un **log** durante un tiempo
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mensajería asíncrona: rabbitmq y kafka (introducción) en tu contexto?
+2. ¿Cómo sabrías que mensajería asíncrona: rabbitmq y kafka (introducción) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mensajería asíncrona: rabbitmq y kafka (introducción)?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring AMQP 4.1.3, Spring for Apache Kafka 4.1.3, kafka-clients
 4.2.2), imágenes **`rabbitmq:4.4.1-management`** y **`apache/kafka:4.4.0`**. `modulo-10/docker-compose.yml`:
 
@@ -2118,52 +1788,7 @@ public class MensajeriaApp {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta los brokers y espera a que estén sanos:
-   ```bash
-   docker compose up -d --wait
-   docker compose ps
-   ```
-2. Arranca el servicio y publica un pedido por cada canal:
-   ```bash
-   cd f050-mensajeria && ../gradlew -q bootRun          # terminal 1
-   curl -s -X POST "localhost:8080/pedidos/P-1?canal=rabbit"; echo
-   curl -s -X POST "localhost:8080/pedidos/P-2?canal=kafka"; echo
-   ```
-3. Lee el topic de Kafka desde el principio con la herramienta del propio broker (los mensajes siguen ahí aunque
-   Facturación ya los consumió):
-   ```bash
-   docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
-     --topic pedidos --from-beginning --property print.key=true --timeout-ms 5000
-   ```
-4. **Rómpelo a propósito:** detén el servicio (`Ctrl+C`), publica un mensaje directamente en la cola desde la consola web
-   de RabbitMQ (http://localhost:15672, `academia`/`academia`, cola `facturacion.pedidos`, *Publish message*) y vuelve a
-   arrancar el servicio. Al terminar: `docker compose down`.
-
-**Output esperado:**
-
-- Paso 1: `docker compose ps` muestra `rabbitmq` y `kafka` con estado `Up ... (healthy)`.
-- Paso 2: `{"pedido":"P-1","canal":"rabbit","particion":null}` y `{"pedido":"P-2","canal":"kafka","particion":N}`
-  (N entre 0 y 2, siempre el mismo para la clave `P-2`). En el log del servicio: `RabbitMQ -> PedidoCreado:P-1` y
-  `Kafka -> PedidoCreado:P-2 (partición N, offset 0)`.
-- Paso 3: una línea con la clave, un tabulador y el valor, y al cumplirse los 5 s el resumen de la herramienta (el
-  *timeout* aparece además como una excepción informativa en la consola):
-
-```text
-P-2	PedidoCreado:P-2
-Processed a total of 1 messages
-```
-
-- Paso 4: al arrancar, el servicio consume en seguida el mensaje que esperaba en la cola: el broker lo guardó mientras
-  Facturación estaba caída.
-
-**Captura comentada:** en el paso 3 ves la diferencia central con RabbitMQ: en Kafka, consumir **no borra**. En la
-consola web de RabbitMQ, la cola `facturacion.pedidos` muestra 0 mensajes listos después del paso 2: allí, consumir sí
-borra.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```bash
 docker compose up -d --wait
 cd f050-mensajeria && ../gradlew test
@@ -2222,73 +1847,27 @@ comprobación:** agregas un servicio de Puntos que también debe enterarse de ca
 en Kafka? *(En RabbitMQ, una cola `puntos.pedidos` con su binding al mismo exchange; en Kafka, nada en el broker: el
 servicio usa un `group-id` nuevo, `puntos`, y lee el mismo topic.)*
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** despliegas un consumidor de Kafka nuevo y **no recibe los pedidos que ya estaban en el topic**; solo ve
-los que llegan después. **Cómo se ve:** el log muestra que el grupo se unió y que se le asignaron particiones, pero
-ninguna línea `Kafka -> ...`; con `kafka-consumer-groups.sh --describe --group <grupo>` ves el `CURRENT-OFFSET` igual
-al `LOG-END-OFFSET`. **Diagnóstico:** para un grupo sin *offsets* guardados, Kafka aplica `auto.offset.reset`, cuyo
-valor por defecto es `latest`: empieza al final. **Arreglo:** si el consumidor debe procesar el historial, configura
-`spring.kafka.consumer.auto-offset-reset=earliest` **antes** del primer arranque del grupo (después ya tiene *offsets*
-y la propiedad no aplica; habría que reiniciarlos con `kafka-consumer-groups.sh --reset-offsets`). El equivalente en
-RabbitMQ: publicar en un exchange **sin binding** hacia ninguna cola; el mensaje se descarta en silencio.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cuándo usarías RabbitMQ y cuándo Kafka?»
-
-**Respuesta modelo:** RabbitMQ cuando necesito un *message broker* clásico: enrutamiento flexible por exchanges,
-colas de trabajo donde cada mensaje lo procesa un consumidor y desaparece, prioridades, TTL y DLQ, con volúmenes
-moderados y latencia baja. Kafka cuando necesito un log de eventos durable y particionado: alto volumen, orden por
-clave, varios consumidores independientes que leen el mismo flujo a su ritmo, reprocesar el pasado o alimentar CDC y
-analítica. En ambos asumiría entrega al menos una vez, consumidores idempotentes, outbox en el productor y contratos de
-mensaje versionados.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Petición-respuesta disfrazada sobre el broker:**
-
-```java
-// ✘ «asíncrono» que en realidad bloquea esperando la respuesta en otra cola
-rabbit.convertAndSend("inventario", "consultar", sku);
-String respuesta = (String) rabbit.receiveAndConvert("respuestas.pedidos", 5_000);   // espera hasta 5 s
-```
-
-Se ve como un servicio que publica y se queda esperando, con colas de «respuestas» y correlaciones manuales: tienes la
-latencia de una llamada síncrona más la complejidad de un broker. Si necesitas la respuesta para continuar, usa una
-llamada síncrona con timeout (temas 1 y 2); usa mensajes para avisar hechos que otros procesan después.
-
----
+</details>
 
 ### Sync vs async: criterios de decisión
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 6, Lección 5 de 5 · Fase 1.
+#### ► DE QUÉ TRATA
+Decidir con cinco preguntas si una interacción entre servicios debe ser síncrona o asíncrona, calcular la disponibilidad y la latencia de una cadena síncrona y medir la diferencia de tiempo de respuesta entre ambos estilos en Spring Boot; lo compruebas cuando CriteriosDeComunicac…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Decidir con cinco preguntas si una interacción entre servicios debe ser síncrona o asíncrona, calcular la disponibilidad y la latencia de una cadena síncrona y medir la diferencia de tiempo de respuesta entre ambos estilos en Spring Boot; lo compruebas cuando CriteriosDeComunicacionTest y SyncAsyncTest pasan 6 de 6.**
 
-- Los cuatro temas anteriores de este módulo.
-- Eventos de Spring (`ApplicationEventPublisher`, `@EventListener`) y `@Async` (Módulos 1 y 5).
-- Porcentajes y multiplicación de probabilidades (Módulo 0.2).
+#### ► POR QUÉ EXISTE ESTO
+Síncrono es como una llamada telefónica: preguntas y esperas en la línea hasta que te responden. Asíncrono es como un mensaje de texto: lo envías y sigues con tu vida; la respuesta (si hay) llega después.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en sync vs async: criterios de decisión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Decidir** con cinco preguntas si una interacción entre servicios debe ser síncrona o asíncrona, **calcular** la
-disponibilidad y la latencia de una cadena síncrona y **medir** la diferencia de tiempo de respuesta entre ambos
-estilos en Spring Boot; lo compruebas cuando `CriteriosDeComunicacionTest` y `SyncAsyncTest` pasan 6 de 6.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja a una persona en la **ventanilla de un banco** y a otra en un **buzón de correo**. En la ventanilla (síncrono),
-pides tu saldo y **esperas de pie** hasta que el cajero responde; si el sistema del cajero está lento, la fila entera
-espera, y si el cajero tiene que llamar a otra sucursal, que llama a otra, tu espera es la suma de todas. En el buzón
-(asíncrono), dejas una carta («cambié de dirección») y **te vas**; el banco la procesa después, y varias áreas (tarjetas,
-seguros, correspondencia) reciben copia sin que tú las conozcas. Sobre la ventanilla, un cartel: «¿Necesitas la
-respuesta para irte?». Sobre el buzón: «¿Te da igual si pasa dentro de un minuto?».
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A{"¿Quien llama necesita<br/>la respuesta para continuar?"} -- sí --> S["SÍNCRONO<br/>REST / gRPC / GraphQL<br/>con timeout"]
@@ -2300,60 +1879,84 @@ flowchart TD
     S --> D["Disponibilidad = producto de la cadena<br/>Latencia = suma de los saltos"]
 ```
 
-**Texto alternativo:** árbol de decisión. Si quien llama necesita la respuesta para continuar, la recomendación es
-síncrono (REST, gRPC o GraphQL con timeout). Si no la necesita, se pregunta si tolera que el efecto ocurra después: si no
-lo tolera, también síncrono; si lo tolera y hay varios interesados, tareas largas o picos de carga, asíncrono con
-RabbitMQ o Kafka; si no, asíncrono simple con una cola o un evento en proceso. Desde síncrono, una nota recuerda que la
-disponibilidad de la cadena es el producto y la latencia la suma.
+1. Síncrono es como una llamada telefónica: preguntas y esperas en la línea hasta que te responden.
+2. Asíncrono es como un mensaje de texto: lo envías y sigues con tu vida; la respuesta (si hay) llega después.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sync vs async: criterios de decisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Síncrono** es como una llamada telefónica: preguntas y esperas en la línea hasta que te responden. **Asíncrono** es
-como un mensaje de texto: lo envías y sigues con tu vida; la respuesta (si hay) llega después.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sync vs async: criterios de decisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Entre servicios, la regla de bolsillo es: **si necesitas la respuesta para seguir, llama (síncrono); si solo estás
-avisando que algo pasó, envía un mensaje (asíncrono)**. El problema de llamar siempre es que, si encadenas muchas
-llamadas, basta que **una** falle o tarde para que todo falle o tarde.
+#### ► CUÁNDO NO USAR ESTO
+Todo síncrono «porque es más fácil de depurar»:
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sync vs async: criterios de decisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Las cinco preguntas del record `Necesidad`:
+#### ► LO QUE DEBES RECORDAR
+- Síncrono es como una llamada telefónica: preguntas y esperas en la línea hasta que te responden.
+- Asíncrono es como un mensaje de texto: lo envías y sigues con tu vida; la respuesta (si hay) llega después.
 
-| Pregunta | Si la respuesta es «sí» |
-|---|---|
-| ¿El usuario espera el resultado en pantalla? | empuja a síncrono, salvo que tolere ver «en proceso» |
-| ¿Quien llama necesita datos de vuelta para continuar? | síncrono |
-| ¿Tolera consistencia eventual? | habilita asíncrono |
-| ¿Varios servicios reaccionan al mismo hecho? | asíncrono (evento); el emisor no los conoce |
-| ¿Tarea larga o picos de carga? | asíncrono (la cola amortigua) |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sync vs async: criterios de decisión en tu contexto?
+2. ¿Cómo sabrías que sync vs async: criterios de decisión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sync vs async: criterios de decisión?
 
-**La aritmética de las cadenas síncronas:** si cada servicio está disponible el 99,5 % del tiempo y una petición
-necesita a 5 servicios en cadena, la disponibilidad es 0,995⁵ ≈ **97,52 %** (unas 18 horas de fallo al mes en lugar de
-3,6). Y si cada salto tarda 80 ms, la latencia mínima es **400 ms**. Con mensajería, el usuario solo depende del primer
-servicio; los demás trabajan después.
+</details>
 
-En Spring Boot, el laboratorio implementa el mismo caso de uso de dos formas: `POST /pedidos/{id}/sincrono` llama al
-`Notificador` (300 ms) y responde **201** al terminar; `POST /pedidos/{id}/asincrono` publica `PedidoCreado` y responde
-**202 Accepted** de inmediato, mientras un `@Async @EventListener` hace el trabajo en otro hilo. En un sistema distribuido,
-ese evento viajaría por RabbitMQ o Kafka (tema 4).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 8. EXPLICACIÓN MAESTRA
+#### Objetivo observable
+**Decidir** con cinco preguntas si una interacción entre servicios debe ser síncrona o asíncrona, **calcular** la
+disponibilidad y la latencia de una cadena síncrona y **medir** la diferencia de tiempo de respuesta entre ambos
+estilos en Spring Boot; lo compruebas cuando `CriteriosDeComunicacionTest` y `SyncAsyncTest` pasan 6 de 6.
 
-- **El costo de lo asíncrono:** consistencia eventual que hay que explicar en la interfaz («tu pedido está en
-  proceso»), duplicados y desorden (consumidores idempotentes), errores que no vuelven al usuario (DLQ, reintentos,
-  alertas), trazabilidad más difícil (propagar `traceparent` en los mensajes, Módulo 10) y un broker que operar.
-- **Patrones intermedios:** *request-reply* asíncrono con 202 + URL de estado (`Location: /pedidos/P-1/estado`) para
-  tareas largas; **copias locales** alimentadas por eventos para convertir una llamada síncrona frecuente en una lectura
-  local; **sagas** (Módulos 22 y 25) para transacciones de negocio que cruzan servicios.
-- **Comandos frente a eventos:** un comando («ReservaInventario») tiene un destinatario y espera que algo ocurra; un
-  evento («PedidoCreado») informa un hecho y no sabe quién escucha. Mezclarlos produce acoplamiento oculto.
-- **Cuándo NO hacerlo asíncrono:** validaciones que el usuario necesita ya (stock disponible al pagar, saldo),
-  operaciones que deben fallar o tener éxito juntas desde el punto de vista del usuario, o sistemas pequeños donde una
-  llamada con timeout es más simple de operar que un broker. **Cuándo NO hacerlo síncrono:** notificaciones, auditoría,
-  actualización de copias, tareas largas y cualquier cosa con varios interesados.
+#### Construcción guiada
+1. Ejecuta los criterios y la aritmética de cadenas (solo JDK):
+   ```bash
+   javac -d /tmp/f051 src/main/java/academia/decision/Necesidad.java src/main/java/academia/decision/CriteriosDeComunicacion.java
+   java -cp /tmp/f051 academia.decision.CriteriosDeComunicacion
+   ```
+2. Arranca el servicio y mide los dos estilos:
+   ```bash
+   ../gradlew -q bootRun          # terminal 1
+   curl -s -o /dev/null -w "síncrono:  %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-1/sincrono
+   curl -s -o /dev/null -w "asíncrono: %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-2/asincrono
+   ```
+3. Cambia en `main` el caso «Enviar correo de confirmación» a `usuarioEsperaElResultado = true` y
+   `toleraConsistenciaEventual = false`, vuelve a compilar y ejecutar: ¿qué decide y por qué?
 
-#### 9. CÓDIGO EJECUTABLE
+**Output esperado:**
 
+Paso 1 (salida real con JDK 25.0.5):
+
+```text
+Consultar saldo antes de pagar                     -> SINCRONO [quien llama no puede continuar sin la respuesta]
+Enviar correo de confirmación                      -> ASINCRONO [el efecto puede ocurrir después]
+Pedido creado: facturar, despachar y sumar puntos  -> ASINCRONO [el efecto puede ocurrir después, varios servicios reaccionan al mismo hecho sin que el emisor los conozca]
+Generar el reporte mensual en PDF                  -> ASINCRONO [el efecto puede ocurrir después, la cola amortigua picos y tareas largas]
+Cadena síncrona de 5 servicios al 99,5 %: 97.5249 % disponible
+Latencia de 5 saltos de 80 ms: 400 ms
+```
+
+- Paso 2: `síncrono:  201 en 0.3…s` y `asíncrono: 202 en 0.0…s` (los milisegundos exactos varían).
+- Paso 3: `SINCRONO [quien llama no puede continuar sin la respuesta]`: si el usuario debe ver el resultado y no
+  tolera esperar, la pantalla espera la respuesta.
+
+**Captura comentada:** con solo 5 servicios al 99,5 %, la cadena baja a 97,52 %: perdiste casi dos «nueves». En el
+paso 2 la diferencia de tiempo es el trabajo que el estilo asíncrono saca del camino del usuario.
+
+#### Código de referencia / ejecutable
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring MVC; JUnit Jupiter 6.0.3). `Necesidad` y
 `CriteriosDeComunicacion` son Java puro. `f051-sync-async/build.gradle.kts`:
 
@@ -2583,44 +2186,7 @@ class PedidosController {
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta los criterios y la aritmética de cadenas (solo JDK):
-   ```bash
-   javac -d /tmp/f051 src/main/java/academia/decision/Necesidad.java src/main/java/academia/decision/CriteriosDeComunicacion.java
-   java -cp /tmp/f051 academia.decision.CriteriosDeComunicacion
-   ```
-2. Arranca el servicio y mide los dos estilos:
-   ```bash
-   ../gradlew -q bootRun          # terminal 1
-   curl -s -o /dev/null -w "síncrono:  %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-1/sincrono
-   curl -s -o /dev/null -w "asíncrono: %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-2/asincrono
-   ```
-3. Cambia en `main` el caso «Enviar correo de confirmación» a `usuarioEsperaElResultado = true` y
-   `toleraConsistenciaEventual = false`, vuelve a compilar y ejecutar: ¿qué decide y por qué?
-
-**Output esperado:**
-
-Paso 1 (salida real con JDK 25.0.5):
-
-```text
-Consultar saldo antes de pagar                     -> SINCRONO [quien llama no puede continuar sin la respuesta]
-Enviar correo de confirmación                      -> ASINCRONO [el efecto puede ocurrir después]
-Pedido creado: facturar, despachar y sumar puntos  -> ASINCRONO [el efecto puede ocurrir después, varios servicios reaccionan al mismo hecho sin que el emisor los conozca]
-Generar el reporte mensual en PDF                  -> ASINCRONO [el efecto puede ocurrir después, la cola amortigua picos y tareas largas]
-Cadena síncrona de 5 servicios al 99,5 %: 97.5249 % disponible
-Latencia de 5 saltos de 80 ms: 400 ms
-```
-
-- Paso 2: `síncrono:  201 en 0.3…s` y `asíncrono: 202 en 0.0…s` (los milisegundos exactos varían).
-- Paso 3: `SINCRONO [quien llama no puede continuar sin la respuesta]`: si el usuario debe ver el resultado y no
-  tolera esperar, la pantalla espera la respuesta.
-
-**Captura comentada:** con solo 5 servicios al 99,5 %, la cadena baja a 97,52 %: perdiste casi dos «nueves». En el
-paso 2 la diferencia de tiempo es el trabajo que el estilo asíncrono saca del camino del usuario.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```bash
 ../gradlew test
 ```
@@ -2709,49 +2275,4 @@ comprobación:** un flujo de checkout llama en cadena a 3 servicios con 99,9 % c
 la cadena y qué cambiarías? *(0,999³ ≈ 99,70 %; sacaría del camino síncrono todo lo que no necesita respuesta, como
 notificaciones y puntos, publicándolo como eventos.)*
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** pasaste la notificación a `@EventListener` «para hacerla asíncrona», pero el endpoint sigue tardando
-300 ms. **Cómo se ve:** `asíncrono: 202 en 0.3…s` en el paso 2, y en el log el trabajo del listener corre en el mismo
-hilo de la petición (`http-nio-8080-exec-1`) en lugar de un hilo `task-1`. **Diagnóstico:** `@EventListener` es
-**síncrono** por defecto; `@Async` solo funciona si la aplicación tiene `@EnableAsync` y el método se invoca a través
-del proxy de Spring (no desde la misma clase). Imprime `Thread.currentThread().getName()` en el listener. **Arreglo:**
-`@EnableAsync` en la aplicación y `@Async` en el listener, como en el laboratorio; en un sistema distribuido, publica el
-evento en un broker.
-
-Otro error real (Mac, Spring Boot 4.1.3), de la primera versión de este laboratorio, cuyo test leía un campo del bean:
-
-```text
-java.lang.NullPointerException: Cannot invoke "java.util.concurrent.atomic.AtomicInteger.get()" because "this.notificador.enviados" is null
-```
-
-**Diagnóstico:** como `Notificador` tiene un método `@Async`, Spring no inyecta el objeto original sino un **proxy
-CGLIB** (una subclase generada). Las llamadas a métodos se delegan al objeto real, pero los **campos** del proxy nunca se
-inicializan: leer `notificador.enviados` desde fuera devuelve `null`. **Arreglo:** campos privados y acceso por métodos
-(`notificador.enviados()`), como en el código actual.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Diseñas el checkout de una tienda: pagos, inventario, facturación, correo y puntos. ¿Qué haces síncrono y qué
-asíncrono?»
-
-**Respuesta modelo:** síncrono solo lo que el usuario necesita para confirmar la compra: autorizar el pago (con
-timeout e idempotencia) y reservar inventario, porque si fallan, la compra no debe confirmarse. Todo lo demás
-(facturación, correo, puntos, analítica) reacciona a un evento `PedidoConfirmado` publicado con outbox en un broker,
-con consumidores idempotentes y DLQ. Así el usuario depende de 2 servicios y no de 5, la latencia baja y un fallo del
-correo no tumba ventas. Si reservar inventario y cobrar deben compensarse ante fallos posteriores, usaría una saga.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Todo síncrono «porque es más fácil de depurar»:**
-
-```text
-POST /checkout
-  → pagos (120 ms) → inventario (80 ms) → facturación (150 ms) → correo (300 ms) → puntos (90 ms)
-  = 740 ms y 5 formas de fallar por cada compra; el correo caído devuelve error al comprador
-```
-
-Se ve en las trazas como una escalera de *spans* y en los incidentes como «no se puede comprar porque el proveedor de
-correo está lento». Pregúntate en cada flecha si quien llama necesita la respuesta; si no, conviértela en un evento.
-
----
+</details>

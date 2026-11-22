@@ -2,40 +2,73 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, módulos ES y manejo básico de la terminal.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** ejecutar un cálculo intensivo en un Worker Thread, comprobar que un temporizador del hilo principal sigue respondiendo y limitar la cantidad de cálculos simultáneos.
+#### ► DE QUÉ TRATA
+Este tema te guía por worker threads para trabajo cpu-bound con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender worker threads para trabajo cpu-bound te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** un cálculo síncrono pesado monopoliza el hilo principal y retrasa timers, solicitudes HTTP y demás trabajo JavaScript. Un Worker Thread permite mover ese cómputo a otro hilo. No es una optimización para I/O: consultas de red o de base de datos ya usan las operaciones no bloqueantes de Node y no necesitan un Worker.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Explicación específica:** cada Worker tiene su propia instancia de V8, su Event Loop y memoria aislada por defecto. El hilo principal entrega datos iniciales con `workerData` y se comunica después mediante `postMessage` y eventos `message`. Los valores se copian o transfieren; las variables globales no se comparten mágicamente. `SharedArrayBuffer` es un mecanismo explícito para casos avanzados, no el comportamiento predeterminado.
+#### ► LA ANALOGÍA
+Piensa en worker threads para trabajo cpu-bound como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Crear Workers tiene coste y cada cálculo activo consume CPU. En un servidor se usa un pool acotado o un límite de concurrencia, no un Worker nuevo e ilimitado por petición. También se escuchan `message` y `error`, se valida la entrada y se termina o reutiliza cada Worker de forma deliberada.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que worker threads para trabajo cpu-bound resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** la oficina principal entrega un cálculo pesado a un especialista con un taller separado. Intercambian pedidos y resultados por mensajería; el especialista no puede modificar directamente los archivos de la oficina. Contratar más especialistas que puestos disponibles no acelera el trabajo y puede saturar el taller.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Worker Threads para trabajo CPU-bound se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Worker Threads para trabajo CPU-bound | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-- CPU-bound frente a I/O-bound: solo el primero justifica normalmente un Worker Thread.
-- `workerData`, `parentPort`, `postMessage` y aislamiento de memoria.
-- Concurrencia acotada, escucha de errores y finalización del Worker.
-- El hilo principal coordina; no debe esperar el resultado con un bucle bloqueante.
+#### ► CUÁNDO NO USAR ESTO
+No uses worker threads para trabajo cpu-bound por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Practica
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: worker threads para trabajo cpu-bound funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Empieza en una carpeta vacía. No copies archivos de otros temas ni uses ejemplos del repositorio:
+#### ► LO QUE DEBES RECORDAR
+- Worker Threads para trabajo CPU-bound existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve worker threads para trabajo cpu-bound en tu contexto?
+2. ¿Cómo sabrías que worker threads para trabajo cpu-bound no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar worker threads para trabajo cpu-bound?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-worker
 cd practica-worker
 mkdir src
 ```
-
-Crea manualmente `package.json`:
 
 ```json
 {
@@ -44,8 +77,6 @@ Crea manualmente `package.json`:
   "type": "module"
 }
 ```
-
-Crea `src/calcular.js` con este contenido:
 
 ```js
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
@@ -82,70 +113,78 @@ if (!isMainThread) {
 }
 ```
 
-Ejecuta:
-
 ```bash
 node src/calcular.js
 ```
 
-**Resultado esperado:** aparecen varios mensajes `el hilo principal responde` antes de `{ ok: true, valor: 9227465 }`. Los latidos no tienen un número exacto obligatorio; lo relevante es que continúan durante el cálculo.
-
-**Fallo deliberado y corrección:** cambia `workerData` a `{ n: -1 }` y ejecuta de nuevo. El resultado será `{ ok: false, error: "n debe ser un entero entre 0 y 40" }`: mover código a otro hilo no valida la entrada. Corrige el valor a `35` y añade en la rama principal una validación que rechace valores fuera de rango antes de construir el Worker; conserva también la validación interna como defensa.
-
-**Práctica guiada:** modifica únicamente `src/calcular.js` para recibir `{ a: 20, b: 25 }` en `workerData`, validar ambos enteros y devolver `fibonacci(a) + fibonacci(b)`. El resultado esperado es `81790`. Después cambia `b` por `2.5` y comprueba que el error identifica la entrada inválida; restaura los valores válidos.
-
-**Ejercicio independiente:** crea `src/servidor.js`, sin importar archivos de otros temas, con un servidor HTTP en `127.0.0.1:3000`. Debe aceptar `/calcular?n=35`, ejecutar Fibonacci en un Worker y responder también `/salud`. Implementa una cola interna y un semáforo que permita como máximo dos Workers activos; las demás peticiones deben esperar. Termina cada Worker en `finally` y devuelve un error HTTP controlado si `n` no es válido. Ejecuta varias peticiones de cálculo y una de salud en paralelo: `/salud` debe seguir respondiendo y el contador de Workers activos nunca debe superar dos.
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** mueve el cálculo pesado de asignación de rutas a un pool acotado de Workers. Mantén las consultas de disponibilidad fuera de ese pool porque son I/O. Define respuesta de error y plazo máximo para que un cálculo fallido no deje una petición pendiente.
-
-**Checklist de salida:**
-
-- [ ] Explicas por qué Fibonacci es CPU-bound y una consulta a PostgreSQL no se beneficia de un Worker Thread.
-- [ ] El cálculo devuelve `9227465` para `n = 35` y los timers principales siguen apareciendo.
-- [ ] Una entrada inválida produce un diagnóstico controlado, no una recursión sin límite.
-- [ ] El servidor independiente nunca tiene más de dos Workers activos y cierra los que termina.
-- [ ] Escuchas tanto el resultado como el evento `error`.
-
-**Errores comunes:** usar Workers para I/O simple; crear uno por petición sin límite; asumir memoria global compartida; enviar objetos enormes sin medir el coste de copia; omitir `error` o `terminate`.
-
-**Fuentes oficiales:** [Worker Threads](https://nodejs.org/api/worker_threads.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+</details>
 
 ### Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, HTTP básico y comprensión de procesos y puertos locales.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** iniciar dos procesos con `cluster`, identificar qué PID atiende cada respuesta y demostrar que su estado en memoria no se comparte.
+#### ► DE QUÉ TRATA
+Este tema te guía por cluster module y balanceo entre procesos con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender cluster module y balanceo entre procesos te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** un solo proceso ejecuta JavaScript principal en un hilo y no aprovecha por sí solo todos los núcleos para ese código. `cluster` permite varios procesos de la misma aplicación escuchando un puerto común. Esto añade capacidad y aislamiento, pero también exige externalizar estado, controlar reinicios y medir el resultado.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Explicación específica:** el proceso primario usa `cluster.fork()` y cada worker ejecuta una copia independiente de la aplicación, con su propia memoria y Event Loop. Una variable global o una sesión guardada en un objeto no es visible en otro worker. Redis, una base de datos u otro almacén compartido son necesarios cuando el estado debe ser común.
+#### ► LA ANALOGÍA
+Piensa en cluster module y balanceo entre procesos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Node puede distribuir conexiones entre workers, pero no garantiza que cada petición alterne PID ni que el throughput crezca linealmente con el número de procesos. La carga, el número real de núcleos, I/O, el sistema operativo y la coordinación influyen. Empieza con pocos workers, mide y evita crear más procesos de los que la máquina puede sostener.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cluster module y balanceo entre procesos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** son varias sucursales con personal e inventario propios y un repartidor central de clientes. Si una sucursal anota algo en su libreta, las demás no lo ven; necesitan un registro central. Abrir el doble de sucursales no garantiza el doble de ventas si la calle, el repartidor o el almacén ya son el cuello de botella.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cluster module y balanceo entre procesos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cluster module y balanceo entre procesos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-- `cluster.isPrimary`, `cluster.fork()` y procesos con memoria aislada.
-- `os.availableParallelism()` como referencia, no como orden de usar todos los núcleos.
-- Balanceo de conexiones sin garantía de throughput lineal.
-- Estado compartido externo, cierre ordenado y reinicios acotados.
+#### ► CUÁNDO NO USAR ESTO
+No uses cluster module y balanceo entre procesos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Practica
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cluster module y balanceo entre procesos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Empieza en una carpeta vacía y crea todos los archivos localmente:
+#### ► LO QUE DEBES RECORDAR
+- Cluster module y balanceo entre procesos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cluster module y balanceo entre procesos en tu contexto?
+2. ¿Cómo sabrías que cluster module y balanceo entre procesos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cluster module y balanceo entre procesos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-cluster
 cd practica-cluster
 mkdir src
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -154,8 +193,6 @@ Crea `package.json`:
   "type": "module"
 }
 ```
-
-Crea `src/server.js`:
 
 ```js
 import cluster from "node:cluster";
@@ -185,87 +222,87 @@ if (cluster.isPrimary) {
 }
 ```
 
-Ejecuta en una terminal:
-
 ```bash
 node src/server.js
 ```
-
-En otra terminal, desde la misma carpeta, realiza varias peticiones:
 
 ```bash
 for i in {1..8}; do curl -s http://127.0.0.1:3000/; done
 ```
 
-**Resultado esperado:** cada respuesta incluye `pid` y un contador. Normalmente aparecerá más de un PID, aunque el balanceador no promete una secuencia exacta. El contador puede repetir valores entre PIDs: cada proceso tiene su propia variable `atendidas`.
-
-**Fallo deliberado y corrección:** interpreta inicialmente `atendidas` como total global y contrasta la suma esperada con las respuestas. El diagnóstico es memoria aislada, no pérdida aleatoria de peticiones. Corrige el diseño moviendo el contador a un almacén compartido si realmente debe ser global; no intentes sincronizarlo leyendo variables de otro proceso.
-
-**Práctica guiada:** en la rama primaria de `src/server.js`, sustituye el reinicio ausente por una política de máximo tres reemplazos por minuto. Guarda las marcas de tiempo de los reinicios, descarta las que tengan más de 60 segundos y solo ejecuta `cluster.fork()` si quedan menos de tres. Registra un error y no reinicies cuando se alcance el límite: un fallo permanente de arranque no debe crear un bucle infinito.
-
-Para probar una salida de forma acotada, usa exclusivamente uno de los PID que tu propio primario acaba de imprimir como `Worker local listo`:
-
 ```bash
 kill -TERM PID_IMPRESO_POR_TU_PRIMARIO
 ```
 
-Sustituye el texto por ese número, verifica que corresponde a esta práctica y no uses el PID del primario ni un PID de otro servicio. Observa el evento `exit` y el único reemplazo. Detén la práctica con `Ctrl+C` en su terminal.
-
-**Ejercicio independiente:** crea `src/carga.js` que envíe 100 peticiones con `fetch`, con concurrencia máxima de 10, y mida duración total y latencias. Modifica `src/server.js` para leer `WORKERS` con valores `1` o `2`, manteniendo siempre el límite de dos. Ejecuta por separado `WORKERS=1 node src/server.js` y `WORKERS=2 node src/server.js`, y lanza `node src/carga.js` contra cada configuración. Entrega una tabla con PIDs, duración y latencia; interpreta los datos sin afirmar que dos procesos deben duplicar el throughput.
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta dos procesos de la API y alterna peticiones entre ellos. Comprueba que autorización, sesiones y estado de entregas no dependan de memoria local. Añade cierre ordenado y una política de reemplazo limitada antes de medir capacidad.
-
-**Checklist de salida:**
-
-- [ ] Las respuestas identifican el PID del proceso que las atendió.
-- [ ] Demuestras con `atendidas` que la memoria no se comparte entre workers.
-- [ ] El número de procesos está limitado y su beneficio se evalúa con mediciones.
-- [ ] Los reinicios tienen un límite verificable y no forman un bucle infinito.
-- [ ] Una terminación de prueba usa solo el PID local identificado en la salida del primario.
-
-**Errores comunes:** guardar sesiones solo en memoria; crear un proceso por núcleo sin medir; esperar throughput lineal; confundir procesos con threads; reiniciar indefinidamente; matar procesos sin verificar que pertenecen a la práctica.
-
-**Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
+</details>
 
 ### Tema 3: Redis para caché, idempotencia y Pub/Sub · Avanzado · 45 min
 
-**Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** implementar una lectura cache-aside con TTL, comprobar una reserva atómica con `SET NX EX` y demostrar que Pub/Sub pierde mensajes cuando no hay suscriptores conectados.
+#### ► DE QUÉ TRATA
+Este tema te guía por redis para caché, idempotencia y pub/sub con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender redis para caché, idempotencia y pub/sub te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una consulta repetida puede sobrecargar la fuente oficial y un comando repetido puede duplicar un efecto. Redis ayuda con caché temporal y coordinación atómica, pero cada patrón ofrece garantías distintas. Pub/Sub sirve para notificaciones en vivo, no como cola durable.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Explicación específica:** en cache-aside se consulta Redis, se acude a la fuente oficial ante un fallo de caché y se guarda la copia con TTL. Después de una escritura se invalida la entrada relacionada. La base de datos sigue siendo el registro oficial; una caída de Redis debe tener una política explícita.
+#### ► LA ANALOGÍA
+Piensa en redis para caché, idempotencia y pub/sub como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`SET clave valor NX EX segundos` combina en una operación atómica la creación solo si no existe y una expiración. Es útil para reservar un identificador y evitar ejecuciones concurrentes idénticas durante ese plazo. Sin embargo, esa marca no vuelve durable por sí sola un cobro, correo u otro efecto externo: el efecto necesita idempotencia durable en su sistema de destino o un diseño transaccional apropiado. La expiración también implica que una marca temporal no es un historial permanente.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que redis para caché, idempotencia y pub/sub resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Pub/Sub entrega a los suscriptores conectados en ese momento. Si se desconecta el suscriptor, no recupera después los mensajes publicados. Para trabajo recuperable se requiere una cola, Redis Streams u otro mecanismo con persistencia y seguimiento de consumo.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Redis para caché, idempotencia y Pub/Sub se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** la caché es una pizarra con una copia temporal del horario; el registro oficial está en otro lugar. `SET NX EX` es un sello temporal que solo se coloca una vez durante su vigencia. Pub/Sub es un anuncio por altavoz: quien no estaba presente no lo escucha después.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Redis para caché, idempotencia y Pub/Sub | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:**
+#### ► CUÁNDO NO USAR ESTO
+No uses redis para caché, idempotencia y pub/sub por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-- Cache-aside, TTL e invalidación después de modificar la fuente oficial.
-- Reserva atómica con `NX` y expiración con `EX`.
-- Idempotencia durable del efecto como responsabilidad adicional.
-- Pub/Sub efímero frente a colas o Streams recuperables.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: redis para caché, idempotencia y pub/sub funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Practica
+#### ► LO QUE DEBES RECORDAR
+- Redis para caché, idempotencia y Pub/Sub existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Empieza en una carpeta vacía y crea un Redis local con versión fijada:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve redis para caché, idempotencia y pub/sub en tu contexto?
+2. ¿Cómo sabrías que redis para caché, idempotencia y pub/sub no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar redis para caché, idempotencia y pub/sub?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-redis
 cd practica-redis
 mkdir src
 docker run --name redis-practica-patrones -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -278,13 +315,9 @@ Crea `package.json`:
 }
 ```
 
-Instala la dependencia:
-
 ```bash
 npm install
 ```
-
-Crea `src/app.js`:
 
 ```js
 import { createClient } from "redis";
@@ -322,19 +355,9 @@ try {
 }
 ```
 
-Ejecuta:
-
 ```bash
 node src/app.js
 ```
-
-**Resultado esperado:** ambas lecturas contienen la tarifa, `llamadasAlRepositorio` es `1`, la primera reserva devuelve `OK` y la segunda `null`.
-
-**Fallo deliberado y corrección:** elimina temporalmente `NX: true` de las dos reservas y ejecuta de nuevo. Ambas devuelven `OK`, por lo que la segunda sobrescribe la primera en lugar de rechazar el duplicado. Restaura `NX: true` en ambas llamadas y conserva `EX`; comprueba otra vez `OK` y `null`. Para un efecto externo, añade además una restricción única durable en el sistema destino.
-
-**Práctica guiada:** cambia el TTL de `delivery:RF-100` a `EX: 2`. En `src/app.js`, lee la clave inmediatamente, espera con `await new Promise((resolve) => setTimeout(resolve, 2100))` y vuelve a leerla. El primer valor debe existir y el segundo ser `null`; la siguiente llamada a `findDeliveryCached` debe incrementar el repositorio. Después añade una función que borre `delivery:RF-100` con `del`, actualiza el valor del repositorio y verifica que la lectura posterior obtiene el estado nuevo.
-
-**Ejercicio independiente:** crea `src/pubsub.js` desde cero:
 
 ```js
 import { createClient } from "redis";
@@ -356,66 +379,75 @@ console.log({ recibidos, receptoresAusentes });
 await publisher.quit();
 ```
 
-Ejecuta `node src/pubsub.js`. Debes recibir solo `conectado` y la segunda publicación debe informar cero receptores. Explica por qué reconectar no recuperaría `desconectado` y qué mecanismo durable elegirías para una confirmación contable.
-
-Al finalizar, elimina solo el contenedor de esta práctica:
-
-```bash
-docker rm -f redis-practica-patrones
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** cachea lecturas de rutas con TTL e invalidación, reserva confirmaciones con una clave idempotente y publica cambios de panel por Pub/Sub solo cuando perder una actualización sea aceptable. Documenta la garantía durable contra efectos duplicados en la base o proveedor que realmente ejecuta el efecto.
-
-**Checklist de salida:**
-
-- [ ] Dos lecturas consecutivas producen una sola llamada al repositorio.
-- [ ] La entrada expira y la invalidación obliga a leer el estado actualizado.
-- [ ] Dos reservas con la misma clave devuelven `OK` y `null` al usar `NX EX`.
-- [ ] La prueba sin `NX` muestra el fallo y la corrección restaura el comportamiento atómico.
-- [ ] Pub/Sub no entrega al suscriptor desconectado y no se presenta como cola durable.
-- [ ] Los clientes se cierran y la idempotencia externa no depende únicamente de una marca temporal en Redis.
-
-**Errores comunes:** cachear sin TTL; no invalidar después de escribir; omitir `NX`; guardar secretos en URLs; no cerrar clientes; tratar Redis como única fuente de verdad sin estrategia adecuada; usar Pub/Sub para pagos o contabilidad.
-
-**Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
+</details>
 
 ### Tema 4: Colas de trabajo con BullMQ · Avanzado · 45 min
 
-**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
+#### ► DE QUÉ TRATA
+Este tema te guía por colas de trabajo con bullmq con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender colas de trabajo con bullmq te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
+#### ► LA ANALOGÍA
+Piensa en colas de trabajo con bullmq como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que colas de trabajo con bullmq resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Colas de trabajo con BullMQ se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Conceptos clave:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Colas de trabajo con BullMQ | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-- Productor, cola, consumidor y estado en Redis.
-- `attempts`, backoff, `jobId` y concurrencia acotada.
-- Reintentos ante fallos transitorios e idempotencia del efecto.
-- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
+#### ► CUÁNDO NO USAR ESTO
+No uses colas de trabajo con bullmq por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Practica
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: colas de trabajo con bullmq funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
+#### ► LO QUE DEBES RECORDAR
+- Colas de trabajo con BullMQ existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve colas de trabajo con bullmq en tu contexto?
+2. ¿Cómo sabrías que colas de trabajo con bullmq no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar colas de trabajo con bullmq?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-bullmq
 cd practica-bullmq
 mkdir src
 docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
 ```
-
-Crea manualmente `package.json`:
 
 ```json
 {
@@ -428,13 +460,9 @@ Crea manualmente `package.json`:
 }
 ```
 
-Instala la dependencia declarada:
-
 ```bash
 npm install
 ```
-
-Crea `src/cola.js`:
 
 ```js
 import { Queue, Worker } from "bullmq";
@@ -483,79 +511,82 @@ try {
 }
 ```
 
-Ejecuta:
-
 ```bash
 node src/cola.js
 ```
-
-**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
-
-**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
-
-**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
-
-**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
-
-Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
 
 ```bash
 docker rm -f redis-practica-bullmq
 ```
 
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
-
-**Checklist de salida:**
-
-- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
-- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
-- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
-- [ ] Un fallo permanente se detiene después del número configurado de intentos.
-- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
-- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
-
-**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
-
-**Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
+</details>
 
 ### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 45 min
 
-**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
+#### ► DE QUÉ TRATA
+Este tema te guía por pm2, memory leaks y heap snapshots con foco en comprensión antes de implementación.
 
-#### Aprende
+#### ► LA IDEA EN UNA FRASE
+**Entender pm2, memory leaks y heap snapshots te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
+#### ► LA ANALOGÍA
+Piensa en pm2, memory leaks y heap snapshots como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pm2, memory leaks y heap snapshots resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| PM2, memory leaks y heap snapshots se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar PM2, memory leaks y heap snapshots | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:**
+#### ► CUÁNDO NO USAR ESTO
+No uses pm2, memory leaks y heap snapshots por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-- Referencias vivas, garbage collection y comparación de snapshots.
-- RSS, `heapUsed` y `external` como métricas diferentes.
-- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
-- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pm2, memory leaks y heap snapshots funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Practica
+#### ► LO QUE DEBES RECORDAR
+- PM2, memory leaks y heap snapshots existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Empieza en una carpeta vacía:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pm2, memory leaks y heap snapshots en tu contexto?
+2. ¿Cómo sabrías que pm2, memory leaks y heap snapshots no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pm2, memory leaks y heap snapshots?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir practica-memoria
 cd practica-memoria
 mkdir src
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -568,13 +599,9 @@ Crea `package.json`:
 }
 ```
 
-Instala la dependencia de desarrollo:
-
 ```bash
 npm install
 ```
-
-Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
 
 ```js
 const retenidos = [];
@@ -591,21 +618,9 @@ setInterval(() => {
 }, 500);
 ```
 
-Ejecuta el inspector únicamente en loopback:
-
 ```bash
 node --inspect=127.0.0.1:9229 src/leak.js
 ```
-
-Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
-
-**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
-
-**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
-
-**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
-
-**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
 
 ```js
 module.exports = {
@@ -613,55 +628,75 @@ module.exports = {
 };
 ```
 
-Arranca y observa la versión corregida con:
-
-```bash
-npx pm2 start ecosystem.config.cjs
-npx pm2 logs memoria-academia
-```
-
-Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
-
-```bash
-npx pm2 stop memoria-academia
-npx pm2 delete memoria-academia
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
-
-**Checklist de salida:**
-
-- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
-- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
-- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
-- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
-- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
-- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
-
-**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
-
-**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
-
-## Laboratorio práctico
-
-Construye una API de asignación y etiquetas desde una carpeta vacía. El laboratorio no reutiliza archivos de los temas ni ejemplos del repositorio. Comprobarás CPU fuera del hilo principal, dos procesos con memoria aislada, concurrencia acotada y una cola con reintentos.
-
-**Al terminar podrás:** mientras dos procesos atienden HTTP, una petición de cálculo se ejecuta en un Worker Thread sin impedir `/salud`; otra petición encola una etiqueta cuyo primer intento falla y cuyo segundo se completa.
-
-**Prerrequisitos:** Node.js LTS, Docker y tres terminales.
+</details>
 
 ### 1. Crea el proyecto y Redis
 
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por 1. crea el proyecto y redis con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 1. crea el proyecto y redis te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 1. crea el proyecto y redis como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 1. crea el proyecto y redis resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 1. Crea el proyecto y Redis se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 1. Crea el proyecto y Redis | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 1. crea el proyecto y redis por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 1. crea el proyecto y redis funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 1. Crea el proyecto y Redis existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 1. crea el proyecto y redis en tu contexto?
+2. ¿Cómo sabrías que 1. crea el proyecto y redis no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 1. crea el proyecto y redis?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir laboratorio-despachos
 cd laboratorio-despachos
 mkdir src
 docker run --name redis-laboratorio-despachos -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
 ```
-
-Crea manualmente `package.json`:
 
 ```json
 {
@@ -674,12 +709,69 @@ Crea manualmente `package.json`:
 }
 ```
 
-Ejecuta `npm install`.
+</details>
 
 ### 2. Implementa el cálculo CPU-bound
 
-Crea `src/asignacion.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 2. implementa el cálculo cpu-bound con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 2. implementa el cálculo cpu-bound te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 2. implementa el cálculo cpu-bound como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 2. implementa el cálculo cpu-bound resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 2. Implementa el cálculo CPU-bound se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 2. Implementa el cálculo CPU-bound | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 2. implementa el cálculo cpu-bound por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 2. implementa el cálculo cpu-bound funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 2. Implementa el cálculo CPU-bound existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 2. implementa el cálculo cpu-bound en tu contexto?
+2. ¿Cómo sabrías que 2. implementa el cálculo cpu-bound no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 2. implementa el cálculo cpu-bound?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 import { parentPort, workerData } from "node:worker_threads";
 
@@ -690,12 +782,69 @@ for (let i = 0; i < 8_000_000; i += 1) {
 parentPort.postMessage({ guia: workerData.guia, puntuacion });
 ```
 
-El bucle es carga CPU-bound deliberada; no contiene I/O.
+</details>
 
 ### 3. Implementa cluster, límite de Workers y productor
 
-Crea `src/api.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 3. implementa cluster, límite de workers y productor con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 3. implementa cluster, límite de workers y productor te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 3. implementa cluster, límite de workers y productor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 3. implementa cluster, límite de workers y productor resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 3. Implementa cluster, límite de Workers y productor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 3. Implementa cluster, límite de Workers y productor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 3. implementa cluster, límite de workers y productor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 3. implementa cluster, límite de workers y productor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 3. Implementa cluster, límite de Workers y productor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 3. implementa cluster, límite de workers y productor en tu contexto?
+2. ¿Cómo sabrías que 3. implementa cluster, límite de workers y productor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 3. implementa cluster, límite de workers y productor?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 import cluster from "node:cluster";
 import http from "node:http";
@@ -783,12 +932,69 @@ if (cluster.isPrimary) {
 }
 ```
 
-Hay como máximo dos Workers CPU activos por proceso; con dos procesos el máximo total es cuatro. Cada proceso tiene `activos` y `esperando` propios: cluster no comparte esa memoria.
+</details>
 
 ### 4. Implementa el consumidor con reintento y cierre
 
-Crea `src/trabajador-etiquetas.js`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 4. implementa el consumidor con reintento y cierre con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 4. implementa el consumidor con reintento y cierre te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 4. implementa el consumidor con reintento y cierre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 4. implementa el consumidor con reintento y cierre resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 4. Implementa el consumidor con reintento y cierre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 4. Implementa el consumidor con reintento y cierre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 4. implementa el consumidor con reintento y cierre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 4. implementa el consumidor con reintento y cierre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 4. Implementa el consumidor con reintento y cierre existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 4. implementa el consumidor con reintento y cierre en tu contexto?
+2. ¿Cómo sabrías que 4. implementa el consumidor con reintento y cierre no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 4. implementa el consumidor con reintento y cierre?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```js
 import { Worker } from "bullmq";
 import { setTimeout as delay } from "node:timers/promises";
@@ -818,23 +1024,76 @@ process.on("SIGINT", cerrar);
 process.on("SIGTERM", cerrar);
 ```
 
-El `Set` solo evita duplicados dentro de esta ejecución. En producción, el efecto externo necesita una clave única durable; el reintento de BullMQ no la sustituye.
+</details>
 
 ### 5. Ejecuta y observa
 
-En la primera terminal, desde `laboratorio-despachos`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por 5. ejecuta y observa con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender 5. ejecuta y observa te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 5. ejecuta y observa como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 5. ejecuta y observa resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 5. Ejecuta y observa se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 5. Ejecuta y observa | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 5. ejecuta y observa por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 5. ejecuta y observa funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 5. Ejecuta y observa existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 5. ejecuta y observa en tu contexto?
+2. ¿Cómo sabrías que 5. ejecuta y observa no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 5. ejecuta y observa?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 node src/api.js
 ```
 
-En la segunda terminal, desde la misma carpeta:
-
 ```bash
 node src/trabajador-etiquetas.js
 ```
-
-En la tercera terminal, lanza una petición de salud y otra de cálculo al mismo tiempo:
 
 ```bash
 curl -s http://127.0.0.1:3000/salud &
@@ -842,29 +1101,76 @@ curl -s 'http://127.0.0.1:3000/asignar?guia=RF-200' &
 wait
 ```
 
-**Resultado esperado:** `/salud` responde mientras se calcula la asignación. Repite varias peticiones y registra los PID; no exijas una alternancia exacta ni un aumento lineal de throughput.
-
-Compara una generación síncrona con el encolado:
-
 ```bash
 time curl -s 'http://127.0.0.1:3000/etiqueta-sincrona?guia=RF-201'
 time curl -s 'http://127.0.0.1:3000/etiqueta?guia=RF-202'
 ```
 
-**Resultado esperado:** la ruta síncrona espera sus 300 ms de trabajo; la ruta de cola responde después de registrar el job, sin esperar el procesamiento. En la segunda terminal, `laboratorio:RF-202` falla una vez y después se completa. Publica otra vez la misma guía y verifica que el `jobId` conservado evita un job nuevo. Mide tus propios tiempos en lugar de asumir una proporción fija.
+</details>
 
 ### 6. Verificación y cierre
 
-- [ ] `/salud` responde durante `/asignar`.
-- [ ] `workersCpuActivos` nunca supera dos en el proceso consultado.
-- [ ] Las respuestas muestran que los procesos de cluster tienen PID y contadores independientes.
-- [ ] `/etiqueta` responde antes de que el consumidor complete su trabajo.
-- [ ] El fallo deliberado produce un número limitado de reintentos y luego completa.
-- [ ] La duplicación por `jobId` no se confunde con idempotencia durable del efecto externo.
-- [ ] No se afirma que dos procesos dupliquen automáticamente el throughput.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Detén el consumidor y la API con `Ctrl+C` en sus propias terminales. Elimina únicamente el contenedor creado por este laboratorio:
+#### ► DE QUÉ TRATA
+Este tema te guía por 6. verificación y cierre con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender 6. verificación y cierre te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en 6. verificación y cierre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que 6. verificación y cierre resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| 6. Verificación y cierre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar 6. Verificación y cierre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses 6. verificación y cierre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: 6. verificación y cierre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- 6. Verificación y cierre existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve 6. verificación y cierre en tu contexto?
+2. ¿Cómo sabrías que 6. verificación y cierre no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar 6. verificación y cierre?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 docker rm -f redis-laboratorio-despachos
 ```
+
+</details>

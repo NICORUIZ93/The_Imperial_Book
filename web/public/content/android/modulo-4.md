@@ -7,28 +7,68 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la app en el emulador: rotar, enviar a segundo plano y observar qué se muestra.
 
+
 ### Tema 1: StateFlow en el ViewModel · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás exponer un estado de pantalla desde un `ViewModel` con `StateFlow`, garantizando que siempre haya un valor actual disponible.
+#### ► DE QUÉ TRATA
+Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateFlow, garantizando que siempre haya un valor actual disponible.
 
-**Conocimiento previo:** `ViewModel` (Módulo 1 de este track).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateFlow, garantizando que siempre haya un valor actual disponible.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** `StateFlow` garantiza un valor actual siempre disponible, apropiado para representar el estado de una pantalla completa; la convención de exponerlo como mutable privado y de solo lectura público refuerza la dirección única del flujo de datos (UDF, Tema 2).
+#### ► LA ANALOGÍA
+Piensa en stateflow en el viewmodel como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que stateflow en el viewmodel resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** estado observable, siempre con un valor actual disponible.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| StateFlow en el ViewModel se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`StateFlow` es un tipo especial de `Flow` (Kotlin Multiplatform, Módulo 2) que garantiza tener siempre un valor actual disponible de inmediato para cualquier nuevo observador, a diferencia de un `Flow` genérico. Esta garantía lo hace apto para representar "el estado actual de la pantalla" (`Cargando`, `Exito`, `Error`), un valor que siempre debe existir. El patrón `_estado` privado mutable expuesto como `estado` de solo lectura es una convención de encapsulación: el `ViewModel` controla exclusivamente cuándo cambia el estado; la UI solo puede leerlo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar StateFlow en el ViewModel | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** `StateFlow` es como un tablero de anuncios público que siempre muestra algún mensaje actual visible para cualquiera que lo mire (nunca está vacío), en contraste con un sistema de mensajería que solo entrega mensajes nuevos a partir del momento en que alguien se suscribe.
+#### ► CUÁNDO NO USAR ESTO
+No uses stateflow en el viewmodel por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: stateflow en el viewmodel funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- StateFlow en el ViewModel existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve stateflow en el viewmodel en tu contexto?
+2. ¿Cómo sabrías que stateflow en el viewmodel no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar stateflow en el viewmodel?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── ViewModel ──────────────────────────────┐
 │ private val _estado = MutableStateFlow(Cargando)  │
@@ -41,10 +81,6 @@ Al finalizar podrás exponer un estado de pantalla desde un `ViewModel` con `Sta
 │ (nunca espera a un evento futuro)                │
 └───────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
@@ -88,10 +124,6 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `_estado` es `MutableStateFlow`, mutable solo dentro de la clase; `estado` se expone como `StateFlow` (interfaz de solo lectura) vía `asStateFlow()`; `cargar()` actualiza `_estado.value` dentro de `viewModelScope.launch`, garantizando que siempre exista un valor (`Cargando` inicialmente, luego `Exito` o `Error`) disponible para cualquier observador, en cualquier momento.
-
-Simula, en Python, que un nuevo observador que se suscribe tarde igual recibe el valor actual de inmediato, a diferencia de un evento que ya pasó:
-
 ```bash
 python3 -c "
 class StateFlowSimulado:
@@ -110,42 +142,23 @@ print('observador que llega tarde recibe de inmediato:', estado.nuevo_observador
 "
 ```
 
-**Resultado esperado:** aunque el "observador" se suscribe después de que el estado ya cambió de `Cargando` a `Exito`, recibe inmediatamente el valor actual (`Exito: [tarea1, tarea2]`), confirmando la garantía central de `StateFlow`: nunca hay ausencia de valor para un nuevo observador.
-
-**Fallo deliberado:** intenta mutar `estado` (la propiedad pública de solo lectura) directamente desde fuera de la clase, como haría un composable si `TareasViewModelConEstado` expusiera `_estado` en vez de `estado` (`viewModel._estado.value = EstadoUI.Cargando`, simulando el error). En Kotlin real esto ni siquiera compila, porque `_estado` es `private` — diagnostica confirmando que la visibilidad `private` en el tipo mutable es lo que impide, a nivel de compilador, que cualquier consumidor externo rompa la dirección única del flujo de datos (UDF, Tema 2), no una simple convención de nombres sin efecto real.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un cuarto caso a `EstadoUI` (`object Vacio`, para cuando `repo.obtenerTareas()` devuelve una lista vacía) y actualiza `cargar()` para emitirlo cuando corresponda. **Pista:** revisa el tamaño de la lista dentro del bloque `try` antes de decidir entre `Exito` y `Vacio`.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una frase por qué `EstadoUI` se modela como `sealed class` en vez de, por ejemplo, tres variables booleanas independientes (`cargando`, `error`, `exito`), y qué estados inválidos (por ejemplo, `cargando = true` y `exito = true` simultáneamente) esa segunda alternativa permitiría por error que `sealed class` evita estructuralmente.
-
-#### Paso 7 · Cierre
-
-Ya expones un estado de pantalla con `StateFlow`, garantizando un valor actual siempre disponible y protegido de mutación externa. El siguiente tema cubre cómo observar ese `StateFlow` desde Compose de forma consciente del ciclo de vida. Fuente oficial: [Android Developers — StateFlow and SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow).
-
-**Errores comunes:** exponer `MutableStateFlow` directamente en vez de su versión de solo lectura, permitiendo que la UI mute el estado sin pasar por el `ViewModel`; olvidar el valor inicial de `MutableStateFlow`, lo cual ni siquiera compila porque `StateFlow` exige un valor desde su creación.
-
-**Cuándo no usarlo:** un mensaje puntual en el `StateFlow` necesita además una confirmación de la UI (`mensajeMostrado()`), o se mostraría tras cada rotación; el Tema 3 enseña ese patrón.
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Expón un estado inmutable de la ruta desde StateFlow. Simula carga y fallo de red y verifica que la pantalla no combina un indicador de éxito con datos de una consulta anterior.
+</details>
 
 ### Tema 2: collectAsStateWithLifecycle y UDF · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás observar un `StateFlow` desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.
+#### ► DE QUÉ TRATA
+Al finalizar podrás observar un StateFlow desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.
 
-**Conocimiento previo:** Tema 1 de este módulo; ciclo de vida (Módulo 1); state hoisting (Módulo 2).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás observar un StateFlow desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** `collectAsStateWithLifecycle` evita desperdiciar recursos recolectando actualizaciones mientras la UI no es visible; UDF hace que el flujo de datos de toda la pantalla sea predecible, con una única fuente de verdad (el `ViewModel`) controlando todos los cambios de estado.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** recolección consciente del ciclo de vida, flujo de datos en una única dirección.
 
 `collectAsStateWithLifecycle` pausa automáticamente la recolección cuando la Activity va a background (tras `onStop`, Módulo 1) y la reanuda al volver a foreground, ahorrando recursos que `collectAsState` (la versión simple, sin esa consciencia) desperdiciaría. UDF generaliza el state hoisting del Módulo 2 hacia la relación completa `ViewModel`↔UI: el estado fluye desde el `ViewModel` hacia la UI, y las intenciones del usuario fluyen en la dirección contraria, nunca al revés.
@@ -160,9 +173,56 @@ Al finalizar podrás observar un `StateFlow` desde Compose de forma consciente d
 └──────────────── la UI NUNCA modifica el estado directamente ─────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que collectasstatewithlifecycle y udf resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| collectAsStateWithLifecycle y UDF se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar collectAsStateWithLifecycle y UDF | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses collectasstatewithlifecycle y udf por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: collectasstatewithlifecycle y udf funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- collectAsStateWithLifecycle y UDF existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve collectasstatewithlifecycle y udf en tu contexto?
+2. ¿Cómo sabrías que collectasstatewithlifecycle y udf no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar collectasstatewithlifecycle y udf?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── Usuario hace click ──▶ ViewModel.accion() ──▶ actualiza StateFlow ──▶ Compose recompone ─┐
+│                                                                                                │
+└──────────────── la UI NUNCA modifica el estado directamente ─────────────────────┘
+```
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
@@ -187,10 +247,6 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `viewModel.estado.collectAsStateWithLifecycle()` observa el `StateFlow` pausando la recolección cuando la Activity no está en foreground; el `when (estado)` renderiza un composable distinto según el caso de `EstadoUI`, sin que ningún branch modifique `estado` directamente — la UI solo lee, nunca escribe.
-
-Simula la diferencia de consumo de recursos entre `collectAsState` (siempre activo) y `collectAsStateWithLifecycle` (pausado en background) a lo largo de una sesión de uso típica:
-
 ```bash
 python3 -c "
 eventos = ['foreground', 'foreground', 'background', 'background', 'background', 'foreground']
@@ -205,50 +261,69 @@ print('ahorro:', recolecciones_simple - recolecciones_consciente, 'recolecciones
 "
 ```
 
-**Resultado esperado:** de 6 eventos totales, solo 3 ocurren en `foreground`; `collectAsState` simple recolectaría en los 6, mientras que `collectAsStateWithLifecycle` solo recolecta en los 3 de `foreground`, ahorrando exactamente las 3 recolecciones que ocurrirían inútilmente mientras la UI no es visible.
-
-**Fallo deliberado:** modifica `PantallaTareasUDF.kt` para que, dentro del `when`, alguna rama asigne directamente `viewModel.estado.value = EstadoUI.Cargando` (rompiendo UDF deliberadamente). En Kotlin real esto no compila, porque `estado` es `StateFlow` (interfaz de solo lectura, sin propiedad `value` mutable) — diagnostica confirmando que UDF no es solo una convención de diseño sino que, gracias al patrón del Tema 1, el propio sistema de tipos de Kotlin impide que la UI mute el estado directamente.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una función `onReintentar: () -> Unit` como parámetro de `PantallaTareasUDF`, invocada desde `MensajeError()`, que llame a `viewModel.cargar()` (Tema 1) — confirma que esta es la única forma correcta de que la UI "reaccione" ante un error: notificando una intención, no mutando el estado. **Pista:** sigue exactamente el mismo patrón de callback de state hoisting del Módulo 2, Tema 2.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una frase qué diferencia de comportamiento observarías en los logs si cambiaras `collectAsStateWithLifecycle` por `collectAsState` simple en una pantalla real, dejando la app en background varios minutos y luego revisando cuántas veces se recolectó el `StateFlow` durante ese período.
-
-#### Paso 7 · Cierre
-
-Ya observas un `StateFlow` de forma consciente del ciclo de vida, y explicas por qué UDF hace que el flujo de datos sea predecible y protegido por el propio sistema de tipos. El siguiente tema cubre el caso de eventos de un solo uso, donde `StateFlow` no es la herramienta correcta. Fuente oficial: [Android Developers — collectAsStateWithLifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle#lifecycle-aware-flow-collection).
-
-**Errores comunes:** usar `collectAsState` simple en pantallas de producción, desperdiciando recursos en background; que la UI intente modificar el estado directamente en vez de notificar una intención al `ViewModel`.
-
-**Cuándo no usarlo:** para un `Flow` de una fuente que no representa "estado de pantalla" sino un flujo de datos puramente transitorio sin necesidad de valor actual, `StateFlow` y `collectAsStateWithLifecycle` no son la herramienta adecuada; considera un `SharedFlow` (Tema 3) para esos casos.
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Recoge el estado de ruta solo mientras la pantalla esté activa. Envía la aplicación al fondo y vuelve; verifica que muestra el valor reciente y no crea colecciones adicionales en cada regreso.
+</details>
 
 ### Tema 3: SharedFlow para eventos de un solo uso · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás explicar por qué un `SharedFlow` puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como **estado** que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar por qué un SharedFlow puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como estado que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás explicar por qué un SharedFlow puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como estado que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un mensaje como «Tarea guardada» o una navegación tras un pago son resultados que el usuario no debe perder. La guía oficial de Android sobre eventos de UI establece que los eventos que nacen en el `ViewModel` deben producir siempre una actualización del estado de UI, y advierte que exponerlos con `Channel` u otros streams reactivos no garantiza su entrega cuando el `ViewModel` vive más que la UI que los recolecta (por ejemplo, durante una rotación o con la app en segundo plano).
+#### ► LA ANALOGÍA
+Piensa en sharedflow para eventos de un solo uso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sharedflow para eventos de un solo uso resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** eventos que no deben repetirse en una recomposición, a diferencia del estado persistente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| SharedFlow para eventos de un solo uso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un `MutableSharedFlow()` sin `replay` entrega cada emisión solo a los recolectores activos en ese instante y no la retiene. Eso parece ideal para «mostrar un Snackbar», pero es justo el problema: si el evento se emite mientras la Activity se está recreando o la UI está detenida, nadie lo recolecta y se pierde. Un `StateFlow` con un campo `mensaje = "Tarea guardada"` tampoco basta por sí solo, porque tras rotar el nuevo observador lo vería otra vez. La solución de la guía oficial combina ambas ideas: el mensaje forma parte del estado (`mensajeUsuario: String?`), así que sobrevive a la rotación y nunca se pierde, y la UI llama a `mensajeMostrado()` cuando ya lo enseñó, lo que lo pone a `null` y evita repetirlo. Un cambio de configuración no es una recomposición: la recomposición vuelve a ejecutar composables con el mismo estado; la rotación destruye y recrea la Activity.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar SharedFlow para eventos de un solo uso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un `SharedFlow` para eventos es una campana que suena una sola vez: si el destinatario estaba fuera de la sala, el aviso se pierde. El estado con confirmación es una nota en el tablón: sigue ahí hasta que alguien la lee y la retira (`mensajeMostrado()`). La analogía termina aquí: la nota solo sobrevive a la muerte del proceso si además la guardas con `SavedStateHandle`.
+#### ► CUÁNDO NO USAR ESTO
+No uses sharedflow para eventos de un solo uso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sharedflow para eventos de un solo uso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- SharedFlow para eventos de un solo uso existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sharedflow para eventos de un solo uso en tu contexto?
+2. ¿Cómo sabrías que sharedflow para eventos de un solo uso no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sharedflow para eventos de un solo uso?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── StateFlow (estado persistente) ─────────────┐
 │ nuevo observador SIEMPRE recibe el valor actual     │
@@ -263,10 +338,6 @@ Un `MutableSharedFlow()` sin `replay` entrega cada emisión solo a los recolecto
 │ llama mensajeMostrado() → null (ni se pierde ni repite) │
 └─────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
@@ -306,8 +377,6 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** el resultado del guardado no se «emite»: se escribe en el estado (`mensajeUsuario = "Tarea guardada"`), así que cualquier observador, también el que llega tras una rotación, lo ve mientras no se haya mostrado. `mensajeMostrado()` es la confirmación de la UI: pone el mensaje a `null`. En la pantalla lo consumes así (patrón de la guía oficial):
-
 ```kotlin
 val estado by viewModel.estado.collectAsStateWithLifecycle()
 estado.mensajeUsuario?.let { mensaje ->
@@ -317,8 +386,6 @@ estado.mensajeUsuario?.let { mensaje ->
     }
 }
 ```
-
-Este script es un **modelo** (no ejecuta Android) de por qué no conviene un `SharedFlow` para el mensaje: un observador que se suscribe DESPUÉS de la emisión, como la Activity recreada tras rotar, no recibe nada:
 
 ```bash
 python3 -c "
@@ -351,74 +418,69 @@ print('SharedFlow -> observador tardío vio el evento:', observador_tardio_vio_a
 "
 ```
 
-**Resultado esperado:** el observador tardío de `StateFlow` recibe `lista_cargada` (el valor actual, siempre disponible); el observador tardío de `SharedFlow` NO ve ningún evento (`False`): si «Tarea guardada» se hubiera emitido así mientras la Activity se recreaba, el usuario nunca vería el aviso. Por eso el `ViewModel` del Paso 4 guarda el mensaje en el estado y lo retira solo cuando la UI confirma que lo mostró.
-
-**Verificación real en Android:** muestra la pantalla con un botón que llama a `guardarTarea()` y el `SnackbarHost` del bloque anterior. Pulsa el botón: aparece «Tarea guardada» una vez. Rota el emulador cuando el Snackbar ya se cerró: no vuelve a aparecer, porque `mensajeMostrado()` lo puso a `null`. Pulsa de nuevo el botón y rota **mientras** el Snackbar está visible: tras la recreación se muestra otra vez, porque aún no se había confirmado; no se pierde.
-
-**Fallo deliberado:** comenta la llamada `viewModel.mensajeMostrado()` en la pantalla, instala y repite: tras cada rotación el Snackbar reaparece aunque no hayas guardado nada. **Diagnóstico:** el mensaje sigue en el estado porque nadie lo confirmó; la corrección no es volver a un `SharedFlow` (que lo perdería), sino confirmar el consumo. Restaura la llamada.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una función `eliminarTarea(id: String)` que, al terminar, deje en el estado `mensajeUsuario = "Tarea $id eliminada"`, y comprueba en el emulador que el Snackbar se muestra una vez y no se repite al rotar. **Pista:** sigue el mismo patrón de `update { it.copy(...) }` y reutiliza `mensajeMostrado()`.
-
-#### Paso 6 · Práctica independiente
-
-Documenta en una tabla de dos columnas, para tres señales reales de tu propio proyecto (por ejemplo: lista de resultados, mensaje de error puntual, navegación tras pago exitoso), cómo la modelarías como estado de UI (por ejemplo, `pagoConfirmado: Boolean` que la UI observa para navegar, como el `isUserLoggedIn` de la guía oficial), justificando qué pasaría con cada una si se perdiera durante una rotación.
-
-#### Paso 7 · Cierre
-
-Ya sabes por qué un `SharedFlow` puede perder un evento de un solo uso y lo modelas como estado con confirmación, de modo que ni se pierde ni se repite tras una rotación. Esto cierra el módulo de estado con StateFlow y Compose; el siguiente módulo del track aborda networking con Retrofit para conectar este estado con datos reales de red. Fuentes oficiales: [Android Developers — UI events](https://developer.android.com/topic/architecture/ui-layer/events) y [StateFlow y SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow#sharedflow).
-
-**Errores comunes:** exponer el aviso con un `SharedFlow` o `Channel` y perderlo cuando la UI no está recolectando (rotación, segundo plano); guardar el mensaje en el estado pero olvidar `mensajeMostrado()`, con lo que reaparece tras cada rotación.
-
-**Cuándo no usarlo:** `SharedFlow` sigue siendo útil para difundir datos a varios recolectores cuando perder una emisión no importa (por ejemplo, actualizaciones de progreso que se reemplazan); no lo uses para resultados que el usuario debe ver o para navegar.
-
----
-
-**Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Modela la confirmación como estado durable y usa eventos para avisos transitorios. Rota después de entregar: no debe repetirse la navegación ni depender de un aviso perdido para saber si el envío fue confirmado.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una pantalla con UDF completo: eventos de usuario → `ViewModel` → `StateFlow` → UI.
-
-**Requisitos previos:** Módulos 0-3 completados.
-
-| Paso | Acción | Código/Comando | Explicación |
-|---|---|---|---|
-| 1 | Exponer un `StateFlow<EstadoUI>` desde un `ViewModel` | Ver Tema 1 | `_estado` privado, `estado` público |
-| 2 | Observarlo con `collectAsStateWithLifecycle` | Ver Tema 2 | En vez de `collectAsState` simple |
-| 3 | Implementar el flujo UDF completo | Ver Tema 2 | Click → ViewModel → StateFlow → recomposición |
-| 4 | Mostrar un aviso de un solo uso como estado con confirmación | Ver Tema 3 | `mensajeUsuario` + `mensajeMostrado()` |
-| 5 | Verificar la pausa automática de recolección en background | Ver Tema 2 | Con `collectAsStateWithLifecycle` |
-
-**Verificación:** el laboratorio se considera exitoso si el aviso se muestra exactamente una vez (no se repite tras rotar la pantalla ni se pierde si rotas mientras está visible), y si toda actualización de estado sigue el flujo UDF completo sin que la UI modifique el `StateFlow` directamente.
-
-**Errores comunes y soluciones**
-
-- **Usar un `SharedFlow` o `Channel` para un aviso de un solo uso como un Snackbar.** Se pierde si la UI no está recolectando; guárdalo en el estado y confírmalo con `mensajeMostrado()`.
-- **Usar `collectAsState` simple en vez de `collectAsStateWithLifecycle`.** Desperdicia recursos recolectando mientras la app está en background.
-- **Modificar el estado directamente desde la UI en vez de notificar una intención al `ViewModel`.** Rompe UDF; toda mutación de estado debe pasar por el `ViewModel`.
-
----
-
-
-## Laboratorio de transferencia
+</details>
 
 ### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. **Prerrequisitos:** Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con Compose y Material 3.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-En el proyecto integrador, una persona redacta una observación de entrega antes de enviarla. **¿Por qué es importante?** Mantener un dato durante recomposición no demuestra que vuelva al recrear la pantalla ni al recuperar un proceso eliminado por el sistema.
+#### ► DE QUÉ TRATA
+Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. Prerrequisitos: Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`remember` conserva un valor mientras permanece su composición. `rememberSaveable` añade guardado/restauración para valores compatibles con el mecanismo de estado guardado. Un ViewModel sobrevive a cambios de configuración, pero no a cualquier muerte de proceso. Para datos duraderos necesitas persistencia apropiada, por ejemplo una base de datos.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo.**
 
-**Analogía:** remember es una nota sobre la mesa; saveable es una ficha breve para reconstruir el contexto. El límite es el tamaño y la naturaleza del estado guardado: no guardes listas enormes, fotos ni secretos en él. Este campo es estado transitorio, no una entrega enviada al servidor.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada desde cero
-En Android Studio, crea **New Project → Empty Activity**, nombre `Restauracion`, paquete `com.example.restauracion`, Kotlin. Usa las dependencias de Compose/Material 3 que genera la plantilla y conserva sus versiones. Abre la terminal en la raíz del proyecto. Crea o reemplaza `app/src/main/java/com/example/restauracion/MainActivity.kt`:
+#### ► LA ANALOGÍA
+Piensa en restaurar un borrador tras recreación: remember no equivale a remembersaveable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que restaurar un borrador tras recreación: remember no equivale a remembersaveable resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Restaurar un borrador tras recreación: remember no equivale a rememberSaveable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Restaurar un borrador tras recreación: remember no equivale a rememberSaveable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses restaurar un borrador tras recreación: remember no equivale a remembersaveable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: restaurar un borrador tras recreación: remember no equivale a remembersaveable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Restaurar un borrador tras recreación: remember no equivale a rememberSaveable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve restaurar un borrador tras recreación: remember no equivale a remembersaveable en tu contexto?
+2. ¿Cómo sabrías que restaurar un borrador tras recreación: remember no equivale a remembersaveable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar restaurar un borrador tras recreación: remember no equivale a remembersaveable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 package com.example.restauracion
 
@@ -454,18 +516,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 ```
+
 ```bash
 ./gradlew assembleDebug
 ```
-En Windows usa `gradlew.bat assembleDebug`. Instala y ejecuta con Run de Android Studio. **Resultado esperado:** escribe `Puerta azul`, rota el emulador y verifica que el texto sigue. Explica cada bloque: Activity instala la composición, el estado guardable recibe los cambios y el campo representa ese estado.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** sustituye `rememberSaveable` por `remember` y ajusta su import. Rota tras escribir: si la Activity se recrea, el texto se pierde. **Pista:** deshabilitar la recreación para esconder el fallo no enseña restauración; repón el estado guardable. Verifica la configuración del emulador si no se produce recreación.
-
-#### Paso 6 · Práctica independiente
-Ensaya muerte de proceso del sistema: con la app en segundo plano y un dispositivo ADB seleccionado ejecuta `adb shell am kill com.example.restauracion`, y vuelve desde recientes. Registra si se restaura el texto y las condiciones del dispositivo. No uses force-stop ni borres datos para afirmar que probaste el mismo escenario. Diseña además dónde guardarías una observación que debe sobrevivir al cierre explícito del usuario.
-
-#### Paso 7 · Cierre
-El siguiente paso es SavedStateHandle y persistencia de borradores. **Errores comunes:** confundir recomposición con recreación, guardar objetos grandes y esperar que ViewModel sobreviva a cualquier terminación. **Límites y decisión de uso:** este ejemplo no promete conservación tras force-stop, desinstalación o borrado de datos.
-
-**Fuente oficial:** [Android: guardar estado Compose](https://developer.android.com/develop/ui/compose/state-saving).
+</details>

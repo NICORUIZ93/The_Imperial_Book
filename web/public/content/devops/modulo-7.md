@@ -3,28 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Helm charts y values · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás empaquetar manifiestos de Kubernetes como un Helm chart parametrizable, desplegando el mismo chart en distintos entornos con valores distintos.
 
-**Conocimiento previo:** Módulo 6 completo de este track (Deployment, Service); Helm instalado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás empaquetar manifiestos de Kubernetes como un Helm chart parametrizable, desplegando el mismo chart en distintos entornos con valores distintos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de crecimiento de complejidad: a medida que una aplicación acumula múltiples Deployments, Services, ConfigMaps e Ingress relacionados, gestionarlos como archivos YAML sueltos entre múltiples entornos se vuelve rápidamente inmanejable.
+#### ► LA ANALOGÍA
+Piensa en helm charts y values como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** chart, `values.yaml`, plantillas con sintaxis Go template, `helm install`/`upgrade`.
-
-Un Helm chart empaqueta un conjunto completo de manifiestos como unidad reutilizable, con plantillas Go template (`{{ .Values.replicaCount }}`) rellenadas dinámicamente desde `values.yaml`. El mismo chart se despliega en desarrollo con `replicaCount: 1` y en producción con `replicaCount: 5` sin duplicar manifiestos. `helm install` crea un "release"; `helm upgrade` lo actualiza manteniendo historial, permitiendo `helm rollback`.
-
-**Analogía:** manifiestos YAML sueltos son como escribir una carta nueva completa cada vez. Un Helm chart es una plantilla de carta con campos marcados (`[NOMBRE]`, `[FECHA]`) que rellenas por destinatario, mientras la estructura permanece consistente.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     C["mi-chart/"] --> F1["Chart.yaml (metadatos)"]
@@ -33,9 +31,50 @@ flowchart TD
     C -->|se instala con| H["helm install mi-api ./mi-chart --set replicaCount=5"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Helm charts y values se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea un chart mínimo en `academia-devops/src/modulo7/helm-chart`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Helm charts y values | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses helm charts y values por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: helm charts y values funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Helm charts y values existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve helm charts y values en tu contexto?
+2. ¿Cómo sabrías que helm charts y values no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar helm charts y values?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    C["mi-chart/"] --> F1["Chart.yaml (metadatos)"]
+    C --> F2["values.yaml: replicas 3, image tag 1.0"]
+    C --> F3["templates/deployment.yaml (usa &#123;&#123; .Values.replicaCount &#125;&#125;)"]
+    C -->|se instala con| H["helm install mi-api ./mi-chart --set replicaCount=5"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/helm-chart/templates
@@ -68,10 +107,6 @@ EOF
 helm template mi-api . | grep -A1 "kind: Deployment"
 ```
 
-**Explicación línea por línea:** `{{ .Values.replicaCount }}` y `{{ .Values.image }}` se rellenan con los valores de `values.yaml`; `helm template` renderiza el YAML final localmente sin instalarlo, útil para verificar antes de aplicar al clúster.
-
-Instala el chart con un valor sobrescrito en la línea de comandos, y confirma el número real de réplicas:
-
 ```bash
 kind create cluster --name helm-demo 2>/dev/null || true
 helm install mi-api . --set replicaCount=3
@@ -81,50 +116,27 @@ helm upgrade mi-api . --set replicaCount=5
 kubectl get deployment mi-api -o jsonpath='{.spec.replicas}'
 ```
 
-**Resultado esperado:** tras `helm install --set replicaCount=3`, el Deployment reporta `3`; tras `helm upgrade --set replicaCount=5`, reporta `5`, demostrando que el mismo chart parametriza el número de réplicas sin editar manifiestos directamente.
-
-**Fallo deliberado:** rompe la sintaxis de la plantilla (cambia `{{ .Values.replicaCount }}` por `{{ .Values.replicaCont }}`, con una errata) y ejecuta `helm template mi-api .`. El resultado renderiza `replicas:` vacío o con `<no value>` en vez de un número — diagnostica que Helm no valida que la clave referenciada exista en `values.yaml`, solo sustituye lo que encuentra.
-
-#### Paso 5 · Práctica guiada
-
-Crea un segundo archivo `values-produccion.yaml` con `replicaCount: 10`, e instala usando `helm upgrade mi-api . -f values-produccion.yaml` en vez de `--set`. **Pista:** `-f` acepta un archivo completo de valores, útil cuando son muchos parámetros distintos por entorno.
-
-#### Paso 6 · Práctica independiente
-
-Ejecuta `helm history mi-api` para ver el historial de revisiones generado por los `install`/`upgrade` anteriores, y usa `helm rollback mi-api 1` para volver a la primera revisión; confirma con `kubectl get deployment` que las réplicas volvieron al valor original.
-
-#### Paso 7 · Cierre
-
-Ya parametrizas el mismo conjunto de manifiestos para múltiples entornos sin duplicarlos. El siguiente tema expone múltiples servicios detrás de un único punto de entrada HTTP. Fuente oficial: [Helm — Charts](https://helm.sh/docs/topics/charts/).
-
-**Errores comunes:** referenciar una clave de `values.yaml` con un nombre distinto al real, fallando silenciosamente en vez de con un error explícito; instalar directamente sin `helm template` primero, perdiendo la oportunidad de revisar el YAML renderizado antes de aplicarlo.
-
-**Cuándo no usarlo:** para un único manifiesto simple sin variación real entre entornos, empaquetarlo como chart añade complejidad de plantillas sin beneficio; el límite es cuando de verdad necesitas parametrización reutilizable entre múltiples despliegues.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Empaqueta el despliegue del servicio en un chart con valores locales y de prueba. Renderiza ambas configuraciones y comprueba que cambian parámetros previstos sin duplicar los manifiestos completos.
+</details>
 
 ### Tema 2: Ingress Controllers y reglas de enrutamiento · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás exponer múltiples Services por dominio o ruta detrás de un único Ingress Controller, sin necesitar un LoadBalancer separado por servicio.
 
-**Conocimiento previo:** Tema 1 de este módulo; Módulo 6 (Service, LoadBalancer).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás exponer múltiples Services por dominio o ruta detrás de un único Ingress Controller, sin necesitar un LoadBalancer separado por servicio.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de eficiencia de costos: el Ingress permite exponer múltiples servicios HTTP compartiendo un único punto de entrada externo, en vez de aprovisionar un balanceador de carga independiente y costoso para cada servicio.
+#### ► LA ANALOGÍA
+Piensa en ingress controllers y reglas de enrutamiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Ingress (regla de enrutamiento), Ingress Controller (implementación), host-based routing, path-based routing.
-
-Un objeto Ingress define reglas de enrutamiento HTTP/HTTPS según dominio y/o ruta. Por sí solo es solo una declaración: necesita un Ingress Controller corriendo que efectivamente lea esas reglas y enrute el tráfico. Centralizar el enrutamiento facilita TLS, redirecciones y rate limiting en un solo lugar. **Nota de vigencia:** el proyecto `ingress-nginx` (Kubernetes SIG) fue archivado en marzo de 2026 y no declaró soporte para versiones de Kubernetes posteriores a la 1.33 — para un clúster en el baseline de este track (1.36), usa **Traefik** o un controller que implemente la **Gateway API** (el sucesor oficial de Ingress) en vez de `ingress-nginx`.
-
-**Analogía:** un Ingress es el directorio de un edificio que dice "la empresa A está en el piso 3". El Ingress Controller es el guardia de seguridad que efectivamente lee ese directorio y dirige a cada visitante al piso correcto.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     I["Internet"] --> IC["Ingress Controller (único punto de entrada externo)"]
@@ -133,9 +145,50 @@ flowchart TD
     IC -->|"path: /docs"| S3["Service &quot;documentacion&quot;"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ingress Controllers y reglas de enrutamiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo7/ingress` con dos servicios enrutados por dominio distinto:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ingress Controllers y reglas de enrutamiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses ingress controllers y reglas de enrutamiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ingress controllers y reglas de enrutamiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Ingress Controllers y reglas de enrutamiento existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ingress controllers y reglas de enrutamiento en tu contexto?
+2. ¿Cómo sabrías que ingress controllers y reglas de enrutamiento no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ingress controllers y reglas de enrutamiento?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    I["Internet"] --> IC["Ingress Controller (único punto de entrada externo)"]
+    IC -->|"host: api.miapp.com"| S1["Service &quot;mi-api&quot;"]
+    IC -->|"host: admin.miapp.com"| S2["Service &quot;mi-admin&quot;"]
+    IC -->|"path: /docs"| S3["Service &quot;documentacion&quot;"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/ingress && cd academia-devops/src/modulo7/ingress
@@ -169,50 +222,27 @@ kubectl apply -f ingress.yaml
 kubectl get ingress mi-ingress
 ```
 
-**Explicación línea por línea:** `--port` es la bandera de `kubectl expose` que fija el puerto por el que el Service queda accesible; `--target-port` es la bandera que fija a qué puerto del Pod reenviar ese tráfico (acá, ambos apuntan al 3000 donde escucha Node). Cada entrada bajo `rules` asocia un `host` distinto (`api.local`, `admin.local`) con un Service interno distinto; sin un Ingress Controller instalado y corriendo, este objeto queda definido pero no enruta ningún tráfico real todavía.
-
-Verifica las reglas definidas y qué Service resolvería cada dominio:
-
 ```bash
 kubectl describe ingress mi-ingress | grep -A6 Rules
 ```
 
-**Resultado esperado:** la sección `Rules` muestra `api.local` asociado al backend `api:80` y `admin.local` asociado a `admin:80`, confirmando que las reglas de enrutamiento están correctamente definidas según el host.
-
-**Fallo deliberado:** define una tercera regla con `host: api.local` (duplicado) apuntando a un backend distinto, y aplica de nuevo. El comportamiento resultante depende del Ingress Controller específico, pero típicamente solo una de las dos reglas para el mismo host toma efecto — diagnostica revisando `kubectl describe ingress` para confirmar cuál regla quedó activa y por qué duplicar un host sin distinguir por `path` genera ambigüedad.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una tercera regla con `path: /docs` bajo el mismo host `api.local`, enrutando hacia un tercer Service `documentacion`. **Pista:** puedes combinar host-based y path-based routing en las mismas reglas de un único objeto Ingress.
-
-#### Paso 6 · Práctica independiente
-
-Investiga (documentando sin necesariamente configurarlo) qué anotación de tu Ingress Controller específico habilitarías para terminar TLS automáticamente con un certificado, y qué recurso adicional (como un `Secret` de tipo `kubernetes.io/tls`) necesitarías referenciar.
-
-#### Paso 7 · Cierre
-
-Ya enrutas múltiples servicios HTTP compartiendo un único punto de entrada externo. El siguiente tema escala automáticamente las réplicas detrás de estos Services según demanda real. Fuente oficial: [Kubernetes — Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
-
-**Errores comunes:** crear un objeto Ingress sin tener un Ingress Controller instalado, esperando que enrute tráfico igualmente; duplicar un host sin distinguir por path, generando reglas ambiguas.
-
-**Cuándo no usarlo:** para un único servicio sin necesidad de compartir punto de entrada con otros, un `LoadBalancer` directo (Módulo 6) puede ser más simple que introducir un Ingress Controller completo; el beneficio del Ingress aparece con múltiples servicios HTTP.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Enruta /api hacia el servicio y valida el nombre de host configurado. Prueba una ruta inexistente y conserva la respuesta que permite distinguir un 404 del ingress de uno de la aplicación.
+</details>
 
 ### Tema 3: HorizontalPodAutoscaler · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás configurar un HorizontalPodAutoscaler que ajusta automáticamente el número de réplicas según el uso real de CPU, con límites mínimo y máximo explícitos.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo; Módulo 6 (Deployment).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás configurar un HorizontalPodAutoscaler que ajusta automáticamente el número de réplicas según el uso real de CPU, con límites mínimo y máximo explícitos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de tráfico variable: el HPA permite que un servicio responda automáticamente a fluctuaciones de demanda sin intervención manual constante, un requisito prácticamente indispensable para tráfico impredecible.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** HorizontalPodAutoscaler (HPA), métrica objetivo, escalado automático de réplicas, mínimo y máximo.
 
 Un HPA ajusta el número de réplicas de un Deployment según una métrica observada, típicamente CPU. `kubectl autoscale deployment mi-api --cpu-percent=70 --min=2 --max=10` es el comando que mantiene el uso promedio alrededor del 70%, incrementando réplicas si se supera (hasta 10) y reduciendo si cae por debajo (hasta un mínimo de 2): `--cpu-percent` es la bandera que fija el umbral objetivo, y `--min`/`--max` son las banderas que fijan el rango de réplicas permitido. Depende de `metrics-server` instalado en el clúster; sin él, el HPA no tiene datos para decidir.
@@ -229,73 +259,79 @@ flowchart TD
     D -->|"No, uso bajo"| DEC["reduce réplicas (hasta el mínimo de 2)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Desde una carpeta vacía crea `academia-devops/src/modulo7/hpa` con un Deployment que consume CPU deliberadamente bajo carga:
-
-```bash
-mkdir -p academia-devops/src/modulo7/hpa && cd academia-devops/src/modulo7/hpa
-kubectl create deployment carga-cpu --image=busybox -- sh -c "while true; do :; done"
-kubectl set resources deployment carga-cpu --requests=cpu=100m --limits=cpu=200m
-kubectl autoscale deployment carga-cpu --cpu-percent=50 --min=1 --max=4
-kubectl get hpa carga-cpu
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    H["HorizontalPodAutoscaler (objetivo: 70% CPU, min:2, max:10)"] --> O["observa uso real de CPU de las réplicas actuales"]
+    O --> D{"¿uso > 70%?"}
+    D -->|Sí| INC["incrementa réplicas (hasta 10)"]
+    D -->|"No, uso bajo"| DEC["reduce réplicas (hasta el mínimo de 2)"]
 ```
 
-**Explicación línea por línea:** `--requests=cpu=100m` es imprescindible: el HPA calcula el porcentaje de uso relativo a lo solicitado, y sin una solicitud de CPU definida no tiene una base contra la cual medir el porcentaje; `--limits` es la bandera que fija el tope máximo de CPU que ese contenedor puede llegar a usar. Más abajo, `--watch` es la bandera que deja `kubectl get hpa` corriendo y actualizando la salida en vivo, en vez de imprimir una sola vez y terminar.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| HorizontalPodAutoscaler se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Observa el escalado en respuesta a la carga simulada durante unos minutos:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar HorizontalPodAutoscaler | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-```bash
-kubectl get hpa carga-cpu --watch &
-sleep 60
-kill %1
-kubectl get hpa carga-cpu
-```
+#### ► CUÁNDO NO USAR ESTO
+No uses horizontalpodautoscaler por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Resultado esperado:** la columna `TARGETS` de `kubectl get hpa` muestra un porcentaje de uso creciente por encima del 50% configurado, y la columna `REPLICAS` aumenta gradualmente desde 1 hacia el máximo de 4 a medida que el HPA reacciona a la carga sostenida.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: horizontalpodautoscaler funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Fallo deliberado:** elimina el `metrics-server` del clúster (o simula su ausencia consultando `kubectl top pods` en un clúster sin él instalado). `kubectl get hpa` muestra `<unknown>` en la columna de métricas actuales — diagnostica que sin un servidor de métricas funcionando, el HPA no tiene datos sobre los cuales basar ninguna decisión de escalado, independientemente de su configuración.
+#### ► LO QUE DEBES RECORDAR
+- HorizontalPodAutoscaler existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-#### Paso 5 · Práctica guiada
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve horizontalpodautoscaler en tu contexto?
+2. ¿Cómo sabrías que horizontalpodautoscaler no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar horizontalpodautoscaler?
 
-Detén la carga de CPU (`kubectl scale deployment carga-cpu --replicas=0` y vuelve a `1` sin el proceso de estrés) y observa cómo el HPA reduce gradualmente las réplicas de vuelta hacia el mínimo configurado. **Pista:** la reducción suele ser más lenta que el incremento, por diseño, para evitar oscilaciones bruscas.
+</details>
 
-#### Paso 6 · Práctica independiente
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Cambia `--max=4` a `--max=2` mientras el HPA ya había escalado a 4 réplicas, y confirma que Kubernetes reduce automáticamente hasta respetar el nuevo máximo, incluso si la métrica de CPU seguiría justificando más réplicas.
+#### Objetivo observable
+Al finalizar podrás configurar un HorizontalPodAutoscaler que ajusta automáticamente el número de réplicas según el uso real de CPU, con límites mínimo y máximo explícitos.
 
-#### Paso 7 · Cierre
+**Conocimiento previo:** Temas 1 y 2 de este módulo; Módulo 6 (Deployment).
 
-Ya escalas automáticamente según demanda real, con límites explícitos que evitan tanto capacidad insuficiente como coste descontrolado. El siguiente tema verifica que cada réplica esté realmente sana antes de recibir tráfico o de considerarse viva. Fuente oficial: [Kubernetes — HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
-
-**Errores comunes:** configurar un HPA sin definir `requests.cpu` en el Deployment, dejando sin base de cálculo el porcentaje objetivo; establecer un máximo sin considerar el coste de infraestructura ante un consumo anómalo sostenido (por ejemplo, un bug, no tráfico legítimo).
-
-**Cuándo no usarlo:** para una carga de trabajo con estado que no puede simplemente añadir réplicas intercambiables (una base de datos con un único líder de escritura), un HPA horizontal no aplica de la misma forma; ahí el escalado requiere una estrategia específica del propio sistema con estado.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Genera carga controlada sobre la API y observa réplicas y métrica de escalado. Al retirar la carga, verifica reducción estable y registra los límites de recursos que condicionan el resultado.
+</details>
 
 ### Tema 4: Probes de liveness y readiness · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás configurar liveness y readiness probes distintas para el mismo contenedor, entendiendo que una dispara un reinicio y la otra solo excluye tráfico temporalmente.
 
-**Conocimiento previo:** Temas 1 a 3 de este módulo; Módulo 3 (healthchecks de Docker Compose).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás configurar liveness y readiness probes distintas para el mismo contenedor, entendiendo que una dispara un reinicio y la otra solo excluye tráfico temporalmente.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real muy común: usar una liveness probe demasiado agresiva para verificar una dependencia externa temporalmente caída provoca reinicios innecesarios de un contenedor que en realidad está perfectamente sano internamente.
+#### ► LA ANALOGÍA
+Piensa en probes de liveness y readiness como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** liveness probe, readiness probe, `startupProbe`, reinicio vs exclusión de tráfico.
-
-Una liveness probe verifica si el contenedor sigue funcionando; si falla repetidamente, Kubernetes lo reinicia. Una readiness probe determina si está listo para recibir tráfico; si falla, Kubernetes deja de enrutarle tráfico sin reiniciarlo, el mismo concepto que `condition: service_healthy` de Docker Compose (Módulo 3) pero continuo durante toda la vida del Pod. `startupProbe` da un periodo de gracia inicial antes de evaluar las otras dos, evitando reinicios prematuros durante un arranque lento.
-
-**Analogía:** una liveness probe es comprobar si el corazón de un paciente late: si se detiene, requiere reanimación (reinicio). Una readiness probe es comprobar si puede recibir visitas ahora mismo: puede estar vivo pero temporalmente no disponible, sin necesitar ninguna intervención de emergencia.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     L["livenessProbe falla repetidamente"] --> LR2["Kubernetes REINICIA el contenedor"]
@@ -303,9 +339,49 @@ flowchart LR
     S["startupProbe (gracia inicial)"] --> SR["liveness/readiness no se evalúan aún"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Probes de liveness y readiness se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo7/probes` con un backend que expone rutas de salud distintas para cada probe:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Probes de liveness y readiness | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses probes de liveness y readiness por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: probes de liveness y readiness funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Probes de liveness y readiness existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve probes de liveness y readiness en tu contexto?
+2. ¿Cómo sabrías que probes de liveness y readiness no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar probes de liveness y readiness?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    L["livenessProbe falla repetidamente"] --> LR2["Kubernetes REINICIA el contenedor"]
+    R["readinessProbe falla"] --> RR["Kubernetes deja de enrutar tráfico (NO reinicia)"]
+    S["startupProbe (gracia inicial)"] --> SR["liveness/readiness no se evalúan aún"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/probes && cd academia-devops/src/modulo7/probes
@@ -348,12 +424,6 @@ EOF
 kubectl apply -f pod.yaml
 ```
 
-`--from-file` es la bandera que crea el ConfigMap a partir del contenido de un archivo local (`app.js`), en vez de un valor escrito en línea.
-
-**Explicación línea por línea:** `/live` siempre responde `200` (el proceso está vivo); `/ready` responde `503` durante los primeros 5 segundos, simulando una inicialización lenta, y solo después reporta listo — exactamente el escenario donde `readinessProbe` debe excluir tráfico sin que `livenessProbe` reinicie nada.
-
-Observa la transición de no-listo a listo sin ningún reinicio:
-
 ```bash
 sleep 1 && kubectl get pod con-probes -o jsonpath='{.status.containerStatuses[0].ready}'
 echo
@@ -362,69 +432,81 @@ echo
 kubectl get pod con-probes -o jsonpath='{.status.containerStatuses[0].restartCount}'
 ```
 
-**Resultado esperado:** el primer chequeo (a 1 segundo) reporta `false` (no listo todavía); el segundo (a 9 segundos) reporta `true`; el conteo de reinicios (`restartCount`) permanece en `0` durante toda la transición, confirmando que la readiness probe excluyó tráfico sin disparar ningún reinicio.
-
-**Fallo deliberado:** cambia `livenessProbe` para que apunte también a `/ready` en vez de `/live` (una configuración incorrecta común). Durante los primeros 5 segundos, la liveness probe también falla, y tras varios reintentos Kubernetes reinicia el contenedor innecesariamente — diagnostica con `kubectl describe pod con-probes` revisando el evento de reinicio, y confirma que el problema es haber usado la ruta equivocada para la probe equivocada.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un `startupProbe` con `failureThreshold: 30` y `periodSeconds: 1` apuntando también a `/live`, dando hasta 30 segundos de gracia antes de que la liveness probe normal empiece a evaluarse. **Pista:** mientras el `startupProbe` no reporte éxito, ni liveness ni readiness se evalúan todavía.
-
-#### Paso 6 · Práctica independiente
-
-Modifica `app.js` para que `/live` falle permanentemente después de 20 segundos (simulando un bloqueo real irrecuperable), y confirma que en ese caso sí ocurre un reinicio automático, a diferencia del escenario de solo-no-listo del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya distingues cuándo un problema requiere reiniciar un contenedor y cuándo solo requiere dejar de enrutarle tráfico temporalmente. El siguiente tema aplica mínimo privilegio a las identidades que operan dentro del clúster. Fuente oficial: [Kubernetes — Configure Liveness, Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
-
-**Errores comunes:** apuntar la liveness probe a una ruta que verifica dependencias externas fluctuantes; olvidar un `startupProbe` en aplicaciones con arranque lento, causando reinicios prematuros durante la inicialización legítima.
-
-**Cuándo no usarlo:** para un Job que debe terminar (Módulo 6, Tema 6), las probes de liveness/readiness no aplican de la misma forma, ya que el contenedor no está pensado para vivir indefinidamente esperando tráfico.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Distingue proceso vivo de servicio listo para recibir tráfico. Interrumpe una dependencia y demuestra que la política elegida evita un bucle de reinicios sin anunciar disponibilidad falsa.
+</details>
 
 ### Tema 5: RBAC en Kubernetes · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás crear un Role limitado a un namespace, vincularlo a una ServiceAccount con un RoleBinding, y confirmar que un Pod con esa identidad solo puede hacer exactamente lo permitido.
 
-**Conocimiento previo:** Temas 1 a 4 de este módulo; IAM del track Cloud (principio de mínimo privilegio).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás crear un Role limitado a un namespace, vincularlo a una ServiceAccount con un RoleBinding, y confirmar que un Pod con esa identidad solo puede hacer exactamente lo permitido.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de seguridad: sin RBAC configurado deliberadamente, es común que las cargas de trabajo terminen con permisos mucho más amplios de los que realmente necesitan, replicando el mismo riesgo que las políticas IAM demasiado permisivas.
+#### ► LA ANALOGÍA
+Piensa en rbac en kubernetes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** Role, ClusterRole, RoleBinding, cuenta de servicio (ServiceAccount), mínimo privilegio aplicado a Kubernetes.
-
-Un Role define permisos limitados a un namespace específico; un ClusterRole aplica a nivel de clúster completo. Un RoleBinding conecta un Role con una identidad (usuario, grupo o ServiceAccount); sin binding explícito, un Role no concede nada. Una ServiceAccount es la identidad que usan los Pods (no personas) para autenticarse contra la API de Kubernetes.
-
-**Analogía:** un Role es una descripción de puesto de trabajo limitada a un departamento. Un ClusterRole es esa misma descripción aplicable a toda la empresa. Un RoleBinding es la carta de asignación formal que pone a alguien (o a un sistema automatizado) en ese puesto con esos permisos exactos.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     R["Role lector-pods en desarrollo: get y list de Pods"] -->|RoleBinding conecta Role e identidad| SA["ServiceAccount mi-app-sa"]
     SA --> P["Pod que usa esta cuenta"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| RBAC en Kubernetes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo7/rbac` y confirma que una ServiceAccount sin permisos no puede listar Pods:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar RBAC en Kubernetes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses rbac en kubernetes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rbac en kubernetes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- RBAC en Kubernetes existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rbac en kubernetes en tu contexto?
+2. ¿Cómo sabrías que rbac en kubernetes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rbac en kubernetes?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    R["Role lector-pods en desarrollo: get y list de Pods"] -->|RoleBinding conecta Role e identidad| SA["ServiceAccount mi-app-sa"]
+    SA --> P["Pod que usa esta cuenta"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/rbac && cd academia-devops/src/modulo7/rbac
 kubectl create serviceaccount lector-limitado
 kubectl auth can-i list pods --as=system:serviceaccount:default:lector-limitado
 ```
-
-**Explicación línea por línea:** `--as` es la bandera que hace que `kubectl auth can-i` simule la pregunta "¿esta identidad puede hacer esto?" impersonando a esa cuenta, sin necesitar realmente ejecutar la acción, ideal para verificar permisos antes de conceder o denegar acceso real.
-
-Otorga permisos explícitos mínimos y confirma que ahora sí puede, pero solo eso:
 
 ```bash
 cat > rbac.yaml <<'EOF'
@@ -455,50 +537,27 @@ kubectl auth can-i list pods --as=system:serviceaccount:default:lector-limitado
 kubectl auth can-i delete pods --as=system:serviceaccount:default:lector-limitado
 ```
 
-**Resultado esperado:** antes del `Role`/`RoleBinding`, `can-i list pods` responde `no`; después, responde `yes`; pero `can-i delete pods` con la misma cuenta sigue respondiendo `no`, confirmando que solo tiene exactamente los verbos (`get`, `list`) que el Role le otorgó explícitamente.
-
-**Fallo deliberado:** cambia `resources: ["pods"]` a `resources: ["secrets"]` en el Role sin cambiar el nombre, y vuelve a aplicar. `can-i list pods` con esa misma cuenta ahora responde `no` de nuevo — diagnostica revisando `kubectl describe role lector-pods` para confirmar que el recurso al que aplica el permiso cambió, no que el binding se rompió.
-
-#### Paso 5 · Práctica guiada
-
-Crea un segundo Role que permita `create` sobre `pods` (no solo lectura) y un segundo RoleBinding para una nueva ServiceAccount `creador-pods`; confirma con `kubectl auth can-i create pods --as=system:serviceaccount:default:creador-pods` que solo esa cuenta específica tiene ese permiso adicional. **Pista:** cada RoleBinding es independiente; una ServiceAccount solo tiene la unión de los permisos de todos sus bindings.
-
-#### Paso 6 · Práctica independiente
-
-Investiga la diferencia entre un `Role` y un `ClusterRole` ejecutando `kubectl auth can-i list nodes --as=system:serviceaccount:default:lector-limitado` (los Nodes no son específicos de ningún namespace) y explica por qué un `Role` namespaced nunca podría otorgar ese permiso, sin importar cómo se configure.
-
-#### Paso 7 · Cierre
-
-Ya aplicas mínimo privilegio real a las identidades que operan dentro del clúster, verificando con `can-i` antes de asumir qué puede hacer cada una. El siguiente tema centraliza seguridad y observabilidad de la comunicación entre servicios. Fuente oficial: [Kubernetes — RBAC](https://kubernetes.io/docs/reference/access-control/rbac/).
-
-**Errores comunes:** usar la ServiceAccount por defecto con permisos amplios en vez de crear una específica y mínima por carga de trabajo; olvidar que un Role sin un RoleBinding no concede ningún acceso, exactamente igual que una política IAM sin adjuntar.
-
-**Cuándo no usarlo:** para un permiso que debe aplicar a nivel de clúster completo (no limitado a un namespace), un `Role` no basta; ahí un `ClusterRole` con su correspondiente `ClusterRoleBinding` es el objeto correcto.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Crea una cuenta de despliegue limitada al namespace de prueba. Comprueba con permisos efectivos que puede actualizar el servicio pero no leer secretos ni modificar recursos de otro namespace.
+</details>
 
 ### Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás explicar cómo un proxy sidecar centraliza mTLS, reintentos y observabilidad entre servicios sin que el código de la aplicación las implemente directamente.
 
-**Conocimiento previo:** Temas 1 a 5 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás explicar cómo un proxy sidecar centraliza mTLS, reintentos y observabilidad entre servicios sin que el código de la aplicación las implemente directamente.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de arquitecturas con muchos microservicios: gestionar seguridad, resiliencia y observabilidad de la comunicación interna dentro del código de cada aplicación individual se vuelve progresivamente inmanejable a medida que crece el número de servicios.
+#### ► LA ANALOGÍA
+Piensa en service mesh — istio, linkerd, envoy y mtls como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** service mesh, sidecar proxy, mTLS, observabilidad de tráfico entre servicios.
-
-Un service mesh gestiona la comunicación entre servicios inyectando un proxy sidecar (comúnmente Envoy) junto a cada Pod; todo el tráfico entrante y saliente pasa por ese proxy. Esto centraliza cifrado, reintentos, circuit breakers y observabilidad sin implementarlos en el código de cada aplicación. mTLS hace que ambas partes de una comunicación (no solo el servidor) verifiquen certificados mutuamente, cifrando el tráfico interno de forma transparente.
-
-**Analogía:** un service mesh es como instalar un sistema de seguridad y comunicación estandarizado en cada oficina de un complejo empresarial: en vez de que cada oficina implemente su propio sistema de verificación, uno centralizado gestiona automáticamente la identidad mutua y el registro de comunicaciones entre oficinas.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph PA["Pod A"]
@@ -512,11 +571,55 @@ flowchart LR
     A2 <-->|mTLS cifrado| B2
 ```
 
-La app no gestiona directamente el cifrado; el sidecar lo hace.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Service Mesh — Istio, Linkerd, Envoy y mTLS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Service Mesh — Istio, Linkerd, Envoy y mTLS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo7/service-mesh` y simula el patrón de sidecar con dos contenedores dentro del mismo Pod, uno como proxy delante del otro (sin instalar Istio completo, para ilustrar el mecanismo básico):
+#### ► CUÁNDO NO USAR ESTO
+No uses service mesh — istio, linkerd, envoy y mtls por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: service mesh — istio, linkerd, envoy y mtls funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Service Mesh — Istio, Linkerd, Envoy y mTLS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve service mesh — istio, linkerd, envoy y mtls en tu contexto?
+2. ¿Cómo sabrías que service mesh — istio, linkerd, envoy y mtls no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar service mesh — istio, linkerd, envoy y mtls?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph PA["Pod A"]
+        A1["Contenedor app A"]
+        A2["Proxy sidecar (Envoy)"]
+    end
+    subgraph PB["Pod B"]
+        B1["Contenedor app B"]
+        B2["Proxy sidecar (Envoy)"]
+    end
+    A2 <-->|mTLS cifrado| B2
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/service-mesh/nginx && cd academia-devops/src/modulo7/service-mesh
@@ -548,52 +651,69 @@ kubectl get pod con-sidecar -o jsonpath='{.spec.containers[*].name}'
 echo
 ```
 
-**Explicación línea por línea:** el Pod tiene dos contenedores (`app` y `sidecar-proxy`) que comparten red por definición de Pod (Módulo 6, Tema 1); en un service mesh real, este patrón se automatiza inyectando el sidecar en cada Pod del mesh sin que el desarrollador lo defina manualmente cada vez, como sí se hizo aquí de forma explícita para ilustrarlo.
-
-**Resultado esperado:** `kubectl get pod con-sidecar -o jsonpath='{.spec.containers[*].name}'` imprime `app sidecar-proxy`, confirmando que ambos contenedores comparten el mismo Pod y por tanto la misma red interna, la base estructural sobre la que un service mesh real construye mTLS automático.
-
-**Fallo deliberado:** intenta acceder directamente al contenedor `app` en el puerto 3000 desde fuera del Pod (sin pasar por el sidecar), simulando qué pasaría si alguien intentara saltarse el proxy. Sin un Service que exponga específicamente ese puerto, no hay forma externa de alcanzarlo directamente — diagnostica confirmando que el diseño de service mesh depende de que TODO el tráfico entre/salga exclusivamente a través del sidecar, nunca directamente al contenedor de aplicación.
-
-#### Paso 5 · Práctica guiada
-
-Investiga (documentando, sin instalarlo completo en este laboratorio) los pasos de `istioctl install` o `linkerd install` para un clúster `kind`, y qué comando usarías para confirmar que el sidecar se inyectó automáticamente en un namespace etiquetado para el mesh. **Pista:** ambos usan una etiqueta de namespace (`istio-injection=enabled` en Istio) para decidir dónde inyectar el sidecar automáticamente.
-
-#### Paso 6 · Práctica independiente
-
-Compara en un documento propio el coste operativo (un componente más que entender y depurar) contra el beneficio (mTLS automático, observabilidad centralizada) para una arquitectura hipotética de 3 microservicios frente a una de 30 microservicios, concluyendo en qué punto la adopción se justifica.
-
-#### Paso 7 · Cierre
-
-Ya entiendes el mecanismo estructural de un service mesh (sidecar compartiendo red con la app) y cuándo su complejidad adicional se justifica. El siguiente tema compara dos estrategias de despliegue a nivel de Deployment, más básicas que un service mesh pero igual de decisivas. Fuente oficial: [Istio — What is Istio](https://istio.io/latest/docs/overview/what-is-istio/).
-
-**Errores comunes:** adoptar un service mesh completo antes de tener suficientes microservicios comunicándose entre sí para justificar su complejidad operativa; asumir que un sidecar se configura solo, sin entender que requiere instalación y configuración explícita del plano de control del mesh.
-
-**Cuándo no usarlo:** para una arquitectura con pocos servicios y comunicación interna limitada, un service mesh completo añade una capa operativa entera sin beneficio proporcional; el límite es cuando el número de servicios y la necesidad de mTLS/observabilidad centralizada realmente lo justifican.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Protege la comunicación entre dos servicios de laboratorio mediante identidad de la malla. Prueba un cliente autorizado y otro ajeno, y compara latencia y complejidad con la configuración previa.
+</details>
 
 ### Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar vas a configurar explícitamente `spec.strategy.type` en un Deployment, comparando `RollingUpdate` (sin downtime) contra `Recreate` (downtime garantizado pero sin versiones mixtas simultáneas).
+#### ► DE QUÉ TRATA
+Al finalizar vas a configurar explícitamente spec.strategy.type en un Deployment, comparando RollingUpdate (sin downtime) contra Recreate (downtime garantizado pero sin versiones mixtas simultáneas).
 
-**Conocimiento previo:** Módulo 6 (rolling update con `kubectl set image`).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a configurar explícitamente spec.strategy.type en un Deployment, comparando RollingUpdate (sin downtime) contra Recreate (downtime garantizado pero sin versiones mixtas simultáneas).**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un Deployment con una migración de esquema de base de datos incompatible entre v1 y v2 no puede tener pods v1 y v2 corriendo simultáneamente (como hace `RollingUpdate` por diseño) sin arriesgar corromper datos — necesita que TODOS los pods viejos terminen antes de que arranque cualquiera nuevo.
+#### ► LA ANALOGÍA
+Piensa en estrategias de despliegue — recreate vs rollingupdate como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que estrategias de despliegue — recreate vs rollingupdate resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `spec.strategy.type`, Recreate, RollingUpdate, ventana de downtime, coexistencia de versiones.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Estrategias de despliegue — Recreate vs RollingUpdate se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`RollingUpdate` (el default) reemplaza pods gradualmente, garantizando `maxUnavailable`/`maxSurge` pero permitiendo que versiones viejas y nuevas coexistan brevemente; `Recreate` termina TODOS los pods viejos antes de crear los nuevos, garantizando que nunca coexistan dos versiones, al costo de downtime total durante la transición.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Estrategias de despliegue — Recreate vs RollingUpdate | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** `RollingUpdate` es como reemplazar las luces de un puente una por una mientras el tráfico sigue circulando; `Recreate` es cerrar el puente completo, apagar todas las luces viejas, y recién entonces instalar las nuevas.
+#### ► CUÁNDO NO USAR ESTO
+No uses estrategias de despliegue — recreate vs rollingupdate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: estrategias de despliegue — recreate vs rollingupdate funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Estrategias de despliegue — Recreate vs RollingUpdate existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve estrategias de despliegue — recreate vs rollingupdate en tu contexto?
+2. ¿Cómo sabrías que estrategias de despliegue — recreate vs rollingupdate no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar estrategias de despliegue — recreate vs rollingupdate?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir -p academia-devops/src/modulo7/estrategia && cd academia-devops/src/modulo7/estrategia
 cat > deployment-recreate.yaml <<'EOF'
@@ -618,64 +738,27 @@ kubectl set image deployment/mi-api mi-api=node:24-alpine
 kubectl get pods -w
 ```
 
-**Resultado esperado:** con `type: Recreate`, los 3 pods viejos terminan TODOS antes de que se cree el primer pod nuevo — `kubectl get pods -w` muestra una ventana real donde CERO pods están corriendo, a diferencia de `RollingUpdate` (Módulo 6) donde siempre hay al menos `replicas - maxUnavailable` disponibles.
-
-**Fallo deliberado:** dejá `type: Recreate` pero asumí (sin verificarlo) que, como ya viste `RollingUpdate` en el Módulo 6, esto "debería comportarse igual pero más simple". Diagnostica confirmando que un servicio con `Recreate` detrás de un balanceador de carga sin página de mantenimiento devuelve errores de conexión real durante toda la ventana de downtime — un comportamiento que `RollingUpdate` específicamente evita y que `Recreate` específicamente no evita.
-
-#### Paso 5 · Práctica guiada
-
-Mientras el despliegue con `Recreate` está en curso, corré `while true; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:PUERTO; sleep 0.5; done` en otra terminal y contá cuántos segundos seguidos devuelve un error de conexión. **Pista:** esa cantidad de segundos es el downtime real que `Recreate` garantiza, no una estimación teórica.
-
-#### Paso 6 · Práctica independiente
-
-Repetí la misma medición de downtime con el Deployment del Módulo 6 (`strategy.type: RollingUpdate`, el default) y compará ambos resultados documentados lado a lado.
-
-#### Paso 7 · Cierre
-
-Entregá el despliegue con `Recreate` y la ventana de cero pods del Paso 4, la interrupción real reproducida por confundir ambas estrategias del Paso 5, y la medición de downtime comparada del Paso 6; explicá por qué `Recreate` es la excepción deliberada para casos de incompatibilidad real entre versiones, no una alternativa intercambiable con `RollingUpdate`. Esto cierra el módulo de Kubernetes avanzado; el siguiente módulo cubre infraestructura como código con Terraform. Errores comunes: usar `Recreate` por costumbre o simplicidad percibida en un servicio con tráfico real; no medir el downtime real antes de asumir que una estrategia "debería" comportarse como la otra. Fuentes oficiales: [Kubernetes — Deployment strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Kubernetes — Recreate Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment).
-
-**Cuándo no usarlo:** para un servicio con tráfico real y sin una incompatibilidad genuina entre versiones, `Recreate` solo introduce downtime innecesario; `RollingUpdate` (el default) es la elección correcta en casi todos los casos.
-
----
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Elige una estrategia según compatibilidad entre revisiones y acceso al volumen. Reproduce la actualización y documenta indisponibilidad observada, sin prometer continuidad si ambas versiones no pueden coexistir.
+</details>
 
 ### Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min
 
-**Prerrequisito:** temas «RBAC en Kubernetes» de este módulo y «Contenedores sin privilegios» (módulo 2).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** aislar por red la base de datos para que solo la API pueda llegar a ella con una `NetworkPolicy`, y obligar a que los pods de un namespace cumplan el nivel `restricted` de Pod Security.
+#### ► DE QUÉ TRATA
+Necesitas un clúster con un plugin de red que aplique NetworkPolicy. kind lo hace de serie desde la versión 0.24.0 (agosto de 2024), que incorpora kube-network-policies; comprueba tu versión con kind version. Con minikube, usa minikube start --cni=calico, como en la demostración.
 
-**¿Por qué es importante?** Por defecto, en Kubernetes cualquier pod puede hablar con cualquier otro y puede pedir privilegios. Si un pod se compromete, llega a la base de datos. Las políticas reducen ese alcance.
+#### ► LA IDEA EN UNA FRASE
+**Necesitas un clúster con un plugin de red que aplique NetworkPolicy.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Necesitas un clúster con un plugin de red que aplique NetworkPolicy. kind lo hace de serie desde la versión 0.24.0 (agosto de 2024), que incorpora `kube-network-policies`; comprueba tu versión con `kind version`. Con minikube, usa `minikube start --cni=calico`, como en la demostración.
+#### ► LA ANALOGÍA
+Piensa en políticas en kubernetes: networkpolicy y pod security admission como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-En RutaFlow, un pod de pruebas olvidado en el namespace de producción podía conectarse a PostgreSQL. Nadie lo había pensado porque «está en la red interna». Con políticas, solo la API llega a la base.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** NetworkPolicy, `podSelector`, `ingress`, denegar por defecto, plugin de red (CNI), Pod Security Standards (`privileged`, `baseline`, `restricted`), etiqueta `pod-security.kubernetes.io/enforce`.
-
-**NetworkPolicy:** reglas de tráfico entre pods. En cuanto una política selecciona un pod, ese pod solo acepta el tráfico que alguna política permite. El patrón es: **denegar todo** en el namespace y luego **permitir** lo necesario (la API hacia la base en el puerto 5432). Requiere un plugin de red que las aplique (Calico, Cilium); si no, se ignoran en silencio.
-
-**Pod Security Admission:** el apiserver revisa los pods contra tres niveles:
-
-| Nivel | Permite |
-|---|---|
-| `privileged` | todo |
-| `baseline` | evita los privilegios más peligrosos |
-| `restricted` | exige no root, sin escalar privilegios, capacidades eliminadas, seccomp |
-
-Se activa con una etiqueta en el namespace, por ejemplo `pod-security.kubernetes.io/enforce: restricted`.
-
-**Analogía:** NetworkPolicy son las puertas con tarjeta entre áreas de un edificio; Pod Security es el control de entrada que no deja pasar a nadie con herramientas peligrosas. La analogía falla en que, sin el sistema de tarjetas instalado (CNI), las puertas existen en el plano pero no se cierran.
-
-**Límite de uso:** NetworkPolicy no cifra el tráfico ni autentica servicios: para eso está mTLS (service mesh). Pod Security no reemplaza políticas más detalladas como Kyverno u OPA Gatekeeper.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["pod api"] -->|"5432 permitido"| D["pod postgres"]
@@ -683,9 +766,49 @@ flowchart LR
     N["namespace produccion<br/>enforce: restricted"] --> R["rechaza pods con privilegios"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Políticas en Kubernetes: NetworkPolicy y Pod Security Admission se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/devops/politicas/namespace.yaml`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Políticas en Kubernetes: NetworkPolicy y Pod Security Admission | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses políticas en kubernetes: networkpolicy y pod security admission por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: políticas en kubernetes: networkpolicy y pod security admission funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Políticas en Kubernetes: NetworkPolicy y Pod Security Admission existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve políticas en kubernetes: networkpolicy y pod security admission en tu contexto?
+2. ¿Cómo sabrías que políticas en kubernetes: networkpolicy y pod security admission no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar políticas en kubernetes: networkpolicy y pod security admission?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["pod api"] -->|"5432 permitido"| D["pod postgres"]
+    X["pod de pruebas"] -. "bloqueado" .-> D
+    N["namespace produccion<br/>enforce: restricted"] --> R["rechaza pods con privilegios"]
+```
 
 ```yaml
 apiVersion: v1
@@ -695,8 +818,6 @@ metadata:
   labels:
     pod-security.kubernetes.io/enforce: restricted
 ```
-
-Archivo `academia-labs/devops/politicas/red.yaml`:
 
 ```yaml
 # 1) Denegar todo el tráfico de entrada en el namespace.
@@ -719,8 +840,6 @@ spec:
       ports: [ { protocol: TCP, port: 5432 } ]
 ```
 
-Ejecútalo:
-
 ```bash
 minikube start --cni=calico
 kubectl apply -f academia-labs/devops/politicas/namespace.yaml -f academia-labs/devops/politicas/red.yaml
@@ -729,71 +848,10 @@ kubectl -n produccion run postgres --image=postgres:16 --labels=app=postgres --e
 kubectl -n produccion run privilegiado --image=busybox:1.36 --privileged -- sleep 3600
 ```
 
-**Explicación por bloques:** El namespace `produccion` aplica el nivel `restricted`: el apiserver rechaza pods que no cumplan. La primera NetworkPolicy selecciona todos los pods y no permite entradas, así que todo queda bloqueado. La segunda permite solo a los pods `app=api` llegar a `app=postgres` en el puerto 5432. El pod de PostgreSQL se crea con un `securityContext` que cumple el nivel restringido. El último comando intenta crear un pod privilegiado.
-
-**Resultado esperado:**
-
 ```text
 El pod postgres se crea.
 El pod privilegiado se rechaza: Error from server (Forbidden): pods "privilegiado" is forbidden: violates PodSecurity "restricted:latest": privileged (container "privilegiado" must not set securityContext.privileged=true) ...
 Desde un pod sin la etiqueta app=api, `nc -zv postgres-ip 5432` no conecta; desde uno con app=api, sí.
 ```
 
-**Fallo deliberado:** crea el clúster con `minikube start` sin `--cni=calico` y aplica las mismas políticas. **Error esperado:** las políticas se crean sin error, pero cualquier pod sigue conectándose a la base. **Diagnóstico:** el plugin de red por defecto no aplica NetworkPolicy. Comprueba siempre con una conexión real que la política funciona.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** aplica los archivos y comprueba el rechazo del pod privilegiado.
-2. **Variación:** crea un pod `api` y otro `curioso` y prueba la conexión a la base desde cada uno.
-3. **Diagnóstico:** reproduce el fallo deliberado sin Calico.
-4. **Integración:** agrega una política de salida (`Egress`) que permita a la API solo DNS y la base.
-5. **Diseño:** cambia el namespace a `warn` en lugar de `enforce` y explica para qué sirve en una migración.
-
-**Pista:** prueba cada política con una conexión real: una política que existe pero no se aplica es peor que ninguna, porque da falsa seguridad.
-
-#### Paso 6 · Práctica independiente
-
-Instala Kyverno y escribe una política que rechace imágenes con la etiqueta `latest` en el namespace `produccion`.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas el patrón denegar todo y permitir lo necesario.
-- [ ] Solo la API llega a la base.
-- [ ] El namespace rechaza pods privilegiados.
-- [ ] Sabes comprobar que el CNI aplica las políticas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confiar en políticas sin comprobarlas, olvidar el DNS al restringir salidas y usar `privileged` en namespaces de producción. **Siguiente paso:** el tema «Service Mesh» agrega cifrado e identidad al tráfico permitido.
-
-**Transferencia al proyecto integrador «RutaFlow»:** aplica en el namespace de producción de RutaFlow el nivel `restricted` y políticas de red que dejen a la base accesible solo desde la API.
-
-**Fuente oficial:** [Kubernetes — Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) y [Kubernetes — Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** convertir los manifiestos del Módulo 6 en un Helm chart parametrizable, instalar un Ingress Controller y exponer la aplicación por dominio, configurar autoscaling, y añadir probes de liveness y readiness.
-
-**Requisitos previos:** el clúster local y la aplicación desplegada del Módulo 6 de este track, Helm instalado.
-
-| Paso | Acción | Comando/Configuración | Explicación | Resultado esperado |
-|---|---|---|---|---|
-| 1 | Crear la estructura de un Helm chart | `helm create mi-chart` | Genera estructura base con plantillas de ejemplo | Se crea `mi-chart/` con `Chart.yaml`, `values.yaml`, `templates/` |
-| 2 | Adaptar las plantillas | Usa `{{ .Values.* }}` para réplicas, imagen, tag | Convierte manifiestos estáticos en reutilizables | Los archivos usan correctamente Go template |
-| 3 | Definir valores por defecto | `replicaCount: 3` en `values.yaml` | Establece configuración por defecto | El archivo se guarda correctamente |
-| 4 | Instalar el chart | `helm install mi-api ./mi-chart` | Despliega usando el chart parametrizado | `kubectl get pods` muestra los Pods desplegados |
-| 5 | Instalar un Ingress Controller | Sigue la documentación oficial para tu clúster local | Habilita enrutamiento HTTP | El controller corre (`kubectl get pods -n <namespace>`) |
-| 6 | Crear una regla de Ingress | `host: mi-api.local` enrutando al Service | Expone la app por dominio | `kubectl get ingress` muestra el objeto |
-| 7 | Configurar el HPA | `kubectl autoscale deployment mi-api --cpu-percent=70 --min=2 --max=10` | Habilita escalado automático | `kubectl get hpa` muestra el autoscaler |
-| 8 | Añadir probes | `livenessProbe`/`readinessProbe` en la plantilla, `helm upgrade` | Aplica robustez de arranque | `kubectl describe pod` muestra ambas probes pasando |
-| 9 | Comparar estrategias de despliegue | `strategy.type: Recreate` vs `RollingUpdate` | Ver Tema 7 | La medición de downtime real difiere entre ambas |
-
-**Verificación:** el laboratorio se considera exitoso si `helm upgrade` con un cambio de valores refleja el nuevo número de réplicas sin editar YAML directamente, si HPA y probes aparecen configurados y saludables, y si la comparación de estrategias de despliegue muestra una ventana de downtime real con `Recreate` y ninguna con `RollingUpdate`.
-
-**Errores comunes y soluciones**
-
-- **`helm install` falla con error de sintaxis.** Usa `helm template ./mi-chart` para renderizar localmente antes de instalar.
-- **El Ingress no enruta tráfico.** Verifica que el `host` resuelve hacia la IP del Ingress Controller (en local, vía tu archivo `hosts`); si usás `ingress-nginx`, migrá a Traefik o Gateway API (proyecto archivado desde marzo de 2026).
-- **El HPA muestra `<unknown>`.** Instala `metrics-server` si no viene por defecto en tu distribución.
-- **El Pod nunca llega a `Ready` tras añadir probes.** Verifica que las rutas configuradas realmente existen y responden en tu aplicación.
-- **Usar `Recreate` por costumbre en un servicio con tráfico real.** `RollingUpdate` es el default correcto salvo incompatibilidad genuina entre versiones.
-
----
+</details>

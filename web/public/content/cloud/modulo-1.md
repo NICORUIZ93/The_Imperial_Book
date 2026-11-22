@@ -3,31 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Virtualización vs contenedores · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás comparar virtualización y contenedores desde cero. Prerrequisitos: Docker; verifica `docker --version`.
-#### Paso 2 · Contexto y caso real
-Un servicio cloud necesita aislamiento y un coste de ejecución razonable.
-#### Paso 3 · Teoría, modelo mental y analogía
-Una VM emula una casa completa; un contenedor comparte cimientos y aísla habitaciones.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** hipervisor, máquina virtual, kernel compartido, aislamiento de procesos, sobrecarga de recursos.
+#### ► DE QUÉ TRATA
+Al finalizar podrás comparar virtualización y contenedores desde cero. Prerrequisitos: Docker; verifica docker --version.
 
-La virtualización tradicional funciona instalando un hipervisor sobre tu sistema operativo (o directamente sobre el hardware), que crea máquinas virtuales completas: cada una con su propio kernel, su propio sistema operativo instalado desde cero, y sus propios recursos de CPU y memoria reservados. Si quieres correr tres aplicaciones aisladas con máquinas virtuales, estás cargando tres sistemas operativos completos, cada uno con su propio consumo de arranque, de memoria y de disco, incluso si las tres aplicaciones son ligeras.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás comparar virtualización y contenedores desde cero.**
 
-Los contenedores resuelven el mismo problema —aislar aplicaciones para que no interfieran entre sí— de una forma radicalmente más ligera: en vez de virtualizar hardware completo, aíslan procesos dentro del mismo kernel del sistema operativo anfitrión. Un contenedor no arranca un sistema operativo nuevo; arranca un proceso (o varios) que cree estar solo en su propio sistema de archivos, su propia red y su propio espacio de procesos, pero en realidad comparte el kernel de Linux (o de Windows) con el resto de contenedores y con el propio host. Esto es posible gracias a mecanismos del kernel como los namespaces (que aíslan qué ve cada proceso) y los cgroups (que limitan cuánta CPU y memoria puede usar).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La consecuencia práctica es enorme: un contenedor típico arranca en menos de un segundo, mientras que una máquina virtual puede tardar decenas de segundos o minutos en arrancar su sistema operativo completo. Un contenedor pesa, en muchos casos, decenas de megabytes; una máquina virtual con su sistema operativo completo puede pesar varios gigabytes. Esto es exactamente lo que hace posible que en este curso levantes y destruyas Floci en segundos, tantas veces como quieras, sin esperar minutos cada vez.
+#### ► LA ANALOGÍA
+Piensa en virtualización vs contenedores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Esto no significa que los contenedores reemplacen completamente a las máquinas virtuales: las máquinas virtuales siguen siendo necesarias cuando se necesita aislar kernels distintos (por ejemplo, correr Windows y Linux en la misma máquina física), o cuando se necesita el aislamiento de seguridad más fuerte posible entre cargas de trabajo que no confían entre sí. De hecho, Docker Desktop en macOS y Windows internamente usa una máquina virtual ligera de Linux para poder ejecutar contenedores Linux sobre esos sistemas operativos, porque los contenedores Linux necesitan un kernel Linux por debajo.
-
-**Analogía:** una máquina virtual es como construir un edificio completo nuevo —con su propia estructura, tuberías y sistema eléctrico— cada vez que quieres alquilar una oficina. Un contenedor es como alquilar una oficina dentro de un edificio ya construido: compartes la estructura, las tuberías y la electricidad del edificio (el kernel), pero tu oficina está completamente separada y con llave propia de las demás.
-
-**¿Por qué es importante?** Docker, y por extensión los contenedores, se convirtieron en el estándar de la industria para empaquetar y distribuir software precisamente por esta ligereza: te permite correr docenas de servicios aislados en un portátil normal, algo impensable con máquinas virtuales completas. Todo el ecosistema de nube moderno —incluyendo cómo se distribuyen y ejecutan Floci, tus propias aplicaciones, y servicios como ECS o Kubernetes que verás en módulos avanzados— se construye sobre esta idea.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph VM["VIRTUALIZACIÓN TRADICIONAL — 3 SO completos, más pesado"]
@@ -58,10 +53,73 @@ flowchart LR
     end
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Ejecuta el servicio de entregas dentro de un contenedor y registra qué comparte con el host. Reinícialo y comprueba que los datos persistentes dependen del volumen configurado, no del proceso anterior.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Virtualización vs contenedores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, compara lo que ve tu equipo con lo que ve un contenedor:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Virtualización vs contenedores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses virtualización vs contenedores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: virtualización vs contenedores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Virtualización vs contenedores existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve virtualización vs contenedores en tu contexto?
+2. ¿Cómo sabrías que virtualización vs contenedores no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar virtualización vs contenedores?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph VM["VIRTUALIZACIÓN TRADICIONAL — 3 SO completos, más pesado"]
+        direction TB
+        VA["App A — SO A"]
+        VB["App B — SO B"]
+        VC["App C — SO C"]
+        VH["Hipervisor"]
+        VHW["Hardware físico"]
+        VA --> VH
+        VB --> VH
+        VC --> VH
+        VH --> VHW
+    end
+    subgraph CT["CONTENEDORES — 1 kernel compartido, más ligero"]
+        direction TB
+        CA["App A"]
+        CB["App B"]
+        CC["App C"]
+        CE["Docker Engine"]
+        CK["Kernel del host (Linux)"]
+        CHW["Hardware físico"]
+        CA --> CE
+        CB --> CE
+        CC --> CE
+        CE --> CK
+        CK --> CHW
+    end
+```
+
 ```bash
 mkdir ejemplo-contenedores && cd ejemplo-contenedores
 uname -r
@@ -69,39 +127,28 @@ docker run --rm ubuntu:24.04 uname -r
 docker run --rm ubuntu:24.04 sh -c '. /etc/os-release; echo "$PRETTY_NAME"'
 docker run --rm ubuntu:24.04 ps -e
 ```
-Resultado esperado: en Linux, los dos `uname -r` imprimen la misma versión de kernel, porque el contenedor no arranca un kernel propio; en macOS y Windows, el segundo muestra el kernel de la máquina virtual Linux de Docker Desktop. El tercer comando imprime una línea que empieza con `Ubuntu 24.04`, aunque tu equipo use otro sistema: el sistema de archivos sí es propio. El último lista un solo proceso, `ps`, con `PID` 1: el contenedor no ve los procesos del host. Copia las cuatro salidas en `src/isolation.md`.
-#### Paso 5 · Práctica guiada
-Pista: ejecuta un contenedor con recurso inválido para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Compara memoria y tiempo de arranque y conserva la salida.
-#### Paso 7 · Cierre
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: imágenes. Errores comunes: confundir aislamiento con seguridad total y olvidar límites. Fuente oficial: https://docs.docker.com/get-started/docker-overview/.
+
+</details>
 
 ### Tema 2: Imágenes y capas · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás construir una imagen desde cero. Prerrequisitos: Docker; verifica `docker --version`.
-#### Paso 2 · Contexto y caso real
-Una imagen reproducible evita diferencias entre desarrollo y producción.
-#### Paso 3 · Teoría, modelo mental y analogía
-Las capas son transparencias acumuladas; una capa inmutable puede reutilizarse.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** imagen, capa (layer), Dockerfile, caché de construcción, inmutabilidad.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir una imagen desde cero. Prerrequisitos: Docker; verifica docker --version.
 
-Una imagen Docker es un paquete inmutable que contiene todo lo necesario para ejecutar una aplicación: el código, las dependencias, las librerías del sistema, las variables de entorno por defecto, y el comando que se ejecuta al arrancar. Un contenedor, en cambio, es una instancia en ejecución de una imagen: puedes crear diez contenedores distintos a partir de la misma imagen, cada uno con su propio estado en memoria y en disco, igual que puedes crear varios documentos distintos a partir de la misma plantilla.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una imagen desde cero.**
 
-Las imágenes se construyen en capas. Cada instrucción de un Dockerfile —el archivo de texto que describe cómo se construye una imagen— genera una capa nueva que se apila sobre la anterior. Si la primera capa instala el sistema operativo base, la segunda instala las dependencias, y la tercera copia el código de la aplicación, Docker guarda cada una de esas capas por separado, y las reutiliza como caché si vuelves a construir la imagen y esa capa no cambió. Esto acelera enormemente las reconstrucciones: si solo cambias tu código de aplicación (la última capa), Docker no vuelve a instalar el sistema operativo ni las dependencias, solo reconstruye la capa que cambió.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Este diseño en capas también explica por qué las imágenes se pueden compartir eficientemente: si dos imágenes distintas comparten las mismas primeras capas (por ejemplo, ambas se basan en la misma imagen de Node.js), Docker solo necesita descargar esas capas una vez y las reutiliza para ambas imágenes. Es exactamente lo que ocurre cuando descargas la imagen de Floci: Docker descarga cada capa que compone esa imagen, y si en el futuro descargas otra imagen que comparte alguna de esas capas base, no las vuelve a descargar.
+#### ► LA ANALOGÍA
+Piensa en imágenes y capas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-La inmutabilidad de las imágenes es una propiedad de diseño deliberada: una vez construida, una imagen no cambia. Si necesitas una versión distinta de tu aplicación, construyes una imagen nueva (normalmente con una etiqueta de versión distinta, como `mi-app:1.1` en vez de `mi-app:1.0`), en vez de modificar la imagen existente. Esto es lo que hace que los despliegues con contenedores sean predecibles: la imagen que probaste en tu máquina es exactamente la misma que se ejecuta en cualquier otro entorno, byte por byte.
-
-**Analogía:** una imagen es como la receta impresa de un pastel, con cada paso (capa) numerado y guardado por separado: la masa base, el relleno, la cobertura. Si cambias solo la cobertura, no necesitas rehacer la masa ni el relleno desde cero; reutilizas esos pasos ya hechos. Un contenedor es el pastel horneado a partir de esa receta: puedes hornear varios pasteles idénticos (contenedores) a partir de la misma receta (imagen), y cada uno existe de forma independiente una vez servido.
-
-**¿Por qué es importante?** Entender la diferencia entre imagen y contenedor es la base para entender casi cualquier comando de Docker que vas a usar en este módulo: `docker images` lista las recetas que tienes descargadas, `docker ps` lista los pasteles (contenedores) que están actualmente en el horno (ejecutándose). Confundir estos dos conceptos es el error más común de quien empieza con Docker.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     D1["FROM node:20"] --> L1["Capa 1: node:20 base"]
@@ -112,10 +159,53 @@ flowchart TD
     IMG -->|"docker run"| CNT["Contenedor (instancia en ejecución,\ncon su propio estado)"]
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Construye la imagen del consumidor de entregas y modifica solo su código. Compara capas reutilizadas y tamaño final; la imagen debe arrancar sin archivos de desarrollo ni credenciales incorporadas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Imágenes y capas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, crea el script y el `Dockerfile`, construye la imagen y revisa sus capas:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Imágenes y capas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses imágenes y capas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: imágenes y capas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Imágenes y capas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve imágenes y capas en tu contexto?
+2. ¿Cómo sabrías que imágenes y capas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar imágenes y capas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    D1["FROM node:20"] --> L1["Capa 1: node:20 base"]
+    D2["RUN npm install"] --> L2["Capa 2: dependencias"]
+    D3["COPY . ."] --> L3["Capa 3: código app"]
+    D4["CMD node app.js"]
+    L1 --> L2 --> L3 --> IMG["Imagen (capas apiladas)"]
+    IMG -->|"docker run"| CNT["Contenedor (instancia en ejecución,\ncon su propio estado)"]
+```
+
 ```bash
 mkdir -p ejemplo-imagen/src && cd ejemplo-imagen
 printf '#!/bin/sh\necho "Hola desde la imagen ejemplo-imagen:1.0"\n' > src/saludo.sh
@@ -129,49 +219,77 @@ docker build -t ejemplo-imagen:1.0 .
 docker run --rm ejemplo-imagen:1.0
 docker history ejemplo-imagen:1.0
 ```
-Resultado esperado: `docker run` imprime `Hola desde la imagen ejemplo-imagen:1.0`. `docker history` muestra arriba una fila por instrucción (`CMD`, `COPY src/saludo.sh .`, `WORKDIR /app`) y debajo las capas de `ubuntu:24.04`. Ahora cambia solo el script (`echo 'echo "versión 2"' >> src/saludo.sh`) y construye `ejemplo-imagen:1.1`: en la salida de `docker build`, el paso `WORKDIR` aparece como `CACHED` y solo se repite `COPY`.
-#### Paso 5 · Práctica guiada
-Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Reduce capas y compara tamaños.
-#### Paso 7 · Cierre
-Entrega Dockerfile, salida, fallo y corrección; explica el resultado. Siguiente paso: registros. Errores comunes: copiar secretos y usar etiquetas ambiguas. Fuente oficial: https://docs.docker.com/build/building/best-practices/.
+
+</details>
 
 ### Tema 3: Registros de contenedores (Docker Hub) · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás publicar una imagen de forma segura. Prerrequisitos: Docker; verifica `docker --version`.
-#### Paso 2 · Contexto y caso real
-Un registro distribuye artefactos y controla quién puede descargarlos.
-#### Paso 3 · Teoría, modelo mental y analogía
-Un registry es una biblioteca con estanterías, etiquetas y permisos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** registro (registry), repositorio, etiqueta (tag), imagen pública vs privada.
+#### ► DE QUÉ TRATA
+Al finalizar podrás publicar una imagen de forma segura. Prerrequisitos: Docker; verifica docker --version.
 
-Un registro de contenedores es un servidor que almacena y distribuye imágenes Docker, de forma parecida a como un repositorio de Git almacena y distribuye código fuente. Docker Hub es el registro público más usado del mundo: cuando ejecutas `docker pull floci/floci:latest`, Docker contacta con Docker Hub, localiza el repositorio `floci/floci`, descarga la imagen etiquetada como `latest`, y la guarda localmente para que puedas usarla con `docker run`.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás publicar una imagen de forma segura.**
 
-Cada imagen en un registro vive dentro de un repositorio, identificado normalmente como `usuario-u-organización/nombre-imagen`, y cada repositorio puede tener múltiples versiones distinguidas por etiquetas (tags). La etiqueta `latest` es una convención —no una regla técnica— que casi todos los proyectos usan para señalar la versión más reciente estable, pero en proyectos serios es buena práctica fijar una versión explícita (como `floci/floci:2.3.0`) en vez de depender de `latest`, precisamente porque `latest` puede cambiar de contenido con el tiempo y romper algo que funcionaba antes sin previo aviso.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Además de Docker Hub, existen registros privados (para imágenes internas de una empresa que no deben ser públicas) y registros gestionados por proveedores de nube, como Amazon ECR, que vas a conocer en un módulo avanzado más adelante en este mismo track. El flujo de trabajo es siempre el mismo independientemente del registro: construyes una imagen localmente, la etiquetas con el nombre del registro de destino, y la subes (`push`) para que otras personas o sistemas puedan descargarla (`pull`).
+#### ► LA ANALOGÍA
+Piensa en registros de contenedores (docker hub) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Para este módulo, lo único que necesitas hacer es descargar (`pull`) imágenes ya publicadas —la de prueba `hello-world` y la de Floci—, sin necesidad de publicar nada tú mismo todavía. Publicar tus propias imágenes es algo que verás en el módulo avanzado de ECR/ECS, cuando empaquetes tu propia aplicación del proyecto final.
-
-**Analogía:** Docker Hub es como una tienda de aplicaciones (App Store o Play Store) pero para contenedores: buscas por nombre, ves las versiones disponibles (como las versiones de una app), y descargas (`pull`) la que necesitas. La diferencia es que cualquiera puede publicar sus propias "aplicaciones" (imágenes) sin pasar por un proceso de revisión tan estricto como el de esas tiendas.
-
-**¿Por qué es importante?** Sin un registro central, cada persona tendría que construir cada imagen desde cero en su propia máquina, incluyendo imágenes complejas como la de Floci, que empaqueta múltiples emuladores de servicios de nube. El registro es lo que hace posible que en el siguiente laboratorio simplemente ejecutes un comando de `pull` y tengas Floci funcionando en minutos, en vez de construirlo tú mismo desde su código fuente.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Cuando empaquetes tu propia API en el módulo de ECR/ECS, vas a repetir este mismo flujo (`build` → `tag` → `push`) pero contra un registro privado en vez de Docker Hub; fijar una versión explícita en vez de `latest` evita que un despliegue se rompa por un cambio silencioso en la imagen.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["Tu máquina\n(construyes)"] -->|"docker push"| B["Docker Hub\nfloci/floci:latest"]
     B -->|"docker pull"| C["Tu máquina\n(descargas)"]
 ```
 
-#### Paso 4 · Demostración guiada
-Desde una carpeta vacía, descarga una imagen de Docker Hub, consulta su digest y dale un nombre de tu propio repositorio:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Registros de contenedores (Docker Hub) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Registros de contenedores (Docker Hub) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses registros de contenedores (docker hub) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: registros de contenedores (docker hub) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Registros de contenedores (Docker Hub) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve registros de contenedores (docker hub) en tu contexto?
+2. ¿Cómo sabrías que registros de contenedores (docker hub) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar registros de contenedores (docker hub)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["Tu máquina\n(construyes)"] -->|"docker push"| B["Docker Hub\nfloci/floci:latest"]
+    B -->|"docker pull"| C["Tu máquina\n(descargas)"]
+```
+
 ```bash
 mkdir ejemplo-registry && cd ejemplo-registry
 docker pull ubuntu:24.04
@@ -179,39 +297,28 @@ docker image inspect ubuntu:24.04 --format '{{index .RepoDigests 0}}'
 docker tag ubuntu:24.04 miusuario/base-rutaflow:1.0
 docker images miusuario/base-rutaflow
 ```
-Resultado esperado: `inspect` imprime `ubuntu@sha256:` seguido de 64 caracteres hexadecimales; ese digest identifica el contenido exacto, mientras que la etiqueta `24.04` puede moverse a otra versión. `docker images` muestra `miusuario/base-rutaflow` con la etiqueta `1.0` y el mismo `IMAGE ID` que `ubuntu:24.04`: etiquetar no copia la imagen. Para publicarla necesitarías `docker login` y `docker push miusuario/base-rutaflow:1.0` con tu usuario real de Docker Hub. Anota el digest en `src/registry.md`.
-#### Paso 5 · Práctica guiada
-Pista: usa una etiqueta inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Documenta una etiqueta inmutable y una política de acceso.
-#### Paso 7 · Cierre
-Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: comandos. Errores comunes: usar latest en producción y dejar repositorios públicos. Fuente oficial: https://docs.docker.com/docker-hub/.
+
+</details>
 
 ### Tema 4: Comandos esenciales de Docker · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás operar contenedores desde cero. Prerrequisitos: Docker; verifica `docker --version`.
-#### Paso 2 · Contexto y caso real
-Operar incluye iniciar, inspeccionar, detener y diagnosticar.
-#### Paso 3 · Teoría, modelo mental y analogía
-Los comandos son controles de una flota: estado, arranque, parada y bitácora.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `pull`, `run`, `ps`, `stop`, `rm`, `images`, `exec`, `logs`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás operar contenedores desde cero. Prerrequisitos: Docker; verifica docker --version.
 
-Estos ocho comandos cubren el ciclo de vida completo de un contenedor y son, con diferencia, los que más vas a usar en todo el curso. `docker pull <imagen>` descarga una imagen desde un registro sin ejecutarla todavía. `docker run <imagen>` crea y arranca un contenedor nuevo a partir de una imagen (descargándola primero si no la tienes localmente); con la opción `-d` lo ejecuta en segundo plano (modo *detached*), y con `-p host:contenedor` mapea un puerto de tu máquina a un puerto dentro del contenedor, que es exactamente lo que vas a usar para exponer Floci en el puerto 4566.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás operar contenedores desde cero.**
 
-`docker ps` lista los contenedores que están actualmente en ejecución, mostrando su ID, la imagen de la que provienen, cuánto tiempo llevan corriendo, y los puertos mapeados; añadiendo `-a` muestra también los contenedores detenidos, no solo los activos. `docker stop <id>` detiene un contenedor en ejecución de forma ordenada, enviándole una señal que le da tiempo a cerrar limpiamente antes de forzarlo. `docker rm <id>` elimina un contenedor ya detenido (no se puede eliminar uno en ejecución sin forzarlo con `-f`); esto libera el nombre y el espacio que ocupaba, pero no borra la imagen de la que provenía.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`docker images` lista las imágenes que tienes descargadas localmente, con su repositorio, etiqueta, ID y tamaño en disco; es el comando análogo a `docker ps` pero para imágenes en vez de contenedores en ejecución. `docker exec -it <id> <comando>` ejecuta un comando dentro de un contenedor que ya está corriendo, sin necesidad de detenerlo; el uso más común es abrir una terminal interactiva dentro del contenedor con `docker exec -it <id> /bin/sh` o `/bin/bash`, muy útil para inspeccionar el estado interno de Floci si algo no funciona como esperas.
+#### ► LA ANALOGÍA
+Piensa en comandos esenciales de docker como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`docker logs <id>` muestra la salida estándar (y de error) que ha generado un contenedor desde que arrancó; con la opción `-f` sigue mostrando nuevas líneas en tiempo real, similar a `tail -f` sobre un archivo de log. Este comando es tu primera herramienta de diagnóstico cuando algo en Floci no responde como esperas: casi siempre el motivo está explicado en sus logs.
-
-**Analogía:** si piensas en un contenedor como un electrodoméstico, `docker pull` es comprarlo (llega a tu casa pero no está enchufado), `docker run` es enchufarlo y encenderlo, `docker ps` es mirar qué electrodomésticos están encendidos ahora mismo, `docker stop` es apagarlo con el botón (de forma ordenada), `docker rm` es sacarlo de la habitación una vez apagado, `docker exec` es abrir una trampilla de servicio para revisar su interior mientras sigue encendido, y `docker logs` es leer el panel de diagnóstico que muestra lo que ha estado haciendo.
-
-**¿Por qué es importante?** Estos ocho comandos son, con diferencia, la interacción diaria más común con Docker en cualquier trabajo real que use contenedores. Vas a usarlos constantemente a lo largo de todo el curso, empezando por el laboratorio de este mismo módulo, así que vale la pena que los practiques hasta que los escribas sin pensar.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     P["docker pull"] --> IMG["imagen en disco"]
@@ -224,10 +331,55 @@ flowchart TD
     STOP --> RM["docker rm\n(eliminarlo)"]
 ```
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Escribe un procedimiento de diagnóstico para el emulador con listado, logs e inspección de puertos. Provoca un contenedor detenido y demuestra cómo identificarlo antes de recrear recursos cloud.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Comandos esenciales de Docker se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada
-Recorre el ciclo de vida completo de un contenedor:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Comandos esenciales de Docker | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses comandos esenciales de docker por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: comandos esenciales de docker funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Comandos esenciales de Docker existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve comandos esenciales de docker en tu contexto?
+2. ¿Cómo sabrías que comandos esenciales de docker no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar comandos esenciales de docker?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    P["docker pull"] --> IMG["imagen en disco"]
+    IMG --> R["docker run"]
+    R --> C["contenedor corriendo"]
+    C --> PS["docker ps\n(ver si corre)"]
+    C --> LOGS["docker logs\n(ver su salida)"]
+    C --> EXEC["docker exec\n(entrar dentro)"]
+    C --> STOP["docker stop\n(apagarlo)"]
+    STOP --> RM["docker rm\n(eliminarlo)"]
+```
+
 ```bash
 mkdir ejemplo-comandos && cd ejemplo-comandos
 docker run -d --name rutaflow-demo ubuntu:24.04 sh -c 'echo "servicio iniciado"; sleep 300'
@@ -238,41 +390,28 @@ docker stop rutaflow-demo
 docker ps -a --filter name=rutaflow-demo
 docker rm rutaflow-demo
 ```
-Resultado esperado: `docker ps` muestra `rutaflow-demo` con estado `Up`; `docker logs` imprime `servicio iniciado`; `exec` ejecuta un comando dentro del contenedor que sigue corriendo. `docker stop` tarda unos 10 segundos y después `docker ps -a` muestra `Exited (137)`: `sh` no atendió la señal de parada y Docker lo terminó a la fuerza al vencer el plazo. Lee los logs antes del `rm`; después del `rm`, `docker logs rutaflow-demo` responde `Error response from daemon: No such container: rutaflow-demo`. Guarda los comandos y sus salidas en `src/commands.md`.
-#### Paso 5 · Práctica guiada
-Pista: consulta un contenedor inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Ejecuta un servicio, inspecciona logs y documenta su ciclo.
-#### Paso 7 · Cierre
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: Compose. Errores comunes: borrar antes de leer logs y exponer puertos sin necesidad. Fuente oficial: https://docs.docker.com/engine/reference/commandline/cli/.
+
+</details>
 
 ### Tema 5: Docker Compose — servicios, redes y volúmenes · Básico · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás coordinar servicios desde cero. Prerrequisitos: Docker Compose; verifica `docker compose version`.
-#### Paso 2 · Contexto y caso real
-Una aplicación necesita API, base de datos y red reproducible.
-#### Paso 3 · Teoría, modelo mental y analogía
-Compose es el plano de un edificio: servicios, conexiones y almacenamiento.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Conceptos clave:** `docker-compose.yml`, servicio, red por defecto, volumen, `docker compose up/down`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás coordinar servicios desde cero. Prerrequisitos: Docker Compose; verifica docker compose version.
 
-Docker Compose resuelve un problema que aparece en cuanto necesitas más de un contenedor trabajando juntos: en vez de escribir un comando `docker run` largo y repetirlo cada vez (con todos sus puertos, variables de entorno y volúmenes), describes toda la configuración una sola vez en un archivo de texto llamado `docker-compose.yml`, y Docker Compose se encarga de levantar (o destruir) todos los contenedores descritos con un solo comando.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás coordinar servicios desde cero.**
 
-Cada bloque bajo la clave `services` en ese archivo describe un servicio: qué imagen usa, qué puertos expone, qué variables de entorno necesita, y qué volúmenes monta. Cuando ejecutas `docker compose up`, Compose crea automáticamente una red virtual compartida entre todos los servicios definidos en ese archivo, de forma que cada servicio puede llamar a los demás usando su nombre de servicio como si fuera un nombre de host (por ejemplo, un servicio `backend` puede conectarse a un servicio `db` simplemente usando `db` como dirección, sin necesidad de conocer una IP).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Los volúmenes resuelven el problema de la persistencia: por defecto, todo lo que un contenedor escribe en su sistema de archivos desaparece cuando el contenedor se elimina, porque esos datos viven dentro de la capa superior (efímera) del contenedor. Un volumen monta un directorio del host (o un volumen gestionado por Docker) dentro del contenedor, de forma que los datos escritos ahí sobreviven aunque el contenedor se destruya y se vuelva a crear. Esto es relevante para Floci: si quieres que el estado de tus buckets S3 o tus tablas DynamoDB sobreviva a un reinicio del contenedor, necesitas montar un volumen para la carpeta donde Floci guarda su estado.
+#### ► LA ANALOGÍA
+Piensa en docker compose — servicios, redes y volúmenes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`docker compose up -d` levanta todos los servicios definidos en segundo plano; `docker compose down` los detiene y elimina (pero no borra los volúmenes con nombre, a menos que añadas la opción `-v`); `docker compose ps` lista el estado de los servicios definidos en el archivo actual; y `docker compose logs -f` muestra los logs combinados de todos los servicios en tiempo real. Este conjunto de comandos reemplaza, con mucha más comodidad, a levantar cada contenedor manualmente con `docker run`.
-
-**Analogía:** si `docker run` es encender un electrodoméstico a la vez, Docker Compose es el interruptor general de una casa inteligente: con un solo comando enciendes (o apagas) todos los dispositivos configurados, cada uno con su propia configuración ya guardada, y todos conectados entre sí por la misma red doméstica sin que tengas que configurar esa conexión cada vez.
-
-**¿Por qué es importante?** En el laboratorio de este módulo vas a usar `floci-cli` como flujo principal, pero Docker Compose sigue siendo la herramienta correcta en cuanto necesites correr Floci junto a otros servicios de tu propia aplicación —como probablemente hagas en el proyecto final del Módulo 9— o correr AWS, Azure y GCP local a la vez. Escribir un `docker-compose.yml` correcto es una habilidad que se usa a diario en el desarrollo de software moderno, con o sin Floci de por medio.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Define un `docker-compose.yml` que levante Floci junto a tu propia API (el proyecto final del Módulo 9) con un volumen nombrado para persistir el estado de DynamoDB/S3 entre reinicios, en vez de perderlo cada vez que destruyas el contenedor.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph YML["docker-compose.yml"]
@@ -286,12 +425,56 @@ flowchart LR
     NET --> CNT["Contenedor: floci\nPuerto 4566 expuesto\nVolumen ./data ↔ /state"]
 ```
 
----
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Docker Compose — servicios, redes y volúmenes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Límites y decisión de uso:** Compose sirve para reproducir varios servicios en un host, pero no garantiza alta disponibilidad entre máquinas. Que un contenedor haya arrancado tampoco implica que su dependencia esté lista: combina healthchecks con recuperación en la aplicación.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Docker Compose — servicios, redes y volúmenes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
-Crea `ejemplo-compose/docker-compose.yml` con dos servicios que comparten un volumen con nombre:
+#### ► CUÁNDO NO USAR ESTO
+No uses docker compose — servicios, redes y volúmenes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: docker compose — servicios, redes y volúmenes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Docker Compose — servicios, redes y volúmenes existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve docker compose — servicios, redes y volúmenes en tu contexto?
+2. ¿Cómo sabrías que docker compose — servicios, redes y volúmenes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar docker compose — servicios, redes y volúmenes?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph YML["docker-compose.yml"]
+        Y1["services:"]
+        Y2["floci:"]
+        Y3["image: floci/floci:latest"]
+        Y4["ports: 4566 to 4566"]
+        Y5["persistent volume: ./data to /state"]
+    end
+    YML -->|"docker compose up"| NET["Red compartida compose_default"]
+    NET --> CNT["Contenedor: floci\nPuerto 4566 expuesto\nVolumen ./data ↔ /state"]
+```
+
 ```yaml
 services:
   escritor:
@@ -311,7 +494,7 @@ services:
 volumes:
   datos-entregas:
 ```
-Desde `ejemplo-compose` ejecuta:
+
 ```bash
 docker compose run --rm lector
 docker compose run --rm lector
@@ -320,52 +503,200 @@ docker compose run --rm lector
 docker compose down -v
 docker compose run --rm lector
 ```
-Resultado esperado: los cuatro `run` imprimen `1`, `2`, `3` y `1`. Cada `run` arranca antes al `escritor` por `depends_on`, que añade una línea al archivo. `docker compose down` elimina contenedores y red, pero conserva el volumen, por eso el conteo sigue en `3`; `down -v` también borra el volumen y el conteo vuelve a `1`.
-#### Paso 5 · Práctica guiada
-Pista: usa un volumen inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Añade red, volumen y healthcheck.
-#### Paso 7 · Cierre
-Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: servicios cloud. Errores comunes: datos efímeros, puertos duplicados y dependencias sin healthcheck. Fuente oficial: https://docs.docker.com/compose/.
 
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** ejecutar los comandos esenciales de Docker sobre una imagen de prueba, instalar `floci-cli` —la herramienta oficial recomendada para gestionar Floci— y levantarlo por primera vez con la AWS CLI ya configurada para hablar con él.
-
-**Requisitos previos:** Docker instalado y verificado (Módulo 0), AWS CLI instalada y verificada (Módulo 0).
+</details>
 
 ### Laboratorio 1.1 — Comandos esenciales con una imagen de prueba
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Descargar imagen de prueba | `docker pull hello-world` | Descarga la imagen sin ejecutarla todavía | Líneas de descarga terminando en `Status: Downloaded newer image for hello-world:latest` |
-| 2 | Ejecutarla | `docker run hello-world` | Crea y arranca un contenedor a partir de esa imagen | Texto que empieza con `Hello from Docker!` |
-| 3 | Ver contenedores detenidos | `docker ps -a` | El contenedor de `hello-world` termina su trabajo y se detiene solo; `-a` lo muestra aunque ya no esté corriendo | Una fila con `hello-world` y estado `Exited (0)` |
-| 4 | Ver imágenes descargadas | `docker images` | Lista las imágenes locales, incluyendo `hello-world` | Una fila `hello-world latest ...` |
-| 5 | Eliminar el contenedor detenido | `docker rm <id-del-contenedor>` (el ID sale de `docker ps -a`) | Libera el contenedor detenido; la imagen sigue en disco | No hay salida (o se imprime el ID eliminado) |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 1.1 — comandos esenciales con una imagen de prueba con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 1.1 — comandos esenciales con una imagen de prueba te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 1.1 — comandos esenciales con una imagen de prueba como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 1.1 — comandos esenciales con una imagen de prueba resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 1.1 — Comandos esenciales con una imagen de prueba se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 1.1 — Comandos esenciales con una imagen de prueba | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 1.1 — comandos esenciales con una imagen de prueba por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 1.1 — comandos esenciales con una imagen de prueba funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 1.1 — Comandos esenciales con una imagen de prueba existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 1.1 — comandos esenciales con una imagen de prueba en tu contexto?
+2. ¿Cómo sabrías que laboratorio 1.1 — comandos esenciales con una imagen de prueba no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 1.1 — comandos esenciales con una imagen de prueba?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 1.1 — comandos esenciales con una imagen de prueba.
+
+</details>
 
 ### Laboratorio 1.2 — Instalar floci-cli y levantar Floci
 
-A partir de aquí, este curso usa `floci-cli` —la CLI oficial del proyecto— como flujo principal para levantar, verificar y detener Floci. Gestiona el contenedor por ti (incluyendo el montaje del socket de Docker) y expone comandos memorables en vez de flags largos de `docker run`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Instalar floci-cli (macOS/Linux) | `curl -fsSL https://floci.io/install.sh \| sh` | Descarga e instala el binario nativo de la CLI; en Windows usa `iwr https://floci.io/install.ps1 \| iex` en PowerShell, o `brew install floci-io/floci/floci` con Homebrew | Mensaje `Floci CLI ... installed to ...` |
-| 2 | Levantar Floci (AWS) | `floci start` | Descarga la imagen si hace falta, arranca el contenedor y espera a que esté listo — sin que tengas que escribir `-p 4566:4566` ni montar el socket de Docker a mano | Un mensaje confirmando que Floci está corriendo en el puerto 4566 |
-| 3 | Diagnosticar el entorno | `floci doctor` | Verifica Docker, el socket, la conectividad y la versión de la imagen en un solo comando | Una lista de chequeos, todos en verde/OK |
-| 4 | Cargar las variables de entorno de AWS | `eval $(floci env)` | Exporta `AWS_ENDPOINT_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_DEFAULT_REGION` en tu sesión actual, apuntando a Floci — a partir de aquí, el resto del curso asume que ejecutaste este paso, así que los comandos de `aws` ya no necesitan repetir `--endpoint-url` | Sin salida visible (las variables quedan exportadas en tu shell) |
-| 5 | Confirmar el estado | `floci status` | Detecta automáticamente el puerto y consulta la salud del servidor | Estado `running` con el detalle de servicios habilitados |
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 1.2 — instalar floci-cli y levantar floci con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 1.2 — instalar floci-cli y levantar floci te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 1.2 — instalar floci-cli y levantar floci como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 1.2 — instalar floci-cli y levantar floci resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 1.2 — Instalar floci-cli y levantar Floci se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 1.2 — Instalar floci-cli y levantar Floci | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 1.2 — instalar floci-cli y levantar floci por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 1.2 — instalar floci-cli y levantar floci funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 1.2 — Instalar floci-cli y levantar Floci existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 1.2 — instalar floci-cli y levantar floci en tu contexto?
+2. ¿Cómo sabrías que laboratorio 1.2 — instalar floci-cli y levantar floci no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 1.2 — instalar floci-cli y levantar floci?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 1.2 — instalar floci-cli y levantar floci.
+
+</details>
 
 ### Laboratorio 1.3 — Probar la AWS CLI contra Floci
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Listar buckets S3 (debería estar vacío) | `aws s3 ls` | Con `eval $(floci env)` ya cargado, la CLI habla con Floci sin necesidad de ningún flag adicional | Ninguna línea de salida (todavía no hay buckets) |
-| 2 | Ver los logs de arranque | `floci logs --tail 50` | Floci imprime en sus logs qué servicios ha inicializado correctamente | Líneas indicando que S3, SQS, DynamoDB, Lambda, API Gateway e IAM están listos |
-| 3 | Detener Floci al terminar | `floci stop` | Detiene el contenedor de forma ordenada; usa `floci stop --remove` si además quieres eliminarlo | Confirmación de que el contenedor se detuvo |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Alternativa: Docker Compose.** Si prefieres orquestar Floci junto a otros servicios (o necesitas correr AWS, Azure y GCP local a la vez, como en los Módulos 8 y 31), usa el `docker-compose.yml` de la raíz del proyecto. Define cuatro servicios: `aws-local` (puerto 4566), `azure-local` (4577), `gcp-local` (4588) y `stackport` (8080). Este es su servicio AWS:
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 1.3 — probar la aws cli contra floci con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 1.3 — probar la aws cli contra floci te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 1.3 — probar la aws cli contra floci como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 1.3 — probar la aws cli contra floci resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 1.3 — Probar la AWS CLI contra Floci se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 1.3 — Probar la AWS CLI contra Floci | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 1.3 — probar la aws cli contra floci por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 1.3 — probar la aws cli contra floci funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 1.3 — Probar la AWS CLI contra Floci existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 1.3 — probar la aws cli contra floci en tu contexto?
+2. ¿Cómo sabrías que laboratorio 1.3 — probar la aws cli contra floci no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 1.3 — probar la aws cli contra floci?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```yaml
 services:
   aws-local:
@@ -375,8 +706,6 @@ services:
       - "${AWS_LOCAL_PORT:-4566}:4566"
 ```
 
-Antes de usar el Compose, detén el contenedor de `floci start` con `floci stop`, porque ambos publican el puerto 4566. Este Compose no monta el socket de Docker (`/var/run/docker.sock`), y Floci necesita Docker para los servicios que lanzan contenedores (Lambda, ECS, CodeBuild, RDS, ElastiCache y EC2); para esos módulos usa `floci start`.
-
 ```bash
 docker compose up -d aws-local
 # equivalente manual a `eval $(floci env)`:
@@ -384,17 +713,72 @@ export AWS_ENDPOINT_URL=http://localhost:4566
 export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 ```
 
+</details>
+
 ### Laboratorio 1.4 — Usar StackPort y Floci UI
 
-La academia ya incluye **StackPort** en su `docker-compose.yml`. Levántalo junto con Floci y abre `http://localhost:8080`:
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 1.4 — usar stackport y floci ui con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 1.4 — usar stackport y floci ui te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 1.4 — usar stackport y floci ui como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 1.4 — usar stackport y floci ui resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 1.4 — Usar StackPort y Floci UI se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 1.4 — Usar StackPort y Floci UI | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 1.4 — usar stackport y floci ui por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 1.4 — usar stackport y floci ui funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 1.4 — Usar StackPort y Floci UI existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 1.4 — usar stackport y floci ui en tu contexto?
+2. ¿Cómo sabrías que laboratorio 1.4 — usar stackport y floci ui no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 1.4 — usar stackport y floci ui?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 docker compose up -d aws-local stackport
 ```
-
-StackPort es útil como explorador AWS ligero y arranca en la misma red del laboratorio. También puedes usar Floci UI durante el curso; no son alternativas excluyentes.
-
-Floci UI es un proyecto oficial separado porque incluye su propio frontend, API proxy y configuración de runtimes. No intentes iniciarlo con `docker run floci/floci-ui:latest`: clona el repositorio y usa su Docker Compose, que mantiene coordinados todos sus servicios.
 
 ```bash
 git clone https://github.com/floci-io/floci-ui.git
@@ -403,27 +787,8 @@ docker compose up -d
 docker compose ps
 ```
 
-**Evita el conflicto del puerto 4566:** el Compose de Floci UI incluye por defecto su propio runtime Floci, igual que la academia. Para probar su stack completo, detén primero el Compose de la academia con `docker compose down` desde la carpeta de The_Imperial_Book. Para mantener StackPort y Floci UI abiertos simultáneamente y viendo exactamente los mismos recursos, configura la API de Floci UI con `FLOCI_ENDPOINT` apuntando al runtime ya existente y no levantes el segundo servicio Floci; sigue el Compose y `.env.example` de la versión de Floci UI que hayas clonado.
-
-Abre `http://localhost:4500`. Debes ver **Console Home**, el estado del runtime AWS y el acceso a **Cloud Explorer**. Para levantar también runtimes Azure y GCP usa `docker compose --profile multicloud up -d`. Los puertos predeterminados son UI `4500`, API `4501` y Floci AWS `4566`.
-
-Realiza una primera comprobación de extremo a extremo:
-
 ```bash
 aws --endpoint-url=http://localhost:4566 s3 mb s3://mi-primer-bucket-visual
 ```
 
-Repite la comprobación visual primero en StackPort y después en Floci UI, o en ambas simultáneamente si las configuraste contra el mismo runtime. Localiza `mi-primer-bucket-visual`, confirma proveedor, región y tipo, elimínalo desde CLI y comprueba que desaparece. Así aprendes las fortalezas de ambas interfaces sin confundir dos runtimes independientes.
-
-**Mapa de disponibilidad actual:** Storage es la superficie multi-cloud más completa; AWS Compute, Networking, EKS y Serverless tienen flujos reales; Secrets Manager conserva una página AWS dedicada. Queue (SQS) e IAM, que en versiones anteriores de Floci UI aparecían como placeholders, ya tienen páginas conectadas desde la versión 0.4.0 en adelante. Verificá siempre la versión instalada (`floci-ui --version` o el changelog en github.com/floci-io/floci-ui/releases): si corrés una versión anterior, esas secciones sí pueden seguir mostrándose como placeholder. Cuando una operación no esté conectada en tu versión, usa CLI/SDK como fuente de verdad.
-
-**Verificación:** el laboratorio se considera exitoso si `floci status` reporta el servidor corriendo, `aws s3 ls` funciona con el endpoint local y el bucket creado por CLI aparece al menos en una consola visual configurada —idealmente en StackPort y Floci UI— antes de desaparecer tras su eliminación.
-
-**Errores comunes y soluciones**
-
-- **`floci start` falla con un error de Docker.** Docker Desktop debe estar abierto y corriendo; `floci doctor` te dice exactamente qué chequeo falló (Docker no instalado, socket no accesible, daemon no iniciado).
-- **`aws s3 ls` responde `Unable to locate credentials` o intenta conectar a AWS real.** Se te olvidó ejecutar `eval $(floci env)` en la sesión actual de terminal, o abriste una pestaña nueva donde esas variables no están exportadas — las variables de entorno no persisten entre sesiones de shell.
-- **Puerto ya en uso al ejecutar `floci start`.** Otro proceso (quizá una instancia previa de Floci o de LocalStack) ya usa el puerto 4566. Usa `floci start --port 4599` para un puerto alternativo, o detén el proceso anterior con `floci stop`.
-- **`floci doctor` reporta el socket de Docker inaccesible en Podman o un daemon remoto.** Exporta `DOCKER_HOST` apuntando a tu socket o daemon (`unix:///run/user/1000/podman/podman.sock` para Podman rootless, por ejemplo); `floci start` lo detecta automáticamente sin flags adicionales.
-
----
+</details>

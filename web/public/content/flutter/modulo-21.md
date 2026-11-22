@@ -6,25 +6,72 @@ Vas a ofrecer un plan premium para RutaFlow, leer productos de las tiendas, proc
 
 ---
 
+
 ### Tema 1: catálogo y flujo con `in_app_purchase` · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar mostrarás productos del store y procesarás las actualizaciones con un listener activo. **Prerrequisitos:** futures, streams y configuración de aplicaciones Android/iOS. Crea un proyecto nuevo con `flutter create rutaflow_iap_lab`; agrega `in_app_purchase` con `flutter pub add in_app_purchase`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_1` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_1` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar mostrarás productos del store y procesarás las actualizaciones con un listener activo. Prerrequisitos: futures, streams y configuración de aplicaciones Android/iOS. Crea un proyecto nuevo con flutter create rutaflow_iap_lab; agrega in_app_purchase con flutter pub add…
 
-#### Paso 2 · Contexto y caso real
-La pantalla RutaFlow ofrece “RutaFlow Plus mensual” y “Quitar anuncios”. Los IDs de producto son contratos que se registran por separado en Play Console y App Store Connect. Si el catálogo no está listo o un ID no coincide, la tienda no devolverá ese producto.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar mostrarás productos del store y procesarás las actualizaciones con un listener activo.**
 
-#### ¿Por qué es importante?
-El equipo necesita distinguir catálogo vacío, compra cancelada y pago aprobado. Si todos se muestran como error o éxito, puede perderse una compra o activarse contenido que no fue pagado.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La tienda es el registro del producto y el procesador de transacciones; Flutter pide productos y escucha cambios. No asumas que `buy...()` significa “ya pagó”. La compra llega por `purchaseStream`, se valida y, si corresponde, se confirma con `completePurchase`.
+#### ► LA ANALOGÍA
+Piensa en catálogo y flujo con `in_app_purchase` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/purchases/store.dart` y empieza a escuchar antes de solicitar productos:
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  App->>Store: consulta IDs
+  Store-->>App: precio y producto
+  App->>Store: inicia compra
+  Store-->>App: PurchaseDetails
+  App->>Backend: valida antes de conceder
+```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| catálogo y flujo con `in_app_purchase` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar catálogo y flujo con `in_app_purchase` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses catálogo y flujo con `in_app_purchase` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: catálogo y flujo con `in_app_purchase` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- catálogo y flujo con `in_app_purchase` existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve catálogo y flujo con `in_app_purchase` en tu contexto?
+2. ¿Cómo sabrías que catálogo y flujo con `in_app_purchase` no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar catálogo y flujo con `in_app_purchase`?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'dart:async';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -58,33 +105,10 @@ class Store {
 }
 ```
 
-Registra `iap.plus.monthly` y `iap.remove_ads` en las tiendas de prueba. Ejecuta `flutter run` en dispositivo/emulador con store configurado; observa título y precio localizados devueltos por `ProductDetails`.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** `purchaseStream` puede emitir después de cerrar el diálogo; compara cada `PurchaseStatus` y no dependas del resultado inmediato de `buyNonConsumable`.
-Agrega un botón de compra no consumible con `buyNonConsumable` y revisa `PurchaseStatus` en el stream. **Pista:** `pending` debe mostrar espera, `canceled` volver a la pantalla y `error` mostrar un mensaje recuperable.
-
-#### Paso 6 · Práctica independiente
-Añade un consumible de créditos usando la API correspondiente; no lo modeles como una suscripción. Maneja stream errors y cierra la suscripción en `dispose`.
-
-
-**Fallo deliberado:** Desregistra un ID de producto y observa `notFoundIDs` antes de corregirlo. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
-
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega `store.dart`, IDs de sandbox y captura del producto leído; el siguiente tema configura suscripciones propias de Android.
-
-**Prueba de diagnóstico.** Registra deliberadamente `iap.plus.montly` en el código con una letra faltante; la consulta debe mostrarlo en `notFoundIDs`.
-
 ```bash
 flutter analyze
 flutter test
 ```
-
-**Resultado esperado:** un producto encontrado incluye nombre/precio de la tienda; el ID mal escrito no aparece. **Errores comunes:** empezar a escuchar después de iniciar compra y no completar transacción procesada. Diagrama: `catálogo -> purchaseStream -> validación -> entitlement -> completePurchase`. Fuentes oficiales: [plugin Flutter](https://pub.dev/packages/in_app_purchase), [in-app purchase Apple/Google](https://docs.flutter.dev/platform-integration/ios/apple-frameworks).
-
-**Proyecto propio:** `rutaflow_iap_lab`. **Cuándo llamar éxito:** cuando la transacción llegó y se verificó; no al cerrar la hoja de pago. Evidencia de aprendizaje: entrega el log con estados pending, canceled y purchased usando sandbox.
 
 ```mermaid
 sequenceDiagram
@@ -95,53 +119,75 @@ sequenceDiagram
   App->>Backend: valida antes de conceder
 ```
 
----
+</details>
 
 ### Tema 2: suscripciones Android, planes base y cambios · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar separarás una suscripción de su plan base y comprobarás los estados que afectan al acceso. **Prerrequisitos:** Tema 1, catálogo Play y conceptos de backend. Crea un proyecto nuevo con `flutter create play_subscription_lab` y el archivo `docs/play-subscription-catalog.md`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_2` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_2` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar separarás una suscripción de su plan base y comprobarás los estados que afectan al acceso. Prerrequisitos: Tema 1, catálogo Play y conceptos de backend. Crea un proyecto nuevo con flutter create play_subscription_lab y el archivo docs/play-subscription-catalog.md.
 
-#### Paso 2 · Contexto y caso real
-RutaFlow vende un plan mensual y uno anual con renovación automática. Google Play organiza una suscripción en base plans y ofertas; el usuario puede estar en prueba, activo, en grace period, pausado, cancelado al final o vencido. “Canceló” no siempre significa que el acceso terminó hoy.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar separarás una suscripción de su plan base y comprobarás los estados que afectan al acceso.**
 
-#### ¿Por qué es importante?
-Mostrar acceso revocado antes del vencimiento produce una mala experiencia; mantenerlo después de expirar deja el contenido sin entitlement. La app consulta la fuente de estado de la compra y aplica fechas/estados de Play.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El product ID identifica la suscripción. El base plan define precio/período y auto-renovación; offer puede definir prueba o precio introductorio. El token de compra identifica la transacción. Cambios entre planes usan el dato de suscripción anterior y el modo de reemplazo que corresponda.
+#### ► LA ANALOGÍA
+Piensa en suscripciones android, planes base y cambios como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-En Play Console de prueba crea `rutaflow_plus` con base plans mensual y anual y publica una versión en track interno. En `docs/play-subscription-catalog.md` anota IDs, región, período y política de reemplazo. Desde Flutter carga `ProductDetails` y revisa `productId`, precio localizado y datos específicos de Google Play sin fijar un precio en el código.
+#### ► CÓMO FUNCIONA
+```mermaid
+stateDiagram-v2
+  Trial --> Active
+  Active --> Grace: pago pendiente
+  Active --> CancelAtPeriodEnd: cancela renovación
+  CancelAtPeriodEnd --> Expired: termina período pagado
+```
 
-Cuando el stream informa compra aprobada, envía `purchaseToken` y `productId` al backend autenticado. El backend consulta Google Play Developer API; solo después decide si activa premium y registra la fecha de expiración.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| suscripciones Android, planes base y cambios se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 5 · Práctica guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar suscripciones Android, planes base y cambios | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Pista:** representa por separado renovación automática y vigencia actual; una cancelación puede dejar días de acceso pendientes.
-Usa un usuario tester de licencia y verifica estados de compra, renovación, cancelación y vencimiento en sandbox. **Pista:** distinguir “auto-renew off” de “expired”; conserva entitlement hasta la fecha de vigencia indicada por Google.
+#### ► CUÁNDO NO USAR ESTO
+No uses suscripciones android, planes base y cambios por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 6 · Práctica independiente
-Prueba upgrade mensual→anual, reintento de pago y grace period. Documenta qué pantalla ve el usuario y cuál es el sistema responsable de cada estado.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: suscripciones android, planes base y cambios funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- suscripciones Android, planes base y cambios existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve suscripciones android, planes base y cambios en tu contexto?
+2. ¿Cómo sabrías que suscripciones android, planes base y cambios no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar suscripciones android, planes base y cambios?
 
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega `play-subscription-catalog.md`, respuesta backend de verificación y un registro de los estados probados. El siguiente tema modela el catálogo Apple.
+</details>
 
-**Prueba de diagnóstico.** Configura deliberadamente un plan base con período equivocado; compara precio mostrado y duración recibida del backend antes de habilitar compra.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código y verificación
 ```bash
 flutter test test/features/purchases/play_entitlement_test.dart
 ```
-
-**Resultado esperado:** acceso continúa hasta el vencimiento validado, incluso si se canceló la renovación. **Errores comunes:** confiar en estado local, reconocer una compra sin verificación o tratar todos los cambios como compra nueva. Diagrama: `Product -> base plan -> offer -> purchaseToken -> estado backend`. Fuentes oficiales: [Play Billing integration](https://developer.android.com/google/play/billing/integrate), [verificación y prevención de fraude](https://developer.android.com/google/play/billing/security).
-
-**Proyecto propio:** `play_subscription_lab`. **Cuándo usar una oferta:** cuando el producto y sus términos están explicados en la tienda y la elegibilidad se comprueba del lado correspondiente. Evidencia: entrega estado activo, cancelado aún vigente y expirado.
 
 ```mermaid
 stateDiagram-v2
@@ -151,53 +197,75 @@ stateDiagram-v2
   CancelAtPeriodEnd --> Expired: termina período pagado
 ```
 
----
+</details>
 
 ### Tema 3: suscripciones iOS con StoreKit · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar organizarás planes de iOS y mostrarás el estado de la suscripción sin confundirlo con la configuración Android. **Prerrequisitos:** Tema 1, App Store Connect y Xcode/macOS. En un proyecto nuevo `flutter create ios_subscription_lab`, crea `docs/app-store-subscriptions.md`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_3` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_3` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar organizarás planes de iOS y mostrarás el estado de la suscripción sin confundirlo con la configuración Android. Prerrequisitos: Tema 1, App Store Connect y Xcode/macOS. En un proyecto nuevo flutter create ios_subscription_lab, crea docs/app-store-subscriptions.md.
 
-#### Paso 2 · Contexto y caso real
-Apple agrupa planes relacionados en una subscription group. Una persona solo puede tener un producto activo de ese grupo a la vez; los niveles ordenados permiten cambios y prorrateo del plan. StoreKit puede enviar transacciones renovadas o actualizadas cuando la app ya estaba abierta.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar organizarás planes de iOS y mostrarás el estado de la suscripción sin confundirlo con la configuración Android.**
 
-#### ¿Por qué es importante?
-Un plan visible con duración o precio incorrectos incumple expectativas y puede causar rechazo de revisión. La configuración de App Store Connect, las cadenas de producto y la presentación en Flutter tienen que coincidir.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El subscription group agrupa opciones que compiten entre sí. Product ID es una clave permanente; el nombre y precio dependen de la tienda/región. StoreKit 2 usa transacciones firmadas y estado actual; el plugin `in_app_purchase` las presenta en una API común y ofrece detalles específicos cuando hacen falta.
+#### ► LA ANALOGÍA
+Piensa en suscripciones ios con storekit como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-En App Store Connect crea el grupo `RutaFlow Plus` con mensual y anual; prepara localizaciones, descripción, condiciones y screenshot de revisión. En Flutter consulta ambos IDs con `queryProductDetails`, muestra `ProductDetails.price` y llama `buyNonConsumable` para el plan seleccionado. Conserva los IDs como constantes no sensibles en `lib/features/purchases/product_ids.dart`.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Group[Subscription group] --> Monthly[Plan mensual]
+  Group --> Annual[Plan anual]
+  Monthly --> StoreKit[StoreKit y transacción]
+  Annual --> StoreKit
+```
 
-Prueba en un dispositivo con StoreKit sandbox y observa el stream para compra, renovación y cancelación. El acceso persistente se deriva de entitlement vigente, no de que el botón haya regresado sin excepción.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| suscripciones iOS con StoreKit se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 5 · Práctica guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar suscripciones iOS con StoreKit | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Pista:** mensual y anual del mismo nivel suelen pertenecer al mismo grupo de suscripción; revisa el estado de la transacción en sandbox.
-Prueba cambio entre niveles del mismo grupo, período de prueba y vencimiento acelerado de sandbox. **Pista:** verifica disponibilidad por storefront; un producto no disponible no es un precio de cero.
+#### ► CUÁNDO NO USAR ESTO
+No uses suscripciones ios con storekit por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 6 · Práctica independiente
-Revisa texto de precio, período, renovación automática, condiciones y cómo cancelar desde ajustes. Documenta qué datos Apple proporciona en cada actualización y cuáles se consultan en backend.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: suscripciones ios con storekit funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- suscripciones iOS con StoreKit existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve suscripciones ios con storekit en tu contexto?
+2. ¿Cómo sabrías que suscripciones ios con storekit no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar suscripciones ios con storekit?
 
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega `app-store-subscriptions.md`, capturas del catálogo sandbox y estados procesados. El siguiente tema implementa restauración accesible desde cualquier dispositivo.
+</details>
 
-**Prueba de diagnóstico.** Provoca deliberadamente un error de catálogo cambiando el Product ID una letra; verifica que `notFoundIDs` lo identifique y no se muestre un plan falso.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código y verificación
 ```bash
 flutter test test/features/purchases/product_catalog_test.dart
 ```
-
-**Resultado esperado:** mensual/anual muestran importe localizado y grupo; sandbox publica la transacción en `purchaseStream`. **Errores comunes:** reutilizar ID de Android y ocultar los términos de renovación. Diagrama: `App Store Connect -> grupo -> producto -> StoreKit -> stream`. Fuentes oficiales: [StoreKit para compras](https://developer.apple.com/documentation/storekit/in-app-purchase), [gestión de compras](https://developer.apple.com/in-app-purchase/).
-
-**Proyecto propio:** `ios_subscription_lab`. **Cuándo crear grupo nuevo:** cuando los productos no sean niveles alternativos del mismo servicio. Evidencia: entrega los dos IDs y recorrido sandbox en iOS.
 
 ```mermaid
 flowchart LR
@@ -207,53 +275,75 @@ flowchart LR
   Annual --> StoreKit
 ```
 
----
+</details>
 
 ### Tema 4: pruebas de IAP en sandbox · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar ejecutarás escenarios de compra sin cobrar a una cuenta de producción. **Prerrequisitos:** productos creados, app id correcto y listener. Crea `docs/iap-test-matrix.md` con un proyecto nuevo `flutter create iap_test_lab`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_5` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_5` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar ejecutarás escenarios de compra sin cobrar a una cuenta de producción. Prerrequisitos: productos creados, app id correcto y listener. Crea docs/iap-test-matrix.md con un proyecto nuevo flutter create iap_test_lab.
 
-#### Paso 2 · Contexto y caso real
-La compra puede completarse, cancelarse, quedar pendiente por aprobación familiar, fallar o reembolsarse. Probar solo el estado de éxito deja rutas que usuarios reales sí recorren.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar ejecutarás escenarios de compra sin cobrar a una cuenta de producción.**
 
-#### ¿Por qué es importante?
-Un flujo de pago que duplica un crédito o se cierra mientras está pendiente afecta dinero y confianza. Sandbox/licencia permite comprobar estados antes de operar en producción.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un test unitario usa un fake de interfaz de tienda para las reglas; sandbox/track interno conecta al proveedor y verifica producto, permisos y callback reales. Son niveles de evidencia distintos. No se debe probar clickeando anuncios o compras reales desde una cuenta de usuario.
+#### ► LA ANALOGÍA
+Piensa en pruebas de iap en sandbox como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-Escribe `docs/iap-test-matrix.md` con filas: purchased, pending, canceled, error, restored, duplicate, refund/expiry. Para cada caso apunta preparación, señal de `PurchaseStatus`, llamada backend y entitlement esperado. Añade test de widget con fake `PurchaseRepository` que reproduzca purchased y canceled.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Fake[Test unitario: reglas] --> Logic[Purchase handler]
+  Sandbox[Store de prueba] --> Platform[Plugin y callback real]
+  Logic --> Matrix[Resultados por estado]
+  Platform --> Matrix
+```
 
-En Android agrega un license tester y usa la app publicada en un track de prueba. En Apple usa usuario Sandbox de App Store Connect o StoreKit Testing en Xcode; verifica que el bundle ID y los product IDs coinciden. Ejecuta `flutter test` para lógica y realiza el recorrido sandbox en dispositivo designado.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| pruebas de IAP en sandbox se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 5 · Práctica guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar pruebas de IAP en sandbox | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Pista:** anota sistema operativo, tipo de cuenta y track; una prueba fake no demuestra que la tienda sandbox complete una transacción.
-Comprueba que el producto sigue bloqueado mientras la compra está pending y no se cobra en sandbox. **Pista:** conserva logs que separen cancelación de excepción.
+#### ► CUÁNDO NO USAR ESTO
+No uses pruebas de iap en sandbox por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 6 · Práctica independiente
-Prueba doble emisión, timeout de backend después de aprobación del store y transacción que llega al siguiente arranque. El flujo debe reconciliar estado sin cobrar dos veces ni perder la compra.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pruebas de iap en sandbox funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- pruebas de IAP en sandbox existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pruebas de iap en sandbox en tu contexto?
+2. ¿Cómo sabrías que pruebas de iap en sandbox no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pruebas de iap en sandbox?
 
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega matriz con resultado y target por fila. El siguiente tema conecta validación de store al backend.
+</details>
 
-**Prueba de diagnóstico.** Inyecta deliberadamente un `purchaseStream` repetido; la clave de transacción debe evitar una segunda entrega del producto.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código y verificación
 ```bash
 flutter test test/features/purchases
 ```
-
-**Resultado esperado:** los tests fake pasan; Android/iOS sandbox se reporta por separado con su sistema operativo. **Errores comunes:** contar prueba de widget como prueba de Play/App Store y omitir el estado pending. Fuentes oficiales: [Flutter in_app_purchase](https://pub.dev/packages/in_app_purchase), [Play test tracks](https://developer.android.com/google/play/billing/test), [StoreKit testing](https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox).
-
-**Proyecto propio:** `iap_test_lab`. **Cuándo promover a producción:** después de reconciliar todas las filas de la matriz y la revisión de pricing/políticas. Evidencia de aprendizaje: entrega tests fake y capturas de sandbox.
 
 ```mermaid
 flowchart LR
@@ -263,27 +353,73 @@ flowchart LR
   Platform --> Matrix
 ```
 
----
+</details>
 
 ### Tema 5: restauración de compras y entitlement · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar recuperarás compras restaurables cuando la persona reinstala o cambia de dispositivo. **Prerrequisitos:** listener de compra, backend y diferencias entre consumible/no consumible. Crea `lib/features/purchases/restore_controller.dart` y un botón visible “Restaurar compras”.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_4` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_4` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar recuperarás compras restaurables cuando la persona reinstala o cambia de dispositivo. Prerrequisitos: listener de compra, backend y diferencias entre consumible/no consumible. Crea lib/features/purchases/restore_controller.dart y un botón visible “Restaurar compras”.
 
-#### Paso 2 · Contexto y caso real
-Una persona pagó “Quitar anuncios” en su iPhone nuevo. Si el acceso dependía de `SharedPreferences`, la app muestra un bloqueo incorrecto. Un consumible ya gastado no vuelve del store como compra propia restaurable; el saldo se guarda en el backend.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar recuperarás compras restaurables cuando la persona reinstala o cambia de dispositivo.**
 
-#### ¿Por qué es importante?
-Restaurar acceso protege la compra y reduce solicitudes a soporte. También evita conceder compras a otro usuario solo porque cambió una bandera local o porque una notificación se repitió.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`restorePurchases()` pide al store republicar transacciones restaurables en `purchaseStream`. La restauración no es un endpoint para leer inventario consumible. Procesa cada evento como una notificación nueva: valida y actualiza entitlement de forma idempotente en servidor.
+#### ► LA ANALOGÍA
+Piensa en restauración de compras y entitlement como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-En `lib/features/purchases/restore_controller.dart`, llama:
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  User->>App: Restaurar compras
+  App->>Store: restorePurchases()
+  Store-->>App: purchaseStream
+  App->>Backend: verifica transaction
+  Backend-->>App: entitlement actual
+```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| restauración de compras y entitlement se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar restauración de compras y entitlement | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses restauración de compras y entitlement por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: restauración de compras y entitlement funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- restauración de compras y entitlement existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve restauración de compras y entitlement en tu contexto?
+2. ¿Cómo sabrías que restauración de compras y entitlement no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar restauración de compras y entitlement?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -292,32 +428,9 @@ Future<void> restore(InAppPurchase iap) async {
 }
 ```
 
-Usa el listener del Tema 1 para recibir objetos con estado restaurado, enviar su token al backend y pedir el entitlement vigente. Si no hay resultados, muestra “No encontramos compras para restaurar”; no infieras que falló el store.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** el backend manda sobre el entitlement; restaura productos no consumibles, pero conserva saldo consumible en tu propio registro.
-Elimina datos locales, inicia sesión con el mismo usuario, pulsa restaurar y comprueba el producto no consumible. **Pista:** combina resultado de store con backend, porque algunos consumibles se gestionan fuera del store.
-
-#### Paso 6 · Práctica independiente
-Prueba usuario sin compras, transacción revocada y usuario diferente en el mismo dispositivo. Añade logs con transaction id opaco, sin guardar tokens o recibos en texto visible.
-
-
-**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
-
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega botón, estado vacío y confirmación de entitlement restaurado. El siguiente tema construirá una prueba repetible de tienda.
-
-**Prueba de diagnóstico.** Llama restaurar dos veces y provoca deliberadamente un evento duplicado; el backend debe conservar un solo entitlement.
-
 ```bash
 flutter test test/features/purchases/restore_controller_test.dart
 ```
-
-**Resultado esperado:** compra no consumible restituye acceso; saldo consumible depende del registro de RutaFlow. **Errores comunes:** usar restauración como chequeo de permisos en cada frame o sobreescribir estado del servidor con caché local. Diagrama: `botón -> store stream -> validación backend -> entitlement`. Fuente oficial: [in_app_purchase: restore](https://pub.dev/packages/in_app_purchase).
-
-**Proyecto propio:** `lib/features/purchases/restore_controller.dart`. **Cuándo restaurar:** tras acción explícita y también al reconciliar una sesión, con límites para no duplicar peticiones. Evidencia: entrega tests de restaurado, vacío y repetido.
 
 ```mermaid
 sequenceDiagram
@@ -328,53 +441,76 @@ sequenceDiagram
   Backend-->>App: entitlement actual
 ```
 
----
+</details>
 
 ### Tema 6: validación de transacciones en servidor · Experto · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar verificarás una transacción con la tienda antes de habilitar premium y conciliarás renovaciones y reembolsos. **Prerrequisitos:** backend HTTP autenticado, storage transaccional y los dos módulos de producción de este curso (13 y 18). Crea `docs/iap-server-contract.md`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_6` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_6` y `flutter analyze`.
+#### ► DE QUÉ TRATA
+Al finalizar verificarás una transacción con la tienda antes de habilitar premium y conciliarás renovaciones y reembolsos. Prerrequisitos: backend HTTP autenticado, storage transaccional y los dos módulos de producción de este curso (13 y 18). Crea docs/iap-server-contract.md.
 
-#### Paso 2 · Contexto y caso real
-El cliente puede modificarse o repetir una petición. Una respuesta “purchased” del dispositivo es dato que validar, no prueba suficiente. Google recomienda enviar `purchaseToken` a backend y consultar Play Developer API; Apple ofrece transacciones firmadas, App Store Server API y notificaciones.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar verificarás una transacción con la tienda antes de habilitar premium y conciliarás renovaciones y reembolsos.**
 
-#### ¿Por qué es importante?
-Un entitlement falso permite acceso no pagado; una renovación o reembolso no aplicado deja acceso incorrecto. Validar y reconciliar del lado servidor protege la cuenta incluso después de reinstalación.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El servidor recibe una referencia de compra y el usuario autenticado; consulta a la tienda, valida estado, producto, app/bundle y usuario, y escribe entitlement con clave idempotente. El secreto de Google service account y llaves de App Store Server se mantienen en infraestructura servidor.
+#### ► LA ANALOGÍA
+Piensa en validación de transacciones en servidor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada
-Define `POST /api/iap/verify` en el backend: entrada `{store, productId, purchaseTokenOrTransaction, transactionId}`; autentica sesión; valida formato; consulta Google Play Developer API o verifica la transacción Apple firmada; guarda el resultado una sola vez; devuelve entitlement y expiry. En Flutter crea `lib/features/purchases/verification_client.dart` y envía datos de compra más token de sesión.
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  App->>Backend: token y producto
+  Backend->>Store: verifica compra
+  Store-->>Backend: estado firmado
+  Backend->>DB: actualiza idempotente
+  DB-->>App: entitlement actual
+```
 
-Registra notificaciones de servidor (Google RTDN y App Store Server Notifications) para renovación, cancelación, revocación y reembolso. Concílialas de forma idempotente; no uses el webhook como petición del cliente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| validación de transacciones en servidor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 5 · Práctica guiada
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar validación de transacciones en servidor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Pista:** usa el identificador de transacción como clave idempotente y verifica el recibo/token en el servidor antes de cambiar el entitlement.
-Envía token inválido, token de otra app y transacción duplicada. **Pista:** una respuesta negativa no llama a `completePurchase` como si la app hubiera entregado contenido; define recuperación/reintento por el estado actual.
+#### ► CUÁNDO NO USAR ESTO
+No uses validación de transacciones en servidor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 6 · Práctica independiente
-Diseña rotación de credenciales servidor, monitoreo de webhook retrasado, replay protection y panel de soporte que busca por transaction id. Evita guardar recibos completos más tiempo del necesario.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: validación de transacciones en servidor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- validación de transacciones en servidor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Fallo deliberado:** Entrega un token no válido al backend de sandbox y confirma que no se concede acceso. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve validación de transacciones en servidor en tu contexto?
+2. ¿Cómo sabrías que validación de transacciones en servidor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar validación de transacciones en servidor?
 
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega contrato, test con respuestas fixture firmada/sintética y trazabilidad de cambios de entitlement. Sin credenciales reales documenta que la integración remota está pendiente.
+</details>
 
-**Prueba de diagnóstico.** Repite deliberadamente la misma transacción con el mismo usuario; el servidor debe responder el entitlement existente sin crear una segunda concesión.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
+#### Código y verificación
 ```bash
 curl -i -X POST http://localhost:3000/api/iap/verify -H 'Authorization: Bearer demo-session' -H 'Content-Type: application/json' --data '{"store":"test","productId":"iap.plus.monthly","transactionId":"tx-demo-1"}'
 ```
-
-**Resultado esperado:** el fixture aceptado devuelve entitlement; token inválido no lo activa y replay no duplica. **Errores comunes:** poner credencial de servicio en Flutter y confiar en el payload del cliente. Diagrama: `app -> API -> Apple/Google -> DB entitlement -> app`. Fuentes oficiales: [Play Billing security](https://developer.android.com/google/play/billing/security), [App Store Server API](https://developer.apple.com/documentation/appstoreserverapi), [App Store Server Notifications](https://developer.apple.com/documentation/appstoreservernotifications).
-
-**Proyecto propio:** `docs/iap-server-contract.md`. **Cuándo activar entitlement:** después de verificación de tienda y controles de cuenta; la interfaz puede mostrar “validando” hasta entonces. Evidencia de aprendizaje: entrega prueba inválida, duplicada y aceptada.
 
 ```mermaid
 sequenceDiagram
@@ -385,11 +521,4 @@ sequenceDiagram
   DB-->>App: entitlement actual
 ```
 
----
-
-## Referencias oficiales consultadas
-
-- Flutter `in_app_purchase` [paquete y API](https://pub.dev/packages/in_app_purchase) y [cambios](https://pub.dev/packages/in_app_purchase/changelog)
-- Android [integración Play Billing](https://developer.android.com/google/play/billing/integrate), [seguridad](https://developer.android.com/google/play/billing/security) y [pruebas](https://developer.android.com/google/play/billing/test)
-- Apple [StoreKit](https://developer.apple.com/documentation/storekit/in-app-purchase), [App Store Server API](https://developer.apple.com/documentation/appstoreserverapi) y [Sandbox](https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox)
-- Google Play [política de pagos](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en)
+</details>

@@ -3,28 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Blue-green deployment · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás implementar un corte de tráfico blue-green con NGINX, con rollback instantáneo hacia el entorno anterior sin reconstruir nada.
 
-**Conocimiento previo:** NGINX como proxy inverso (Módulo 0, Tema 9); Docker Compose (Módulo 3).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás implementar un corte de tráfico blue-green con NGINX, con rollback instantáneo hacia el entorno anterior sin reconstruir nada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de cambios de alto riesgo: blue-green da la garantía de reversión más rápida de las tres estrategias de este módulo, a costa del mayor consumo de infraestructura duplicada.
+#### ► LA ANALOGÍA
+Piensa en blue-green deployment como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que blue-green deployment resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** entorno blue, entorno green, corte de tráfico instantáneo, rollback inmediato.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Blue-green deployment se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Blue-green mantiene dos entornos idénticos: "blue" (recibe todo el tráfico actual) y "green" (la nueva versión, sin tráfico todavía). Cuando "green" pasa sus verificaciones, el balanceador cambia de golpe todo el tráfico hacia "green". Si algo sale mal, revertir consiste en volver a apuntar el balanceador hacia "blue", que sigue existiendo intacto — rollback en segundos, sin reconstruir nada. El coste es mantener el doble de infraestructura durante la transición.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Blue-green deployment | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** blue-green es como tener dos escenarios idénticos para una obra de teatro: mientras el público ve la función en "blue", el equipo prepara "green" completo. Cuando está listo, se apagan las luces de "blue" y se encienden las de "green" de golpe.
+#### ► CUÁNDO NO USAR ESTO
+No uses blue-green deployment por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: blue-green deployment funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Blue-green deployment existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve blue-green deployment en tu contexto?
+2. ¿Cómo sabrías que blue-green deployment no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar blue-green deployment?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Antes del corte ────────────┐   ┌── Después del corte ────────────┐
 │ Balanceador ──▶ Blue (v1, 100%)   │   │ Balanceador ──▶ Green (v2, 100%)    │
@@ -32,10 +72,6 @@ Blue-green mantiene dos entornos idénticos: "blue" (recibe todo el tráfico act
 └─────────────────────┘   │              listo para rollback)  │
                               └─────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo5/blue-green` con dos versiones de backend y un NGINX que enruta:
 
 ```bash
 mkdir -p academia-devops/src/modulo5/blue-green/nginx
@@ -67,70 +103,81 @@ docker compose up -d
 curl -s http://localhost:8080/
 ```
 
-**Explicación línea por línea:** `nginx/activo.conf` define un único upstream apuntando a `blue`; cambiar ese único `server` es exactamente el "corte de tráfico" que hace la estrategia.
-
-Corta el tráfico hacia "green" cambiando solo la configuración de NGINX, sin tocar ningún contenedor de aplicación:
-
 ```bash
 sed -i 's/server blue:3000;/server green:3000;/' nginx/activo.conf
 docker compose exec edge nginx -s reload
 curl -s http://localhost:8080/
 ```
 
-**Resultado esperado:** antes del corte, `curl` responde "version BLUE (v1)"; después de reemplazar el upstream y recargar NGINX, responde "version GREEN (v2)", sin ningún downtime ni reinicio de los contenedores backend.
-
-**Fallo deliberado:** simula que "green" tiene un problema (`docker compose stop green`) justo después del corte, y repite `curl`. Verás un error de gateway — diagnostica el problema, y ejecuta el rollback instantáneo: `sed -i 's/server green:3000;/server blue:3000;/' nginx/activo.conf && docker compose exec edge nginx -s reload`. Confirma que `curl` vuelve a responder "version BLUE (v1)" en segundos, sin reconstruir nada.
-
-#### Paso 5 · Práctica guiada
-
-Automatiza el corte con un pequeño script `cambiar-a.sh green` que reciba el nombre del entorno destino como argumento y haga el `sed` + `nginx -s reload` en un solo comando. **Pista:** usa `$1` para el argumento posicional del script.
-
-#### Paso 6 · Práctica independiente
-
-Mide con `time` cuánto tarda el corte completo (cambio de configuración + reload) frente a cuánto tardaría reconstruir y volver a desplegar un contenedor desde cero, y documenta la diferencia como justificación cuantitativa del beneficio de blue-green.
-
-#### Paso 7 · Cierre
-
-Ya cortas tráfico de golpe entre dos entornos idénticos, con rollback casi instantáneo. El siguiente tema expone la nueva versión gradualmente en vez de de golpe. Fuente oficial: [Martin Fowler — BlueGreenDeployment](https://martinfowler.com/bliki/BlueGreenDeployment.html).
-
-**Errores comunes:** olvidar recargar NGINX (`nginx -s reload`) después de cambiar la configuración, dejando el corte sin efecto; destruir el entorno "blue" inmediatamente después del corte, perdiendo la posibilidad de rollback instantáneo.
-
-**Cuándo no usarlo:** para cambios de bajo riesgo y alta frecuencia, mantener el doble de infraestructura solo para un rollback instantáneo no conviene frente al coste; ahí un rolling update (Tema 3) es más eficiente.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Mantén dos versiones del servicio y cambia el destino del tráfico en laboratorio. Verifica salud antes del cambio y practica el retorno conservando compatibilidad con la base compartida.
+</details>
 
 ### Tema 2: Canary releases · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás enrutar un porcentaje pequeño de tráfico real hacia una nueva versión con NGINX, e incrementarlo gradualmente según métricas observadas.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás enrutar un porcentaje pequeño de tráfico real hacia una nueva versión con NGINX, e incrementarlo gradualmente según métricas observadas.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: canary limita el radio de impacto de un problema no detectado en pruebas —si la nueva versión falla bajo tráfico real, solo afecta a la pequeña fracción que cayó en el canary, no al 100% como en blue-green.
+#### ► LA ANALOGÍA
+Piensa en canary releases como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que canary releases resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** porcentaje de tráfico incremental, monitorización de métricas durante el despliegue, incremento gradual.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Canary releases se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un despliegue canary expone la nueva versión a una fracción pequeña del tráfico (5%), monitoreando métricas clave. Si se mantienen aceptables, el porcentaje se incrementa gradualmente (10%, 25%, 50%, 100%). El nombre viene de los canarios que los mineros usaban como alerta temprana de gases tóxicos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Canary releases | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un despliegue canary es como probar una receta nueva sirviéndola primero solo a un pequeño grupo de mesas, observando su reacción, antes de ponerla en el menú completo.
+#### ► CUÁNDO NO USAR ESTO
+No uses canary releases por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: canary releases funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Canary releases existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve canary releases en tu contexto?
+2. ¿Cómo sabrías que canary releases no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar canary releases?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── 5% tráfico ──▶ v2 (nueva) ──┐  ┌── 95% tráfico ──▶ v1 (estable) ──┐
 └───────────────────┘  └──────────────────────┘
 ¿métricas OK? Sí ──▶ incrementa a 25% ──▶ ... hasta 100%
               No ──▶ revierte a 0%, v1 sigue atendiendo todo
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo5/canary` con dos versiones y pesos de tráfico en NGINX:
 
 ```bash
 mkdir -p academia-devops/src/modulo5/canary/nginx
@@ -164,68 +211,79 @@ EOF
 docker compose up -d
 ```
 
-**Explicación línea por línea:** `split_clients` distribuye pseudoaleatoriamente el tráfico entre `canary` (5%) y `estable` (el resto), usando `$remote_addr` y `$request_id` como semilla, aproximando el porcentaje configurado sobre un volumen suficiente de peticiones.
-
-Ejecuta 100 peticiones y cuenta cuántas cayeron en cada versión:
-
 ```bash
 for i in $(seq 100); do curl -s http://localhost:8081/; echo; done | sort | uniq -c
 ```
 
-**Resultado esperado:** aproximadamente 5 respuestas de "v2 canary" y 95 de "v1 estable" (el porcentaje exacto varía por ser una distribución probabilística, no determinista sobre una muestra pequeña).
-
-**Fallo deliberado:** cambia `5% canary;` por `50% canary;` sin avisar, simulando un error de configuración que expone de más el canary, y repite las 100 peticiones. Verás aproximadamente 50/50 en vez del 5% esperado — diagnostica revisando `nginx/canary.conf` línea por línea antes de asumir que el problema está en la aplicación y no en el enrutamiento.
-
-#### Paso 5 · Práctica guiada
-
-Cambia el porcentaje a `25%` y repite las 100 peticiones, confirmando que la proporción observada se acerca más a ese nuevo valor. **Pista:** con muestras pequeñas, la proporción observada rara vez es exacta; repite el conteo con 500 peticiones si quieres mayor precisión.
-
-#### Paso 6 · Práctica independiente
-
-Agrega una tercera versión `v3` con 1% de tráfico simultáneamente con el 5% de `v2`, ajustando `split_clients` para tres categorías, y confirma que las tres proporciones son observables en una muestra de 1000 peticiones.
-
-#### Paso 7 · Cierre
-
-Ya limitas el radio de impacto exponiendo gradualmente una nueva versión. El siguiente tema reemplaza instancias de forma incremental sin enrutamiento explícito por porcentaje. Fuente oficial: [NGINX — split_clients](https://nginx.org/en/docs/http/ngx_http_split_clients_module.html).
-
-**Errores comunes:** confundir un cambio de configuración de enrutamiento con un problema de la aplicación misma; asumir que una muestra pequeña reproduce exactamente el porcentaje configurado.
-
-**Cuándo no usarlo:** para un cambio de esquema de base de datos incompatible hacia atrás, canary no es apropiado (no puedes tener tráfico parcial en dos esquemas incompatibles simultáneamente); ahí blue-green (Tema 1) es la estrategia correcta.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Dirige una fracción controlada de peticiones a la versión candidata. Compara tasa de errores y latencia por versión; una degradación deliberada debe detener el avance del despliegue.
+</details>
 
 ### Tema 3: Rolling updates · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás reemplazar instancias de una versión anterior por la nueva de forma incremental, controlando cuántas pueden estar simultáneamente no disponibles (`maxUnavailable`) o de más (`maxSurge`).
+#### ► DE QUÉ TRATA
+Al finalizar podrás reemplazar instancias de una versión anterior por la nueva de forma incremental, controlando cuántas pueden estar simultáneamente no disponibles (maxUnavailable) o de más (maxSurge).
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reemplazar instancias de una versión anterior por la nueva de forma incremental, controlando cuántas pueden estar simultáneamente no disponibles (maxUnavailable) o de más (maxSurge).**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: rolling update es la estrategia por defecto en Kubernetes porque no requiere infraestructura duplicada como blue-green, ni enrutamiento explícito por porcentaje como canary.
+#### ► LA ANALOGÍA
+Piensa en rolling updates como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rolling updates resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** reemplazo incremental de instancias, `maxUnavailable`, `maxSurge`, disponibilidad continua durante el despliegue.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Rolling updates se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un rolling update reemplaza instancias antiguas por nuevas de forma incremental, manteniendo suficientes disponibles en todo momento. `maxUnavailable` limita cuántas pueden estar fuera de servicio a la vez; `maxSurge` permite crear instancias adicionales temporalmente por encima de la cantidad normal antes de retirar las antiguas.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Rolling updates | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un rolling update es como renovar progresivamente la flota de vehículos de una empresa, reemplazando uno a la vez y manteniendo siempre suficientes en la carretera, en vez de detener toda la flota de golpe.
+#### ► CUÁNDO NO USAR ESTO
+No uses rolling updates por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rolling updates funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Rolling updates existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rolling updates en tu contexto?
+2. ¿Cómo sabrías que rolling updates no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rolling updates?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Instancias iniciales ──┐  [v1] [v1] [v1] [v1] [v1]
 ├── Paso 1 (maxUnavailable:1) ┤  [v2] [v1] [v1] [v1] [v1]  ← nunca menos de 4 disponibles
 ├── Paso 2 ────────────────┤  [v2] [v2] [v1] [v1] [v1]
 └── Final ─────────────────┘  [v2] [v2] [v2] [v2] [v2]
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo5/rolling` con 3 réplicas escaladas manualmente con Docker Compose:
 
 ```bash
 mkdir -p academia-devops/src/modulo5/rolling && cd academia-devops/src/modulo5/rolling
@@ -241,10 +299,6 @@ docker compose up -d --scale app=3
 docker compose ps
 ```
 
-**Explicación línea por línea:** `--scale` es la bandera que fija cuántas réplicas levantar de un mismo servicio (acá, `app=3`, con `VERSION=v1`); simula el estado inicial de 3 instancias antes de un rolling update. Más abajo, `--no-recreate` es la bandera que evita recrear los contenedores que ya están corriendo y sin cambios, tocando solo el que reemplazás.
-
-Reemplaza las instancias una por una, manteniendo siempre al menos 2 disponibles (equivalente a `maxUnavailable: 1` sobre 3 réplicas). `docker compose up` no acepta `-e`/`--env` (esa bandera solo existe en `run`/`exec`): la forma correcta de cambiar la variable es editar el `compose.yaml` y dejar que `--no-recreate` proteja a las instancias que no tocaste:
-
 ```bash
 CONTENEDOR=$(docker compose ps -q app | head -1)
 docker compose stop "$CONTENEDOR"
@@ -254,50 +308,69 @@ docker compose up -d --scale app=3 --no-recreate
 docker compose ps
 ```
 
-**Resultado esperado:** en cualquier momento del reemplazo, `docker compose ps` muestra al menos 2 instancias corriendo (nunca las 3 caídas a la vez); `--no-recreate` deja intactas a las dos instancias `v1` que no quitaste, mientras la tercera se recrea desde el `compose.yaml` ya actualizado a `v2`. Repite la secuencia dos veces más (una por cada instancia `v1` restante) hasta que las tres reporten `VERSION=v2` con `docker inspect`.
-
-**Fallo deliberado:** detén las 3 instancias simultáneamente antes de levantar ninguna nueva (`docker compose stop $(docker compose ps -q app)`). Durante esa ventana no hay ninguna instancia disponible para atender tráfico — diagnostica que esto es exactamente lo que `maxUnavailable` está diseñado para prevenir, y que reemplazar de a una es lo que garantiza continuidad.
-
-#### Paso 5 · Práctica guiada
-
-Repite el reemplazo completo de las 3 instancias, contando en cada paso cuántas están disponibles con `docker compose ps --filter status=running`. **Pista:** nunca debería bajar de 2 instancias `running` simultáneamente si respetas el equivalente de `maxUnavailable: 1`.
-
-#### Paso 6 · Práctica independiente
-
-Simula `maxSurge: 1` levantando una cuarta instancia nueva ANTES de detener ninguna de las tres antiguas, y luego retirando las antiguas de a una; compara este enfoque con el anterior en términos de capacidad disponible durante la transición.
-
-#### Paso 7 · Cierre
-
-Ya reemplazas instancias sin interrupción de servicio, controlando el margen de disponibilidad. El siguiente tema desacopla activar una funcionalidad de desplegar su código. Fuente oficial: [Kubernetes — Rolling Update Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment).
-
-**Errores comunes:** detener todas las instancias antiguas antes de tener listas las nuevas, causando una ventana sin disponibilidad; no monitorear cuántas instancias están realmente disponibles durante el reemplazo.
-
-**Cuándo no usarlo:** para un cambio que necesita observación explícita por porcentaje de tráfico antes de generalizarse, un rolling update simple no tiene esa fase de decisión; ahí canary (Tema 2) es más apropiado.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Actualiza réplicas progresivamente mientras envías peticiones de prueba. Registra disponibilidad y versiones observadas, y comprueba que el servicio soporta la coexistencia temporal de ambas versiones.
+</details>
 
 ### Tema 4: Feature flags vs branches por entorno · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás desacoplar el despliegue de código del lanzamiento de una funcionalidad usando un feature flag activable sin nuevo despliegue.
 
-**Conocimiento previo:** Temas 1 a 3 de este módulo; Módulo 1 (trunk-based development).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás desacoplar el despliegue de código del lanzamiento de una funcionalidad usando un feature flag activable sin nuevo despliegue.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de trunk-based development: con feature flags puedes desplegar código con mucha frecuencia sin que eso implique liberar cada funcionalidad inmediatamente al público.
+#### ► LA ANALOGÍA
+Piensa en feature flags vs branches por entorno como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que feature flags vs branches por entorno resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** feature flag, desacoplar deploy de release, activación selectiva, branches por entorno.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Feature flags vs branches por entorno se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un feature flag es un interruptor de configuración que activa o desactiva una funcionalidad en tiempo de ejecución, sin desplegar una versión distinta. Esto desacopla deploy (código en producción) de release (funcionalidad visible). La alternativa, branches por entorno, acopla ambos al proceso de fusión de ramas, reintroduciendo ramas de larga duración que trunk-based development busca evitar.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Feature flags vs branches por entorno | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un feature flag es como instalar una luz nueva en una habitación pero dejar el interruptor apagado hasta el día de la inauguración, sin volver a hacer ninguna obra ese día.
+#### ► CUÁNDO NO USAR ESTO
+No uses feature flags vs branches por entorno por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: feature flags vs branches por entorno funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Feature flags vs branches por entorno existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve feature flags vs branches por entorno en tu contexto?
+2. ¿Cómo sabrías que feature flags vs branches por entorno no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar feature flags vs branches por entorno?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Sin feature flag (acoplado) ──┐   ┌── Con feature flag (desacoplado) ──┐
 │ deploy = release                    │   │ deploy (código en producción, flag=false) │
@@ -305,10 +378,6 @@ Un feature flag es un interruptor de configuración que activa o desactiva una f
 │ inmediatamente                            │   │ (para todos, o solo un subconjunto)         │
 └─────────────────────┘   └──────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo5/feature-flag`:
 
 ```bash
 mkdir -p academia-devops/src/modulo5/feature-flag && cd academia-devops/src/modulo5/feature-flag
@@ -326,60 +395,75 @@ docker run -d --name app-flag -p 3002:3000 -v "$(pwd)":/app -w /app -e FLAG_NUEV
 curl -s http://localhost:3002/
 ```
 
-**Explicación línea por línea:** `process.env.FLAG_NUEVA_FUNCION === 'true'` lee el flag como una variable de entorno; el mismo código desplegado responde distinto según ese único valor externo, sin recompilar ni redeployar nada.
-
-Activa la funcionalidad sin ningún nuevo despliegue de código, solo cambiando la variable y reiniciando el proceso con la nueva configuración:
-
 ```bash
 docker rm -f app-flag
 docker run -d --name app-flag -p 3002:3000 -v "$(pwd)":/app -w /app -e FLAG_NUEVA_FUNCION=true node:22-alpine node app.js
 curl -s http://localhost:3002/
 ```
 
-**Resultado esperado:** la primera petición responde "funcion nueva desactivada"; tras cambiar solo la variable de entorno (sin tocar `app.js`), la segunda responde "funcion nueva ACTIVA", demostrando que el mismo código binario/fuente se comporta distinto según el flag.
-
-**Fallo deliberado:** cambia `FLAG_NUEVA_FUNCION` a `"verdadero"` (un valor no reconocido) en vez de `"true"`. La comparación estricta `=== 'true'` falla silenciosamente y el flag queda desactivado sin ningún error visible — diagnostica que un flag mal escrito no lanza excepción, simplemente se comporta como si estuviera apagado, un riesgo real de esta técnica si no se valida el valor esperado.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un segundo flag `FLAG_DESCUENTO_ESPECIAL` independiente del primero, y confirma que ambos pueden activarse o desactivarse de forma completamente independiente entre sí. **Pista:** cada flag debe leerse y evaluarse de forma aislada, sin que uno afecte la lógica del otro.
-
-#### Paso 6 · Práctica independiente
-
-Implementa una activación parcial simple: usa una tercera variable `PORCENTAJE_ACTIVACION` y una condición pseudoaleatoria (`Math.random() * 100 < porcentaje`) para activar el flag solo para una fracción de las peticiones, acercándote al patrón de canary del Tema 2 pero a nivel de funcionalidad de negocio.
-
-#### Paso 7 · Cierre
-
-Ya despliegas código con frecuencia sin exponer funcionalidad incompleta, activándola después sin redeploy. El siguiente tema cierra el ciclo revirtiendo automáticamente ante métricas anómalas. Fuente oficial: [Martin Fowler — FeatureToggle](https://martinfowler.com/articles/feature-toggles.html).
-
-**Errores comunes:** comparar el valor del flag de forma frágil (sensible a mayúsculas o variantes del texto) sin validar explícitamente el valor esperado; dejar flags obsoletos en el código mucho después de que la funcionalidad ya se generalizó al 100%, acumulando deuda técnica de ramas condicionales innecesarias.
-
-**Cuándo no usarlo:** para cambios de infraestructura que no son "código de aplicación" (como una migración de base de datos irreversible), un feature flag no aplica de la misma forma; ahí blue-green (Tema 1) es el mecanismo correcto de control de riesgo.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Activa una función para un grupo de usuarios de prueba sin recompilar. Desactívala al provocar un error y verifica que el estado persistido sigue siendo compatible con la función apagada.
+</details>
 
 ### Tema 5: Rollback automático por métricas · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás diseñar (y simular con un script simple) un rollback automático que revierte un despliegue sin intervención humana cuando una métrica supera un umbral.
 
-**Conocimiento previo:** Temas 1 a 4 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás diseñar (y simular con un script simple) un rollback automático que revierte un despliegue sin intervención humana cuando una métrica supera un umbral.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de horarios sin supervisión activa (noches, fines de semana): un rollback automático reduce drásticamente el tiempo entre que un despliegue problemático empieza a afectar usuarios reales y el momento en que se revierte.
+#### ► LA ANALOGÍA
+Piensa en rollback automático por métricas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rollback automático por métricas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** umbral de error, ventana de observación, reversión automática sin intervención humana.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Rollback automático por métricas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un rollback automático por métricas observa continuamente indicadores clave (tasa de error, latencia) durante una ventana de tiempo tras el despliegue, y revierte automáticamente si superan un umbral configurado. Diseñarlo bien requiere calibrar tanto el umbral (ni muy sensible ni muy laxo) como la ventana de observación. Depende directamente de tener métricas confiables y consultables programáticamente (Módulo 9, Prometheus/Grafana).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Rollback automático por métricas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un rollback automático por métricas es como el frenado automático de emergencia de un vehículo moderno: en vez de depender solo del conductor, el propio vehículo monitorea sensores y frena si se cruza un umbral de riesgo, más rápido de lo que reaccionaría un humano.
+#### ► CUÁNDO NO USAR ESTO
+No uses rollback automático por métricas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rollback automático por métricas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Rollback automático por métricas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rollback automático por métricas en tu contexto?
+2. ¿Cómo sabrías que rollback automático por métricas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rollback automático por métricas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Despliegue canario en curso (5% del tráfico en v2)
    Monitorea: tasa de error
@@ -387,10 +471,6 @@ Despliegue canario en curso (5% del tráfico en v2)
      Sí ──▶ ROLLBACK AUTOMÁTICO (revierte a v1, sin intervención humana)
      No ──▶ continúa, incrementa gradualmente el porcentaje hacia v2
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo5/rollback-auto` con un backend que falla a propósito una fracción de las veces, y un script que monitorea y revierte:
 
 ```bash
 mkdir -p academia-devops/src/modulo5/rollback-auto && cd academia-devops/src/modulo5/rollback-auto
@@ -428,80 +508,78 @@ EOF
 chmod +x vigilar.sh
 ```
 
-**Explicación línea por línea:** `app-fallido.js` simula una versión con un ~40% de tasa de error real; `vigilar.sh` hace 20 peticiones, calcula el porcentaje de errores, y si supera el `UMBRAL` del 20%, revierte automáticamente eliminando el contenedor problemático.
-
-Ejecuta el vigilante dentro de un contenedor con las herramientas necesarias:
-
 ```bash
 docker run --rm --network host -v "$(pwd)":/w -w /w alpine sh -c "apk add --no-cache curl bash >/dev/null 2>&1; bash vigilar.sh"
 ```
 
-**Resultado esperado:** el script imprime una tasa de error cercana al 40%, muy por encima del umbral del 20%, y ejecuta el rollback automático eliminando `backend-canario` sin intervención humana.
-
-**Fallo deliberado:** cambia `UMBRAL=20` a `UMBRAL=90` (demasiado laxo) y repite con un backend nuevo (recrea `backend-canario`). El script reporta "métricas OK" a pesar de una tasa de error real del 40%, muy dañina en producción — diagnostica que un umbral mal calibrado deja pasar problemas reales sin revertir, exactamente el riesgo de un umbral demasiado permisivo descrito en la teoría.
-
-#### Paso 5 · Práctica guiada
-
-Reduce la ventana de observación a 5 peticiones en vez de 20 y repite el experimento varias veces; explica por qué una ventana tan corta puede dar resultados inconsistentes entre ejecuciones distintas. **Pista:** con pocas muestras, la proporción observada varía mucho más de una ejecución a otra.
-
-#### Paso 6 · Práctica independiente
-
-Modifica `app-fallido.js` para que la tasa de error real sea configurable por variable de entorno, y encuentra experimentalmente el umbral de tasa de error real a partir del cual tu `vigilar.sh` con `UMBRAL=20` empieza a disparar el rollback de forma consistente en al menos 8 de 10 ejecuciones.
-
-#### Paso 7 · Cierre
-
-Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervisión humana, calibrando el compromiso entre sensibilidad y falsos positivos. Esto cierra el módulo de estrategias de despliegue; el siguiente módulo introduce Kubernetes, donde estos mismos patrones se implementan de forma nativa a mayor escala. Fuente oficial: [Google SRE Book — Release Engineering](https://sre.google/sre-book/release-engineering/).
-
-**Errores comunes:** definir un umbral basado en intuición sin datos históricos reales del sistema; usar una ventana de observación tan corta que el resultado depende más del azar que de la señal real.
-
-**Cuándo no usarlo:** sin métricas confiables y consultables programáticamente, intentar un rollback automático es contraproducente (decide con datos incompletos o inexistentes); ahí primero se necesita observabilidad real (Módulo 9) antes de automatizar la reversión.
-
----
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura una condición medible de reversión y genera errores controlados en la candidata. Verifica que vuelve al artefacto anterior y conserva la evidencia necesaria para investigar el fallo.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** configurar un pipeline de CD que despliegue automáticamente a un entorno de staging tras pasar CI, simular un despliegue canary manual, implementar un feature flag simple, y diseñar un rollback automático por métricas.
-
-**Requisitos previos:** el pipeline de CI del Módulo 4 de este track ya configurado, acceso a un entorno de staging (puede simularse con Docker Compose local).
-
-| Paso | Acción | Configuración | Explicación | Resultado esperado |
-|---|---|---|---|---|
-| 1 | Documentar las tres estrategias con un diagrama propio | Distingue blue-green, canary y rolling update en tus propias palabras | Consolida la comprensión conceptual | Un documento propio que distingue las tres estrategias |
-| 2 | Configurar el job de CD hacia staging | Job `deploy-staging` con dependencia explícita del éxito de CI | El despliegue solo ocurre si CI valida el cambio | El job solo se ejecuta tras el éxito de tests |
-| 3 | Simular un despliegue canary manual | Dos réplicas con NGINX enrutando un porcentaje pequeño | Practica canary manualmente | El balanceador distribuye tráfico desigual según lo configurado |
-| 4 | Implementar un feature flag simple | Variable de entorno que activa/desactiva una funcionalidad | Aplica el Tema 4 de forma mínima | Cambiar la variable activa/desactiva sin nuevo despliegue |
-| 5 | Diseñar un rollback automático | Métrica, umbral, ventana de observación y acción de reversión | Aplica el razonamiento del Tema 5 | Un documento que especifica métrica, umbral, ventana y acción |
-
-**Verificación:** el laboratorio se considera exitoso si el job de CD depende del éxito de CI, el balanceador de canary distribuye tráfico verificablemente, y el feature flag activa/desactiva sin nuevo despliegue.
-
-**Errores comunes y soluciones**
-
-- **`deploy-staging` se ejecuta aunque CI falle.** Revisa la dependencia explícita entre jobs (`needs` en GitHub Actions).
-- **El canary simulado envía todo el tráfico a una sola instancia.** Revisa la configuración de pesos del balanceador.
-- **El feature flag requiere reiniciar la aplicación completa.** Si lees la variable solo al arrancar, necesitas recarga en caliente o aceptar el reinicio.
-- **No sabes qué métrica usar para el rollback automático.** Empieza con la tasa de error HTTP 5xx como señal de partida razonable.
+</details>
 
 ### Tema 6: Rollback ensayado y compatibilidad del artefacto anterior · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. **Prerrequisitos:** procesos, códigos de salida, archivos y Python 3. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un pipeline del proyecto integrador no termina al copiar archivos: necesita saber si la versión candidata funciona y qué hacer si no. **¿Por qué es importante?** La recuperación que nunca se ensayó puede fallar durante el incidente.
+#### ► DE QUÉ TRATA
+Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. Prerrequisitos: procesos, códigos de salida, archivos y Python 3. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una promoción cambia qué artefacto se considera activo. El criterio de salud debe evaluar una capacidad útil, no solo que el proceso existe. El rollback devuelve una versión anterior compatible; si una migración destruyó datos, revertir el binario puede ser insuficiente.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla.**
 
-**Analogía:** antes de cambiar de puente, comprueba que el nuevo soporta el paso y conserva una vía de regreso. El límite es que este simulacro usa archivos locales: no representa despliegue atómico entre nodos ni tráfico real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LA ANALOGÍA
+Piensa en rollback ensayado y compatibilidad del artefacto anterior como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rollback ensayado y compatibilidad del artefacto anterior resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Rollback ensayado y compatibilidad del artefacto anterior se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Rollback ensayado y compatibilidad del artefacto anterior | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses rollback ensayado y compatibilidad del artefacto anterior por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rollback ensayado y compatibilidad del artefacto anterior funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Rollback ensayado y compatibilidad del artefacto anterior existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rollback ensayado y compatibilidad del artefacto anterior en tu contexto?
+2. ¿Cómo sabrías que rollback ensayado y compatibilidad del artefacto anterior no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rollback ensayado y compatibilidad del artefacto anterior?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ensayo-release
 cd ensayo-release
 ```
-Crea `release.py`:
+
 ```python
 from pathlib import Path
 import subprocess
@@ -523,70 +601,32 @@ result = subprocess.run([sys.executable, active.read_text(encoding='utf-8')],
 assert result.stdout.strip() == 'ENV-42 listo'
 print('Candidato rechazado; activa:', active.read_text(encoding='utf-8'))
 ```
+
 ```bash
 python3 release.py
 ```
-**Resultado esperado:** `Candidato rechazado; activa: v1.py`. Windows puede usar `py`. Explica cada bloque: preparar artefactos, recordar versión, evaluar candidato y volver a comprobar la capacidad activa. La versión rota no se considera válida solo por existir.
 
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** sustituye el contenido de `v2.py` generado por `print("pantalla vacía")`. El proceso termina con cero, pero el criterio de capacidad sigue rechazándolo. **Pista:** no reduzcas salud a `returncode == 0`.
+</details>
 
-#### Paso 6 · Práctica independiente
-Haz una candidata válida que conserve la salida requerida y registre una versión. Comprueba promoción y rechazo en dos ejecuciones. Añade un manejo explícito del timeout que conserve la versión anterior y registre el motivo.
-
-#### Paso 7 · Cierre
-El siguiente paso es repetir el procedimiento con el orquestador y una migración expand/contract. **Errores comunes:** sobrescribir el artefacto anterior, no comprobar la recuperación y suponer que rollback restaura datos. **Límites y decisión de uso:** `active.txt` no es un mecanismo de producción; sirve para comprender la decisión antes de automatizarla en CI/CD.
-
-**Fuente oficial:** [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
 ### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas · Intermedio · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar distinguirás un experimento A/B de un canary y de un despliegue
-shadow, asignarás una variante de forma determinista y protegerás la respuesta
-real cuando una segunda versión solo observa tráfico. **Prerrequisitos:** los
-Temas 1–3 de este módulo, HTTP, una función y pruebas con Node.js 22 o superior.
-El ejemplo es independiente y no requiere Kubernetes, una cuenta cloud ni
-tráfico real.
+#### ► DE QUÉ TRATA
+Al finalizar distinguirás un experimento A/B de un canary y de un despliegue shadow, asignarás una variante de forma determinista y protegerás la respuesta real cuando una segunda versión solo observa tráfico. Prerrequisitos: los Temas 1–3 de este módulo, HTTP, una función y prue…
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar distinguirás un experimento A/B de un canary y de un despliegue shadow, asignarás una variante de forma determinista y protegerás la respuesta real cuando una segunda versión solo observa tráfico.**
 
-La captura de referencia resume siete estrategias: rolling update, recreate,
-blue/green, canary, A/B y shadow (las dos primeras ya aparecen también en el
-Módulo 7). No son sinónimos:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- **A/B** asigna grupos comparables a variantes y mide una métrica de producto;
-  la asignación debe ser estable para que una persona no cambie de versión en
-  cada petición.
-- **Shadow** duplica una petición hacia la candidata, pero entrega al usuario
-  únicamente la respuesta estable y descarta la respuesta espejo.
-- **Canary** limita el porcentaje de tráfico real a una versión nueva para
-  decidir si continuar; no es automáticamente un experimento estadístico.
+#### ► LA ANALOGÍA
+Piensa en a/b testing y shadow traffic: medir sin convertir usuarios en cobayas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Un A/B que cambia de variante por petición mezcla
-los grupos y contamina la comparación. Un shadow que repite un `POST` con efecto
-de negocio puede duplicar pagos, reservas o envíos. La estrategia solo es segura
-si el contrato de la segunda versión define qué puede observar y qué no puede
-mutar.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Piensa en tres interruptores distintos: A/B decide **quién** ve cada variante;
-canary decide **cuánto tráfico** recibe una candidata durante un rollout; shadow
-decide **qué tráfico se copia** sin exponer su respuesta. El bucket de A/B debe
-ser determinista (por ejemplo, un hash del identificador), y la copia shadow
-necesita un timeout y aislamiento de efectos.
-
-**Analogía:** A/B es dividir una clase en dos grupos para comparar dos métodos;
-canary es probar una receta con pocas mesas antes de servirla a todo el salón;
-shadow es dejar que una segunda cocina prepare una copia que nadie come. El
-límite es que un hash local no corrige sesgos de selección, consentimiento,
-privacidad, tamaño de muestra ni métricas mal elegidas.
-
-**Mapa de tráfico:** `usuario → asignación A/B → variante estable o candidata`; `petición → estable → respuesta entregada`; `└→ shadow → solo comparación, sin respuesta al usuario`. Canary cambia el porcentaje de tráfico que llega a la candidata durante el despliegue.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     R["Tráfico real"] --> A["A/B: variante estable por usuario"]
@@ -598,18 +638,58 @@ flowchart TD
     SD --> SR["Se entrega solo la respuesta estable"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| A/B testing y shadow traffic: medir sin convertir usuarios en cobayas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `package.json`, `deployment.mjs` y `deployment.test.mjs` con el contenido completo de abajo:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar A/B testing y shadow traffic: medir sin convertir usuarios en cobayas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses a/b testing y shadow traffic: medir sin convertir usuarios en cobayas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: a/b testing y shadow traffic: medir sin convertir usuarios en cobayas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- A/B testing y shadow traffic: medir sin convertir usuarios en cobayas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve a/b testing y shadow traffic: medir sin convertir usuarios en cobayas en tu contexto?
+2. ¿Cómo sabrías que a/b testing y shadow traffic: medir sin convertir usuarios en cobayas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar a/b testing y shadow traffic: medir sin convertir usuarios en cobayas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    R["Tráfico real"] --> A["A/B: variante estable por usuario"]
+    R --> C["Canary: porcentaje a la candidata"]
+    R --> S["Shadow: copia de la petición"]
+    A --> AM["Métrica de producto por grupo"]
+    C --> CM["Decisión de continuar o revertir"]
+    S --> SD["Respuesta espejo descartada"]
+    SD --> SR["Se entrega solo la respuesta estable"]
+```
 
 ```bash
 mkdir ejemplo-deploy-strategies
 cd ejemplo-deploy-strategies
 ```
-
-`deployment.mjs` contiene las dos operaciones completas:
-
-`package.json`:
 
 ```json
 {
@@ -659,9 +739,6 @@ export async function serveWithShadow({ request, stable, shadow, timeoutMs = 100
 }
 ```
 
-`deployment.test.mjs` comprueba la asignación estable y que el shadow no
-reemplaza la respuesta real:
-
 ```js
 import assert from 'node:assert/strict';
 import { abVariant, serveWithShadow } from './deployment.mjs';
@@ -687,59 +764,8 @@ assert.deepEqual(calls.sort(), ['shadow:ENV-42', 'stable:ENV-42']);
 console.log('deployment strategies: ok');
 ```
 
-Ejecuta las pruebas:
-
 ```bash
 npm test
 ```
 
-**Resultado esperado:** `deployment strategies: ok`. El identificador `ENV-42`
-siempre cae en el mismo bucket, el split 0 produce `stable` y el split 1 produce
-`canary`; aunque shadow devuelva error, la respuesta entregada sigue siendo la
-estable. El test verifica además que ambas funciones reciben la misma petición.
-
-#### Paso 5 · Práctica guiada
-
-**Fallo deliberado:** cambia `const bucket = ...` por `Math.random()` y ejecuta
-`npm test` varias veces. El test de estabilidad debe fallar o el mismo usuario
-debe cambiar de variante. Después cambia `shadow` para incrementar una variable
-de negocio y explica por qué eso no es un shadow seguro.
-
-**Pista:** la variante debe depender de una entrada estable; el callback shadow
-debe poder reintentarse o ejecutarse sin producir un efecto externo.
-
-#### Paso 6 · Práctica independiente
-
-1. Añade una función `experimentMetric` que cuente respuestas por variante sin
-   guardar identificadores personales.
-2. Prueba `split = 0.25` con una lista de 100 identificadores y registra el
-   conteo observado, sin exigir que una muestra pequeña sea exactamente 25/75.
-3. Añade un timeout shadow de 1 ms y comprueba que una shadow lenta no bloquea
-   indefinidamente la respuesta estable.
-4. Escribe una tabla que indique qué operaciones son de solo lectura, cuáles son
-   idempotentes y cuáles no deben duplicarse. En el proyecto integrador, deja en
-   `docs/despliegue.md` esa tabla junto con la métrica que compararías entre
-   ambas variantes.
-
-#### Paso 7 · Cierre
-
-Registra la tabla de diferencias A/B–canary–shadow y la tabla de efectos
-permitidos en la variante
-shadow. El siguiente paso es comparar estas decisiones con `Recreate` y
-`RollingUpdate` del Módulo 7 y con el split 90/10 de Istio del Módulo 15.
-
-**Errores comunes:** cambiar de variante por petición, usar `Math.random()` sin
-control, medir una muestra demasiado pequeña como si fuera una conclusión,
-reenviar `POST` con efectos, copiar credenciales o ignorar el timeout de la
-versión shadow. **Límites y decisión de uso:** el laboratorio no implementa
-consentimiento, análisis estadístico, balanceadores, service mesh ni garantías
-de aislamiento; demuestra la frontera conceptual y un contrato local.
-
-**Transferencia al proyecto integrador DevOps:** antes de habilitar tráfico real,
-documenta la métrica primaria, la regla de asignación y el criterio de detener el
-experimento; para shadow, limita la copia a operaciones de solo lectura y
-verifica que su salida nunca reemplace la respuesta estable.
-
-**Fuente oficial:** [Kubernetes Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) y [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
-
----
+</details>

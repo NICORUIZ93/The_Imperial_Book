@@ -6,19 +6,22 @@ Aquí el proyecto deja de ser una sola configuración local y se convierte en un
 reproducible. Cada decisión se prueba con Gradle; no se considera profesional una build
 que depende de archivos secretos o pasos manuales en el portátil del autor.
 
+
 ### Tema 1: Gradle, version catalogs y resolución de dependencias · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto.
-**Prerrequisitos:** estructura del Módulo 0. Trabaja en `gradle/libs.versions.toml`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una app grande usa plugins, BOM, procesadores y docenas de
-librerías transitivas. Declarar versiones en cada módulo causa divergencia; actualizar a
-ciegas puede compilar y fallar en runtime. El catálogo da nombres comunes, pero no decide
-compatibilidad ni reemplaza las notas de versión.
+#### ► DE QUÉ TRATA
+Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto. Prerrequisitos: estructura del Módulo 0. Trabaja en gradle/libs.versions.toml.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Gradle construye un grafo de tareas y otro de dependencias por variante. Una dependencia
 `implementation` no expone su API a consumidores; `api` sí y aumenta acoplamiento. BOM
 alinea una familia compatible. Constraints expresan límites; dependency locking fija lo
@@ -39,8 +42,63 @@ flowchart LR
     V -->|constraint| C[Límite explícito]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea o edita `gradle/libs.versions.toml`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A[:app] --> L[kotlinx-coroutines-core]
+    B[:feature:entregas] --> L
+    L --> V{Versión resuelta}
+    V -->|mayor solicitada| S[1.10.2]
+    V -->|constraint| C[Límite explícito]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Gradle, version catalogs y resolución de dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Gradle, version catalogs y resolución de dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses gradle, version catalogs y resolución de dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: gradle, version catalogs y resolución de dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Gradle, version catalogs y resolución de dependencias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve gradle, version catalogs y resolución de dependencias en tu contexto?
+2. ¿Cómo sabrías que gradle, version catalogs y resolución de dependencias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar gradle, version catalogs y resolución de dependencias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A[:app] --> L[kotlinx-coroutines-core]
+    B[:feature:entregas] --> L
+    L --> V{Versión resuelta}
+    V -->|mayor solicitada| S[1.10.2]
+    V -->|constraint| C[Límite explícito]
+```
 
 ```toml
 [versions]
@@ -53,8 +111,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 coroutines = ["kotlinx-coroutines-core"]
 ```
 
-Usa `implementation(libs.bundles.coroutines)` y ejecuta:
-
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:dependencies --configuration debugRuntimeClasspath
@@ -62,44 +118,23 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:test
 ```
 
-**Resultado esperado:** una versión seleccionada y una ruta que explica quién la pidió.
-`dependencyInsight` muestra la versión elegida y la cadena de solicitantes; si aparece
-`FAILED`, esa ruta indica qué módulo introdujo el conflicto. **Fallo deliberado:** agrega una versión transitiva incompatible; observa selección y
-fuerza una prueba que use la API afectada. Corrige alineando, no excluyendo sin análisis.
-
-#### Paso 5 · Práctica guiada
-Mueve tres dependencias al catálogo y distingue plugin de librería. **Pista:** confirma
-con `dependencies` cada classpath; una build verde no prueba ausencia de duplicados.
-
-#### Paso 6 · Práctica independiente
-Activa verification metadata o locking, simula checksum/versión inesperada y documenta
-la actualización segura: fuente primaria, changelog, build, tests y rollback. Compara
-`api` e `implementation` midiendo qué módulo recompila al cambiar una clase interna.
-**Proyecto integrador:** el catálogo y el grafo documentado sostienen la build
-reproducible del proyecto integrador multi-módulo.
-
-#### Paso 7 · Cierre
-Entrega catálogo, informe de grafo y prueba. El siguiente tema produce variantes sin
-filtrar secretos. **Errores comunes:** versiones dinámicas, exclusiones globales y copiar
-coordenadas antiguas. **Cuándo no usarlo:** un catálogo compartido no obliga a que todas
-las aplicaciones usen la misma versión si tienen ciclos independientes.
-
-**Transferencia a RutaFlow:** dependencias auditables. **Fuentes oficiales:**
-[gestión de dependencias](https://developer.android.com/build/dependencies) y
-[version catalogs](https://docs.gradle.org/current/userguide/version_catalogs.html).
+</details>
 
 ### Tema 2: Build types, product flavors y configuración segura · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos
-correctos. **Prerrequisitos:** Kotlin DSL y manifest. Edita `app/build.gradle.kts`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow necesita un entorno de prueba sin que una build
-debug escriba producción. Copiar proyectos duplica arreglos; hardcodear tokens los publica
-en APK. Variantes combinan flavor, build type y source sets de forma determinista.
+#### ► DE QUÉ TRATA
+Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos correctos. Prerrequisitos: Kotlin DSL y manifest. Edita app/build.gradle.kts.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos correctos.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Build type expresa depuración/optimización; flavor expresa dimensión de producto o
 entorno. La variante fusiona manifest, recursos y código con prioridades; el source set
 de la variante se superpone a `main` y el build type tiene prioridad sobre el flavor.
@@ -122,8 +157,65 @@ flowchart TD
     P1 --> PR[prodRelease]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea o edita `app/build.gradle.kts`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    M[main] --> D1[demo]
+    M --> P1[prod]
+    D1 --> DD[demoDebug]
+    D1 --> DR[demoRelease]
+    P1 --> PD[prodDebug]
+    P1 --> PR[prodRelease]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Build types, product flavors y configuración segura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Build types, product flavors y configuración segura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses build types, product flavors y configuración segura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: build types, product flavors y configuración segura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Build types, product flavors y configuración segura existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve build types, product flavors y configuración segura en tu contexto?
+2. ¿Cómo sabrías que build types, product flavors y configuración segura no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar build types, product flavors y configuración segura?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    M[main] --> D1[demo]
+    M --> P1[prod]
+    D1 --> DD[demoDebug]
+    D1 --> DR[demoRelease]
+    P1 --> PD[prodDebug]
+    P1 --> PR[prodRelease]
+```
 
 ```kotlin
 android {
@@ -143,56 +235,27 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:test
 ```
 
-**Resultado esperado:** dos application IDs instalables y endpoints distintos; release
-no contiene herramientas debug. El manifest fusionado queda bajo
-`app/build/intermediates/`; localízalo para la variante y confirma `applicationId`,
-permisos y metadatos antes de instalar. **Fallo deliberado:** coloca un token en `BuildConfig`,
-abre el APK como ZIP y encuéntralo. Elimínalo y usa autenticación emitida por backend.
-
-#### Paso 5 · Práctica guiada
-Agrega nombre/icono visible para demo y un network security config solo debug. **Pista:**
-inspecciona el manifest fusionado, no deduzcas el resultado de archivos parciales.
-
-#### Paso 6 · Práctica independiente
-Define matriz de variantes permitidas y deshabilita combinaciones inútiles con
-`androidComponents.beforeVariants`, comprobando que la matriz final coincide con la
-documentación. Prueba endpoint, ID, debuggable y ausencia de secretos. Diseña firma en CI con
-variables protegidas sin imprimir valores ni almacenar keystore en el repositorio.
-**Proyecto integrador:** la matriz demo/prod forma parte de las variantes del proyecto
-integrador de RutaFlow.
-
-#### Paso 7 · Cierre
-Entrega matriz y artefactos inspeccionados. El siguiente tema divide el monolito con
-fronteras verificables. **Errores comunes:** flavor por cliente sin estrategia, secretos
-en recursos y probar solo debug. **Cuándo no usarlo:** no crees flavors si basta una
-configuración remota validada y el binario es idéntico.
-
-**Transferencia a RutaFlow:** demo aislada de producción. **Fuente oficial:**
-[build variants](https://developer.android.com/build/build-variants).
+</details>
 
 ### Tema 3: Modularización, convenciones y fronteras de arquitectura · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás separar feature, core y data sin ciclos. **Prerrequisitos:** Hilt,
-arquitectura por capas y Gradle. Crea `feature:entregas` y `core:model`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un módulo único permite cualquier acceso, ralentiza builds y
-hace difícil asignar ownership. Demasiados módulos también cuestan configuración y APIs.
-La frontera se justifica por encapsulación, reutilización, equipo o rendimiento medido.
+#### ► DE QUÉ TRATA
+Al finalizar podrás separar feature, core y data sin ciclos. Prerrequisitos: Hilt, arquitectura por capas y Gradle. Crea feature:entregas y core:model.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Features dependen de contratos core, no de implementaciones hermanas. `internal` y
-`implementation` reducen superficie. Un módulo data puede implementar una interfaz de
-dominio inyectada desde el composition root. Convention plugins centralizan configuración
-sin copiar bloques Gradle. Un módulo por paquete solo agrega configuración; la frontera se
-justifica por ownership, reutilización o rendimiento medido. Las dependencias apuntan
-hacia contratos: una feature no conoce implementaciones de data. Un test de arquitectura o
-una regla de dependencias entre módulos puede fallar la build si aparece una flecha
-prohibida. Mide configuración, compilación limpia e incremental antes y
-después. **Analogía:** paredes con puertas explícitas contienen incendios; levantar una
-pared entre cada silla hace inhabitable el edificio.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás separar feature, core y data sin ciclos.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en modularización, convenciones y fronteras de arquitectura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     APP[:app] --> FEAT[:feature:entregas]
@@ -202,8 +265,51 @@ flowchart TD
     FEAT -.->|no permitido| DATA
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `core/model/src/main/kotlin/Entrega.kt` y declara dependencias:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Modularización, convenciones y fronteras de arquitectura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Modularización, convenciones y fronteras de arquitectura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses modularización, convenciones y fronteras de arquitectura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: modularización, convenciones y fronteras de arquitectura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Modularización, convenciones y fronteras de arquitectura existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve modularización, convenciones y fronteras de arquitectura en tu contexto?
+2. ¿Cómo sabrías que modularización, convenciones y fronteras de arquitectura no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar modularización, convenciones y fronteras de arquitectura?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    APP[:app] --> FEAT[:feature:entregas]
+    FEAT --> MODEL[:core:model]
+    FEAT --> COREUI[:core:ui]
+    DATA[:core:data] --> MODEL
+    FEAT -.->|no permitido| DATA
+```
 
 ```kotlin
 // feature/entregas/build.gradle.kts
@@ -221,56 +327,27 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:assembleDebug --scan
 ```
 
-**Resultado esperado:** feature compila/prueba aislada y no accede a clases internas de
-data. `./gradlew projects` y el build scan muestran la topología; compara tiempos antes y
-después en la misma máquina y con la misma tarea. **Fallo deliberado:** añade dependencia feature A → B y B → A; Gradle rechaza el
-ciclo. Extrae el contrato compartido hacia core sin mover toda implementación.
-
-#### Paso 5 · Práctica guiada
-Extrae modelo y UI común; usa `dependencyInsight` y un test de arquitectura para impedir
-que feature dependa de `app`. **Pista:** dibuja flechas antes de mover archivos.
-
-#### Paso 6 · Práctica independiente
-Crea convention plugin para Compose, compara tiempo limpio/incremental y documenta API
-pública de cada módulo. Mide configuración y compilación limpia con `--profile`; sin
-medición, dividir puede empeorar el ciclo. Simula eliminar una feature y demuestra que core no cambia.
-Registra tradeoff: módulos, tiempo, ownership, aislamiento y complejidad de navegación.
-**Proyecto integrador:** las fronteras entre feature, core y data definen la estructura
-del proyecto integrador multi-módulo.
-
-#### Paso 7 · Cierre
-Entrega grafo sin ciclos y mediciones. El siguiente tema optimiza release sin romper
-serialización ni reflexión. **Errores comunes:** módulo por paquete, core gigante y `api`
-por comodidad. **Cuándo no usarlo:** una app pequeña puede comenzar por paquetes y
-extraer módulos cuando exista una frontera o métrica real.
-
-**Transferencia a RutaFlow:** feature de entregas aislada. **Fuente oficial:**
-[modularización](https://developer.android.com/topic/modularization).
+</details>
 
 ### Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque
-y automatizar un artefacto trazable. **Prerrequisitos:** publicación, testing y profiling.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Debug oculta problemas de shrinker y rendimiento. R8 elimina,
-optimiza y ofusca; una regla amplia arregla un crash pero pierde beneficios. CI debe
-probar el mismo release que se distribuye y conservar mapping para desofuscar fallos.
+#### ► DE QUÉ TRATA
+Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque y automatizar un artefacto trazable. Prerrequisitos: publicación, testing y profiling.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-R8 parte de entry points y reglas keep. Reflexión/serialización deben declarar contratos
-o generar adapters. Resource shrinker elimina recursos no alcanzables y exige minificación
-activa; los recursos accedidos por nombre deben conservarse con una regla. `mapping.txt`
-permite desofuscar con `retrace`; sin ese archivo, un fallo de producción queda ilegible.
-Baseline Profile
-precompila rutas críticas en ART y se versiona en `src/main/baseline-prof.txt`;
-Macrobenchmark mide fuera del proceso objetivo. Sin perfil el arranque sigue funcionando,
-pero pierde la precompilación. CI
-produce AAB firmado, SBOM/checksums, tests y mapping, con permisos mínimos. **Analogía:**
-R8 poda ramas no conectadas; el perfil marca caminos que deben estar pavimentados antes
-de la primera visita.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque y automatizar un artefacto trazable.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en r8, recursos, baseline profiles y pipeline reproducible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     SRC[Código y pruebas] --> R8[R8 y shrinker]
@@ -283,8 +360,54 @@ flowchart LR
     MAP --> RET
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Actualiza la configuración release en `app/build.gradle.kts`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| R8, recursos, Baseline Profiles y pipeline reproducible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar R8, recursos, Baseline Profiles y pipeline reproducible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses r8, recursos, baseline profiles y pipeline reproducible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: r8, recursos, baseline profiles y pipeline reproducible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- R8, recursos, Baseline Profiles y pipeline reproducible existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve r8, recursos, baseline profiles y pipeline reproducible en tu contexto?
+2. ¿Cómo sabrías que r8, recursos, baseline profiles y pipeline reproducible no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar r8, recursos, baseline profiles y pipeline reproducible?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    SRC[Código y pruebas] --> R8[R8 y shrinker]
+    R8 --> AAB[AAB firmado]
+    R8 --> MAP[mapping.txt]
+    BP[Baseline Profile] --> AAB
+    AAB --> CHK[Checksum y SBOM]
+    CHK --> PUB[Publicación manual]
+    AAB --> RET[retrace de fallos]
+    MAP --> RET
+```
 
 ```kotlin
 buildTypes.named("release") {
@@ -302,51 +425,23 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 sha256sum app/build/outputs/bundle/prodRelease/*.aab
 ```
 
-**Resultado esperado:** AAB, mapping, reporte lint y benchmark con ruta reproducible.
-El reporte lint y el mapping quedan bajo `app/build/outputs/`; verifica su existencia
-antes de publicar. **Fallo deliberado:** accede por reflexión a una clase solo release; observa crash
-minificado. Añade regla mínima o adapter generado y prueba el artefacto release.
-
-#### Paso 5 · Práctica guiada
-Genera perfil para inicio y apertura de entrega; compara mediana sin/con perfil en mismo
-dispositivo. **Pista:** no mezcles cambios funcionales con la comparación.
-
-#### Paso 6 · Práctica independiente
-Diseña pipeline con caché, unit/instrumented tests, lint, bundle, firma, checksum, mapping
-y promoción manual protegida. Conserva el mapping junto al artefacto y automatiza
-`retrace` en el análisis de fallos. Reproduce fallo, desofusca stack trace y ejecuta rollback.
-Documenta qué evidencia proviene de emulador y qué requiere Play pre-launch/vitals.
-**Proyecto integrador:** el pipeline y el AAB trazable cierran la entrega del proyecto
-integrador de RutaFlow.
-
-#### Paso 7 · Cierre
-Entrega bundle y reporte. El siguiente módulo conecta almacenamiento, cámara y hardware.
-**Errores comunes:** keep global, benchmark debug, firma expuesta y publicar artefacto
-distinto al probado. **Cuándo no usarlo:** no interpretes un microbenchmark aislado como
-experiencia completa; combínalo con métricas de campo.
-
-**Transferencia a RutaFlow:** release optimizada y trazable. **Fuentes oficiales:**
-[optimización](https://developer.android.com/build/shrink-code) y
-[Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).
+</details>
 
 ### Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min
 
-**Prerrequisito:** tema «R8, recursos, Baseline Profiles y pipeline reproducible» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** crear un módulo de Macrobenchmark que mida el arranque en frío y los fotogramas al hacer scroll en una build de release, y comparar el resultado con y sin Baseline Profile.
+#### ► DE QUÉ TRATA
+Usa Android Studio con la plantilla Baseline Profile / Macrobenchmark (File > New > New Module). Necesitas un dispositivo real o un emulador con imagen de Android 10+; los resultados de emulador solo sirven para comparar entre sí.
 
-**¿Por qué es importante?** Las mediciones en una build de depuración engañan: el código no está optimizado. Macrobenchmark instala la build de release, la arranca desde fuera del proceso y repite la medición varias veces, como la vive el usuario.
+#### ► LA IDEA EN UNA FRASE
+**Usa Android Studio con la plantilla Baseline Profile / Macrobenchmark (File > New > New Module).**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Android Studio con la plantilla **Baseline Profile / Macrobenchmark** (File > New > New Module). Necesitas un dispositivo real o un emulador con imagen de Android 10+; los resultados de emulador solo sirven para comparar entre sí.
-
-#### Paso 2 · Contexto y caso real
-
-Los conductores de RutaFlow se quejaban de que la app tardaba en abrir al empezar el día. El equipo no sabía si un cambio mejoraba o empeoraba, porque medía con un cronómetro. Con Macrobenchmark, cada pull request muestra el arranque medido.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** Macrobenchmark, arranque en frío, `StartupTimingMetric`, `FrameTimingMetric`, iteraciones, `CompilationMode`, mediana y percentil.
 
 **Macrobenchmark** corre en un módulo de pruebas aparte que controla la app desde fuera:
@@ -371,9 +466,63 @@ flowchart LR
     S & F --> R["mínimo / mediana / máximo"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `macrobenchmark/src/main/java/co/rutaflow/benchmark/ArranqueBenchmark.kt`:
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Macrobenchmark: medir el arranque y el scroll como lo vive el usuario se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Macrobenchmark: medir el arranque y el scroll como lo vive el usuario | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses macrobenchmark: medir el arranque y el scroll como lo vive el usuario por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: macrobenchmark: medir el arranque y el scroll como lo vive el usuario funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Macrobenchmark: medir el arranque y el scroll como lo vive el usuario existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve macrobenchmark: medir el arranque y el scroll como lo vive el usuario en tu contexto?
+2. ¿Cómo sabrías que macrobenchmark: medir el arranque y el scroll como lo vive el usuario no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar macrobenchmark: medir el arranque y el scroll como lo vive el usuario?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
 
 ```kotlin
 package co.rutaflow.benchmark
@@ -418,16 +567,10 @@ class ArranqueBenchmark {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 ./gradlew :macrobenchmark:connectedBenchmarkAndroidTest
 # resultados en macrobenchmark/build/outputs/connected_android_test_additional_output/
 ```
-
-**Explicación por bloques:** `MacrobenchmarkRule` controla la app desde fuera. Las dos pruebas de arranque son iguales salvo el modo de compilación: sin perfil y con el Baseline Profile aplicado. Cada una arranca en frío diez veces y espera el primer fotograma. La prueba de scroll abre la app una vez (`setupBlock`), busca la lista por su `testTag` (expuesto con `testTagsAsResourceId` en Compose) y la desliza mientras mide los fotogramas.
-
-**Resultado esperado:**
 
 ```text
 ArranqueBenchmark_arranqueSinPerfil
@@ -437,37 +580,4 @@ timeToInitialDisplayMs   min 431,   median 462,   max 510
 (las cifras dependen del dispositivo; lo que importa es la diferencia entre medianas)
 ```
 
-**Fallo deliberado:** cambia la variante de la app a `debug` en el módulo de benchmark. **Error esperado:** la prueba falla con un aviso de que la app objetivo es depurable (`DEBUGGABLE`). **Diagnóstico:** una build depurable no representa el rendimiento real. Usa la variante `benchmark` que crea la plantilla, firmada como release.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta las pruebas y anota las medianas de arranque.
-2. **Variación:** regenera el Baseline Profile después de agregar una pantalla y vuelve a medir.
-3. **Diagnóstico:** reproduce el fallo deliberado con la variante depurable.
-4. **Integración:** agrega `testTag("lista_envios")` y `Modifier.semantics { testTagsAsResourceId = true }` en la pantalla para que el scroll encuentre la lista.
-5. **Diseño:** define un umbral de arranque para RutaFlow y qué hacer si un pull request lo supera.
-
-**Pista:** compara medianas de la misma prueba en el mismo dispositivo; una sola ejecución no prueba nada.
-
-#### Paso 6 · Práctica independiente
-
-Agrega una prueba que mida el tiempo desde que se toca un envío en la lista hasta que aparece su detalle, con `TraceSectionMetric` y una sección `trace("abrirDetalle")` en el código de la app.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué no se mide en debug.
-- [ ] Obtuviste medianas con y sin perfil.
-- [ ] Reprodujiste el rechazo de la app depurable.
-- [ ] Mides scroll además del arranque.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** medir en debug, comparar ejecuciones sueltas y mezclar resultados de dispositivos distintos. **Siguiente paso:** el módulo 13 convierte estas mediciones en objetivos de calidad por dispositivo y versión.
-
-**Transferencia al proyecto integrador «RutaFlow»:** agrega Macrobenchmark a la app del conductor de RutaFlow y publica las medianas de arranque en cada pull request.
-
-**Fuente oficial:** [Android Developers — Write a Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview).
-
-## Proyecto del módulo
-
-Convierte RutaFlow en proyecto multi-módulo con demo/prod, catálogo verificado, release
-minificada y pipeline que conserva mapping y checksum. Provoca un conflicto, un ciclo y
-un crash de reflexión; demuestra diagnóstico y corrección mínima.
+</details>

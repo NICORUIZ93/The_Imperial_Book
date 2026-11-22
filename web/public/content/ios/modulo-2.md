@@ -3,24 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: @State y @Binding · Básico · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a conectar `TarjetaEnvio` (Módulo 1) a un interruptor de estado "entregado/en ruta" que el padre posee y el hijo solo puede modificar, nunca copiar. Prerrequisitos: Módulo 1 completo.
-#### Paso 2 · Contexto y caso real
-Si la pantalla de detalle de un envío y la lista de envíos mostraran cada una su propia copia del estado "entregado", marcar la entrega en el detalle nunca actualizaría la lista — exactamente el bug que `@Binding` existe para evitar.
-#### Paso 3 · Teoría, modelo mental y analogía
-`@State` pertenece a la vista que lo declara; `@Binding` es una referencia hacia el estado de otra vista, nunca una copia — un apoderado con autorización para modificar la casa de otro, sin ser dueño de ella.
-**Conceptos clave:** estado propio de una vista vs referencia mutable al estado de otra.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Cómo leer `@State`, `@Binding` y el prefijo `$`
+#### ► DE QUÉ TRATA
+Al finalizar vas a conectar TarjetaEnvio (Módulo 1) a un interruptor de estado "entregado/en ruta" que el padre posee y el hijo solo puede modificar, nunca copiar. Prerrequisitos: Módulo 1 completo.
 
-En Swift, `@State` y `@Binding` son **property wrappers**, no decoradores genéricos. Un wrapper define cómo se almacena y se accede a una propiedad mediante `wrappedValue`; el compilador reescribe la declaración y sintetiza almacenamiento auxiliar. En `@State private var contador = 0`, leer o asignar `contador` opera sobre el valor envuelto. La expresión `$contador` accede al `projectedValue` que `State` expone: un `Binding<Int>` capaz de leer y escribir el mismo origen de verdad.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a conectar TarjetaEnvio (Módulo 1) a un interruptor de estado "entregado/en ruta" que el padre posee y el hijo solo puede modificar, nunca copiar.**
 
-`@Binding var valor: Int` no crea almacenamiento ni copia el entero. Declara que la vista necesita recibir dos operaciones coordinadas —lectura y escritura— sobre un valor poseído en otro lugar. Por eso el inicializador espera `Binding<Int>` y se llama con `$contador`, no con `contador`. El error «Cannot convert value of type 'Int' to expected argument type 'Binding<Int>'» indica precisamente que se pasó el valor actual cuando el hijo necesitaba el vínculo proyectado.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Decisión:** usa `@State` solo para estado transitorio que la vista posee; usa `@Binding` cuando el hijo debe modificar una fuente de verdad externa. No copies datos de dominio en otro `@State` para “sincronizarlos”: aparecerán dos fuentes de verdad que pueden divergir.
+#### ► LA ANALOGÍA
+Piensa en @state y @binding como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que @state y @binding resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| @State y @Binding se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar @State y @Binding | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses @state y @binding por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: @state y @binding funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- @State y @Binding existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve @state y @binding en tu contexto?
+2. ¿Cómo sabrías que @state y @binding no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar @state y @binding?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 struct PantallaContador: View {
     @State private var contador = 0 // estado propio de esta vista
@@ -36,23 +80,6 @@ struct BotonContador: View {
     }
 }
 ```
-
-`@State` declara una propiedad cuyo valor pertenece exclusivamente a esa vista específica, y cuyo cambio dispara automáticamente un redibujado de esa vista (y de cualquier sub-vista que dependa de ese valor); SwiftUI gestiona el almacenamiento persistente de ese valor entre redibujados por su cuenta, un mecanismo conceptualmente equivalente a `remember { mutableStateOf(...) }` en Jetpack Compose (Módulo 2 del track de Android), ambos resolviendo el mismo problema de "preservar estado local entre recomposiciones/redibujados sucesivos" en sus respectivos frameworks de UI declarativa.
-
-`@Binding`, en contraste, no posee el valor sino que mantiene una referencia hacia el estado de otra vista (típicamente el padre, pasado con el prefijo `$` que crea el Binding a partir de un `@State`): modificar `valor` dentro de `BotonContador` efectivamente modifica el `@State` original en `PantallaContador`, exactamente el mismo principio de state hoisting estudiado en Jetpack Compose (Módulo 2 de Android) y en React (Módulo 2 de React), donde un componente hijo recibe el valor y una forma de notificar cambios, sin poseer el estado él mismo.
-
-**Analogía:** `@State` es como el propietario de una casa que decide directamente sobre sus remodelaciones; `@Binding` es como un apoderado con autorización específica para tomar ciertas decisiones sobre esa misma casa en nombre del propietario, sin ser dueño de ella, pero con capacidad real de modificarla efectivamente.
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
-* Proyecto: en el proyecto integrador RutaFlow, conecta el formulario de confirmación con @State y @Binding.
-
-**Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
-
-**¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía llamada `EstadoDemo`. En Xcode elige **File ▸ New ▸ Project ▸ App**, guarda el proyecto dentro de esa carpeta, nómbralo `EstadoDemo`, selecciona interfaz SwiftUI y lenguaje Swift, y ábrelo. Reemplaza manualmente el contenido de `ContentView.swift` con:
 
 ```swift
 import SwiftUI
@@ -79,35 +106,73 @@ struct ConfirmarEntregaBoton: View {
 }
 ```
 
-Como `ContentView.swift` ya no declara `ContentView`, abre el `EstadoDemoApp.swift` generado y cambia `ContentView()` por `DetalleEnvio()` dentro de `WindowGroup`.
-
-Ejecútalo y obsérvalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema de la app):
-
 ```bash
 xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** al tocar "Confirmar entrega" dentro de `ConfirmarEntregaBoton`, el texto de `DetalleEnvio` cambia a "Estado: Entregado". Hay un solo valor `entregado` con dos puntos de acceso (el padre lo posee, el hijo lo modifica vía `$`), no dos copias sincronizándose. **Fallo deliberado:** mira el Paso 5 — al darle al hijo su propio `@State`, el texto del padre deja de cambiar.
-#### Paso 5 · Práctica guiada
-Pista: cambiá `ConfirmarEntregaBoton` para que declare su propio `@State private var entregado = false` en vez de recibir el `@Binding` — ese es el fallo deliberado: ahora tocar el botón cambia SU propia copia, pero `DetalleEnvio` nunca se entera, y las dos vistas muestran estados de entrega distintos para el mismo envío.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`ResumenRuta`) que también reciba el mismo `$entregado` — confirmá que las tres vistas (detalle, botón, resumen) siempre muestran el mismo valor, sin que ninguna tenga que "sincronizarse" explícitamente con las otras.
-
-#### Paso 7 · Cierre
-Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
+</details>
 
 ### Tema 2: @Observable · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear un `EnviosViewModel` con `@Observable` y a confirmar que solo las vistas que leen la propiedad que cambió se redibujan. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-Si la pantalla de RutaFlow muestra tanto la lista de envíos como un contador de "envíos pendientes" separados, actualizar la lista no debería forzar un redibujado del contador si el contador no cambió.
-#### Paso 3 · Teoría, modelo mental y analogía
-`@Observable` redibuja solo las vistas que efectivamente leyeron la propiedad específica que cambió — un sistema de notificaciones que avisa solo a quien se suscribió a ese tema exacto, no a todo el canal.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Porque `@Observable` redibuja únicamente las vistas que efectivamente leyeron la propiedad que cambió, evitando la sobre-notificación del viejo `ObservableObject`+`@Published`, que redibujaba a cualquier observador del objeto completo.
-**Conceptos clave:** redibujado granular basado en la propiedad específica leída, no en el objeto completo.
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear un EnviosViewModel con @Observable y a confirmar que solo las vistas que leen la propiedad que cambió se redibujan. Prerrequisitos: Tema 1 de este módulo.
 
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a crear un EnviosViewModel con @Observable y a confirmar que solo las vistas que leen la propiedad que cambió se redibujan.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en @observable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que @observable resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| @Observable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar @Observable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses @observable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: @observable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- @Observable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve @observable en tu contexto?
+2. ¿Cómo sabrías que @observable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar @observable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 @Observable
 class TareasViewModel {
@@ -120,29 +185,12 @@ struct PantallaTareas: View {
 }
 ```
 
-`@Observable` (el framework de Observation moderno de Swift) reemplaza al patrón anterior `ObservableObject` + `@Published`, con una mejora de rendimiento significativa: SwiftUI, con `@Observable`, solo redibuja las vistas que efectivamente leen la propiedad específica que cambió, en vez de redibujar cualquier vista que simplemente observe el objeto completo (el comportamiento del modelo anterior basado en `@Published`, donde cambiar cualquier propiedad publicada notificaba a todos los observadores del objeto entero, sin distinguir si esa vista específica leía o no esa propiedad en particular).
-
-Esta granularidad de redibujado bajo `@Observable` es análoga a la optimización de "skippability" en Jetpack Compose (Módulo 10 del track de Android), donde Compose evita recomponer un composable si sus parámetros efectivamente relevantes no cambiaron, aunque el mecanismo interno de detección sea distinto (Compose analiza parámetros de entrada, `@Observable` rastrea qué propiedades específicas de un objeto observable se leyeron durante el último `body`).
-
-**Analogía:** `@Observable` es como un sistema de notificaciones que avisa únicamente a quienes se suscribieron específicamente a un tema exacto de interés (una propiedad concreta), en vez de notificar a todos los suscriptores de un canal general cada vez que cualquier tema dentro de ese canal cambia, sin importar si les interesa ese tema específico o no.
-
-**Código del ejemplo:**
-
 ```swift
 @Observable
 class TareasViewModel {
     var tareas: [Tarea] = []   // solo las vistas que LEEN `tareas` específicamente se redibujan al cambiar
 }
 ```
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
-* Proyecto: en el proyecto integrador RutaFlow, mueve el estado de la jornada a un modelo @Observable.
-
-**Límites y decisión de uso:** Observar cambios no establece una política de persistencia ni de concurrencia. Define quién posee el modelo y dónde puede mutarlo; una propiedad observable compartida sin esas reglas puede seguir produciendo estados incoherentes.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de otra carpeta vacía y crea en Xcode un proyecto independiente llamado `EstadoDemo` con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y lenguaje Swift. No reutilices el proyecto del Tema 1. Reemplaza el `ContentView.swift` generado con este contenido escrito manualmente:
 
 ```swift
 import SwiftUI
@@ -169,32 +217,75 @@ struct ListaEnvios: View {
 }
 ```
 
-Abre el `EstadoDemoApp.swift` generado y cambia `ContentView()` por `ListaEnvios()` dentro de `WindowGroup`.
-
-Ejecútalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema con `xcodebuild`):
-
 ```bash
 xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** `ListaEnvios` solo lee `vm.envios` en su `body`. Al tocar "Cambiar conductor" (que modifica `vm.conductorActivo`), la lista NO se redibuja, porque nunca leyó esa propiedad. Para comprobarlo, añade temporalmente `let _ = Self._printChanges()` al inicio del `body` y observa en la consola de Xcode que no se imprime un recálculo al cambiar el conductor. **Fallo deliberado:** mira el Paso 5 — al leer `conductorActivo` en el `body` "para tenerlo a mano", la lista empieza a redibujarse de más.
-#### Paso 5 · Práctica guiada
-Pista: agregá `Text(vm.conductorActivo)` dentro del `body` de `ListaEnvios` "solo para tenerlo a mano", sin usarlo realmente en la lógica visible — ese es el fallo deliberado: ahora `ListaEnvios` SÍ se redibuja cada vez que `conductorActivo` cambia, aunque la lista de envíos en sí no haya cambiado, porque `@Observable` rastrea exactamente qué leíste, no qué "parece que vas a necesitar".
-#### Paso 6 · Práctica independiente
-Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segunda vista `ContadorPendientes` que lea solo `vm.envios.count` — confirmá que ninguna de las dos vistas se redibuja de más cuando cambia una propiedad que la otra no lee.
-#### Paso 7 · Cierre
-Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
+</details>
 
 ### Tema 3: @Environment y identidad vs valor · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a inyectar un `ServicioAPI` de RutaFlow vía `@Environment`, llegando a una vista profunda sin pasarlo por cada inicializador intermedio. Prerrequisitos: Tema 2 de este módulo.
-#### Paso 2 · Contexto y caso real
-Si `DetalleEnvio` está anidada tres niveles dentro de `ListaEnvios`, que a su vez está dentro de la pantalla principal, pasar `ServicioAPI` manualmente por cada inicializador intermedio que no lo usa directamente sería puro acoplamiento sin beneficio.
-#### Paso 3 · Teoría, modelo mental y analogía
-`@Environment` es la electricidad disponible en cualquier toma del edificio: cualquier vista descendiente se "enchufa" sin que nadie tienda un cable manual desde la planta de generación hasta cada habitación.
-**Conceptos clave:** inyección de dependencias sin pasar manualmente por cada inicializador.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Al finalizar vas a inyectar un ServicioAPI de RutaFlow vía @Environment, llegando a una vista profunda sin pasarlo por cada inicializador intermedio. Prerrequisitos: Tema 2 de este módulo.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a inyectar un ServicioAPI de RutaFlow vía @Environment, llegando a una vista profunda sin pasarlo por cada inicializador intermedio.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en @environment y identidad vs valor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    A["WindowGroup\n.environment(ServicioAPI())"] -.->|disponible para cualquier descendiente| B["ListaEnvios\n(no lo usa)"]
+    B -.->|sin reenviar manualmente| C["VistaIntermedia\n(no lo usa)"]
+    C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| @Environment y identidad vs valor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar @Environment y identidad vs valor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses @environment y identidad vs valor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: @environment y identidad vs valor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- @Environment y identidad vs valor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve @environment y identidad vs valor en tu contexto?
+2. ¿Cómo sabrías que @environment y identidad vs valor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar @environment y identidad vs valor?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```swift
 struct MiApp: App {
     var body: some Scene {
@@ -207,22 +298,10 @@ struct ContentView: View {
 }
 ```
 
-`@Environment` inyecta una dependencia disponible para cualquier vista descendiente en el árbol, sin necesidad de pasarla explícitamente a través de cada inicializador intermedio de vistas que no la usan directamente pero que se encuentran en el camino jerárquico hacia una vista descendiente que sí la necesita (un problema conocido como "prop drilling" en otros ecosistemas de UI declarativa, como React, donde Context API resuelve exactamente el mismo problema, Módulo 5 del track de React); esto es especialmente valioso en apps con árboles de vistas profundos, donde pasar una dependencia manualmente por cada nivel intermedio sería tedioso y añadiría acoplamiento innecesario a vistas que no la consumen directamente.
-
-La distinción entre identidad y valor en SwiftUI (relacionada con el `struct` vs `class` del Módulo 0) determina cómo SwiftUI decide si una vista es "la misma" entre dos renderizados sucesivos o una vista completamente nueva: esta decisión afecta directamente si el estado (`@State`) de esa vista se preserva o se reinicia, un mecanismo importante de entender al trabajar con listas donde el orden o la identidad de los elementos puede cambiar dinámicamente.
-
-**Analogía:** `@Environment` es como la electricidad disponible en cualquier toma de corriente de un edificio entero, sin necesidad de tender un cable manual específico desde la planta de generación hasta cada dispositivo individual que la necesita: cualquier habitación puede simplemente "enchufarse" al servicio ya disponible en el ambiente general.
-
-**¿Por qué es importante?** `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio, un problema resuelto de forma análoga por Context API en React; la identidad de una vista determina si su estado se preserva o se reinicia entre renderizados sucesivos.
-
-**Código del ejemplo:**
-
 ```swift
 WindowGroup { ContentView().environment(ServicioAPI()) }
 // Cualquier vista descendiente puede leer @Environment(ServicioAPI.self) sin pasar por cada nivel intermedio
 ```
-
-**Diagrama: @Environment vs prop drilling**
 
 ```mermaid
 flowchart TD
@@ -230,14 +309,6 @@ flowchart TD
     B -.->|sin reenviar manualmente| C["VistaIntermedia\n(no lo usa)"]
     C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
 ```
-
-En tu propio proyecto RutaFlow, crea `ServicioAPI.swift` con **File ▸ New ▸ File ▸ Swift File**, agrégalo al target de la app y escribe allí la clase del Paso 4. Límite de la decisión: `@Environment` no conviene para una dependencia que solo necesita una única vista puntual y cercana a la raíz — ahí pasarla directamente por el inicializador es más simple y explícito; reservá `@Environment` específicamente cuando la dependencia debe atravesar varios niveles de vistas intermedias que no la usan.
-
----
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `EstadoDemo`; no reutilices los proyectos de los Temas 1 o 2. Crea `ServicioAPI.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y distribuye manualmente el siguiente contenido: la clase `ServicioAPI` y sus imports en `ServicioAPI.swift`, el tipo `@main` en el `EstadoDemoApp.swift` generado (sustituyendo el tipo de app anterior) y las dos vistas en `ContentView.swift` junto con `import SwiftUI`.
 
 ```swift
 import SwiftUI
@@ -265,46 +336,8 @@ struct DetalleEnvio: View {
 }
 ```
 
-Ejecútalo (en Xcode: ⌘R para el simulador; por terminal, compila el esquema):
-
 ```bash
 xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
 ```
 
-**Resultado esperado:** la pantalla muestra "Conectado a: https://api.rutaflow.dev". `DetalleEnvio` leyó `ServicioAPI` directamente del ambiente aunque `ListaEnvios` (la vista intermedia) nunca lo recibió ni lo reenvió. **Fallo deliberado:** mira el Paso 5 — al quitar `.environment(ServicioAPI())` del `WindowGroup`, la app compila pero crashea al arrancar, porque no hay ningún `ServicioAPI` en el ambiente que leer.
-#### Paso 5 · Práctica guiada
-Pista: quitá `.environment(ServicioAPI())` del `WindowGroup` pero dejá `@Environment(ServicioAPI.self) var servicio` en `DetalleEnvio` — ese es el fallo deliberado: en tiempo de ejecución, SwiftUI no encuentra ningún `ServicioAPI` inyectado en el ambiente y la app crashea al intentar leer `servicio`, un error silencioso en tiempo de compilación que solo aparece al correr.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la inyección, y agregá una segunda vista intermedia entre `ListaEnvios` y `DetalleEnvio` que NO lea `ServicioAPI` en absoluto — confirmá que esa vista intermedia no necesita saber nada sobre `ServicioAPI` para que `DetalleEnvio` siga funcionando.
-
-**Proyecto integrador:** en el proyecto iniciado desde cero en este tema, crea `SesionConductor.swift` con una clase `@Observable` que contenga `conductorID` y `nombreVisible`. Crea `JornadaView.swift` como vista intermedia que no reciba la sesión y `DetalleJornadaView.swift` como descendiente que la lea con `@Environment`; inyecta una única instancia desde `EstadoDemoApp.swift`. Añade un borrador local y aplica `.id(sesion.conductorID)` al editor: al cambiar de `c-891` a `c-999`, el texto visible debe corresponder al conductor nuevo y el borrador anterior debe reiniciarse, demostrando tanto la inyección como el efecto de la identidad.
-
-#### Paso 7 · Cierre
-Entregá la inyección funcionando a través de varios niveles del Paso 4, el crash por ambiente faltante del Paso 5, y la vista intermedia ignorante de la dependencia del Paso 6; explicá por qué esto resuelve el mismo "prop drilling" que Context API resuelve en React. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
-**Implicación práctica:** `@Environment` evita el "prop drilling" de pasar una dependencia manualmente por cada inicializador intermedio que no la usa, resolviendo en SwiftUI el mismo problema que Context API resuelve en React.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir un formulario con estado compartido entre vistas padre/hijo usando `@Binding`.
-
-**Requisitos previos:** Módulo 1 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Usar `@State` para un contador local | Ver Tema 1 | Verifica el redibujado al cambiarlo |
-| 2 | Pasarlo a una vista hija con `@Binding` | Ver Tema 1 | Modificarlo desde el hijo |
-| 3 | Crear una clase `@Observable` compartida | Ver Tema 2 | Entre varias vistas |
-| 4 | Inyectar un servicio vía `@Environment` | Ver Tema 3 | En vez de pasarlo manualmente |
-
-**Verificación:** el laboratorio se considera exitoso si modificar el valor desde la vista hija (vía `@Binding`) actualiza correctamente el estado en la vista padre, y si el servicio inyectado vía `@Environment` es accesible desde una vista descendiente sin pasar por inicializadores intermedios.
-
-**Errores comunes y soluciones**
-
-- **Usar `@State` en la vista hija en vez de `@Binding` cuando se necesita modificar el estado del padre.** `@State` crea una copia local independiente; usa `@Binding` para una referencia real.
-- **Seguir usando `ObservableObject` + `@Published` en código nuevo.** Prefiere `@Observable` para mejor rendimiento de redibujado granular.
-- **Pasar una dependencia manualmente por cada inicializador intermedio.** Usa `@Environment` para evitar el prop drilling.
-
----
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `EstadoDemo`.
-* Proyecto: en el proyecto integrador RutaFlow, inyecta la sesión del conductor por @Environment y comprueba la identidad.
+</details>

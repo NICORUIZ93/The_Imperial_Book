@@ -3,20 +3,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: TestBed y componentes standalone · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con `TestBed` real, que un `input()` signal se asigna desde una prueba con `fixture.componentRef.setInput(...)` o, al crear el componente, con `bindings: [inputBinding(...)]` —nunca escribiéndolo directamente—, reproduciendo el error real que ocurre al intentar el atajo incorrecto.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con TestBed real, que un input() signal se asigna desde una prueba con fixture.componentRef.setInput(...) o, al crear el componente, con bindings: [inputBinding(...)] —nunca escribiéndolo directamente—, reproduciendo el error real que ocurre al inte…
 
-**Conocimiento previo:** Módulo 1 de este track (`input()` signal).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con TestBed real, que un input() signal se asigna desde una prueba con fixture.componentRef.setInput(...) o, al crear el componente, con bindings: [inputBinding(...)] —nunca escribiéndolo directamente—, reproduciendo el error real que ocurre al intentar el atajo incorrecto.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un `input()` signal es de solo lectura desde la perspectiva del propio componente; confirmar con una prueba real que intentar asignarlo directamente (en vez de usar `setInput`) falla de una forma real y diagnosticable evita que un desarrollador pierda tiempo con un atajo que Angular simplemente no soporta.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `TestBed.configureTestingModule`, `createComponent`, `componentRef.setInput`.
 
 `TestBed` es el entorno de pruebas de Angular que permite crear una instancia real y renderizada de un componente dentro de un entorno controlado y aislado para pruebas, sin necesidad de arrancar la aplicación completa. `TestBed.configureTestingModule({ imports: [Tarjeta] })` declara qué componente (u otras dependencias) estarán disponibles en ese entorno de prueba específico; al tratarse de un componente standalone (Módulo 0), simplemente se importa directamente, sin necesidad de declarar un `NgModule` de pruebas dedicado como se requería en versiones anteriores de Angular.
@@ -52,17 +54,77 @@ describe('Tarjeta', () => {
 });
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Parte de una carpeta vacía (o continúa en `demo-comparacion` del Módulo 9):
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que testbed y componentes standalone resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| TestBed y componentes standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar TestBed y componentes standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses testbed y componentes standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: testbed y componentes standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- TestBed y componentes standalone existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve testbed y componentes standalone en tu contexto?
+2. ¿Cómo sabrías que testbed y componentes standalone no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar testbed y componentes standalone?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌──────────────┐   setInput('titulo','Hola')   ┌──────────────────┐
+│ fixture         │ ──────────────────────────────▶│ componentRef       │
+│ (entorno de test)│                                │ (mismo mecanismo   │
+└──────────────┘                                │  que un binding    │
+                                                  │  real en produccion)│
+                                                  └──────────────────┘
+```
+
+```ts
+describe('Tarjeta', () => {
+  it('muestra el título', async () => {
+    await TestBed.configureTestingModule({ imports: [Tarjeta] }).compileComponents();
+    const fixture = TestBed.createComponent(Tarjeta);
+    fixture.componentRef.setInput('titulo', 'Hola');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Hola');
+  });
+});
+```
 
 ```bash
 npx -y @angular/cli@22 new demo-testbed --standalone --skip-git --defaults
 cd demo-testbed
 mkdir -p src/app
 ```
-
-Crea `src/app/tarjeta.ts`:
 
 ```ts
 // src/app/tarjeta.ts
@@ -77,8 +139,6 @@ export class Tarjeta {
   titulo = input.required<string>();
 }
 ```
-
-Confirma con `TestBed` real tanto el uso correcto (`setInput`) como el error real que produce el atajo incorrecto:
 
 ```ts
 // src/app/tarjeta.spec.ts
@@ -124,69 +184,23 @@ describe('formas soportadas de asignar un input signal en un test', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** los tres tests pasan; el segundo muestra la alternativa a `setInput`: `inputBinding` enlaza el input a un signal desde la creación, como haría una plantilla padre; el tercero confirma con `expect(...).toThrow()` que un `input()` signal NO expone `.set()` (a diferencia de un `signal()` normal del Módulo 2), porque es un `InputSignal` de solo lectura, no un `WritableSignal` — la razón real, verificada en código, de por qué necesitas `setInput` o `inputBinding`.
-
-**Fallo deliberado:** quita el `await fixture.whenStable();` inmediatamente después de `fixture.componentRef.setInput('titulo', 'Hola mundo');` en el primer test, y ejecuta de nuevo. El test se vuelve intermitente/falla dependiendo del entorno porque la aserción sobre `fixture.nativeElement.textContent` puede ejecutarse ANTES de que Angular complete la detección de cambios que actualiza el DOM tras `setInput` — diagnosticando por qué la teoría insiste en `whenStable()` como paso obligatorio, no opcional. Restaura el `await` antes de continuar.
-
-**`detectChanges()` frente a `whenStable()` y prueba de un `output()`:** `fixture.detectChanges()` ejecuta la detección de cambios **en ese instante** y también funciona en un proyecto zoneless; `await fixture.whenStable()` espera a que Angular termine el trabajo que programó (detección, efectos, temporizadores internos). Usa `whenStable()` como regla y `detectChanges()` cuando quieras controlar paso a paso cuándo se repinta. Si no llamas a ninguno de los dos después de `setInput`, el `<p>` del componente sigue vacío cuando la aserción lo lee. Para un `output()`, suscríbete desde la prueba y dispara el evento real:
-
-```ts
-it('emite confirmar con la cantidad al pulsar el botón', async () => {
-  const fixture = TestBed.createComponent(ContadorEntregas);
-  fixture.componentRef.setInput('cantidad', 3);
-  await fixture.whenStable();
-  const spy = vi.fn();
-  fixture.componentInstance.confirmar.subscribe(spy);
-  fixture.nativeElement.querySelector('button').click();
-  expect(spy).toHaveBeenCalledWith(3);
-});
-```
-
-Aquí `ContadorEntregas` tiene `cantidad = input.required<number>()`, `confirmar = output<number>()` y el template `<p>Entregas pendientes: {{ cantidad() }}</p><button (click)="confirmar.emit(cantidad())">Confirmar</button>`.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un segundo input opcional (`subtitulo = input<string>('')`) y confirma con un test que su valor por defecto se usa cuando `setInput` no lo asigna explícitamente.
-2. Escribe un test que confirme que `setInput` con un valor DISTINTO en una segunda llamada actualiza correctamente el DOM (no solo la primera vez).
-3. Documenta, en un comentario, la diferencia real entre un `WritableSignal` (Módulo 2, con `.set()`/`.update()`) y un `InputSignal` (Módulo 1, sin ellos) — ambos son signals legibles de la misma forma (`titulo()`), pero solo uno es escribible directamente.
-4. Escribe de memoria (sin mirar) un componente con `input.required()` y un test que use `setInput` + `whenStable()` correctamente. Compara después contra el patrón del Paso 4.
-
-**Pista:** si una prueba de un componente con inputs signal falla de forma intermitente (a veces pasa, a veces no), la primera sospecha debe ser un `await fixture.whenStable()` faltante después de `setInput`, no un bug en el componente mismo.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método real de `componentRef` que asigna un valor a un `input()` signal desde un test:
-
-```ts
-fixture.componentRef.____('titulo', 'Hola mundo');
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `input.required()` y un test que confirme tanto el uso correcto de `setInput` como el error real de intentar `.set()` directamente. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con `TestBed` real, que un `input()` signal se asigna desde una prueba con `setInput` o con `inputBinding` al crear el componente, y reproduces el error real de intentar el atajo incorrecto. El siguiente tema confirma con Angular Testing Library que consultar el DOM por rol/texto (en vez de por selector CSS interno) hace que una prueba sobreviva a un refactor puramente cosmético. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
-
-**Errores comunes:** asignar un input signal como propiedad directa en vez de usar `setInput`; olvidar `await fixture.whenStable()` tras `setInput`, produciendo aserciones que se ejecutan antes de que la vista termine de actualizarse.
-
-**Cuándo no usarlo:** para un componente sin ningún input (o con solo `@Output`/eventos), no hay ningún valor de input que propagar — `TestBed.createComponent` sin `setInput` es suficiente.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Monta el formulario de asignación con sus imports standalone y dependencias falsas. Verifica que un conductor inválido impide enviar la solicitud y que un caso válido emite el identificador esperado.
+</details>
 
 ### Tema 2: Angular Testing Library · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con dos pruebas equivalentes (una por selector CSS interno y otra por rol/texto), que solo la prueba orientada al usuario sobrevive a un refactor puramente cosmético del componente — la garantía concreta que justifica preferir Angular Testing Library.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con dos pruebas equivalentes (una por selector CSS interno y otra por rol/texto), que solo la prueba orientada al usuario sobrevive a un refactor puramente cosmético del componente — la garantía concreta que justifica preferir Angular Testing Librar…
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con dos pruebas equivalentes (una por selector CSS interno y otra por rol/texto), que solo la prueba orientada al usuario sobrevive a un refactor puramente cosmético del componente — la garantía concreta que justifica preferir Angular Testing Library.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Renombrar una clase CSS por razones puramente visuales (sin cambiar ningún comportamiento) no debería romper ninguna prueba; confirmar con un experimento real (dos pruebas del mismo componente, un refactor cosmético real aplicado) cuál sobrevive y cuál no es la evidencia concreta, no solo la afirmación teórica.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** consultas orientadas al usuario, `render`, `screen`, `userEvent`.
 
 Angular Testing Library es una capa sobre `TestBed` que promueve un estilo de prueba centrado deliberadamente en cómo un usuario real interactúa con la interfaz, en vez de en detalles internos de implementación: en lugar de acceder a elementos del DOM mediante selectores CSS internos (`fixture.nativeElement.querySelector('.boton-interno')`, que se rompe si el nombre de una clase CSS cambia por razones puramente visuales sin afectar el comportamiento real), se consulta el DOM por texto visible o por rol semántico de accesibilidad (`screen.getByRole('button', { name: /ver más/i })`), exactamente la misma información que un usuario (o una tecnología asistiva como un lector de pantalla) usaría para identificar ese elemento.
@@ -223,16 +237,77 @@ it('emite el evento al hacer click', async () => {
 });
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-testing-library --standalone --skip-git --defaults` y luego `cd demo-testing-library`):
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que angular testing library resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Angular Testing Library se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Angular Testing Library | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses angular testing library por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: angular testing library funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Angular Testing Library existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve angular testing library en tu contexto?
+2. ¿Cómo sabrías que angular testing library no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar angular testing library?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌───────────────────────────┐   renombrar .boton-interno   ┌────────┐
+│ query por selector CSS       │ ─────────────────────────────▶│ ROTA    │
+└───────────────────────────┘                                └────────┘
+┌───────────────────────────┐   renombrar .boton-interno   ┌────────┐
+│ query por rol/texto          │ ─────────────────────────────▶│ SIGUE   │
+│ (screen.getByRole)           │                                │ PASANDO │
+└───────────────────────────┘                                └────────┘
+```
+
+```ts
+import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+it('emite el evento al hacer click', async () => {
+  const seleccionar = vi.fn();
+  await render(Tarjeta, { inputs: { titulo: 'Hola' }, on: { seleccionar } });
+  await userEvent.click(screen.getByRole('button', { name: /ver más/i }));
+  expect(seleccionar).toHaveBeenCalled();
+});
+```
 
 ```bash
 npm install @testing-library/angular @testing-library/user-event --save-dev
 mkdir -p src/app
 ```
-
-Crea `src/app/boton-entrega.ts` con un botón cuyo `class` interno cambiará durante el experimento:
 
 ```ts
 // src/app/boton-entrega.ts
@@ -247,8 +322,6 @@ export class BotonEntrega {
   confirmar = output<void>();
 }
 ```
-
-Escribe DOS pruebas del mismo comportamiento: una acoplada al selector CSS interno, otra orientada al usuario:
 
 ```ts
 // src/app/boton-entrega.spec.ts
@@ -284,53 +357,23 @@ describe('prueba orientada al usuario con Testing Library (robusta)', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan inicialmente.
-
-**Fallo deliberado:** aplica un refactor puramente cosmético al componente: cambia `class="boton-interno-v1"` por `class="boton-interno-v2"` en `boton-entrega.ts` (sin cambiar ningún comportamiento real) y ejecuta de nuevo ambos tests. El primero (`.querySelector('.boton-interno-v1')`) FALLA con `boton` como `null` — se rompió por un cambio que no afectó el comportamiento real. El segundo (`screen.getByRole('button', {...})`) SIGUE PASANDO sin ninguna modificación — confirmando en código, no solo en teoría, exactamente la garantía que Angular Testing Library promete. Restaura la clase original o actualiza el primer test antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Repite el experimento pero esta vez cambiando el TEXTO visible del botón (de "Confirmar entrega" a "Confirmar pedido") — esta vez la prueba orientada al usuario SÍ debería fallar, porque el texto es parte del comportamiento observable real, no un detalle cosmético interno.
-2. Documenta, en un comentario, la diferencia entre un cambio "puramente cosmético" (nombre de clase CSS) y un cambio "de comportamiento observable" (texto visible al usuario) — y por qué Testing Library debería reaccionar solo al segundo.
-3. Agrega una prueba con `screen.getByLabelText(...)` para un campo de formulario, y documenta por qué esa consulta también es accesible para un lector de pantalla, no solo conveniente para el test.
-4. Escribe de memoria (sin mirar) un componente y dos pruebas equivalentes (una por selector CSS, otra por rol/texto) que demuestren la diferencia de robustez ante un refactor cosmético. Compara después contra el patrón del Paso 4.
-
-**Pista:** el experimento del Paso 4 es la forma más convincente de enseñar por qué Testing Library existe — no te limites a explicarlo, reprodúcelo cada vez que quieras confirmar (o recordar) la diferencia real.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la función real de `@testing-library/angular` que consulta el DOM renderizado por rol semántico de accesibilidad:
-
-```ts
-const boton = screen.____('button', { name: /confirmar entrega/i });
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, dos pruebas equivalentes del mismo componente (una por selector CSS interno, otra con `screen.getByRole`) y documenta cuál sobrevive a un refactor cosmético. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con un refactor cosmético real aplicado a un componente, que una prueba por selector CSS interno se rompe mientras una prueba orientada al usuario (por rol/texto) sigue pasando. El siguiente y último tema confirma con `HttpTestingController` cómo aislar completamente una prueba de un backend real, incluyendo el caso de error. Fuentes oficiales: [Testing Library — Angular](https://testing-library.com/docs/angular-testing-library/intro/).
-
-**Errores comunes:** consultar por selector CSS interno cuando una consulta por rol/texto cubriría el mismo caso con mayor robustez; usar `getByTestId` como primera opción en vez de como último recurso (la documentación oficial de Testing Library recomienda preferir siempre consultas por rol, texto o label antes que un atributo `data-testid` artificial).
-
-**Cuándo no usarlo:** para verificar un detalle de implementación interno que SÍ importa probar directamente (como confirmar que un signal interno específico cambió de valor, sin ninguna manifestación visible en el DOM), acceder directamente a `fixture.componentInstance` (Tema 1) sigue siendo apropiado — Testing Library está diseñada para comportamiento observable, no para reemplazar todo acceso a la instancia del componente.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Prueba asignar una entrega mediante etiquetas y botones visibles. Cambia la estructura interna del componente: la prueba debe seguir pasando mientras el operador pueda completar la tarea.
+</details>
 
 ### Tema 3: Mockear HttpClient y el builder predeterminado basado en Vitest · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con `HttpTestingController` real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con HttpTestingController real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.
 
-**Conocimiento previo:** Módulo 7 de este track (`HttpTestingController`); Temas 1-2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con HttpTestingController real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Probar cómo una aplicación maneja un error 500 real del servidor sin poder forzar deliberadamente ese error en un backend real de producción es prácticamente imposible; `HttpTestingController` permite simular ese error exacto de forma determinista y repetible en cada ejecución de la suite de pruebas.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `HttpTestingController`, aislamiento de pruebas del backend real, migración de Karma a Vitest.
 
 `HttpTestingController` es el mecanismo de Angular para interceptar peticiones HTTP realizadas durante una prueba sin que lleguen a un servidor real: `httpMock.expectOne('/api/usuarios')` verifica que exactamente una petición a esa URL fue realizada por el código bajo prueba, devolviendo un objeto `req` sobre el que se puede llamar `req.flush([{ id: 1, nombre: 'Ana' }])` para simular la respuesta exacta del servidor que la prueba necesita, permitiendo probar cómo el servicio o componente maneja esa respuesta específica (incluyendo casos de error simulados con `req.flush(null, { status: 500, statusText: 'Error' })`) sin ninguna dependencia de un backend real disponible ni de datos reales impredecibles.
@@ -364,133 +407,72 @@ const req = httpMock.expectOne('/api/usuarios');
 req.flush([{ id: 1, nombre: 'Ana' }]);
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-http-testing --standalone --skip-git --defaults` y luego `cd demo-http-testing`), crea `src/app/usuarios-error.service.ts`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mockear httpclient y el builder predeterminado basado en vitest resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-```bash
-mkdir -p src/app
-```
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mockear HttpClient y el builder predeterminado basado en Vitest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```ts
-// src/app/usuarios-error.service.ts
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, map, of } from 'rxjs';
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mockear HttpClient y el builder predeterminado basado en Vitest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-export interface Usuario {
-  id: number;
-  nombre: string;
-}
+#### ► CUÁNDO NO USAR ESTO
+No uses mockear httpclient y el builder predeterminado basado en vitest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-@Injectable({ providedIn: 'root' })
-export class UsuariosErrorService {
-  private http = inject(HttpClient);
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mockear httpclient y el builder predeterminado basado en vitest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-  cargarUsuarios() {
-    return this.http.get<Usuario[]>('/api/usuarios').pipe(
-      map((usuarios) => ({ ok: true as const, usuarios })),
-      catchError(() => of({ ok: false as const, usuarios: [] as Usuario[] }))
-    );
-  }
-}
-```
+#### ► LO QUE DEBES RECORDAR
+- Mockear HttpClient y el builder predeterminado basado en Vitest existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Confirma con `HttpTestingController` real AMBOS casos: la respuesta exitosa y el error simulado:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mockear httpclient y el builder predeterminado basado en vitest en tu contexto?
+2. ¿Cómo sabrías que mockear httpclient y el builder predeterminado basado en vitest no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mockear httpclient y el builder predeterminado basado en vitest?
 
-```ts
-// src/app/usuarios-error.service.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { UsuariosErrorService } from './usuarios-error.service';
+</details>
 
-describe('UsuariosErrorService maneja exito y error 500 sin backend real', () => {
-  let controlador: HttpTestingController;
-  let servicio: UsuariosErrorService;
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
-    controlador = TestBed.inject(HttpTestingController);
-    servicio = TestBed.inject(UsuariosErrorService);
-  });
+#### Objetivo observable
+Al finalizar podrás confirmar, con `HttpTestingController` real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.
 
-  afterEach(() => controlador.verify());
+**Conocimiento previo:** Módulo 7 de este track (`HttpTestingController`); Temas 1-2 de este módulo.
 
-  it('con respuesta exitosa, devuelve ok:true con los usuarios', () => {
-    let resultado: any;
-    servicio.cargarUsuarios().subscribe((r) => (resultado = r));
-
-    controlador.expectOne('/api/usuarios').flush([{ id: 1, nombre: 'Ana' }]);
-
-    expect(resultado).toEqual({ ok: true, usuarios: [{ id: 1, nombre: 'Ana' }] });
-  });
-
-  it('con un error 500 simulado, devuelve ok:false sin lanzar una excepcion sin manejar', () => {
-    let resultado: any;
-    servicio.cargarUsuarios().subscribe((r) => (resultado = r));
-
-    controlador.expectOne('/api/usuarios').flush(null, { status: 500, statusText: 'Server Error' });
-
-    expect(resultado).toEqual({ ok: false, usuarios: [] });
-  });
-});
-```
-
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** ambos tests pasan; el segundo confirma con `flush(null, { status: 500, statusText: 'Server Error' })` que `HttpTestingController` puede simular un error real del servidor SIN necesitar que ningún backend real esté caído o mal configurado — el escenario de error se reproduce de forma completamente determinista en cada ejecución.
-
-**Fallo deliberado:** quita el operador `catchError(...)` del pipe en `cargarUsuarios()`, dejando solo `map(...)`, y ejecuta de nuevo el segundo test. FALLA porque el Observable ahora se rechaza (error no manejado) en vez de emitir `{ ok: false, usuarios: [] }` — el test nunca recibe un valor en `resultado`, reproduciendo en código exactamente el bug que ocurriría en producción si un componente real no maneja el error de una petición fallida. Restaura `catchError(...)` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un tercer test que simule un error 404 (`flush(null, { status: 404, statusText: 'Not Found' })`) y confirma si el servicio actual lo distingue de un 500 o los trata igual (documenta la decisión).
-2. Abre `angular.json` y confirma que `test` usa `@angular/build:unit-test` (el builder predeterminado con Vitest); documenta en un comentario la diferencia de tiempo de arranque frente al builder anterior basado en Karma, si puedes medirla localmente.
-3. Escribe un test que confirme que `controlador.verify()` en `afterEach` detectaría una petición extra no esperada si el servicio, por error, hiciera una segunda llamada HTTP no anticipada.
-4. Escribe de memoria (sin mirar) un servicio con manejo de error vía `catchError`, y dos tests con `HttpTestingController` que confirmen el caso exitoso y el caso de error. Compara después contra el patrón del Paso 4.
-
-**Pista:** `flush(null, { status: N, statusText: '...' })` es la forma de simular CUALQUIER código de error HTTP (401, 404, 500, 503) sin necesitar que un servidor real produzca ese error específico bajo demanda — úsalo para cubrir cada código de error que tu código realmente maneja de forma distinta.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el operador real de RxJS que captura un error del Observable y permite devolver un valor de reemplazo en vez de propagar el rechazo:
-
-```ts
-this.http.get<Usuario[]>('/api/usuarios').pipe(
-  map((usuarios) => ({ ok: true as const, usuarios })),
-  ____(() => of({ ok: false as const, usuarios: [] }))
-);
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio con manejo de error vía `catchError` y dos tests con `HttpTestingController` que confirmen ambos casos. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas, con `HttpTestingController` real, tanto una respuesta exitosa como un error 500 simulado, sin ninguna dependencia de un backend real. Con esto cierras el módulo de testing y el track completo de Angular: pruebas con `TestBed` respetando el mecanismo real de inputs (Tema 1), pruebas orientadas al usuario que sobreviven a refactors cosméticos (Tema 2), y aislamiento completo del backend con casos de éxito y error cubiertos (Tema 3); el siguiente paso natural es aplicar esta misma disciplina de pruebas a un proyecto propio de principio a fin. Fuentes oficiales: [Angular — HTTP testing](https://angular.dev/guide/http/testing).
-
-**Errores comunes:** probar solo el camino feliz (respuesta exitosa) sin simular nunca un error real del servidor; olvidar `controlador.verify()` en `afterEach`, dejando pasar peticiones no esperadas sin que ningún test las detecte.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Prueba el servicio que consulta el estado de una entrega contra `HttpTestingController`, simulando tanto una respuesta exitosa como un 500 real del backend de RutaFlow. El operador debe ver un mensaje explícito de error, nunca una pantalla en blanco sin explicación.
-
-**Cuándo no usarlo:** para verificar el comportamiento end-to-end real de la aplicación completa contra un backend genuino (incluyendo configuración de red, CORS, certificados reales), un test end-to-end con Playwright es más apropiado que `HttpTestingController`, que deliberadamente nunca toca la red real.
-
----
-
+</details>
 
 ### Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS. Prerrequisitos: Temas 1 y 2 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-El tablero de envíos del centro de control se construyó con HTML propio: cada pantalla tenía tablas distintas, sin soporte de teclado ni anuncios para lectores de pantalla, y las pruebas se rompían con cada cambio de clase CSS. Es el caso real que resuelve una librería de componentes como Angular Material, que casi todo proyecto Angular empresarial usa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 **Angular Material** ofrece componentes que siguen Material Design y las pautas de accesibilidad (roles ARIA, foco, teclado). Debajo está el **CDK** (Component Dev Kit): utilidades sin estilo como `LiveAnnouncer` (anuncia texto a lectores de pantalla), `FocusTrap` u *overlays*, que sirven aunque uses otro diseño. Los **harnesses** (`MatTableHarness`, `MatButtonHarness`) son APIs de prueba que interactúan con el componente como lo haría una persona, sin depender de su HTML interno.
 
 **Analogía:** Material es una cocina modular que ya viene con enchufes e instalaciones en regla; el harness es el inspector que prueba que los interruptores funcionan sin abrir las paredes.
@@ -516,8 +498,65 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** probar un `mat-table` consultando clases CSS internas de Material en vez de un harness (`MatTableHarness`), lo que rompe la prueba en cada actualización de versión; omitir `LiveAnnouncer` al anunciar un cambio de estado y asumir que el rol ARIA del componente ya lo cubre.
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    T[Tablero] --> MT[mat-table]
+    T --> MB[mat-flat-button]
+    T --> LA[LiveAnnouncer del CDK]
+    S[spec] --> H[harnesses]
+    H --> MT
+    H --> MB
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Angular Material y CDK: componentes accesibles probados con harnesses se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Angular Material y CDK: componentes accesibles probados con harnesses | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses angular material y cdk: componentes accesibles probados con harnesses por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: angular material y cdk: componentes accesibles probados con harnesses funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Angular Material y CDK: componentes accesibles probados con harnesses existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve angular material y cdk: componentes accesibles probados con harnesses en tu contexto?
+2. ¿Cómo sabrías que angular material y cdk: componentes accesibles probados con harnesses no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar angular material y cdk: componentes accesibles probados con harnesses?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    T[Tablero] --> MT[mat-table]
+    T --> MB[mat-flat-button]
+    T --> LA[LiveAnnouncer del CDK]
+    S[spec] --> H[harnesses]
+    H --> MT
+    H --> MB
+```
 
 ```bash
 mkdir angular-material && cd angular-material
@@ -525,8 +564,6 @@ npx -y @angular/cli@22 new tablero-material --defaults --skip-git --style=css --
 cd tablero-material
 npm install @angular/material@22 @angular/cdk@22
 ```
-
-Crea `src/app/tablero.ts`:
 
 ```typescript
 import { Component, computed, inject, signal } from '@angular/core';
@@ -587,8 +624,6 @@ export class Tablero {
 }
 ```
 
-Crea `src/app/tablero.spec.ts`:
-
 ```typescript
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -620,61 +655,14 @@ describe('Tablero con Angular Material', () => {
 });
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 rm src/app/app.spec.ts
 npx ng test --watch=false
 ```
-
-**Resultado esperado:**
 
 ```text
  Test Files  1 passed (1)
       Tests  1 passed (1)
 ```
 
-La prueba no usa ningún selector de CSS: lee filas, celdas, el chip y el estado del botón a través de los harnesses. Con `ng add @angular/material` también se configuran el tema y la tipografía; aquí se instala lo mínimo para que el ejemplo sea reproducible.
-
-**Fallo deliberado:** Quita `MatTableModule` de los `imports` del componente. La compilación falla con `NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'.`: sin el módulo, Angular no sabe que `<table mat-table>` es un componente y trata `dataSource` como un atributo HTML desconocido.
-
-#### Paso 5 · Práctica guiada
-Agrega ordenamiento por barrio con `MatSortModule` y una prueba con `MatSortHarness` que verifique el orden. **Pista:** envuelve los datos en `MatTableDataSource`, conecta `dataSource.sort` con `viewChild(MatSort)` y agrega `mat-sort-header` a la columna.
-
-#### Paso 6 · Práctica independiente
-Activa un lector de pantalla (VoiceOver o NVDA), pulsa el botón y verifica que se lee el anuncio. Documenta qué pasaría sin `LiveAnnouncer`.
-
-#### Paso 7 · Cierre
-
-Antes de seguir, confirma estas cuatro evidencias:
-
-- [ ] `npx ng test --watch=false` pasa con la prueba de harnesses del Paso 4.
-- [ ] Quitar `MatTableModule` produce `NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'.`
-- [ ] La prueba con `MatSortHarness` del Paso 5 verifica el orden por barrio.
-- [ ] Documentaste, tras el Paso 6, qué anuncia el lector de pantalla y qué pasaría sin `LiveAnnouncer`.
-
-Fuente oficial: [Angular — Component harnesses](https://angular.dev/guide/testing/component-harnesses-overview).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** escribir una suite de pruebas completa para un componente con input signal y un servicio que consume HTTP.
-
-**Requisitos previos:** Módulos 0-9 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Probar un componente con `TestBed` | Ver Tema 1 | Usa `setInput` para el input signal |
-| 2 | Reescribir la misma prueba con Testing Library | Ver Tema 2 | Compara la legibilidad de ambos enfoques |
-| 3 | Simular un clic con `userEvent` | Ver Tema 2 | Verifica que el output se emite correctamente |
-| 4 | Mockear una petición HTTP | Ver Tema 3 | Usa `HttpTestingController` |
-| 5 | Simular un error HTTP | `req.flush(null, {status: 500, ...})` | Verifica el manejo de errores del servicio |
-
-**Verificación:** el laboratorio se considera exitoso si todas las pruebas pasan de forma determinista sin depender de un backend real, y si las pruebas escritas con Testing Library consultan el DOM por rol/texto en vez de por selectores CSS internos.
-
-**Errores comunes y soluciones**
-
-- **Asignar un input signal como propiedad directa en vez de usar `setInput`.** Los inputs signal son de solo lectura desde el componente; usa siempre `fixture.componentRef.setInput(...)`.
-- **Olvidar `await fixture.whenStable()` tras `setInput`.** Sin esperar la estabilización, las aserciones pueden ejecutarse antes de que la vista se actualice.
-- **Consultar por selector CSS interno en vez de por rol/texto.** Esto hace que la prueba se rompa ante refactors cosméticos sin relación con el comportamiento real.
-
----
+</details>

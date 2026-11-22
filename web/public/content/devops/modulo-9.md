@@ -3,38 +3,74 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás instrumentar una aplicación con counters, gauges e histograms, eligiendo el tipo correcto según si un valor solo crece, sube y baja, o se distribuye en rangos.
 
-**Conocimiento previo:** Docker y Docker Compose (Módulos 0-3) de este track.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás instrumentar una aplicación con counters, gauges e histograms, eligiendo el tipo correcto según si un valor solo crece, sube y baja, o se distribuye en rangos.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de instrumentación: elegir el tipo de métrica equivocado —típicamente un gauge para algo que debería ser counter, o viceversa— produce resultados sin sentido al aplicar las funciones de PromQL diseñadas para cada tipo.
+#### ► LA ANALOGÍA
+Piensa en modelo de métricas de prometheus — counter, gauge, histogram como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que modelo de métricas de prometheus — counter, gauge, histogram resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** counter (monótono creciente), gauge (sube y baja), histogram (distribución en buckets), serie temporal.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Modelo de métricas de Prometheus — counter, gauge, histogram se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Prometheus modela todo como series temporales identificadas por nombre y etiquetas. Un counter solo puede incrementarse (o reiniciarse a cero si el proceso reinicia): total de peticiones, total de errores. Un gauge sube y baja libremente: memoria en uso, conexiones activas. Un histogram agrupa observaciones en buckets (rangos), permitiendo calcular percentiles después con PromQL.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Modelo de métricas de Prometheus — counter, gauge, histogram | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un counter es como el odómetro de un vehículo: solo aumenta. Un gauge es como el velocímetro: sube y baja constantemente. Un histogram es un registro de cuántos viajes cayeron en cada rango de duración, permitiendo analizar la distribución completa, no solo el promedio.
+#### ► CUÁNDO NO USAR ESTO
+No uses modelo de métricas de prometheus — counter, gauge, histogram por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: modelo de métricas de prometheus — counter, gauge, histogram funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Modelo de métricas de Prometheus — counter, gauge, histogram existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve modelo de métricas de prometheus — counter, gauge, histogram en tu contexto?
+2. ¿Cómo sabrías que modelo de métricas de prometheus — counter, gauge, histogram no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar modelo de métricas de prometheus — counter, gauge, histogram?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Counter (http_requests_total) ──┐  ┌── Gauge (conexiones_activas) ──┐  ┌── Histogram (latencia) ──┐
 │ solo sube, nunca baja                │  │ sube y baja libremente             │  │ buckets: ≤100ms:850  │
 │ (salvo reinicio del proceso)          │  │                                      │  │ ≤500ms:980 ≤1s:995     │
 └─────────────────────────┘  └─────────────────────────┘  └───────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/metricas` con una API que expone los tres tipos de métrica:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/metricas && cd academia-devops/src/modulo9/metricas
@@ -59,60 +95,75 @@ EOF
 docker run -d --name metricas-app -p 3010:3000 -v "$(pwd)":/app -w /app node:22-alpine sh -c "npm install --silent && node app.js"
 ```
 
-**Explicación línea por línea:** `--silent` es la bandera que le dice a `npm install` que no imprima el log detallado de la instalación, dejando solo la salida de la aplicación. `Counter` (`http_requests_total`) solo se incrementa con `.inc()`; `Gauge` (`conexiones_activas`) sube con `.inc()` y baja con `.dec()`, reflejando el valor actual; `Histogram` (`latencia_segundos`) registra cada observación en el bucket correspondiente automáticamente vía `startTimer()`.
-
-Genera tráfico y consulta las tres métricas expuestas:
-
 ```bash
 sleep 8
 for i in $(seq 10); do curl -s http://localhost:3010/ >/dev/null & done; wait
 curl -s http://localhost:3010/metrics | grep -E "^http_requests_total|^conexiones_activas|^latencia_segundos_bucket"
 ```
 
-**Resultado esperado:** `http_requests_total{status="200"}` muestra un valor acumulado igual al número de peticiones atendidas; `conexiones_activas` fluctúa entre 0 y el número de peticiones concurrentes en curso; `latencia_segundos_bucket` muestra conteos acumulados por cada rango (`le="0.1"`, `le="0.5"`, `le="1"`).
-
-**Fallo deliberado:** cambia `peticionesTotal.inc(...)` por una asignación directa que la haga bajar en algún punto (simulando un uso incorrecto de un counter como si fuera un gauge, por ejemplo restándole con `.inc(-1)`). Prometheus scrapeará un valor que retrocede — diagnostica revisando la métrica cruda con `curl .../metrics`, confirmando que un counter que retrocede sin reinicio del proceso es una señal de instrumentación incorrecta, no de comportamiento normal.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una etiqueta `method` al counter `http_requests_total` (`labelNames: ['status', 'method']`) y confirma que `curl .../metrics` ahora muestra series separadas por combinación de `status` y `method`. **Pista:** cada combinación única de valores de etiquetas genera una serie temporal distinta, aunque compartan el mismo nombre de métrica.
-
-#### Paso 6 · Práctica independiente
-
-Agrega un segundo gauge que registre el tamaño de una cola simulada (`const colaSize = new client.Gauge(...)`, incrementado y decrementado según una lista en memoria), y confirma que su comportamiento en `/metrics` refleja subidas y bajadas, a diferencia del counter que solo crece.
-
-#### Paso 7 · Cierre
-
-Ya distingues cuándo usar cada tipo de métrica según su patrón de comportamiento real. El siguiente tema convierte estos valores crudos en información interpretable con PromQL. Fuente oficial: [Prometheus — Metric Types](https://prometheus.io/docs/concepts/metric_types/).
-
-**Errores comunes:** usar un counter para un valor que legítimamente sube y baja (como conexiones activas); no definir etiquetas suficientemente ricas al instrumentar, limitando qué preguntas se pueden responder después sin reinstrumentar.
-
-**Cuándo no usarlo:** para un valor que rara vez cambia y no necesita análisis de tendencia (como una versión de build estática), instrumentarlo como métrica de Prometheus añade overhead sin beneficio real; una etiqueta fija en otra métrica ya existente suele bastar.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Instrumenta peticiones, operaciones en curso y duración con tipos de métrica adecuados. Envía una carga conocida y comprueba conteos y unidades, evitando etiquetas con identificadores de usuarios o guías.
+</details>
 
 ### Tema 2: PromQL esencial · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás escribir consultas PromQL con `rate()`, agregación y filtrado por etiquetas para convertir contadores acumulados en tasas interpretables.
+#### ► DE QUÉ TRATA
+Al finalizar podrás escribir consultas PromQL con rate(), agregación y filtrado por etiquetas para convertir contadores acumulados en tasas interpretables.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás escribir consultas PromQL con rate(), agregación y filtrado por etiquetas para convertir contadores acumulados en tasas interpretables.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: un counter acumulado sin `rate()` es un número absoluto poco interpretable por sí solo; PromQL es el lenguaje que convierte esos datos crudos en información accionable.
+#### ► LA ANALOGÍA
+Piensa en promql esencial como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que promql esencial resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `rate()`, agregación (`sum`, `avg`), filtrado por etiquetas, ventana de tiempo.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| PromQL esencial se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`rate(http_requests_total[5m])` calcula la tasa de incremento por segundo de un counter sobre una ventana de tiempo. Combinado con filtrado por etiquetas y agregación: `sum(rate(http_requests_total{status="500"}[5m])) / sum(rate(http_requests_total[5m]))` calcula la tasa de error como proporción. Las funciones de agregación combinan series de múltiples réplicas en un único valor.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar PromQL esencial | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un counter sin `rate()` es como mirar el odómetro total y tratar de deducir la velocidad actual sin contexto de tiempo. `rate()` es calcular la velocidad real dividiendo distancia entre tiempo en una ventana reciente.
+#### ► CUÁNDO NO USAR ESTO
+No uses promql esencial por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: promql esencial funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- PromQL esencial existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve promql esencial en tu contexto?
+2. ¿Cómo sabrías que promql esencial no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar promql esencial?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 http_requests_total (counter, acumulado, poco interpretable directamente)
    ▼
@@ -120,10 +171,6 @@ rate(...[5m])  ──▶  peticiones por segundo (interpretable directamente)
    ▼
 sum(rate(...{status="500"}[5m])) / sum(rate(...[5m]))  ──▶  tasa de error (ej. 0.02 = 2%)
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/promql` levantando Prometheus apuntando a la API del Tema 1:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/promql && cd academia-devops/src/modulo9/promql
@@ -140,62 +187,75 @@ sleep 5
 curl -s 'http://localhost:9090/api/v1/query?query=up' | grep -o '"value":\[[^]]*\]'
 ```
 
-**Explicación línea por línea:** `--add-host` es la bandera que agrega una entrada DNS manual dentro del contenedor (acá, para que Prometheus pueda resolver `host.docker.internal` y alcanzar la app corriendo en el host). `scrape_configs` le dice a Prometheus cada cuántos segundos (`scrape_interval`) consultar el endpoint `/metrics` de la aplicación; `up` es una métrica interna que Prometheus genera automáticamente por cada target, valiendo `1` si el scrape tuvo éxito.
-
-Genera tráfico real y ejecuta `rate()` sobre el counter acumulado vía la API HTTP de Prometheus:
-
 ```bash
 for i in $(seq 30); do curl -s http://localhost:3010/ >/dev/null & done; wait
 sleep 10
 curl -sS -G 'http://localhost:9090/api/v1/query' --data-urlencode 'query=rate(http_requests_total[1m])' | python3 -m json.tool
 ```
 
-`-G` envía los datos como parámetros de la URL en una petición GET y `--data-urlencode` codifica la consulta. Sin eso, curl interpreta `[1m]` como un rango de su propia sintaxis de patrones y falla con `curl: (3) bad range in URL`; `-S` muestra ese tipo de error aunque uses `-s`.
-
-**Resultado esperado:** la consulta `up` devuelve `1` para el target `metricas-app`, confirmando el scrape exitoso; `rate(http_requests_total[1m])` devuelve un valor numérico positivo (peticiones por segundo), calculado a partir del incremento del counter durante el último minuto, no el valor acumulado absoluto.
-
-**Fallo deliberado:** consulta `rate(conexiones_activas[1m])` (aplicando `rate()` sobre un gauge, no un counter). El resultado es numéricamente calculable pero conceptualmente sin sentido — diagnostica comparando contra la documentación de Prometheus, que advierte explícitamente que `rate()` está diseñada para counters monótonos, no para valores que suben y bajan libremente.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una segunda instancia de la aplicación (otro contenedor en un puerto distinto) como un segundo target en `prometheus.yml`, y ejecuta `sum(rate(http_requests_total[1m]))` para confirmar que agrega el tráfico de ambas instancias en un único valor. **Pista:** sin `sum()`, la consulta devolvería dos series separadas, una por instancia.
-
-#### Paso 6 · Práctica independiente
-
-Provoca artificialmente algunas respuestas con `status="500"` (modificando `app.js` para fallar aleatoriamente una fracción de las veces) y calcula la tasa de error real con la consulta completa del Paso 2; compara el resultado contra la proporción real que configuraste en el código.
-
-#### Paso 7 · Cierre
-
-Ya conviertes contadores acumulados en tasas y proporciones interpretables directamente. El siguiente tema visualiza estas mismas consultas en dashboards. Fuente oficial: [Prometheus — Querying basics](https://prometheus.io/docs/prometheus/latest/querying/basics/).
-
-**Errores comunes:** aplicar `rate()` sobre un gauge en vez de un counter; olvidar `sum()` al combinar métricas de múltiples réplicas, obteniendo series separadas en vez de un valor agregado.
-
-**Cuándo no usarlo:** para un gauge (valor que ya representa el estado actual), aplicar `rate()` no tiene sentido; ahí simplemente se consulta el valor directo, opcionalmente con funciones de agregación si hay múltiples instancias.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Construye consultas para tasa de errores y latencia del servicio. Valídalas con un periodo sin tráfico y con un fallo controlado para evitar divisiones inválidas o promedios engañosos.
+</details>
 
 ### Tema 3: Dashboards en Grafana · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás conectar Grafana a Prometheus como fuente de datos y construir un panel que visualiza una consulta PromQL en tiempo real.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás conectar Grafana a Prometheus como fuente de datos y construir un panel que visualiza una consulta PromQL en tiempo real.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de respuesta a incidentes: un buen dashboard reduce el tiempo que un equipo necesita para entender el estado real de un sistema, especialmente crítico cuando cada minuto de diagnóstico cuenta.
+#### ► LA ANALOGÍA
+Piensa en dashboards en grafana como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que dashboards en grafana resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** panel, fuente de datos (data source), consulta visualizada, dashboard compartido.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Dashboards en Grafana se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Grafana visualiza datos de múltiples fuentes, comúnmente Prometheus. Un dashboard se compone de paneles, cada uno con una consulta y un tipo de visualización (líneas, valor destacado, tabla). Un buen dashboard se organiza en torno a preguntas operativas reales, no expone todas las métricas disponibles indiscriminadamente, evitando la sobrecarga que lo haría tan inútil como no tener dashboard.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Dashboards en Grafana | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un dashboard de Grafana es el panel de instrumentos de la cabina de un piloto: una selección cuidadosa de los indicadores más críticos (altitud, velocidad, combustible), no cada sensor individual del avión.
+#### ► CUÁNDO NO USAR ESTO
+No uses dashboards en grafana por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dashboards en grafana funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Dashboards en Grafana existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dashboards en grafana en tu contexto?
+2. ¿Cómo sabrías que dashboards en grafana no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dashboards en grafana?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Dashboard "Estado del servicio" ──────────────┐
 │ Panel: tasa de peticiones/segundo (líneas)          │
@@ -203,10 +263,6 @@ Grafana visualiza datos de múltiples fuentes, comúnmente Prometheus. Un dashbo
 │ Panel: latencia p95 (líneas)                            │
 └─────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/grafana` y levanta Grafana apuntando al Prometheus del Tema 2:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/grafana/provisioning/datasources
@@ -229,10 +285,6 @@ sleep 6
 curl -s -u admin:admin http://localhost:3300/api/datasources | python3 -m json.tool | grep -A2 '"name": "Prometheus"'
 ```
 
-**Explicación línea por línea:** el archivo de `provisioning/datasources` configura la fuente de datos Prometheus automáticamente al arrancar Grafana, sin necesitar configurarla manualmente en la interfaz cada vez que se recrea el contenedor.
-
-Crea un dashboard con un panel vía la API de Grafana, usando la misma consulta del Tema 2:
-
 ```bash
 cat > dashboard.json <<'EOF'
 {"dashboard":{"title":"Estado del servicio","panels":[{"type":"timeseries","title":"Peticiones por segundo","targets":[{"expr":"rate(http_requests_total[1m])"}],"gridPos":{"h":8,"w":12,"x":0,"y":0}}]},"overwrite":true}
@@ -240,60 +292,75 @@ EOF
 curl -s -u admin:admin -X POST -H "Content-Type: application/json" -d @dashboard.json http://localhost:3300/api/dashboards/db | python3 -m json.tool
 ```
 
-**Resultado esperado:** la API de datasources confirma que "Prometheus" quedó registrada como fuente por defecto; la creación del dashboard responde con `"status": "success"` y una URL del dashboard recién creado, confirmando que el panel con la consulta `rate(http_requests_total[1m])` quedó guardado.
-
-**Fallo deliberado:** cambia la `url` del datasource a un puerto incorrecto (`http://host.docker.internal:9999`) y vuelve a aplicar el provisioning (recreando el contenedor). El panel del dashboard queda sin datos — diagnostica visitando `curl -u admin:admin http://localhost:3300/api/datasources/1/health` (o el ID correspondiente), que reportará el fallo de conexión hacia Prometheus.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un segundo panel al `dashboard.json` con la consulta de tasa de error del Tema 2, y vuelve a aplicarlo con la misma llamada a la API. **Pista:** cada elemento del array `panels` necesita su propio `gridPos` para no superponerse visualmente con los demás.
-
-#### Paso 6 · Práctica independiente
-
-Investiga y documenta cómo agregarías una variable de plantilla (`templating`) al dashboard para poder elegir entre múltiples instancias de la aplicación desde un desplegable, sin duplicar el dashboard completo por instancia.
-
-#### Paso 7 · Cierre
-
-Ya visualizas consultas PromQL en tiempo real organizadas en torno a preguntas operativas reales. El siguiente tema convierte estas mismas consultas en alertas automáticas. Fuente oficial: [Grafana — Provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/).
-
-**Errores comunes:** configurar la URL del datasource apuntando a `localhost` en vez de al nombre de red correcto cuando Grafana corre en un contenedor distinto de Prometheus; construir un dashboard con demasiados paneles sin priorizar las preguntas operativas realmente importantes.
-
-**Cuándo no usarlo:** para una métrica que se consulta una única vez de forma puntual durante un diagnóstico específico, crear un panel permanente en un dashboard compartido es innecesario; una consulta directa en la interfaz de Prometheus basta para ese caso.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Crea un panel que permita decidir si el despliegue funciona: tráfico, errores y latencia. Relaciona cada gráfico con una acción y comprueba que sus unidades y filtros corresponden al mismo servicio.
+</details>
 
 ### Tema 4: Alertmanager y reglas de alerta · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás definir una regla de alerta con una condición sostenida en el tiempo (`for`), evitando que fluctuaciones momentáneas disparen notificaciones innecesarias.
+#### ► DE QUÉ TRATA
+Al finalizar podrás definir una regla de alerta con una condición sostenida en el tiempo (for), evitando que fluctuaciones momentáneas disparen notificaciones innecesarias.
 
-**Conocimiento previo:** Temas 1 a 3 de este módulo; Módulo 5 (rollback automático por métricas).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir una regla de alerta con una condición sostenida en el tiempo (for), evitando que fluctuaciones momentáneas disparen notificaciones innecesarias.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de fatiga de alertas: un sistema de alertas mal calibrado, ya sea por exceso o por defecto, es tan perjudicial para la fiabilidad operativa como no tener ningún sistema de alertas.
+#### ► LA ANALOGÍA
+Piensa en alertmanager y reglas de alerta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que alertmanager y reglas de alerta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** regla de alerta, `expr`, `for` (duración sostenida), Alertmanager, enrutamiento de notificaciones.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Alertmanager y reglas de alerta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Una regla de alerta define una condición PromQL (`expr`) que, sostenida durante `for`, dispara una alerta. Prometheus envía alertas disparadas a Alertmanager, que las agrupa, silencia si aplica, y enruta al canal correcto. Alertar sobre síntomas observables por el usuario (tasa de error, latencia) es preferible a alertar sobre causas internas específicas.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Alertmanager y reglas de alerta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** una regla de alerta es un guardia instruido para avisar solo si una puerta permanece abierta más de 2 minutos continuos, no ante una apertura momentánea normal. Alertmanager es la central que agrupa avisos relacionados y dirige cada uno al equipo correcto.
+#### ► CUÁNDO NO USAR ESTO
+No uses alertmanager y reglas de alerta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: alertmanager y reglas de alerta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Alertmanager y reglas de alerta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve alertmanager y reglas de alerta en tu contexto?
+2. ¿Cómo sabrías que alertmanager y reglas de alerta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar alertmanager y reglas de alerta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Prometheus evalúa continuamente: expr > umbral, sostenido durante "for"
    ¿condición cumplida durante todo el periodo "for"?
      Sí ──▶ envía alerta disparada a Alertmanager
               agrupa, silencia si aplica, enruta al canal/persona correcta
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/alertas` con una regla de alerta real evaluada por Prometheus:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/alertas && cd academia-devops/src/modulo9/alertas
@@ -323,59 +390,74 @@ sleep 5
 curl -s http://localhost:9091/api/v1/rules | python3 -m json.tool | grep -E "name|state"
 ```
 
-**Explicación línea por línea:** `for: 30s` exige que la condición se mantenga sostenida durante al menos 30 segundos antes de que la alerta pase de `pending` a `firing`; sin `for`, cualquier pico momentáneo de un solo scrape dispararía la alerta inmediatamente.
-
-Fuerza la condición de error real y observa la transición de estado de la alerta:
-
 ```bash
 sleep 35
 curl -s http://localhost:9091/api/v1/alerts | python3 -m json.tool | grep -E "alertname|state" | head -6
 ```
 
-**Resultado esperado:** si la tasa de error real de tu aplicación se mantiene por encima del 5% durante los 30 segundos de `for`, la alerta `TasaDeErrorAlta` transiciona de `pending` a `firing`; si la tasa de error nunca cruzó ese umbral, `curl .../api/v1/alerts` no muestra ninguna alerta activa.
-
-**Fallo deliberado:** cambia `for: 30s` a `for: 0s` (disparo inmediato sin sostenimiento) y provoca un único pico momentáneo de errores de menos de un segundo. La alerta se dispara instantáneamente ante ese pico aislado — diagnostica revisando el historial de `curl .../api/v1/alerts` inmediatamente después del pico, confirmando que sin una duración sostenida, cualquier fluctuación momentánea genera una alerta, exactamente el problema de fatiga de alertas que `for` está diseñado para prevenir.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una segunda regla de alerta sobre latencia p95 elevada, usando `histogram_quantile(0.95, rate(latencia_segundos_bucket[5m])) > 0.5`. **Pista:** `histogram_quantile` opera sobre las series `_bucket` generadas automáticamente por un Histogram de Prometheus.
-
-#### Paso 6 · Práctica independiente
-
-Reduce el umbral de la regla original a `> 0.01` (1%, muy sensible) y observa cuántas veces se dispara con tráfico normal; documenta en qué punto un umbral demasiado sensible produciría fatiga de alertas en un equipo real.
-
-#### Paso 7 · Cierre
-
-Ya diseñas reglas de alerta que solo notifican ante problemas sostenidos y reales, no ante ruido momentáneo. El siguiente tema formaliza qué nivel de estas métricas es aceptable con SLI/SLO/SLA. Fuente oficial: [Prometheus — Alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/).
-
-**Errores comunes:** omitir `for`, disparando alertas ante cualquier fluctuación momentánea; alertar sobre causas internas específicas (CPU de un servidor) en vez de síntomas observables por el usuario.
-
-**Cuándo no usarlo:** para una condición que, aunque cruce un umbral momentáneamente, no representa ningún riesgo real si se normaliza rápido (como un pico de tráfico legítimo de un segundo), una alerta sin `for` generaría ruido; el límite es diseñar siempre con una duración sostenida apropiada al contexto.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Dispara una alerta con una degradación controlada y verifica recepción, agrupación y resolución. El aviso debe enlazar el runbook y señalar el servicio y entorno afectados.
+</details>
 
 ### Tema 5: SLI, SLO, SLA · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás definir un SLI medible, fijar un SLO interno más estricto que cualquier SLA externo, y calcular el presupuesto de error resultante.
 
-**Conocimiento previo:** Temas 1 a 4 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir un SLI medible, fijar un SLO interno más estricto que cualquier SLA externo, y calcular el presupuesto de error resultante.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: los SLI/SLO dan a los equipos un lenguaje objetivo y cuantificable para decidir cuándo priorizar estabilidad sobre velocidad, reemplazando percepciones subjetivas ("se siente lento hoy") por un criterio medible.
+#### ► LA ANALOGÍA
+Piensa en sli, slo, sla como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sli, slo, sla resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** Service Level Indicator, Service Level Objective, Service Level Agreement, presupuesto de error (error budget).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| SLI, SLO, SLA se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un SLI es una métrica real medible ("porcentaje de peticiones que responden en menos de 200ms"), calculada directamente con PromQL. Un SLO es la meta interna del equipo sobre ese SLI ("99% en 30 días"). Un SLA es un compromiso formal externo con consecuencias contractuales, normalmente más laxo que el SLO interno. El presupuesto de error, derivado del SLO, formaliza cuánta falla es aceptable sin romper la meta.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar SLI, SLO, SLA | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** un SLI es el tiempo real que un restaurante tarda en servir un plato, medido con cronómetro. Un SLO es la meta interna ("95% en menos de 15 minutos"). Un SLA es el compromiso público a clientes ("garantizamos 20 minutos o el evento es gratis"), típicamente más laxo que la meta interna real.
+#### ► CUÁNDO NO USAR ESTO
+No uses sli, slo, sla por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sli, slo, sla funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- SLI, SLO, SLA existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sli, slo, sla en tu contexto?
+2. ¿Cómo sabrías que sli, slo, sla no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sli, slo, sla?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── SLI (medido):     99.4% de peticiones bajo 200ms este mes ──┐
 │ SLO (objetivo):   99.5% de peticiones bajo 200ms  ← meta interna │
@@ -383,10 +465,6 @@ Un SLI es una métrica real medible ("porcentaje de peticiones que responden en 
 │ Presupuesto de error del SLO: 0.5% puede "fallar" sin romper la meta │
 └──────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/slo` y calcula un SLI real con PromQL sobre el histogram de latencia del Tema 1, generando tráfico desde un contenedor Docker efímero:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/slo && cd academia-devops/src/modulo9/slo
@@ -397,12 +475,6 @@ curl -sS -G 'http://localhost:9090/api/v1/query' \
   --data-urlencode 'query=sum(rate(latencia_segundos_bucket{le="0.5"}[5m]))/sum(rate(latencia_segundos_count[5m]))' \
   | python3 -m json.tool | grep -A1 '"value"'
 ```
-
-El punto de entrada de `curlimages/curl` ejecuta directamente un comando que exista en la imagen (aquí `sh`) y solo antepone `curl` cuando el primer argumento es una opción. `--add-host=host.docker.internal:host-gateway` hace que ese nombre también resuelva en Linux, y ya no se ocultan los errores con `2>/dev/null || true`. La consulta va con `-G --data-urlencode` porque curl interpretaría `{…}` y `[…]` de PromQL como patrones propios.
-
-**Explicación línea por línea:** dividir las observaciones que cayeron en el bucket `le="0.5"` (menos de 500ms) entre el total de observaciones (`_count`) produce directamente el SLI "porcentaje de peticiones bajo 500ms", el mismo tipo de cálculo que respalda cualquier SLO real.
-
-Calcula el presupuesto de error restante para un SLO específico y documenta el resultado:
 
 ```bash
 cat > slo.md <<'EOF'
@@ -415,50 +487,69 @@ EOF
 cat slo.md
 ```
 
-**Resultado esperado:** la consulta PromQL devuelve un valor entre 0 y 1 (por ejemplo, `0.97`), representando el SLI real medido en esta ventana corta de prueba; `slo.md` documenta explícitamente que el SLO interno (95%) es más estricto que un hipotético SLA externo (90%), dejando margen de seguridad.
-
-**Fallo deliberado:** fija el SLO igual al SLA (ambos en 90%, sin margen interno) y simula que el SLI real cae a 91%. El equipo estaría técnicamente cumpliendo el SLO, pero peligrosamente cerca de incumplir el SLA externo con consecuencias contractuales — diagnostica revisando por qué la práctica recomendada es siempre dejar margen entre el SLO interno y el SLA externo, exactamente el error de no dejarlo.
-
-#### Paso 5 · Práctica guiada
-
-Cambia la ventana de la consulta de `[5m]` a `[30d]` (simulando la ventana real de un SLO mensual, aunque tu Prometheus de prueba no tenga 30 días de datos reales) y explica qué limitación práctica tendría este laboratorio corto para calcular un SLO mensual real. **Pista:** Prometheus solo puede calcular sobre datos que efectivamente recolectó; una ventana de 30 días requiere 30 días de retención de datos.
-
-#### Paso 6 · Práctica independiente
-
-Calcula cuántos minutos de presupuesto de error representan un SLO de 99.9% sobre un mes de 30 días, y documenta ese cálculo junto con una decisión razonada de cuándo el equipo podría "gastar" ese presupuesto en un despliegue de mayor riesgo.
-
-#### Paso 7 · Cierre
-
-Ya mides un SLI real, defines un SLO con margen interno, y calculas el presupuesto de error resultante. El siguiente tema estandariza cómo se instrumenta el código para no acoplarse a Prometheus específicamente. Fuente oficial: [Google SRE Book — Service Level Objectives](https://sre.google/sre-book/service-level-objectives/).
-
-**Errores comunes:** fijar el SLO igual o más laxo que el SLA externo, sin margen de seguridad interno; definir un SLO sin una consulta PromQL concreta que lo mida, dejándolo como una aspiración no verificable.
-
-**Cuándo no usarlo:** para un proyecto interno sin usuarios externos ni compromisos contractuales, un SLA formal no aplica; basta con un SLO interno como meta de calidad, sin la capa adicional de compromiso externo.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Define un objetivo de disponibilidad con numerador, denominador y ventana explícitos. Calcula el presupuesto de error con datos de prueba y documenta qué despliegues se detendrían al agotarlo.
+</details>
 
 ### Tema 6: OpenTelemetry como estándar de instrumentación · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás instrumentar código una única vez con la API de OpenTelemetry, exportando hacia Prometheus sin acoplar la instrumentación a ese backend específico.
 
-**Conocimiento previo:** Temas 1 a 5 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás instrumentar código una única vez con la API de OpenTelemetry, exportando hacia Prometheus sin acoplar la instrumentación a ese backend específico.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de portabilidad: instrumentar directamente contra bibliotecas específicas de un backend obliga a reescribir la instrumentación si la organización decide cambiar de herramienta de observabilidad más adelante.
+#### ► LA ANALOGÍA
+Piensa en opentelemetry como estándar de instrumentación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que opentelemetry como estándar de instrumentación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** OpenTelemetry, instrumentación estándar, independencia de backend de observabilidad, trazas distribuidas.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| OpenTelemetry como estándar de instrumentación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-OpenTelemetry proporciona una API estándar, independiente de backend, para instrumentar métricas, logs y trazas. Un Collector separado exporta esos datos hacia el backend elegido (Prometheus, cualquier sistema de trazas compatible), desacoplando la instrumentación de la elección de herramienta. Las trazas distribuidas permiten seguir una petición a través de múltiples servicios, viendo cuánto tiempo se consumió en cada uno.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar OpenTelemetry como estándar de instrumentación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** instrumentar directamente contra un backend específico es como escribir documentación interna en un formato propietario de un único proveedor. OpenTelemetry es escribirla en un formato estándar que cualquier proveedor puede leer sin conversión.
+#### ► CUÁNDO NO USAR ESTO
+No uses opentelemetry como estándar de instrumentación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: opentelemetry como estándar de instrumentación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- OpenTelemetry como estándar de instrumentación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve opentelemetry como estándar de instrumentación en tu contexto?
+2. ¿Cómo sabrías que opentelemetry como estándar de instrumentación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar opentelemetry como estándar de instrumentación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 Código de la aplicación
    │  instrumentado UNA VEZ con la API de OpenTelemetry
@@ -467,10 +558,6 @@ OpenTelemetry Collector
    ├──▶ exporta métricas a Prometheus
    └──▶ (cambiar de backend no requiere reinstrumentar el código)
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/otel` con una aplicación instrumentada con OpenTelemetry en vez de directamente con `prom-client`:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/otel && cd academia-devops/src/modulo9/otel
@@ -504,52 +591,69 @@ curl -s http://localhost:3011/ >/dev/null
 curl -s http://localhost:9465/metrics | grep otel_http_requests_total
 ```
 
-**Explicación línea por línea:** el código de la aplicación usa exclusivamente la API neutral de OpenTelemetry (`meter.createCounter`, `.add()`), sin importar directamente ninguna biblioteca específica de Prometheus; el `PrometheusExporter` es el único punto que sabe traducir esos datos al formato que Prometheus espera, sin que el resto del código lo sepa.
-
-**Resultado esperado:** `curl http://localhost:9465/metrics` muestra `otel_http_requests_total{status="200"} 1` (o el conteo acumulado real), en formato compatible con Prometheus, a pesar de que el código de la aplicación nunca importó ninguna biblioteca de Prometheus directamente.
-
-**Fallo deliberado:** elimina el `PrometheusExporter` y su configuración, dejando solo el `MeterProvider` sin ningún exportador configurado. La aplicación sigue registrando métricas internamente (`contador.add(1, ...)` no falla), pero no hay ningún endpoint `/metrics` disponible para que Prometheus las consulte — diagnostica confirmando que la instrumentación (qué se mide) está completamente separada de la exportación (a dónde va), exactamente el punto central de OpenTelemetry.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un segundo contador `otel_errores_total` y confirma que aparece igualmente en `http://localhost:9465/metrics` sin ninguna configuración adicional del exportador. **Pista:** el `PrometheusExporter` ya configurado expone automáticamente cualquier métrica nueva registrada en el mismo `MeterProvider`.
-
-#### Paso 6 · Práctica independiente
-
-Investiga (documentando, sin necesariamente instalarlo) cómo se vería la misma instrumentación exportando hacia un backend de trazas distribuidas en vez de Prometheus, y qué cambiaría exactamente en el código de la aplicación (la respuesta esperada: nada en el código de instrumentación, solo la configuración del exportador).
-
-#### Paso 7 · Cierre
-
-Ya instrumentas código de forma neutral al backend de observabilidad elegido. El siguiente tema conecta todas las prácticas de este track con métricas de madurez del equipo completo. Fuente oficial: [OpenTelemetry — Concepts](https://opentelemetry.io/docs/concepts/).
-
-**Errores comunes:** seguir importando bibliotecas específicas de un backend directamente en el código de negocio, perdiendo la independencia que OpenTelemetry ofrece; asumir que OpenTelemetry reemplaza a Prometheus, cuando en realidad es una capa de instrumentación que se complementa con él como backend de destino.
-
-**Cuándo no usarlo:** para un prototipo desechable de corta duración donde nunca se planea cambiar de herramienta de observabilidad, la capa adicional de abstracción de OpenTelemetry puede no justificarse frente a instrumentar directamente y de forma más simple contra Prometheus.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Propaga contexto entre API y consumidor mediante instrumentación del laboratorio. Una petición de prueba debe producir una traza correlacionada sin incorporar credenciales ni direcciones personales como atributos.
+</details>
 
 ### Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás calcular las cuatro métricas DORA de un proyecto real a partir de su historial de Git y sus incidentes registrados.
 
-**Conocimiento previo:** Temas 1 a 6 de este módulo; Módulos 1, 4 y 5 (Git, CI, CD) de este track.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás calcular las cuatro métricas DORA de un proyecto real a partir de su historial de Git y sus incidentes registrados.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real, respaldado por investigación empírica: los equipos de más alto rendimiento mejoran las cuatro métricas DORA simultáneamente, sugiriendo que velocidad y estabilidad no están en tensión cuando se invierte en las prácticas correctas.
+#### ► LA ANALOGÍA
+Piensa en métricas dora — lead time, deployment frequency, mttr, change failure rate como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que métricas dora — lead time, deployment frequency, mttr, change failure rate resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** DORA (DevOps Research and Assessment), las cuatro métricas clave, madurez del equipo de entrega de software.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Lead Time for Changes mide cuánto tiempo pasa entre un commit y su despliegue a producción. Deployment Frequency mide con qué frecuencia se despliega. MTTR mide cuánto tarda un equipo en restaurar el servicio tras un incidente. Change Failure Rate mide qué porcentaje de cambios desplegados requieren corrección de emergencia o rollback.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** las métricas DORA son como los cuatro indicadores clave de un equipo médico de emergencias: qué tan rápido moviliza un tratamiento aprobado (lead time), con qué frecuencia atiende exitosamente (deployment frequency), qué tan rápido estabiliza si algo sale mal (MTTR), y qué porcentaje de procedimientos requieren corrección adicional (change failure rate).
+#### ► CUÁNDO NO USAR ESTO
+No uses métricas dora — lead time, deployment frequency, mttr, change failure rate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: métricas dora — lead time, deployment frequency, mttr, change failure rate funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve métricas dora — lead time, deployment frequency, mttr, change failure rate en tu contexto?
+2. ¿Cómo sabrías que métricas dora — lead time, deployment frequency, mttr, change failure rate no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar métricas dora — lead time, deployment frequency, mttr, change failure rate?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Las cuatro métricas DORA ──────────────────────┐
 │ Lead Time for Changes  (commit ──▶ producción)          │
@@ -558,10 +662,6 @@ Lead Time for Changes mide cuánto tiempo pasa entre un commit y su despliegue a
 │ Change Failure Rate    (% de cambios que requieren fix)     │
 └─────────────────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo9/dora` y calcula Lead Time y Deployment Frequency a partir de un historial de Git real con tags de despliegue:
 
 ```bash
 mkdir -p academia-devops/src/modulo9/dora && cd academia-devops/src/modulo9/dora
@@ -574,10 +674,6 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint s
   git log --format="%H %ad %s" --date=iso'
 ```
 
-**Explicación línea por línea:** `--date` es la bandera de `git commit` que fija manualmente la fecha del commit (útil aquí para simular un historial con fechas controladas en vez de usar el momento real de ejecución); cada tag (`v1.0`, `v1.1`) representa un despliegue real a producción; comparar la fecha del commit contra la fecha del tag correspondiente permite calcular el Lead Time real de cada cambio específico. `python3` es el comando que ejecuta el intérprete de Python, usado abajo para el cálculo aritmético del Lead Time.
-
-Calcula manualmente el Lead Time del segundo cambio (del commit del 2 de enero a las 09:00 al tag del 3 de enero a las 09:00):
-
 ```bash
 python3 -c "
 from datetime import datetime
@@ -587,64 +683,27 @@ print(f'Lead Time: {(deploy - commit).total_seconds() / 3600} horas')
 "
 ```
 
-**Resultado esperado:** el script imprime "Lead Time: 24.0 horas", el tiempo real transcurrido entre el commit del cambio y su despliegue marcado por el tag, exactamente la métrica que un equipo real calcularía sobre su propio historial de Git y sus despliegues reales.
-
-**Fallo deliberado:** calcula el Lead Time usando la fecha del PRIMER commit del proyecto en vez del commit específico que introdujo el cambio desplegado en `v1.1`. El resultado sería un Lead Time artificialmente inflado (o incorrecto) — diagnostica confirmando que el Lead Time se mide por cambio individual, no desde el inicio del proyecto completo, un error común al calcular esta métrica por primera vez.
-
-#### Paso 5 · Práctica guiada
-
-Calcula la Deployment Frequency del historial de ejemplo: cuenta cuántos tags de despliegue existen (`git tag | wc -l`) dividido entre el número de días que abarca el historial completo. **Pista:** usa las fechas del primer y último tag para calcular el periodo total en días.
-
-#### Paso 6 · Práctica independiente
-
-Diseña (documentando, sin necesariamente implementar completo) cómo calcularías MTTR usando el historial de alertas `firing`→resuelta de Alertmanager, y Change Failure Rate contando cuántos de los últimos 10 despliegues fueron seguidos por un `helm rollback` o `terraform apply` de reversión dentro de la hora siguiente.
-
-#### Paso 7 · Cierre
-
-Ya calculas Lead Time real a partir de tu propio historial de Git, y sabes qué datos necesitarías para las otras tres métricas DORA. Esto cierra el módulo de observabilidad; el siguiente módulo cubre logging estructurado y correlación de peticiones entre servicios. Fuente oficial: [DORA — DevOps Research and Assessment](https://dora.dev/).
-
-**Errores comunes:** medir Lead Time desde el inicio del proyecto en vez de por cambio individual; ignorar que las cuatro métricas deben mejorar juntas, tratando velocidad y estabilidad como si estuvieran necesariamente en tensión.
-
-**Cuándo no usarlo:** para un proyecto de aprendizaje personal sin ningún equipo ni cadencia real de despliegues a producción, calcular métricas DORA formales no aporta valor práctico inmediato; son más útiles cuando hay un equipo y un historial real de despliegues que analizar.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Calcula el Lead Time real de los últimos cambios desplegados a la plataforma a partir de los tags de release del repositorio, y define junto a Deployment Frequency el panel DORA que acompañará al dashboard de métricas del módulo siguiente.
-
----
+</details>
 
 ### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Avanzado · 20 min
 
-**Prerrequisito:** temas «SLI, SLO, SLA» y «Alertmanager y reglas de alerta» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** diseñar un experimento con hipótesis, alcance y condición de parada, matar pods de la API mientras se mide el SLO, y decidir con los datos si el sistema resiste.
+#### ► DE QUÉ TRATA
+Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus. Instala Chaos Mesh con Helm o usa kubectl delete pod en un bucle para la versión sin herramientas.
 
-**¿Por qué es importante?** Los sistemas fallan aunque nadie lo planee. Provocar fallos pequeños y controlados en horario laboral, con el equipo atento, es mejor que descubrirlos a las tres de la mañana. Pero sin hipótesis ni medición, «romper cosas» no enseña nada.
+#### ► LA IDEA EN UNA FRASE
+**Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus. Instala Chaos Mesh con Helm o usa `kubectl delete pod` en un bucle para la versión sin herramientas.
+#### ► LA ANALOGÍA
+Piensa en chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-RutaFlow «sabía» que su API soportaba perder un pod. El primer experimento mostró otra cosa: las peticiones en curso fallaban durante 30 segundos porque el pod no tenía readiness probe y el Service seguía enviándole tráfico.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** hipótesis de estado estable, radio de impacto, condición de parada, inyección de fallos, Chaos Mesh, `PodChaos`, día de juego (*game day*).
-
-Un experimento de caos sigue un método:
-
-1. **Estado estable:** una métrica que muestra que todo va bien (por ejemplo, 99 % de peticiones exitosas en 5 minutos).
-2. **Hipótesis:** «si muere un pod de la API, el estado estable se mantiene».
-3. **Fallo:** el más pequeño que pruebe la hipótesis (un pod, en staging).
-4. **Radio de impacto y parada:** qué puede afectarse y cuándo detener (si los errores pasan del 5 %).
-5. **Conclusión:** si la hipótesis falló, es un hallazgo: se corrige y se repite.
-
-Herramientas como **Chaos Mesh** describen el fallo como un recurso de Kubernetes (`PodChaos`, `NetworkChaos`), con duración y selección de pods.
-
-**Analogía:** es un simulacro de incendio: avisas, defines quién participa, mides cuánto tarda la evacuación y paras si alguien se lastima. La analogía falla en que aquí el «incendio» es real, aunque pequeño: por eso se empieza en staging.
-
-**Límite de uso:** no empieces en producción ni sin observabilidad: si no puedes medir el estado estable, no sabrás qué pasó. Avisa al equipo y define quién puede detener el experimento.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     E["estado estable: éxito >= 99 %"] --> H["hipótesis: perder 1 pod no lo afecta"]
@@ -654,9 +713,51 @@ flowchart LR
     M -->|no| C["confirmar hipótesis"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/devops/caos/pod-kill.yaml`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos en tu contexto?
+2. ¿Cómo sabrías que chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    E["estado estable: éxito >= 99 %"] --> H["hipótesis: perder 1 pod no lo afecta"]
+    H --> F["PodChaos: matar 1 pod cada 30 s"]
+    F --> M{"¿éxito < 95 %?"}
+    M -->|sí| P["parar y registrar hallazgo"]
+    M -->|no| C["confirmar hipótesis"]
+```
 
 ```yaml
 apiVersion: chaos-mesh.org/v1alpha1
@@ -673,8 +774,6 @@ spec:
   duration: "5m"
 ```
 
-Archivo `academia-labs/devops/caos/experimento.md`:
-
 ```markdown
 # Experimento: perder un pod de la API
 - Estado estable: tasa de éxito >= 99 % (PromQL: sum(rate(http_requests_total{code!~"5.."}[1m])) / sum(rate(http_requests_total[1m])))
@@ -684,8 +783,6 @@ Archivo `academia-labs/devops/caos/experimento.md`:
 - Resultado: (completar con los datos)
 ```
 
-Ejecútalo:
-
 ```bash
 helm repo add chaos-mesh https://charts.chaos-mesh.org
 helm install chaos-mesh chaos-mesh/chaos-mesh -n chaos-mesh --create-namespace
@@ -694,69 +791,10 @@ kubectl apply -f academia-labs/devops/caos/pod-kill.yaml
 kubectl get pods -n staging -w
 ```
 
-**Explicación por bloques:** `experimento.md` deja por escrito el método antes de romper nada: métrica de estado estable con su consulta PromQL, hipótesis, alcance y condición de parada. `pod-kill.yaml` mata un solo pod con la etiqueta `app=api` en staging durante cinco minutos. Mientras tanto, `hey` genera carga constante para que haya peticiones en curso cuando cada pod muere. Con `kubectl get pods -w` ves cómo el Deployment reemplaza cada pod.
-
-**Resultado esperado:**
-
 ```text
 kubectl get pods -w muestra pods de la API pasando a Terminating y nuevos pods en ContainerCreating y Running.
 Con readiness probe correcta: la tasa de éxito en Grafana se mantiene por encima de 99 % y hey reporta solo algunos errores aislados.
 Sin readiness probe: hey reporta ráfagas de errores 502/503 y la tasa baja por debajo de 95 %: la hipótesis falla.
 ```
 
-**Fallo deliberado:** quita la readiness probe del Deployment de la API y repite el experimento. **Error esperado:** la tasa de éxito cae por debajo de 95 % y se activa la condición de parada. **Diagnóstico:** el Service envía tráfico a pods que todavía no están listos o que ya se están cerrando. Es el hallazgo que el experimento debía revelar: agrega readiness probe y apagado ordenado, y repite.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** escribe tu propio `experimento.md` antes de ejecutar nada.
-2. **Variación:** ejecuta el experimento y registra el mínimo de la tasa de éxito.
-3. **Diagnóstico:** reproduce el fallo deliberado sin readiness probe.
-4. **Integración:** agrega un `NetworkChaos` con 300 ms de latencia hacia la base y mide el p95 de la API.
-5. **Diseño:** organiza un «día de juego» de una hora con el equipo: roles, experimento y reunión de cierre.
-
-**Pista:** si no puedes escribir la condición de parada como una consulta, todavía no estás listo para el experimento.
-
-#### Paso 6 · Práctica independiente
-
-Automatiza el experimento con un `Schedule` de Chaos Mesh que corra cada semana en staging y una alerta que avise si la hipótesis falla.
-
-#### Paso 7 · Cierre
-
-- [ ] Tu experimento tiene hipótesis, alcance y parada escritos.
-- [ ] Mediste el estado estable durante el fallo.
-- [ ] Reprodujiste el hallazgo sin readiness probe.
-- [ ] Sabes por qué no se empieza en producción.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** romper cosas sin hipótesis, empezar en producción y no tener cómo medir el estado estable. **Siguiente paso:** el módulo 14 convierte los hallazgos en alertas que conducen a acciones.
-
-**Transferencia al proyecto integrador «RutaFlow»:** ejecuta en staging el experimento de perder un pod de la API de RutaFlow y registra el resultado y las correcciones en el runbook.
-
-**Fuente oficial:** [Principles of Chaos Engineering](https://principlesofchaos.org/) y [Chaos Mesh — PodChaos](https://chaos-mesh.org/docs/simulate-pod-chaos-on-kubernetes/).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** exponer una métrica counter desde una API propia, consultarla con PromQL, visualizarla en un dashboard de Grafana, y configurar una alerta basada en un umbral sostenido.
-
-**Requisitos previos:** una API propia simple, Prometheus y Grafana corriendo (pueden levantarse con Docker Compose, Módulo 3 de este track).
-
-| Paso | Acción | Configuración | Explicación | Resultado esperado |
-|---|---|---|---|---|
-| 1 | Instrumentar un counter en tu API | Biblioteca cliente de Prometheus, counter `http_requests_total` | Expone la métrica en `/metrics` | El endpoint responde en formato Prometheus |
-| 2 | Configurar Prometheus para scrapear tu API | `scrape_config` en `prometheus.yml` | Prometheus consulta periódicamente ese endpoint | El servicio aparece `UP` en targets |
-| 3 | Consultar con PromQL | `rate(http_requests_total[5m])` | Calcula la tasa de peticiones por segundo | Se muestra la tasa calculada |
-| 4 | Crear un dashboard en Grafana | Conecta Prometheus como fuente, crea un panel | Visualiza la métrica en tiempo real | El panel se actualiza con tráfico real |
-| 5 | Generar tráfico con errores intencionales | Ruta que responde 500 en ciertas condiciones | Prepara datos para calcular tasa de error | La métrica incluye `status="500"` |
-| 6 | Calcular la tasa de error con PromQL | Consulta del Tema 2 | Aplica sobre datos reales | Un valor entre 0 y 1 |
-| 7 | Configurar una regla de alerta | Expresión, umbral, `for: 2m` | Aplica el patrón del Tema 4 | La regla aparece cargada correctamente |
-| 8 | Definir un SLO propio | Documento con SLO y consulta PromQL | Aplica el razonamiento del Tema 5 | Un documento claro con el SLO definido |
-
-**Verificación:** el laboratorio se considera exitoso si el dashboard refleja tráfico real, la tasa de error es coherente con los errores generados intencionalmente, y la regla de alerta está correctamente configurada.
-
-**Errores comunes y soluciones**
-
-- **Prometheus muestra tu servicio como `DOWN`.** Verifica el endpoint `/metrics` con `curl` directo, y que la dirección en `scrape_config` coincide con dónde corre tu app.
-- **`rate()` devuelve valores extraños.** Confirma que la métrica es un counter, no un gauge.
-- **El panel de Grafana no muestra datos.** Verifica la URL del datasource y el rango de tiempo seleccionado.
-- **La alerta nunca se dispara.** Revisa que sostuviste la condición durante todo el `for`; si el problema fue breve, correctamente no se dispara.
-
----
+</details>

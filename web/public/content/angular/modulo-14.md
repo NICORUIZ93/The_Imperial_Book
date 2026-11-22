@@ -7,37 +7,74 @@ El proyecto anterior demuestra integración técnica, pero una aplicación produ
 
 Cada tema verifica su garantía con herramientas reales del ecosistema: `vitest-axe` para accesibilidad automatizada, `DomSanitizer` real de Angular para sanitización, `Intl.PluralRules` real para pluralización correcta, y la API oficial de test de bloques `@defer` para rendimiento diferido.
 
+
 ### Tema 1: Accesibilidad es comportamiento, no una puntuación · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con `vitest-axe` (una auditoría de accesibilidad automatizada real, no una suposición visual), que un formulario con error asociado correctamente vía `aria-describedby` pasa la auditoría, y que quitar esa asociación produce una violación real detectada.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con vitest-axe (una auditoría de accesibilidad automatizada real, no una suposición visual), que un formulario con error asociado correctamente vía aria-describedby pasa la auditoría, y que quitar esa asociación produce una violación real detectada.
 
-**Conocimiento previo:** Módulo 5 de este track (formularios reactivos).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con vitest-axe (una auditoría de accesibilidad automatizada real, no una suposición visual), que un formulario con error asociado correctamente vía aria-describedby pasa la auditoría, y que quitar esa asociación produce una violación real detectada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Una SPA puede ser visualmente correcta y quedar inutilizable para personas que navegan con teclado o lector de pantalla; un `<div role="button">` sin reconstruir teclado y foco es una imitación que rompe exactamente para quien más la necesita.
+#### ► LA ANALOGÍA
+Piensa en accesibilidad es comportamiento, no una puntuación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** HTML semántico, nombre accesible, `aria-describedby`, auditoría automatizada.
-
-Un `<button>` nativo ya participa en tabulación, responde a Enter/Espacio y expone su rol; ARIA describe semántica que HTML no ofrece, pero no agrega comportamiento automáticamente. Cada control necesita un nombre accesible (`<label for>`, nunca solo el placeholder); los errores deben asociarse al campo con `aria-describedby`. Las herramientas automáticas (`axe`) detectan ausencia de labels y relaciones inválidas, pero no prueban que el orden de foco sea comprensible — combínalas con recorrido manual por teclado.
-
-**Analogía:** una rampa dibujada en el plano no garantiza acceso si conduce a una puerta cerrada; la conformidad estructural necesita probar el recorrido completo, no solo la existencia de la rampa.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["input sin aria-describedby"] --> X[axe: violación real]
   B["input con aria-describedby='error-id'"] --> Y[axe: sin violaciones]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Accesibilidad es comportamiento, no una puntuación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Parte de una carpeta vacía, instala `vitest-axe` (un paquete de la comunidad, versión 0.1.0, que ejecuta axe-core desde Vitest; no es un paquete oficial de Angular ni de Vitest) y crea `src/app/campo-con-error.component.ts`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Accesibilidad es comportamiento, no una puntuación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses accesibilidad es comportamiento, no una puntuación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: accesibilidad es comportamiento, no una puntuación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Accesibilidad es comportamiento, no una puntuación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve accesibilidad es comportamiento, no una puntuación en tu contexto?
+2. ¿Cómo sabrías que accesibilidad es comportamiento, no una puntuación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad es comportamiento, no una puntuación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["input sin aria-describedby"] --> X[axe: violación real]
+  B["input con aria-describedby='error-id'"] --> Y[axe: sin violaciones]
+```
 
 ```bash
 mkdir demo-a11y
@@ -66,8 +103,6 @@ export class CampoConErrorComponent {
   mostrarError = input(false);
 }
 ```
-
-Confirma con `vitest-axe` (auditoría real de accesibilidad, no una inspección visual) que el DOM renderizado no tiene violaciones:
 
 ```ts
 // src/app/campo-con-error.component.spec.ts
@@ -107,56 +142,28 @@ describe('CampoConErrorComponent', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; `axe(fixture.nativeElement)` ejecuta una auditoría REAL de accesibilidad (el mismo motor que Lighthouse usa internamente) sobre el DOM renderizado real, confirmando cero violaciones tanto en el estado normal como en el estado de error, con el mensaje correctamente asociado vía `aria-describedby`.
-
-El matcher `toHaveNoViolations` que documenta el README de `vitest-axe` se importa desde `vitest-axe/matchers` (no desde `vitest-axe`) y sus tipos no se integran con Vitest 5; comparar `resultados.violations` con `[]` da la misma garantía sin configuración extra y, si falla, Vitest imprime cada violación.
-
-**Fallo deliberado:** quita el atributo `for="destino"` del `<label>` (dejando `<label>Dirección de destino</label>` sin asociación) y ejecuta de nuevo. Fallan las dos pruebas (ambas renderizan el label) con una violación REAL de axe (`label` rule: "Form elements must have labels") — diagnostica confirmando que la desconexión entre `<label>` e `<input>`, invisible para alguien que ve la pantalla (el texto sigue apareciendo junto al campo), es detectada automáticamente porque rompe la asociación programática que un lector de pantalla necesita. Restaura `for="destino"` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un botón `<div role="button">` deliberadamente incompleto (sin `tabindex`, sin manejo de teclado) y confirma con `axe` que reporta una violación real relacionada con interactividad.
-2. Corrige ese botón reemplazándolo por un `<button>` nativo y confirma que la violación desaparece.
-3. Agrega un ícono sin texto (`<span class="icono-cerrar">×</span>`) sin `aria-label`, y confirma con `axe` la violación real de "nombre accesible ausente"; corrígela.
-4. Escribe de memoria (sin mirar) un componente con un campo y error asociado por `aria-describedby`, y un test `vitest-axe` que confirme cero violaciones. Compara después contra el patrón del Paso 4.
-
-**Pista:** `axe(fixture.nativeElement)` audita exactamente el subárbol DOM que le pasas — si el elemento raíz de tu componente no incluye el contexto completo (por ejemplo, un `<label>` fuera del componente bajo test), la auditoría no lo verá; asegúrate de que el fixture incluya todo el contexto relevante.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la función de `vitest-axe` que ejecuta la auditoría de accesibilidad sobre un nodo DOM real:
-
 ```ts
 const resultados = await ____(fixture.nativeElement);
 expect(resultados.violations).toEqual([]);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un campo de error accesible, y un test `vitest-axe` que confirme cero violaciones. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas con una auditoría automatizada real que un componente no tiene violaciones de accesibilidad, y ves en código exactamente qué desconexión semántica dispara una violación real. El siguiente tema confirma que la sanitización automática de Angular efectivamente bloquea contenido no confiable. Fuentes oficiales: [Angular — Accessibility](https://angular.dev/best-practices/a11y).
-
-**Errores comunes:** usar `role="button"` sin reconstruir el comportamiento de teclado completo; confiar solo en una puntuación de Lighthouse sin ejecutar auditorías automatizadas en cada test de componente.
-
-**Cuándo no usarlo:** para contenido puramente decorativo sin ninguna interacción ni información semántica real (una imagen de fondo sin significado), la auditoría de accesibilidad no tiene nada relevante que verificar.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Completa la asignación de una entrega solo con teclado. Verifica orden de foco, mensajes de validación y devolución del foco al cerrar el diálogo; conserva una prueba del recorrido completo.
+</details>
 
 ### Tema 2: La seguridad automática tiene fronteras explícitas · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con el `DomSanitizer` real de Angular, que un binding `[innerHTML]` normal elimina contenido peligroso (como una etiqueta `<script>`), y contrastarlo con `bypassSecurityTrustHtml`, que deliberadamente desactiva esa protección.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con el DomSanitizer real de Angular, que un binding [innerHTML] normal elimina contenido peligroso (como una etiqueta <script>), y contrastarlo con bypassSecurityTrustHtml, que deliberadamente desactiva esa protección.
 
-**Conocimiento previo:** Módulo 7 de este track (HttpClient, datos externos).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con el DomSanitizer real de Angular, que un binding [innerHTML] normal elimina contenido peligroso (como una etiqueta <script>), y contrastarlo con bypassSecurityTrustHtml, que deliberadamente desactiva esa protección.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Creer que "Angular evita XSS" automáticamente oculta las rutas reales que salen de esa protección: `ElementRef.nativeElement`, `document` directo, o un bypass explícito sin justificación. Confirmar el comportamiento real, no solo confiar en la documentación, evita vulnerabilidades reales.
-
-#### Paso 3 · Teoría con analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** `SecurityContext`, sanitización automática, `bypassSecurityTrustHtml`.
 
 Angular trata los valores enlazados como no confiables y sanitiza según el contexto (HTML, URL, etc.); `[innerHTML]` sanitiza automáticamente contenido peligroso como `<script>`. `bypassSecurityTrustHtml(...)` NO "sanitiza mejor": desactiva la protección por completo, afirmando que el valor ya fue revisado — debe usarse únicamente cerca de una fuente controlada, nunca sobre contenido de usuario sin revisión real.
@@ -172,131 +179,76 @@ Angular trata los valores enlazados como no confiables y sanitiza según el cont
 └──────────────────────────┘
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-seguridad --standalone --skip-git --defaults` y luego `cd demo-seguridad`), crea `src/app/comentario.component.ts`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que la seguridad automática tiene fronteras explícitas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-```bash
-mkdir -p src/app
-```
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| La seguridad automática tiene fronteras explícitas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-```ts
-// src/app/comentario.component.ts
-import { Component, input } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { inject } from '@angular/core';
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar La seguridad automática tiene fronteras explícitas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-@Component({
-  selector: 'app-comentario',
-  standalone: true,
-  template: `<section [innerHTML]="contenidoSeguro()"></section>`,
-})
-export class ComentarioComponent {
-  contenido = input.required<string>();
-  private sanitizer = inject(DomSanitizer);
+#### ► CUÁNDO NO USAR ESTO
+No uses la seguridad automática tiene fronteras explícitas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-  // sin bypass: Angular sanitiza automaticamente segun el contexto HTML
-  contenidoSeguro(): SafeHtml {
-    return this.sanitizer.sanitize(1 /* SecurityContext.HTML */, this.contenido()) ?? '';
-  }
-}
-```
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: la seguridad automática tiene fronteras explícitas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Confirma con un test real que el contenido peligroso se elimina automáticamente:
+#### ► LO QUE DEBES RECORDAR
+- La seguridad automática tiene fronteras explícitas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-```ts
-// src/app/comentario.component.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ComentarioComponent } from './comentario.component';
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve la seguridad automática tiene fronteras explícitas en tu contexto?
+2. ¿Cómo sabrías que la seguridad automática tiene fronteras explícitas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar la seguridad automática tiene fronteras explícitas?
 
-describe('ComentarioComponent', () => {
-  it('la sanitizacion automatica elimina una etiqueta script real', async () => {
-    await TestBed.configureTestingModule({ imports: [ComentarioComponent] }).compileComponents();
-    const fixture = TestBed.createComponent(ComentarioComponent);
-    fixture.componentRef.setInput('contenido', '<p>Hola</p><script>alert("xss")</script>');
-    fixture.detectChanges();
+</details>
 
-    const html = fixture.nativeElement.innerHTML;
-    expect(html).toContain('Hola');
-    expect(html).not.toContain('<script>'); // Angular la elimino automaticamente
-  });
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-  it('bypassSecurityTrustHtml desactiva la proteccion deliberadamente', async () => {
-    await TestBed.configureTestingModule({ imports: [ComentarioComponent] }).compileComponents();
-    const fixture = TestBed.createComponent(ComentarioComponent);
-    const sanitizer = TestBed.inject(DomSanitizer);
+#### Objetivo observable
+Al finalizar podrás confirmar, con el `DomSanitizer` real de Angular, que un binding `[innerHTML]` normal elimina contenido peligroso (como una etiqueta `<script>`), y contrastarlo con `bypassSecurityTrustHtml`, que deliberadamente desactiva esa protección.
 
-    const contenidoConBypass = sanitizer.bypassSecurityTrustHtml('<img src=x onerror="alert(1)">');
-    // asignacion directa via bypass, sin pasar por el sanitize() del componente
-    fixture.componentInstance['contenidoSeguro'] = () => contenidoConBypass;
-    fixture.detectChanges();
+**Conocimiento previo:** Módulo 7 de este track (HttpClient, datos externos).
 
-    const html = fixture.nativeElement.innerHTML;
-    expect(html).toContain('onerror'); // el bypass dejo pasar el atributo peligroso sin ninguna proteccion
-  });
-});
-```
-
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** el primer test confirma que Angular elimina REALMENTE la etiqueta `<script>` del DOM renderizado (no la ejecuta ni la muestra como texto escapado en este caso: la sanitización de `innerHTML` la remueve); el segundo confirma, en un caso deliberadamente construido, que `bypassSecurityTrustHtml` deja pasar contenido peligroso sin ninguna protección — el contraste directo entre ambos comportamientos, no solo una afirmación.
-
-**Fallo deliberado:** en el primer test, cambia el contenido de entrada para incluir SOLO texto sin ninguna etiqueta peligrosa (`'Hola mundo'`) y verifica que `toContain('<script>')` naturalmente no aplicaría — en vez de eso, documenta qué pasaría si alguien confundiera "Angular sanitiza el binding" con "Angular sanitiza CUALQUIER acceso al DOM": agrega una línea `fixture.nativeElement.querySelector('section').outerHTML += '<script>document.cookie</script>'` (manipulación DIRECTA del DOM, fuera del binding de Angular) y confirma que ESA etiqueta SÍ aparece en el HTML final — diagnostica confirmando que la sanitización automática de Angular protege específicamente los bindings de plantilla, NO cualquier manipulación directa del DOM vía `nativeElement` o `document`. Revierte el cambio antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Prueba con una URL `javascript:alert(1)` como `href` de un enlace enlazado dinámicamente y confirma que Angular sanitiza el contexto de URL de forma distinta al contexto HTML.
-2. Documenta, en un comentario, por qué `ElementRef.nativeElement.innerHTML = ...` (manipulación directa) NO pasa por ninguna sanitización de Angular, a diferencia de `[innerHTML]="valor"` en la plantilla.
-3. Escribe un test que confirme que un texto interpolado normal (`{{ comentario }}`, sin `innerHTML`) escapa el HTML completamente, mostrando las etiquetas como texto literal en vez de eliminarlas.
-4. Escribe de memoria (sin mirar) un componente con `[innerHTML]` normal y un test que confirme que una etiqueta `<script>` se elimina automáticamente. Compara después contra el patrón del Paso 4.
-
-**Pista:** la sanitización automática de Angular actúa específicamente sobre los BINDINGS de plantilla (`[innerHTML]`, `[href]`, etc.) — cualquier acceso directo al DOM vía `ElementRef.nativeElement`, `document`, o una librería de terceros que manipule el DOM directamente queda completamente fuera de esa protección.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método de `DomSanitizer` que desactiva deliberadamente la protección automática:
-
-```ts
-const contenidoConBypass = sanitizer.____('<img src=x onerror="alert(1)">');
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con `[innerHTML]` normal, y un test que confirme que Angular elimina una etiqueta `<script>` automáticamente. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas con un test real las fronteras exactas de la sanitización automática de Angular: protege bindings de plantilla, no manipulación directa del DOM ni bypasses explícitos. El siguiente tema confirma que la pluralización de mensajes traducidos usa reglas gramaticales reales, no concatenación. Fuentes oficiales: [Angular — Security](https://angular.dev/best-practices/security).
-
-**Errores comunes:** creer que la sanitización automática cubre cualquier acceso al DOM, incluyendo manipulación directa vía `nativeElement`; usar `bypassSecurityTrustHtml` para silenciar una advertencia sobre contenido de usuario sin revisión real.
-
-**Cuándo no usarlo:** para contenido completamente estático definido en el propio código fuente de la aplicación (nunca proveniente de una fuente externa o de usuario), la sanitización automática es redundante, aunque tampoco perjudicial.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Muestra observaciones de entregas con interpolación segura y prueba texto con etiquetas HTML. Comprueba además la autorización en la API: ocultar una acción del panel no debe conceder ni revocar permisos.
+</details>
 
 ### Tema 3: Internacionalizar implica significado, no reemplazo de texto · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con `Intl.PluralRules` real (la API estándar del navegador para reglas de pluralización), que un mensaje selecciona la forma gramatical correcta según la cantidad, en vez de concatenar un número con un texto fijo.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con Intl.PluralRules real (la API estándar del navegador para reglas de pluralización), que un mensaje selecciona la forma gramatical correcta según la cantidad, en vez de concatenar un número con un texto fijo.
 
-**Conocimiento previo:** ninguno adicional a JavaScript/TypeScript estándar.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con Intl.PluralRules real (la API estándar del navegador para reglas de pluralización), que un mensaje selecciona la forma gramatical correcta según la cantidad, en vez de concatenar un número con un texto fijo.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Concatenar `"Tienes " + count + " tareas"` produce gramática incorrecta para cantidades que requieren una forma singular o una regla especial (0, 1, "muchos" en algunos idiomas); las reglas de pluralización varían por idioma y no siguen un patrón universal de "singular si es 1, plural en cualquier otro caso".
+#### ► LA ANALOGÍA
+Piensa en internacionalizar implica significado, no reemplazo de texto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** ICU plural, `Intl.PluralRules`, significado sobre reemplazo de texto.
-
-Angular reconoce `i18n` en plantillas con formato ICU para expresar plural y selección sin concatenar fragmentos de texto. `Intl.PluralRules` (una API estándar de JavaScript, no específica de Angular, pero el mecanismo subyacente real que las reglas ICU consultan) determina la categoría gramatical correcta (`zero`, `one`, `few`, `many`, `other`, según el idioma) para un número dado en un locale específico.
-
-**Analogía:** localizar un mensaje no es reemplazar palabras en el guion; el orden gramatical, la forma del sustantivo y hasta la estructura completa de la oración pueden cambiar según la cantidad, exactamente como "un día" y "tres días" no son la misma palabra con un número distinto pegado al frente.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   N[cantidad = 0] --> R["Intl.PluralRules('es').select(0)"]
@@ -305,9 +257,50 @@ flowchart LR
   R2 --> C2["'one' -> '1 tarea'"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Internacionalizar implica significado, no reemplazo de texto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-i18n --standalone --skip-git --defaults` y luego `cd demo-i18n`), crea `src/app/pluralizar-tareas.ts`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Internacionalizar implica significado, no reemplazo de texto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses internacionalizar implica significado, no reemplazo de texto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: internacionalizar implica significado, no reemplazo de texto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Internacionalizar implica significado, no reemplazo de texto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve internacionalizar implica significado, no reemplazo de texto en tu contexto?
+2. ¿Cómo sabrías que internacionalizar implica significado, no reemplazo de texto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar internacionalizar implica significado, no reemplazo de texto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  N[cantidad = 0] --> R["Intl.PluralRules('es').select(0)"]
+  R --> C["'other' -> '0 tareas'"]
+  N2[cantidad = 1] --> R2["Intl.PluralRules('es').select(1)"]
+  R2 --> C2["'one' -> '1 tarea'"]
+```
 
 ```bash
 mkdir -p src/app
@@ -330,8 +323,6 @@ export function pluralizarTareas(cantidad: number): string {
   }
 }
 ```
-
-Confirma con un test real, contra la API real de `Intl`, que la forma gramatical correcta se selecciona para distintas cantidades:
 
 ```ts
 // src/app/pluralizar-tareas.spec.ts
@@ -356,71 +347,79 @@ describe('pluralizarTareas', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** los tres tests pasan; `Intl.PluralRules('es').select(...)` (la API REAL del navegador/Node.js para reglas de pluralización, no una tabla de casos escrita a mano) confirma que el español usa la forma singular SOLO para `1`, y la forma plural tanto para `0` como para cantidades mayores — una regla gramatical real, no la suposición ingenua de "singular si es 1, plural en cualquier otro caso" (que coincidentemente es correcta para español, pero NO para todos los idiomas).
-
-**Fallo deliberado:** reemplaza la lógica por concatenación directa: `return cantidad + (cantidad === 1 ? ' tarea pendiente' : ' tareas pendientes');` (una implementación manual sin `Intl.PluralRules`) y ejecuta de nuevo los tests. Los tres SIGUEN pasando en español (porque la regla manual coincide accidentalmente con las categorías reales de este idioma específico) — documenta, sin necesitar cambiar de idioma real en el test, que esta implementación manual se ROMPERÍA silenciosamente para idiomas con más de dos categorías gramaticales (como el árabe, con seis categorías: zero/one/two/few/many/other), mientras que `Intl.PluralRules('ar').select(...)` seguiría funcionando correctamente sin cambiar ninguna lógica de la aplicación. Restaura `Intl.PluralRules` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Prueba `Intl.PluralRules('ar').select(...)` (árabe) para los números 0, 1, 2, 3, 11 y 100, documentando las 6 categorías gramaticales distintas que produce, contrastando con las 2 categorías del español.
-2. Escribe un test que confirme que `Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(...)` formatea una moneda correctamente, documentando por qué la moneda es un dato del dominio (no deducible solo del locale del usuario).
-3. Escribe un test con `Intl.DateTimeFormat` que confirme que la misma fecha UTC se muestra de forma distinta en dos zonas horarias distintas.
-4. Escribe de memoria (sin mirar) una función de pluralización basada en `Intl.PluralRules`, y tests para al menos dos cantidades con categorías gramaticales distintas. Compara después contra el patrón del Paso 4.
-
-**Pista:** `Intl.PluralRules` es una API ESTÁNDAR de JavaScript (disponible en Node.js y en cualquier navegador moderno, no es específica de Angular) — puedes experimentar con ella directamente en una consola de Node.js antes de integrarla en un componente, para explorar las categorías reales de cualquier idioma.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método real de `Intl.PluralRules` que determina la categoría gramatical de un número:
-
 ```ts
 const categoria = reglasEspanol.____(cantidad);
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una función de pluralización basada en `Intl.PluralRules`, y un test que confirme la categoría correcta para al menos dos cantidades. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya usas `Intl.PluralRules` real para seleccionar la forma gramatical correcta de un mensaje según la cantidad, en vez de concatenación manual que solo funciona por coincidencia en algunos idiomas. El siguiente y último tema de este módulo confirma que el contenido diferido con `@defer` efectivamente no bloquea la carga inicial. Fuentes oficiales: [MDN — Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) y [Angular — i18n](https://angular.dev/guide/i18n).
-
-**Errores comunes:** concatenar manualmente cantidad y texto asumiendo la regla "singular si es 1, plural en cualquier otro caso", que solo es correcta para algunos idiomas; deducir la moneda del locale del usuario en vez de tratarla como un dato explícito del dominio.
-
-**Cuándo no usarlo:** para una aplicación con un único idioma de audiencia fijo y sin intención real de internacionalizar nunca, invertir en `Intl.PluralRules` sobre una tabla simple de casos escritos a mano es una formalidad sin beneficio inmediato.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Localiza fechas, distancias y cantidades del panel con datos de dos regiones. Revisa nombres largos y lectura por teclado; las traducciones no deben alterar el identificador utilizado en las operaciones.
+</details>
 
 ### Tema 4: Rendimiento y actualización son contratos de experiencia · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás confirmar, con la API oficial de test de bloques `@defer` de Angular, que el contenido diferido NO se renderiza inicialmente y SÍ se renderiza tras disparar manualmente su condición, verificando en código el beneficio real de rendimiento que `@defer` promete.
+#### ► DE QUÉ TRATA
+Al finalizar podrás confirmar, con la API oficial de test de bloques @defer de Angular, que el contenido diferido NO se renderiza inicialmente y SÍ se renderiza tras disparar manualmente su condición, verificando en código el beneficio real de rendimiento que @defer promete.
 
-**Conocimiento previo:** Módulo 4 de este track (routing y lazy loading).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás confirmar, con la API oficial de test de bloques @defer de Angular, que el contenido diferido NO se renderiza inicialmente y SÍ se renderiza tras disparar manualmente su condición, verificando en código el beneficio real de rendimiento que @defer promete.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un presupuesto de bundle en `angular.json` evita que una dependencia grande entre sin discusión, pero solo `@defer` reduce activamente el JavaScript inicial pospuesto contenido no crítico; sin verificar en un test que el contenido realmente se difiere, un `@defer` mal configurado podría renderizar todo de inmediato sin ningún beneficio real, silenciosamente.
+#### ► LA ANALOGÍA
+Piensa en rendimiento y actualización son contratos de experiencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que rendimiento y actualización son contratos de experiencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** `@defer`, disparadores (`on viewport`, `on interaction`), API de test de bloques diferidos.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Rendimiento y actualización son contratos de experiencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`@defer` pospone la carga y el renderizado de un bloque de plantilla hasta que se cumple un disparador (entrar en el viewport, una interacción del usuario, un timer, etc.), reduciendo el JavaScript necesario para la carga inicial. Angular expone una API oficial de testing (`fixture.getDeferBlocks()` y las utilidades asociadas) para controlar manualmente ese estado en un test, sin depender de temporizadores reales ni de scroll simulado.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Rendimiento y actualización son contratos de experiencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** `@defer` es como no traer todas las herramientas del taller a la mesa de trabajo desde el inicio, solo las que se necesitan de inmediato, trayendo las demás únicamente cuando efectivamente se van a usar.
+#### ► CUÁNDO NO USAR ESTO
+No uses rendimiento y actualización son contratos de experiencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rendimiento y actualización son contratos de experiencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Rendimiento y actualización son contratos de experiencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rendimiento y actualización son contratos de experiencia en tu contexto?
+2. ¿Cómo sabrías que rendimiento y actualización son contratos de experiencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rendimiento y actualización son contratos de experiencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Carga inicial ──────────────────┐  contenido crítico + placeholder del @defer
 └──────────────────────────┘
 ┌── Disparador cumplido ────────────┐  Angular carga y renderiza el bloque diferido
 └──────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-defer --standalone --skip-git --defaults` y luego `cd demo-defer`), crea `src/app/panel-metricas.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -444,8 +443,6 @@ import { Component } from '@angular/core';
 })
 export class PanelMetricasComponent {}
 ```
-
-Confirma con la API oficial de test de bloques diferidos que el contenido pesado NO está en el DOM inicialmente:
 
 ```ts
 // src/app/panel-metricas.component.spec.ts
@@ -486,72 +483,32 @@ describe('PanelMetricasComponent', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el primer test confirma que, inmediatamente tras el render inicial, el contenido pesado del `@defer` NO existe en el DOM (`querySelector` devuelve `null`) y solo el placeholder ligero está presente; el segundo confirma que, tras invocar `bloqueDeferido.render(DeferBlockState.Complete)` (la API oficial de test que fuerza el estado "cargado" sin depender de un disparador real de interacción del usuario), el contenido pesado SÍ aparece — el beneficio real de `@defer` (JavaScript inicial reducido) confirmado en código, no solo asumido por usar la sintaxis.
-
-**Fallo deliberado:** cambia `@defer (on interaction)` por simplemente eliminar el bloque `@defer` (dejando el contenido pesado directamente en la plantilla, sin ningún diferimiento) y ejecuta de nuevo el primer test. FALLA porque `metricas` ya NO es `null` — está presente desde el primer render — diagnostica confirmando en código, no solo en documentación, que sin `@defer` todo el contenido se renderiza (y su JavaScript asociado se descarga) en la carga inicial, exactamente el costo que `@defer` está diseñado para evitar. Restaura el bloque `@defer` antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Cambia el disparador a `on timer(2s)` y documenta, con la API de test (`bloqueDeferido.render(DeferBlockState.Complete)` sigue funcionando independientemente del disparador real configurado), por qué la API de test permite verificar el comportamiento SIN esperar 2 segundos reales en el test.
-2. Agrega un bloque `@loading` (mostrado mientras el contenido diferido está cargándose activamente) y confirma con un test que aparece en el estado intermedio.
-3. Agrega un bloque `@error` (mostrado si la carga del contenido diferido falla) y documenta, en un comentario, en qué escenarios reales un `@defer` podría fallar (por ejemplo, un chunk que no se pudo descargar por un problema de red).
-4. Escribe de memoria (sin mirar) un componente con `@defer (on interaction)` y `@placeholder`, y dos tests que confirmen el estado inicial y el estado tras disparar el render. Compara después contra el patrón del Paso 4.
-
-**Pista:** la API de test de bloques diferidos de Angular (`fixture.getDeferBlocks()` + `.render(estado)`) es la forma oficial de controlar el estado de un `@defer` en un test SIN depender de temporizadores reales, scroll simulado o eventos de interacción reales del DOM — mucho más rápido y determinista que intentar simular el disparador real.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método de la API de test que fuerza el estado "cargado" de un bloque `@defer`:
-
 ```ts
 const [bloqueDeferido] = await fixture.getDeferBlocks();
 await bloqueDeferido.____();
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un bloque `@defer` y `@placeholder`, y un test que confirme que el contenido pesado no está presente inicialmente. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya confirmas en código, con la API oficial de test de bloques diferidos, que `@defer` efectivamente reduce el contenido renderizado en la carga inicial, el beneficio de rendimiento real que promete. Este era el último tema del módulo; el siguiente paso natural es aplicar estas cuatro garantías combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Deferrable Views](https://angular.dev/guide/defer) y [Angular — Testing `@defer`](https://angular.dev/guide/defer#testing-defer).
-
-**Errores comunes:** agregar `@defer` sin verificar en un test que el contenido efectivamente se pospone; establecer presupuestos de bundle como advertencia (`maximumWarning`) sin un límite de error (`maximumError`) que realmente bloquee un build en CI.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Difiere el panel de métricas históricas de entregas con `@defer (on viewport)`, y prueba con la API de bloques diferidos que la carga inicial del panel operativo no incluye ese JavaScript hasta que el operador se desplaza hasta esa sección.
-
-**Cuándo no usarlo:** para contenido pequeño y crítico para la primera impresión del usuario (por ejemplo, el encabezado principal de la página), diferir su renderizado empeoraría la experiencia en vez de mejorarla.
+</details>
 
 ### Tema 5: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min
 
-**Prerrequisito:** temas «Hacia zoneless change detection» (módulo 2) y «Rendimiento y actualización son contratos de experiencia» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** grabar una sesión con el Profiler de Angular DevTools, encontrar el componente que más tiempo consume en cada detección de cambios y confirmar la mejora con una segunda medición.
+#### ► DE QUÉ TRATA
+Instala la extensión Angular DevTools en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (ng serve): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar enableProfiling() para ver los eventos de Angular en el panel…
 
-**¿Por qué es importante?** Optimizar sin medir lleva a cambiar el código equivocado. El Profiler de Angular muestra cuánto tarda cada componente y por qué se actualizó, que es justo lo que el panel genérico del navegador no sabe.
+#### ► LA IDEA EN UNA FRASE
+**Instala la extensión Angular DevTools en Chrome o Firefox.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Instala la extensión **Angular DevTools** en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (`ng serve`): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar `enableProfiling()` para ver los eventos de Angular en el panel Performance de Chrome.
+#### ► LA ANALOGÍA
+Piensa en perfilar con angular devtools y el panel performance de chrome como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-La lista de envíos del panel de RutaFlow se trababa al escribir en el buscador. El equipo sospechaba del servicio HTTP, pero el Profiler mostró que cada tecla volvía a calcular una función costosa en la plantilla de 500 filas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** detección de cambios, ciclo, Profiler, gráfico de llamas (*flame graph*), método en plantilla, `computed`, `enableProfiling`.
-
-Cada vez que algo puede haber cambiado (un evento, una respuesta, una señal), Angular hace un **ciclo de detección de cambios** y revisa las plantillas. El **Profiler** de Angular DevTools graba esos ciclos:
-
-- La barra superior muestra un bloque por ciclo; su altura es el tiempo total.
-- Al elegir un ciclo, el **gráfico de llamas** muestra cada componente: el ancho es el tiempo que tardó.
-- El panel lateral dice qué disparó el ciclo (un evento, un temporizador).
-
-Una causa típica de lentitud es llamar un **método en la plantilla** (`{{ calcular(envio) }}`): se ejecuta en cada ciclo para cada fila. Moverlo a un `computed` hace que se calcule solo cuando cambian sus señales.
-
-**Analogía:** el Profiler es el cronómetro de una carrera de relevos por tramo: no te dice solo que el equipo tardó, sino qué corredor se demoró. La analogía falla en que el «corredor» lento puede ser lento porque lo llaman demasiadas veces, no porque corra mal.
-
-**Límite de uso:** mide en modo desarrollo, que es más lento que producción; compara mediciones entre sí, no contra números absolutos. Para el tiempo de carga y la red, usa Lighthouse o el panel Performance, no el Profiler.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     G["Grabar en Profiler"] --> C["Elegir el ciclo más alto"]
@@ -561,9 +518,51 @@ flowchart LR
     X --> G2["Grabar otra vez y comparar"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Perfilar con Angular DevTools y el panel Performance de Chrome se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `src/app/envios/lista-envios.ts`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Perfilar con Angular DevTools y el panel Performance de Chrome | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses perfilar con angular devtools y el panel performance de chrome por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: perfilar con angular devtools y el panel performance de chrome funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Perfilar con Angular DevTools y el panel Performance de Chrome existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve perfilar con angular devtools y el panel performance de chrome en tu contexto?
+2. ¿Cómo sabrías que perfilar con angular devtools y el panel performance de chrome no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar perfilar con angular devtools y el panel performance de chrome?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    G["Grabar en Profiler"] --> C["Elegir el ciclo más alto"]
+    C --> F["Flame graph: componente más ancho"]
+    F --> H["Hipótesis: método en plantilla"]
+    H --> X["Cambiar a computed"]
+    X --> G2["Grabar otra vez y comparar"]
+```
 
 ```ts
 import { Component, computed, signal } from '@angular/core';
@@ -594,8 +593,6 @@ export class ListaEnvios {
 }
 ```
 
-Archivo `src/main.ts`:
-
 ```ts
 import { enableProfiling } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -606,8 +603,6 @@ enableProfiling(); // Angular 20+: eventos de Angular en el panel Performance de
 bootstrapApplication(App, appConfig);
 ```
 
-Ejecútalo:
-
 ```bash
 ng serve
 # 1) abre Angular DevTools > Profiler > Start recording
@@ -615,79 +610,32 @@ ng serve
 # 3) elige el ciclo más alto y busca ListaEnvios en el flame graph
 ```
 
-**Explicación por bloques:** La versión lenta tenía en la plantilla `{{ puntaje(envio) }}`, un método que suma raíces de 200 números; con 500 filas, cada tecla hacía 100 000 operaciones por ciclo. La versión del archivo usa `filas`, un `computed` que depende de `envios` y `filtro`: solo se recalcula cuando cambia alguna de las dos señales, y la plantilla lee valores ya calculados. `enableProfiling()` agrega una pista de Angular en el panel Performance para ver la misma información junto a la red y el pintado.
-
-**Resultado esperado:**
-
 ```text
 Antes: el flame graph muestra ListaEnvios como el bloque más ancho de cada ciclo al escribir.
 Después: el ciclo al escribir baja de forma visible y ListaEnvios deja de ser el bloque dominante.
 ```
 
-**Fallo deliberado:** graba el Profiler con un build de producción (`ng build` y un servidor estático). **Error esperado:** Angular DevTools muestra que la aplicación está en modo producción y el Profiler no graba. **Diagnóstico:** el Profiler depende de información de depuración que el build de producción quita. Perfila en `ng serve` y valida el resultado final con Lighthouse en producción.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** escribe una versión con el método en la plantilla y graba cinco teclas.
-2. **Variación:** cambia a la versión con `computed` y graba otra vez; compara la altura de los ciclos.
-3. **Diagnóstico:** reproduce el fallo deliberado y lee el aviso de DevTools.
-4. **Integración:** activa `enableProfiling()` y encuentra la pista de Angular en el panel Performance de Chrome.
-5. **Diseño:** escribe en una línea la regla de plantillas que adoptarías en RutaFlow después de esta medición.
-
-**Pista:** primero encuentra el ciclo más alto; después el componente más ancho de ese ciclo. Optimiza solo eso.
-
-#### Paso 6 · Práctica independiente
-
-Perfila la pantalla más usada de tu proyecto, guarda una captura del flame graph antes y después de un cambio, y escribe qué medición confirma la mejora.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué es un ciclo de detección de cambios.
-- [ ] Encontraste el componente más costoso en el flame graph.
-- [ ] Confirmaste la mejora con una segunda grabación.
-- [ ] Sabes que el Profiler solo funciona en desarrollo.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** optimizar sin grabar antes, llamar métodos costosos en las plantillas y comparar mediciones de desarrollo con producción. **Siguiente paso:** el tema «Zoneless» del módulo 11 reduce la cantidad de ciclos que el Profiler tiene que mostrar.
-
-**Transferencia al proyecto integrador «RutaFlow»:** perfila la lista de envíos del panel de RutaFlow, reemplaza los métodos de plantilla por `computed` y adjunta las capturas antes y después al pull request.
-
-**Fuente oficial:** [Angular — DevTools: Profiler](https://angular.dev/tools/devtools/profiler) y [Angular — enableProfiling](https://angular.dev/api/core/enableProfiling).
+</details>
 
 ### Tema 6: CSP con nonce y Trusted Types en Angular · Experto · 45 min
 
-**Prerrequisito:** tema «La seguridad automática tiene fronteras explícitas» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** servir una aplicación Angular con una Content Security Policy estricta basada en nonce y activar Trusted Types para que el navegador bloquee inyecciones de HTML.
+#### ► DE QUÉ TRATA
+Usa Angular 19 o superior. Para la parte con SSR necesitas un proyecto creado con --ssr. Probarás las cabeceras con las DevTools del navegador (pestañas Network y Console).
 
-**¿Por qué es importante?** Angular ya escapa lo que interpolas, pero una dependencia, un `innerHTML` mal usado o un `bypassSecurityTrust...` pueden abrir un hueco de XSS. CSP y Trusted Types son una segunda barrera en el navegador: aunque llegue código inyectado, no se ejecuta.
+#### ► LA IDEA EN UNA FRASE
+**Usa Angular 19 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Angular 19 o superior. Para la parte con SSR necesitas un proyecto creado con `--ssr`. Probarás las cabeceras con las DevTools del navegador (pestañas Network y Console).
+#### ► LA ANALOGÍA
+Piensa en csp con nonce y trusted types en angular como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-Una librería de gráficos usada en el panel de RutaFlow insertaba HTML con `innerHTML` a partir de etiquetas de los envíos. Un envío con el nombre `<img src=x onerror=alert(1)>` ejecutó código en el navegador del operador. CSP habría bloqueado ese script.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** Content Security Policy (CSP), nonce, `script-src`, `strict-dynamic`, Trusted Types, `require-trusted-types-for`, `CSP_NONCE`, `autoCsp`.
-
-**CSP** es una cabecera HTTP que dice al navegador qué scripts puede ejecutar. Con una política basada en **nonce**, cada respuesta lleva un valor aleatorio y solo se ejecutan los `<script>` que lo tienen. Un script inyectado no conoce el nonce y se bloquea.
-
-Angular necesita el mismo nonce para sus estilos en línea. Se lo das con el atributo `ngCspNonce` en el componente raíz o con el token `CSP_NONCE`. Con SSR, la opción `autoCsp` del build genera la política con hashes para los scripts que Angular agrega.
-
-**Trusted Types** obliga a que las asignaciones peligrosas (`innerHTML`, `src` de scripts) reciban un objeto creado por una política conocida, no un texto cualquiera. Angular trae sus políticas `angular` y `angular#unsafe-bypass`.
-
-```text
-Content-Security-Policy: script-src 'nonce-R4nd0m' 'strict-dynamic'; object-src 'none'; base-uri 'self';
-  require-trusted-types-for 'script'; trusted-types angular angular#unsafe-bypass
-```
-
-**Analogía:** el nonce es la contraseña del día en la puerta de un evento: solo entra quien la conoce, y cambia cada día. Trusted Types es el detector de metales: aunque tengas entrada, no pasas con un objeto prohibido. La analogía falla en que la contraseña la inventa el servidor en cada respuesta, no una vez al día.
-
-**Límite de uso:** un nonce fijo no protege: debe ser aleatorio en cada respuesta, así que necesitas un servidor (SSR o un proxy) que lo genere. Librerías antiguas que usan `eval` o `innerHTML` pueden romperse; prueba primero con `Content-Security-Policy-Report-Only`.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S["Servidor: genera nonce aleatorio"] -->|"cabecera CSP + index.html con nonce"| N["Navegador"]
@@ -698,9 +646,57 @@ flowchart LR
     T -->|no| B
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CSP con nonce y Trusted Types en Angular se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `src/server.ts`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CSP con nonce y Trusted Types en Angular | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses csp con nonce y trusted types en angular por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: csp con nonce y trusted types en angular funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- CSP con nonce y Trusted Types en Angular existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve csp con nonce y trusted types en angular en tu contexto?
+2. ¿Cómo sabrías que csp con nonce y trusted types en angular no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar csp con nonce y trusted types en angular?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```text
+Content-Security-Policy: script-src 'nonce-R4nd0m' 'strict-dynamic'; object-src 'none'; base-uri 'self';
+  require-trusted-types-for 'script'; trusted-types angular angular#unsafe-bypass
+```
+
+```mermaid
+flowchart LR
+    S["Servidor: genera nonce aleatorio"] -->|"cabecera CSP + index.html con nonce"| N["Navegador"]
+    N --> A{"¿El script tiene el nonce?"}
+    A -->|sí| OK["se ejecuta"]
+    A -->|no| B["bloqueado y reportado"]
+    N --> T{"¿innerHTML con TrustedHTML?"}
+    T -->|no| B
+```
 
 ```ts
 import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
@@ -731,8 +727,6 @@ app.use(async (req, res, next) => {
 export const reqHandler = createNodeRequestHandler(app);
 ```
 
-Archivo `src/index.html`:
-
 ```html
 <!doctype html>
 <html lang="es">
@@ -743,17 +737,11 @@ Archivo `src/index.html`:
 </html>
 ```
 
-Ejecútalo:
-
 ```bash
 ng build
 npm run serve:ssr:academia-ssr
 # en DevTools > Network, revisa la cabecera Content-Security-Policy del documento
 ```
-
-**Explicación por bloques:** El middleware genera 16 bytes aleatorios por respuesta y arma la política: solo scripts con ese nonce (y los que ellos carguen, gracias a `strict-dynamic`), nada de `<object>`, `<base>` solo del mismo origen y Trusted Types con las políticas de Angular. `index.html` lleva el marcador `RANDOM_NONCE` en `ngCspNonce`; el servidor lo reemplaza por el valor real antes de enviar el HTML. El navegador compara el nonce de cada script con el de la cabecera.
-
-**Resultado esperado:**
 
 ```text
 La cabecera Content-Security-Policy del documento muestra un nonce distinto en cada recarga.
@@ -761,91 +749,199 @@ La aplicación funciona sin errores de CSP en la consola.
 Un <script> inyectado sin nonce aparece en consola como «Refused to execute inline script because it violates the following Content Security Policy directive».
 ```
 
-**Fallo deliberado:** en un componente, asigna `elemento.nativeElement.innerHTML = '<b>' + nombre + '</b>'` usando `ElementRef`. **Error esperado:** `This document requires 'TrustedHTML' assignment`. **Diagnóstico:** Trusted Types bloquea el texto crudo. Usa interpolación o `[innerHTML]` (que Angular sanea y convierte en TrustedHTML) en lugar de manipular el DOM a mano.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** recarga la página dos veces y compara el nonce de la cabecera.
-2. **Variación:** cambia la cabecera a `Content-Security-Policy-Report-Only` y observa que las violaciones se reportan sin bloquear.
-3. **Diagnóstico:** reproduce el fallo deliberado de Trusted Types y corrígelo con `[innerHTML]`.
-4. **Integración:** agrega `report-to` con un **endpoint** propio (URL de tu servidor que recibe datos) que registre las violaciones en el servidor.
-5. **Diseño:** revisa las dependencias del panel de RutaFlow y lista cuáles usan `innerHTML` o `eval`.
-
-**Pista:** despliega primero en modo `Report-Only` una semana y corrige lo que aparezca antes de bloquear.
-
-#### Paso 6 · Práctica independiente
-
-Activa `"security": { "autoCsp": true }` en las opciones de build de `angular.json` en un proyecto con SSR y compara la política generada (basada en hashes) con la tuya basada en nonce.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué el nonce debe cambiar en cada respuesta.
-- [ ] La aplicación funciona con la política estricta y sin errores en consola.
-- [ ] Reprodujiste el bloqueo de Trusted Types.
-- [ ] Sabes empezar con `Report-Only`.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar un nonce fijo, agregar `unsafe-inline` para «arreglar» errores y activar la política sin probar en `Report-Only`. **Siguiente paso:** el tema «Rendimiento y actualización son contratos de experiencia» mide el impacto de estas cabeceras y de cada dependencia.
-
-**Transferencia al proyecto integrador «RutaFlow»:** sirve el panel de RutaFlow con CSP basada en nonce y Trusted Types, primero en modo `Report-Only` y después en bloqueo.
-
-**Fuente oficial:** [Angular — Security: Content security policy](https://angular.dev/best-practices/security#content-security-policy) y [MDN — Content Security Policy](https://developer.mozilla.org/es/docs/Web/HTTP/CSP).
-
-## Revisión oficial de plataforma
+</details>
 
 ### Angular v22 y adopción según estabilidad
 
-La documentación activa corresponde a **Angular v22**. La ruta moderna prioriza signals, control flow integrado, componentes standalone y operación **zoneless**, pero la migración se ejecuta con `ng update` y la guía oficial, no reescribiendo la aplicación. El roadmap distingue estable, developer preview y experimental. **Web MCP** aparece como experimental: sirve para explorar integración con herramientas, pero no debe convertirse en dependencia crítica ni confundirse con una garantía estable.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Aplicación al proyecto:** actualiza una copia mediante la guía 21→22, ejecuta migraciones y pruebas, compara detección de cambios zoneless, revisa compatibilidad Node/TypeScript/RxJS y registra APIs experimentales en un ADR con salida reversible.
+#### ► DE QUÉ TRATA
+Este tema te guía por angular v22 y adopción según estabilidad con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender angular v22 y adopción según estabilidad te permite tomar mejores decisiones técnicas.**
 
-## Laboratorio práctico
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en angular v22 y adopción según estabilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que angular v22 y adopción según estabilidad resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Angular v22 y adopción según estabilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Angular v22 y adopción según estabilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses angular v22 y adopción según estabilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: angular v22 y adopción según estabilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Angular v22 y adopción según estabilidad existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve angular v22 y adopción según estabilidad en tu contexto?
+2. ¿Cómo sabrías que angular v22 y adopción según estabilidad no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar angular v22 y adopción según estabilidad?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar angular v22 y adopción según estabilidad.
+
+</details>
 
 ### Proyecto: auditoría integral de la aplicación standalone
 
-Trabaja sobre el proyecto del módulo 13 y conserva una versión desplegable anterior.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Elige flujo login/lista/crear/editar. Recorre con teclado y un lector; registra barreras antes de cambiar código.
-2. Corrige landmarks, headings, labels, foco, errores y anuncios. Añade skip link y pruebas axe en CI.
-3. Sustituye dos controles personalizados por HTML nativo, Angular Aria, CDK o Material justificando la elección.
-4. Introduce un payload XSS inocuo en entorno aislado, identifica el contexto y crea prueba de regresión.
-5. Busca `bypassSecurityTrust`, `ElementRef`, `innerHTML` y accesos DOM; elimina o documenta cada excepción.
-6. Aplica CSP con nonce por respuesta y Trusted Types. Comprueba lazy chunks, estilos y SSR sin `unsafe-inline` general.
-7. Marca mensajes y atributos, extrae catálogo y construye `es-CO` y `en-US`; añade pseudo-locale o RTL de prueba.
-8. Verifica plurales, moneda explícita, dos zonas horarias, textos largos, teclado y lector en ambos idiomas.
-9. Define budgets iniciales y por componente; rompe uno deliberadamente para demostrar el gate.
-10. Mide flujo con dispositivo/red limitados, optimiza un cuello y compara LCP/INP/CLS y bundle.
-11. Si habilitas service worker, prueba offline, actualización con formulario abierto y rollback. Si no, documenta por qué no aporta al caso.
-12. Entrega runbook de release, dashboard por versión y matriz de evidencia.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto: auditoría integral de la aplicación standalone con foco en comprensión antes de implementación.
 
-**Verificación:** CI ejecuta unitarias, integración, a11y automática, build de todos los locales y budgets. La evidencia manual incluye orden de foco, salida resumida del lector, headers CSP, ataque bloqueado, layout RTL y actualización segura. No declares WCAG completa basándote solo en Lighthouse.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto: auditoría integral de la aplicación standalone te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- Agregar ARIA a todo: usa HTML nativo y ARIA solo para semántica ausente.
-- Mover foco en cada cambio de signal: resérvalo para transiciones que el usuario necesita comprender.
-- Silenciar sanitización con bypass: corrige origen/contexto o sanitiza con política mantenida.
-- Nonce fijo en `index.html`: genéralo por respuesta y alinea header con bootstrap.
-- Concatenar mensajes traducidos: utiliza ICU y mensajes completos con contexto.
-- Deducir moneda por locale: transporta currency como dato del dominio.
-- Medir solo Lighthouse: combina laboratorio con distribución real por versión.
-- Activar SW sin plan: prueba datos privados, versiones, actualización y rollback.
+#### ► LA ANALOGÍA
+Piensa en proyecto: auditoría integral de la aplicación standalone como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
-## Atlas completo de temas oficiales
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto: auditoría integral de la aplicación standalone resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Derivado de la [documentación oficial](https://angular.dev/overview), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 46 temas.**
-
-| Área | Temas que deben poder explicarse y aplicarse | Resultado verificable |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Fundamentos | `standalone components` · `templates` · `bindings` · `directivas` · `pipes` · `servicios` · `inyección de dependencias` | consola |
-| Reactividad | `signals` · `computed` · `effect` · `linkedSignal` · `resource` · `RxJS` · `interop signal-observable` · `estado derivado` | consola |
-| Aplicación | `router` · `guards` · `resolvers` · `formularios reactivos` · `validación` · `HTTP` · `interceptores` · `errores` | consola |
-| Renderizado | `SSR` · `SSG` · `hydration` · `incremental hydration` · `event replay` · `zoneless` · `deferred views` · `streaming` | consola |
-| Arquitectura | `lazy loading` · `dominios` · `librerías` · `monorepos` · `configuración` · `i18n` · `microfrontends con criterio` | consola |
-| Calidad | `testing` · `harnesses` · `accesibilidad` · `sanitización` · `CSP y Trusted Types` · `rendimiento` · `profiling` · `migraciones` | consola |
+| Proyecto: auditoría integral de la aplicación standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto: auditoría integral de la aplicación standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto: auditoría integral de la aplicación standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto: auditoría integral de la aplicación standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto: auditoría integral de la aplicación standalone existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto: auditoría integral de la aplicación standalone en tu contexto?
+2. ¿Cómo sabrías que proyecto: auditoría integral de la aplicación standalone no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto: auditoría integral de la aplicación standalone?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: auditoría integral de la aplicación standalone.
+
+</details>
 
 ### Método de estudio y proyecto de ampliación
 
-Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
+2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
+
+</details>

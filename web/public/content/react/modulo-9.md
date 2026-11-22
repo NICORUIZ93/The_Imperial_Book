@@ -5,19 +5,26 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
+
 ### Tema 1: Medir antes de optimizar · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a grabar con React DevTools Profiler una interacción real de `ListaEnvios` (escribir en el filtro) para identificar qué componente específico se re-renderiza innecesariamente, antes de optimizar nada. Prerrequisitos: Módulo 8 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Alguien en el equipo "intuye" que `EnvioCard` es lento y propone envolverlo en `React.memo` preventivamente, sin haber grabado ninguna interacción real todavía.
+#### ► DE QUÉ TRATA
+Al finalizar vas a grabar con React DevTools Profiler una interacción real de ListaEnvios (escribir en el filtro) para identificar qué componente específico se re-renderiza innecesariamente, antes de optimizar nada. Prerrequisitos: Módulo 8 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El Profiler graba una interacción y muestra exactamente qué componentes se re-renderizaron y por qué — un diagnóstico real, en vez de adivinar qué pieza "suena mal".
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a grabar con React DevTools Profiler una interacción real de ListaEnvios (escribir en el filtro) para identificar qué componente específico se re-renderiza innecesariamente, antes de optimizar nada.**
 
-**Diagrama: Optimización sin medición**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en medir antes de optimizar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
     A["Aplicación se 'siente' lenta"]
@@ -42,26 +49,72 @@ graph TD
     style G fill:#e8f5e9
 ```
 
-**¿Por qué es importante?** El Profiler proporciona evidencia concreta de qué componentes se re-renderizan innecesariamente y por qué, evitando esfuerzo de optimización desperdiciado en suposiciones incorrectas.
-**Conceptos clave:** React DevTools Profiler, evidencia antes que intuición.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Medir antes de optimizar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-React DevTools Profiler graba una interacción específica de la aplicación (un clic, escribir en un input, navegar entre vistas) y muestra exactamente qué componentes se re-renderizaron durante esa interacción y por qué (props que cambiaron, estado que cambió, o simplemente que su componente padre se re-renderizó, arrastrando consigo un re-render del hijo aunque sus props sean idénticas), información concreta y medible que reemplaza la intuición o suposición sobre qué parte del código podría estar causando lentitud.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Medir antes de optimizar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Optimizar código sin esta información concreta es, en la inmensa mayoría de los casos, esfuerzo desperdiciado en el lugar equivocado: es común intuir que cierto componente "parece pesado" y envolverlo preventivamente en `React.memo` (Tema 2), cuando en realidad el componente que efectivamente causa el problema de rendimiento percibido es otro completamente distinto, identificable únicamente inspeccionando el Profiler durante la interacción real que el usuario reporta como lenta, en vez de adivinar basándose en una impresión general del código.
+#### ► CUÁNDO NO USAR ESTO
+No uses medir antes de optimizar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** optimizar sin el Profiler es como intentar reparar un motor de auto basándose únicamente en la intuición de qué pieza "suena mal", en vez de conectar un diagnóstico real que muestre exactamente qué componente específico está fallando y por qué.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: medir antes de optimizar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-**Diagrama:**
+#### ► LO QUE DEBES RECORDAR
+- Medir antes de optimizar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve medir antes de optimizar en tu contexto?
+2. ¿Cómo sabrías que medir antes de optimizar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar medir antes de optimizar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph TD
+    A["Aplicación se 'siente' lenta"]
+    
+    B["Opción 1: Adivinar<br/>SIN Profiler"]
+    C["Asumo que X es lento<br/>Optimizo todo<br/>Uso React.memo por defecto"]
+    D["Resultado:<br/>Más complejidad<br/>Mejor? Quién sabe..."]
+    
+    E["Opción 2: Medir<br/>CON Profiler"]
+    F["Identifico exactamente<br/>qué se re-renderiza<br/>Optimizo solo eso"]
+    G["Resultado:<br/>Mejora medible<br/>Código simple"]
+    
+    A -->|Riesgoso| B
+    B -->|Acción| C
+    C -->|Consecuencia| D
+    
+    A -->|Seguro| E
+    E -->|Acción| F
+    F -->|Consecuencia| G
+    
+    style D fill:#ffebee
+    style G fill:#e8f5e9
+```
 
 ```
 Profiler graba una interacción → muestra QUÉ componentes se re-renderizaron y POR QUÉ
 (props cambiadas / estado cambiado / re-render heredado del padre)
 ```
 
-
-**Límites y decisión de uso:** Una medición aislada mezcla variabilidad, herramientas y trabajo de desarrollo. Repite el mismo recorrido con datos y build comparables; optimiza el cuello observado y verifica que la mejora no cambia el resultado funcional.
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { useState } from 'react';
 
@@ -88,8 +141,6 @@ export default function App() {
 }
 ```
 
-Con la aplicación abierta:
-
 ```text
 1. Abre React DevTools > pestaña Profiler
 2. Haz click en grabar (●)
@@ -98,53 +149,79 @@ Con la aplicación abierta:
 5. Inspecciona qué componentes aparecen resaltados y por qué
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: el Profiler muestra que `EncabezadoPanel` (que ni siquiera lee el filtro) se re-renderizó igual, simplemente porque es hijo del mismo padre que cambió de estado — no porque `EncabezadoPanel` en sí sea lento, sino porque heredó un render de su padre. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-#### Paso 5 · Práctica guiada
-Pista: envuelve `EnvioCard` en `React.memo` basándote solo en la intuición inicial ("parece pesado"), sin confirmar con el Profiler que ese es el componente real del problema — ese es el fallo deliberado: vuelve a grabar la interacción, y confirma que `EnvioCard` nunca estuvo en la lista de componentes re-renderizados innecesariamente; el tiempo invertido en memoizarlo no resolvió nada, porque el problema real estaba en otro componente.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 identificando con el Profiler cuál es el componente que sí se re-renderiza innecesariamente (`EncabezadoPanel`, según el Paso 4), y aplica ahí la optimización que estudiarás en el Tema 2, confirmando con una nueva grabación que ese render innecesario desaparece. Graba el panel de envíos del proyecto integrador RutaFlow con el Profiler y anota el componente que se re-renderiza de más.
-
-#### Paso 7 · Cierre
-Entrega la grabación del Paso 4 señalando el componente real afectado, la optimización desperdiciada del Paso 5, y la corrección dirigida del Paso 6; explica por qué memoizar basándose en intuición en vez de en evidencia del Profiler puede hacer que el esfuerzo de optimización se invierta en el componente equivocado. Siguiente paso: estudia React.memo con criterio. Errores comunes: optimizar sin medir primero, confiar en percepción subjetiva de qué componente "parece lento", y asumir que el componente visualmente más grande es automáticamente el más costoso de renderizar. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/Profiler.
+</details>
 
 ### Tema 2: React.memo con criterio · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a envolver `EncabezadoPanel` (identificado en el Tema 1 con el Profiler) en `React.memo`, confirmando que el render heredado innecesario desaparece. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`EncabezadoPanel` recibe siempre las mismas props (`titulo="Panel de envíos"`) pero se re-renderiza cada vez que el padre cambia de estado por el filtro, aunque sus props nunca cambian entre esos renders.
+#### ► DE QUÉ TRATA
+Al finalizar vas a envolver EncabezadoPanel (identificado en el Tema 1 con el Profiler) en React.memo, confirmando que el render heredado innecesario desaparece. Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`React.memo` compara superficialmente las props entre renders; si son referencialmente iguales, React se salta la re-ejecución — un guardia que compara la lista de invitados antes de repetir el mismo trabajo.
-**Conceptos clave:** comparación superficial de props, overhead de comparación, cuándo realmente ayuda.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a envolver EncabezadoPanel (identificado en el Tema 1 con el Profiler) en React.memo, confirmando que el render heredado innecesario desaparece.**
 
-`React.memo(function Fila({ item }) { return <li>{item.nombre}</li>; })` envuelve un componente para que React realice una comparación superficial de sus props entre el render anterior y el actual antes de volver a ejecutar la función del componente: si todas las props son referencialmente iguales al render anterior, React se salta completamente la re-ejecución de ese componente y reutiliza el resultado anterior, en vez de volver a calcular un árbol de elementos idéntico innecesariamente.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`React.memo` solo aporta un beneficio real cuando el componente efectivamente recibe las mismas props en renders sucesivos con una frecuencia significativa (por ejemplo, una fila de una lista larga que se re-renderiza cada vez que el componente padre se actualiza por una razón no relacionada con esa fila específica): envolver absolutamente todos los componentes de la aplicación con `React.memo` de forma indiscriminada agrega el overhead de esa comparación superficial de props en cada render, sin ningún beneficio real en componentes que de todas formas reciben props distintas en la mayoría de sus renders (donde la comparación superficial siempre determinaría que sí hay que re-renderizar, agregando el costo de la comparación sin evitar ningún trabajo real).
+#### ► LA ANALOGÍA
+Piensa en react.memo con criterio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** `React.memo` es como un guardia que compara una lista de invitados exacta antes de dejar pasar a un evento que ya ocurrió con la misma lista, ahorrando repetir el mismo trabajo; pedirle a ese guardia que revise la lista incluso cuando la lista prácticamente siempre cambia agrega el costo de la revisión sin ahorrar ningún trabajo real, dado que casi siempre habrá que dejar pasar de todas formas.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que react.memo con criterio resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real en componentes que de todas formas cambian de props frecuentemente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| React.memo con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Código del ejemplo:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar React.memo con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses react.memo con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: react.memo con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- React.memo con criterio existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve react.memo con criterio en tu contexto?
+2. ¿Cómo sabrías que react.memo con criterio no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar react.memo con criterio?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```jsx
 const Fila = React.memo(function Fila({ item }) {
   return <li>{item.nombre}</li>;
 }); // solo se re-renderiza si `item` cambia (comparación superficial)
 ```
 
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { memo, useState } from 'react';
 
@@ -171,64 +248,78 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: grabando de nuevo con el Profiler mientras se escribe en el filtro de zona, `EncabezadoPanel` ya no aparece en la lista de componentes re-renderizados — React detecta que `titulo` sigue siendo exactamente el mismo string y se salta la re-ejecución completamente. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-**Demo con React DevTools Profiler:**
-1. Abre la app sin `React.memo` en `EncabezadoPanel`
-2. DevTools → Profiler tab → grabar (●)
-3. Tipea una letra en el filtro de zona
-4. Detén la grabación
-5. Observa: `EncabezadoPanel` aparece resaltada en rojo/amarillo con un tiempo de render X ms
-6. Ahora envuelve `EncabezadoPanel` en `React.memo`
-7. Repite: grabar, tipear, detener
-8. Resultado esperado: `EncabezadoPanel` YA NO aparece en el chart del Profiler (no se re-renderizó en absoluto)
-9. Conclusión: las mismas props (`titulo="Panel de envíos"`) no cambiaron, así que `React.memo` bloqueó el render innecesario.
-
-#### Paso 5 · Práctica guiada
-Pista: envuelve también `BotonFiltro` (que sí recibe una prop nueva en cada tecla, el texto del filtro actual) en `React.memo` "ya que estamos memoizando todo" — ese es el fallo deliberado: mide con el Profiler el costo de la comparación superficial en `BotonFiltro`; como sus props cambian en cada render, la comparación siempre determina que hay que re-renderizar igual, agregando el costo de comparar sin evitar ningún trabajo real.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 quitando `React.memo` de `BotonFiltro` (que no lo necesita, porque sus props cambian casi siempre), dejándolo únicamente en `EncabezadoPanel`, y confirma con el Profiler que esa es la única memoización que efectivamente ahorra trabajo real. Conserva `React.memo` solo donde el Profiler del proyecto integrador RutaFlow demuestre ahorro y documenta el descarte.
-
-#### Paso 7 · Cierre
-Entrega `EncabezadoPanel` memoizado del Paso 4, el memo desperdiciado en `BotonFiltro` del Paso 5, y la limpieza del Paso 6; explica por qué `React.memo` solo aporta beneficio cuando las props de un componente son estables con frecuencia significativa, no en cualquier componente "por si acaso". Siguiente paso: estudia virtualización para listas largas. Errores comunes: envolver indiscriminadamente todos los componentes en `React.memo`, memoizar un componente cuyas props cambian en casi todos los renders, y no confirmar con el Profiler que la memoización efectivamente eliminó un render real. Fuentes oficiales: https://react.dev/reference/react/memo y https://react.dev/reference/react/memo#minimizing-props-changes.
-**Implicación práctica:** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real.
+</details>
 
 ### Tema 3: Virtualización de listas largas · Avanzado · 20 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a virtualizar `ListaEnvios` cuando RutaFlow acumula miles de envíos históricos, renderizando en el DOM solo los que están visibles en pantalla. Prerrequisitos: Tema 2 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-La pantalla de historial de RutaFlow puede mostrar más de 10,000 envíos acumulados — renderizar los 10,000 `<li>` completos en el DOM de una sola vez, aunque solo una docena sea visible, es trabajo desperdiciado.
+#### ► DE QUÉ TRATA
+Al finalizar vas a virtualizar ListaEnvios cuando RutaFlow acumula miles de envíos históricos, renderizando en el DOM solo los que están visibles en pantalla. Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La virtualización renderiza únicamente los elementos visibles en el viewport (más un pequeño margen), reciclando los mismos nodos DOM al hacer scroll — un teatro que solo construye los asientos de la sección visible, no el estadio completo.
-**Conceptos clave:** renderizar solo lo visible, reciclar nodos del DOM, altura fija por fila.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a virtualizar ListaEnvios cuando RutaFlow acumula miles de envíos históricos, renderizando en el DOM solo los que están visibles en pantalla.**
 
-Renderizar una lista de 10,000 elementos completos en el DOM, incluso si la mayoría no son visibles en la pantalla en un momento dado, es costoso tanto en tiempo de renderizado inicial como en memoria consumida por nodos DOM que el usuario nunca ve directamente; la virtualización (`<FixedSizeList height={600} itemCount={10000} itemSize={40}>{({ index, style }) => <div style={style}>{datos[index].nombre}</div>}</FixedSizeList>` con `react-window`) renderiza únicamente los elementos actualmente visibles en el viewport (más un pequeño margen para un scroll suave), reciclando los mismos nodos DOM a medida que el usuario hace scroll, en vez de mantener los 10,000 nodos completos existiendo simultáneamente en el DOM real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La virtualización no reduce lo que se **descarga**: reduce lo que se **renderiza** de una lista que ya está en memoria. Reducir la descarga inicial es otra técnica, la carga diferida con `React.lazy`, que tiene su propio tema (Tema 5 de este módulo).
+#### ► LA ANALOGÍA
+Piensa en virtualización de listas largas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** la virtualización es como un teatro que solo construye físicamente los asientos de la sección actualmente visible desde donde alguien mira, en vez de construir las 10,000 butacas completas de un estadio entero de una sola vez.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que virtualización de listas largas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** La virtualización reduce drásticamente el costo de renderizar listas largas al mantener en el DOM solo los elementos visibles.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Virtualización de listas largas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Código del ejemplo:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Virtualización de listas largas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses virtualización de listas largas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: virtualización de listas largas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Virtualización de listas largas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve virtualización de listas largas en tu contexto?
+2. ¿Cómo sabrías que virtualización de listas largas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar virtualización de listas largas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```jsx
 import { List } from 'react-window'; // react-window 2: `List` reemplaza a `FixedSizeList`
 <List rowComponent={Fila} rowCount={10000} rowHeight={40} rowProps={{ datos }} style={{ height: 600 }} />
 ```
 
-
-#### Paso 4 · Demostración guiada desde cero
 ```jsx
 import { List } from 'react-window';
 
@@ -252,47 +343,32 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes react-window; la versión 2 usa `List` y `rowComponent` en lugar del antiguo `FixedSizeList`) y arráncalo:
-
 ```bash
 npm install react-window
 npm run dev
 ```
 
-Resultado esperado: inspeccionando el DOM real en las herramientas de desarrollador mientras se hace scroll sobre los 10,000 envíos, nunca existen más de unas pocas decenas de nodos `<div>` simultáneamente — solo se montan las filas visibles y las que entran al hacer scroll reemplazan a las que salen. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
-
-#### Paso 5 · Práctica guiada
-Pista: reemplaza `List` por un `.map()` directo sobre los 10,000 `envios` "para simplificar" — ese es el fallo deliberado: mide con el Profiler el tiempo de renderizado inicial antes y después de este cambio; sin virtualizar, el render inicial tarda notablemente más, y el scroll se siente perceptiblemente menos fluido, porque ahora existen 10,000 nodos DOM reales simultáneamente.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `List`, y agrega a cada fila el estado del envío con un ancho fijo; confirma que el scroll sigue fluido y que el número de nodos del DOM no crece al bajar. En el proyecto integrador RutaFlow, virtualiza el historial de envíos y mide con el Profiler el render inicial antes y después.
-
-#### Paso 7 · Cierre
-Entrega la lista virtualizada del Paso 4, la medición del render completo sin virtualizar del Paso 5 y la variante del Paso 6; explica qué resuelve la virtualización (renderizado continuo de una lista ya cargada) y qué no resuelve (la descarga inicial del bundle, que se trata en el Tema 5). Siguiente paso: estudia useTransition para mantener la interfaz responsiva durante cálculos costosos. Errores comunes: virtualizar una lista pequeña que no lo necesita, usar un índice de array en vez de un id estable como key dentro de la lista virtualizada, y esperar que la virtualización reduzca el tamaño del bundle. Fuente oficial: https://github.com/bvaughn/react-window.
-**Implicación práctica:** La virtualización reduce drásticamente el costo de renderizar listas largas ya cargadas; no cambia lo que se descarga.
+</details>
 
 ### Tema 4: useTransition, useDeferredValue y Fiber · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a usar `useTransition` para que escribir en el filtro de zona de RutaFlow siga respondiendo instantáneamente, aunque filtrar 10,000 envíos sea un cálculo costoso en segundo plano. Prerrequisitos: Tema 3 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Filtrar la lista completa de 10,000 envíos cada vez que el operador escribe una letra bloquea momentáneamente la interfaz — el input se siente "trabado" porque React trata esa actualización con la misma prioridad urgente que la propia tecla.
+#### ► DE QUÉ TRATA
+Al finalizar vas a usar useTransition para que escribir en el filtro de zona de RutaFlow siga respondiendo instantáneamente, aunque filtrar 10,000 envíos sea un cálculo costoso en segundo plano. Prerrequisitos: Tema 3 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-`useTransition` marca una actualización como no urgente, permitiendo que React la posponga en favor de actualizaciones más urgentes — gracias a Fiber, que hace que el trabajo de renderizado sea interrumpible y priorizable.
-**Conceptos clave:** actualizaciones no urgentes, arquitectura de trabajo interrumpible.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a usar useTransition para que escribir en el filtro de zona de RutaFlow siga respondiendo instantáneamente, aunque filtrar 10,000 envíos sea un cálculo costoso en segundo plano.**
 
-`useTransition` permite marcar ciertas actualizaciones de estado como "de transición" (no urgentes), indicándole a React que puede posponer o interrumpir ese trabajo de renderizado específico en favor de actualizaciones más urgentes que ocurran mientras tanto (como seguir respondiendo instantáneamente a la escritura del usuario en un input, mientras una lista de resultados derivados de ese input, potencialmente costosa de recalcular, se actualiza en segundo plano con menor prioridad); `useDeferredValue` ofrece un mecanismo relacionado, proporcionando una versión "retrasada" de un valor que se actualiza con menor prioridad que el valor original, útil para mantener la interfaz responsiva mientras un cálculo derivado costoso se pone al día en segundo plano.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Estas APIs son posibles gracias a Fiber, la arquitectura interna de React (introducida como reescritura completa del motor de reconciliación) que representa el árbol de trabajo de renderizado como una estructura de datos que puede pausarse, reanudarse y priorizarse de forma incremental, en vez del algoritmo de reconciliación anterior (previo a Fiber), que ejecutaba el trabajo de renderizado de forma síncrona e ininterrumpible de principio a fin una vez iniciado. Reconciliation es el proceso mediante el cual React compara el árbol de elementos anterior con el nuevo (Módulo 1, Tema 2) para determinar el conjunto mínimo de cambios reales que aplicar al DOM, y Fiber es la arquitectura que permite que ese proceso de comparación se ejecute de forma interrumpible y priorizable, en vez de bloquear el hilo principal del navegador de forma ininterrumpida durante actualizaciones costosas.
+#### ► LA ANALOGÍA
+Piensa en usetransition, usedeferredvalue y fiber como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** `useTransition` es como decirle a un asistente "esto puede esperar, atiende primero cualquier solicitud urgente que llegue mientras tanto"; Fiber es como reorganizar el flujo de trabajo de ese asistente para que pueda pausar una tarea larga en curso, atender algo urgente que acaba de llegar, y luego retomar exactamente donde la había dejado, en vez de tener que completar obligatoriamente la tarea larga en curso antes de poder atender cualquier otra cosa.
-
-**¿Por qué es importante?** `useTransition`/`useDeferredValue` mantienen la interfaz responsiva ante actualizaciones costosas al priorizar el trabajo urgente sobre el no urgente, una capacidad habilitada estructuralmente por la arquitectura Fiber, que hace que el trabajo de renderizado sea interrumpible y priorizable.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
     A["Tecla presionada<br/>urgente"] -->|Prioridad 1| B["Actualizar input<br/>render inmediato"]
@@ -310,10 +386,60 @@ graph LR
     style F fill:#ff9800
 ```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| useTransition, useDeferredValue y Fiber se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
----
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar useTransition, useDeferredValue y Fiber | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► CUÁNDO NO USAR ESTO
+No uses usetransition, usedeferredvalue y fiber por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: usetransition, usedeferredvalue y fiber funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- useTransition, useDeferredValue y Fiber existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve usetransition, usedeferredvalue y fiber en tu contexto?
+2. ¿Cómo sabrías que usetransition, usedeferredvalue y fiber no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar usetransition, usedeferredvalue y fiber?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+graph LR
+    A["Tecla presionada<br/>urgente"] -->|Prioridad 1| B["Actualizar input<br/>render inmediato"]
+    C["Filtrar 10k items<br/>no urgente"] -->|Prioridad 2| D["useTransition<br/>puede esperar"]
+    A -.->|Interrumpe| D
+    B --> E["Input responde<br/>instantáneamente"]
+    D --> F["Lista se actualiza<br/>en background"]
+    
+    G["Fiber: árbol interrumpible<br/>y priorizable"]
+    G -.->|Posibilita| A
+    G -.->|Posibilita| D
+    
+    style B fill:#4caf50
+    style E fill:#4caf50
+    style F fill:#ff9800
+```
+
 ```jsx
 import { useState, useTransition } from 'react';
 
@@ -347,51 +473,78 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
 ```bash
 npm run dev
 ```
 
-Resultado esperado: el input de filtro muestra cada letra tecleada instantáneamente (porque `setTextoInput` no está dentro de la transición), mientras la lista filtrada se actualiza con una prioridad menor, sin bloquear la respuesta del input; `isPending` permite mostrar un indicador sutil mientras esa actualización no urgente está en curso.
-
-Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `00042` en el filtro con `userEvent` y comprueba que el input muestra `00042` y que la lista contiene «RF-00042 zona-sur». Después ejecuta `npm test` (borra o adapta esta prueba cuando reemplaces `App.jsx` en otro tema).
-
-#### Paso 5 · Práctica guiada
-Pista: mete ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTransition` — ese es el fallo deliberado: ahora el propio texto visible del input también se trata como no urgente, y al escribir rápido, las letras tardan en aparecer en el campo.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) y dejando solo `setEnviosFiltrados` dentro de `startTransition` (no urgente), y agrega un indicador visual sutil basado en `isPending` mientras la lista filtrada todavía se está recalculando. Filtra una lista grande del proyecto integrador RutaFlow con `useDeferredValue` y mide si la entrada sigue respondiendo.
-
-#### Paso 7 · Cierre
-Entrega la transición correctamente dividida del Paso 4, el bloqueo del input provocado en el Paso 5, y el indicador de `isPending` del Paso 6; explica por qué solo el cálculo derivado costoso (no la actualización del propio input) debería marcarse como no urgente, y cómo Fiber hace posible que React interrumpa ese trabajo para atender la tecla siguiente. Siguiente paso: cierra el módulo integrando Profiler, memo, virtualización y transitions en el panel completo de RutaFlow. Errores comunes: marcar como no urgente la actualización que debería sentirse instantánea, no usar `isPending` para comunicar que hay trabajo en curso, y aplicar `useTransition` a actualizaciones que ya son baratas y no lo necesitan. Fuentes oficiales: https://react.dev/reference/react/useTransition y https://react.dev/reference/react/useDeferredValue.
-**Implicación práctica:** `useTransition`/`useDeferredValue` mantienen la interfaz responsiva ante actualizaciones costosas al priorizar el trabajo urgente sobre el no urgente, gracias a la arquitectura Fiber.
+</details>
 
 ### Tema 5: Suspense y React.lazy: carga diferida de componentes y rutas · Avanzado · 40 min
 
-**Duración estimada:** 40 min (4 subtemas de 10 min). Este es el único tema del curso que enseña la carga diferida en el cliente; el Módulo 5 y el Tema 3 de este módulo remiten aquí, y el Módulo 10 reutiliza `<Suspense>` en el servidor.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** separar un componente o una ruta en su propio *chunk* con `React.lazy`, mostrar un `fallback` con `<Suspense>` mientras se descarga, recuperarte con un Error Boundary si la descarga falla y decidir con `npm run build` cuándo la división vale la pena.
+#### ► DE QUÉ TRATA
+Este tema te guía por suspense y react.lazy: carga diferida de componentes y rutas con foco en comprensión antes de implementación.
 
-**¿Por qué es importante?** El tamaño del JavaScript inicial afecta directamente cuánto tarda la app en volverse usable (y el LCP del Tema 1). En RutaFlow, la analítica y la administración las abren pocos usuarios; si van en el bundle inicial, todos los conductores pagan esa descarga.
+#### ► LA IDEA EN UNA FRASE
+**Entender suspense y react.lazy: carga diferida de componentes y rutas te permite tomar mejores decisiones técnicas.**
 
-**Prerrequisitos:** Módulo 2, Tema 6 (Error Boundaries), Módulo 5, Tema 3 (rutas protegidas) y Tema 1 de este módulo (medir). Trabajas en `mi-react`.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Subtema 5.1: Divide un componente con `lazy` y `<Suspense>` · 10 min
+#### ► LA ANALOGÍA
+Piensa en suspense y react.lazy: carga diferida de componentes y rutas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**1. Contexto**
-`React.lazy(() => import('./Componente.jsx'))` convierte un import normal en uno **diferido**: Vite separa ese archivo en un chunk aparte que se descarga la primera vez que React intenta renderizarlo. Mientras llega, el `<Suspense>` más cercano muestra su `fallback`.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que suspense y react.lazy: carga diferida de componentes y rutas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**2. Hazlo tú**
-Crea `src/PanelAnalitica.jsx`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Suspense y React.lazy: carga diferida de componentes y rutas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Suspense y React.lazy: carga diferida de componentes y rutas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses suspense y react.lazy: carga diferida de componentes y rutas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: suspense y react.lazy: carga diferida de componentes y rutas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Suspense y React.lazy: carga diferida de componentes y rutas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve suspense y react.lazy: carga diferida de componentes y rutas en tu contexto?
+2. ¿Cómo sabrías que suspense y react.lazy: carga diferida de componentes y rutas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar suspense y react.lazy: carga diferida de componentes y rutas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```jsx
 export default function PanelAnalitica() {
   return <div>Gráficos pesados aquí</div>;
 }
 ```
-
-Crea `src/ErrorBoundary.jsx`, una versión reutilizable del boundary del Módulo 2 que recibe el `fallback` por props:
 
 ```jsx
 import { Component } from 'react';
@@ -408,8 +561,6 @@ export default class ErrorBoundary extends Component {
   }
 }
 ```
-
-Crea `src/Analitica.jsx`:
 
 ```jsx
 import { lazy, Suspense, useState } from 'react';
@@ -436,8 +587,6 @@ export default function Analitica() {
 }
 ```
 
-Y `src/Analitica.test.jsx`:
-
 ```jsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -452,218 +601,37 @@ it('descarga el panel solo al pulsar el botón', async () => {
 });
 ```
 
-Usa `<Analitica />` en `src/App.jsx` y ejecuta:
-
 ```bash
 npm test
 npm run build
 ```
-
-**Resultado esperado:** la prueba pasa (nota el `await ... findByText`: el panel llega después del clic). La salida de `npm run build` muestra un archivo aparte para el panel, con un hash distinto en tu equipo:
 
 ```text
 dist/assets/PanelAnalitica-Dnrl6zdc.js    0.14 kB │ gzip:  0.15 kB
 dist/assets/index-C1lJPiOr.js           221.53 kB │ gzip: 69.39 kB
 ```
 
-En `npm run dev`, con la pestaña Network abierta, el chunk de `PanelAnalitica` aparece solo al pulsar «Abrir analítica».
-
-**Fallo deliberado:** cambia la línea de `lazy` por `import PanelAnalitica from './PanelAnalitica.jsx';` y vuelve a ejecutar `npm run build`. **Resultado:** el archivo `PanelAnalitica-*.js` desaparece y su código pasa a `index-*.js`. **Diagnóstico:** basta **un** import estático del mismo módulo en cualquier parte de la app para que Vite lo incluya en el bundle inicial. Restaura `lazy`.
-
-**3. Entiende**
-**Explicación por bloques:** `lazy` recibe una función que devuelve la promesa de `import()`; React la llama la primera vez que necesita renderizar `PanelAnalitica` y «suspende» ese subárbol hasta que la promesa se resuelve. `<Suspense>` atrapa esa suspensión y muestra el `fallback`; cuando llega el módulo, React renderiza el panel. La segunda vez el módulo ya está en memoria y no hay espera. **Límite:** declara `lazy` fuera del componente; si lo llamas dentro, cada render crea un componente nuevo y se pierde su estado.
-
-**Analogía:** es un menú de restaurante en el que cada plato se cocina cuando alguien lo pide; `<Suspense>` es el «su pedido está en preparación» mientras llega.
-
-**4. Cierra**
-Guarda la salida de `npm run build` con el chunk separado.
-
-#### Subtema 5.2: Recupérate si el chunk no llega · 10 min
-
-**1. Contexto**
-Un chunk diferido viaja por la red **después** de que la app arrancó. Si la red cae o publicaste una versión nueva que borró el archivo viejo, la promesa de `import()` se rechaza y React lanza ese error durante el render.
-
-**2. Hazlo tú**
-Crea `src/AnaliticaRed.test.jsx` (en un archivo aparte, porque `vi.mock` afecta a todo el archivo):
-
-```jsx
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { expect, it, vi } from 'vitest';
-import Analitica from './Analitica.jsx';
-
-// Simula que el chunk no se puede descargar (red caída o despliegue nuevo).
-vi.mock('./PanelAnalitica.jsx', () => {
-  throw new Error('Failed to fetch dynamically imported module');
-});
-
-it('si el chunk no llega, el boundary muestra la recuperación y el resto sigue', async () => {
-  vi.spyOn(console, 'error').mockImplementation(() => {}); // React registra el error capturado
-  render(<Analitica />);
-  await userEvent.click(screen.getByRole('button', { name: 'Abrir analítica' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo cargar la analítica');
-  expect(screen.getByRole('heading', { name: 'Panel de envíos' })).toBeInTheDocument();
-});
-```
-
-```bash
-npm test
-```
-
-**Resultado esperado:** las dos pruebas de analítica pasan: con el chunk roto, el título sigue en pantalla y el panel muestra el mensaje de recuperación.
-
-**Fallo deliberado:** en `Analitica.jsx`, quita el `<ErrorBoundary>` y deja solo el `<Suspense>`. **Error esperado:** la prueba falla con `Failed to fetch dynamically imported module` y el título desaparece, porque el error sube hasta la raíz. **Diagnóstico:** `<Suspense>` maneja la **espera**, no el **fallo**; el fallo lo atrapa un Error Boundary. Restáuralo.
-
-**3. Entiende**
-Cada carga diferida tiene dos estados extra: «esperando» (`<Suspense>`) y «falló» (Error Boundary). Pon el boundary alrededor de la sección que puede fallar, no de toda la app, para que el resto siga usable. Un mensaje con «Recarga la página» es una recuperación razonable cuando el fallo viene de un despliegue nuevo.
-
-**4. Cierra**
-Guarda las dos pruebas en verde.
-
-#### Subtema 5.3: Divide por ruta · 10 min
-
-**1. Contexto**
-La división más rentable suele ser por ruta: cada pantalla poco visitada en su propio chunk. En el Módulo 5, Tema 3 protegiste `/admin`; ahora además se descargará solo cuando un supervisor entre.
-
-**2. Hazlo tú**
-En el `src/App.jsx` de la ruta protegida (Módulo 5, Tema 3), cambia el import de `Admin` y el elemento de la ruta:
-
-```jsx
-import { createContext, lazy, Suspense, useContext, useState } from 'react';
-// …
-const Admin = lazy(() => import('./Admin.jsx')); // chunk separado, se descarga al usarlo
-
-// dentro de createBrowserRouter:
-{
-  path: 'admin',
-  element: (
-    <RutaProtegida>
-      <Suspense fallback={<p role="status">Cargando…</p>}>
-        <Admin />
-      </Suspense>
-    </RutaProtegida>
-  ),
-},
-```
-
-```bash
-npm run build
-npm run dev
-```
-
-**Resultado esperado:** `npm run build` muestra un `Admin-*.js` separado de `index-*.js`. Con rol `'conductor'`, navegar a `/admin` redirige a `/` **sin** descargar el chunk (compruébalo en Network); con `'supervisor'`, el chunk se descarga al entrar.
-
-**Fallo deliberado:** con rol `'conductor'`, quita `<RutaProtegida>` y deja `<Suspense><Admin /></Suspense>` como elemento de la ruta. **Resultado:** al visitar `/admin`, Network muestra la descarga de `Admin-*.js` y la pantalla aparece. **Diagnóstico:** la protección decide **si** se renderiza; `lazy` solo decide **cuándo** se descarga lo que se renderiza. Restaura `<RutaProtegida>`.
-
-**3. Entiende**
-`lazy` descarga en el momento en que React necesita renderizar el componente. Si lo envuelves en la ruta protegida, la redirección ocurre antes y el código de administración nunca viaja para un conductor. Recuerda: aunque el chunk no se descargue, sigue publicado en tu servidor; la protección real está en la API.
-
-**4. Cierra**
-Guarda la salida de `npm run build` con los chunks `Admin-*.js` y `PanelAnalitica-*.js`.
-
-#### Subtema 5.4: Decide cuándo dividir · 10 min
-
-**1. Contexto**
-Cada chunk es una petición más. Dividir algo pequeño o que se ve al cargar la página agrega una espera donde antes no había ninguna.
-
-**2. Hazlo tú**
-Con la salida de `npm run build`, completa esta tabla para tres componentes de tu app (por ejemplo, la lista de envíos, la analítica y la administración):
-
-| Componente | ¿Se ve al cargar? | ¿Cuántos usuarios lo abren? | Tamaño (kB gzip) | ¿Dividir? |
-|---|---|---|---|---|
-
-**Resultado esperado:** la lista de envíos queda en el bundle inicial (se ve al cargar); analítica y administración se dividen.
-
-**Fallo deliberado:** aplica `lazy` a la lista de envíos, que se ve al entrar. **Resultado:** al cargar la página aparece «Cargando…» un instante antes de la lista, y el Profiler o la pestaña Network muestran una petición extra en el arranque. **Diagnóstico:** dividir lo que se necesita de inmediato empeora la carga. Deshaz el cambio.
-
-**3. Entiende**
-Divide lo que es grande **y** poco frecuente o que no se ve al entrar: pantallas de rol, modales pesados, editores, gráficos. Mide antes y después con el tamaño de `npm run build` y con el Tema 1. En el servidor, `<Suspense>` cumple otra función, enviar HTML por partes (*streaming*), que verás en el Módulo 10, Tema 3.
-
-**4. Cierra**
-Guarda la tabla con tu decisión para cada componente.
-
-**Hito del tema:**
-
-- [ ] `npm run build` muestra `PanelAnalitica-*.js` y `Admin-*.js` como chunks separados.
-- [ ] La prueba del chunk roto pasa gracias al Error Boundary, y la provoqué sin él.
-- [ ] Comprobé en Network que un conductor redirigido no descarga `Admin`.
-- [ ] Justifiqué con tamaños qué componentes divido y cuáles no.
-
-**Resumen:** `lazy` divide un componente en un chunk que se descarga al primer render; `<Suspense>` muestra la espera; un Error Boundary maneja el fallo de descarga; la división por ruta es la más rentable; y dividir lo que se ve al cargar empeora la experiencia.
-
-**Errores comunes:** llamar a `lazy` dentro de un componente, olvidar el Error Boundary alrededor de una carga diferida, dejar un import estático del mismo módulo en otro archivo y dividir componentes pequeños que se ven al entrar.
-
-**Transferencia al proyecto integrador «RutaFlow»:** carga de forma diferida el panel de analítica y el mapa, y demuestra con `npm run build` que el bundle inicial del operador baja de tamaño frente a importarlos directamente.
-
-**Ejercicio:** agrega un botón «Ver mapa» que cargue de forma diferida un componente `MapaEntregas` y, además, empiece a descargar su chunk cuando el usuario pase el ratón por encima del botón, para que el clic no tenga espera. Antes de abrir la solución, escribe qué llamada repetida no descarga el chunk dos veces.
-
-<details>
-<summary>Solución — ábrela después de intentarlo</summary>
-
-`import()` devuelve siempre la misma promesa para el mismo módulo; el navegador lo descarga una sola vez. Puedes llamar a la misma función de import en `onMouseEnter` (precarga) y dentro de `lazy`.
-
-```jsx
-import { lazy, Suspense, useState } from 'react';
-import ErrorBoundary from './ErrorBoundary.jsx';
-
-const importarMapa = () => import('./MapaEntregas.jsx');
-const MapaEntregas = lazy(importarMapa);
-
-export default function BotonMapa() {
-  const [verMapa, setVerMapa] = useState(false);
-  return (
-    <>
-      <button onMouseEnter={importarMapa} onFocus={importarMapa} onClick={() => setVerMapa(true)}>
-        Ver mapa
-      </button>
-      {verMapa && (
-        <ErrorBoundary fallback={<p role="alert">No se pudo cargar el mapa.</p>}>
-          <Suspense fallback={<p role="status">Cargando mapa…</p>}>
-            <MapaEntregas />
-          </Suspense>
-        </ErrorBoundary>
-      )}
-    </>
-  );
-}
-```
-
-Compruébalo en Network: el chunk aparece al pasar el ratón (o al llegar con Tab, por `onFocus`) y el clic ya no muestra «Cargando mapa…». Si tu versión precargaba en un `useEffect` al montar, descargaba el mapa para todos los usuarios, aunque nunca lo abrieran.
-
 </details>
-
-**Fuentes oficiales:** [React — `lazy`](https://react.dev/reference/react/lazy), [React — `<Suspense>`](https://react.dev/reference/react/Suspense) y [Vite — Features](https://vite.dev/guide/features.html).
 
 ### Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min
 
-**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado cliente» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** leer el resultado de una promesa con `use` dentro de un límite de `Suspense` y un límite de errores, y leer un contexto dentro de un `if`.
+#### ► DE QUÉ TRATA
+Usa React 19 o superior. Parte del proyecto de Vite del módulo y trabaja en src/DetalleEnvio.jsx.
 
-**¿Por qué es importante?** `use` permite escribir componentes que leen datos asíncronos como si fueran síncronos, mientras `Suspense` muestra la espera. También es la única forma de leer un contexto después de un `return` temprano o dentro de una condición.
+#### ► LA IDEA EN UNA FRASE
+**Usa React 19 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa React 19 o superior. Parte del proyecto de Vite del módulo y trabaja en `src/DetalleEnvio.jsx`.
+#### ► LA ANALOGÍA
+Piensa en el hook use: leer una promesa con suspense y un contexto de forma condicional como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El detalle de un envío en RutaFlow necesita datos del servidor. Antes, cada componente tenía su `useEffect`, su `useState` de carga y su `useState` de error. Con `use` y `Suspense`, la espera y el error se manejan en un solo lugar para toda la sección.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `use`, promesa estable, `Suspense`, límite de errores (*Error Boundary*), contexto condicional.
-
-`use(promesa)` **suspende** el componente mientras la promesa está pendiente: React muestra el `fallback` del `Suspense` más cercano. Cuando se resuelve, vuelve a renderizar con el valor. Si se rechaza, el error sube al límite de errores más cercano.
-
-La regla clave: **la promesa no se crea durante el render** del componente que la lee. Si la creas ahí, cada render crea una promesa nueva y el componente suspende para siempre. Créala en un componente padre, en un cargador de ruta o guárdala en una caché.
-
-`use(Contexto)` lee un contexto como `useContext`, pero **puede ir dentro de condiciones y bucles**. Las demás reglas de los hooks siguen igual para el resto.
-
-**Analogía:** `use` es pedir un plato y quedarte en la mesa: el mesero (`Suspense`) muestra el letrero «en preparación» hasta que llega. La analogía falla en que, si pides el plato de nuevo cada vez que miras la mesa, la cocina nunca termina: por eso la promesa se crea una sola vez.
-
-**Límite de uso:** no reemplaza a una librería de datos con caché, reintentos e invalidación (TanStack Query). No llames `use` en un `try/catch`: el error debe llegar al límite de errores.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     P["Padre: crea la promesa una vez"] --> S["Suspense fallback: Cargando"]
@@ -673,9 +641,51 @@ flowchart TB
     D -->|rechazada| E["ErrorBoundary: mensaje"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| El hook use: leer una promesa con Suspense y un contexto de forma condicional se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-react/src/DetalleEnvio.jsx`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar El hook use: leer una promesa con Suspense y un contexto de forma condicional | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses el hook use: leer una promesa con suspense y un contexto de forma condicional por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: el hook use: leer una promesa con suspense y un contexto de forma condicional funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- El hook use: leer una promesa con Suspense y un contexto de forma condicional existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve el hook use: leer una promesa con suspense y un contexto de forma condicional en tu contexto?
+2. ¿Cómo sabrías que el hook use: leer una promesa con suspense y un contexto de forma condicional no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar el hook use: leer una promesa con suspense y un contexto de forma condicional?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    P["Padre: crea la promesa una vez"] --> S["Suspense fallback: Cargando"]
+    S --> D["DetalleEnvio: use(promesa)"]
+    D -->|pendiente| S
+    D -->|resuelta| V["muestra el envío"]
+    D -->|rechazada| E["ErrorBoundary: mensaje"]
+```
 
 ```jsx
 import { createContext, Suspense, use, useState } from 'react';
@@ -713,86 +723,38 @@ export default function DetalleEnvio() {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-react
 npm install react-error-boundary
 npm run dev
 ```
 
-**Explicación por bloques:** `pedirEnvio` simula el servidor y rechaza el código `ENV-404`. El padre crea la promesa una sola vez con el inicializador de `useState` y crea otra solo cuando el usuario pulsa el botón. `Detalle` lee la promesa con `use`: mientras espera, se ve el `fallback` de `Suspense`; si falla, el `ErrorBoundary` muestra el mensaje. Después de un `return` temprano, `use(PreferenciasContext)` lee el contexto, algo prohibido para `useContext`. En React 19, `<PreferenciasContext value>` funciona como proveedor.
-
-**Resultado esperado:**
-
 ```text
 Al cargar: «Cargando envío…» durante unos 800 ms y luego «ENV-42 · Bodega → Calle 26».
 Al pulsar «Pedir envío inexistente»: «Cargando envío…» y luego «No se pudo cargar el envío».
 ```
 
-**Fallo deliberado:** mueve `pedirEnvio('ENV-42')` dentro de `Detalle` y llama `use(pedirEnvio('ENV-42'))`. **Error esperado:** la pantalla queda en «Cargando envío…» para siempre y la consola avisa de una promesa no cacheada creada durante el render. **Diagnóstico:** cada render crea una promesa nueva, que nunca está resuelta. Crea la promesa fuera del render del componente que la lee.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** carga la página y mide cuánto dura el estado de carga.
-2. **Variación:** cambia `mostrarRuta` a `false` y comprueba el texto.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica el bucle de suspensiones.
-4. **Integración:** mueve el `Suspense` para que envuelva dos detalles y observa que esperan juntos.
-5. **Diseño:** decide qué pantallas de RutaFlow usarían `use` y cuáles TanStack Query, y justifica.
-
-**Pista:** si algo queda cargando para siempre, busca dónde se crea la promesa.
-
-#### Paso 6 · Práctica independiente
-
-Crea una pequeña caché `const cache = new Map()` con una función `obtenerEnvio(codigo)` que devuelve la misma promesa para el mismo código, y úsala para que dos componentes lean el mismo envío con una sola petición.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué hace `use` con una promesa pendiente, resuelta y rechazada.
-- [ ] La pantalla muestra carga, datos y error en los casos esperados.
-- [ ] Reprodujiste la promesa creada en el render.
-- [ ] Lees un contexto después de un `return` temprano.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear la promesa en el render, envolver `use` en `try/catch` y olvidar el límite de errores. **Siguiente paso:** el tema siguiente, React Compiler, memoiza automáticamente lo que antes hacías con `useMemo`.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el detalle de envío de RutaFlow, carga los datos con una promesa creada en el cargador de la ruta y léela con `use` dentro de `Suspense` y un límite de errores.
-
-**Fuente oficial:** [React — use](https://react.dev/reference/react/use) y [React — Suspense](https://react.dev/reference/react/Suspense).
+</details>
 
 ### Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min
 
-**Prerrequisito:** temas «Medir antes de optimizar» y «React.memo con criterio» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** activar React Compiler en un proyecto de Vite, comprobar con React DevTools qué componentes memoizó, y corregir con el linter el código que rompe las reglas de React.
+#### ► DE QUÉ TRATA
+Usa React 19 y un proyecto de Vite 8 (con @vitejs/plugin-react 6, el que instala hoy npm create vite@latest). Instalarás babel-plugin-react-compiler, @rolldown/plugin-babel, @babel/core, ESLint y eslint-plugin-react-hooks 7 o superior. Necesitas la extensión React DevTools en el…
 
-**¿Por qué es importante?** Escribir `useMemo`, `useCallback` y `memo` a mano es fácil de olvidar y fácil de equivocar. El compilador lo hace automáticamente, pero solo si el código respeta las reglas de React. Por eso el compilador y su linter van juntos.
+#### ► LA IDEA EN UNA FRASE
+**Usa React 19 y un proyecto de Vite 8 (con @vitejs/plugin-react 6, el que instala hoy npm create vite@latest).**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa React 19 y un proyecto de Vite 8 (con `@vitejs/plugin-react` 6, el que instala hoy `npm create vite@latest`). Instalarás `babel-plugin-react-compiler`, `@rolldown/plugin-babel`, `@babel/core`, ESLint y `eslint-plugin-react-hooks` 7 o superior. Necesitas la extensión React DevTools en el navegador.
+#### ► LA ANALOGÍA
+Piensa en react compiler y las reglas de react: memoización automática como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-La lista de envíos de RutaFlow tenía `useMemo` en algunos lugares y en otros no; nadie sabía cuáles eran necesarios. Con el compilador activo, el equipo borró la mayoría y el linter encontró dos componentes que mutaban props, que eran la causa real de renders de más.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** memoización, React Compiler, reglas de React (pureza, inmutabilidad, reglas de los hooks), `eslint-plugin-react-hooks`, directiva `"use no memo"`.
-
-**React Compiler** analiza tus componentes al compilar y agrega memoización donde sirve: si las entradas de un cálculo o de un elemento JSX no cambiaron, reutiliza el resultado anterior. Funciona con componentes y hooks.
-
-Para hacerlo de forma segura, supone que el código cumple las **reglas de React**:
-
-1. Componentes y hooks son **puros** e idempotentes durante el render.
-2. Props y estado son **inmutables**: no se modifican, se reemplazan.
-3. Los hooks se llaman siempre en el mismo orden, en el nivel superior.
-
-Si un componente rompe una regla, el compilador **lo salta** (no lo optimiza) y el linter `eslint-plugin-react-hooks` lo marca. La directiva `"use no memo"` excluye un componente a propósito mientras lo corriges.
-
-**Analogía:** el compilador es un asistente que guarda copias de lo que ya calculaste para no repetirlo. Solo puede hacerlo si tus recetas no cambian los ingredientes a escondidas. La analogía falla en que el asistente no te avisa en voz alta: el aviso lo da el linter.
-
-**Límite de uso:** no compensa algoritmos lentos ni listas enormes sin virtualizar: memoizar no reduce el trabajo de un cálculo que sí cambió. No borres `useMemo` que se usan para mantener una referencia estable en dependencias de efectos sin probar antes.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     C["Código del componente"] --> L{"¿Cumple las reglas de React?"}
@@ -801,9 +763,50 @@ flowchart LR
     M --> D["React DevTools: insignia Memo ✨"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| React Compiler y las reglas de React: memoización automática se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-react/vite.config.js`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar React Compiler y las reglas de React: memoización automática | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses react compiler y las reglas de react: memoización automática por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: react compiler y las reglas de react: memoización automática funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- React Compiler y las reglas de React: memoización automática existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve react compiler y las reglas de react: memoización automática en tu contexto?
+2. ¿Cómo sabrías que react compiler y las reglas de react: memoización automática no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar react compiler y las reglas de react: memoización automática?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    C["Código del componente"] --> L{"¿Cumple las reglas de React?"}
+    L -->|sí| M["Compiler agrega memoización"]
+    L -->|no| S["Compiler lo salta + aviso del linter"]
+    M --> D["React DevTools: insignia Memo ✨"]
+```
 
 ```js
 import babel from '@rolldown/plugin-babel';
@@ -817,8 +820,6 @@ export default defineConfig({
 });
 ```
 
-Archivo `academia-react/eslint.config.js`:
-
 ```js
 import reactHooks from 'eslint-plugin-react-hooks';
 
@@ -830,8 +831,6 @@ export default [
   },
 ];
 ```
-
-Archivo `academia-react/src/ListaEnvios.jsx`:
 
 ```jsx
 export default function ListaEnvios({ envios, filtro }) {
@@ -847,8 +846,6 @@ export default function ListaEnvios({ envios, filtro }) {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-react
 npm install -D @rolldown/plugin-babel @babel/core babel-plugin-react-compiler eslint eslint-plugin-react-hooks@latest
@@ -856,64 +853,10 @@ npx eslint src
 npm run dev
 ```
 
-**Explicación por bloques:** En `vite.config.js`, `reactCompilerPreset()` (exportado por `@vitejs/plugin-react`) ejecuta el compilador mediante `@rolldown/plugin-babel`, como indica la sección «React Compiler» del README del plugin. `eslint.config.js` activa las reglas recomendadas de hooks, que incluyen las validaciones del compilador, para los archivos `.js` y `.jsx` de `src`. En `ListaEnvios`, la línea comentada modifica el array de props y rompe la inmutabilidad; la versión correcta usa `filter` y `toSorted`, que crean copias. Sin escribir `useMemo`, el compilador memoiza `visibles` y el JSX mientras `envios` y `filtro` no cambien.
-
-**Resultado esperado:**
-
 ```text
 npx eslint src termina sin errores.
 En React DevTools > Components, ListaEnvios muestra la insignia «Memo ✨».
 Al escribir en un campo que no afecta a la lista, el Profiler muestra que ListaEnvios no se volvió a renderizar.
 ```
 
-**Fallo deliberado:** descomenta `envios[0] = ...`. **Error esperado:** `npx eslint src` reporta `Error: This value cannot be modified` con la explicación «Modifying component props or hook arguments is not allowed», y DevTools ya no muestra la insignia del compilador en ese componente. **Diagnóstico:** el compilador saltó el componente porque rompe la regla de inmutabilidad. Usa una copia. Ojo: el linter no detecta todas las mutaciones; por ejemplo, `envios.sort(...)` sobre una prop no se reporta en `eslint-plugin-react-hooks` 7.1, así que prefiere siempre `toSorted`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** activa el compilador y busca la insignia en React DevTools.
-2. **Variación:** graba el Profiler escribiendo en un campo ajeno a la lista, con y sin compilador.
-3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de ESLint.
-4. **Integración:** agrega `"use no memo"` como primera línea del componente y confirma que la insignia desaparece.
-5. **Diseño:** busca en un proyecto tuyo tres `useMemo` y decide cuáles puede reemplazar el compilador.
-
-**Pista:** si un componente no muestra la insignia, corre el linter: casi siempre explica qué regla rompe.
-
-#### Paso 6 · Práctica independiente
-
-Activa el compilador solo para la carpeta `src/envios` ajustando el filtro del preset (`const preset = reactCompilerPreset();` y su propiedad `rolldown.filter`, como muestra el README de `@vitejs/plugin-react`), corrige lo que marque el linter ahí y documenta el plan para el resto del proyecto.
-
-#### Paso 7 · Cierre
-
-- [ ] Nombras las tres reglas de React que el compilador supone.
-- [ ] ListaEnvios aparece memoizado en DevTools.
-- [ ] Reprodujiste el aviso del linter por mutar props.
-- [ ] Sabes para qué sirve `"use no memo"`.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** activar el compilador sin el linter, mutar props o estado y borrar memoizaciones sin medir antes y después. **Siguiente paso:** el tema «Virtualización y code-splitting» ataca lo que la memoización no puede: listas muy largas.
-
-**Transferencia al proyecto integrador «RutaFlow»:** activa React Compiler en el panel de RutaFlow, corrige todos los avisos del linter y adjunta al pull request una grabación del Profiler antes y después.
-
-**Fuente oficial:** [React — React Compiler](https://react.dev/learn/react-compiler) y [React — Rules of React](https://react.dev/reference/rules).
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** medir con el Profiler, aplicar `React.memo` con criterio, y virtualizar una lista larga.
-
-**Requisitos previos:** Módulos 0-8 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Grabar una interacción con el Profiler | — | Encuentra un componente que se re-renderiza sin necesidad |
-| 2 | Envolver ese componente con `React.memo` | Ver Tema 2 | Confirma con el Profiler que el render innecesario desaparece |
-| 3 | Virtualizar una lista de 10,000 elementos | Ver Tema 3 | Compara el rendimiento de scroll antes/después |
-| 4 | Dividir un bundle grande con `React.lazy` | Ver Tema 5 | Verifica la mejora en el tiempo de carga inicial |
-
-**Verificación:** el laboratorio se considera exitoso si puedes mostrar una comparación concreta antes/después con el Profiler del componente optimizado, y si la lista virtualizada mantiene un scroll fluido con 10,000 elementos donde la versión sin virtualizar no lo hacía.
-
-**Errores comunes y soluciones**
-
-- **Optimizar sin medir primero con el Profiler.** Identifica el componente problemático real antes de aplicar cualquier optimización.
-- **Envolver todo con `React.memo` sin criterio.** Solo aplícalo donde el componente recibe las mismas props con frecuencia significativa.
-- **Renderizar listas largas sin virtualizar.** Usa `react-window` (versión 2: `List`) u otra librería de virtualización para listas de miles de elementos.
-
----
+</details>

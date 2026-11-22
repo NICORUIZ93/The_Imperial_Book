@@ -148,36 +148,26 @@ export async function omitirSinInfra(nombre, url, puerto) {
 
 ---
 
+
 ### RabbitMQ: publisher confirms, consumer acknowledgments
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 1 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Implementar un publicador que solo da un mensaje por enviado cuando RabbitMQ lo confirma (y que detecta los mensajes que no llegan a ninguna cola) y un consumidor con acks manuales, prefetch y cola de mensajes muertos, y demostrar que ningún mensaje se pierde ni se queda atascado…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar un publicador que solo da un mensaje por enviado cuando RabbitMQ lo confirma (y que detecta los mensajes que no llegan a ninguna cola) y un consumidor con acks manuales, prefetch y cola de mensajes muertos, y demostrar que ningún mensaje se pierde ni se queda atascado.**
 
-- Exchanges, colas, bindings y `amqplib` básico (Módulo 18, ficha «Kafka y RabbitMQ»).
-- Promesas y callbacks en Node (Módulo 13).
-- Docker Compose (Módulo 0.5).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en rabbitmq: publisher confirms, consumer acknowledgments como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** un publicador que solo da un mensaje por enviado cuando RabbitMQ lo **confirma** (y que detecta los
-mensajes que no llegan a ninguna cola) y un consumidor con **acks manuales**, prefetch y cola de mensajes muertos, y
-**demostrar** que ningún mensaje se pierde ni se queda atascado. Lo compruebas cuando `confirms.test.js` pasa 5 de 5
-contra un RabbitMQ real.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja una **oficina de correo certificado**. Al dejar la carta, el empleado te da un **recibo sellado**: hasta que no
-lo tienes, no sabes si la carta entró al sistema (eso es el *publisher confirm*). Si la dirección no existe, te la
-**devuelven** en la ventanilla (*mandatory* + *return*). En el otro extremo, el cartero entrega la carta y el
-destinatario **firma el acuse de recibo** solo cuando la ha leído (el *ack*). Si el cartero llega y el destinatario
-se desmaya antes de firmar, la carta **vuelve a la oficina** y se reparte otra vez. Y las cartas con dirección
-ilegible van a un **casillero de rechazados** para que alguien las revise (la *dead letter queue*).
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant P as publicador (ConfirmChannel)
@@ -199,66 +189,48 @@ sequenceDiagram
     Q->>D: dead-letter (x-death: rejected)
 ```
 
-**Texto alternativo:** diagrama de secuencia. El publicador, con un canal en modo confirm, publica P-1 persistente y
-mandatory en el exchange f135.pedidos, que lo enruta a la cola f135.facturacion; el broker responde basic.ack y la
-promesa se resuelve. Al publicar P-4 con una clave sin cola, el broker devuelve basic.return 312 NO_ROUTE y después el
-ack, y la promesa se rechaza. El consumidor, con prefetch 5, recibe P-1 y hace ack, con lo que el broker lo borra;
-recibe P-2 y hace nack con requeue, con lo que vuelve a la cola marcado como redelivered; recibe P-3, inválido, hace
-nack sin requeue y el broker lo envía a la cola de mensajes muertos con la cabecera x-death de motivo rejected.
+1. Cuando tu programa envía un mensaje a RabbitMQ, **no sabe** si llegó: la red puede fallar justo en ese momento.
+2. Con **publisher confirms**, RabbitMQ responde «lo tengo» por cada mensaje. Tu programa espera esa respuesta antes de
+3. Del otro lado, el programa que recibe tiene que decir «ya lo procesé» (**ack**). Hasta que no lo dice, RabbitMQ
+4. Si un mensaje está mal y nunca se podrá procesar, se aparta a una **cola de mensajes muertos** para revisarlo, en
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| RabbitMQ: publisher confirms, consumer acknowledgments se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar RabbitMQ: publisher confirms, consumer acknowledgments | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+noAck: true («auto-ack») en un consumidor que hace trabajo importante. Evítalo: el broker borra el mensaje en cuanto lo envía, antes de que lo proceses. Si el proceso muere a mitad, el mensaje se pierde sin rastro.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rabbitmq: publisher confirms, consumer acknowledgments funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - Cuando tu programa envía un mensaje a RabbitMQ, **no sabe** si llegó: la red puede fallar justo en ese momento.
 - Con **publisher confirms**, RabbitMQ responde «lo tengo» por cada mensaje. Tu programa espera esa respuesta antes de
-  decir «pedido enviado».
 - Del otro lado, el programa que recibe tiene que decir «ya lo procesé» (**ack**). Hasta que no lo dice, RabbitMQ
-  guarda el mensaje. Si el programa se cae a mitad, RabbitMQ se lo da a otro.
 - Si un mensaje está mal y nunca se podrá procesar, se aparta a una **cola de mensajes muertos** para revisarlo, en
-  vez de repetirlo para siempre.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rabbitmq: publisher confirms, consumer acknowledgments en tu contexto?
+2. ¿Cómo sabrías que rabbitmq: publisher confirms, consumer acknowledgments no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rabbitmq: publisher confirms, consumer acknowledgments?
 
-- **Canal en modo confirm:** `conexion.createConfirmChannel()`. Cada `publish(exchange, clave, contenido, opciones,
-  callback)` recibe su confirm en el callback: `error === null` es un `basic.ack`, un error es un `basic.nack` (el
-  broker no pudo hacerse cargo). `canal.waitForConfirms()` espera todos los pendientes.
-- **Cuándo confirma RabbitMQ:** para un mensaje enrutable, cuando todas las colas lo aceptaron; si es **persistente**
-  (`persistent: true`) y la cola es **durable**, después de escribirlo a disco; en una cola quorum, cuando la mayoría de
-  réplicas lo tiene.
-- **`mandatory: true`:** un mensaje que no llega a ninguna cola se **confirma igual** (el broker hizo su trabajo: no
-  había adónde mandarlo). Para enterarte, `mandatory` hace que el broker lo devuelva con `basic.return` (evento
-  `'return'` en amqplib, código **312 NO_ROUTE**), y RabbitMQ envía ese return **antes** del ack del mismo mensaje. Por
-  eso `publicador.js` apunta los devueltos y los revisa al llegar el confirm.
-- **Acks manuales:** `consume(cola, fn, { noAck: false })`. `ack(msg)` borra; `nack(msg, false, true)` reencola;
-  `nack(msg, false, false)` descarta o, si la cola tiene `deadLetterExchange`, lo manda allí con la cabecera
-  `x-death`. `msg.fields.redelivered` dice si ya se entregó antes.
-- **`prefetch(n)`:** máximo de mensajes **sin ack** que el broker le entrega a este consumidor. Sin prefetch, el broker
-  le empuja toda la cola a la memoria del proceso; con un prefetch pequeño, el trabajo se reparte entre consumidores.
-- **Durabilidad:** exchange y cola `durable: true` sobreviven a un reinicio; los mensajes, solo si además son
-  persistentes.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Confirm uno a uno vs en lote vs asíncrono.** Esperar cada confirm (como aquí) es simple y da el error exacto, pero
-  limita el rendimiento a un mensaje por ida y vuelta. Publicar un lote y `waitForConfirms()` es más rápido, pero si
-  algo falla no sabes cuál y reenvías el lote. Lo habitual en producción: publicar sin esperar y llevar un mapa de
-  pendientes por `deliveryTag`, con una ventana máxima en vuelo. Trade-off: latencia por mensaje frente a rendimiento.
-- **Al menos una vez, no exactamente una.** Confirms + acks dan **at-least-once**: si el ack del consumidor se pierde,
-  el mensaje se reentrega y lo procesarás dos veces; si el confirm se pierde, el publicador reenvía y habrá un
-  duplicado en la cola. Por eso la ficha 2 (deduplicación) no es opcional. Exactly-once real no existe entre sistemas;
-  existe el **efecto** exactamente una vez (idempotencia).
-- **Colas clásicas vs quorum.** Para mensajes que no puedes perder, usa colas **quorum** (replicadas con Raft): el
-  confirm llega cuando la mayoría las tiene. Permiten fijar un límite de reentregas (`x-delivery-limit`) para que un
-  mensaje venenoso no gire para siempre. Las clásicas son de un nodo.
-- **Alternativas:** *Kafka* con `acks=all` y productor idempotente (Módulo 26) para flujos de eventos de alto volumen
-  con relectura; *transactional outbox* (Módulo 25) cuando el mensaje debe salir **si y solo si** se guardó un cambio en
-  tu base de datos: los confirms no resuelven ese problema (puedes guardar y morir antes de publicar).
-- **El ack olvidado.** RabbitMQ cierra el canal de un consumidor que retiene un mensaje sin ack más de
-  `consumer_timeout`; antes de eso, con prefetch, el consumidor se queda quieto (error común).
-- **Cuándo NO hace falta:** telemetría o métricas que toleran pérdidas (un `publish` sin confirm es más barato), o
-  notificaciones que se regeneran solas.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS**, **amqplib 2.4.0** y **RabbitMQ 4.4.1** (imagen `rabbitmq:4.4.1-management`).
 
 `f135-rabbitmq-confirms/topologia.js`:
@@ -392,52 +364,7 @@ console.log(`colas: ${COLA}=${cola.messageCount} · ${DLQ}=${dlq.messageCount}`)
 await conexion.close();
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta RabbitMQ y ejecuta la demo:
-
-```bash
-docker compose up -d --wait rabbitmq
-node f135-rabbitmq-confirms/demo.js
-```
-
-**Output esperado** (real, con RabbitMQ 3.12.1 en el entorno de redacción; el orden entre las líneas del publicador y
-las del consumidor puede variar porque corren a la vez):
-
-```text
-consumidor: ack   P-1
-publicador: P-1 confirmado por el broker
-consumidor: nack  P-2 requeue=true (la base de datos no respondió)
-publicador: P-2 confirmado por el broker
-consumidor: ack   P-2
-consumidor: nack  P-3 requeue=false (total inválido)
-publicador: P-3 confirmado por el broker
-publicador: P-4 no llegó a ninguna cola (312 NO_ROUTE)
-colas: f135.facturacion=0 · f135.facturacion.dlq=1
-```
-
-2. Mira las colas desde el broker:
-
-```bash
-docker compose exec rabbitmq rabbitmqctl -q list_queues name messages
-```
-
-**Output esperado** (el orden de las filas puede variar):
-
-```text
-f135.facturacion.dlq	1
-f135.facturacion	0
-```
-
-3. Abre la consola `http://localhost:15672` (usuario y clave `academia`) → *Queues and Streams* →
-   `f135.facturacion.dlq` → *Get messages*. **Captura comentada:** el mensaje `{"id":"P-3","total":-5}` con la cabecera
-   `x-death` (`reason: rejected`, `queue: f135.facturacion`): así sabes de dónde vino y por qué.
-
-*(Los pasos con `docker compose` se ejecutaron en el entorno de redacción con un RabbitMQ 3.12.1 local en lugar de la
-imagen 4.4.1; la confirmación con 4.4.1 está en `verificacion/microservicios/pendiente.md`.)*
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 Test contra RabbitMQ real (se omite si no responde; con `EXIGIR_INFRA=1` falla):
 
 ```javascript
@@ -530,113 +457,27 @@ node --test f135-rabbitmq-confirms/confirms.test.js
 **Pregunta de comprobación:** si publicas con `mandatory: false` a una clave sin cola, ¿qué recibe el callback del
 confirm? (Un ack normal: el broker confirmó y el mensaje se descartó en silencio.)
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** el consumidor procesa unos pocos mensajes al arrancar y luego **se queda quieto**, sin errores, mientras
-la cola crece. **Causa:** falta el `ack`. Con `prefetch(5)`, el broker entrega 5 mensajes y espera; como nunca llega
-el ack, no entrega más.
-
-```javascript
-// Módulo 22 · F135 · Error común: olvidar el ack con prefetch. El consumidor recibe `prefetch` mensajes y se queda
-// QUIETO: el broker no le envía más hasta que confirme alguno. No hay error ni log: la cola simplemente crece.
-// Ejecuta (con RabbitMQ arriba):  node f135-rabbitmq-confirms/error-comun.js
-import amqplib from 'amqplib';
-import { AMQP_URL } from '../comun/config.js';
-import { declarar, vaciar, EXCHANGE, COLA } from './topologia.js';
-
-const conexion = await amqplib.connect(AMQP_URL);
-const canal = await conexion.createConfirmChannel();
-await declarar(canal); await vaciar(canal);
-for (let i = 1; i <= 10; i++) canal.publish(EXCHANGE, 'pedido.creado', Buffer.from(`{"id":"P-${i}"}`), { persistent: true });
-await canal.waitForConfirms();
-
-const consumidor = await conexion.createChannel();
-await consumidor.prefetch(5);
-let recibidos = 0;
-await consumidor.consume(COLA, (msg) => {
-  recibidos++;
-  // ... se procesa el pedido ...
-  // MAL: falta consumidor.ack(msg)
-}, { noAck: false });
-
-await new Promise((r) => setTimeout(r, 1000));
-const { messageCount } = await canal.checkQueue(COLA);
-console.log(`publicados: 10 · recibidos por el consumidor: ${recibidos} · listos en la cola: ${messageCount}`);
-console.log(`→ ${recibidos} mensajes «unacked» bloquean al consumidor; con prefetch=5 no recibirá nada más`);
-await conexion.close(); // al cerrar, los 5 sin ack vuelven a la cola (no se pierden)
-```
-
-Salida real de `node f135-rabbitmq-confirms/error-comun.js`:
-
-```text
-publicados: 10 · recibidos por el consumidor: 5 · listos en la cola: 5
-→ 5 mensajes «unacked» bloquean al consumidor; con prefetch=5 no recibirá nada más
-```
-
-**Diagnóstico visual:** en la consola de RabbitMQ, la cola muestra **Unacked = 5** (igual al prefetch) y **Ready**
-creciendo, con un consumidor conectado que no avanza. Por CLI: `rabbitmqctl list_queues name messages_ready
-messages_unacknowledged`. **Arreglo:** `canal.ack(msg)` al terminar (y `nack` en el `catch`), como en
-`consumidor.js`. Sin prefetch, el mismo error es peor: el consumidor acumula **toda** la cola en memoria.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Cómo garantizas que un mensaje no se pierde entre un productor, RabbitMQ y un consumidor?**
-
-**Respuesta modelo:** cubro los tres tramos. Del productor al broker, con publisher confirms: solo considero enviado
-un mensaje cuando el broker lo confirma, y lo publico persistente en un exchange y una cola durables, mejor una cola
-quorum para que el confirm signifique que está replicado; con `mandatory` detecto los mensajes sin ruta, que si no se
-confirman igualmente y se pierden en silencio. En el broker, durabilidad y réplicas. Del broker al consumidor, acks
-manuales después de terminar el trabajo, con prefetch para limitar lo que tiene en vuelo; si el consumidor muere, el
-broker reentrega. Los errores pasajeros se reencolan con un límite y los permanentes van a una dead letter queue que
-alguien vigila. Esto da al menos una entrega, así que el consumidor tiene que ser idempotente o deduplicar por
-`messageId`. Y si el mensaje nace de un cambio en mi base de datos, uso outbox, porque los confirms no evitan que guarde
-el cambio y muera antes de publicar.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**`noAck: true` («auto-ack») en un consumidor que hace trabajo importante.** Evítalo: el broker borra el mensaje en
-cuanto lo **envía**, antes de que lo proceses. Si el proceso muere a mitad, el mensaje se pierde sin rastro.
-
-```javascript
-// MAL: el mensaje se da por entregado al salir del broker; un fallo durante el cobro lo pierde.
-await canal.consume(COLA, async (msg) => { await cobrar(JSON.parse(msg.content)); }, { noAck: true });
-
-// BIEN: ack manual al terminar; si algo falla, nack (reintento o DLQ) (consumidor.js).
-await canal.consume(COLA, async (msg) => {
-  try { await cobrar(JSON.parse(msg.content)); canal.ack(msg); } catch { canal.nack(msg, false, !msg.fields.redelivered); }
-}, { noAck: false });
-```
-
----
+</details>
 
 ### Deduplicación con Redis
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 2 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Implementar un consumidor que procesa cada mensaje una sola vez aunque llegue repetido, usando SET NX EX de Redis como marca atómica, y demostrar que 10 copias simultáneas producen un solo efecto y que un fallo no deja el mensaje marcado como hecho. Lo compruebas cuando dedup.tes…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar un consumidor que procesa cada mensaje una sola vez aunque llegue repetido, usando SET NX EX de Redis como marca atómica, y demostrar que 10 copias simultáneas producen un solo efecto y que un fallo no deja el mensaje marcado como hecho.**
 
-- Ficha 1 (al menos una entrega, `messageId`).
-- Redis: claves, `GET`, `SET`, `EXPIRE` y el cliente `redis` de Node (Módulo 19, ficha «Rate Limiting con Redis»).
-- `Promise.all` y concurrencia en Node (Módulo 13).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en deduplicación con redis como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** un consumidor que procesa cada mensaje **una sola vez** aunque llegue repetido, usando `SET NX EX` de
-Redis como marca atómica, y **demostrar** que 10 copias simultáneas producen un solo efecto y que un fallo no deja el
-mensaje marcado como hecho. Lo compruebas cuando `dedup.test.js` pasa 5 de 5 contra un Redis real.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja la **entrada de un concierto** con un lector de boletas. Cada boleta tiene un código único. Al pasarla, el
-lector la marca como usada **en el mismo gesto en que la valida**: si dos personas con fotocopias de la misma boleta
-llegan a la vez a dos puertas, una entra y la otra ve «ya usada». Si el lector primero **mirara** si está usada y
-**después** la marcara, las dos fotocopias entrarían en ese segundo de diferencia. Y las marcas no se guardan para
-siempre: una semana después del concierto se borran.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     M["mensaje llega<br/>messageId = P-1"] --> S{"SET dedup:facturacion:P-1 en-curso NX EX 30"}
@@ -648,61 +489,58 @@ flowchart TD
     G -- en-curso --> R["otro consumidor lo tiene:<br/>nack con requeue"]
 ```
 
-**Texto alternativo:** diagrama de flujo de la deduplicación. Llega un mensaje con messageId P-1 y se ejecuta SET de la
-clave dedup:facturacion:P-1 con valor en-curso, NX y caducidad de 30 segundos. Si responde OK, se procesa: con éxito se
-guarda el valor hecho con caducidad de una semana y se hace ack; con error se borra la clave y se hace nack para que se
-reentregue. Si el SET devuelve null porque la clave existía, se lee: si vale hecho, es un duplicado y se hace ack sin
-procesar; si vale en-curso, otro consumidor lo está procesando y se hace nack con requeue.
+1. En la ficha 1 viste que un mensaje **puede llegar dos veces** (por ejemplo, si se pierde el «ya lo procesé»).
+2. Si el mensaje es «cobrar 100 a Ana», procesarlo dos veces es un cobro doble.
+3. La solución: anotar en una libreta compartida (**Redis**) qué mensajes ya procesaste, usando su identificador. Antes
+4. El truco está en **mirar y anotar a la vez**, con una sola orden de Redis, para que dos copias que llegan juntas no
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Deduplicación con Redis se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Deduplicación con Redis | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+Marcar como procesado ANTES de hacer el trabajo, sin caducidad ni limpieza. Evítalo: si el proceso muere después de marcar, el mensaje se reentrega, ve la marca «hecho» y se descarta. Has cambiado un duplicado por una pérdida.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: deduplicación con redis funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - En la ficha 1 viste que un mensaje **puede llegar dos veces** (por ejemplo, si se pierde el «ya lo procesé»).
 - Si el mensaje es «cobrar 100 a Ana», procesarlo dos veces es un cobro doble.
 - La solución: anotar en una libreta compartida (**Redis**) qué mensajes ya procesaste, usando su identificador. Antes
-  de procesar, miras la libreta.
 - El truco está en **mirar y anotar a la vez**, con una sola orden de Redis, para que dos copias que llegan juntas no
-  pasen las dos.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve deduplicación con redis en tu contexto?
+2. ¿Cómo sabrías que deduplicación con redis no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar deduplicación con redis?
 
-- **`SET clave valor NX EX segundos`**: escribe **solo si no existe** (`NX`) y con caducidad (`EX`), en una operación
-  atómica. Redis ejecuta los comandos de uno en uno, así que entre N intentos simultáneos exactamente uno recibe `OK` y
-  los demás `null`. En node-redis 6.3.1: `redis.set(clave, 'en-curso', { condition: 'NX', expiration: { type: 'EX',
-  value: 30 } })`.
-- **Dos estados:** `en-curso` con TTL corto (si el proceso muere, la marca caduca y otro puede reintentar) y `hecho`
-  con TTL largo, la **ventana de deduplicación** (aquí una semana). Duplicados que lleguen después de la ventana no se
-  detectan: elige la ventana mayor que el tiempo máximo de reentrega de tu broker.
-- **Si el trabajo falla:** `DEL` la clave y relanza el error, para que el `nack` provoque una reentrega que sí se
-  procese.
-- **Clave:** incluye el **consumidor** (`dedup:facturacion:P-1`): el mismo evento lo procesan facturación y envíos, y
-  cada uno debe deduplicar por su cuenta.
-- **El `messageId` lo pone el productor** (ficha 1) y debe ser estable en los reintentos: un id nuevo en cada reenvío
-  anula la deduplicación.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **El hueco que queda.** Entre «terminé el trabajo» y `SET hecho` el proceso puede morir: la marca `en-curso` caduca,
-  el mensaje se reentrega y el trabajo se repite. La marca en Redis **no está en la misma transacción** que el efecto.
-  Si el efecto es en tu base de datos, la solución robusta es el **patrón inbox**: guardar el `messageId` en una tabla
-  con clave única **en la misma transacción** que el cambio de negocio. Redis es más rápido y sirve a varios servicios,
-  la tabla inbox es exacta. Trade-off: velocidad y sencillez frente a garantía.
-- **Idempotencia natural vs deduplicación.** Mejor que deduplicar es que la operación sea idempotente por diseño
-  («dejar el pedido en estado PAGADO» en vez de «sumar 100»; ficha 4). La deduplicación es la red cuando la operación no
-  lo es (enviar un correo, llamar a una pasarela).
-- **Alternativas:** clave de idempotencia en la API de destino (muchas pasarelas de pago la aceptan), restricción
-  `UNIQUE` en la base de datos, o la deduplicación del broker (Kafka con productor idempotente evita duplicados **en el
-  log**, no en tu consumidor).
-- **Redis como dependencia.** Si Redis no responde, decide: ¿paras de consumir (seguro) o procesas sin deduplicar
-  (riesgo de duplicado)? Para cobros, para. Y usa Redis con persistencia y réplica si la ventana es larga, o perderás
-  las marcas en un reinicio.
-- **Cuándo NO usarlo:** operaciones ya idempotentes (un `PUT` de estado), consumidores que escriben en una base de datos
-  donde puedes usar inbox, o volúmenes donde la ventana de marcas no cabe en memoria.
-
-#### 9. CÓDIGO EJECUTABLE
-
-Versiones: **Node.js 26.13.1 LTS**, **redis (node-redis) 6.3.1** y **Redis 8.10.2** (imagen `redis:8.10.2-alpine`).
-
-`f136-dedup-redis/dedup.js`:
+#### Código y verificación
+```mermaid
+flowchart TD
+    M["mensaje llega<br/>messageId = P-1"] --> S{"SET dedup:facturacion:P-1 en-curso NX EX 30"}
+    S -- "OK (gané)" --> T["procesar (cobrar)"]
+    T -- éxito --> H["SET … hecho EX 604800"] --> A["ack"]
+    T -- error --> DEL["DEL clave"] --> N["nack → reentrega"]
+    S -- "null (ya existía)" --> G{"GET clave"}
+    G -- hecho --> D["duplicado: ack sin procesar"]
+    G -- en-curso --> R["otro consumidor lo tiene:<br/>nack con requeue"]
+```
 
 ```javascript
 // Módulo 22 · F136 · Deduplicación con Redis: procesar cada mensaje UNA vez aunque llegue varias (at-least-once).
@@ -735,8 +573,6 @@ export async function procesarUnaVez(redis, { consumidor, messageId }, trabajo,
 }
 ```
 
-`f136-dedup-redis/demo.js`:
-
 ```javascript
 // Módulo 22 · F136 · Demo: RabbitMQ (at-least-once) entrega dos veces el pedido P-1; el cobro se hace UNA vez.
 // Ejecuta (con Redis arriba):  node f136-dedup-redis/demo.js
@@ -759,20 +595,10 @@ console.log(`TTL de dedup:facturacion:P-1 = ${await redis.ttl('dedup:facturacion
 await redis.close();
 ```
 
-En un consumidor de RabbitMQ (ficha 1), `procesarUnaVez` va dentro del manejador: `procesar = (pedido, msg) =>
-procesarUnaVez(redis, { consumidor: 'facturacion', messageId: msg.properties.messageId }, () => cobrar(pedido))`; un
-`duplicado` termina en `ack` y un `EnCursoEnOtroLado` en `nack` con reencolado.
-
-#### 10. MINI-LABORATORIO
-
-1. Levanta Redis y ejecuta la demo:
-
 ```bash
 docker compose up -d --wait redis
 node f136-dedup-redis/demo.js
 ```
-
-**Output esperado** (real, con Redis 7.0.15 en el entorno de redacción):
 
 ```text
 P-1 → procesado (cobrados 100)
@@ -782,191 +608,32 @@ cobros reales: P-1, P-2
 TTL de dedup:facturacion:P-1 = 604800 s · valor = hecho
 ```
 
-2. Mira la marca desde Redis:
-
 ```bash
 docker compose exec redis redis-cli --scan --pattern 'dedup:*'
 docker compose exec redis redis-cli TTL dedup:facturacion:P-1
 ```
 
-**Output esperado:** las claves `dedup:facturacion:P-1` y `dedup:facturacion:P-2` (en cualquier orden) y un TTL
-cercano a `604800` que baja cada segundo.
-
-3. Compara la versión ingenua con la atómica: `node f136-dedup-redis/error-comun.js` (salida en el punto 12).
-
-*(Con `redis:8.10.2-alpine` está en `verificacion/microservicios/pendiente.md`.)*
-
-#### 11. VERIFICACIÓN
-
-```javascript
-// Módulo 22 · F136 · Verificación contra un Redis real (REDIS_URL). Si no responde, se OMITE (o FALLA con EXIGIR_INFRA=1).
-// Ejecuta: node --test f136-dedup-redis/dedup.test.js
-import { test, before, after } from 'node:test';
-import assert from 'node:assert/strict';
-import { createClient } from 'redis';
-import { REDIS_URL } from '../comun/config.js';
-import { omitirSinInfra } from '../comun/infra.js';
-import { procesarUnaVez, EnCursoEnOtroLado } from './dedup.js';
-import { procesarUnaVezMal } from './error-comun.js';
-
-const skip = await omitirSinInfra('Redis', REDIS_URL, 6379);
-let redis;
-const id = () => `t-${process.pid}-${Math.random().toString(36).slice(2)}`;
-before(async () => { if (!skip) redis = await createClient({ url: REDIS_URL }).connect(); });
-after(async () => { await redis?.close(); });
-
-test('la segunda entrega del mismo messageId se descarta', { skip }, async () => {
-  const m = { consumidor: 'test', messageId: id() };
-  let veces = 0;
-  assert.equal((await procesarUnaVez(redis, m, async () => ++veces)).estado, 'procesado');
-  assert.equal((await procesarUnaVez(redis, m, async () => ++veces)).estado, 'duplicado');
-  assert.equal(veces, 1);
-});
-
-test('10 entregas SIMULTÁNEAS: SET NX deja pasar exactamente una', { skip }, async () => {
-  const m = { consumidor: 'test', messageId: id() };
-  let veces = 0;
-  const lento = async () => { veces++; await new Promise((r) => setTimeout(r, 50)); };
-  const r = await Promise.allSettled(Array.from({ length: 10 }, () => procesarUnaVez(redis, m, lento)));
-  assert.equal(veces, 1);
-  assert.equal(r.filter((x) => x.status === 'fulfilled').length, 1);
-  assert.ok(r.filter((x) => x.status === 'rejected').every((x) => x.reason instanceof EnCursoEnOtroLado));
-});
-
-test('si el trabajo falla, la clave se borra y la reentrega SÍ se procesa', { skip }, async () => {
-  const m = { consumidor: 'test', messageId: id() };
-  await assert.rejects(procesarUnaVez(redis, m, async () => { throw new Error('cobro caído'); }), /cobro caído/);
-  assert.equal((await procesarUnaVez(redis, m, async () => 'ok')).estado, 'procesado');
-});
-
-test('la marca «hecho» tiene caducidad: la ventana de deduplicación no crece para siempre', { skip }, async () => {
-  const m = { consumidor: 'test', messageId: id() };
-  await procesarUnaVez(redis, m, async () => {}, { ttlHechoSeg: 60 });
-  const ttl = await redis.ttl(`dedup:test:${m.messageId}`);
-  assert.ok(ttl > 0 && ttl <= 60, `TTL=${ttl}`);
-});
-
-test('error común: GET y luego SET (no atómico) deja pasar varias copias simultáneas', { skip }, async () => {
-  const m = { consumidor: 'test', messageId: id() };
-  let veces = 0;
-  await Promise.all(Array.from({ length: 10 }, () => procesarUnaVezMal(redis, m, async () => { veces++; })));
-  assert.ok(veces > 1, `procesado ${veces} veces`);
-});
-```
-
-```bash
-node --test f136-dedup-redis/dedup.test.js
-```
-
-**Output esperado:** `ℹ tests 5` y `ℹ pass 5`.
-
-**Pregunta de comprobación:** ¿qué pasaría si `ttlEnCursoSeg` fuera más corto que lo que tarda el trabajo?
-
-#### 12. ERROR COMÚN
-
-**Síntoma:** con una sola réplica no hay cobros dobles; al escalar a cinco, tras una reentrega masiva aparecen cobros
-duplicados «aunque deduplicamos». **Causa:** la comprobación se hace con `GET` y la marca con `SET` en **dos pasos**:
-todas las copias leen «no existe» antes de que la primera escriba.
-
-```javascript
-// Módulo 22 · F136 · Error común: comprobar con GET y marcar con SET en dos pasos. Entre uno y otro hay un hueco:
-// las copias que llegan a la vez ven «no existe» y TODAS procesan. Además, marcar ANTES del trabajo sin
-// borrar al fallar perdería el mensaje si el proceso muere a mitad.
-// Ejecuta (con Redis arriba):  node f136-dedup-redis/error-comun.js
-import { createClient } from 'redis';
-import { REDIS_URL } from '../comun/config.js';
-
-export async function procesarUnaVezMal(redis, { consumidor, messageId }, trabajo) {
-  const clave = `dedup:${consumidor}:${messageId}`;
-  if (await redis.get(clave)) return { estado: 'duplicado' };   // 1) ¿ya está?
-  await trabajo();                                              // 2) proceso…
-  await redis.set(clave, 'hecho', { expiration: { type: 'EX', value: 3600 } }); // 3) …y marco. Demasiado tarde.
-  return { estado: 'procesado' };
-}
-
-if (import.meta.main) {
-  const redis = await createClient({ url: REDIS_URL }).connect();
-  await redis.del('dedup:facturacion:P-1');
-  let cobros = 0;
-  // 5 copias del mismo mensaje llegan a la vez (5 réplicas del consumidor tras una reentrega masiva).
-  await Promise.all(Array.from({ length: 5 }, () => procesarUnaVezMal(redis, { consumidor: 'facturacion', messageId: 'P-1' }, async () => { cobros++; })));
-  console.log(`GET + SET: 5 copias simultáneas de P-1 → ${cobros} cobros`);
-  await redis.del('dedup:facturacion:P-1');
-  const { procesarUnaVez } = await import('./dedup.js');
-  cobros = 0;
-  await Promise.allSettled(Array.from({ length: 5 }, () => procesarUnaVez(redis, { consumidor: 'facturacion', messageId: 'P-1' }, async () => { cobros++; })));
-  console.log(`SET NX:    5 copias simultáneas de P-1 → ${cobros} cobro`);
-  await redis.close();
-}
-```
-
-Salida real de `node f136-dedup-redis/error-comun.js`:
-
-```text
-GET + SET: 5 copias simultáneas de P-1 → 5 cobros
-SET NX:    5 copias simultáneas de P-1 → 1 cobro
-```
-
-**Diagnóstico visual:** en los logs (Módulo 21), filtra por `messageId`: varias líneas «procesado» con el mismo id y
-milisegundos de diferencia, desde réplicas distintas. En Redis, `MONITOR` (solo en desarrollo) muestra `GET` y `SET`
-intercalados de varias conexiones. **Arreglo:** una sola orden atómica, `SET … NX`, como en `dedup.js`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**Tu consumidor recibe mensajes duplicados. ¿Cómo evitas procesarlos dos veces?**
-
-**Respuesta modelo:** primero acepto que con at-least-once habrá duplicados y que exactly-once entre sistemas no existe,
-así que busco que el **efecto** ocurra una vez. Lo mejor es que la operación sea idempotente por diseño, fijando un
-estado en vez de sumar. Si no lo es, deduplico por un id estable que pone el productor. Con Redis uso `SET clave NX EX`,
-que es atómico: un estado «en curso» con caducidad corta para que una caída no bloquee el mensaje y un «hecho» con la
-ventana de deduplicación; si el trabajo falla, borro la marca para permitir el reintento. La clave incluye el
-consumidor. Sé que queda un hueco entre terminar y marcar, así que si el efecto va a mi base de datos uso una tabla
-inbox con clave única en la misma transacción. Nunca hago `GET` y luego `SET`, porque entre los dos se cuelan las
-copias concurrentes.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Marcar como procesado ANTES de hacer el trabajo, sin caducidad ni limpieza.** Evítalo: si el proceso muere después
-de marcar, el mensaje se reentrega, ve la marca «hecho» y se descarta. Has cambiado un duplicado por una **pérdida**.
-
-```javascript
-// MAL: la marca es definitiva antes de cobrar; si cobrar() revienta, el reintento lo da por hecho.
-if (await redis.set(clave, 'hecho', { condition: 'NX' })) await cobrar(pedido);
-
-// BIEN: «en-curso» con TTL corto, «hecho» solo al terminar y DEL si falla (dedup.js).
-const r = await procesarUnaVez(redis, { consumidor: 'facturacion', messageId }, () => cobrar(pedido));
-```
-
----
+</details>
 
 ### Sagas con NestJS CQRS
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 3 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Implementar una saga coreografiada con @nestjs/cqrs que reacciona a eventos (@Saga()), ejecuta el comando del paso siguiente y, si un paso falla, ejecuta la compensación de los anteriores, y demostrar con tests los tres caminos (feliz, fallo sin compensar y fallo con compensación…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar una saga coreografiada con @nestjs/cqrs que reacciona a eventos (@Saga()), ejecuta el comando del paso siguiente y, si un paso falla, ejecuta la compensación de los anteriores, y demostrar con tests los tres caminos (feliz, fallo sin compensar y fallo con compensación).**
 
-- NestJS: módulos, providers e inyección de dependencias (Módulo 14, ficha «NestJS»).
-- Observables de rxjs a nivel de `pipe`, `map` y `filter`.
-- Comandos y eventos (Módulo 18, «sync vs async»).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en sagas con nestjs cqrs como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** una saga coreografiada con `@nestjs/cqrs` que reacciona a eventos (`@Saga()`), ejecuta el comando del
-paso siguiente y, si un paso falla, ejecuta la **compensación** de los anteriores, y **demostrar** con tests los tres
-caminos (feliz, fallo sin compensar y fallo con compensación). Lo compruebas cuando `saga.test.js` pasa 4 de 4.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja una **agencia de viajes** que te arma un paquete: vuelo, hotel y tour. No puede reservar los tres «a la vez»
-en una sola operación, porque son tres empresas distintas. Reserva el vuelo; con la confirmación en la mano, reserva el
-hotel; con esa, el tour. Si el tour está agotado, **no puede borrar el pasado**: llama al hotel para **cancelar** y a
-la aerolínea para **anular** el vuelo (compensaciones). Encima de la mesa tiene una **hoja de ruta** que dice «si llega
-la confirmación del vuelo, pide el hotel; si el tour falla, cancela el hotel»: esa hoja es la saga.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     C["CrearPedido"] --> E1(["PedidoCreado"])
@@ -983,66 +650,48 @@ flowchart LR
     C6 --> E6(["PedidoCancelado"])
 ```
 
-**Texto alternativo:** flujo de la saga de pedidos. CrearPedido produce PedidoCreado, al que la saga responde con
-ReservarStock. ReservarStock produce StockReservado o StockAgotado. Con StockReservado, la saga envía CobrarPago, que
-produce PagoAceptado o PagoRechazado. PagoAceptado lleva a ConfirmarPedido y a PedidoConfirmado. PagoRechazado lleva a la
-compensación LiberarStock, que produce StockLiberado, y la saga entonces envía CancelarPedido. StockAgotado también lleva
-a CancelarPedido, sin compensar nada. CancelarPedido produce PedidoCancelado.
+1. Comprar en una tienda online toca varios servicios: **inventario** (apartar el producto), **pagos** (cobrar) y
+2. No existe un botón «hazlo todo o nada» entre bases de datos distintas. Entonces se hace **paso a paso**, y cada paso
+3. Si el cobro falla después de apartar el producto, hay que **devolver el producto al estante**. Eso es una
+4. Una **saga** es la receta que dice qué paso sigue cuando uno sale bien y qué deshacer cuando uno sale mal.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sagas con NestJS CQRS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sagas con NestJS CQRS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+La saga que llama directamente a los servicios. Evita que la saga haga el trabajo (llamar al inventario, cobrar) dentro del map: mezcla la decisión «qué sigue» con efectos de red, no hay manejador que reintentar ni evento que registrar, y cualquier excepción la apaga.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sagas con nestjs cqrs funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - Comprar en una tienda online toca varios servicios: **inventario** (apartar el producto), **pagos** (cobrar) y
-  **pedidos** (confirmar). Cada uno tiene su propia base de datos.
 - No existe un botón «hazlo todo o nada» entre bases de datos distintas. Entonces se hace **paso a paso**, y cada paso
-  tiene su **deshacer**.
 - Si el cobro falla después de apartar el producto, hay que **devolver el producto al estante**. Eso es una
-  **compensación**.
 - Una **saga** es la receta que dice qué paso sigue cuando uno sale bien y qué deshacer cuando uno sale mal.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sagas con nestjs cqrs en tu contexto?
+2. ¿Cómo sabrías que sagas con nestjs cqrs no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sagas con nestjs cqrs?
 
-- **@nestjs/cqrs** trae tres buses: `CommandBus` (órdenes: «reserva stock»), `EventBus` (hechos: «stock reservado») y
-  `QueryBus` (ficha 7). `CqrsModule.forRoot()` los registra y, al arrancar, conecta los `@CommandHandler` y las sagas de
-  los providers del módulo.
-- **Comando:** una clase que extiende `Command<R>` (`R` es lo que devuelve `commandBus.execute`); su manejador
-  implementa `ICommandHandler` con `execute()`. Un comando tiene **un** manejador.
-- **Evento:** una clase con los datos del hecho, en pasado; la publica el manejador con `eventBus.publish(evento)`.
-  Puede tener muchos oyentes.
-- **Saga:** una propiedad decorada con `@Saga()` que recibe el flujo (Observable) de **todos** los eventos y devuelve
-  un flujo de comandos: `eventos$.pipe(ofType(PagoRechazado), map((e) => new LiberarStock(e.pedidoId)))`. Nest ejecuta
-  cada comando emitido en el `CommandBus`.
-- **Compensación:** un comando más (`LiberarStock`) que deshace el efecto de un paso anterior; debe ser idempotente
-  (ficha 4). Solo se compensa lo que se hizo: con `StockAgotado` no hay nada que liberar.
-- **El evento lleva lo necesario** para el paso siguiente (`StockReservado` lleva el `total`), así la saga no consulta
-  nada y queda como una tabla «evento → comando».
-- **Detalle del bus en memoria:** `publish()` llama a las sagas **sincrónicamente**. Si ningún manejador hace `await`,
-  toda la cadena ocurre dentro del primer `publish()` y un oyente suscrito después ve los eventos al revés. En el
-  laboratorio los servicios simulan la red con `await` y el orden se ve causal.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Coreografía vs orquestación.** Esta saga es **coreografía**: cada paso reacciona a eventos y nadie guarda «en qué
-  paso va el pedido». Escala bien con pocos pasos, pero el flujo queda repartido y es difícil de ver. La
-  **orquestación** (Temporal.io, Módulo 25; Camunda; AWS Step Functions) pone un coordinador con estado que llama a cada
-  paso, reintenta y compensa, con historial y tiempos de espera. Trade-off: menos piezas frente a visibilidad y
-  durabilidad.
-- **Lo que @nestjs/cqrs NO te da:** el `EventBus` por defecto vive **en memoria del proceso**. Si el proceso muere entre
-  `StockReservado` y `CobrarPago`, la saga se pierde: nada recuerda que había stock reservado. Para producción, los
-  eventos tienen que salir a un broker durable (un `eventPublisher` propio que publique en RabbitMQ o Kafka, con outbox)
-  y la saga necesita **estado persistido** y **tiempos límite** («si no hay respuesta del pago en 10 minutos,
-  compensa»). Esta ficha enseña el modelo; el Módulo 25 lo hace durable con Temporal.
-- **Errores dentro de la saga.** Por defecto (`sagaErrorStrategy: 'complete'`), una excepción en el flujo de una saga
-  la **termina**: Nest la registra una vez y deja de escuchar (error común). `'resubscribe'` se vuelve a suscribir con
-  espera creciente, pero pierde los eventos de mientras. Lo correcto es no lanzar dentro del `pipe` y validar en los
-  manejadores.
-- **Aislamiento.** Mientras la saga corre, otros ven estados intermedios (stock reservado de un pedido que se va a
-  cancelar). Es la «I» que pierdes respecto a una transacción ACID; se mitiga con estados explícitos (`PENDIENTE`) y
-  reservas con caducidad.
-- **Cuándo NO usar una saga:** si los datos pueden vivir en **un solo servicio** con una transacción local, hazlo así.
-  Una saga para algo que cabía en una transacción es el anti-patrón «sagas innecesarias» del Módulo 30.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **@nestjs/core 12.5.1**, **@nestjs/cqrs 12.1.3**, **rxjs
 7.8.2** y **reflect-metadata 0.2.2**. Se compila con `npm run build` (`tsconfig.json` con `experimentalDecorators` y
 `emitDecoratorMetadata`, que NestJS necesita):
@@ -1349,47 +998,7 @@ console.log('stock TEC-1:', inventario.stock.get('TEC-1'), '· reservas:', [...i
 await app.close();
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Compila y ejecuta la demo (no necesita Docker):
-
-```bash
-npm run build
-node dist/f137-sagas-nestjs/src/main.js
-```
-
-**Output esperado** (real):
-
-```text
-▶ P-1: 2 × TEC-1 por 240000
-  evento PedidoCreado     {"pedidoId":"P-1","sku":"TEC-1","cantidad":2,"total":240000}
-  evento StockReservado   {"pedidoId":"P-1","total":240000}
-  evento PagoAceptado     {"pedidoId":"P-1"}
-  evento PedidoConfirmado {"pedidoId":"P-1"}
-▶ P-2: 1 × MOU-1 por 50000
-  evento PedidoCreado     {"pedidoId":"P-2","sku":"MOU-1","cantidad":1,"total":50000}
-  evento StockAgotado     {"pedidoId":"P-2"}
-  evento PedidoCancelado  {"pedidoId":"P-2","motivo":"sin stock"}
-▶ P-3: 1 × TEC-1 por 2000000
-  evento PedidoCreado     {"pedidoId":"P-3","sku":"TEC-1","cantidad":1,"total":2000000}
-  evento StockReservado   {"pedidoId":"P-3","total":2000000}
-  evento PagoRechazado    {"pedidoId":"P-3","motivo":"cobro de 2000000 rechazado"}
-  evento StockLiberado    {"pedidoId":"P-3","motivo":"pago rechazado"}
-  evento PedidoCancelado  {"pedidoId":"P-3","motivo":"pago rechazado"}
-estado final: {"P-1":{"estado":"CONFIRMADO"},"P-2":{"estado":"CANCELADO","motivo":"sin stock"},"P-3":{"estado":"CANCELADO","motivo":"pago rechazado"}}
-stock TEC-1: 3 · reservas: P-1
-```
-
-**Captura comentada:** P-3 reservó 1 teclado (stock 5 → 2 tras P-1 y P-3) y, al rechazarse el pago, `StockLiberado` lo
-devolvió: al final quedan 3, los que se llevó P-1. P-2 se cancela **sin** compensación porque no reservó nada.
-
-2. Rompe la saga a propósito: en `servicios.ts`, quita el `await red();` de `liberar`, `cobrar`, `reservar` y
-   `guardar`, recompila y ejecuta. **Output esperado:** los eventos de cada pedido salen **al revés**
-   (`PedidoConfirmado` primero): el bus en memoria encadenó toda la saga dentro del primer `publish()` (punto 7).
-   Vuelve a dejarlo como estaba.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```typescript
 // Módulo 22 · F137 · Verificación de la saga con @nestjs/cqrs 12.1.3 (sin infraestructura).
 // Ejecuta: npm run build && node --test dist/f137-sagas-nestjs/src/saga.test.js
@@ -1459,141 +1068,27 @@ npm run build && node --test dist/f137-sagas-nestjs/src/saga.test.js
 
 **Pregunta de comprobación:** en el test de tres sagas a la vez, ¿por qué el stock final de TEC-1 es 4 y no 3?
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** tras un pedido con datos raros, **ningún pedido más avanza**: se crean y se quedan en `PENDIENTE`. En el
-log hay un único error, de hace horas. **Causa:** una excepción dentro del `pipe` de una saga; con la estrategia por
-defecto de @nestjs/cqrs 12.1.3 (`sagaErrorStrategy: 'complete'`) esa saga se da por terminada.
-
-```typescript
-// Módulo 22 · F137 · Error común: una excepción DENTRO del flujo de una saga la apaga para siempre.
-// Con la opción por defecto de @nestjs/cqrs 12.1.3 (sagaErrorStrategy: 'complete'), Nest registra el error UNA vez
-// y el Observable de esa saga termina: los eventos siguientes se ignoran en silencio y los pedidos quedan colgados.
-// Ejecuta: npm run build && node dist/f137-sagas-nestjs/src/error-comun.js
-import 'reflect-metadata';
-import { Injectable, Module } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { CqrsModule, CommandBus, CommandHandler, EventBus, Saga, ofType } from '@nestjs/cqrs';
-import type { ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { Observable, map } from 'rxjs';
-import { CrearPedido, PedidoCreado, ConfirmarPedido } from './mensajes.js';
-
-const confirmados: string[] = [];
-
-@Injectable()
-class SagaFragil {
-  @Saga()
-  pedidoCreado = (eventos$: Observable<any>): Observable<ICommand> => eventos$.pipe(
-    ofType(PedidoCreado),
-    map((e) => {
-      if (e.total <= 0) throw new Error(`total inválido en ${e.pedidoId}`); // MAL: validar lanzando dentro del stream
-      return new ConfirmarPedido(e.pedidoId);
-    }),
-  );
-}
-
-@CommandHandler(CrearPedido)
-class Crear implements ICommandHandler<CrearPedido> {
-  constructor(private readonly eventos: EventBus) {}
-  async execute(c: CrearPedido) { this.eventos.publish(new PedidoCreado(c.pedidoId, c.sku, c.cantidad, c.total)); }
-}
-@CommandHandler(ConfirmarPedido)
-class Confirmar implements ICommandHandler<ConfirmarPedido> {
-  async execute(c: ConfirmarPedido) { confirmados.push(c.pedidoId); }
-}
-
-for (const estrategia of ['complete', 'resubscribe'] as const) {
-  confirmados.length = 0;
-  @Module({ imports: [CqrsModule.forRoot({ sagaErrorStrategy: estrategia })], providers: [SagaFragil, Crear, Confirmar] })
-  class Demo {}
-  const app = await NestFactory.createApplicationContext(Demo, { logger: ['error'] });
-  const bus = app.get(CommandBus);
-  await bus.execute(new CrearPedido('P-1', 'TEC-1', 1, 100));
-  await bus.execute(new CrearPedido('P-2', 'TEC-1', 1, 0));    // este revienta la saga
-  await new Promise((r) => setTimeout(r, 300));                // 'resubscribe' vuelve a suscribirse a los 100 ms
-  await bus.execute(new CrearPedido('P-3', 'TEC-1', 1, 100));  // ¿alguien lo escucha todavía?
-  await new Promise((r) => setTimeout(r, 50));
-  console.log(`sagaErrorStrategy=${estrategia.padEnd(11)} → confirmados: [${confirmados.join(', ')}]`);
-  await app.close();
-}
-```
-
-Salida real de `NO_COLOR=1 node dist/f137-sagas-nestjs/src/error-comun.js` (sin las líneas `at …` de la pila; la fecha
-y el pid cambian):
-
-```text
-[Nest] 11880  - 11/20/2026, 12:28:39 AM   ERROR [EventBus] Saga "pedidoCreado" has thrown an unhandled exception.
-[Nest] 11880  - 11/20/2026, 12:28:39 AM   ERROR [EventBus] Error: total inválido en P-2
-sagaErrorStrategy=complete    → confirmados: [P-1]
-[Nest] 11880  - 11/20/2026, 12:28:39 AM   ERROR [EventBus] Saga "pedidoCreado" has thrown an unhandled exception.
-[Nest] 11880  - 11/20/2026, 12:28:39 AM   ERROR [EventBus] Error: total inválido en P-2
-sagaErrorStrategy=resubscribe → confirmados: [P-1, P-3]
-```
-
-**Diagnóstico visual:** busca en los logs `Saga "…" has thrown an unhandled exception` y mira la hora: todo lo que
-quedó colgado empezó justo después. Un panel con «pedidos en PENDIENTE hace más de N minutos» lo detecta antes que los
-clientes. **Arreglo:** no lances dentro del flujo de la saga; valida en el manejador del comando (que publica un evento
-de rechazo) o captura por evento dentro de un `mergeMap`. `'resubscribe'` es una red de seguridad, no el arreglo: pierde
-los eventos que llegan mientras espera.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Qué es una saga y cuándo usarías coreografía en lugar de orquestación?**
-
-**Respuesta modelo:** una saga reemplaza una transacción distribuida por una secuencia de transacciones locales, una por
-servicio, donde cada paso publica un evento que dispara el siguiente y cada paso tiene una compensación que deshace su
-efecto si un paso posterior falla. No da aislamiento: otros pueden ver estados intermedios, así que los modelo con
-estados explícitos como «pendiente». En coreografía, cada servicio reacciona a eventos de los demás sin coordinador; la
-uso con pocos pasos y equipos que ya publican eventos, porque no añade infraestructura. Cuando hay muchos pasos,
-tiempos de espera, reintentos y necesito ver en qué paso va cada instancia, prefiero orquestación con algo durable como
-Temporal. En NestJS, `@Saga()` de @nestjs/cqrs es coreografía dentro de un proceso: sirve para modelar el flujo, pero
-el bus es en memoria, así que en producción saco los eventos a un broker con outbox y persisto el estado de la saga.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**La saga que llama directamente a los servicios.** Evita que la saga haga el trabajo (llamar al inventario, cobrar)
-dentro del `map`: mezcla la decisión «qué sigue» con efectos de red, no hay manejador que reintentar ni evento que
-registrar, y cualquier excepción la apaga.
-
-```typescript
-// MAL: la saga cobra ella misma; si el cobro lanza, la saga muere y no queda rastro del paso.
-@Saga() stockReservado = (e$: Observable<any>) => e$.pipe(ofType(StockReservado),
-  mergeMap(async (e) => { await this.pagos.cobrar(e.pedidoId, e.total); return new ConfirmarPedido(e.pedidoId); }));
-
-// BIEN: la saga solo traduce evento → comando; el trabajo y sus fallos van en el manejador (pedido.saga.ts).
-@Saga() stockReservado = (e$: Observable<any>) => e$.pipe(ofType(StockReservado), map((e) => new CobrarPago(e.pedidoId, e.total)));
-```
-
----
+</details>
 
 ### Compensaciones idempotentes
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 4 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Diseñar compensaciones que se pueden ejecutar varias veces y llegar desordenadas sin dañar los datos (clave estable, estado en vez de delta y «lápida» para lo que todavía no ocurrió), y demostrar que con respuestas perdidas y reintentos el dinero vuelve exactamente una vez. Lo co…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Diseñar compensaciones que se pueden ejecutar varias veces y llegar desordenadas sin dañar los datos (clave estable, estado en vez de delta y «lápida» para lo que todavía no ocurrió), y demostrar que con respuestas perdidas y reintentos el dinero vuelve exactamente una vez.**
 
-- Ficha 3 (sagas y compensaciones).
-- Ficha 2 (duplicados y reintentos).
-- Retry con backoff (Módulo 19).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en compensaciones idempotentes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diseñar** compensaciones que se pueden ejecutar varias veces y llegar desordenadas sin dañar los datos (clave
-estable, estado en vez de delta y «lápida» para lo que todavía no ocurrió), y **demostrar** que con respuestas perdidas
-y reintentos el dinero vuelve exactamente una vez. Lo compruebas cuando `compensaciones.test.js` pasa 6 de 6.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja un **interruptor de luz** y un **timbre**. Si te dicen «deja la luz apagada» y lo haces tres veces, la luz
-sigue apagada: la orden es **idempotente**. Si te dicen «toca el timbre» tres veces, sonó tres veces. Una compensación
-tiene que ser como el interruptor: «deja el pago P en estado reembolsado», no «devuelve 300 pesos». Y una tercera
-viñeta: alguien te dice «apaga la luz de la habitación 7» pero esa luz **nunca se encendió**; pegas una nota en el
-interruptor, «no encender: cancelado», para que si alguien llega tarde a encenderla, no lo haga.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant S as coordinador de la saga
@@ -1612,58 +1107,48 @@ sequenceDiagram
     Note over P: llega tarde cobrar(S-2) → RECHAZADO
 ```
 
-**Texto alternativo:** diagrama de secuencia entre el coordinador de la saga y el servicio de pagos. El coordinador
-pide reembolsar S-1; pagos lo marca como reembolsado y suma 300 al saldo, pero la respuesta se pierde. El coordinador
-reintenta dos veces más: en la segunda la respuesta también se pierde y en la tercera llega «reembolsado, repetido»;
-en ninguna se devuelve el dinero de nuevo. Después pide reembolsar S-2, cuyo cobro aún no ha llegado: pagos deja una
-lápida para S-2 y responde «sin cobro»; cuando el cobro de S-2 llega tarde, se rechaza.
+1. Una compensación es el «deshacer» de un paso de la saga: si cobraste y luego algo falló, **reembolsas**.
+2. Pero la red puede fallar justo cuando el servicio de pagos responde «hecho». El coordinador no lo sabe y lo **vuelve a
+3. Si el reembolso «suma 300» cada vez que se lo piden, Ana recibe 900. Si el reembolso dice «deja este cobro como
+4. Y a veces el «deshacer» llega **antes** que el «hacer» (los mensajes viajan por caminos distintos). Hay que recordar
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Compensaciones idempotentes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Compensaciones idempotentes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+Compensar con un DELETE. Evita «deshacer» borrando la fila del cobro: pierdes el historial, contabilidad no cuadra, y si el borrado se reintenta después de que otro proceso reinsertó algo con la misma clave, borras lo que no era tuyo.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: compensaciones idempotentes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - Una compensación es el «deshacer» de un paso de la saga: si cobraste y luego algo falló, **reembolsas**.
 - Pero la red puede fallar justo cuando el servicio de pagos responde «hecho». El coordinador no lo sabe y lo **vuelve a
-  pedir**.
 - Si el reembolso «suma 300» cada vez que se lo piden, Ana recibe 900. Si el reembolso dice «deja este cobro como
-  reembolsado», pedirlo tres veces da lo mismo que una.
 - Y a veces el «deshacer» llega **antes** que el «hacer» (los mensajes viajan por caminos distintos). Hay que recordar
-  «esto ya se canceló» para rechazar el «hacer» cuando llegue.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve compensaciones idempotentes en tu contexto?
+2. ¿Cómo sabrías que compensaciones idempotentes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar compensaciones idempotentes?
 
-- **Regla 1, clave estable:** la compensación se identifica por algo que no cambia entre reintentos (el `sagaId`, o
-  `sagaId:reembolso`). Nunca un `randomUUID()` por intento.
-- **Regla 2, estado y no delta:** guarda el estado del cobro (`COBRADO` → `REEMBOLSADO`) y aplica el cambio de saldo
-  **solo en la transición**. Si ya está en el estado final, responde lo mismo sin tocar nada (`repetido: true`).
-- **Regla 3, lápida:** compensar algo que no existe **no es un error**: devuelve `SIN_COBRO` y guarda la marca. La
-  acción original, si llega después, ve la lápida y se rechaza. Sin lápida, el cobro tardío quedaría cobrado para
-  siempre.
-- **La acción también es idempotente:** `cobrar(S-3)` dos veces cobra una vez (misma clave).
-- **El coordinador reintenta con tope:** las compensaciones **no pueden fallar** a medias para siempre; si tras N
-  intentos no hay respuesta, se escala a una persona (cola de revisión manual, alerta). En `red.js`,
-  `compensarConReintentos` lo modela.
-- `red.js` simula la red que pierde respuestas: el servicio **ejecuta** la llamada y el cliente recibe un timeout. Es
-  el caso que obliga a reintentar.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Compensar no es borrar.** Una compensación es un **nuevo hecho de negocio** (un reembolso, una nota crédito, la
-  liberación de una reserva), no un `DELETE` del cobro: el historial queda y contabilidad lo necesita. Algunas acciones
-  **no se pueden compensar** (enviar un correo, despachar un paquete): ponlas **al final** de la saga, después del
-  último paso que puede fallar (el «pivote»), o compénsalas con otra acción («correo de disculpa»).
-- **Semántica vs mecánica.** Que el dinero vuelva una vez es mecánica (idempotencia). Que el cliente reciba lo que
-  esperaba es semántica: si entre el cobro y el reembolso cambió el tipo de cambio o se cobró una comisión, el reembolso
-  correcto no es «el mismo monto». Decídelo con negocio.
-- **Alternativas:** *reservas con caducidad* (el stock reservado se libera solo si la saga no confirma en 15 minutos:
-  la compensación pasa a ser el camino por defecto); *orquestador durable* (Temporal registra qué compensaciones ya se
-  ejecutaron y no las repite tras un reinicio, aunque tus actividades siguen necesitando idempotencia porque pueden
-  reintentarse); *transacción local* si los datos caben en un servicio (no hace falta compensar).
-- **Almacenamiento real:** en una base de datos, las reglas son una restricción `UNIQUE (saga_id)` en la tabla de
-  reembolsos y un `UPDATE … WHERE estado = 'COBRADO'` que solo afecta a una fila la primera vez.
-- **Cuándo NO hace falta tanto cuidado:** compensaciones que ya son idempotentes por naturaleza («marcar pedido como
-  cancelado»). El cuidado es para las que mueven dinero o cantidades.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS** (JavaScript puro, sin dependencias).
 
 `f138-compensaciones/pagos.js`:
@@ -1762,38 +1247,7 @@ console.log('cobrar S-2 tarde                  →', JSON.stringify(pagos.cobrar
 console.log(`saldo final de ana = ${pagos.saldo.get('ana')}`);
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta la demo (no necesita Docker):
-
-```bash
-node f138-compensaciones/demo.js
-```
-
-**Output esperado** (real):
-
-```text
-tras cobrar S-1: saldo de ana = 700
-  reembolsar S-1 · intento 1: timeout: no llegó la respuesta
-  reembolsar S-1 · intento 2: timeout: no llegó la respuesta
-  reembolsar S-1 · intento 3: {"estado":"REEMBOLSADO","repetido":true}
-tras compensar S-1: saldo de ana = 1000 · movimientos: cobro S-1 -300 | reembolso S-1 +300
-reembolsar S-2 antes de cobrarlo → {"estado":"SIN_COBRO"}
-cobrar S-2 tarde                  → {"estado":"RECHAZADO","motivo":"la saga ya fue compensada"}
-saldo final de ana = 1000
-```
-
-**Captura comentada:** el reembolso se **ejecutó** en el intento 1 (por eso el 3 dice `repetido: true`), pero el
-coordinador no lo supo hasta el 3. El diario de movimientos tiene un solo reembolso.
-
-2. Compara con la versión ingenua: `node f138-compensaciones/error-comun.js` (salida en el punto 12).
-3. Experimenta: en `demo.js`, cambia `perderRespuestas: 2` por `99`. **Output esperado:** cinco intentos con timeout y
-   el programa termina con el error `compensación sin confirmar tras 5 intentos: revisión manual`. Ojo: el reembolso
-   **sí** se aplicó en el servidor en el primer intento; el coordinador no lo sabe, y por eso escala a una persona en
-   vez de darlo por fallido y seguir.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```javascript
 // Módulo 22 · F138 · Verificación: las compensaciones se pueden repetir y llegar desordenadas sin dañar el saldo.
 // Ejecuta: node --test f138-compensaciones/compensaciones.test.js   (sin infraestructura)
@@ -1859,109 +1313,27 @@ node --test f138-compensaciones/compensaciones.test.js
 **Pregunta de comprobación:** ¿qué pasaría en el test de la lápida si `reembolsar` devolviera un error cuando no
 encuentra el cobro?
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** después de un incidente de red, varios clientes tienen **más saldo** del que deberían; el registro de
-reembolsos muestra el mismo monto repetido con ids distintos. **Causa:** el reembolso suma un delta y genera un id
-nuevo en cada intento; cada reintento del coordinador devuelve el dinero otra vez.
-
-```javascript
-// Módulo 22 · F138 · Error común: una compensación que aplica un DELTA y genera un id nuevo en cada intento.
-// Con 2 respuestas perdidas, el coordinador reintenta 3 veces y el cliente recibe el dinero 3 veces.
-// Ejecuta: node f138-compensaciones/error-comun.js
-import { randomUUID } from 'node:crypto';
-import { redQuePierde, compensarConReintentos } from './red.js';
-
-export class PagosIngenuo {
-  saldo = new Map([['ana', 700]]);   // ya se cobraron 300 de 1000
-  reembolsos = new Map();
-  reembolsar(_sagaId, cliente, monto) {
-    const id = randomUUID();                                        // MAL: id nuevo en cada intento
-    this.reembolsos.set(id, monto);
-    this.saldo.set(cliente, this.saldo.get(cliente) + monto);       // MAL: delta, no estado
-    return { reembolsoId: id };
-  }
-}
-
-if (import.meta.main) {
-  const pagos = new PagosIngenuo();
-  const remoto = redQuePierde(pagos, { perderRespuestas: 2 });
-  await compensarConReintentos(() => remoto.reembolsar('S-1', 'ana', 300), { registro: (l) => console.log(`  ${l}`) });
-  console.log(`cobrados 300, reembolsados ${[...pagos.reembolsos.values()].reduce((a, b) => a + b, 0)} · saldo de ana = ${pagos.saldo.get('ana')} (debía quedar en 1000)`);
-}
-```
-
-Salida real de `node f138-compensaciones/error-comun.js` (el uuid cambia):
-
-```text
-  intento 1: timeout: no llegó la respuesta
-  intento 2: timeout: no llegó la respuesta
-  intento 3: {"reembolsoId":"0083d471-36d7-4996-a0a3-99130dddc770"}
-cobrados 300, reembolsados 900 · saldo de ana = 1600 (debía quedar en 1000)
-```
-
-**Diagnóstico visual:** una consulta que agrupe reembolsos por saga (`GROUP BY saga_id HAVING COUNT(*) > 1`) o un panel
-de «reembolsado > cobrado» lo delata. **Arreglo:** las tres reglas de `pagos.js`: clave = `sagaId`, transición de
-estado y lápida.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Qué hace que una compensación sea segura de reintentar?**
-
-**Respuesta modelo:** que sea idempotente y tolerante al desorden. Uso una clave estable, el id de la saga, para que
-todos los reintentos se refieran a la misma compensación; la implemento como transición de estado y no como delta, de
-modo que «dejar el cobro reembolsado» aplicado tres veces tiene el efecto de una; y si me piden compensar algo que aún
-no ocurrió, no fallo: dejo una lápida para rechazar la acción original si llega tarde. La acción también tiene que ser
-idempotente. El coordinador reintenta con backoff y con tope, porque una compensación que no termina deja datos
-inconsistentes, y al agotar los intentos escala a revisión manual. En base de datos lo apoyo con restricciones únicas y
-`UPDATE` condicionados al estado. Y ordeno la saga para que lo que no se puede compensar, como notificar al cliente, vaya
-al final.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Compensar con un `DELETE`.** Evita «deshacer» borrando la fila del cobro: pierdes el historial, contabilidad no
-cuadra, y si el borrado se reintenta después de que otro proceso reinsertó algo con la misma clave, borras lo que no
-era tuyo.
-
-```javascript
-// MAL: la compensación borra la evidencia del cobro.
-await db.query('DELETE FROM cobros WHERE saga_id = $1', [sagaId]);
-
-// BIEN: la compensación es un hecho nuevo y una transición de estado, solo desde COBRADO (pagos.js).
-await db.query("UPDATE cobros SET estado = 'REEMBOLSADO' WHERE saga_id = $1 AND estado = 'COBRADO'", [sagaId]);
-```
-
----
+</details>
 
 ### Event Sourcing con EventStoreDB o MongoDB
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 5 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Implementar un agregado con event sourcing (decidir → eventos → aplicar) y un almacén de eventos sobre MongoDB con concurrencia optimista, y demostrar que el estado se reconstruye de los eventos y que dos escritores con la misma versión no pueden escribir los dos. Lo compruebas c…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Implementar un agregado con event sourcing (decidir → eventos → aplicar) y un almacén de eventos sobre MongoDB con concurrencia optimista, y demostrar que el estado se reconstruye de los eventos y que dos escritores con la misma versión no pueden escribir los dos.**
 
-- MongoDB y el driver `mongodb` (Módulo 15).
-- `Array.prototype.reduce` y objetos inmutables (Módulo 0.3 y Módulo 12).
-- Concurrencia optimista (versión esperada) a nivel de idea.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en event sourcing con eventstoredb o mongodb como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Implementar** un agregado con event sourcing (decidir → eventos → aplicar) y un almacén de eventos sobre **MongoDB**
-con **concurrencia optimista**, y **demostrar** que el estado se reconstruye de los eventos y que dos escritores con la
-misma versión no pueden escribir los dos. Lo compruebas cuando `almacen.test.js` pasa 5 de 5 en memoria y 9 de 9 con
-MongoDB.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja una **libreta de cuenta bancaria** antigua. El banco no escribe «saldo: 285.000» y lo borra cada día: anota
-**cada movimiento** en una línea nueva, numerada, con tinta: «1 · apertura», «2 · depósito 240.000», «3 · depósito
-45.000». El saldo se **calcula** sumando las líneas. Si quieres saber cuánto tenías el martes, sumas hasta la línea del
-martes. Y si dos cajeros intentan escribir a la vez la línea número 4, solo uno puede; el otro tiene que volver a mirar
-la libreta y decidir de nuevo.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     CMD["comando<br/>AgregarLinea"] --> L["leerStream(pedido-P-1)<br/>→ eventos v1..v3, versión 3"]
@@ -1974,63 +1346,85 @@ flowchart LR
     C --> L
 ```
 
-**Texto alternativo:** diagrama de flujo del ciclo de un comando con event sourcing. El comando AgregarLinea lee el
-stream pedido-P-1, que tiene los eventos de la versión 1 a la 3. Se reconstruye el estado aplicando los eventos con
-reduce y se decide: si se rompe una regla, se lanza ReglaDeNegocio; si no, se anexan los nuevos eventos con versión
-esperada 3 en la colección f139_commits de MongoDB, con _id único pedido-P-1@4. Si MongoDB devuelve el error de clave
-duplicada E11000 o la versión no coincide, se produce ConflictoDeConcurrencia y se vuelve a leer y decidir.
+1. Lo normal es guardar **cómo está** algo ahora: «pedido P-1: confirmado, total 285.000». Si cambia, se sobrescribe y
+2. Con **event sourcing** se guarda **lo que pasó**, en orden: «se creó», «se agregó un teclado», «se agregó un mouse»,
+3. Para saber cómo está el pedido, se **repasan** los eventos de principio a fin. Así también puedes saber cómo estaba
+4. Cada pedido tiene su propia lista de eventos (un **stream**), numerada (la **versión**).
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Event Sourcing con EventStoreDB o MongoDB se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Event Sourcing con EventStoreDB o MongoDB | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+Eventos que son filas de una tabla con otro nombre. Evita eventos tipo PedidoActualizado {...todoElEstado }: no dicen qué pasó ni por qué, cada uno repite el estado completo y la historia no se puede leer ni proyectar por intención.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: event sourcing con eventstoredb o mongodb funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - Lo normal es guardar **cómo está** algo ahora: «pedido P-1: confirmado, total 285.000». Si cambia, se sobrescribe y
-  lo anterior se pierde.
 - Con **event sourcing** se guarda **lo que pasó**, en orden: «se creó», «se agregó un teclado», «se agregó un mouse»,
-  «se confirmó». Nunca se borra ni se cambia una línea.
 - Para saber cómo está el pedido, se **repasan** los eventos de principio a fin. Así también puedes saber cómo estaba
-  ayer, o por qué llegó a este estado.
 - Cada pedido tiene su propia lista de eventos (un **stream**), numerada (la **versión**).
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve event sourcing con eventstoredb o mongodb en tu contexto?
+2. ¿Cómo sabrías que event sourcing con eventstoredb o mongodb no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar event sourcing con eventstoredb o mongodb?
 
-- **El agregado** (`pedido.js`) son tres funciones puras: `decidir(estado, comando)` aplica las reglas y devuelve
-  eventos nuevos (o lanza `ReglaDeNegocio`); `aplicar(estado, evento)` devuelve el estado siguiente **sin reglas** (un
-  hecho no se discute); `reconstruir(eventos)` es `eventos.reduce(aplicar, INICIAL)`.
-- **Ciclo de un comando** (`ejecutar`): leer el stream → reconstruir → decidir → `anexar(stream, versionLeída,
-  eventos)`. Si entre la lectura y la escritura otro escribió, el almacén lanza `ConflictoDeConcurrencia` y se repite
-  todo desde la lectura (máximo 3 reintentos).
-- **Almacén en MongoDB** (`almacen-mongo.js`): **un documento por commit** con todos sus eventos. En MongoDB escribir
-  **un documento** es atómico, así que un commit de varios eventos entra entero o no entra, sin transacciones ni replica
-  set. El `_id` es `stream@versiónInicial`: si dos escritores intentan la misma versión, el segundo recibe el error
-  **E11000 duplicate key** (código 11000) y se traduce a `ConflictoDeConcurrencia`.
-- **Posición global** (`posicion`): un contador atómico con `findOneAndUpdate({$inc})` da un orden total para que las
-  proyecciones (ficha 6) lean «todo lo nuevo desde X».
-- **Almacén en memoria** (`almacen-memoria.js`): mismas reglas, para tests sin Docker; `almacen.test.js` ejecuta el
-  **mismo contrato** contra los dos.
-- **Viaje en el tiempo:** `reconstruir(eventos.slice(0, 2))` da el estado tras el evento 2.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **EventStoreDB (hoy KurrentDB 26.1.3) vs MongoDB.** *KurrentDB* (cliente Node `@kurrent/kurrentdb-client` 1.3.3,
-  sucesor de `@eventstore/db-client`) está hecho para esto: streams nativos, escritura con revisión esperada,
-  suscripciones a un stream o a todos (`$all`) con orden global garantizado y proyecciones en el servidor. *MongoDB* es
-  una base de datos general que tu equipo probablemente ya opera; a cambio, el almacén lo escribes tú y su punto débil
-  es el orden global: el contador de `posicion` deja **huecos** si un commit falla después de pedir número y, con
-  escritores concurrentes, un commit con posición 7 puede hacerse visible **antes** que el 6. Una proyección que lee
-  «desde 6» se saltaría el 6. Mitigaciones: un único escritor por almacén, releer una ventana hacia atrás, o leer con
-  *change streams* (requieren replica set). Otras alternativas: PostgreSQL con una tabla de eventos y una secuencia
-  (o Marten/Emmett), o Kafka como log (no sirve para leer un agregado por id).
-- **Snapshots.** Un agregado con 10 000 eventos tarda en reconstruirse: cada N eventos se guarda una foto del estado y
-  se reconstruye desde la foto. Hazlo solo cuando lo midas.
-- **Evolución de eventos.** Los eventos son para siempre. Cambiar su forma exige *upcasting* (convertir versiones
-  viejas al leer) o eventos nuevos (`LineaAgregadaV2`). `aplicar` ignora tipos desconocidos para no romper.
-- **Datos personales.** «Nunca se borra» choca con el derecho al olvido: guarda los datos personales cifrados con una
-  clave por persona y borra la clave (*crypto-shredding*), o fuera del evento.
-- **Cuándo NO usarlo:** CRUD sin reglas ni necesidad de historia (un catálogo), equipos sin experiencia en el patrón
-  (la curva es real) o cuando el único motivo es la auditoría: una tabla de auditoría o el CDC del Módulo 25 son más
-  baratos. Event sourcing brilla cuando la **historia es el negocio** (cuentas, reservas, inventario con trazabilidad).
+#### Construcción guiada
+1. Sin Docker, con el almacén en memoria:
 
-#### 9. CÓDIGO EJECUTABLE
+```bash
+ALMACEN=memoria node f139-event-sourcing/demo.js
+```
 
+**Output esperado** (real):
+
+```text
+almacén: AlmacenEventosMemoria
+  v1 PedidoCreado     {"cliente":"ana"}
+  v2 LineaAgregada    {"sku":"TEC-1","cantidad":2,"precio":120000}
+  v3 LineaAgregada    {"sku":"MOU-1","cantidad":1,"precio":45000}
+  v4 PedidoConfirmado {}
+versión 4 → estado CONFIRMADO, 2 líneas, total 285000
+estado en la v2: total 240000, ABIERTO
+AgregarLinea tras confirmar → ReglaDeNegocio: pedido CONFIRMADO: no admite líneas
+```
+
+2. Con MongoDB:
+
+```bash
+docker compose up -d --wait mongo
+node f139-event-sourcing/demo.js
+docker compose exec mongo mongosh --quiet modulo26 --eval 'db.f139_commits.find({}, {eventos: 0}).sort({posicion: 1})'
+```
+
+**Output esperado:** la demo imprime lo mismo con `almacén: AlmacenEventosMongo` en la primera línea. `mongosh` muestra
+4 documentos con `_id` `pedido-P-1@1` … `pedido-P-1@4`, `desde`/`hasta` iguales en cada uno y `posicion` creciente.
+*(Este paso no se pudo ejecutar en el entorno de redacción, que no tiene MongoDB: está en
+`verificacion/microservicios/pendiente.md`.)*
+
+3. Provoca el conflicto en `mongosh`: `db.f139_commits.insertOne({_id: 'pedido-P-1@4'})`. **Output esperado:** un
+   error `E11000 duplicate key error collection: modulo26.f139_commits index: _id_ dup key: { _id: "pedido-P-1@4" }`
+   (texto del servidor; puede variar ligeramente entre versiones).
+
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS**, **mongodb 7.9.1** (driver oficial) y **MongoDB 9.0.8** (imagen `mongo:9.0.8`).
 
 `f139-event-sourcing/pedido.js`:
@@ -2231,46 +1625,7 @@ try {
 await cerrar();
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Sin Docker, con el almacén en memoria:
-
-```bash
-ALMACEN=memoria node f139-event-sourcing/demo.js
-```
-
-**Output esperado** (real):
-
-```text
-almacén: AlmacenEventosMemoria
-  v1 PedidoCreado     {"cliente":"ana"}
-  v2 LineaAgregada    {"sku":"TEC-1","cantidad":2,"precio":120000}
-  v3 LineaAgregada    {"sku":"MOU-1","cantidad":1,"precio":45000}
-  v4 PedidoConfirmado {}
-versión 4 → estado CONFIRMADO, 2 líneas, total 285000
-estado en la v2: total 240000, ABIERTO
-AgregarLinea tras confirmar → ReglaDeNegocio: pedido CONFIRMADO: no admite líneas
-```
-
-2. Con MongoDB:
-
-```bash
-docker compose up -d --wait mongo
-node f139-event-sourcing/demo.js
-docker compose exec mongo mongosh --quiet modulo26 --eval 'db.f139_commits.find({}, {eventos: 0}).sort({posicion: 1})'
-```
-
-**Output esperado:** la demo imprime lo mismo con `almacén: AlmacenEventosMongo` en la primera línea. `mongosh` muestra
-4 documentos con `_id` `pedido-P-1@1` … `pedido-P-1@4`, `desde`/`hasta` iguales en cada uno y `posicion` creciente.
-*(Este paso no se pudo ejecutar en el entorno de redacción, que no tiene MongoDB: está en
-`verificacion/microservicios/pendiente.md`.)*
-
-3. Provoca el conflicto en `mongosh`: `db.f139_commits.insertOne({_id: 'pedido-P-1@4'})`. **Output esperado:** un
-   error `E11000 duplicate key error collection: modulo26.f139_commits index: _id_ dup key: { _id: "pedido-P-1@4" }`
-   (texto del servidor; puede variar ligeramente entre versiones).
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```javascript
 // Módulo 22 · F139 · Verificación: el MISMO contrato contra el almacén en memoria y contra MongoDB (MONGO_URL).
 // Ejecuta: node --test f139-event-sourcing/almacen.test.js   (MongoDB se OMITE si no responde, salvo EXIGIR_INFRA=1)
@@ -2341,124 +1696,27 @@ mongodb://localhost:27017`; con MongoDB arriba, `ℹ pass 9`.
 
 **Pregunta de comprobación:** ¿por qué `aplicar` no valida reglas y `decidir` sí?
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** un pedido aparece **confirmado por 100** pero con un total de 150: se agregó una línea después de
-confirmar, cosa que el código «prohíbe». **Causa:** el almacén anexa **sin versión esperada** (o con la versión leída al
-escribir, no al decidir). Dos usuarios leen el pedido abierto a la vez; los dos deciden bien con lo que leyeron y los
-dos eventos se guardan.
-
-```javascript
-// Módulo 22 · F139 · Error común: anexar SIN versión esperada («añade al final, sea cual sea el final»).
-// Dos usuarios leen el pedido abierto a la vez: uno confirma y el otro agrega una línea. Los dos «tienen razón» con lo
-// que leyeron, y los dos eventos se guardan: el pedido queda CONFIRMADO con una línea agregada DESPUÉS de confirmar.
-// Ejecuta: node f139-event-sourcing/error-comun.js   (sin infraestructura)
-import { AlmacenEventosMemoria } from './almacen-memoria.js';
-import { decidir, reconstruir, ejecutar } from './pedido.js';
-
-export async function ejecutarSinVersion(almacen, pedidoId, comando) {
-  const { eventos } = await almacen.leerStream(`pedido-${pedidoId}`);
-  const nuevos = decidir(reconstruir(eventos), comando);
-  await new Promise((r) => setTimeout(r, 10));                         // el otro usuario escribe mientras tanto
-  const { version } = await almacen.leerStream(`pedido-${pedidoId}`); // MAL: la versión se lee al ESCRIBIR, no al decidir
-  return almacen.anexar(`pedido-${pedidoId}`, version, nuevos);
-}
-
-async function preparar() {
-  const almacen = new AlmacenEventosMemoria();
-  await ejecutar(almacen, 'P-1', { tipo: 'Crear', cliente: 'ana' });
-  await ejecutar(almacen, 'P-1', { tipo: 'AgregarLinea', sku: 'TEC-1', cantidad: 1, precio: 100 });
-  return almacen;
-}
-const confirmar = { tipo: 'Confirmar' };
-const agregar = { tipo: 'AgregarLinea', sku: 'USB-1', cantidad: 1, precio: 50 };
-
-if (import.meta.main) {
-  let almacen = await preparar();
-  await Promise.all([ejecutarSinVersion(almacen, 'P-1', confirmar), ejecutarSinVersion(almacen, 'P-1', agregar)]);
-  let { eventos } = await almacen.leerStream('pedido-P-1');
-  console.log(`SIN versión esperada: ${eventos.map((e) => e.tipo).join(' → ')}`);
-  console.log(`  estado ${reconstruir(eventos).estado} con total ${reconstruir(eventos).total} (se confirmó por 100)`);
-
-  almacen = await preparar();
-  const resultados = await Promise.allSettled([ejecutar(almacen, 'P-1', confirmar), ejecutar(almacen, 'P-1', agregar)]);
-  ({ eventos } = await almacen.leerStream('pedido-P-1'));
-  console.log(`CON versión esperada: ${eventos.map((e) => e.tipo).join(' → ')}`);
-  for (const r of resultados) if (r.status === 'rejected') console.log(`  el segundo reintentó, releyó y su regla lo frenó → ${r.reason.message}`);
-}
-```
-
-Salida real de `node f139-event-sourcing/error-comun.js`:
-
-```text
-SIN versión esperada: PedidoCreado → LineaAgregada → PedidoConfirmado → LineaAgregada
-  estado CONFIRMADO con total 150 (se confirmó por 100)
-CON versión esperada: PedidoCreado → LineaAgregada → PedidoConfirmado
-  el segundo reintentó, releyó y su regla lo frenó → pedido CONFIRMADO: no admite líneas
-```
-
-**Diagnóstico visual:** lee el stream del agregado y busca eventos que el estado anterior no permitía (una
-`LineaAgregada` después de `PedidoConfirmado`). En MongoDB, dos commits con `desde` solapados o un `_id` que no sigue
-`stream@versión` delatan un almacén sin control de concurrencia. **Arreglo:** la versión esperada es **la que leíste
-para decidir**, y el almacén la hace cumplir con una clave única.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Qué es event sourcing y cómo manejas la concurrencia en un almacén de eventos?**
-
-**Respuesta modelo:** es guardar el estado como la secuencia de eventos que lo produjeron, en lugar de sobrescribir el
-estado actual; el estado se obtiene aplicando los eventos en orden. Me da historia completa, auditoría y la posibilidad
-de construir vistas nuevas repitiendo los eventos. Cada agregado es un stream versionado. Para la concurrencia uso
-control optimista: el comando lee el stream y su versión, decide, y anexa indicando la versión esperada; si otro
-escribió entretanto, el almacén rechaza la escritura y el comando relee y decide otra vez, con un número limitado de
-reintentos. En KurrentDB es la revisión esperada del stream; en MongoDB lo implemento con un documento por commit cuyo
-`_id` es stream más versión, así la clave única hace cumplir la regla y el commit es atómico. Hay que cuidar la
-evolución del esquema de eventos, los snapshots cuando un stream es largo y los datos personales. No lo uso para CRUD
-simple.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Eventos que son filas de una tabla con otro nombre.** Evita eventos tipo `PedidoActualizado {...todoElEstado }`:
-no dicen **qué pasó** ni por qué, cada uno repite el estado completo y la historia no se puede leer ni proyectar por
-intención.
-
-```javascript
-// MAL: «algo cambió»; para saber qué, hay que comparar con el evento anterior.
-{ tipo: 'PedidoActualizado', datos: { estado: 'ABIERTO', lineas: [/* todas */], total: 285000 } }
-
-// BIEN: hechos de negocio con intención y solo los datos del hecho (pedido.js).
-{ tipo: 'LineaAgregada', datos: { sku: 'MOU-1', cantidad: 1, precio: 45000 } }
-```
-
----
+</details>
 
 ### Proyecciones materializadas
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 6 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Construir una proyección que convierte los eventos del almacén en una tabla SQL consultable, con checkpoint en la misma transacción que los cambios, y demostrar que se puede repetir, sobrevive a una caída a mitad de lote y se reconstruye igual desde cero. Lo compruebas cuando pro…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Construir una proyección que convierte los eventos del almacén en una tabla SQL consultable, con checkpoint en la misma transacción que los cambios, y demostrar que se puede repetir, sobrevive a una caída a mitad de lote y se reconstruye igual desde cero.**
 
-- Ficha 5 (event sourcing, posición global).
-- SQL básico: `CREATE TABLE`, `INSERT`, `UPDATE`, `SELECT … GROUP BY` y transacciones `BEGIN`/`COMMIT`/`ROLLBACK`
-  (Módulo 15).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en proyecciones materializadas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Construir** una proyección que convierte los eventos del almacén en una tabla SQL consultable, con **checkpoint en la
-misma transacción** que los cambios, y **demostrar** que se puede repetir, sobrevive a una caída a mitad de lote y se
-reconstruye igual desde cero. Lo compruebas cuando `proyeccion.test.js` pasa 5 de 5.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja el **marcador de un estadio**. Abajo, en la cancha, un árbitro anota cada jugada en su libreta (los eventos).
-Arriba, un operario mira la libreta y **actualiza el marcador** gigante: goles, faltas, tiempo. El público no lee la
-libreta: mira el marcador. El operario pone un **clip** en la última jugada que pasó al marcador; si se distrae, sigue
-desde el clip. Si el marcador se rompe, lo borra y lo rehace leyendo la libreta desde la primera página.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S[("almacén de eventos<br/>(F139: memoria o MongoDB)")] -- "leerDesde(checkpoint, 100)" --> P["ProyeccionResumenPedidos"]
@@ -2470,59 +1728,83 @@ flowchart LR
     Q["consultas: ventas por cliente,<br/>pedidos abiertos…"] --> V
 ```
 
-**Texto alternativo:** diagrama de flujo. La proyección ProyeccionResumenPedidos lee del almacén de eventos de la ficha
-5 los commits posteriores a su checkpoint, en lotes de 100. Por cada commit abre una transacción de SQLite en la que
-hace los INSERT o UPDATE en la tabla resumen_pedidos y actualiza la posición en la tabla checkpoints. La tabla
-resumen_pedidos, con id, cliente, estado, líneas y total, es la vista que usan las consultas, como ventas por cliente o
-pedidos abiertos.
+1. En la ficha 5 guardaste **lo que pasó**. Pero para responder «¿cuánto vendimos a Ana?» tendrías que repasar todos
+2. Una **proyección** es un programa que lee los eventos **una vez** y va llenando una **tabla** pensada para esa
+3. La tabla es una copia **derivada**: si se daña o quieres otra, la borras y la vuelves a llenar desde los eventos.
+4. La proyección recuerda **hasta dónde leyó** (el checkpoint) para continuar desde ahí.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecciones materializadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecciones materializadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+La proyección que consulta otros servicios para completar la vista. Evita que el manejador de un evento haga un fetch al catálogo para traer el nombre del producto: la reconstrucción desde cero hará millones de llamadas, el resultado depende de cuándo reconstruyes (el nombre de hoy, no el del día del evento) y si el catálogo cae, la proyección se p…
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecciones materializadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - En la ficha 5 guardaste **lo que pasó**. Pero para responder «¿cuánto vendimos a Ana?» tendrías que repasar todos
-  los eventos de todos los pedidos cada vez: muy lento.
 - Una **proyección** es un programa que lee los eventos **una vez** y va llenando una **tabla** pensada para esa
-  pregunta.
 - La tabla es una copia **derivada**: si se daña o quieres otra, la borras y la vuelves a llenar desde los eventos.
 - La proyección recuerda **hasta dónde leyó** (el checkpoint) para continuar desde ahí.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecciones materializadas en tu contexto?
+2. ¿Cómo sabrías que proyecciones materializadas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecciones materializadas?
 
-- **`node:sqlite`** viene con Node 26 (SQLite 3.54.1 en 26.13.1): `new DatabaseSync(':memory:')` o un archivo,
-  `db.exec(sql)` y sentencias preparadas `db.prepare(sql).run(...)` / `.get()` / `.all()`. Sin dependencias.
-- **Un manejador por tipo de evento:** `PedidoCreado` → `INSERT`, `LineaAgregada` → suma al total, `PedidoConfirmado`
-  → cambia el estado. Los tipos que no le interesan se ignoran.
-- **Checkpoint atómico:** por cada commit del almacén, `BEGIN` → aplicar sus eventos → `UPDATE checkpoints` →
-  `COMMIT`. Si algo falla, `ROLLBACK` deshace **también** el avance del checkpoint, y la siguiente ejecución repite ese
-  commit completo. Resultado: cada evento afecta la vista **exactamente una vez**.
-- **`ponerseAlDia()`** lee lotes desde el checkpoint hasta que no hay más; se llama en un bucle, con un temporizador o
-  al recibir una notificación.
-- **`reconstruir()`** borra la tabla, pone el checkpoint a 0 y repite todo: así cambias el esquema de la vista o
-  arreglas un bug de la proyección.
-- `INSERT OR IGNORE` es idempotente, pero `total = total + ?` **no**: por eso el checkpoint en la misma transacción no
-  es opcional.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Dónde vive la vista.** Aquí, SQLite en el mismo proceso (simple, ideal para aprender y para vistas locales). En
-  producción, la vista suele estar en la base que mejor responde a la pregunta: PostgreSQL para consultas relacionales,
-  Elasticsearch para búsqueda, Redis para lecturas por clave muy rápidas. Si la vista y el checkpoint están en bases
-  distintas, pierdes la atomicidad y necesitas manejadores idempotentes (por versión del agregado, como en la ficha 7).
-- **Síncrona vs asíncrona.** Proyectar en la misma transacción que se escriben los eventos da lectura inmediata, pero
-  acopla escritura y lectura y una proyección lenta frena los comandos. Asíncrona (esta ficha) desacopla y escala por
-  separado a cambio de **consistencia eventual** (ficha 7).
-- **Orden y huecos.** La proyección confía en que `leerDesde` devuelve en orden de posición. Con el almacén de MongoDB de
-  la ficha 5 y escritores concurrentes, un commit puede hacerse visible después de otro con posición mayor; KurrentDB
-  (`$all`) o change streams evitan el problema. Vigila el **retraso** de la proyección (posición del almacén menos
-  checkpoint) como métrica (Módulo 21).
-- **Reconstrucciones largas.** Con millones de eventos, reconstruir en el sitio deja la vista vacía durante horas:
-  construye la vista nueva **al lado** (`resumen_pedidos_v2`), ponla al día y cambia el tráfico (blue-green de vistas).
-- **Alternativas:** proyecciones del servidor en KurrentDB, vistas materializadas de PostgreSQL (`REFRESH MATERIALIZED
-  VIEW`, que recalcula todo), o Kafka Streams/ksqlDB si los eventos ya están en Kafka.
-- **Cuándo NO:** si una consulta sobre el propio almacén (un índice en MongoDB) basta y es rápida, no añadas una vista
-  que mantener.
+#### Construcción guiada
+1. Sin Docker:
 
-#### 9. CÓDIGO EJECUTABLE
+```bash
+ALMACEN=memoria node f140-proyecciones/demo.js
+```
 
+**Output esperado** (real):
+
+```text
+commits aplicados: 8 · checkpoint: 8
+┌─────────┬───────┬─────────┬──────────────┬────────┬────────┐
+│ (index) │ id    │ cliente │ estado       │ lineas │ total  │
+├─────────┼───────┼─────────┼──────────────┼────────┼────────┤
+│ 0       │ 'P-1' │ 'ana'   │ 'CONFIRMADO' │ 1      │ 240000 │
+│ 1       │ 'P-2' │ 'luis'  │ 'CANCELADO'  │ 1      │ 45000  │
+│ 2       │ 'P-3' │ 'ana'   │ 'ABIERTO'    │ 1      │ 27000  │
+└─────────┴───────┴─────────┴──────────────┴────────┴────────┘
+ventas confirmadas por cliente: [{"cliente":"ana","pedidos":1,"total":240000}]
+llega 1 evento nuevo → aplicados: 1 · checkpoint: 9
+sin eventos nuevos  → aplicados: 0
+reconstruir desde 0 → aplicados: 9 · misma tabla: [{"id":"P-1","estado":"CONFIRMADO","total":240000},{"id":"P-2","estado":"CANCELADO","total":45000},{"id":"P-3","estado":"CONFIRMADO","total":27000}]
+```
+
+**Captura comentada:** «ventas confirmadas por cliente» es una pregunta que el agregado de la ficha 5 no sabe
+responder (solo conoce un pedido a la vez): la vista sí. El segundo `ponerseAlDia()` aplica solo el evento nuevo y el
+tercero, ninguno.
+
+2. Con MongoDB: `docker compose up -d --wait mongo` y `node f140-proyecciones/demo.js`. **Output esperado:** la misma
+   salida (la demo borra la base `modulo26_f140` al empezar). *(Pendiente de ejecutar con MongoDB: ver
+   `verificacion/microservicios/pendiente.md`.)*
+3. Persiste la vista en un archivo: en `demo.js`, cambia `new ProyeccionResumenPedidos(almacen)` por
+   `new ProyeccionResumenPedidos(almacen, { archivo: 'vista.db' })`, ejecuta y abre `sqlite3 vista.db 'SELECT * FROM
+   checkpoints'` (si tienes la CLI de SQLite). **Output esperado:** `resumen_pedidos|9`.
+
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS** con **`node:sqlite`** integrado (SQLite 3.54.1); lee del almacén de la ficha 5
 (**mongodb 7.9.1** con **MongoDB 9.0.8**, o en memoria).
 
@@ -2634,44 +1916,7 @@ console.log(`reconstruir desde 0 → aplicados: ${await vista.reconstruir()} · 
 await cerrar();
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Sin Docker:
-
-```bash
-ALMACEN=memoria node f140-proyecciones/demo.js
-```
-
-**Output esperado** (real):
-
-```text
-commits aplicados: 8 · checkpoint: 8
-┌─────────┬───────┬─────────┬──────────────┬────────┬────────┐
-│ (index) │ id    │ cliente │ estado       │ lineas │ total  │
-├─────────┼───────┼─────────┼──────────────┼────────┼────────┤
-│ 0       │ 'P-1' │ 'ana'   │ 'CONFIRMADO' │ 1      │ 240000 │
-│ 1       │ 'P-2' │ 'luis'  │ 'CANCELADO'  │ 1      │ 45000  │
-│ 2       │ 'P-3' │ 'ana'   │ 'ABIERTO'    │ 1      │ 27000  │
-└─────────┴───────┴─────────┴──────────────┴────────┴────────┘
-ventas confirmadas por cliente: [{"cliente":"ana","pedidos":1,"total":240000}]
-llega 1 evento nuevo → aplicados: 1 · checkpoint: 9
-sin eventos nuevos  → aplicados: 0
-reconstruir desde 0 → aplicados: 9 · misma tabla: [{"id":"P-1","estado":"CONFIRMADO","total":240000},{"id":"P-2","estado":"CANCELADO","total":45000},{"id":"P-3","estado":"CONFIRMADO","total":27000}]
-```
-
-**Captura comentada:** «ventas confirmadas por cliente» es una pregunta que el agregado de la ficha 5 no sabe
-responder (solo conoce un pedido a la vez): la vista sí. El segundo `ponerseAlDia()` aplica solo el evento nuevo y el
-tercero, ninguno.
-
-2. Con MongoDB: `docker compose up -d --wait mongo` y `node f140-proyecciones/demo.js`. **Output esperado:** la misma
-   salida (la demo borra la base `modulo26_f140` al empezar). *(Pendiente de ejecutar con MongoDB: ver
-   `verificacion/microservicios/pendiente.md`.)*
-3. Persiste la vista en un archivo: en `demo.js`, cambia `new ProyeccionResumenPedidos(almacen)` por
-   `new ProyeccionResumenPedidos(almacen, { archivo: 'vista.db' })`, ejecuta y abre `sqlite3 vista.db 'SELECT * FROM
-   checkpoints'` (si tienes la CLI de SQLite). **Output esperado:** `resumen_pedidos|9`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 ```javascript
 // Módulo 22 · F140 · Verificación: la proyección coincide con el agregado, se puede repetir, sobrevive a caídas y
 // se reconstruye igual. Ejecuta: node --test f140-proyecciones/proyeccion.test.js   (sin infraestructura)
@@ -2736,126 +1981,27 @@ node --test f140-proyecciones/proyeccion.test.js
 **Pregunta de comprobación:** si la proyección guardara el checkpoint por **evento** y no por **commit**, ¿qué
 cambiaría en la caída a mitad de un commit con dos eventos?
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** después de un reinicio del proceso, algunos totales de la vista están **inflados**; reconstruir desde cero
-los arregla, hasta el siguiente reinicio. **Causa:** el checkpoint se guarda al final del lote, fuera de la transacción
-de los cambios: si el proceso muere en medio, al volver repite eventos ya aplicados y los `UPDATE … + ?` suman dos veces.
-
-```javascript
-// Módulo 22 · F140 · Error común: guardar el checkpoint FUERA de la transacción (o después, «cuando termine el lote»).
-// Si el proceso muere entre aplicar los eventos y guardar el checkpoint, al volver repite eventos ya aplicados y los
-// totales se SUMAN dos veces. No hay error: la vista simplemente miente.
-// Ejecuta: node f140-proyecciones/error-comun.js   (sin infraestructura)
-import { AlmacenEventosMemoria } from '../f139-event-sourcing/almacen-memoria.js';
-import { ejecutar } from '../f139-event-sourcing/pedido.js';
-import { ProyeccionResumenPedidos } from './proyeccion.js';
-
-export class ProyeccionIngenua extends ProyeccionResumenPedidos {
-  async ponerseAlDia() {
-    const commits = await this.almacen.leerDesde(this.checkpoint(), 100);
-    for (const commit of commits) {
-      for (const evento of commit.eventos) { this.alAplicar(evento); this.aplicar(commit.stream.replace(/^pedido-/, ''), evento); }
-    }
-    // MAL: el checkpoint se guarda al final, en otra «transacción»; si algo cae antes, todo lo anterior se repetirá
-    if (commits.length) this.sql.guardarCheckpoint.run(commits.at(-1).posicion, this.nombre);
-    return commits.length;
-  }
-}
-
-export async function escenario(Clase) {
-  const almacen = new AlmacenEventosMemoria();
-  await ejecutar(almacen, 'P-1', { tipo: 'Crear', cliente: 'ana' });
-  await ejecutar(almacen, 'P-1', { tipo: 'AgregarLinea', sku: 'A', cantidad: 1, precio: 100 });
-  await ejecutar(almacen, 'P-1', { tipo: 'AgregarLinea', sku: 'B', cantidad: 1, precio: 50 });
-  let caidas = 1;
-  const vista = new Clase(almacen, {
-    alAplicar: (e) => { if (e.datos.sku === 'B' && caidas-- > 0) throw new Error('el proceso murió'); },
-  });
-  await vista.ponerseAlDia().catch((e) => e);       // 1.ª ejecución: muere al procesar la línea B
-  try { await vista.ponerseAlDia(); } catch {}      // reinicio: sigue desde el checkpoint guardado
-  return vista.consultar("SELECT total FROM resumen_pedidos WHERE id = 'P-1'")[0]?.total;
-}
-
-if (import.meta.main) {
-  console.log(`checkpoint fuera de la transacción → total de P-1 = ${await escenario(ProyeccionIngenua)} (debía ser 150)`);
-  console.log(`checkpoint en la misma transacción → total de P-1 = ${await escenario(ProyeccionResumenPedidos)}`);
-}
-```
-
-Salida real de `node f140-proyecciones/error-comun.js`:
-
-```text
-checkpoint fuera de la transacción → total de P-1 = 250 (debía ser 150)
-checkpoint en la misma transacción → total de P-1 = 150
-```
-
-**Diagnóstico visual:** compara la vista con la verdad: para unos cuantos ids, `reconstruir(leerStream(id))` contra la
-fila de la vista (el primer test lo hace). Si difieren solo en sumas, es repetición de eventos. **Arreglo:** checkpoint
-en la misma transacción que los cambios, o manejadores idempotentes por versión si la vista y el checkpoint no pueden
-compartir transacción.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Cómo garantizas que una proyección no aplica un evento dos veces ni se salta ninguno?**
-
-**Respuesta modelo:** con un checkpoint guardado de forma atómica con los cambios de la vista. La proyección lee los
-eventos en orden global desde su última posición y, por cada commit o lote, abre una transacción en la base de la
-vista, aplica los cambios y actualiza la posición, y confirma. Si muere a la mitad, la transacción se deshace entera,
-incluida la posición, y al volver repite ese lote: cada evento se aplica exactamente una vez sobre la vista. Si la vista
-está en una base sin transacciones o distinta de donde guardo la posición, hago los manejadores idempotentes, por
-ejemplo ignorando eventos con versión menor o igual a la ya aplicada. Para no saltarme eventos necesito un orden global
-fiable del almacén, cosa que KurrentDB da con `$all` y que en MongoDB hay que cuidar. Mido el retraso de la proyección y
-puedo reconstruirla desde cero, idealmente en una tabla paralela.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**La proyección que consulta otros servicios para completar la vista.** Evita que el manejador de un evento haga un
-`fetch` al catálogo para traer el nombre del producto: la reconstrucción desde cero hará millones de llamadas, el
-resultado depende de **cuándo** reconstruyes (el nombre de hoy, no el del día del evento) y si el catálogo cae, la
-proyección se para.
-
-```javascript
-// MAL: la vista depende de otro servicio en el momento de proyectar.
-if (tipo === 'LineaAgregada') {
-  const { nombre } = await (await fetch(`${CATALOGO}/productos/${datos.sku}`)).json();
-  this.sql.linea.run(datos.cantidad * datos.precio, nombre, id);
-}
-
-// BIEN: el evento ya trae lo que la vista necesita (o la vista proyecta también los eventos del catálogo).
-if (tipo === 'LineaAgregada') this.sql.linea.run(datos.cantidad * datos.precio, id);
-```
-
----
+</details>
 
 ### CQRS
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 22, Lección 7 de 7 · Fase 2.
+#### ► DE QUÉ TRATA
+Separar en un servicio NestJS el lado de escritura (comandos que validan reglas y emiten eventos) del lado de lectura (consultas sobre un modelo desnormalizado que se actualiza con esos eventos), explicar la consistencia eventual que aparece entre ambos y resolver el «leer lo que…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Separar en un servicio NestJS el lado de escritura (comandos que validan reglas y emiten eventos) del lado de lectura (consultas sobre un modelo desnormalizado que se actualiza con esos eventos), explicar la consistencia eventual que aparece entre ambos y resolver el «leer lo que acabo de escribir» con una versión mínima.**
 
-- Fichas 3 (`CommandBus`, `EventBus`), 5 (eventos versionados) y 6 (proyecciones).
-- NestJS (Módulo 14).
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en cqrs como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Separar** en un servicio NestJS el lado de escritura (comandos que validan reglas y emiten eventos) del lado de
-lectura (consultas sobre un modelo desnormalizado que se actualiza con esos eventos), **explicar** la consistencia
-eventual que aparece entre ambos y **resolver** el «leer lo que acabo de escribir» con una versión mínima. Lo
-compruebas cuando `cqrs.test.js` pasa 5 de 5.
-
-#### 4. ANALOGÍA VISUAL
-
-Dibuja un **restaurante** con dos ventanillas. En la de **pedidos** (comandos) un mesero toma tu orden, revisa que el
-plato exista y que haya ingredientes, y te da un número: no te muestra la carta. En la de **pantalla de turnos**
-(consultas) ves los platos listos y en preparación, en grande, ordenados para leerlos de un vistazo. La pantalla se
-actualiza **unos segundos después** de que la cocina avisa. Si acabas de pedir y miras la pantalla en el mismo
-instante, tu número todavía no sale: no es que se perdió, es que la pantalla va un poco atrás.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph W["escritura (comandos)"]
@@ -2870,59 +2016,48 @@ flowchart LR
     H -. "devuelve solo la versión (2)" .-> C1
 ```
 
-**Texto alternativo:** diagrama de CQRS. En el lado de escritura, CommandBus ejecuta CambiarPrecio; su manejador valida
-que el producto exista y que la subida no pase del 50 % y guarda el evento en AlmacenProductos, y devuelve solo la
-versión nueva. El manejador publica PrecioCambiado versión 2 en el EventBus. En el lado de lectura, ProyeccionCatalogo,
-un manejador de eventos asíncrono, actualiza CatalogoLectura, con fichas desnormalizadas. QueryBus ejecuta VerProducto
-con un id y una versión mínima, y su manejador lee solo de CatalogoLectura.
+1. Un programa hace dos tipos de cosas: **cambiar** datos («sube el precio») y **mostrar** datos («lista el catálogo
+2. Lo que se necesita para cambiar bien (reglas, versiones) no es lo mismo que para mostrar rápido (listas ordenadas,
+3. **CQRS** (separación de responsabilidades entre comandos y consultas) usa **dos modelos**: uno para escribir y otro
+4. El precio a pagar: el modelo de lectura se entera **un poco después**. Hay que diseñar las pantallas para eso.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| CQRS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar CQRS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+El comando que devuelve la vista leyendo el modelo de lectura. Evita que CambiarPrecio termine con return this.queryBus.execute(new VerProducto(id)): devolverá el dato viejo (la proyección aún no corrió), y si para «arreglarlo» haces la proyección síncrona dentro del comando, acoplas los dos lados y pierdes lo que CQRS te daba.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cqrs funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
 - Un programa hace dos tipos de cosas: **cambiar** datos («sube el precio») y **mostrar** datos («lista el catálogo
-  barato»).
 - Lo que se necesita para cambiar bien (reglas, versiones) no es lo mismo que para mostrar rápido (listas ordenadas,
-  datos juntos).
 - **CQRS** (separación de responsabilidades entre comandos y consultas) usa **dos modelos**: uno para escribir y otro
-  para leer, conectados por eventos.
 - El precio a pagar: el modelo de lectura se entera **un poco después**. Hay que diseñar las pantallas para eso.
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cqrs en tu contexto?
+2. ¿Cómo sabrías que cqrs no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cqrs?
 
-- **Comandos** (`escritura.ts`): `CrearProducto` y `CambiarPrecio` extienden `Command<number>`; su manejador lee el
-  modelo de escritura (solo lo necesario para decidir), valida reglas, anexa el evento con versión esperada, lo publica
-  y **devuelve la versión**, no la ficha.
-- **Consultas** (`lectura.ts`): `ListarCatalogo` y `VerProducto` extienden `Query<R>`; sus `@QueryHandler` solo leen
-  `CatalogoLectura` y no validan nada.
-- **Proyección:** `@EventsHandler(ProductoCreado, PrecioCambiado)` actualiza la ficha desnormalizada (precio,
-  precio anterior, número de cambios, versión). Ignora eventos con versión menor o igual a la que ya tiene: es
-  idempotente frente a duplicados (ficha 2) y a reenvíos.
-- **Consistencia eventual:** la proyección corre después (aquí, 30 ms simulados). Una consulta justo después del
-  comando ve el dato viejo.
-- **Read-your-writes:** el comando devuelve la versión y la consulta acepta `versionMinima`: espera (con tope de 1 s) a
-  que la vista la alcance. Otras formas: devolver el dato calculado en la respuesta del comando (optimista en la
-  interfaz) o leer del lado de escritura solo para el propio usuario.
-- **Reconstrucción:** como en la ficha 6, la vista se puede borrar y rehacer repitiendo los eventos.
+</details>
 
-#### 8. EXPLICACIÓN MAESTRA
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-- **Niveles de CQRS.** (1) Mismos datos, clases separadas para comandos y consultas: casi gratis, mejora el diseño.
-  (2) Dos modelos en la misma base (tablas de lectura actualizadas en la misma transacción): sin consistencia eventual.
-  (3) Dos bases y eventos entre ellas (este laboratorio, con event sourcing o sin él): escalas lectura y escritura por
-  separado, eliges la tecnología de cada lado, pero aceptas consistencia eventual, más piezas y proyecciones que operar.
-  Sube de nivel solo cuando el anterior duela.
-- **CQRS sin event sourcing** es perfectamente válido (el lado de escritura puede ser un CRUD con outbox). **Event
-  sourcing casi siempre necesita CQRS**, porque el almacén de eventos no sabe responder consultas.
-- **Diseño de la interfaz.** La consistencia eventual se esconde con versiones mínimas, respuestas optimistas, mensajes
-  «procesando» y notificaciones (WebSocket) cuando la vista se actualiza. Ignorarla produce reintentos del usuario
-  (error común).
-- **Alternativas:** un CRUD clásico con índices y réplicas de lectura de la base (las réplicas también tienen retraso);
-  cachés de lectura (Redis) invalidadas por eventos; GraphQL con *resolvers* que leen vistas.
-- **Cuándo NO usarlo:** la mayoría de servicios CRUD con pocas reglas y lecturas parecidas a las escrituras. CQRS en
-  todo el sistema es un anti-patrón; se aplica en el **bounded context** donde lectura y escritura tienen necesidades
-  realmente distintas (catálogo con millones de lecturas y pocos cambios, tableros de operación).
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 Versiones: **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **@nestjs/core 12.5.1**, **@nestjs/cqrs 12.1.3** y
 **@nestjs/testing 12.5.1** (compilado con el `tsconfig.json` de la ficha 3).
 
@@ -3096,184 +2231,4 @@ try { await comandos.execute(new CambiarPrecio('MOU-1', 90000)); } catch (e) { c
 await app.close();
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Compila y ejecuta (no necesita Docker):
-
-```bash
-npm run build
-node dist/f141-cqrs/src/main.js
-```
-
-**Output esperado** (real):
-
-```text
-justo después de crear, catálogo: 0 productos
-100 ms después, hasta 50000: ["USB-1=9000","MOU-1=45000"]
-CambiarPrecio devolvió la versión 2 (un comando no devuelve la ficha)
-lectura inmediata  : {"id":"TEC-1","nombre":"Teclado","precio":120000,"precioAnterior":null,"cambios":0,"version":1}
-con versionMinima=2: {"id":"TEC-1","nombre":"Teclado","precio":99000,"precioAnterior":120000,"cambios":1,"version":2}
-regla del lado de escritura → subida mayor al 50 % (45000 → 90000)
-```
-
-**Captura comentada:** la primera línea es la consistencia eventual en estado puro: los tres comandos terminaron y la
-vista todavía está vacía. La «lectura inmediata» devuelve la versión 1 (precio viejo); con `versionMinima=2` la consulta
-espera unos milisegundos y devuelve el precio nuevo con su historia (`precioAnterior`, `cambios`).
-
-2. Cambia `retrasoMs = 30` por `retrasoMs = 0` en `lectura.ts`, recompila y ejecuta. **Output esperado:** la primera
-   línea sigue diciendo `0 productos`: aunque el retraso sea 0, el manejador de eventos es asíncrono (`await`) y la
-   consulta llega antes. La consistencia eventual no desaparece bajando el retraso.
-3. Ejecuta el error común: `node dist/f141-cqrs/src/error-comun.js` (salida en el punto 12).
-
-#### 11. VERIFICACIÓN
-
-```typescript
-// Módulo 22 · F141 · Verificación de CQRS con @nestjs/cqrs 12.1.3 (sin infraestructura).
-// Ejecuta: npm run build && node --test dist/f141-cqrs/src/cqrs.test.js
-import 'reflect-metadata';
-import { test, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
-import { Test } from '@nestjs/testing';
-import type { TestingModule } from '@nestjs/testing';
-import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
-import { setTimeout as esperar } from 'node:timers/promises';
-import { CatalogoModule } from './app.module.js';
-import { CrearProducto, CambiarPrecio, PrecioCambiado, AlmacenProductos } from './escritura.js';
-import { ListarCatalogo, VerProducto, CatalogoLectura } from './lectura.js';
-
-let app: TestingModule, comandos: CommandBus, consultas: QueryBus;
-beforeEach(async () => {
-  app = await Test.createTestingModule({ imports: [CatalogoModule] }).compile();
-  await app.init();
-  comandos = app.get(CommandBus); consultas = app.get(QueryBus);
-});
-afterEach(() => app.close());
-
-test('el comando devuelve solo la versión; la consulta devuelve la ficha desnormalizada', async () => {
-  assert.equal(await comandos.execute(new CrearProducto('A', 'Teclado', 100)), 1);
-  assert.equal(await comandos.execute(new CambiarPrecio('A', 120)), 2);
-  const ficha = await consultas.execute(new VerProducto('A', 2));
-  assert.deepEqual(ficha, { id: 'A', nombre: 'Teclado', precio: 120, precioAnterior: 100, cambios: 1, version: 2 });
-});
-
-test('consistencia eventual: justo después del comando la lectura todavía no lo ve', async () => {
-  await comandos.execute(new CrearProducto('A', 'Teclado', 100));
-  assert.equal(await consultas.execute(new VerProducto('A')), null);
-  await esperar(80);
-  assert.equal((await consultas.execute(new VerProducto('A')))?.precio, 100);
-});
-
-test('las reglas viven en el lado de escritura y no tocan el de lectura', async () => {
-  await comandos.execute(new CrearProducto('A', 'Teclado', 100));
-  await assert.rejects(comandos.execute(new CambiarPrecio('A', 1000)), /subida mayor al 50 %/);
-  await assert.rejects(comandos.execute(new CrearProducto('B', 'Gratis', 0)), /positivo/);
-  await esperar(80);
-  assert.equal(app.get(AlmacenProductos).leer('A').version, 1);
-  assert.equal((await consultas.execute(new ListarCatalogo())).length, 1);
-});
-
-test('la proyección es idempotente: un evento repetido no cuenta dos cambios', async () => {
-  await comandos.execute(new CrearProducto('A', 'Teclado', 100));
-  await comandos.execute(new CambiarPrecio('A', 110));
-  app.get(EventBus).publish(new PrecioCambiado('A', 2, 100, 110)); // el broker lo entregó dos veces
-  await esperar(100);
-  assert.equal((await consultas.execute(new VerProducto('A')))?.cambios, 1);
-});
-
-test('el modelo de lectura se puede borrar y rehacer desde los eventos del de escritura', async () => {
-  await comandos.execute(new CrearProducto('A', 'Teclado', 100));
-  await comandos.execute(new CambiarPrecio('A', 90));
-  await esperar(80);
-  const antes = await consultas.execute(new VerProducto('A'));
-  const lectura = app.get(CatalogoLectura);
-  lectura.fichas.clear(); lectura.retrasoMs = 0;
-  for (const eventos of app.get(AlmacenProductos).streams.values()) for (const e of eventos) app.get(EventBus).publish(e);
-  assert.deepEqual(await consultas.execute(new VerProducto('A', 2)), antes);
-});
-```
-
-```bash
-npm run build && node --test dist/f141-cqrs/src/cqrs.test.js
-```
-
-**Output esperado:** `ℹ tests 5` y `ℹ pass 5`.
-
-**Pregunta de comprobación:** ¿por qué el test de idempotencia publica un `PrecioCambiado` con versión 2 a mano y
-espera que `cambios` siga en 1?
-
-#### 12. ERROR COMÚN
-
-**Síntoma:** usuarios que cambian un precio y ven el viejo en la pantalla siguiente; algunos lo vuelven a enviar y el
-historial muestra cambios duplicados. **Causa:** la pantalla trata el lado de lectura como si fuera inmediato.
-
-```typescript
-// Módulo 22 · F141 · Error común: tratar el lado de lectura como si fuera inmediato. La pantalla guarda el precio y
-// enseguida lo vuelve a leer: ve el VIEJO, cree que falló y lo envía otra vez (o muestra un dato falso).
-// Ejecuta: npm run build && node dist/f141-cqrs/src/error-comun.js
-import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { setTimeout as esperar } from 'node:timers/promises';
-import { CatalogoModule } from './app.module.js';
-import { CrearProducto, CambiarPrecio } from './escritura.js';
-import { VerProducto } from './lectura.js';
-
-const app = await NestFactory.createApplicationContext(CatalogoModule, { logger: false });
-const comandos = app.get(CommandBus), consultas = app.get(QueryBus);
-await comandos.execute(new CrearProducto('TEC-1', 'Teclado', 100));
-await esperar(100);
-
-// MAL: escribir y leer sin pedir la versión que acabas de escribir.
-await comandos.execute(new CambiarPrecio('TEC-1', 140));
-const vista = await consultas.execute(new VerProducto('TEC-1'));
-console.log(`MAL  → guardé 140 y la pantalla muestra ${vista?.precio}`);
-try { await comandos.execute(new CambiarPrecio('TEC-1', 140)); console.log('       el usuario lo reintenta: segundo cambio aceptado, 2 eventos para un solo cambio real'); }
-catch (e) { console.log(`       reintento → ${(e as Error).message}`); }
-
-// BIEN: el comando devuelve la versión y la consulta espera a que la vista la alcance (read-your-writes).
-const version = await comandos.execute(new CambiarPrecio('TEC-1', 150));
-const buena = await consultas.execute(new VerProducto('TEC-1', version));
-console.log(`BIEN → guardé 150 (versión ${version}) y la pantalla muestra ${buena?.precio}`);
-await app.close();
-```
-
-Salida real de `node dist/f141-cqrs/src/error-comun.js`:
-
-```text
-MAL  → guardé 140 y la pantalla muestra 100
-       el usuario lo reintenta: segundo cambio aceptado, 2 eventos para un solo cambio real
-BIEN → guardé 150 (versión 4) y la pantalla muestra 150
-```
-
-**Diagnóstico visual:** en las trazas (Módulo 21), una petición de escritura seguida a pocos milisegundos de una de
-lectura del mismo recurso que devuelve una versión menor; en los datos, eventos idénticos consecutivos del mismo
-usuario. **Arreglo:** read-your-writes con `versionMinima`, respuesta optimista en la interfaz, o mostrar «guardado,
-actualizando…» hasta que la vista alcance la versión.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-**¿Qué es CQRS, qué problema resuelve y qué te cuesta?**
-
-**Respuesta modelo:** CQRS separa el modelo que procesa comandos, que cambian el estado y aplican reglas, del modelo
-que responde consultas. Resuelve el conflicto entre lo que necesita la escritura, que es consistencia, invariantes y
-concurrencia, y lo que necesita la lectura, que son vistas desnormalizadas, rápidas y quizá en otra tecnología, y
-permite escalar cada lado por separado. En su forma ligera son solo clases separadas sobre los mismos datos; en su
-forma completa son dos almacenes unidos por eventos, a menudo con event sourcing en la escritura. Lo que cuesta es la
-consistencia eventual entre los dos lados, más infraestructura, proyecciones que operar y reconstruir, y manejadores
-idempotentes. La consistencia eventual la gestiono devolviendo la versión en el comando y dejando que la consulta
-espere esa versión, o con respuestas optimistas en la interfaz. Lo aplico solo donde lectura y escritura son muy
-distintas, no en todo el sistema.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El comando que devuelve la vista leyendo el modelo de lectura.** Evita que `CambiarPrecio` termine con
-`return this.queryBus.execute(new VerProducto(id))`: devolverá el dato **viejo** (la proyección aún no corrió), y si
-para «arreglarlo» haces la proyección síncrona dentro del comando, acoplas los dos lados y pierdes lo que CQRS te daba.
-
-```typescript
-// MAL: el comando lee la vista, que todavía no se ha actualizado.
-async execute({ id, precio }: CambiarPrecio) { /* … */ this.eventos.publish(evento); return this.consultas.execute(new VerProducto(id)); }
-
-// BIEN: el comando devuelve la versión; quien necesite la ficha la pide con versionMinima (escritura.ts y lectura.ts).
-async execute({ id, precio }: CambiarPrecio) { /* … */ this.eventos.publish(evento); return evento.version; }
-```
+</details>

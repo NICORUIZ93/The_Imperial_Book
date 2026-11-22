@@ -4,26 +4,26 @@ Este capítulo enseña a reconocer la época de un proyecto, comprobar compatibi
 
 ## Aprende construyendo
 
+
 ### Tema 1: Reconocer la versión y la arquitectura de un proyecto · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás identificar la versión real de Angular, Node.js y TypeScript de un proyecto, y distinguir código heredado de una práctica vigente.
 
-**Conocimiento previo:** terminal, `package.json`, componentes standalone y ejecución de scripts con Node.js.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás identificar la versión real de Angular, Node.js y TypeScript de un proyecto, y distinguir código heredado de una práctica vigente.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Caso real:** recibes un panel de operaciones que usa `NgModule`, Zone.js y APIs deprecadas. Antes de “modernizarlo” necesitas saber qué versión ejecuta, qué versiones soporta y qué migraciones faltan. Adivinar por la apariencia del código puede romper el build.
+#### ► LA ANALOGÍA
+Piensa en reconocer la versión y la arquitectura de un proyecto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** AngularJS 1.x y Angular 2+ son proyectos distintos. Dentro de Angular moderno también existen fronteras relevantes: Ivy fue predeterminado desde Angular 9; los componentes standalone aparecieron después; Signals y el control de flujo moderno cambiaron la forma recomendada de escribir aplicaciones. Angular 22 es la línea activa en julio de 2026, pero un proyecto puede estar legítimamente en una línea LTS anterior.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Una versión semántica tiene tres números: mayor, menor y parche. Un cambio mayor puede retirar APIs; uno menor añade capacidades compatibles; un parche corrige fallos. La versión del CLI, `@angular/core`, Node.js y TypeScript forma una **matriz de compatibilidad**: no basta actualizar un solo paquete.
-
-**Analogía:** una aplicación Angular es un tren. `@angular/core`, CLI, TypeScript y Node.js son vagones acoplados; cambiar uno por un modelo incompatible puede impedir que todo el tren avance.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
   P["package.json: core y CLI"] --> M["tabla de compatibilidad"]
@@ -34,9 +34,52 @@ flowchart TD
   D -->|"no"| FIX["actualizar la incompatible"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Reconocer la versión y la arquitectura de un proyecto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una **carpeta vacía**, crea el ejemplo independiente `ejemplo-version-angular`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Reconocer la versión y la arquitectura de un proyecto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses reconocer la versión y la arquitectura de un proyecto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: reconocer la versión y la arquitectura de un proyecto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Reconocer la versión y la arquitectura de un proyecto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve reconocer la versión y la arquitectura de un proyecto en tu contexto?
+2. ¿Cómo sabrías que reconocer la versión y la arquitectura de un proyecto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar reconocer la versión y la arquitectura de un proyecto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+  P["package.json: core y CLI"] --> M["tabla de compatibilidad"]
+  N["node --version"] --> M
+  T["TypeScript"] --> M
+  M --> D{"¿soportada?"}
+  D -->|"sí"| OK["continuar"]
+  D -->|"no"| FIX["actualizar la incompatible"]
+```
 
 ```bash
 mkdir ejemplo-version-angular
@@ -45,10 +88,6 @@ npm init -y
 npm install --save-dev @angular/cli@22
 npx ng version
 ```
-
-`npm init -y` crea `package.json`; `--save-dev` registra el CLI como herramienta de desarrollo; `npx` ejecuta la copia local y evita mezclarla con un CLI global. La salida debe mostrar Angular CLI 22, además de Node.js y el sistema operativo.
-
-Guarda `clasificar-version.mjs`:
 
 ```javascript
 // La función clasifica la línea mayor; no intenta adivinar compatibilidad.
@@ -65,58 +104,69 @@ console.log(estadoAngular(22));
 node clasificar-version.mjs
 ```
 
-`node` es el comando que ejecuta el archivo `.mjs` con el runtime de Node.js.
-
-**Resultado esperado:** `activo en julio de 2026`.
-
-**Fallo deliberado:** cambia `@angular/cli@22` por una versión inexistente como `@angular/cli@999`. npm responderá `ETARGET`; diagnostica que el registro no contiene esa versión y restaura una versión publicada.
-
-#### Paso 5 · Práctica guiada
-
-Ejecuta `npm view @angular/core version` y compara el resultado con `npx ng version`. **Pista:** una consulta muestra lo más reciente del registro; la otra muestra lo instalado en tu proyecto. No son necesariamente iguales.
-
-#### Paso 6 · Práctica independiente
-
-Abre un proyecto Angular real, registra sus cuatro versiones relevantes y comprueba la combinación en la tabla oficial. Decide si está soportado sin actualizar nada todavía.
-
-#### Paso 7 · Cierre
-
-Ya puedes separar “última versión” de “versión instalada y soportada”. El siguiente tema convierte esa observación en un plan seguro.
-
-**Errores comunes:** usar un CLI global distinto del local; asumir que “más nuevo” siempre significa compatible; actualizar `@angular/core` sin el CLI; confundir AngularJS con Angular.
-
-**Fuente oficial:** [Angular — Versioning and releases](https://angular.dev/reference/releases) y [Angular — Version compatibility](https://angular.dev/reference/versions).
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Inventaría en el panel las versiones instaladas, el bootstrap y las rutas. Registra qué partes usan NgModules y qué partes son standalone antes de preparar una migración reproducible.
-
-**Límites y decisión de uso:** La versión declarada en package.json expresa un rango; no demuestra qué quedó instalado. Contrasta el lockfile y la herramienta del proyecto antes de elegir migraciones. Reconocer standalone tampoco prueba que todos los providers tengan alcance correcto.
+</details>
 
 ### Tema 2: Leer la guía de actualización antes de modificar archivos · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás producir un inventario de migración, ejecutar una simulación y distinguir cambios automáticos de decisiones manuales.
 
-**Prerrequisitos:** tema anterior, Git, npm y un proyecto Angular que compile antes de migrar.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás producir un inventario de migración, ejecutar una simulación y distinguir cambios automáticos de decisiones manuales.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Caso profesional:** un equipo debe actualizar una aplicación sin bloquear entregas. La migración necesita una línea base verde, un commit recuperable y una lista de deprecaciones; ejecutar comandos sin esa evidencia mezcla errores anteriores con errores introducidos por la actualización.
+#### ► LA ANALOGÍA
+Piensa en leer la guía de actualización antes de modificar archivos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Una actualización cambia herramientas, dependencias y a veces código fuente. Preparar primero una línea base comprobable permite saber si un error ya existía o nació durante la migración, reduce el riesgo de perder trabajo y convierte una operación incierta en una secuencia que el equipo puede revisar y repetir.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que leer la guía de actualización antes de modificar archivos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría con analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Leer la guía de actualización antes de modificar archivos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`ng update` consulta metadatos de paquetes y ejecuta **migrations** o esquemas que reescriben código conocido. No puede decidir por ti si una API interna cambió de significado, si una prueba ausente ocultaba un fallo o si una dependencia externa todavía no es compatible.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Leer la guía de actualización antes de modificar archivos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** la herramienta automática es una cuadrilla que reemplaza señales de tránsito conocidas; el equipo sigue siendo responsable de comprobar que las rutas del negocio llegan al destino correcto.
+#### ► CUÁNDO NO USAR ESTO
+No uses leer la guía de actualización antes de modificar archivos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: leer la guía de actualización antes de modificar archivos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Crea un proyecto nuevo y una copia de trabajo independiente:
+#### ► LO QUE DEBES RECORDAR
+- Leer la guía de actualización antes de modificar archivos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-El primer comando es la forma reproducible de `ng new`: crea `src/app/app.ts`, la configuración y los scripts sin depender de un CLI global.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve leer la guía de actualización antes de modificar archivos en tu contexto?
+2. ¿Cómo sabrías que leer la guía de actualización antes de modificar archivos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar leer la guía de actualización antes de modificar archivos?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 npx @angular/cli@21 new ejemplo-update --standalone --routing --style=scss --skip-git
 cd ejemplo-update
@@ -127,52 +177,27 @@ git commit -m "linea base Angular 21"
 npx ng update @angular/core@22 @angular/cli@22 --dry-run
 ```
 
-`--standalone` evita crear un `AppModule`; `--routing` prepara rutas; `--style=scss` selecciona SCSS; `--skip-git` permite que tú controles el primer commit; `--dry-run` calcula cambios sin escribirlos.
-
-**Resultado esperado:** el build inicial termina correctamente y la simulación enumera los paquetes o migraciones sin dejar cambios en `git status`.
-
-**Fallo deliberado:** elimina temporalmente `node_modules` y ejecuta `npx ng build` sin instalar dependencias. El error de módulos ausentes demuestra que un fallo del entorno no es un fallo de migración. Corrige con `npm ci` y repite la línea base.
-
-#### Paso 5 · Práctica guiada
-
-Guarda la salida de `ng update --dry-run` en `docs/migracion-angular-22.txt`. **Pista:** en PowerShell usa `| Tee-Object`; en macOS/**Linux** (sistema operativo tipo Unix) usa `| tee`.
-
-#### Paso 6 · Práctica independiente
-
-Clasifica cada aviso como automático, manual o bloqueado por una dependencia. Escribe qué prueba verificaría cada cambio manual antes de aplicar la actualización.
-
-#### Paso 7 · Cierre
-
-Ahora tienes un plan antes de tocar archivos. El siguiente tema aplica la actualización en saltos controlados.
-
-Este mismo procedimiento (línea base verde, `ng update --dry-run`, clasificar avisos) es el que aplicarás para mantener actualizado el proyecto integrador de este track (aplicación standalone completa, Módulo 13) mucho después de terminarlo, cuando Angular publique nuevas versiones mayores.
-
-**Cuándo no usarlo:** para un proyecto de práctica descartable que no seguirá manteniéndose, migrar versiones con este cuidado es esfuerzo desproporcionado; esta disciplina se justifica en una aplicación real que debe seguir funcionando y recibiendo actualizaciones de seguridad con el tiempo.
-
-**Errores comunes:** migrar con el repositorio sucio; confundir `--dry-run` con una migración aplicada; ignorar peer dependencies; no guardar la salida; comenzar sin pruebas.
-
-**Fuente oficial:** [Angular CLI — ng update](https://angular.dev/cli/update) y [Angular Update Guide](https://angular.dev/update-guide).
+</details>
 
 ### Tema 3: Migrar una versión mayor a la vez y verificar cada salto · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás dividir una migración grande en saltos consecutivos, verificar cada frontera y revertir un salto sin perder trabajo.
 
-**Conocimiento previo:** Git, pruebas, build de producción y lectura de la guía de actualización.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás dividir una migración grande en saltos consecutivos, verificar cada frontera y revertir un salto sin perder trabajo.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Caso real:** una aplicación Angular 18 debe llegar a Angular 22. Hacer un cambio único oculta qué migración rompió el contrato; avanzar 18→19→20→21→22 produce cuatro estados comprobables y recuperables.
+#### ► LA ANALOGÍA
+Piensa en migrar una versión mayor a la vez y verificar cada salto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**¿Por qué es importante?** Migrar una versión mayor por vez conserva un punto de diagnóstico claro. Si aparece un fallo, sabes en qué salto nació, qué cambios revisar y a qué commit regresar; sin esas fronteras, varios cambios incompatibles pueden mezclarse y hacer que la causa real quede oculta.
-
-#### Paso 3 · Teoría con analogía
-
-Cada versión mayor contiene transformaciones pensadas para el estado producido por la versión anterior. Saltar fronteras puede omitir migraciones, combinar deprecaciones y dejar dependencias incompatibles.
-
-**Analogía:** es una escalera con descansos. En cada descanso compruebas equilibrio, equipaje y dirección; un salto de cuatro pisos elimina los puntos donde podrías detectar y corregir el problema.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   V18["Angular 18"] -->|"build + test"| V19["Angular 19"]
@@ -181,9 +206,50 @@ flowchart LR
   V21 -->|"build + test"| V22["Angular 22"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Migrar una versión mayor a la vez y verificar cada salto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-En una carpeta vacía crea el ejemplo independiente `plan-migracion` y guarda el programa en `src/plan.mjs`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Migrar una versión mayor a la vez y verificar cada salto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses migrar una versión mayor a la vez y verificar cada salto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: migrar una versión mayor a la vez y verificar cada salto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Migrar una versión mayor a la vez y verificar cada salto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve migrar una versión mayor a la vez y verificar cada salto en tu contexto?
+2. ¿Cómo sabrías que migrar una versión mayor a la vez y verificar cada salto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar migrar una versión mayor a la vez y verificar cada salto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  V18["Angular 18"] -->|"build + test"| V19["Angular 19"]
+  V19 -->|"build + test"| V20["Angular 20"]
+  V20 -->|"build + test"| V21["Angular 21"]
+  V21 -->|"build + test"| V22["Angular 22"]
+```
 
 ```bash
 mkdir plan-migracion
@@ -191,8 +257,6 @@ cd plan-migracion
 npm init -y
 mkdir src
 ```
-
-Guarda `src/plan.mjs`:
 
 ```javascript
 // Devuelve cada salto consecutivo para poder validarlo por separado.
@@ -210,30 +274,4 @@ console.log(crearPlan(18, 22).map(([a, b]) => `${a}→${b}`).join(', '));
 node src/plan.mjs
 ```
 
-**Salida esperada:** `18→19, 19→20, 20→21, 21→22`.
-
-**Fallo deliberado:** ejecuta `crearPlan(22, 18)`. Debe aparecer `El destino debe ser una versión mayor entera`; el diagnóstico es una dirección de migración inválida, no un problema de npm.
-
-#### Paso 5 · Práctica guiada
-
-Añade a cada salto los comandos `ng update`, `ng build` y `ng test`. **Pista:** ningún salto se considera terminado si el build o las pruebas fallan.
-
-#### Paso 6 · Práctica independiente
-
-Diseña un plan 16→22 que incluya commit, migración, pruebas, revisión de deprecaciones y criterio de rollback por cada versión. No ejecutes la siguiente versión hasta cerrar la anterior.
-
-#### Paso 7 · Cierre
-
-Terminaste el capítulo con una migración observable y reversible. El próximo capítulo aplica esta disciplina al proyecto integrador.
-
-**Errores comunes:** saltar varias versiones; actualizar dependencias no relacionadas al mismo tiempo; no leer deprecaciones; borrar pruebas que fallan; continuar con un build rojo.
-
-**Fuente oficial:** [Angular Update Guide](https://angular.dev/update-guide), [Angular releases](https://angular.dev/reference/releases) y [Angular compatibility](https://angular.dev/reference/versions).
-
----
-
-**Límites y decisión de uso:** Un salto mayor que compila aún puede cambiar comportamiento de rutas, formularios o SSR. Migra una versión mayor por paso, conserva un punto recuperable y ejecuta pruebas de usuario en cada salto según la [guía oficial de actualización](https://angular.dev/update-guide).
-
-## Laboratorio práctico
-
-Elige un proyecto Angular propio o crea uno en una versión LTS. Documenta versión instalada, matriz compatible, simulación, plan de saltos y evidencia verde. El laboratorio termina cuando otra persona puede repetir tu migración y explicar por qué cada paso es seguro.
+</details>

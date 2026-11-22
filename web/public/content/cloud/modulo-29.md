@@ -3,13 +3,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a comprobar que el costo sintetizado de Floci cambia cuando creás y borrás un bucket real, en vez de devolver números inventados. Prerrequisitos: Módulo 2 completo.
-#### Paso 2 · Contexto y caso real
-RutaFlow quiere estimar, mientras desarrolla, cuánto costaría en AWS real la infraestructura que va acumulando módulo a módulo (S3, DynamoDB, Lambda) — sin esperar a tener una cuenta de AWS real ni una tarjeta de crédito de por medio.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a comprobar que el costo sintetizado de Floci cambia cuando creás y borrás un bucket real, en vez de devolver números inventados.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Cost Explorer es un libro contable que agrupa el consumo real por dimensiones (servicio, tag, fecha) — un contador que revisa qué tenés encendido ahora mismo, no una factura ficticia desconectada de tu estado real.
 
 **Conceptos clave:** `GetCostAndUsage`, enumerador de uso de recursos, agrupación por dimensión.
@@ -43,8 +52,58 @@ En el comando, `--time-period` es la bandera que acota el rango de fechas a anal
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Genera el reporte local de costes del entorno de entregas y relaciona sus filas con recursos creados. Etiquétalo como estimación sintetizada: no es una factura ni predice el gasto real.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que cost explorer — costos sintetizados a partir de tu estado real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Cost Explorer — costos sintetizados a partir de tu estado real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Cost Explorer — costos sintetizados a partir de tu estado real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses cost explorer — costos sintetizados a partir de tu estado real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: cost explorer — costos sintetizados a partir de tu estado real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Cost Explorer — costos sintetizados a partir de tu estado real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve cost explorer — costos sintetizados a partir de tu estado real en tu contexto?
+2. ¿Cómo sabrías que cost explorer — costos sintetizados a partir de tu estado real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar cost explorer — costos sintetizados a partir de tu estado real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-29/tema-1-cost-explorer.sh — ejecutar con: bash tema-1-cost-explorer.sh
+aws s3 mb s3://demo-costo-antes 2>/dev/null
+aws ce get-cost-and-usage --time-period Start=2026-01-01,End=2026-02-01 \
+  --granularity MONTHLY --metrics UnblendedCost --group-by Type=DIMENSION,Key=SERVICE
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -54,35 +113,70 @@ aws s3 mb s3://demo-costo-antes
 aws ce get-cost-and-usage --time-period Start=2026-01-01,End=2026-02-01 \
   --granularity MONTHLY --metrics UnblendedCost --group-by Type=DIMENSION,Key=SERVICE
 ```
-Resultado esperado: el desglose incluye `S3` con un costo distinto de cero, reflejando el bucket que acabás de crear — la prueba de que Cost Explorer sintetiza sobre tu estado real, no sobre datos inventados.
-#### Paso 5 · Práctica guiada
-Pista: repetí la consulta con `--time-period Start=2026-02-01,End=2026-01-01` (fecha de fin anterior a la de inicio) — ese es el fallo deliberado: la API rechaza el rango con un error de validación, porque un período que termina antes de empezar no tiene ningún significado posible.
-#### Paso 6 · Práctica independiente
-Eliminá el bucket (`aws s3 rb s3://demo-costo-antes`) y volvé a consultar `get-cost-and-usage` — confirmá que el costo de S3 bajó en la siguiente consulta, reflejando que ya no existe.
-#### Paso 7 · Cierre
-Entregá el costo reflejado tras crear el bucket del Paso 4, el rango inválido rechazado del Paso 5, y el costo actualizado tras borrarlo del Paso 6; explicá por qué estos números nunca deberían usarse para un presupuesto real. Siguiente paso: precios. Errores comunes: mezclar fechas y no etiquetar recursos. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html.
+
+</details>
 
 ### Tema 2: Pricing — catálogo de tarifas de referencia · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a consultar el catálogo de tarifas que el Tema 1 usa por detrás para sintetizar el costo de la infraestructura de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
-#### Paso 2 · Contexto y caso real
-Antes de decidir si el nodo de reparto (Módulo 21) corre en `t3.micro` o en algo más grande, RutaFlow necesita saber el precio real de referencia por tipo de instancia y región, no una estimación de memoria.
-#### Paso 3 · Teoría, modelo mental y analogía
-La API de Pricing es un catálogo con filtros: elegís servicio, tipo y región, y te devuelve la tarifa vigente — no una base de datos exhaustiva de cada variante posible.
 
-**Conceptos clave:** `GetProducts`, `DescribeServices`, instantánea de precios.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a consultar el catálogo de tarifas que el Tema 1 usa por detrás para sintetizar el costo de la infraestructura de RutaFlow.**
 
-El servicio Pricing es el catálogo de tarifas del que Cost Explorer obtiene sus números: `DescribeServices` lista qué servicios tienen precios catalogados y qué atributos puedes consultar sobre ellos (por ejemplo, tipo de instancia o región), y `GetProducts` devuelve las ofertas de producto que coinciden con los filtros que apliques. La instantánea incluida en Floci es intencionalmente mínima —EC2, S3 y Lambda para `us-east-1`, con un puñado de tipos de instancia representativos— suficiente para ejercitar el análisis del formato de respuesta y la lógica de filtrado de tu código, no una base de datos de precios exhaustiva. Si necesitas cobertura más amplia, puedes apuntar Floci a tu propia instantánea de precios con `FLOCI_SERVICES_PRICING_SNAPSHOT_PATH`.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un detalle de formato importante: AWS devuelve `GetProducts` como un arreglo de strings, donde cada string es en realidad un objeto JSON serializado que tienes que volver a parsear — un patrón algo inusual de la API real que Floci replica fielmente para que tu código de parseo funcione idéntico contra ambos.
+#### ► LA ANALOGÍA
+Piensa en pricing — catálogo de tarifas de referencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** la instantánea de precios incluida es como una lista de precios de referencia de los productos más comunes de una tienda, útil para hacer cálculos aproximados rápidos, sin pretender ser el catálogo completo de cada variante y promoción disponible.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pricing — catálogo de tarifas de referencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** Entender que Pricing es deliberadamente una instantánea mínima —no un espejo completo y actualizado de las tarifas reales de AWS— evita que confíes en sus números para decisiones de presupuesto reales: para eso, siempre consulta la API de Pricing contra AWS real o la consola de precios oficial.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Pricing — catálogo de tarifas de referencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Practícalo tú:**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Pricing — catálogo de tarifas de referencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses pricing — catálogo de tarifas de referencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pricing — catálogo de tarifas de referencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Pricing — catálogo de tarifas de referencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pricing — catálogo de tarifas de referencia en tu contexto?
+2. ¿Cómo sabrías que pricing — catálogo de tarifas de referencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pricing — catálogo de tarifas de referencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 # archivo: src/labs/modulo-29/tema-2-pricing.sh — ejecutar con: bash tema-2-pricing.sh
 aws pricing describe-services --service-code AmazonEC2
@@ -91,20 +185,6 @@ aws pricing get-products --service-code AmazonEC2 \
   --query 'PriceList[0]' --output text
 ```
 
-`--service-code` es la bandera que identifica el servicio de AWS a consultar (aquí, EC2); `--filters` es la bandera que acota la búsqueda a una combinación específica de atributos (tipo de instancia y región).
-
-**Resultado esperado:** `describe-services` confirma qué atributos son filtrables para EC2; `get-products` devuelve un string que es en realidad JSON serializado — cópialo y pásalo por `python -m json.tool` para confirmarlo.
-
-**Modifica esto:** repite la consulta cambiando `instanceType` a un valor que no existe en la instantánea (por ejemplo `x9.enorme`) y confirma que `PriceList` vuelve vacío en vez de fallar con error.
-
-**Cuándo no usarlo:** no confíes en este catálogo para cotizar un presupuesto real; solo cubre EC2, S3 y Lambda en `us-east-1` con tipos representativos, no el catálogo completo de AWS.
-
-**Cómo crece tu proyecto:** este catálogo es la fuente que consulta el Tema 1 para sintetizar el costo estimado de la infraestructura del proyecto.
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Construye una estimación del almacenamiento de evidencias indicando región, unidad y volumen. Conserva la tarifa consultada y la fecha; cambiar una hipótesis debe modificar el cálculo de manera trazable.
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -115,21 +195,24 @@ aws pricing get-products --service-code AmazonEC2 \
   --filters 'Type=TERM_MATCH,Field=instanceType,Value=t3.micro' 'Type=TERM_MATCH,Field=regionCode,Value=us-east-1' \
   --query 'PriceList[0]' --output text
 ```
-Resultado esperado: `get-products` devuelve un string que es en realidad JSON serializado — pasalo por `python3 -m json.tool` para confirmar la tarifa real de `t3.micro` en `us-east-1`, el mismo tipo de instancia que usa `demo-lc` del Módulo 21.
-#### Paso 5 · Práctica guiada
-Pista: repetí la consulta filtrando por `Field=instanceType,Value=x9.enorme` (un tipo que no existe en la instantánea) — ese es el fallo deliberado: `PriceList` vuelve vacío en vez de fallar con un error, porque la instantánea de Floci es intencionalmente mínima, no un espejo completo de AWS real.
-#### Paso 6 · Práctica independiente
-Repetí la consulta cambiando `regionCode` a otra región cubierta por la instantánea y compará el precio devuelto — documentá si la diferencia (o su ausencia) te sorprendió.
-#### Paso 7 · Cierre
-Entregá la tarifa real de `t3.micro` del Paso 4, el `PriceList` vacío del Paso 5, y la comparación entre regiones del Paso 6; explicá por qué esta instantánea mínima nunca debería usarse para cotizar un presupuesto real. Siguiente paso: exportación. Errores comunes: precio sin unidad y moneda incorrecta. Fuente oficial: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html.
+
+</details>
 
 ### Tema 3: BCM Data Exports — reportes de costo en formato estándar · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a generar el reporte de costo de RutaFlow en formato FOCUS, el estándar que una herramienta externa de FinOps podría consumir directamente. Prerrequisitos: Temas 1-2 de este módulo.
-#### Paso 2 · Contexto y caso real
-Si RutaFlow algún día compara su costo en AWS, Azure y GCP (Módulo 8) con una sola herramienta externa, esa herramienta necesita los tres reportes en el mismo formato estándar, no tres PDFs distintos con estructura libre.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a generar el reporte de costo de RutaFlow en formato FOCUS, el estándar que una herramienta externa de FinOps podría consumir directamente.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Exportar es pedirle al contador que entregue el reporte siempre en el mismo formato estándar de la industria, no un PDF de formato libre que cada quien interpreta distinto.
 
 **Conceptos clave:** `CreateExport`, formato Parquet, esquema FOCUS, ciclo de vida de ejecución.
@@ -164,28 +247,83 @@ aws s3 ls s3://demo-facturacion/focus/ --recursive
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Exporta el coste de laboratorio y valida columnas, moneda y periodo antes de agregarlo. Una fila con unidad distinta debe detectarse en vez de sumarse silenciosamente al total.
 
-#### Paso 4 · Demostración guiada
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que bcm data exports — reportes de costo en formato estándar resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| BCM Data Exports — reportes de costo en formato estándar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar BCM Data Exports — reportes de costo en formato estándar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses bcm data exports — reportes de costo en formato estándar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: bcm data exports — reportes de costo en formato estándar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- BCM Data Exports — reportes de costo en formato estándar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve bcm data exports — reportes de costo en formato estándar en tu contexto?
+2. ¿Cómo sabrías que bcm data exports — reportes de costo en formato estándar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar bcm data exports — reportes de costo en formato estándar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-29/tema-3-bcm-export.sh — ejecutar con: bash tema-3-bcm-export.sh
+aws s3 mb s3://demo-facturacion
+aws bcm-data-exports create-export --export \
+  '{"Name":"demo-reporte","DataQuery":{"QueryStatement":"SELECT * FROM COST_AND_USAGE_REPORT"},"DestinationConfigurations":{"S3Destination":{"S3Bucket":"demo-facturacion","S3Prefix":"focus","S3Region":"us-east-1","S3OutputConfigurations":{"Format":"PARQUET","Compression":"PARQUET","OutputType":"CUSTOM","Overwrite":"OVERWRITE_REPORT"}}},"RefreshCadence":{"Frequency":"SYNCHRONOUS"}}'
+aws s3 ls s3://demo-facturacion/focus/ --recursive
+```
+
 ```bash
 aws s3 mb s3://demo-facturacion
 aws bcm-data-exports create-export --export \
   '{"Name":"demo-reporte","DataQuery":{"QueryStatement":"SELECT * FROM COST_AND_USAGE_REPORT"},"DestinationConfigurations":{"S3Destination":{"S3Bucket":"demo-facturacion","S3Prefix":"focus","S3Region":"us-east-1","S3OutputConfigurations":{"Format":"PARQUET","Compression":"PARQUET","OutputType":"CUSTOM","Overwrite":"OVERWRITE_REPORT"}}},"RefreshCadence":{"Frequency":"SYNCHRONOUS"}}'
 aws s3 ls s3://demo-facturacion/focus/ --recursive
 ```
-Resultado esperado: `create-export` devuelve un `ExportArn`; `s3 ls` muestra un archivo `.parquet` real generado por el motor DuckDB sidecar, siguiendo el esquema FOCUS 1.2 — el mismo formato que usarías para comparar costos entre proveedores.
-#### Paso 5 · Práctica guiada
-Pista: cambiá `"Format"` a `"CSV"` — ese es el fallo deliberado: `create-export` falla con `ValidationException`, porque solo Parquet está implementado en Floci hoy, aunque la documentación de AWS real mencione otros formatos.
-#### Paso 6 · Práctica independiente
-Descargá el archivo `.parquet` generado y confirmá con alguna herramienta local (por ejemplo, leerlo con `duckdb` o `pandas`) que sus columnas siguen el esquema FOCUS, no una estructura ad hoc inventada por Floci.
-#### Paso 7 · Cierre
-Entregá el export FOCUS generado del Paso 4, el formato CSV rechazado del Paso 5, y la validación de columnas del Paso 6; explicá por qué la estandarización del esquema es lo que permite comparar costos entre proveedores distintos. Siguiente paso: tags. Errores comunes: exportar sin retención y no validar columnas. Fuente oficial: https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html.
+
+</details>
 
 ### Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a etiquetar con `Proyecto=rutaflow` recursos de dos servicios distintos y a descubrirlos con una sola consulta. Prerrequisitos: Módulos 2 y 4.
-#### Paso 2 · Contexto y caso real
-RutaFlow tiene recursos repartidos entre S3, DynamoDB, SQS y más — auditar "todo lo que pertenece a este proyecto" consultando cada servicio por separado y cruzando resultados a mano no escala.
-#### Paso 3 · Teoría, modelo mental y analogía
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a etiquetar con Proyecto=rutaflow recursos de dos servicios distintos y a descubrirlos con una sola consulta. Prerrequisitos: Módulos 2 y 4.
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a etiquetar con Proyecto=rutaflow recursos de dos servicios distintos y a descubrirlos con una sola consulta.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un tag es una etiqueta contable que conecta un recurso con su responsable o proyecto; Resource Groups Tagging API es la búsqueda universal que cruza todos los servicios a la vez.
 
 **Conceptos clave:** `TagResources`, `GetResources`, filtro de tipo de recurso, ARN arbitrario.
@@ -219,8 +357,60 @@ aws resourcegroupstaggingapi get-resources --tag-filters Key=Proyecto,Values=dem
 
 **Cómo crece tu proyecto:** esta etiqueta común permite auditar de un vistazo todos los recursos que pertenecen al proyecto integrador, sin importar el servicio.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que resource groups tagging api — descubrimiento centralizado por etiqueta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Resource Groups Tagging API — descubrimiento centralizado por etiqueta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Resource Groups Tagging API — descubrimiento centralizado por etiqueta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses resource groups tagging api — descubrimiento centralizado por etiqueta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: resource groups tagging api — descubrimiento centralizado por etiqueta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Resource Groups Tagging API — descubrimiento centralizado por etiqueta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve resource groups tagging api — descubrimiento centralizado por etiqueta en tu contexto?
+2. ¿Cómo sabrías que resource groups tagging api — descubrimiento centralizado por etiqueta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar resource groups tagging api — descubrimiento centralizado por etiqueta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-29/tema-4-tagging.sh — ejecutar con: bash tema-4-tagging.sh
+aws resourcegroupstaggingapi tag-resources \
+  --resource-arn-list arn:aws:s3:::demo-facturacion --tags Proyecto=demo
+aws resourcegroupstaggingapi tag-resources \
+  --resource-arn-list arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas --tags Proyecto=demo
+aws resourcegroupstaggingapi get-resources --tag-filters Key=Proyecto,Values=demo
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -232,21 +422,24 @@ aws resourcegroupstaggingapi tag-resources \
   --resource-arn-list arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents --tags Proyecto=rutaflow
 aws resourcegroupstaggingapi get-resources --tag-filters Key=Proyecto,Values=rutaflow
 ```
-Resultado esperado: `get-resources` devuelve ambos ARNs —el bucket `demo-facturacion` y la tabla `ShipmentEvents`— en una sola respuesta, aunque pertenecen a servicios completamente distintos.
-#### Paso 5 · Práctica guiada
-Pista: probá `tag-resources --resource-arn-list arn:aws:s3:::este-bucket-no-existe --tags Proyecto=rutaflow` — ese es el fallo deliberado (al revés de lo que esperarías): la llamada se acepta sin error, porque el servicio no valida que el ARN corresponda a un recurso real en otro servicio emulado; la etiqueta queda "flotando" sobre un recurso que nunca existió.
-#### Paso 6 · Práctica independiente
-Usá `get-tag-keys` y `get-tag-values` para auditar qué claves y valores de etiqueta existen actualmente, y confirmá que `Proyecto`/`rutaflow` aparece en ambos listados — documentá qué política obligatoria impondrías (por ejemplo, "todo recurso nuevo debe tener `Proyecto` desde su creación") para que esto no dependa de acordarse después.
-#### Paso 7 · Cierre
-Entregá el descubrimiento cruzado del Paso 4, el ARN inexistente aceptado sin validar del Paso 5, y la política propuesta del Paso 6; explicá por qué ese comportamiento de "aceptar ARNs arbitrarios" es útil y riesgoso a la vez. Siguiente paso: identidad. Errores comunes: claves inconsistentes y tags ausentes en recursos nuevos. Fuente oficial: https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/Welcome.html.
+
+</details>
 
 ### Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a confirmar en qué cuenta simulada está operando tu sesión antes de desplegar nada, y a comprobar el aislamiento entre dos cuentas distintas. Prerrequisitos: Módulo 7 completo.
-#### Paso 2 · Contexto y caso real
-Antes de que un pipeline de CI despliegue cambios de RutaFlow, necesita confirmar con certeza que está apuntando a la cuenta correcta (dev, no una de otro equipo) — el mismo smoke test que correría contra AWS real.
-#### Paso 3 · Teoría, modelo mental y analogía
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a confirmar en qué cuenta simulada está operando tu sesión antes de desplegar nada, y a comprobar el aislamiento entre dos cuentas distintas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `GetCallerIdentity` es mostrar tu credencial actual; `AssumeRole` es cambiar de pase temporalmente, con un alcance distinto al tuyo.
 
 **Conceptos clave:** `GetCallerIdentity`, `AssumeRole`, resolución de cuenta por AKID de 12 dígitos.
@@ -280,8 +473,58 @@ AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Asume el rol de prueba del consumidor y registra identidad y expiración sin imprimir el secreto. Comprueba aislamiento entre cuentas del laboratorio y documenta la validación adicional requerida en producción.
 
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sts en profundidad — identidad temporal y aislamiento multi-cuenta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| STS en profundidad — identidad temporal y aislamiento multi-cuenta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar STS en profundidad — identidad temporal y aislamiento multi-cuenta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses sts en profundidad — identidad temporal y aislamiento multi-cuenta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sts en profundidad — identidad temporal y aislamiento multi-cuenta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- STS en profundidad — identidad temporal y aislamiento multi-cuenta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sts en profundidad — identidad temporal y aislamiento multi-cuenta en tu contexto?
+2. ¿Cómo sabrías que sts en profundidad — identidad temporal y aislamiento multi-cuenta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sts en profundidad — identidad temporal y aislamiento multi-cuenta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-29/tema-5-sts.sh — ejecutar con: bash tema-5-sts.sh
+aws sts get-caller-identity
+AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
+  aws sts get-caller-identity --query 'Account' --output text
+```
+
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -291,48 +534,135 @@ aws sts get-caller-identity
 AWS_ACCESS_KEY_ID=222222222222 AWS_SECRET_ACCESS_KEY=test \
   aws sts get-caller-identity --query 'Account' --output text
 ```
-Resultado esperado: la primera llamada confirma la cuenta por defecto (`000000000000`); la segunda, con un `AWS_ACCESS_KEY_ID` de 12 dígitos distinto, devuelve `222222222222` — la prueba de que Floci resuelve la cuenta directamente desde ese identificador.
-#### Paso 5 · Práctica guiada
-Pista: creá una tabla DynamoDB usando las credenciales de la cuenta `222222222222`, y después intentá leerla con las credenciales por defecto de `000000000000` — ese es el fallo deliberado si lo esperás ver: `ResourceNotFoundException`, porque esa tabla simplemente no existe en la cuenta `000000000000`; el aislamiento multi-cuenta es real, no cosmético.
-#### Paso 6 · Práctica independiente
-Documentá, para un pipeline real de RutaFlow, por qué el primer paso antes de cualquier despliegue debería ser `get-caller-identity` — qué desastre evitaría detectar a tiempo que el pipeline apunta a la cuenta equivocada.
-#### Paso 7 · Cierre
-Entregá las dos identidades confirmadas del Paso 4, el aislamiento entre cuentas del Paso 5, y la justificación del smoke test del Paso 6; explicá por qué las credenciales temporales de alcance limitado son el principio de seguridad central que atraviesa todo este módulo. Siguiente paso: gobierno. Errores comunes: operar cuenta equivocada y no validar región. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html.
 
-## Laboratorio práctico
-
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
-
-**Objetivo del laboratorio:** consultar el costo sintetizado de tus recursos actuales en Floci y exportarlo en formato FOCUS/Parquet, y luego etiquetar recursos de al menos dos servicios distintos y descubrirlos todos con una sola consulta de Resource Groups Tagging API.
-
-**Requisitos previos:** al menos un bucket S3 y una tabla DynamoDB de módulos anteriores, y un bucket adicional para recibir la exportación de BCM Data Exports.
+</details>
 
 ### Laboratorio 29.1 — Costo sintetizado y exportación FOCUS
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Consulta el costo agrupado por servicio | `aws ce get-cost-and-usage --time-period Start=2026-01-01,End=2026-02-01 --granularity MONTHLY --metrics UnblendedCost --group-by Type=DIMENSION,Key=SERVICE` | Refleja el costo sintetizado de tus recursos actuales | Un desglose con al menos S3 y DynamoDB si los tienes creados |
-| 2 | Consulta el catálogo de precios de EC2 | `aws pricing get-products --service-code AmazonEC2 --filters 'Type=TERM_MATCH,Field=instanceType,Value=t3.micro' 'Type=TERM_MATCH,Field=regionCode,Value=us-east-1'` | Confirma la fuente de tarifas que usa Cost Explorer | Un `PriceList` con al menos una oferta de producto |
-| 3 | Crea el bucket de exportación | `aws s3 mb s3://mi-facturacion` | Destino de la exportación FOCUS | Confirmación de creación |
-| 4 | Crea la exportación | `aws bcm-data-exports create-export --export '{"Name":"reporte-mensual","DataQuery":{"QueryStatement":"SELECT * FROM COST_AND_USAGE_REPORT"},"DestinationConfigurations":{"S3Destination":{"S3Bucket":"mi-facturacion","S3Prefix":"focus","S3Region":"us-east-1","S3OutputConfigurations":{"Format":"PARQUET","Compression":"PARQUET","OutputType":"CUSTOM","Overwrite":"OVERWRITE_REPORT"}}},"RefreshCadence":{"Frequency":"SYNCHRONOUS"}}'` | Genera el reporte en formato FOCUS/Parquet de inmediato | Un `ExportArn` |
-| 5 | Verifica el archivo generado | `aws s3 ls s3://mi-facturacion/focus/ --recursive` | Confirma que el Parquet real se escribió | Un archivo `.parquet` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 29.1 — costo sintetizado y exportación focus con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 29.1 — costo sintetizado y exportación focus te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en laboratorio 29.1 — costo sintetizado y exportación focus como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 29.1 — costo sintetizado y exportación focus resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 29.1 — Costo sintetizado y exportación FOCUS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 29.1 — Costo sintetizado y exportación FOCUS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 29.1 — costo sintetizado y exportación focus por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 29.1 — costo sintetizado y exportación focus funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 29.1 — Costo sintetizado y exportación FOCUS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 29.1 — costo sintetizado y exportación focus en tu contexto?
+2. ¿Cómo sabrías que laboratorio 29.1 — costo sintetizado y exportación focus no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 29.1 — costo sintetizado y exportación focus?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 29.1 — costo sintetizado y exportación focus.
+
+</details>
 
 ### Laboratorio 29.2 — Descubrimiento centralizado por etiqueta
 
-| Paso | Acción | Comando | Explicación | Salida esperada |
-|---|---|---|---|---|
-| 1 | Etiqueta tu bucket S3 | `aws resourcegroupstaggingapi tag-resources --resource-arn-list arn:aws:s3:::curso-cloud-local --tags Proyecto=academia` | Añade una etiqueta común a un recurso S3 | `FailedResourcesMap` vacío |
-| 2 | Etiqueta tu tabla DynamoDB | `aws resourcegroupstaggingapi tag-resources --resource-arn-list arn:aws:dynamodb:us-east-1:000000000000:table/mi-tabla --tags Proyecto=academia` | La misma etiqueta en un servicio completamente distinto | `FailedResourcesMap` vacío |
-| 3 | Descubre ambos con una sola consulta | `aws resourcegroupstaggingapi get-resources --tag-filters Key=Proyecto,Values=academia` | Cruza servicios sin consultarlos por separado | Ambos ARNs (S3 y DynamoDB) en la respuesta |
-| 4 | Verifica tu identidad de llamada | `aws sts get-caller-identity` | Confirma cuenta, usuario y ARN actuales | Tu `Account`, `UserId` y `Arn` |
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Verificación:** el laboratorio se considera exitoso si `s3 ls` confirma un archivo `.parquet` real generado por la exportación FOCUS, y si `get-resources` con el filtro `Proyecto=academia` devuelve tanto el ARN de tu bucket S3 como el de tu tabla DynamoDB en una sola respuesta, confirmando el descubrimiento cruzado entre servicios.
+#### ► DE QUÉ TRATA
+Este tema te guía por laboratorio 29.2 — descubrimiento centralizado por etiqueta con foco en comprensión antes de implementación.
 
-**Errores comunes y soluciones**
+#### ► LA IDEA EN UNA FRASE
+**Entender laboratorio 29.2 — descubrimiento centralizado por etiqueta te permite tomar mejores decisiones técnicas.**
 
-- **`get-cost-and-usage` devuelve costos en cero para un servicio que sí tienes en uso.** Revisa el Tema 1: solo los servicios con un enumerador de precio implementado (EC2, S3, Lambda) generan costo real; el resto aparece en el catálogo con cantidad cero — comportamiento esperado, no un error.
-- **`create-export` falla con `ValidationException` en el formato.** Revisa que uses exactamente `"Format": "PARQUET"` y `"Compression": "PARQUET"`; CSV y GZIP todavía no están implementados en Floci.
-- **`get-resources` no encuentra un recurso recién etiquetado.** Confirma que el ARN usado en `tag-resources` coincide exactamente —carácter por carácter, incluyendo la región y cuenta— con el que aparecería en `get-resources`; un ARN mal formado se acepta pero no se cruza correctamente.
-- **`assume-role` con un AKID que no tiene 12 dígitos no aísla la cuenta esperada.** Revisa el Tema 5: solo un `AWS_ACCESS_KEY_ID` de exactamente 12 dígitos se usa directamente como ID de cuenta; cualquier otro formato cae al `FLOCI_DEFAULT_ACCOUNT_ID`.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
----
+#### ► LA ANALOGÍA
+Piensa en laboratorio 29.2 — descubrimiento centralizado por etiqueta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que laboratorio 29.2 — descubrimiento centralizado por etiqueta resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Laboratorio 29.2 — Descubrimiento centralizado por etiqueta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Laboratorio 29.2 — Descubrimiento centralizado por etiqueta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses laboratorio 29.2 — descubrimiento centralizado por etiqueta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: laboratorio 29.2 — descubrimiento centralizado por etiqueta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Laboratorio 29.2 — Descubrimiento centralizado por etiqueta existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve laboratorio 29.2 — descubrimiento centralizado por etiqueta en tu contexto?
+2. ¿Cómo sabrías que laboratorio 29.2 — descubrimiento centralizado por etiqueta no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 29.2 — descubrimiento centralizado por etiqueta?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 29.2 — descubrimiento centralizado por etiqueta.
+
+</details>

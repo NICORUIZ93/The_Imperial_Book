@@ -15,7 +15,7 @@
 | java | 23 | 120 | 4 | 4 | 7 | 8 | sí | 25/120 | 117/120 | — |
 | javascript | 15 | 92 | 5 | 4 | 2 | 4 | sí | 62/92 | 92/92 | — |
 | kotlin-multiplatform | 14 | 66 | 2 | 2 | 3 | 7 | sí | 57/66 | 66/66 | — |
-| microservices | 37 | 187 | 0 | 0 | 0 | 0 | **no** | 2/187 | 24/187 | Fundamentos, Aplicación, Integración, Experto |
+| microservices | 37 | 0 | 0 | 0 | 0 | 0 | **no** | 2/0 | 24/0 | Fundamentos, Aplicación, Integración, Experto |
 | node | 14 | 78 | 3 | 3 | 2 | 6 | **no** | 33/78 | 78/78 | — |
 | react | 15 | 64 | 3 | 3 | 3 | 6 | sí | 43/64 | 64/64 | — |
 | rutaflow | 8 | 29 | 1 | 1 | 3 | 3 | **no** | 26/29 | 29/29 | — |

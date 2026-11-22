@@ -6,107 +6,145 @@ Construirás una app de conductor desde una lista vacía hasta una entrega sincr
 
 ---
 
+
 ### Tema 1: estado de la jornada con Riverpod · Intermedio · 30 min
 
-**Duración estimada:** 30 min.
-**¿Por qué es importante?** Una sola fuente de estado evita que distintas pantallas muestren versiones distintas de la jornada.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Flutter M1 T1 (widgets) y Dart M0 T3 (async/await). Proyecto continuo: `flutter_rutaflow`, la app de turnos del conductor.
+#### ► DE QUÉ TRATA
+Este tema te guía por estado de la jornada con riverpod con foco en comprensión antes de implementación.
 
-#### Subtema 1.1: Representa paradas con estado inmutable · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender estado de la jornada con riverpod te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
-Si cada pantalla guarda su propia copia, una puede mostrar una parada entregada y otra pendiente. Un provider ofrece un solo estado compartido.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
-Observa shift_provider.dart y. Revisa `Stop`, `ShiftNotifier.build` y `load`; inicializan una lista vacía y guardan una copia que no se puede modificar desde afuera. Ejecuta desde el código de este tema:
+#### ► LA ANALOGÍA
+Piensa en estado de la jornada con riverpod como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que estado de la jornada con riverpod resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| estado de la jornada con Riverpod se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar estado de la jornada con Riverpod | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses estado de la jornada con riverpod por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: estado de la jornada con riverpod funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- estado de la jornada con Riverpod existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve estado de la jornada con riverpod en tu contexto?
+2. ¿Cómo sabrías que estado de la jornada con riverpod no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar estado de la jornada con riverpod?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+flutter test --no-pub test/features/shift/shift_provider_test.dart
+```
 
 ```bash
 flutter test --no-pub test/features/shift/shift_provider_test.dart
 ```
 
-**Resultado esperado:** las dos pruebas pasan; la lista inicial está vacía y la lista cargada no permite agregar paradas directamente.
-
-**Fallo deliberado:** reemplaza `List.unmodifiable(stops)` por `stops`. **Resultado esperado:** la prueba de inmutabilidad falla al intentar agregar un elemento. **Diagnóstico:** el estado comparte la lista que recibió; conserva una copia inmutable.
-
-**3. Entiende**
-`Notifier` guarda el estado de una tarea y expone acciones que lo cambian. `NotifierProvider` permite que pantallas y pruebas lean la misma fuente.
-
-**4. Cierra**
-Escribe qué estado inicial tiene una jornada y por qué `load` no conserva la lista que recibió.
-
-#### Subtema 1.2: Completa una parada por su id · 10 min
-
-**1. Contexto**
-La lista puede cambiar de orden. Identificar una parada por su id evita completar la dirección incorrecta.
-
-**2. Hazlo tú**
-Observa shift_provider.dart y localiza `complete`. Ejecuta la prueba que carga dos paradas y completa `p-1`:
-
 ```bash
 flutter test --no-pub test/features/shift/shift_provider_test.dart
 ```
 
-**Resultado esperado:** `p-1` queda `done: true`; `p-2` sigue pendiente; la lista anterior no cambia.
-
-**Fallo deliberado:** cambia `if (stop.id == id)` por `if (stop.id != id)`. **Resultado esperado:** la prueba muestra completada la parada equivocada. **Diagnóstico:** invertiste la comparación; el id recibido debe coincidir con el de la parada que cambia.
-
-**3. Entiende**
-La acción crea una lista nueva y conserva los objetos que no cambian. La interfaz puede volver a dibujar con el estado actualizado.
-
-**4. Cierra**
-Guarda el antes y el después y explica qué fila cambió.
-
-#### Subtema 1.3: Prueba la acción y un id inexistente · 10 min
-
-**1. Contexto**
-La misma acción debe comportarse de forma previsible si el servidor envía un id desconocido.
-
-**2. Hazlo tú**
-Observa shift_provider_test.dart y ejecuta las dos pruebas del `ProviderContainer`:
-
-```bash
-flutter test --no-pub test/features/shift/shift_provider_test.dart
-```
-
-**Resultado esperado:** al completar `no-existe`, la misma lista queda en el estado; completar `p-1` cambia solo esa parada.
-
-**Fallo deliberado:** quita `List.unmodifiable` del estado y vuelve a ejecutar. **Resultado esperado:** el test que intenta modificar la lista deja de recibir `UnsupportedError`. **Diagnóstico:** el estado quedó expuesto a cambios desde cualquier widget; restaura la copia inmutable.
-
-**3. Entiende**
-`ProviderContainer` permite probar el provider sin abrir una pantalla ni hacer una llamada de red. Las pruebas revisan el cambio observable del estado.
-
-**4. Cierra**
-Entrega las salidas de ambas pruebas y anota un caso que todavía falta, como cargar una jornada desde la API.
-
-**Hito del tema:**
-
-- [ ] Cargué dos paradas en `ShiftNotifier`.
-- [ ] Completé una por id y conservé la otra.
-- [ ] El id desconocido no cambia la lista.
-- [ ] Las pruebas muestran que el estado es inmutable.
-
-**Fuente oficial:** [Riverpod: providers y Notifier](https://riverpod.dev/docs/providers/notifier_provider).
-
-**Proyecto integrador:** `ShiftNotifier` es el estado real que `flutter_rutaflow` comparte entre la pantalla de mapa, la lista de paradas y las notificaciones de entrega del conductor. **Límite:** usa un `NotifierProvider` compartido cuando varias pantallas necesitan leer y reaccionar al mismo estado; si el dato solo vive dentro de un único widget y nadie más lo consulta, un `StatefulWidget` local es más simple que levantar un provider global.
+</details>
 
 ### Tema 2: mapa y permiso de ubicación · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar mostrarás la posición del conductor con permiso gradual y un estado comprensible si se niega. **Prerrequisitos:** Flutter y geolocalización. En un proyecto nuevo `flutter create route_map_lab`, añade `google_maps_flutter` y `geolocator` con `flutter pub add google_maps_flutter geolocator`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El mapa permite orientar al conductor, pero una ubicación precisa solo se solicita cuando la función la necesita. El usuario puede conceder ubicación aproximada, denegar o apagar servicios; la app debe conservar una alternativa para ver la parada en texto.
+#### ► DE QUÉ TRATA
+Al finalizar mostrarás la posición del conductor con permiso gradual y un estado comprensible si se niega. Prerrequisitos: Flutter y geolocalización. En un proyecto nuevo flutter create route_map_lab, añade google_maps_flutter y geolocator con flutter pub add google_maps_flutter…
 
-#### ¿Por qué es importante?
-Pedir permisos al iniciar, sin explicar el uso, reduce confianza. Mostrar una pantalla vacía al recibir `denied` deja al conductor sin información necesaria para seguir.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar mostrarás la posición del conductor con permiso gradual y un estado comprensible si se niega.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El plugin obtiene una posición; Google Maps la dibuja. Son dos responsabilidades distintas. Una posición es `{latitud, longitud, precisión, hora}`: compara precisión y antigüedad antes de mover el marcador. La llave de Maps se restringe por plataforma y aplicación; no se reutiliza una llave maestra del servidor.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/map/location_reader.dart`:
+#### ► LA ANALOGÍA
+Piensa en mapa y permiso de ubicación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Permission[Permiso gradual] --> Location[Geolocator]
+  Location --> Check[Valida edad y precisión]
+  Check --> Marker[Marcador o fallback]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| mapa y permiso de ubicación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar mapa y permiso de ubicación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses mapa y permiso de ubicación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mapa y permiso de ubicación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- mapa y permiso de ubicación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mapa y permiso de ubicación en tu contexto?
+2. ¿Cómo sabrías que mapa y permiso de ubicación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mapa y permiso de ubicación?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:geolocator/geolocator.dart';
 
@@ -126,28 +164,9 @@ Future<Position> readPosition() async {
 }
 ```
 
-Agrega permisos de Android/iOS siguiendo la guía del plugin. Crea `lib/features/map/route_map.dart` con `GoogleMap`, `initialCameraPosition` y un `Marker` solo después de recibir la posición. En consola observa el prompt; con permiso negado muestra dirección escrita.
-
-#### Paso 5 · Práctica guiada
-Prueba `readPosition` con el permiso concedido, denegado y con el servicio apagado. Simula las tres condiciones en emulador. **Pista:** no repitas el prompt si el sistema indica `deniedForever`; ofrece un botón hacia ajustes.
-
-#### Paso 6 · Práctica independiente
-Registra la llave de Maps con restricciones Android/iOS, límites de cuota y alertas de facturación. Añade atribución de Google Maps en la sección “Acerca de” o avisos legales.
-
-#### Paso 7 · Cierre y evidencia
-Entrega ambos archivos y una captura de cada estado (posición, permiso denegado). El siguiente tema recibe posiciones del gateway en vivo.
-
-**Prueba de diagnóstico.** Provoca deliberadamente `deniedForever`; el flujo debe conservar la dirección de la parada y ofrecer ajustes, no quedar bloqueado. **Resultado esperado:** el mapa se muestra solo cuando hay una posición válida.
-
 ```bash
 flutter run
 ```
-
-**Errores comunes:** pedir permiso preciso sin justificarlo, olvidar declarar permiso nativo y exponer la API key sin restricciones. Diagrama: `solicitud -> permiso -> lectura -> validación -> marcador`. Fuentes: [Google Maps para Flutter](https://developers.google.com/maps/flutter-package/overview), [Geolocator](https://pub.dev/packages/geolocator).
-
-**Proyecto propio:** `route_map_lab`. **Cuándo pedir precisión:** cuando la tarea depende de pocos metros y la persona recibió una explicación. **Fallos a vigilar:** tratar `deniedForever` como permiso temporal. Evidencia de aprendizaje: entrega el flujo de permiso y captura de fallback textual.
-
-**Resultado esperado:** el mapa tiene marcador con posición; sin permiso muestra la dirección y ayuda contextual.
 
 ```mermaid
 flowchart LR
@@ -156,27 +175,71 @@ flowchart LR
   Check --> Marker[Marcador o fallback]
 ```
 
-Fuente oficial: guía de [configuración Google Maps Flutter](https://developers.google.com/maps/flutter-package/config).
-
----
+</details>
 
 ### Tema 3: animar el marcador sin saltos · Intermedio · 30 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar moverás un marcador entre puntos de manera legible y sin dibujar datos obsoletos. **Prerrequisitos:** `AnimationController`, `Tween` y coordenadas. En `live_route_lab`, crea `lib/features/map/position_tween.dart`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El GPS emite a intervalos irregulares. Cambiar directamente de A a B puede saltar; animar cada evento sin cancelar el anterior puede dejar un marcador retrasado varios segundos.
+#### ► DE QUÉ TRATA
+Al finalizar moverás un marcador entre puntos de manera legible y sin dibujar datos obsoletos. Prerrequisitos: AnimationController, Tween y coordenadas. En live_route_lab, crea lib/features/map/position_tween.dart.
 
-#### ¿Por qué es importante?
-Una animación debe ayudar a anticipar movimiento. Si acumula retraso o hace que el vehículo atraviese edificios, la suavidad engaña sobre la ubicación real.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar moverás un marcador entre puntos de manera legible y sin dibujar datos obsoletos.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Interpolar es dibujar puntos intermedios entre dos mediciones recientes. Limita duración, cancela la animación anterior al recibir un punto más nuevo y conserva el dato real separado del punto visual. No inventes una ruta curva si solo tienes dos coordenadas.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/map/position_tween.dart`:
+#### ► LA ANALOGÍA
+Piensa en animar el marcador sin saltos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  FixA[Posición A: GPS] --> Visual[Interpolación temporal]
+  FixB[Posición B: GPS] --> Visual
+  Visual --> Marker[Marcador actual]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| animar el marcador sin saltos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar animar el marcador sin saltos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses animar el marcador sin saltos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: animar el marcador sin saltos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- animar el marcador sin saltos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve animar el marcador sin saltos en tu contexto?
+2. ¿Cómo sabrías que animar el marcador sin saltos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar animar el marcador sin saltos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:flutter/animation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -193,28 +256,9 @@ class PositionTween extends Tween<LatLng> {
 }
 ```
 
-Al recibir una posición nueva, crea un controller corto, actualiza el marker en `AnimatedBuilder` y llama `dispose` al retirar el widget. Como ejemplo independiente, crea el proyecto nuevo `position_tween_lab` con `flutter create position_tween_lab`; ejecuta el mismo fixture de dos puntos en emulador.
-
-#### Paso 5 · Práctica guiada
-Comprueba que una posición más reciente cancela el controller activo. **Pista:** `CurvedAnimation` cambia la sensación, pero no debe ocultar datos viejos; compara el marker con el punto real.
-
-#### Paso 6 · Práctica independiente
-Prueba un punto idéntico, un salto mayor al umbral y una pausa de señal. Para una pausa larga, mueve al punto nuevo sin animación prolongada y muestra la hora de actualización.
-
-#### Paso 7 · Cierre y evidencia
-Entrega el tween y un video/captura del mismo recorrido. El siguiente tema guardará las confirmaciones mientras no haya conexión.
-
-**Prueba de diagnóstico.** Provoca deliberadamente una duración de cinco segundos; la animación debe verse retrasada. Reduce el intervalo y comprueba que el marker alcanza el último dato.
-
 ```bash
 flutter test test/features/map/position_tween_test.dart
 ```
-
-**Errores comunes:** iniciar un controller por evento sin cancelar el anterior y tratar ubicación interpolada como GPS real. Diagrama: `punto real A -> interpolación visual -> punto real B`. Fuente: [Flutter animations](https://docs.flutter.dev/ui/animations).
-
-**Proyecto propio:** `position_tween_lab`. **Cuándo animar:** si la nueva posición llega pronto y no se está mostrando una ubicación obsoleta. **Fallos a vigilar:** no liberar el `AnimationController` o seguir animando tras una actualización nueva. Evidencia de aprendizaje: entrega una prueba con fixture de dos puntos.
-
-**Resultado esperado:** el marcador termina en el último dato aceptado; la animación solo cambia el dibujo intermedio.
 
 ```mermaid
 flowchart LR
@@ -223,27 +267,71 @@ flowchart LR
   Visual --> Marker[Marcador actual]
 ```
 
-Fuente oficial: [animaciones Flutter](https://docs.flutter.dev/ui/animations).
-
----
+</details>
 
 ### Tema 4: posiciones en tiempo real con Socket.IO · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar conectarás una app Flutter a eventos de posición y distinguirás reconexión de una nueva sesión. **Prerrequisitos:** streams y HTTP. Crea `live_route_lab` con `flutter create live_route_lab` y añade `socket_io_client`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El gateway puede publicar varias veces la misma posición si el teléfono recupera señal. Un evento antiguo que llega después de uno nuevo no debe hacer retroceder al marcador. La clave de parada y la marca de tiempo ayudan a descartar mensajes repetidos o atrasados.
+#### ► DE QUÉ TRATA
+Al finalizar conectarás una app Flutter a eventos de posición y distinguirás reconexión de una nueva sesión. Prerrequisitos: streams y HTTP. Crea live_route_lab con flutter create live_route_lab y añade socket_io_client.
 
-#### ¿Por qué es importante?
-El mapa representa hechos en el tiempo. Sin orden e idempotencia, una demora de red puede mostrar al conductor en el punto equivocado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar conectarás una app Flutter a eventos de posición y distinguirás reconexión de una nueva sesión.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Socket.IO reintenta la conexión, no garantiza que tu lógica de negocio haya aplicado cada evento una sola vez. Comprueba `eventId`/`sequence`, valida coordenadas y conserva la hora del servidor. Una reconexión debe volver a escuchar el canal autorizado y limpiar listeners anteriores.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/live/route_socket.dart`:
+#### ► LA ANALOGÍA
+Piensa en posiciones en tiempo real con socket.io como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+  Gateway->>Flutter: route:position(sequence)
+  Flutter->>Validator: forma y rango
+  Validator->>State: solo secuencia nueva
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| posiciones en tiempo real con Socket.IO se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar posiciones en tiempo real con Socket.IO | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses posiciones en tiempo real con socket.io por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: posiciones en tiempo real con socket.io funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- posiciones en tiempo real con Socket.IO existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve posiciones en tiempo real con socket.io en tu contexto?
+2. ¿Cómo sabrías que posiciones en tiempo real con socket.io no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar posiciones en tiempo real con socket.io?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:socket_io_client/socket_io_client.dart' as socket_io;
 
@@ -266,29 +354,9 @@ class RouteSocket {
 }
 ```
 
-Conecta a un servidor Socket.IO de desarrollo accesible desde el emulador. Ejecuta la app y emite un fixture `{eventId, sequence, lat, lng, sentAt}`; observa el evento en el callback.
-
-#### Paso 5 · Práctica guiada
-En `lib/features/live/position_order.dart`, acepta solo `sequence > lastSequence` y coordenadas dentro de latitud/longitud válidas. Simula mensaje repetido y atrasado; ninguno debe reemplazar la posición actual. **Pista:** compara enteros monotónicos, no timestamps del reloj del teléfono.
-
-#### Paso 6 · Práctica independiente
-Desconecta el servidor durante el recorrido, reconecta y confirma que no se registró dos veces el listener. Añade cierre de sesión que desconecte el socket y borre el token de memoria.
-
-#### Paso 7 · Cierre y evidencia
-Guarda el cliente, filtro de orden y log con secuencia aceptada/descartada. El siguiente tema anima solo las posiciones aceptadas.
-
-**Prueba de diagnóstico.** Provoca deliberadamente dos eventos con el mismo `sequence`; el segundo se debe descartar. **Resultado esperado:** el marcador conserva la ubicación más reciente y el log cuenta un duplicado.
-
 ```bash
 flutter test test/features/live/position_order_test.dart
 ```
-
-**Errores comunes:** llamar `connect()` varias veces o asumir entrega exactly-once. Diagrama: `socket -> validar forma -> deduplicar -> actualizar estado`. Fuente: [socket_io_client](https://pub.dev/packages/socket_io_client).
-
-**Proyecto propio:** `live_route_lab`, con gateway de desarrollo configurado.
-**Ejemplo independiente:** crea `live_route_lab` con `flutter create live_route_lab` y configura un gateway Socket.IO local. **Cuándo aceptar posición:** si formato, secuencia, timestamp y coordenadas son válidos. **Fallos a vigilar:** callback doble tras reconexión y recibir un payload que no sea Map. Evidencia de aprendizaje: entrega el test con el duplicado descartado.
-
-**Resultado esperado:** secuencia mayor actualiza; duplicada o menor no cambia el estado.
 
 ```mermaid
 sequenceDiagram
@@ -297,27 +365,71 @@ sequenceDiagram
   Validator->>State: solo secuencia nueva
 ```
 
-Fuente oficial del paquete: [Socket.IO client Dart](https://pub.dev/packages/socket_io_client).
-
----
+</details>
 
 ### Tema 5: confirmaciones offline y sincronización · Avanzado · 35 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar registrarás una confirmación sin red y la sincronizarás sin duplicarla. **Prerrequisitos:** Future, JSON e idempotencia. Crea `lib/features/sync/outbox.dart` y un test con almacenamiento temporal.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El conductor confirma una entrega en un sótano y pierde señal. La app debe conservar la evidencia, avisar “pendiente de enviar” y volver a intentar al recuperar conectividad. Un reintento puede llegar al servidor más de una vez.
+#### ► DE QUÉ TRATA
+Al finalizar registrarás una confirmación sin red y la sincronizarás sin duplicarla. Prerrequisitos: Future, JSON e idempotencia. Crea lib/features/sync/outbox.dart y un test con almacenamiento temporal.
 
-#### ¿Por qué es importante?
-Si el botón borra la confirmación local al fallar el servidor, se pierde trabajo. Si reenvía sin una clave estable, una entrega puede contarse dos veces.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar registrarás una confirmación sin red y la sincronizarás sin duplicarla.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La outbox local es una bandeja de salida: guarda un comando con `operationId`, contenido mínimo y estado. El servidor usa ese mismo id para idempotencia. En conflicto de estado, no sobrescribas en silencio; conserva respuesta y permite resolver según regla del dominio.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/sync/delivery_command.dart`:
+#### ► LA ANALOGÍA
+Piensa en confirmaciones offline y sincronización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+stateDiagram-v2
+  [*] --> Pending: guarda primero
+  Pending --> Sent: recibo server
+  Pending --> Conflict: estado incompatible
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| confirmaciones offline y sincronización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar confirmaciones offline y sincronización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses confirmaciones offline y sincronización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: confirmaciones offline y sincronización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- confirmaciones offline y sincronización existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve confirmaciones offline y sincronización en tu contexto?
+2. ¿Cómo sabrías que confirmaciones offline y sincronización no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar confirmaciones offline y sincronización?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 class DeliveryCommand {
   const DeliveryCommand({required this.operationId, required this.stopId});
@@ -331,28 +443,9 @@ class DeliveryCommand {
 }
 ```
 
-Para practicar en una copia independiente crea `offline_delivery_lab` con `flutter create offline_delivery_lab`; implementa el repositorio local con SQLite/Drift o la base ya usada en la app: inserta la operación antes de llamar a red, marca `sent` solo en respuesta confirmada y elimina únicamente según la política de retención. Ejecuta `flutter test test/features/sync/outbox_test.dart`.
-
-#### Paso 5 · Práctica guiada
-Simula timeout, reinicio de app y dos intentos con el mismo `operationId`. **Pista:** la identidad del comando nace una vez al presionar confirmar y se reutiliza durante todos los reintentos.
-
-#### Paso 6 · Práctica independiente
-Diseña un conflicto cuando el servidor ya canceló la parada. Muestra “requiere revisión” y conserva la respuesta del servidor sin marcar la entrega como completada.
-
-#### Paso 7 · Cierre y evidencia
-Entrega la tabla outbox antes/después, con id estable y resultado de los reintentos. El siguiente tema enviará evidencia y avisará sobre nuevas tareas.
-
-**Prueba de diagnóstico.** Provoca deliberadamente dos envíos con el mismo `operationId`; el backend de prueba debe responder el mismo resultado lógico y solo guardar una confirmación. **Resultado esperado:** offline conserva una operación pendiente.
-
 ```bash
 flutter test test/features/sync/outbox_test.dart
 ```
-
-**Errores comunes:** generar un nuevo id en cada reintento y descartar un registro al recibir timeout ambiguo. Diagrama: `guardar -> intentar -> confirmado / pendiente / conflicto`. Fuente: [Flutter persistence cookbook](https://docs.flutter.dev/cookbook/persistence).
-
-**Proyecto propio:** `offline_delivery_lab`. **Cuándo borrar la outbox:** cuando el servidor confirmó la acción y la política de retención permite limpiarla. **Fallos a vigilar:** tratar timeout como rechazo y crear otra operación con un id distinto. Evidencia de aprendizaje: entrega la fila antes y después de dos intentos.
-
-**Resultado esperado:** tras timeout conserva `pending`; tras respuesta confirmada cambia a `sent`.
 
 ```mermaid
 stateDiagram-v2
@@ -361,27 +454,71 @@ stateDiagram-v2
   Pending --> Conflict: estado incompatible
 ```
 
-Fuente oficial: [persistencia Flutter](https://docs.flutter.dev/cookbook/persistence).
-
----
+</details>
 
 ### Tema 6: carga de evidencia con Dio y notificaciones · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar subirás una evidencia con progreso y recibirás una asignación sin mezclar los dos flujos. **Prerrequisitos:** HTTP, permisos de archivo y push. Crea un proyecto nuevo de práctica con `flutter create evidence_delivery_lab`; añade `dio`, `image_picker` y `firebase_messaging` según las plataformas que vas a compilar.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una foto de entrega puede ser grande y la red puede cortarse. El conductor necesita saber si se envía, se reintenta o requiere volver a elegir el archivo. Una notificación push puede avisar una asignación; el backend sigue siendo quien autoriza y guarda su estado.
+#### ► DE QUÉ TRATA
+Al finalizar subirás una evidencia con progreso y recibirás una asignación sin mezclar los dos flujos. Prerrequisitos: HTTP, permisos de archivo y push. Crea un proyecto nuevo de práctica con flutter create evidence_delivery_lab; añade dio, image_picker y firebase_messaging según…
 
-#### ¿Por qué es importante?
-La evidencia respalda la operación y puede incluir datos sensibles. Controlar tamaño, progreso, cancelación y acceso evita subir más información de la necesaria.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar subirás una evidencia con progreso y recibirás una asignación sin mezclar los dos flujos.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Dio transporta la petición; el servidor valida la sesión, extensión, MIME, tamaño y permisos antes de almacenar. FCM entrega una señal, no una fuente confiable del estado de la entrega. Al abrir una notificación, consulta el backend.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada
-Crea `lib/features/evidence/evidence_uploader.dart`:
+#### ► LA ANALOGÍA
+Piensa en carga de evidencia con dio y notificaciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Picker[Selecciona evidencia] --> Dio[Dio: progreso]
+  Dio --> API[API: auth y límites]
+  FCM[Push: aviso mínimo] --> API
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| carga de evidencia con Dio y notificaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar carga de evidencia con Dio y notificaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses carga de evidencia con dio y notificaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: carga de evidencia con dio y notificaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- carga de evidencia con Dio y notificaciones existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve carga de evidencia con dio y notificaciones en tu contexto?
+2. ¿Cómo sabrías que carga de evidencia con dio y notificaciones no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar carga de evidencia con dio y notificaciones?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```dart
 import 'package:dio/dio.dart';
 
@@ -403,28 +540,9 @@ class EvidenceUploader {
 }
 ```
 
-Usa un fixture local y backend de desarrollo. Ejecuta `flutter test test/features/evidence/evidence_uploader_test.dart` con Dio adapter fake. Para FCM inicializa Firebase, registra handler de foreground y tap; al abrir consulta `/api/deliveries/{id}` antes de navegar.
-
-#### Paso 5 · Práctica guiada
-Prueba archivo cancelado, `413` por tamaño, `401` por sesión vencida y pérdida de red. **Pista:** reintenta el upload solo si el backend usa una clave idempotente y no duplica archivos.
-
-#### Paso 6 · Práctica independiente
-Añade una política de retención local para fotos fallidas y documenta cómo borrar una evidencia enviada. En push muestra una notificación con datos mínimos, nunca dirección completa o token de acceso.
-
-#### Paso 7 · Cierre y evidencia
-Entrega `evidence_uploader.dart`, el test fake, progreso visible y flujo de notificación probado en dispositivo de desarrollo. Reporta por separado si el proyecto FCM o la credencial no estuvo disponible. El siguiente módulo practica testing e integración del curso completo.
-
-**Prueba de diagnóstico.** Provoca deliberadamente una respuesta `401`; la app debe pedir iniciar sesión y no reintentar automáticamente con el mismo token. **Resultado esperado:** se observa progreso y el backend de prueba recibe una sola evidencia.
-
 ```bash
 flutter test test/features/evidence/evidence_uploader_test.dart
 ```
-
-**Errores comunes:** subir la foto completa sin límite y confiar en payload push para actualizar el dominio. Diagrama: `archivo -> validación local -> API autenticada -> recibo`. Fuentes: [Dio](https://pub.dev/packages/dio), [Firebase Messaging Flutter](https://firebase.google.com/docs/cloud-messaging/flutter/client).
-
-**Proyecto propio:** `evidence_delivery_lab`. **Cuándo reintentar:** si la API define una operación idempotente; un `401` requiere renovar sesión y `413` requiere reducir el archivo. Evidencia de aprendizaje: entrega el test fake, progreso y estado de respuesta.
-
-**Resultado esperado:** una carga produce un recibo; la notificación solo abre una consulta autenticada para obtener el estado vigente. Fuente oficial Firebase: [cliente FCM Flutter](https://firebase.google.com/docs/cloud-messaging/flutter/client).
 
 ```mermaid
 flowchart LR
@@ -433,13 +551,4 @@ flowchart LR
   FCM[Push: aviso mínimo] --> API
 ```
 
----
-
-## Referencias oficiales consultadas
-
-- [Riverpod](https://riverpod.dev/docs/introduction/getting_started)
-- [Google Maps for Flutter](https://developers.google.com/maps/flutter-package/overview) y [Geolocator](https://pub.dev/packages/geolocator)
-- [socket_io_client](https://pub.dev/packages/socket_io_client)
-- [Flutter animations](https://docs.flutter.dev/ui/animations)
-- [Flutter persistence cookbook](https://docs.flutter.dev/cookbook/persistence)
-- [Dio](https://pub.dev/packages/dio) y [Firebase Messaging Flutter](https://firebase.google.com/docs/cloud-messaging/flutter/client)
+</details>

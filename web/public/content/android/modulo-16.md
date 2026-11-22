@@ -9,19 +9,22 @@ una evidencia independiente y termina integrándose en RutaFlow.
 
 > **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3), dentro de `dependencies { }` de `app/build.gradle.kts`: Tema 2, `implementation(libs.androidx.datastore.preferences)`; Tema 3, `implementation(libs.androidx.paging.runtime)` e `implementation(libs.androidx.paging.compose)`; Tema 4, `implementation(platform(libs.firebase.bom))` e `implementation(libs.firebase.messaging)`, más el plugin `alias(libs.plugins.google.services)` (raíz con `apply false`) y el `google-services.json` de tu proyecto de Firebase en `app/`; Tema 6, `implementation(libs.androidx.credentials)` e `implementation(libs.androidx.credentials.play.services.auth)`; Tema 7, `implementation(libs.play.integrity)`.
 
+
 ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar
-rechazo y elegir Photo Picker cuando no necesitas acceso general. **Prerrequisitos:**
-Módulo 15 Tema 1 (Activity Result API) y AndroidManifest.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow adjunta una foto de entrega. Pedir acceso a toda
-la galería al abrir la app aumenta riesgo y abandono; el selector del sistema concede
-acceso temporal únicamente al elemento elegido.
+#### ► DE QUÉ TRATA
+Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar rechazo y elegir Photo Picker cuando no necesitas acceso general. Prerrequisitos: Módulo 15 Tema 1 (Activity Result API) y AndroidManifest.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar rechazo y elegir Photo Picker cuando no necesitas acceso general.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un permiso peligroso se declara en el manifiesto y se solicita durante la acción que
 lo justifica. Antes de pedirlo, comprueba si ya fue concedido; si el sistema recomienda
 una explicación, muestra una razón concreta; si se rechaza, conserva un flujo útil.
@@ -33,10 +36,51 @@ del archivo; el picker deja que el usuario entregue una sola carpeta. La analog�
 implica propiedad permanente: la URI puede necesitar persistencia explícita según el
 contrato usado.
 
-#### Paso 4 · Demostración guiada desde cero
-En una rama nueva del proyecto crea
-`app/src/main/java/com/academia/privacidad/AdjuntarFoto.kt`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que permisos en tiempo de ejecución y alternativas sin permiso resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Permisos en tiempo de ejecución y alternativas sin permiso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Permisos en tiempo de ejecución y alternativas sin permiso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses permisos en tiempo de ejecución y alternativas sin permiso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: permisos en tiempo de ejecución y alternativas sin permiso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Permisos en tiempo de ejecución y alternativas sin permiso existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve permisos en tiempo de ejecución y alternativas sin permiso en tu contexto?
+2. ¿Cómo sabrías que permisos en tiempo de ejecución y alternativas sin permiso no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar permisos en tiempo de ejecución y alternativas sin permiso?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 package com.academia.privacidad
 
@@ -60,69 +104,75 @@ fun AdjuntarFoto(onSeleccionada: (Uri) -> Unit) {
 }
 ```
 
-Compila y revisa el manifiesto fusionado:
-
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:assembleDebug :app:processDebugMainManifest
 grep -R "READ_MEDIA_IMAGES" app/build/intermediates/merged_manifests || echo "sin permiso amplio"
 ```
 
-**Resultado esperado:** `BUILD SUCCESSFUL` y `sin permiso amplio`. El contrato abre
-una UI del sistema y devuelve `Uri?`; cancelar no es error y no ejecuta el callback.
-
-**Fallo deliberado:** agrega `READ_MEDIA_IMAGES` al manifiesto aunque solo uses el
-picker. El `grep` lo detecta: existe privilegio sin necesidad. Elimínalo y documenta
-por qué el caso de uso funciona con acceso seleccionado por el usuario.
-
-#### Paso 5 · Práctica guiada
-Añade una pantalla previa que explique para qué se usará la imagen y permita continuar
-sin adjuntarla. **Pista:** la explicación pertenece a tu UI; no suplantes el diálogo
-del sistema ni bloquees al usuario si rechaza.
-
-#### Paso 6 · Práctica independiente
-Implementa ubicación precisa para «iniciar ruta» con `RequestPermission`. Prueba tres
-estados: concedido, rechazado y «no volver a preguntar». En el último ofrece abrir
-ajustes, pero no repitas el diálogo en bucle.
-
-#### Paso 7 · Cierre
-Entrega picker, manifiesto sin privilegios sobrantes y matriz de tres estados. El
-siguiente tema persiste preferencias pequeñas sin convertirlas en una base relacional.
-**Errores comunes:** pedir permisos al arrancar, asumir que el rechazo es permanente y
-solicitar almacenamiento para un picker que no lo necesita. **Cuándo no usarlo:** si
-necesitas relaciones, consultas o conjuntos grandes, usa Room; un permiso tampoco debe
-sustituir una alternativa más privada.
-
-**Transferencia al proyecto integrador «RutaFlow»:** el comprobante se elige por URI y
-se copia al almacenamiento controlado por la app antes de subirlo. **Fuentes oficiales:**
-[solicitar permisos](https://developer.android.com/training/permissions/requesting) y
-[minimizar permisos](https://developer.android.com/privacy-and-security/minimize-permission-requests).
+</details>
 
 ### Tema 2: DataStore para preferencias consistentes y migrables · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás guardar una preferencia con DataStore, observarla como `Flow` y
-decidir entre Preferences, un esquema tipado y Room. **Prerrequisitos:** corrutinas,
-Flow y Módulo 6.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow recuerda tema visual, filtros y consentimiento.
-Son pocos valores, pero deben escribirse sin bloquear el hilo ni perder actualizaciones
-concurrentes.
+#### ► DE QUÉ TRATA
+Al finalizar podrás guardar una preferencia con DataStore, observarla como Flow y decidir entre Preferences, un esquema tipado y Room. Prerrequisitos: corrutinas, Flow y Módulo 6.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Preferences DataStore guarda pares clave/valor sin esquema; Proto o un serializer
-tipado conserva estructura; Room resuelve conjuntos grandes, relaciones y actualizaciones
-parciales. `data` expone un `Flow` y `edit` aplica una transacción. DataStore no cifra
-secretos por sí solo. **Analogía:** DataStore es una ficha de configuración, Room un
-archivo con tablas relacionadas; no uses la ficha como almacén de miles de entregas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás guardar una preferencia con DataStore, observarla como Flow y decidir entre Preferences, un esquema tipado y Room.**
 
-#### Paso 4 · Demostración guiada desde cero
-Agrega `androidx.datastore:datastore-preferences` al catálogo de versiones del proyecto.
-Usa la versión estable indicada por las notas oficiales de AndroidX que hayas fijado en
-la rama; no mezcles versiones copiadas de ejemplos distintos. Crea el archivo
-`app/src/main/java/com/academia/ajustes/AjustesRepository.kt` con este contenido:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en datastore para preferencias consistentes y migrables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que datastore para preferencias consistentes y migrables resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| DataStore para preferencias consistentes y migrables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar DataStore para preferencias consistentes y migrables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses datastore para preferencias consistentes y migrables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: datastore para preferencias consistentes y migrables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- DataStore para preferencias consistentes y migrables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve datastore para preferencias consistentes y migrables en tu contexto?
+2. ¿Cómo sabrías que datastore para preferencias consistentes y migrables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar datastore para preferencias consistentes y migrables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 package com.academia.ajustes
 
@@ -153,55 +203,74 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:test
 ```
 
-**Resultado esperado:** `BUILD SUCCESSFUL`; una sola instancia de DataStore existe por
-archivo y la escritura ocurre dentro de `edit`. La UI recopila el `Flow` con ciclo de
-vida, no lee el archivo directamente.
-
-**Fallo deliberado:** declara dos delegates con el mismo nombre de archivo en clases
-distintas y trata de usarlos simultáneamente. DataStore puede fallar por múltiples
-instancias activas. Centraliza el delegate a nivel superior e inyecta el repositorio.
-
-#### Paso 5 · Práctica guiada
-Agrega `ordenar_por_prioridad` con valor predeterminado `true` y prueba que la ausencia
-de clave produce el valor documentado. **Pista:** el default pertenece al mapeo del
-repositorio, no a cada pantalla.
-
-#### Paso 6 · Práctica independiente
-Diseña una migración desde `SharedPreferences`. Escribe una tabla con clave anterior,
-clave nueva, default y política ante dato inválido; demuestra que la migración se ejecuta
-una vez y que una reinstalación limpia conserva defaults sensatos.
-
-#### Paso 7 · Cierre
-Entrega repositorio, prueba de default y plan de migración. El siguiente tema pagina un conjunto
-que DataStore no debería almacenar. **Errores comunes:** crear múltiples instancias,
-guardar tokens como texto y usar DataStore para datos relacionales. **Cuándo no usarlo:**
-usa Room para entregas y Android Keystore más almacenamiento apropiado para secretos.
-
-**Transferencia al proyecto integrador «RutaFlow»:** persiste filtros y preferencias,
-no el historial de entregas. **Fuente oficial:** [DataStore](https://developer.android.com/topic/libraries/architecture/datastore).
+</details>
 
 ### Tema 3: Paging 3, estados de carga y RemoteMediator · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar
-cuándo combinar red y Room con `RemoteMediator`. **Prerrequisitos:** Retrofit, Room,
-Flow y LazyColumn.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** descargar diez mil entregas para mostrar veinte desperdicia
-red y memoria. Paginar no es solo «scroll infinito»: también exige claves estables,
-deduplicación, refresh y recuperación de errores.
+#### ► DE QUÉ TRATA
+Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar cuándo combinar red y Room con RemoteMediator. Prerrequisitos: Retrofit, Room, Flow y LazyColumn.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar cuándo combinar red y Room con RemoteMediator.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 `PagingSource` carga una fuente; `Pager` expone `Flow<PagingData<T>>`; Compose consume
 con `collectAsLazyPagingItems`. `LoadState` distingue refresh y append. Cuando Room es
 la fuente de verdad, `RemoteMediator` trae páginas remotas y las escribe en una
 transacción. **Analogía:** el catálogo entrega bandejas bajo demanda; RemoteMediator
 repone el depósito local, no entrega directamente a cada pantalla.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `app/src/main/java/com/academia/paging/EntregasPagingSource.kt`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que paging 3, estados de carga y remotemediator resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Paging 3, estados de carga y RemoteMediator se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Paging 3, estados de carga y RemoteMediator | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses paging 3, estados de carga y remotemediator por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: paging 3, estados de carga y remotemediator funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Paging 3, estados de carga y RemoteMediator existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve paging 3, estados de carga y remotemediator en tu contexto?
+2. ¿Cómo sabrías que paging 3, estados de carga y remotemediator no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar paging 3, estados de carga y remotemediator?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 package com.academia.paging
 
@@ -237,52 +306,27 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:testDebugUnitTest --tests '*PagingSource*'
 ```
 
-**Resultado esperado:** tests con `PagingSource.LoadParams.Refresh` verifican página 1,
-`nextKey = 2` y `LoadResult.Error` ante una excepción. El fin se representa con lista
-vacía y `nextKey = null`, no con un bucle de peticiones.
-
-**Fallo deliberado:** devuelve siempre `pagina + 1`, incluso con respuesta vacía. Un
-test demuestra que nunca se alcanza el final. Restaura `nextKey = null` cuando no hay
-datos.
-
-#### Paso 5 · Práctica guiada
-Renderiza `LoadState.Loading`, `Error` con botón Retry y lista vacía. **Pista:** refresh
-y append son estados distintos; un error al anexar no debe borrar lo ya visible.
-
-#### Paso 6 · Práctica independiente
-Implementa `RemoteMediator` con Room como fuente de verdad. Prueba refresh transaccional,
-clave siguiente y una respuesta duplicada del servidor sin duplicar filas.
-
-#### Paso 7 · Cierre
-Entrega PagingSource, pruebas de fin/error y diseño de RemoteMediator. El siguiente tema
-recibe cambios remotos mediante push sin confundir notificación con estado de negocio.
-**Errores comunes:** claves inestables, reintento infinito y usar la red directamente
-como UI source en una app offline-first. **Cuándo no usarlo:** una lista pequeña y
-acotada no necesita Paging.
-
-**Transferencia al proyecto integrador «RutaFlow»:** historial paginado desde Room,
-sincronizado por RemoteMediator. **Fuentes oficiales:** [Paging 3](https://developer.android.com/topic/libraries/architecture/paging/v3-overview) y
-[red + base de datos](https://developer.android.com/topic/libraries/architecture/paging/v3-network-db).
+</details>
 
 ### Tema 4: FCM, permiso de notificaciones y sincronización confiable · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android
-13+ y tratar el push como señal para sincronizar. **Prerrequisitos:** notificaciones
-locales, deep links, WorkManager y backend autenticado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow avisa que una entrega cambió, pero un push puede
-retrasarse, duplicarse o perderse. La notificación mejora latencia percibida; la API y
-la base local siguen siendo la fuente de verdad.
+#### ► DE QUÉ TRATA
+Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android 13+ y tratar el push como señal para sincronizar. Prerrequisitos: notificaciones locales, deep links, WorkManager y backend autenticado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-FCM asigna un token a una instalación; `onNewToken` debe enviarlo al backend asociado
-al usuario correcto. Los mensajes de datos permiten decidir cómo sincronizar. Android
-13+ requiere `POST_NOTIFICATIONS` para mostrar UI, no para actualizar silenciosamente
-dentro de los límites del sistema. **Analogía:** el push es un timbre, no el contenido
-del paquete: al oírlo consultas el estado autenticado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android 13+ y tratar el push como señal para sincronizar.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en fcm, permiso de notificaciones y sincronización confiable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     F[FCM: envio_id] --> S[MessagingService]
@@ -293,8 +337,52 @@ flowchart LR
     U -. no toma el push como estado final .-> F
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `app/src/main/java/com/academia/push/RutaFlowMessagingService.kt`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| FCM, permiso de notificaciones y sincronización confiable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar FCM, permiso de notificaciones y sincronización confiable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses fcm, permiso de notificaciones y sincronización confiable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: fcm, permiso de notificaciones y sincronización confiable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- FCM, permiso de notificaciones y sincronización confiable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve fcm, permiso de notificaciones y sincronización confiable en tu contexto?
+2. ¿Cómo sabrías que fcm, permiso de notificaciones y sincronización confiable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar fcm, permiso de notificaciones y sincronización confiable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    F[FCM: envio_id] --> S[MessagingService]
+    S --> W[Trabajo único en WorkManager]
+    W --> A[API autenticada]
+    A --> R[Room: fuente local de verdad]
+    R --> U[UI observa Flow]
+    U -. no toma el push como estado final .-> F
+```
 
 ```kotlin
 package com.academia.push
@@ -316,9 +404,6 @@ class RutaFlowMessagingService : FirebaseMessagingService() {
 }
 ```
 
-Declara el servicio con `exported="false"` y la acción `MESSAGING_EVENT`, crea el canal
-en primer plano y solicita `POST_NOTIFICATIONS` después de explicar el beneficio.
-
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:processDebugMainManifest :app:testDebugUnitTest
@@ -326,46 +411,23 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 grep -R "MESSAGING_EVENT\|exported=\"false\"" app/build/intermediates/merged_manifests
 ```
 
-**Resultado esperado:** el manifiesto fusionado contiene servicio no exportado; tests
-rechazan IDs inválidos y encolan una sola sincronización idempotente para duplicados.
-
-**Fallo deliberado:** usa el texto recibido como estado final y marca «entregado» sin
-consultar API. Reproduce un mensaje duplicado o antiguo: puede retroceder datos. Corrige
-encolando una sincronización por ID y comparando versión del servidor.
-
-#### Paso 5 · Práctica guiada
-Implementa `onNewToken` con una cola local que se vacía tras login. **Pista:** cerrar
-sesión debe desvincular el token en backend antes de asociarlo a otra cuenta.
-
-#### Paso 6 · Práctica independiente
-Prueba matriz foreground/background, permiso concedido/rechazado y mensaje perdido.
-Cuando FCM informa mensajes eliminados, ejecuta sincronización completa y documenta
-telemetría de recibido, mostrado, abierto y sincronizado sin guardar contenido sensible.
-
-#### Paso 7 · Cierre
-Entrega servicio, manifiesto, política de token y matriz. El siguiente tema adapta el mismo flujo
-a pantallas grandes. **Errores comunes:** confiar en entrega exacta, registrar tokens en
-logs y pedir permiso sin contexto. **Cuándo no usarlo:** actualizaciones críticas que
-requieren garantía deben tener reconciliación en backend/cliente; FCM no es una cola
-transaccional.
-
-**Transferencia al proyecto integrador «RutaFlow»:** cada push invalida una entrega y
-WorkManager reconcilia Room. **Fuentes oficiales:** [configurar FCM](https://firebase.google.com/docs/cloud-messaging/android/get-started) y
-[recibir mensajes](https://firebase.google.com/docs/cloud-messaging/android/receive-messages).
+</details>
 
 ### Tema 5: Interfaces adaptativas para teléfono, tablet y foldable · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado
-al redimensionar y probar teléfono, tablet, split-screen y foldable. **Prerrequisitos:**
-Compose, Navigation y pruebas UI.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Android no equivale a un rectángulo fijo: una app puede
-cambiar de tamaño sin recrearse y ejecutarse en tablet, escritorio o postura plegada.
-Estirar una lista de teléfono produce líneas ilegibles y navegación desperdiciada.
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado al redimensionar y probar teléfono, tablet, split-screen y foldable. Prerrequisitos: Compose, Navigation y pruebas UI.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado al redimensionar y probar teléfono, tablet, split-screen y foldable.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Diseño adaptativo responde al tamaño de la ventana, no al modelo del dispositivo.
 Compact suele usar una pantalla; medium/expanded puede usar lista y detalle simultáneos,
 con `NavigationSuiteScaffold` eligiendo barra o rail. Los datos y la selección viven
@@ -388,8 +450,67 @@ flowchart TD
     E --> S
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea y prueba una decisión pura antes de conectar APIs de ventana:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    W[Tamaño y postura actuales] --> C{Espacio útil}
+    C -->|Compacto| O[Una superficie + barra]
+    C -->|Medio| M[Rail o dos paneles si caben]
+    C -->|Expandido| E[Lista y detalle]
+    O --> S[Estado compartido fuera del layout]
+    M --> S
+    E --> S
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Interfaces adaptativas para teléfono, tablet y foldable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Interfaces adaptativas para teléfono, tablet y foldable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses interfaces adaptativas para teléfono, tablet y foldable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: interfaces adaptativas para teléfono, tablet y foldable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Interfaces adaptativas para teléfono, tablet y foldable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve interfaces adaptativas para teléfono, tablet y foldable en tu contexto?
+2. ¿Cómo sabrías que interfaces adaptativas para teléfono, tablet y foldable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar interfaces adaptativas para teléfono, tablet y foldable?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    W[Tamaño y postura actuales] --> C{Espacio útil}
+    C -->|Compacto| O[Una superficie + barra]
+    C -->|Medio| M[Rail o dos paneles si caben]
+    C -->|Expandido| E[Lista y detalle]
+    O --> S[Estado compartido fuera del layout]
+    M --> S
+    E --> S
+```
 
 ```kotlin
 package com.academia.adaptive
@@ -403,58 +524,32 @@ fun presentacion(ancho: Ancho): Presentacion = when (ancho) {
 }
 ```
 
-Conecta la función a `currentWindowAdaptiveInfo().windowSizeClass` y conserva
-`envioSeleccionadoId` en ViewModel/SavedStateHandle.
-
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:testDebugUnitTest --tests '*Adaptive*' :app:connectedDebugAndroidTest
 ```
 
-**Resultado esperado:** tests unitarios cubren tres anchos; pruebas UI confirman barra
-en compacto y lista/detalle en expandido sin perder selección al redimensionar.
-
-**Fallo deliberado:** calcula layout una sola vez con `resources.configuration` y guarda
-selección dentro de la rama compacta. Al cambiar tamaño, se pierde. Mueve el estado al
-ViewModel y deriva presentación del tamaño actual.
-
-#### Paso 5 · Práctica guiada
-Agrega previews para cuatro tamaños y limita el ancho de formularios. **Pista:** más
-espacio no significa que cada campo deba ocuparlo por completo.
-
-#### Paso 6 · Práctica independiente
-Ejecuta la matriz oficial: teléfono vertical/horizontal, tablet, foldable, split-screen,
-teclado y TalkBack. Registra captura, foco y continuidad de una entrega seleccionada.
-
-#### Paso 7 · Cierre
-Entrega layout adaptativo y matriz. El siguiente y último tema moderniza autenticación sin guardar
-contraseñas. **Errores comunes:** detectar «tablet» por nombre, duplicar pantallas y
-guardar estado dentro del layout. **Cuándo no usarlo:** no añadas panel doble si empeora
-la tarea; adapta según contenido y evidencia.
-
-**Transferencia al proyecto integrador «RutaFlow»:** teléfono muestra lista o detalle;
-tablet muestra ambos con selección compartida. **Fuentes oficiales:** [calidad adaptativa](https://developer.android.com/develop/adaptive-apps/quality-guidelines/core-app-quality) y
-[calidad técnica](https://developer.android.com/quality/technical).
+</details>
 
 ### Tema 6: Credential Manager, passkeys y verificación en servidor · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico
-de una passkey y separar autenticación local de autorización del backend. **Prerrequisitos:**
-HTTP, deep links y seguridad del Módulo 13.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** guardar contraseñas o construir un selector propio aumenta
-phishing y fragmentación. Credential Manager unifica passkeys, contraseñas y proveedores;
-el servidor sigue verificando credenciales y emitiendo la sesión de RutaFlow.
+#### ► DE QUÉ TRATA
+Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico de una passkey y separar autenticación local de autorización del backend. Prerrequisitos: HTTP, deep links y seguridad del Módulo 13.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El servidor genera un challenge de un solo uso ligado al origen. El autenticador firma
-con una clave privada que no se comparte; el servidor valida firma, challenge, RP ID y
-contador cuando corresponda. La app transporta JSON de WebAuthn, no decide por sí sola
-que la firma es válida. **Analogía:** el teléfono firma un formulario con un sello que
-no entrega; la oficina compara el sello y el número único del formulario.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico de una passkey y separar autenticación local de autorización del backend.**
 
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en credential manager, passkeys y verificación en servidor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant A as App Android
@@ -468,8 +563,55 @@ sequenceDiagram
     S-->>A: sesión si origen, firma y challenge son válidos
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `app/src/main/java/com/academia/identidad/IniciarSesion.kt`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Credential Manager, passkeys y verificación en servidor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Credential Manager, passkeys y verificación en servidor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses credential manager, passkeys y verificación en servidor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: credential manager, passkeys y verificación en servidor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Credential Manager, passkeys y verificación en servidor existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve credential manager, passkeys y verificación en servidor en tu contexto?
+2. ¿Cómo sabrías que credential manager, passkeys y verificación en servidor no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar credential manager, passkeys y verificación en servidor?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant A as App Android
+    participant S as Servidor
+    participant C as Credential Manager
+    A->>S: solicita challenge de un solo uso
+    S-->>A: opciones WebAuthn y challenge
+    A->>C: getCredential(opciones)
+    C-->>A: respuesta firmada
+    A->>S: assertion completa
+    S-->>A: sesión si origen, firma y challenge son válidos
+```
 
 ```kotlin
 package com.academia.identidad
@@ -500,53 +642,23 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 ./gradlew :app:test
 ```
 
-**Resultado esperado:** el fake de `IdentidadApi` comprueba que el JSON recibido incluye
-el challenge esperado y devuelve una sesión solo una vez. Cancelar el selector produce
-estado cancelado, no «contraseña incorrecta».
-
-**Fallo deliberado:** reutiliza el mismo challenge en dos verificaciones. El segundo
-intento debe fallar; si pasa, existe replay. Marca challenges consumidos y con expiración
-en el servidor.
-
-#### Paso 5 · Práctica guiada
-Modela `Cargando`, `Cancelado`, `Autenticado` y `Error` sin registrar el JSON completo.
-**Pista:** cancelación voluntaria no es un incidente ni debe mostrar alarma roja.
-
-#### Paso 6 · Práctica independiente
-Agrega fallback de contraseña/federado mediante Credential Manager, logout que revoca
-sesión y prueba de cuenta equivocada. Diseña dónde aplicar Play Integrity como señal de
-riesgo, nunca como sustituto de autenticación o autorización.
-
-#### Paso 7 · Cierre
-Entrega flujo, prueba anti-replay y modelo de estados. Como siguiente paso, cierra el track demostrando que
-una app profesional minimiza privilegios, escala datos/UI y delega identidad a APIs
-modernas con verificación de servidor. **Errores comunes:** verificar solo en cliente,
-registrar assertions y confundir integridad de dispositivo con identidad. **Cuándo no
-usarlo:** no obligues passkeys si tu población/plataformas no puede recuperarlas; conserva
-un fallback seguro y medido.
-
-**Transferencia al proyecto integrador «RutaFlow»:** conductor inicia sesión, backend
-verifica y entrega sesión con autorización por envío. **Fuente oficial:**
-[Credential Manager y form factors](https://developer.android.com/identity/form-factors).
+</details>
 
 ### Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Avanzado · 45 min
 
-**Prerrequisito:** tema «Credential Manager, passkeys y verificación en servidor» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** pedir un token de integridad desde la app al confirmar una entrega, verificarlo en el servidor y decidir qué hacer según el veredicto de app, dispositivo y cuenta.
+#### ► DE QUÉ TRATA
+Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y com.google.android.play:integrity en el módulo app. El servidor descifra el token con la API de Google.
 
-**¿Por qué es importante?** Cualquiera puede llamar a tu API con un script o con una app modificada que marca entregas falsas. Play Integrity da al servidor una señal firmada por Google de que la petición viene de tu app sin modificar, en un dispositivo real.
+#### ► LA IDEA EN UNA FRASE
+**Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y com.google.android.play:integrity en el módulo app.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y `com.google.android.play:integrity` en el módulo `app`. El servidor descifra el token con la API de Google.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow detectó entregas marcadas desde lugares imposibles. Alguien usaba una versión modificada de la app con ubicación falsa. Exigir un veredicto de integridad para confirmar entregas cortó el fraude sin afectar a los conductores legítimos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
+#### ► LA ANALOGÍA
 **Conceptos clave:** atestación, token de integridad, nonce o `requestHash`, veredicto de app (`appRecognitionVerdict`), de dispositivo (`deviceRecognitionVerdict`) y de cuenta, decodificación en servidor.
 
 Flujo de una **solicitud estándar**:
@@ -582,9 +694,73 @@ sequenceDiagram
     S->>S: compara requestHash y decide
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
-Archivo `app/src/main/java/co/rutaflow/conductor/integridad/Integridad.kt`:
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant A as App del conductor
+    participant P as Play Integrity
+    participant S as API RutaFlow
+    participant G as Google (decode)
+    A->>P: request(requestHash de la entrega)
+    P-->>A: token
+    A->>S: POST /entregas + token
+    S->>G: decodeIntegrityToken
+    G-->>S: veredicto
+    S->>S: compara requestHash y decide
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Play Integrity API: comprobar en el servidor que la petición viene de tu app real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Play Integrity API: comprobar en el servidor que la petición viene de tu app real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses play integrity api: comprobar en el servidor que la petición viene de tu app real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: play integrity api: comprobar en el servidor que la petición viene de tu app real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Play Integrity API: comprobar en el servidor que la petición viene de tu app real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve play integrity api: comprobar en el servidor que la petición viene de tu app real en tu contexto?
+2. ¿Cómo sabrías que play integrity api: comprobar en el servidor que la petición viene de tu app real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar play integrity api: comprobar en el servidor que la petición viene de tu app real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant A as App del conductor
+    participant P as Play Integrity
+    participant S as API RutaFlow
+    participant G as Google (decode)
+    A->>P: request(requestHash de la entrega)
+    P-->>A: token
+    A->>S: POST /entregas + token
+    S->>G: decodeIntegrityToken
+    G-->>S: veredicto
+    S->>S: compara requestHash y decide
+```
 
 ```kotlin
 package co.rutaflow.conductor.integridad
@@ -615,8 +791,6 @@ class Integridad(contexto: Context, private val numeroProyecto: Long) {
 }
 ```
 
-Archivo `servidor/src/main/kotlin/co/rutaflow/api/VerificadorIntegridad.kt`:
-
 ```kotlin
 package co.rutaflow.api
 
@@ -633,16 +807,10 @@ fun decidir(veredicto: Veredicto, hashEsperado: String): Decision = when {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 ./gradlew bundleRelease   # sube el .aab a la pista de prueba interna de Play Console
 # instala desde Play en un dispositivo de prueba y confirma una entrega
 ```
-
-**Explicación por bloques:** En la app, `preparar` calienta el proveedor una sola vez. `tokenParaEntrega` calcula el SHA-256 del código del envío y la hora, y lo envía como `requestHash`; el token devuelto queda atado a esa acción. En el servidor, la respuesta de `decodeIntegrityToken` se resume en un `Veredicto`. `decidir` rechaza si el hash no coincide o si la app no es reconocida, pide verificación extra si el dispositivo no cumple la integridad básica y acepta en el resto de casos.
-
-**Resultado esperado:**
 
 ```text
 App instalada desde Play en un dispositivo real: veredicto app PLAY_RECOGNIZED, dispositivo [MEETS_DEVICE_INTEGRITY] y decisión ACEPTAR.
@@ -650,39 +818,4 @@ La misma app instalada con un APK modificado: app UNRECOGNIZED_VERSION y decisi�
 Un token reutilizado para otra entrega: requestHash distinto y decisión RECHAZAR.
 ```
 
-**Fallo deliberado:** instala la app con `./gradlew installDebug` en lugar de hacerlo desde Play. **Error esperado:** el veredicto de app es `UNRECOGNIZED_VERSION`. **Diagnóstico:** Play solo reconoce el binario que firmó y distribuyó. Prueba con la pista interna o usa las respuestas de prueba configurables en Play Console.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** instala desde la pista interna y confirma una entrega; revisa el veredicto en el servidor.
-2. **Variación:** configura en Play Console una respuesta de prueba con `MEETS_BASIC_INTEGRITY` y comprueba la decisión `VERIFICAR_EXTRA`.
-3. **Diagnóstico:** reproduce el fallo deliberado con `installDebug`.
-4. **Integración:** cambia la hora en el `requestHash` del servidor y comprueba que la decisión es `RECHAZAR`.
-5. **Diseño:** diseña qué pide la app cuando la decisión es `VERIFICAR_EXTRA` (por ejemplo, foto obligatoria o firma del cliente).
-
-**Pista:** si el hash no coincide, compara el texto exacto que hashean la app y el servidor, incluido el separador.
-
-#### Paso 6 · Práctica independiente
-
-Agrega pruebas unitarias a `decidir` para los cuatro casos (hash distinto, app no reconocida, dispositivo débil y todo correcto).
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué la decisión se toma en el servidor.
-- [ ] Ataste el token a la acción con `requestHash`.
-- [ ] Reprodujiste el veredicto de una app no instalada desde Play.
-- [ ] Tu política no bloquea a ciegas a dispositivos legítimos.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** decidir en la app, no atar el token a la acción y rechazar todo lo que no tenga la integridad máxima. **Siguiente paso:** el módulo 13 integra esta señal con el resto de la operación de seguridad de la app.
-
-**Transferencia al proyecto integrador «RutaFlow»:** exige un veredicto de Play Integrity para confirmar entregas en la API de RutaFlow, con verificación extra en dispositivos de integridad básica.
-
-**Fuente oficial:** [Android Developers — Play Integrity API overview](https://developer.android.com/google/play/integrity/overview) y [Android Developers — Make a standard API request](https://developer.android.com/google/play/integrity/standard).
-
-## Proyecto del módulo
-
-Integra los seis temas en una rama `modulo-16`: adjunta foto sin permiso amplio,
-persiste preferencias con DataStore, pagina Room/red, reconcilia un push FCM, adapta
-lista/detalle y autentica con challenge de servidor. La evidencia incluye tests, matriz
-de dispositivos/permisos, manifiesto fusionado y un README que separa lo ejecutado en
-emulador de Firebase/backend que requiera credenciales reales.
+</details>

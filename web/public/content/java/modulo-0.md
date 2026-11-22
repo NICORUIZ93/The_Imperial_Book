@@ -100,21 +100,68 @@ flowchart LR
 
 ## Aprende construyendo
 
+
 ### Tema 1: Del código fuente a la JVM · Básico · 40 min
 
-**Duración estimada:** 40 min.
-**¿Por qué es importante?** Entender fuente, bytecode y classpath permite diagnosticar por qué un programa que compila no inicia.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** ninguno. Proyecto continuo del track: construir un motor de asignación de entregas. Usa JDK 25 o posterior (el que instalaste en «Antes de comenzar») y ejecuta `java --version` y `javac --version` antes de comenzar.
+#### ► DE QUÉ TRATA
+Este tema te guía por del código fuente a la jvm con foco en comprensión antes de implementación.
 
-#### Subtema 1.1: Compila y ejecuta tu primera clase · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender del código fuente a la jvm te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
-El código que escribes y el archivo que ejecuta Java tienen formatos distintos. Verás esa traducción en una clase pequeña.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
-Crea `java-motor/src/Saludo.java` con este contenido:
+#### ► LA ANALOGÍA
+Piensa en del código fuente a la jvm como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que del código fuente a la jvm resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Del código fuente a la JVM se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Del código fuente a la JVM | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses del código fuente a la jvm por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: del código fuente a la jvm funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Del código fuente a la JVM existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve del código fuente a la jvm en tu contexto?
+2. ¿Cómo sabrías que del código fuente a la jvm no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar del código fuente a la jvm?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public final class Saludo {
     public static void main(String[] args) {
@@ -123,75 +170,19 @@ public final class Saludo {
 }
 ```
 
-Desde la carpeta `java-motor/`, ejecuta:
-
 ```bash
 javac -d out src/Saludo.java
 java -cp out Saludo
 ```
 
-**Resultado esperado:** la terminal muestra `Hola desde la JVM`; el archivo compilado queda en `out/Saludo.class`.
-
-**Fallo deliberado:** cambia el nombre del archivo a `saludo.java` y vuelve a compilar. **Error esperado:** el compilador indica que la clase pública `Saludo` debe estar en `Saludo.java`. **Diagnóstico:** el nombre de un archivo con una clase pública distingue mayúsculas y debe coincidir con el nombre de la clase.
-
-**3. Entiende**
-`javac` compila el archivo fuente `.java` y `java` ejecuta el bytecode `.class`. Compilar no ejecuta el programa.
-
-**4. Cierra**
-Guarda el fuente y anota qué archivo creó cada comando.
-
-#### Subtema 1.2: Lee una instrucción del bytecode · 10 min
-
-**1. Contexto**
-Si el programa compila pero falla en otro entorno, saber inspeccionar el artefacto ayuda a encontrar dónde se rompió el recorrido.
-
-**2. Hazlo tú**
-Abre `java-motor/src/Saludo.java` y, desde `java-motor/`, ejecuta:
-
 ```bash
 javap -c -classpath out Saludo
 ```
-
-**Resultado esperado:** aparece el método `main` y varias instrucciones de bytecode, entre ellas llamadas asociadas a `System.out.println`.
-
-**Fallo deliberado:** ejecuta `javap -c -classpath src Saludo`. **Error esperado:** no encuentra la clase. **Diagnóstico:** `javap` busca el `.class`; está en `out`, no en la carpeta `src`.
-
-**3. Entiende**
-El bytecode es un formato intermedio que la JVM puede ejecutar. `javap` lo muestra para inspección; no modifica el programa.
-
-**4. Cierra**
-Copia dos instrucciones que mostró `javap` y describe cuál llamada del programa ayudan a representar.
-
-#### Subtema 1.3: Diagnostica dónde busca la JVM · 10 min
-
-**1. Contexto**
-La JVM necesita saber en qué carpeta están las clases compiladas. Una ruta equivocada produce un error de carga aunque el archivo fuente esté bien.
-
-**2. Hazlo tú**
-Desde `java-motor/`, ejecuta el comando correcto y el comando con el directorio equivocado:
 
 ```bash
 java -cp out Saludo
 java -cp src Saludo
 ```
-
-**Resultado esperado:** el primero imprime `Hola desde la JVM`; el segundo falla con `Could not find or load main class Saludo` o `ClassNotFoundException`.
-
-**Fallo deliberado:** borra `out/Saludo.class` y vuelve a ejecutar `java -cp out Saludo`. **Error esperado:** no puede cargar la clase. **Diagnóstico:** el bytecode fue eliminado; recompila con `javac -d out src/Saludo.java`.
-
-**3. Entiende**
-`-cp` señala el classpath: las carpetas donde Java busca las clases. La carpeta del fuente no sustituye la carpeta que contiene el `.class`.
-
-**4. Cierra**
-Entrega la salida correcta, el error reproducido y la ruta que corregiste.
-
-#### Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente · 10 min
-
-**1. Contexto**
-El Subtema 1.3 produjo `Could not find or load main class` cuando la propia clase que ejecutas no existe en el classpath. Pero `Saludo` podría compilar y empezar a ejecutarse, y fallar después porque una clase que *usa* internamente sí falta. Ambos casos imprimen `ClassNotFoundException` en algún lugar del mensaje y es fácil confundirlos; cada uno exige un diagnóstico distinto.
-
-**2. Hazlo tú**
-Crea `java-motor/src/Ayudante.java` y `java-motor/src/Principal.java`:
 
 ```java
 public final class Ayudante {
@@ -207,91 +198,78 @@ public final class Principal {
 }
 ```
 
-Desde `java-motor/`, compila los tres archivos del tema y ejecuta `Principal`:
-
-```bash
-javac -d out src/Saludo.java src/Principal.java src/Ayudante.java
-java -cp out Principal
-```
-
-**Resultado esperado:** imprime `ayudando`. Ahora borra solo la dependencia, sin tocar `Principal.class`:
-
-```bash
-rm out/Ayudante.class
-java -cp out Principal
-```
-
-**Resultado esperado:** `Exception in thread "main" java.lang.NoClassDefFoundError: Ayudante`, con `at Principal.main(Principal.java:3)` y como causa `Caused by: java.lang.ClassNotFoundException: Ayudante`. Compara este mensaje con el del Subtema 1.3 (`Could not find or load main class Saludo` / `no se ha encontrado o cargado la clase principal`): son errores diferentes que comparten la misma excepción de causa.
-
-**Fallo deliberado:** una hipótesis frecuente es pensar que cualquier mensaje con `ClassNotFoundException` significa "la clase que quiero ejecutar no existe". **Error esperado:** con `Ayudante.class` borrado, `Principal` sí empieza a ejecutarse (la JVM ya cargó y arrancó `Principal.main`) y falla *dentro* de `main`, al intentar cargar `Ayudante` por primera vez. **Diagnóstico:** `Could not find or load main class` ocurre antes de iniciar `main` porque la propia clase que invocaste en `java` no se encontró; `NoClassDefFoundError` ocurre durante la ejecución porque una clase que el código ya en marcha necesita cargar no está disponible, aunque sí existía al compilar. Restaura `Ayudante.class` recompilando para corregirlo.
-
-**3. Entiende**
-El mensaje de arranque (`Could not find or load main class`) y la excepción en tiempo de ejecución (`NoClassDefFoundError`) comparten la misma causa raíz —no se encontró el `.class`— pero ocurren en momentos distintos del ciclo de vida: antes de que exista un hilo `main` ejecutándose, o después. Leer *dónde* aparece el stack trace (si hay uno) dice en qué momento falló la carga.
-
-**4. Cierra**
-Guarda ambas salidas lado a lado y explica con tus palabras en qué momento del programa ocurrió cada una.
-
-**Hito del tema:**
-
-- [ ] Compilé y ejecuté `Saludo`.
-- [ ] Inspeccioné bytecode con `javap`.
-- [ ] Reproduje el error de classpath y lo corregí.
-- [ ] Distinguí `Could not find or load main class` de `NoClassDefFoundError` por el momento en que ocurren.
-- [ ] Conservé fuente, artefacto y salidas.
-
-**Fuentes oficiales:** [manual de `javac`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html) y [manual de `java`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html).
-
-**Proyecto integrador:** el motor de asignación de entregas parte de esta misma pareja `javac`/`java`: cada módulo del motor se compila una vez y se ejecuta muchas veces con distintos datos de entrada. **Límite:** `javac` recompila cuando cambia el código; no necesitas recompilar solo porque cambien los argumentos de entrada, y volver a compilar sin cambios reales no diagnostica ningún error de ejecución.
+</details>
 
 ### Tema 2: JDK, JRE y JVM · Básico · 30 min
 
-**¿Por qué es importante?** Saber qué herramienta compila y cuál ejecuta evita buscar un bug en el código cuando falta el JDK. **Modelo mental:** el compilador es el taller que fabrica el bytecode; la JVM es el motor que lo pone en marcha.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** el motor de entregas se compila en desarrollo y CI, y se ejecuta en el servidor. **Límite:** no asumas que todas las distribuciones traen un JRE separado. **Práctica:** registra las versiones de java y javac para comparar equipos.
+#### ► DE QUÉ TRATA
+Este tema te guía por jdk, jre y jvm con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender jdk, jre y jvm te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en jdk, jre y jvm como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que jdk, jre y jvm resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| JDK, JRE y JVM se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar JDK, JRE y JVM | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses jdk, jre y jvm por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: jdk, jre y jvm funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- JDK, JRE y JVM existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve jdk, jre y jvm en tu contexto?
+2. ¿Cómo sabrías que jdk, jre y jvm no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar jdk, jre y jvm?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 javac -d out src/Entorno.java
 java -cp out Entorno
 ```
 
-#### Subtema 2.1: Comprueba qué herramientas instalaste · 10 min
-
-**1. Contexto**
-
-Para compilar necesitas el JDK. Comprobar los ejecutables evita confundir un problema de instalación con un error del programa.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/versiones.txt`. En una terminal ejecuta:
-
 ```bash
 java --version
 javac --version
 ```
-
-**Resultado esperado:** los dos comandos muestran la misma versión mayor.
-
-Registra en `java-motor/src/versiones.txt` la versión que imprimió cada comando.
-
-**Fallo deliberado:** escribe `javacc --version`. **Diagnóstico:** la terminal no encuentra el comando porque el nombre está mal; si solo falta `javac`, instala un JDK o corrige `PATH`.
-
-**3. Entiende**
-
-`java` ejecuta; `javac` compila. El JDK incluye herramientas de desarrollo y el entorno que necesita el programa para ejecutarse.
-
-**4. Cierra**
-
-Guarda las dos salidas e identifica cuál comando usarás para cada tarea.
-
-#### Subtema 2.2: Inspecciona la VM que ejecuta tu clase · 10 min
-
-**1. Contexto**
-
-El nombre de la máquina virtual y la versión activa ayudan a resolver diferencias entre equipos.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Entorno.java`:
 
 ```java
 public class Entorno {
@@ -302,68 +280,79 @@ public class Entorno {
 }
 ```
 
-Desde `java-motor` ejecuta:
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
 
 ```bash
 javac -d out src/Entorno.java
 java -cp out Entorno
 ```
 
-**Resultado esperado:** se imprimen el nombre de la VM y la versión de Java del proceso.
-
-**Fallo deliberado:** lanza `java -cp src Entorno`. **Diagnóstico:** la clase está en `out` porque la compilaste allí; corrige el classpath.
-
-**3. Entiende**
-
-La JVM carga y ejecuta bytecode. La propiedad consultada describe la VM activa; no es el compilador.
-
-**4. Cierra**
-
-Conserva archivo, comandos y las dos líneas de salida.
-
-#### Subtema 2.3: Separa desarrollo de ejecución · 10 min
-
-**1. Contexto**
-
-La computadora que compila y el servidor que ejecuta el resultado no necesariamente necesitan las mismas herramientas.
-
-**2. Hazlo tú**
-
-Desde `java-motor` usa el archivo anterior:
-
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
-
-Anota: en desarrollo y CI necesitas `javac`; el proceso de ejecución necesita una JVM y las clases de Java compatibles con la versión objetivo.
-
-**Resultado esperado:** `Entorno.class` aparece en `out` y se ejecuta con `java`.
-
-**Fallo deliberado:** intenta compilar en una máquina que solo ofrece el comando `java`. **Diagnóstico:** ese runtime ejecuta, pero no compila; lleva la compilación a CI o instala un JDK.
-
-**3. Entiende**
-
-“JRE” se usa para hablar del runtime necesario para ejecutar Java, pero las distribuciones actuales no siempre ofrecen un paquete separado con ese nombre. Revisa qué incluye el proveedor elegido.
-
-**4. Cierra**
-
-Escribe dónde compilas, qué artefacto despliegas y qué versión lo ejecutará. Consulta [la documentación del JDK](https://docs.oracle.com/en/java/javase/25/) para el proveedor de tu entorno.
+</details>
 
 ### Tema 3: public static void main — qué significa cada palabra · Intermedio · 40 min
 
-**Duración estimada:** 40 min.
-**¿Por qué es importante?** Este método conecta lo que escribes con el arranque del programa; entenderlo te permite recibir parámetros de ejecución y diagnosticar por qué el lanzador no encuentra la entrada.
-**Prerrequisitos:** M0 T1. Proyecto continuo: el motor de asignación de entregas recibirá origen y destino por terminal. Usa JDK 25 o posterior. Java 25 admite formas adicionales de métodos `main`; aquí practicarás primero la firma clásica, compatible con versiones anteriores.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 3.1: Identifica cada parte de la firma clásica · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por public static void main — qué significa cada palabra con foco en comprensión antes de implementación.
 
-**1. Contexto**
-El lanzador necesita una entrada reconocible para iniciar el motor sin pedirle al usuario que cree objetos primero.
+#### ► LA IDEA EN UNA FRASE
+**Entender public static void main — qué significa cada palabra te permite tomar mejores decisiones técnicas.**
 
-**2. Hazlo tú**
-Crea `java-motor/src/PuntoEntrada.java`:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en public static void main — qué significa cada palabra como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que public static void main — qué significa cada palabra resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| public static void main — qué significa cada palabra se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar public static void main — qué significa cada palabra | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses public static void main — qué significa cada palabra por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: public static void main — qué significa cada palabra funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- public static void main — qué significa cada palabra existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve public static void main — qué significa cada palabra en tu contexto?
+2. ¿Cómo sabrías que public static void main — qué significa cada palabra no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar public static void main — qué significa cada palabra?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public final class PuntoEntrada {
     public static void main(String[] args) {
@@ -373,30 +362,10 @@ public final class PuntoEntrada {
 }
 ```
 
-Desde `java-motor/`, compila y ejecuta:
-
 ```bash
 javac -d out src/PuntoEntrada.java
 java -cp out PuntoEntrada
 ```
-
-**Resultado esperado:** `Motor de entregas listo` y `Argumentos recibidos: 0`.
-
-**Fallo deliberado:** cambia el nombre `main` por `iniciar`, recompila y lanza la clase. **Error esperado:** Java indica que no encuentra un método principal válido. **Diagnóstico:** el código sigue siendo un método Java válido, pero el lanzador busca una entrada reconocida llamada `main`.
-
-**3. Entiende**
-`public` permite que el lanzador acceda al método; `static` permite llamarlo en la clase antes de crear una instancia; `void` indica que no devuelve un resultado al lanzador. `String[] args` es una lista de textos que puede venir vacía.
-
-**4. Cierra**
-Señala en el archivo qué palabra permite el acceso, cuál evita crear un objeto y dónde aparecen los argumentos.
-
-#### Subtema 3.2: Recibe argumentos sin recompilar · 10 min
-
-**1. Contexto**
-Una misma versión del motor debe poder asignar rutas distintas cambiando solo los datos de entrada.
-
-**2. Hazlo tú**
-Reemplaza el contenido de `java-motor/src/PuntoEntrada.java` por el siguiente código completo:
 
 ```java
 public final class PuntoEntrada {
@@ -413,31 +382,11 @@ public final class PuntoEntrada {
 }
 ```
 
-Desde `java-motor/`, ejecuta:
-
 ```bash
 javac -d out src/PuntoEntrada.java
 java -cp out PuntoEntrada Medellin Envigado
 java -cp out PuntoEntrada Medellin
 ```
-
-**Resultado esperado:** la primera ejecución muestra `Ruta solicitada: Medellin -> Envigado`; la segunda muestra el mensaje de uso y termina normalmente.
-
-**Fallo deliberado:** elimina la condición `if` y ejecuta con un solo argumento. **Error esperado:** `ArrayIndexOutOfBoundsException`. **Diagnóstico:** `args[1]` no existe; valida la cantidad antes de leer posiciones.
-
-**3. Entiende**
-Los argumentos llegan en el mismo orden en que aparecen después del nombre de la clase: `args[0]` es el primero y `args[1]` el segundo. El `return` termina este método `void`; no devuelve datos.
-
-**4. Cierra**
-Guarda las dos salidas y explica por qué el programa maneja la entrada incompleta antes de acceder a `args[1]`.
-
-#### Subtema 3.3: Compara una forma abreviada de Java 25 · 10 min
-
-**1. Contexto**
-Al leer ejemplos nuevos puedes encontrar programas de archivo único con menos sintaxis; debes reconocer qué versión requiere cada forma.
-
-**2. Hazlo tú**
-En una carpeta aparte `java-motor/java25/`, crea `Hola25.java` con este archivo completo:
 
 ```java
 void main() {
@@ -445,85 +394,73 @@ void main() {
 }
 ```
 
-Con JDK 25, desde `java-motor/java25/`, ejecuta:
-
 ```bash
 java Hola25.java
 ```
 
-**Resultado esperado:** `Hola, Java 25`. El modo de archivo fuente permite este ejemplo compacto en Java 25.
-
-**Fallo deliberado:** con el mismo JDK 25, compila como si fuera Java 21: `javac --release 21 -d out Hola25.java`. **Error esperado:** `Hola25.java:1: error: implicitly declared classes are not supported in -source 21`. **Diagnóstico:** la forma compacta mostrada depende de las capacidades incorporadas en Java 25; el estilo clásico del subtema anterior funciona en JDK 21 y posteriores.
-
-**3. Entiende**
-Java 25 amplió las formas de entrada válidas para facilitar programas pequeños; la firma clásica sigue siendo útil en proyectos y versiones anteriores. Al elegir una forma, comprueba la versión mínima declarada por el proyecto.
-
-**4. Cierra**
-Anota las versiones con las que verificaste cada archivo y conserva las salidas. No cambies la firma clásica del motor por una forma que el JDK objetivo no soporte.
-
-#### Subtema 3.4: Separa la regla del archivo de la regla del método · 10 min
-
-**1. Contexto**
-El Subtema 1.1 mostró que el nombre del archivo debe coincidir con el de la clase pública. Esa regla es sobre `public class`, no sobre `main`. Vale la pena comprobar si el lanzador también exige que la clase sea pública para arrancarla.
-
-**2. Hazlo tú**
-Crea `java-motor/src/motor.java` (nombre de archivo en minúsculas, sin relación con el nombre de la clase) con este contenido exacto:
-
-```java
-final class MotorInterno {
-    public static void main(String[] args) {
-        System.out.println("corre sin ser clase publica");
-    }
-}
-```
-
-Desde `java-motor/`, compila y ejecuta:
-
-```bash
-javac -d out src/motor.java
-java -cp out MotorInterno
-```
-
-**Resultado esperado:** compila sin error y ejecuta `corre sin ser clase publica`. El `.class` se llama `MotorInterno.class` aunque el archivo fuente se llamaba `motor.java`.
-
-**Fallo deliberado:** una hipótesis frecuente es pensar que la regla "el nombre del archivo debe coincidir con el de la clase" aplica a cualquier clase con `main`. **Error esperado:** no hay ningún error; `javac` acepta el archivo sin quejarse y `java -cp out MotorInterno` funciona igual que con una clase pública. **Diagnóstico:** la restricción de nombre de archivo del Subtema 1.1 es exclusiva de las clases declaradas `public`; una clase sin modificador de acceso (paquete-privada) puede vivir en un archivo con cualquier nombre, mientras ese archivo no contenga ninguna otra clase `public`. Hasta Java 24, el lanzador exigía además que `main` fuera `public static void main(String[] args)`; desde Java 25 (JEP 512) también acepta un `main` sin `public`, sin `static` o sin parámetros. Compruébalo: quita `public` de `main`, recompila y ejecuta; con JDK 25 imprime lo mismo.
-
-**3. Entiende**
-`public` en `class MotorInterno` controla quién puede importar y usar esa clase desde otro paquete; no tiene nada que ver con lo que exige `java` para arrancarla por classpath. La firma de `main` es otra regla, que depende de la versión: la firma clásica `public static void main(String[] args)` funciona en todas, y Java 25 la relajó. Si tu proyecto debe compilar también con JDK 21, conserva la firma clásica.
-
-**4. Cierra**
-Explica con tus palabras por qué el motor de entregas puede tener clases de ayuda sin `public` y seguir ejecutándolas con `java -cp` durante el desarrollo, aunque el archivo final que se publique sí necesite una clase pública con el nombre acordado.
-
-**Hito del tema:**
-
-- [ ] Identifiqué el papel de `public`, `static`, `void`, `main` y `String[] args`.
-- [ ] Recibí y mostré dos argumentos en el orden correcto.
-- [ ] Controlé el caso en que faltaba un argumento y reproduje el fallo sin validación.
-- [ ] Distinguí la firma clásica de la forma compacta disponible en Java 25.
-- [ ] Separé la regla de nombre de archivo (clase `public`) de la regla de `main` (firma clásica en todas las versiones; formas relajadas desde Java 25).
-
-**Fuentes oficiales:** [guía de lanzamiento de aplicaciones Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) y [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512).
-
-**Diagrama interactivo:** [La firma que la JVM busca](/visuals/temas/java/modulo-0-tema-2-main.html).
-
-**Proyecto integrador:** el motor de entregas recibirá origen y destino exactamente como en el Subtema 3.2, por terminal y sin recompilar entre rutas distintas. **Límite:** no conviene usar la forma compacta de Java 25 (`void main()`) en el motor real, porque el proyecto debe seguir compilando en JDK 21; úsala solo para scripts de un solo archivo que no se distribuyen. **Práctica:** modifica `PuntoEntrada.java` para aceptar un tercer argumento opcional con el peso del paquete y valida que `args.length` lo cubra antes de leerlo.
+</details>
 
 ### Tema 4: Tipos primitivos vs referencias · Intermedio · 40 min
 
-**¿Por qué es importante?** Distinguir valores y referencias ayuda a evitar nulos y comparaciones equivocadas en datos de RutaFlow. **Modelo mental:** un primitivo es el valor escrito en una tarjeta; una referencia es una dirección que apunta al objeto.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** representa una guía con campos y comprueba su igualdad. **Límite:** == no compara el contenido de objetos. **Práctica:** compara dos guías iguales con equals y con ==.
+#### ► DE QUÉ TRATA
+Este tema te guía por tipos primitivos vs referencias con foco en comprensión antes de implementación.
 
-#### Subtema 4.1: Guarda una cantidad primitiva · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender tipos primitivos vs referencias te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+1. Contexto El Subtema 4.3 mostró que == siempre da false entre dos String creados con new. Pero si alguien prueba == con dos literales de texto en vez de new String(...), puede obtener true por accidente y concluir —equivocadamente— que == sí sirve para comparar texto.
 
-Una cantidad pequeña como el número de entregas se representa con un valor entero.
+#### ► LA ANALOGÍA
+Piensa en tipos primitivos vs referencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+1. [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
+2. [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
+3. [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
+4. [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
 
-Crea `java-motor/src/Tipos.java`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tipos primitivos vs referencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tipos primitivos vs referencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tipos primitivos vs referencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tipos primitivos vs referencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
+- [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
+- [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
+- [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tipos primitivos vs referencias en tu contexto?
+2. ¿Cómo sabrías que tipos primitivos vs referencias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tipos primitivos vs referencias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public class Tipos {
     public static void main(String[] args) {
@@ -534,34 +471,10 @@ public class Tipos {
 }
 ```
 
-Desde `java-motor` compila y ejecuta:
-
 ```bash
 javac -d out src/Tipos.java
 java -cp out Tipos
 ```
-
-**Resultado esperado:** `3 entregas, 12.5 km`.
-
-**Fallo deliberado:** asigna el texto `"tres"` a `int entregas`. **Diagnóstico:** `int` guarda números enteros; el texto pertenece a `String`.
-
-**3. Entiende**
-
-Un primitivo guarda directamente un valor simple. No puede ser `null`.
-
-**4. Cierra**
-
-Anota cuál dato usa `int` y cuál usa `double`.
-
-#### Subtema 4.2: Usa una referencia para describir un envío · 10 min
-
-**1. Contexto**
-
-Un envío agrupa varios datos y puede no existir todavía. Para representarlo usamos una clase y una referencia.
-
-**2. Hazlo tú**
-
-Reemplaza el contenido de `java-motor/src/Tipos.java` por este archivo completo:
 
 ```java
 public class Tipos {
@@ -579,30 +492,6 @@ public class Tipos {
 }
 ```
 
-Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
-
-**Resultado esperado:** `RT-8 -> Cali`.
-
-**Fallo deliberado:** cambia `Envio envio = new Envio();` por `Envio envio = null;` y ejecuta. **Error esperado:** `NullPointerException` al asignar `envio.guia`. **Diagnóstico:** `NullPointerException` aparece porque la referencia no apunta a un objeto; crea el objeto o comprueba que exista antes de usarlo.
-
-**3. Entiende**
-
-Una referencia apunta a un objeto; puede valer `null`. El objeto y la variable que lo referencia son conceptos distintos. `static class Envio` es una clase mínima dentro de `Tipos`; en el Módulo 1 aprenderás a protegerla con constructor y campos privados, y en M1 T5 a escribirla en una línea con `record`.
-
-**4. Cierra**
-
-Dibuja una variable primitiva con su valor y una referencia que apunta a `Envio`.
-
-#### Subtema 4.3: Compara valores, no direcciones por accidente · 10 min
-
-**1. Contexto**
-
-Dos textos pueden contener la misma guía aunque sean objetos distintos.
-
-**2. Hazlo tú**
-
-Reemplaza `java-motor/src/Tipos.java` por este archivo completo:
-
 ```java
 public class Tipos {
     public static void main(String[] args) {
@@ -613,28 +502,6 @@ public class Tipos {
     }
 }
 ```
-
-Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
-
-**Resultado esperado:** imprime `true` y luego `false`.
-
-**Fallo deliberado:** cambia `a.equals(b)` por `a == b` como comparación de contenido. **Diagnóstico:** `==` compara si las referencias apuntan al mismo objeto; para igualdad de texto usa `equals`.
-
-**3. Entiende**
-
-Para primitivos `==` compara valores. Para objetos compara identidad de referencia; cada clase puede definir igualdad de contenido mediante `equals`.
-
-**4. Cierra**
-
-Explica por qué las dos comparaciones imprimen resultados distintos. Revisa [tipos primitivos de Java](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html).
-
-#### Subtema 4.4: Descubre por qué `==` "a veces parece funcionar" con texto · 10 min
-
-**1. Contexto**
-El Subtema 4.3 mostró que `==` siempre da `false` entre dos `String` creados con `new`. Pero si alguien prueba `==` con dos literales de texto en vez de `new String(...)`, puede obtener `true` por accidente y concluir —equivocadamente— que `==` sí sirve para comparar texto.
-
-**2. Hazlo tú**
-Reemplaza `java-motor/src/Tipos.java` por este archivo completo:
 
 ```java
 public class Tipos {
@@ -649,45 +516,73 @@ public class Tipos {
 }
 ```
 
-Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
-
-**Resultado esperado:** `literal == literal: true`, `literal == new String: false`, `new String().intern() == literal: true`.
-
-**Fallo deliberado:** una hipótesis frecuente, al ver que `literalA == literalB` dio `true`, es concluir que "`==` funciona bien con `String` mientras sean literales, el problema es solo `new String(...)`". **Error esperado:** esa regla se rompe apenas el texto llega por `args[0]`, por `scanner.next()`, por concatenación en tiempo de ejecución o por lectura de un archivo: en esos casos el `String` resultante casi nunca es el mismo objeto interno que el literal, aunque el contenido sea idéntico, y `==` vuelve a dar `false` de forma impredecible para quien solo probó con literales fijos. **Diagnóstico:** Java reutiliza un único objeto por cada literal de texto distinto en lo que se llama el *pool de strings*; por eso dos literales idénticos (`"RT-8"` y `"RT-8"`) son el mismo objeto y `==` da `true` casi por casualidad. `new String(...)` crea deliberadamente un objeto nuevo fuera del pool, y `.intern()` es el único método que busca o registra ese objeto en el pool explícitamente. Ninguna de las dos reglas depende de si el *contenido* es igual, sino de si el *objeto* es el mismo.
-
-**3. Entiende**
-El pool de strings es una optimización de memoria, no una garantía de comparación. Confiar en que `==` "funcionó en mis pruebas con literales" es una trampa: el comportamiento cambia en cuanto el texto deja de ser un literal fijo en el código y pasa a construirse en tiempo de ejecución. `equals` compara contenido siempre, sin depender de esa optimización interna.
-
-**4. Cierra**
-Anota qué pasaría si el motor de entregas comparara con `==` el código de guía que llega por `args[0]` contra un literal `"RT-8"` escrito en el código: explica por qué fallaría aunque el texto fuera idéntico.
-
-**Hito del tema:**
-
-- [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
-- [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
-- [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
-- [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
+</details>
 
 ### Tema 5: Variables, conversiones y `String` · Intermedio · 35 min
 
-**¿Por qué es importante?** La conversión incorrecta pierde peso o rechaza entradas válidas antes de cotizar un envío. **Modelo mental:** convertir double a int es recortar decimales, no redondear automáticamente.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** lee el peso entregado por el operador y conserva su precisión. **Límite:** parsear texto puede fallar si el formato no es numérico. **Práctica:** ejecuta el caso numérico y el caso inválido.
+#### ► DE QUÉ TRATA
+Este tema te guía por variables, conversiones y `string` con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender variables, conversiones y `string` te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en variables, conversiones y `string` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que variables, conversiones y `string` resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Variables, conversiones y `String` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Variables, conversiones y `String` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses variables, conversiones y `string` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: variables, conversiones y `string` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Variables, conversiones y `String` existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve variables, conversiones y `string` en tu contexto?
+2. ¿Cómo sabrías que variables, conversiones y `string` no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar variables, conversiones y `string`?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 javac -d out src/LeerPeso.java
 java -cp out LeerPeso 2.75
 ```
-
-#### Subtema 5.1: Declara y actualiza una variable · 10 min
-
-**1. Contexto**
-
-El total de paquetes cambia durante una jornada, así que su variable puede actualizarse.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Variables.java`:
 
 ```java
 public class Variables {
@@ -700,30 +595,6 @@ public class Variables {
 }
 ```
 
-Desde `java-motor` ejecuta `javac -d out src/Variables.java` y `java -cp out Variables`.
-
-**Resultado esperado:** `Norte: 3`.
-
-**Fallo deliberado:** asigna otro valor a `zona`. **Diagnóstico:** `final` permite asignar la variable una sola vez; elimina la segunda asignación.
-
-**3. Entiende**
-
-Una variable guarda un valor o una referencia. `final` impide reasignar esa variable; no vuelve inmutable cualquier objeto al que apunte.
-
-**4. Cierra**
-
-Identifica en tu archivo la variable modificable y la que no puede reasignarse.
-
-#### Subtema 5.2: Convierte un dato sin perderlo · 10 min
-
-**1. Contexto**
-
-Un peso puede tener decimales. Guardarlo en un entero quitaría información.
-
-**2. Hazlo tú**
-
-En `java-motor/src/Conversion.java`, crea una variable `double pesoKg = 2.75` y conviértela a `int` con `(int) pesoKg`. Imprime ambos valores.
-
 ```java
 public class Conversion {
     public static void main(String[] args) {
@@ -734,30 +605,6 @@ public class Conversion {
     }
 }
 ```
-
-Ejecuta `javac -d out src/Conversion.java` y `java -cp out Conversion`.
-
-**Resultado esperado:** imprime `2.75` y `2`.
-
-**Fallo deliberado:** usa el entero para facturar el peso. **Diagnóstico:** el cast descartó la parte decimal; conserva `double` o elige una regla explícita de redondeo.
-
-**3. Entiende**
-
-Una conversión explícita a un tipo más pequeño puede perder datos. Java no puede restaurarlos después.
-
-**4. Cierra**
-
-Anota el dato perdido y qué regla de negocio decidiría cómo redondear.
-
-#### Subtema 5.3: Lee texto y conviértelo con control · 10 min
-
-**1. Contexto**
-
-Los argumentos de terminal llegan como texto, aunque representen números.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/LeerPeso.java`:
 
 ```java
 public class LeerPeso {
@@ -772,40 +619,73 @@ public class LeerPeso {
 }
 ```
 
-Desde `java-motor` compila y ejecuta `javac -d out src/LeerPeso.java`, `java -cp out LeerPeso 2.75` y `java -cp out LeerPeso pesado`.
-
-**Resultado esperado:** la entrada numérica se convierte; el texto inválido muestra el mensaje de uso.
-
-**Fallo deliberado:** elimina el `try/catch` y ejecuta con `pesado`. **Diagnóstico:** `parseDouble` no puede convertir esa palabra y lanza `NumberFormatException`; valida la entrada en el borde del programa.
-
-**3. Entiende**
-
-`String` representa texto. `parseDouble` convierte texto válido a número y lanza una excepción cuando el formato no es numérico.
-
-**4. Cierra**
-
-Guarda las dos salidas y explica qué dato llegó originalmente como texto. Consulta [conversión de datos](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html).
+</details>
 
 ### Tema 6: Operadores, precedencia y control de flujo · Intermedio · 40 min
 
-**¿Por qué es importante?** Una condición mal agrupada puede aceptar un paquete inválido o detener todo el cálculo. **Modelo mental:** el cortocircuito revisa cada puerta y deja de avanzar cuando una ya está cerrada.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** valida peso y estado antes de asignar un conductor. **Límite:** un ciclo con <= puede acceder fuera del arreglo. **Práctica:** cambia el límite y diagnostica el índice que falla.
+#### ► DE QUÉ TRATA
+Este tema te guía por operadores, precedencia y control de flujo con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender operadores, precedencia y control de flujo te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en operadores, precedencia y control de flujo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que operadores, precedencia y control de flujo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Operadores, precedencia y control de flujo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Operadores, precedencia y control de flujo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses operadores, precedencia y control de flujo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: operadores, precedencia y control de flujo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Operadores, precedencia y control de flujo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve operadores, precedencia y control de flujo en tu contexto?
+2. ¿Cómo sabrías que operadores, precedencia y control de flujo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar operadores, precedencia y control de flujo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 javac -d out src/Condicion.java
 java -cp out Condicion
 ```
-
-#### Subtema 6.1: Protege una comprobación con cortocircuito · 10 min
-
-**1. Contexto**
-
-Antes de leer el peso de un envío, comprueba que el envío exista.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Condicion.java`:
 
 ```java
 public class Condicion {
@@ -826,30 +706,6 @@ public class Condicion {
 }
 ```
 
-Desde `java-motor` compila y ejecuta `javac -d out src/Condicion.java` y `java -cp out Condicion`.
-
-**Resultado esperado:** `false` y `true`.
-
-**Fallo deliberado:** cambia `&&` por `&` entre la comprobación de `null` y el acceso al peso. **Diagnóstico:** `&` evalúa ambos lados y aparece `NullPointerException`; restaura `&&` para que la segunda parte solo se evalúe si el paquete existe.
-
-**3. Entiende**
-
-`&&` hace cortocircuito: si el lado izquierdo ya es falso, no evalúa el derecho. `&` sobre booleanos no tiene esa protección.
-
-**4. Cierra**
-
-Señala qué parte impide desreferenciar `null`.
-
-#### Subtema 6.2: Elige una acción con switch · 10 min
-
-**1. Contexto**
-
-El motor muestra un mensaje según el estado de la entrega.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/MensajeEstado.java`:
-
 ```java
 enum Estado { CREADO, EN_RUTA, ENTREGADO }
 
@@ -868,30 +724,6 @@ public class MensajeEstado {
 }
 ```
 
-Compila y ejecuta `javac -d out src/MensajeEstado.java` y `java -cp out MensajeEstado`.
-
-**Resultado esperado:** `Conductor en recorrido`.
-
-**Fallo deliberado:** agrega `CANCELADO` al enum y no agregues su caso al switch. **Diagnóstico:** el compilador indica que la expresión dejó de cubrir todos los estados; define el mensaje para el nuevo estado.
-
-**3. Entiende**
-
-Un `switch` expresión produce un valor. Con un enum cerrado, el compilador puede avisar si falta una alternativa.
-
-**4. Cierra**
-
-Agrega el estado `CANCELADO` y conserva el mensaje correspondiente.
-
-#### Subtema 6.3: Recorre una lista sin salir de sus límites · 10 min
-
-**1. Contexto**
-
-Las posiciones de un arreglo empiezan en cero. La última posición es su longitud menos uno.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Recorrido.java`:
-
 ```java
 public class Recorrido {
     public static void main(String[] args) {
@@ -902,28 +734,6 @@ public class Recorrido {
     }
 }
 ```
-
-Compila y ejecuta `javac -d out src/Recorrido.java` y `java -cp out Recorrido`.
-
-**Resultado esperado:** imprime los índices 0, 1 y 2 sin error.
-
-**Fallo deliberado:** cambia `i < guias.length` por `i <= guias.length`. **Diagnóstico:** la iteración intenta leer el índice 3, que no existe; devuelve el límite a `<`.
-
-**3. Entiende**
-
-La longitud cuenta elementos; no es un índice válido. Comprueba el límite antes de cada acceso.
-
-**4. Cierra**
-
-Anota cuántas guías hay y cuál es su último índice. Fuente oficial: [control de flujo](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html).
-
-#### Subtema 6.4: Descubre qué agrupa la precedencia sin paréntesis · 10 min
-
-**1. Contexto**
-El título de este tema promete "precedencia", pero hasta ahora solo viste `&&` en una sola condición. Cuando mezclas `||` y `&&` en la misma línea sin paréntesis, Java agrupa según la precedencia del operador, no según el orden en que los leíste.
-
-**2. Hazlo tú**
-Crea `java-motor/src/Precedencia.java`:
 
 ```java
 public class Precedencia {
@@ -942,34 +752,69 @@ public class Precedencia {
 }
 ```
 
-Desde `java-motor`, compila y ejecuta `javac -d out src/Precedencia.java` y `java -cp out Precedencia`.
-
-**Resultado esperado:** `true` y después `false`, con los mismos tres argumentos (`true, false, false`) en ambos métodos.
-
-**Fallo deliberado:** una hipótesis frecuente es pensar que `a || b && c` se lee de izquierda a derecha, como si fuera `(a || b) && c`. **Error esperado:** con `esUrgente=true, pesoExcedido=false, clienteVip=false`, esa lectura predice `false` (porque `clienteVip` es `false`), pero el programa imprime `true`. **Diagnóstico:** `&&` tiene mayor precedencia que `||`, así que Java evalúa primero `pesoExcedido && clienteVip` (`false && false` = `false`) y luego `esUrgente || false` (`true || false` = `true`); la expresión real es `esUrgente || (pesoExcedido && clienteVip)`, no `(esUrgente || pesoExcedido) && clienteVip`.
-
-**3. Entiende**
-La precedencia decide qué operador "atrapa" a sus operandos vecinos antes que otro cuando no hay paréntesis. `&&` agrupa antes que `||`, igual que `*` agrupa antes que `+` en aritmética. Cuando una condición combina ambos operadores y el orden importa para el negocio, los paréntesis explícitos no son opcionales: documentan la intención y evitan depender de que quien lea el código recuerde la tabla de precedencia.
-
-**4. Cierra**
-Reescribe `sinParentesis` con paréntesis que hagan explícito el agrupamiento real que ya tiene (sin cambiar el resultado) y explica por qué ahora es más fácil de leer sin memorizar reglas de precedencia.
+</details>
 
 ### Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 35 min
 
-**¿Por qué es importante?** Arreglos y wrappers aparecen al leer datos externos, pero un índice incorrecto o un wrapper nulo detiene la operación. **Modelo mental:** un arreglo es una fila con longitud fija y casillas numeradas desde cero.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** conserva varias guías y convierte sus cantidades. **Límite:** usa una colección si el tamaño debe cambiar. **Práctica:** prueba un índice fuera de rango y una conversión inválida.
+#### ► DE QUÉ TRATA
+Este tema te guía por arreglos, wrappers y paso de argumentos con foco en comprensión antes de implementación.
 
-#### Subtema 7.1: Guarda y recorre varias guías · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender arreglos, wrappers y paso de argumentos te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un arreglo reúne varios valores del mismo tipo bajo una sola variable.
+#### ► LA ANALOGÍA
+Piensa en arreglos, wrappers y paso de argumentos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**2. Hazlo tú**
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que arreglos, wrappers y paso de argumentos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-Crea `java-motor/src/Guias.java`:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arreglos, wrappers y paso de argumentos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arreglos, wrappers y paso de argumentos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arreglos, wrappers y paso de argumentos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arreglos, wrappers y paso de argumentos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arreglos, wrappers y paso de argumentos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arreglos, wrappers y paso de argumentos en tu contexto?
+2. ¿Cómo sabrías que arreglos, wrappers y paso de argumentos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arreglos, wrappers y paso de argumentos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 public class Guias {
     public static void main(String[] args) {
@@ -980,30 +825,6 @@ public class Guias {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Guias.java` y `java -cp out Guias`.
-
-**Resultado esperado:** aparecen las dos guías y `Total: 2`.
-
-**Fallo deliberado:** intenta leer `guias[2]`. **Diagnóstico:** los índices válidos son 0 y 1; para agregar o quitar elementos en ejecución usa una colección, no un arreglo de tamaño fijo.
-
-**3. Entiende**
-
-Un arreglo tiene una longitud fija después de crearse. Su índice inicial es cero.
-
-**4. Cierra**
-
-Entrega la salida y señala el primer y el último índice válido.
-
-#### Subtema 7.2: Convierte entre primitivos y wrappers con cuidado · 10 min
-
-**1. Contexto**
-
-Un formulario entrega números como texto y puede dejar un campo vacío. Convertirlo requiere validar ambos casos.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Wrapper.java`:
-
 ```java
 public class Wrapper {
     public static void main(String[] args) {
@@ -1013,30 +834,6 @@ public class Wrapper {
     }
 }
 ```
-
-Compila y ejecuta `javac -d out src/Wrapper.java` y `java -cp out Wrapper 4`.
-
-**Resultado esperado:** `5`.
-
-**Fallo deliberado:** ejecuta `java -cp out Wrapper cuatro` y luego sin argumento. **Diagnóstico:** el primer caso no se puede convertir a entero; el segundo no tiene `args[0]`. Valida entrada antes de convertir o desenvolver el wrapper.
-
-**3. Entiende**
-
-`Integer` es un objeto que puede ser `null`; `int` es un primitivo. Al sumar, Java desenvuelve el wrapper automáticamente; desenvolver `null` causa `NullPointerException`.
-
-**4. Cierra**
-
-Explica el autoboxing y por qué un wrapper nulo no se debe sumar. Fuente oficial: [clases wrapper](https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html).
-
-#### Subtema 7.3: Observa qué cambia al pasar una referencia · 10 min
-
-**1. Contexto**
-
-Java pasa argumentos por valor. Para un objeto, el valor copiado es una referencia; el método puede cambiar el objeto, pero reasignar su copia no cambia la variable del llamador.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/PasoValor.java`:
 
 ```java
 public class PasoValor {
@@ -1053,40 +850,73 @@ public class PasoValor {
 }
 ```
 
-Compila y ejecuta `javac -d out src/PasoValor.java` y `java -cp out PasoValor`.
-
-**Resultado esperado:** `pedido listo`.
-
-**Fallo deliberado:** espera que imprima `otro`. **Diagnóstico:** el método reasignó su copia local de la referencia; la mutación del objeto compartido sí permanece. Para evitar efectos laterales, prefiere valores inmutables cuando encajen.
-
-**3. Entiende**
-
-Java siempre pasa una copia del argumento. En el caso de un objeto esa copia apunta al mismo objeto, hasta que el parámetro se reasigna.
-
-**4. Cierra**
-
-Dibuja las dos referencias antes y después de llamar a `cambiar`.
+</details>
 
 ### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 35 min
 
-**¿Por qué es importante?** Fechas y horas incorrectas cambian promesas de entrega y registros de auditoría. **Modelo mental:** LocalDate es una fecha del calendario; Instant es un momento único del reloj mundial.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Proyecto integrador:** guarda el día prometido y la hora real de entrega con tipos distintos. **Límite:** una fecha local no incluye zona horaria. **Práctica:** parsea una fecha ISO y muestra el mismo instante en Bogotá.
+#### ► DE QUÉ TRATA
+Este tema te guía por entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) en tu contexto?
+2. ¿Cómo sabrías que entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`)?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 javac -d out src/FechaEntrega.java
 java -cp out FechaEntrega 2026-11-03
 ```
-
-#### Subtema 8.1: Lee una entrada y valida el número · 10 min
-
-**1. Contexto**
-
-El operador introduce la cantidad de paquetes por terminal. La entrada puede faltar o no ser un número.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Entrada.java`:
 
 ```java
 import java.util.Scanner;
@@ -1105,30 +935,6 @@ public class Entrada {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Entrada.java` y `java -cp out Entrada`. Escribe `3` y luego repite escribiendo `tres`.
-
-**Resultado esperado:** el primer caso muestra `Recibidos: 3`; el segundo informa que se esperaba un número.
-
-**Fallo deliberado:** elimina `hasNextInt()` y escribe `tres`. **Diagnóstico:** `nextInt()` lanza `InputMismatchException` porque la entrada no tiene el formato solicitado.
-
-**3. Entiende**
-
-Leer una línea no garantiza que el texto sea un número. Comprueba el dato antes de convertirlo.
-
-**4. Cierra**
-
-Guarda ambas salidas. Fuente oficial: [Scanner](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html).
-
-#### Subtema 8.2: Parsea una fecha de entrega · 10 min
-
-**1. Contexto**
-
-Una fecha de calendario como “2026-11-03” no representa por sí sola una hora ni una zona horaria.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/FechaEntrega.java`:
-
 ```java
 import java.time.LocalDate;
 
@@ -1139,30 +945,6 @@ public class FechaEntrega {
     }
 }
 ```
-
-Compila y ejecuta `javac -d out src/FechaEntrega.java` y `java -cp out FechaEntrega 2026-11-03`.
-
-**Resultado esperado:** `2026-11-04`.
-
-**Fallo deliberado:** ejecuta con `03/11/2026`. **Diagnóstico:** `LocalDate.parse` usa ISO `yyyy-MM-dd` por defecto; usa un `DateTimeFormatter` explícito si ese es el formato externo.
-
-**3. Entiende**
-
-`LocalDate` representa una fecha civil sin hora ni zona. No la conviertas a una fecha/hora si el dominio solo necesita el día.
-
-**4. Cierra**
-
-Guarda la fecha original, la calculada y el formato de entrada.
-
-#### Subtema 8.3: Distingue un instante de una hora local · 10 min
-
-**1. Contexto**
-
-La hora “09:00” en Bogotá no es necesariamente el mismo instante que “09:00” en Madrid.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Instantes.java`:
 
 ```java
 import java.time.Instant;
@@ -1179,36 +961,69 @@ public class Instantes {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Instantes.java` y `java -cp out Instantes`.
-
-**Resultado esperado:** imprime un instante UTC y la representación del mismo momento en Bogotá.
-
-**Fallo deliberado:** reemplaza la zona por `America/Desconocida`. **Diagnóstico:** `ZoneId` no reconoce ese identificador; usa un nombre de zona disponible, no una diferencia horaria inventada.
-
-**3. Entiende**
-
-`Instant` identifica un momento global; `ZonedDateTime` muestra ese instante con reglas de una zona. `Date` y `Calendar` son APIs antiguas; para código nuevo usa tipos de `java.time`.
-
-**4. Cierra**
-
-Explica cuál valor guardarías para registrar el momento de una entrega y cuál para guardar el día prometido. Fuente oficial: [java.time](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html).
+</details>
 
 ### Tema 9: Java 25 para programas pequeños: `IO`, archivos compactos e `import module` · Intermedio · 30 min
 
-**Duración estimada:** 30 min.
-**¿Por qué es importante?** Java 25 (LTS) incorporó como definitivas tres funciones pensadas para scripts y primeros programas: archivos fuente compactos con `main` de instancia (JEP 512), la clase `java.lang.IO` para leer y escribir en consola, y la importación de módulos completos (JEP 511). Las verás en ejemplos actuales y en la certificación de Java 25; también debes saber cuándo **no** usarlas, porque no compilan con versiones anteriores.
-**Prerrequisitos:** Tema 2 (`main` clásico y la forma compacta) y Tema 8 (entrada con `Scanner`) de este módulo. Usa JDK 25.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Subtema 9.1: Lee y escribe en consola con `IO` · 10 min
+#### ► DE QUÉ TRATA
+Este tema te guía por java 25 para programas pequeños: `io`, archivos compactos e `import module` con foco en comprensión antes de implementación.
 
-**1. Contexto**
+#### ► LA IDEA EN UNA FRASE
+**Entender java 25 para programas pequeños: `io`, archivos compactos e `import module` te permite tomar mejores decisiones técnicas.**
 
-El Tema 8 leyó la entrada con `Scanner` y escribió con `System.out.println`. Para una herramienta de una sola pantalla, Java 25 ofrece una forma más corta.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
+#### ► LA ANALOGÍA
+Piensa en java 25 para programas pequeños: `io`, archivos compactos e `import module` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-En `java-motor/java25/`, crea `Saludo.java`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que java 25 para programas pequeños: `io`, archivos compactos e `import module` resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Java 25 para programas pequeños: `IO`, archivos compactos e `import module` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Java 25 para programas pequeños: `IO`, archivos compactos e `import module` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses java 25 para programas pequeños: `io`, archivos compactos e `import module` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: java 25 para programas pequeños: `io`, archivos compactos e `import module` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Java 25 para programas pequeños: `IO`, archivos compactos e `import module` existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve java 25 para programas pequeños: `io`, archivos compactos e `import module` en tu contexto?
+2. ¿Cómo sabrías que java 25 para programas pequeños: `io`, archivos compactos e `import module` no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar java 25 para programas pequeños: `io`, archivos compactos e `import module`?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 void main() {
     String nombre = IO.readln("Conductor: ");
@@ -1216,33 +1031,9 @@ void main() {
 }
 ```
 
-Ejecuta desde `java-motor/java25/` y escribe `Ana` cuando lo pida:
-
 ```bash
 java Saludo.java
 ```
-
-**Resultado esperado:** el programa muestra `Conductor: `, tú escribes `Ana` y pulsas Enter, y aparece `Hola, Ana. Hoy tienes 2 entregas.`
-
-**Fallo deliberado:** compila el archivo para Java 21: `javac --release 21 -d out Saludo.java`. **Error esperado:** `Saludo.java:1: error: implicitly declared classes are not supported in -source 21`. **Diagnóstico:** la forma compacta y `IO` existen desde Java 25; un proyecto que deba compilar con 21 necesita la clase y el `main` clásicos.
-
-**3. Entiende**
-
-`IO` está en `java.lang`, así que no necesita `import`. `IO.readln(mensaje)` muestra el mensaje y devuelve la línea leída; `IO.println` escribe con salto de línea. Un archivo compacto (sin `class`) importa automáticamente todo el módulo `java.base`: por eso `List.of` funciona sin `import java.util.List`.
-
-**4. Cierra**
-
-Guarda la salida y anota qué tres cosas omitiste respecto al `PuntoEntrada` del Tema 2.
-
-#### Subtema 9.2: Importa un módulo completo con `import module` · 10 min
-
-**1. Contexto**
-
-En una clase normal (no compacta), cada tipo de otro paquete necesita su `import`. Para prototipos que usan muchas clases de `java.util` y `java.time`, la lista crece.
-
-**2. Hazlo tú**
-
-Crea `java-motor/java25/Modulos.java`:
 
 ```java
 import module java.base;
@@ -1258,30 +1049,6 @@ public class Modulos {
 }
 ```
 
-Ejecuta `java Modulos.java`.
-
-**Resultado esperado:** `[RF-1, RF-2] {RF-1=2026-11-18}`.
-
-**Fallo deliberado:** borra la línea `import module java.base;` y compila con `javac -d out Modulos.java`. **Error esperado:** `error: cannot find symbol` en `List`. **Diagnóstico:** en una clase declarada no hay importación automática del módulo; vuelve a poner la línea o escribe los `import` de cada clase.
-
-**3. Entiende**
-
-`import module java.base;` importa todos los paquetes **exportados** por ese módulo (`java.util`, `java.time`, `java.io`...). No carga más código en tiempo de ejecución: solo cambia cómo el compilador resuelve nombres. Los módulos los estudiarás a fondo en el Módulo 10 (JPMS).
-
-**4. Cierra**
-
-Cuenta cuántas líneas `import` habrías necesitado sin esta línea.
-
-#### Subtema 9.3: Resuelve un nombre ambiguo entre dos módulos · 10 min
-
-**1. Contexto**
-
-Importar módulos enteros trae muchos nombres a la vez, y dos módulos pueden exportar clases con el mismo nombre simple.
-
-**2. Hazlo tú**
-
-Crea `java-motor/java25/amb/Ambiguo.java`:
-
 ```java
 import module java.base;
 import module java.desktop;
@@ -1294,29 +1061,10 @@ public class Ambiguo {
 }
 ```
 
-Compila con `javac -d out amb/Ambiguo.java` desde `java-motor/java25/`.
-
-**Resultado esperado (fallo deliberado):**
-
 ```text
 error: reference to List is ambiguous
   both class java.awt.List in java.awt and interface java.util.List in java.util match
 ```
-
-**Diagnóstico:** `java.desktop` exporta `java.awt.List` y `java.base` exporta `java.util.List`. Añade debajo de los `import module` la línea `import java.util.List;`: una importación de tipo concreta gana sobre las de módulo. Compila y ejecuta con `java -cp out Ambiguo`; ahora imprime `[RF-1]`.
-
-**3. Entiende**
-
-Precedencia de importaciones: un `import` de tipo (`java.util.List`) gana sobre un `import` de paquete con `*`, y este sobre `import module`. **Límite:** en código de producción, prefiere importaciones explícitas: el lector ve de dónde viene cada tipo y un módulo nuevo no puede introducir ambigüedades al actualizar dependencias.
-
-**4. Cierra**
-
-Escribe la regla de precedencia en una línea y decide si el motor de entregas usará `import module` (respuesta habitual: solo en scripts y pruebas rápidas).
-
-**Ejercicio:** escribe un archivo compacto `Kilometros.java` que pida con `IO.readln` dos distancias en kilómetros, las sume y muestre el total con un decimal. Antes de abrir la solución, predice qué ocurre si el usuario escribe `doce`.
-
-<details>
-<summary>Solución</summary>
 
 ```java
 void main() {
@@ -1326,61 +1074,4 @@ void main() {
 }
 ```
 
-Con `doce`, `Double.parseDouble` lanza `NumberFormatException: For input string: "doce"`. `IO.readln` devuelve texto; convertirlo y validarlo sigue siendo tu responsabilidad (Módulo 3 enseña a manejar esa excepción). El formato `%.1f` usa la configuración regional por defecto: en algunos sistemas imprime coma decimal.
-
 </details>
-
-**Hito del tema:**
-
-- [ ] Ejecuté un archivo compacto con `IO.readln` e `IO.println`.
-- [ ] Provoqué el error de compilación con `--release 21` y expliqué la versión mínima.
-- [ ] Usé `import module java.base` y vi el error al quitarlo.
-- [ ] Resolví la ambigüedad de `List` con una importación de tipo.
-
-**Fuentes oficiales:** [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512), [JEP 511: Module Import Declarations](https://openjdk.org/jeps/511) y [API de `java.lang.IO`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IO.html).
-
-**Proyecto integrador:** usa un archivo compacto para un script de diagnóstico que pida una guía y muestre su estado. **Límite:** el motor de entregas sigue con clases y `main` clásicos para compilar también en JDK 21 (Tema 2).
-
-## Ruta de proyecto progresivo desde carpeta vacía
-
-No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-java && cd academia-java && git init && gradle init --type java-application`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
-
-| Hito | Evolución acumulativa | Evidencia antes de avanzar |
-|---|---|---|
-| Base | dominio y colecciones. | Arranque reproducible, commit limpio y prueba mínima. |
-| Aplicación | I/O, concurrencia y datos. | Casos normales, límite y error automatizados. |
-| Integración | Conecta capas y reemplaza dobles por infraestructura controlada. | Diagrama, contratos y prueba de integración. |
-| Experto | testing, profiling y seguridad. | Perfil o threat model, telemetría y runbook de recuperación. |
-
-Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
-
-## Construcción guiada del capítulo
-
-**Objetivo del laboratorio:** compilar y ejecutar un programa Java que procese entrada del usuario con validación de tipos, inspeccionando el bytecode generado.
-
-**Requisitos previos:** ninguno (módulo introductorio del track).
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Escribir y compilar `Hola.java` | Ver Tema 1 | Observa el `.class` generado |
-| 2 | Declarar los 8 tipos primitivos y un `String` | Ver Tema 4 | Distingue primitivos de referencias |
-| 3 | Leer un número con `Scanner` y validar | — | Maneja el caso de entrada incorrecta |
-| 4 | Investigar JDK vs JRE vs JVM | Ver Tema 2 | Documenta cuál necesitas para cada caso |
-| 5 | Inspeccionar el bytecode con `javap -c` | Ver Tema 1 | Observa las instrucciones generadas |
-| 6 | Procesar cantidad y tarifa sin perder precisión | Ver Tema 5 | Compara `double` y `BigDecimal` construido desde texto |
-| 7 | Modelar estados del envío con `enum` y `switch` | Ver Tema 6 | Agrega un estado y observa la exhaustividad |
-| 8 | Predecir mutaciones y reasignaciones de un arreglo | Ver Tema 7 | Explica valor frente a copia de referencia |
-| 9 | Calcular una fecha con `java.time` | Ver Tema 8 | Prueba una entrada válida y una fecha imposible |
-
-**Verificación:** el laboratorio se considera exitoso si el programa compila y ejecuta correctamente, si maneja apropiadamente una entrada inválida del usuario sin terminar abruptamente, y si puedes explicar al menos tres instrucciones del bytecode generado por `javap`.
-
-**Errores comunes y soluciones**
-
-- **Confundir `JRE` con `JDK` al instalar el entorno de desarrollo.** Para desarrollar necesitas el JDK, que incluye `javac`.
-- **Olvidar que `main` debe ser exactamente `public static void main(String[] args)`.** Cualquier desviación de esa firma exacta impide que la JVM lo reconozca como punto de entrada.
-- **Asumir que un tipo primitivo puede usarse directamente en una colección genérica.** Usa el wrapper correspondiente (`Integer`, no `int`, dentro de `List<Integer>`).
-- **Comparar texto con `==`.** Usa `equals` para contenido; `==` solo responde si las referencias son idénticas.
-- **Afirmar que Java pasa objetos por referencia.** Java copia la referencia por valor; se puede mutar el objeto apuntado, pero no reasignar la variable del llamador.
-- **Usar `double` para una tarifa monetaria.** Usa `BigDecimal` desde una representación decimal textual y define la política de redondeo.
-
----

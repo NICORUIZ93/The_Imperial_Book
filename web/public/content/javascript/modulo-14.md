@@ -5,32 +5,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: TypeScript avanzado · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás construir una unión discriminada exhaustiva, derivar tipos con utilidades y mantener un contrato público que falle al añadir estados sin manejar. Endurecerás el ciclo de entrega del proyecto sin `any` ni assertions que oculten deuda.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir una unión discriminada exhaustiva, derivar tipos con utilidades y mantener un contrato público que falle al añadir estados sin manejar. Endurecerás el ciclo de entrega del proyecto sin any ni assertions que oculten deuda.
 
-**Conocimiento previo:** TypeScript strict, generics, narrowing, `never` y pruebas de tipos. Ejecuta `npx tsc --noEmit` limpio antes de modificar el dominio.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una unión discriminada exhaustiva, derivar tipos con utilidades y mantener un contrato público que falle al añadir estados sin manejar.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El proyecto incorpora cancelación y devolución a estados existentes. Si cada pantalla usa strings y condicionales parciales, una variante nueva puede quedar sin UI. El proyecto usará discriminante, exhaustividad y tipos derivados para que el cambio rompa en todos los lugares pendientes.
+#### ► LA ANALOGÍA
+Piensa en typescript avanzado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** unión discriminada, campo discriminante literal, narrowing, exhaustividad con `never`, utility types (`Pick`, `Record`).
-
-Una unión discriminada usa un campo común (`kind`) con valores literales distintos por variante, permitiendo que TypeScript angoste (narrow) el tipo dentro de cada rama de un `switch` sin ningún cast manual; `never` captura la garantía de "no debería quedar nada sin cubrir" — si el compilador puede probar que una rama recibe un valor imposible, exige tratarlo, y si queda un caso real sin manejar, falla ANTES de ejecutar, no en producción.
-
-**Analogía:** es como un formulario con un menú desplegable fijo de categorías, donde cada categoría habilita campos específicos propios; agregar una categoría nueva sin actualizar el formulario produce un error visible antes de publicarlo, no un campo vacío silencioso descubierto por un usuario real.
-
-**¿Por qué es importante?** Una unión discriminada exhaustiva convierte un estado nuevo del dominio en un error de compilación en cada lugar que todavía no lo maneja, en vez de un bug silencioso que aparece recién cuando ese estado ocurre en producción.
-
-**Casos de uso reales:** agregar un estado nuevo a un flujo de pedidos y que el compilador señale cada pantalla pendiente; derivar un `Record` de iconos que el compilador exige completar; migrar un `enum` plano a una unión discriminada con payload propio por variante.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["DeliveryStatus.kind"] --> B{switch}
@@ -39,7 +33,52 @@ flowchart LR
   B -->|delivered| E[rama tipada: receivedBy]
   B -->|caso nuevo sin rama| F["assertNever: error de compilación"]
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| TypeScript avanzado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar TypeScript avanzado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses typescript avanzado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: typescript avanzado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- TypeScript avanzado existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve typescript avanzado en tu contexto?
+2. ¿Cómo sabrías que typescript avanzado no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar typescript avanzado?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["DeliveryStatus.kind"] --> B{switch}
+  B -->|assigned| C[rama tipada: courierId]
+  B -->|in-transit| D[rama tipada: lat/lng]
+  B -->|delivered| E[rama tipada: receivedBy]
+  B -->|caso nuevo sin rama| F["assertNever: error de compilación"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-1
@@ -47,8 +86,6 @@ cd ejemplo-js-modulo-14-tema-1
 npm init -y
 npm install --save-dev typescript tsx
 ```
-
-Crea `tsconfig.json`:
 
 ```json
 {
@@ -62,8 +99,6 @@ Crea `tsconfig.json`:
   "include": ["src"]
 }
 ```
-
-Crea `src/domain/delivery-status.ts`:
 
 ```ts
 // La unión discriminada obliga a tratar cada estado de la entrega.
@@ -86,8 +121,6 @@ function assertNever(value: never): never {
 }
 ```
 
-Crea `src/demo.ts` para ejecutar las tres ramas:
-
 ```ts
 import { statusLabel } from './domain/delivery-status.js';
 
@@ -96,63 +129,32 @@ console.log(statusLabel({ kind: 'in-transit', latitude: 4.6, longitude: -74.1 })
 console.log(statusLabel({ kind: 'delivered', receivedBy: 'Luis' }));
 ```
 
-Ejecuta:
-
 ```bash
 npx tsc --noEmit
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** la comprobación termina sin errores y la salida contiene `Asignada a Ana`, `En ruta: 4.6, -74.1` y `Recibida por Luis`.
-
-**Fallo deliberado:** añade `{ kind: "cancelled"; reason: string }` sin incorporarlo al `switch`. `assertNever` recibe un valor distinto de `never` y TypeScript señala la rama faltante antes de ejecutar.
-
-#### Paso 5 · Práctica guiada
-
-Deriva `DeliveryKind = DeliveryStatus["kind"]` y un `Record<DeliveryKind, string>` para iconos. **Pista:** al añadir una variante, el `Record` también debe exigir su icono.
-
-#### Paso 6 · Práctica independiente
-
-Modela devolución y reprogramación, crea un tipo `DeliverySummary` con `Pick` y pruebas `@ts-expect-error`. Compara unión exhaustiva con clase jerárquica y registra la decisión.
-
-#### Paso 7 · Cierre
-
-Ya puedes hacer que evolución del dominio revele consumidores incompletos. El siguiente tema llevará cálculo tipado fuera del hilo principal con validación runtime.
-
-**Errores comunes:** usar enum/string sin payload específico; default que oculta variantes; `as never`; tipos condicionales ilegibles; confundir seguridad estática con validación externa.
-
-**Fuentes oficiales:** [TypeScript — Unions](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html) y [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Modela el resultado público como unión discriminada de carga, error y éxito. Comprueba que añadir un estado obliga a actualizar el renderizado, sin usar conversiones que silencien el compilador.
-
-**Límites y decisión de uso:** Los tipos de TypeScript se eliminan al ejecutar y no validan respuestas externas. Combina contratos estáticos con validación en las fronteras; una aserción de tipo no transforma un dato inválido en uno correcto.
+</details>
 
 ### Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás definir un protocolo de mensajes discriminado, validar entradas dentro del worker, correlacionar respuestas y cancelar solicitudes obsoletas. Calcularás distancia del proyecto sin bloquear UI ni confiar ciegamente en TypeScript.
 
-**Prerrequisitos:** Web Workers, TypeScript, uniones discriminadas y medición de hilo principal. Vite debe ejecutar el ejemplo; el contrato de tipos desaparece cuando un mensaje cruza el límite runtime.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás definir un protocolo de mensajes discriminado, validar entradas dentro del worker, correlacionar respuestas y cancelar solicitudes obsoletas.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El planificador recibe recalculados sucesivos al mover una parada. El proyecto debe devolver solo el cálculo más reciente, rechazar payloads inválidos y terminar workers al destruir la vista.
+#### ► LA ANALOGÍA
+Piensa en workers y ejecución fuera del hilo principal como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** hilo separado, `postMessage`, serialización/clonado estructurado, protocolo de mensajes, validación en la frontera runtime.
-
-Un Worker corre en un hilo completamente separado, comunicándose con el hilo principal únicamente a través de `postMessage`, que serializa (clona) los datos enviados — el tipo que TypeScript declaró para ese mensaje en tiempo de compilación es solo una promesa que nunca se verifica en tiempo de ejecución una vez que el mensaje efectivamente cruza esa frontera entre hilos.
-
-**Analogía:** es como enviar un paquete a través de un servicio de correo que solo transporta el contenido físico, nunca la etiqueta de "contenido garantizado" que el remitente escribió; quien lo recibe debe volver a verificar qué llegó realmente, sin confiar ciegamente en lo que decía esa etiqueta.
-
-**¿Por qué es importante?** El tipo estático de TypeScript no sobrevive la frontera de `postMessage`; validar la forma real del mensaje dentro del worker es la única garantía genuina contra un payload corrupto o inesperado.
-
-**Casos de uso reales:** descartar una respuesta obsoleta de un cálculo recalculado varias veces; rechazar un mensaje con forma inesperada sin que un cast silencioso lo deje pasar; terminar el worker explícitamente al destruir la vista que lo creó.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
   participant UI as Hilo principal
@@ -165,7 +167,56 @@ sequenceDiagram
     W-->>UI: postMessage({kind: "success", ...})
   end
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Workers y ejecución fuera del hilo principal se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Workers y ejecución fuera del hilo principal | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses workers y ejecución fuera del hilo principal por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: workers y ejecución fuera del hilo principal funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Workers y ejecución fuera del hilo principal existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve workers y ejecución fuera del hilo principal en tu contexto?
+2. ¿Cómo sabrías que workers y ejecución fuera del hilo principal no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar workers y ejecución fuera del hilo principal?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+  participant UI as Hilo principal
+  participant W as Worker
+  UI->>W: postMessage(payload) — tipo solo en compilación
+  W->>W: valida forma real del payload
+  alt payload inválido
+    W-->>UI: postMessage({kind: "error", ...})
+  else payload válido
+    W-->>UI: postMessage({kind: "success", ...})
+  end
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-2
@@ -173,8 +224,6 @@ cd ejemplo-js-modulo-14-tema-2
 npm create vite@latest . -- --template vanilla-ts
 npm install
 ```
-
-Crea `src/workers/route.worker.ts`:
 
 ```ts
 // route.worker.ts: el cálculo pesado ocurre fuera del hilo de la interfaz.
@@ -190,8 +239,6 @@ self.onmessage = (event: MessageEvent<unknown>) => {
   self.postMessage({ kind: "success", total });
 };
 ```
-
-Crea `src/route-client.ts`:
 
 ```ts
 type RouteResponse =
@@ -211,8 +258,6 @@ export function createRouteClient(output: HTMLElement) {
   };
 }
 ```
-
-Sustituye `src/main.ts` por un punto de entrada que también permita comprobar que la UI responde:
 
 ```ts
 import { createRouteClient } from './route-client';
@@ -236,63 +281,77 @@ window.addEventListener('pagehide', () => client.destroy(), { once: true });
 npm run dev
 ```
 
-Abre la URL local y pulsa **Calcular**.
-
-**Resultado esperado:** `Distancia planificada: 7 km`; el botón de la UI sigue respondiendo durante un lote grande.
-
-**Fallo deliberado:** envía `{ segments: [2, "3"] }`. Aunque un cast podría silenciar al editor, el worker responde `Segmentos inválidos`. Conserva validación en la frontera.
-
-#### Paso 5 · Práctica guiada
-
-Añade `requestId` a solicitud/respuesta y descarta respuestas antiguas. **Pista:** correlación pertenece al protocolo, no a una variable global invisible.
-
-#### Paso 6 · Práctica independiente
-
-Implementa cancelación, timeout, error del worker y transferencia de ArrayBuffer. Mide coste de clonación y define umbral donde otro hilo aporta valor.
-
-#### Paso 7 · Cierre
-
-Ya puedes operar un protocolo fuera del hilo con límites runtime. El siguiente tema decidirá cómo dividir y entregar ese código.
-
-**Errores comunes:** confiar en MessageEvent tipado; olvidar terminate; perder correlación; enviar DOM/funciones; usar worker para tareas pequeñas sin medir.
-
-**Fuentes oficiales:** [MDN — Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) y [Vite — Web Workers](https://vite.dev/guide/features.html#web-workers).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Traslada el cálculo de estadísticas del historial a un Worker. Mide que la entrada sigue respondiendo y prueba cancelar una consulta para que sus estadísticas no aparezcan bajo otra guía.
+</details>
 
 ### Tema 3: Bundlers y optimización · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás auditar el grafo de producción, crear un chunk bajo demanda y comparar bytes/solicitudes antes y después. Separarás el mapa del proyecto solo si no permanece importado de forma ansiosa.
 
-**Conocimiento previo:** ESM, import dinámico, Vite, Rollup y DevTools Network. Conserva un build base y mide comprimido además de tamaño en disco.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás auditar el grafo de producción, crear un chunk bajo demanda y comparar bytes/solicitudes antes y después.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La mayoría de operadores consulta listas; pocos abren el mapa avanzado. En este proyecto el mapa se descargará al entrar a su ruta, con estado de carga/error y presupuesto documentado.
+#### ► LA ANALOGÍA
+Piensa en bundlers y optimización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** grafo de dependencias, import estático vs. dinámico, chunk bajo demanda, importación ansiosa (eager), presupuesto de bytes.
-
-Un bundler construye un grafo de dependencias a partir de los imports estáticos del código; un `import()` dinámico marca un punto de división real donde el bundler puede generar un chunk separado, cargado solo cuando ese código efectivamente se ejecuta — pero basta con que CUALQUIER otro archivo importe el mismo módulo de forma estática para que ese chunk quede incluido en el bundle inicial de todas formas, sin ningún error que lo señale.
-
-**Analogía:** es como reservar una sala separada para un evento específico, pero si alguien deja una puerta conectada permanentemente abierta desde el salón principal, la gente entra a esa sala igual, sin esperar a que el evento realmente empiece.
-
-**¿Por qué es importante?** Un import dinámico no garantiza por sí solo que el código quede fuera del bundle inicial; cualquier import estático remanente del mismo módulo en otro archivo anula esa división silenciosamente.
-
-**Casos de uso reales:** cargar un mapa pesado solo cuando el usuario navega a esa pantalla; detectar una importación ansiedad duplicada inspeccionando el reporte visual del bundle; medir bytes comprimidos (no solo el tamaño en disco) antes de decidir si vale la pena dividir.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   M[main.ts] -->|import estático| Maps[maplibre-gl]
   V[vista-mapa.ts] -->|import dinámico await import| Maps
   Maps -. "si M también lo importa estático" .-> Bundle["incluido en el bundle inicial igual"]
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Bundlers y optimización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Bundlers y optimización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses bundlers y optimización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: bundlers y optimización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Bundlers y optimización existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve bundlers y optimización en tu contexto?
+2. ¿Cómo sabrías que bundlers y optimización no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar bundlers y optimización?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  M[main.ts] -->|import estático| Maps[maplibre-gl]
+  V[vista-mapa.ts] -->|import dinámico await import| Maps
+  Maps -. "si M también lo importa estático" .-> Bundle["incluido en el bundle inicial igual"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-3
@@ -301,8 +360,6 @@ npm create vite@latest . -- --template vanilla-ts
 npm install
 npm install maplibre-gl
 ```
-
-Crea `vite.config.ts`:
 
 ```ts
 import { defineConfig } from 'vite';
@@ -321,8 +378,6 @@ export default defineConfig({
 });
 ```
 
-Crea `src/map-view.ts`; el import dinámico se ejecuta únicamente al abrir el mapa:
-
 ```ts
 export async function mountMap(container: HTMLElement) {
   const { Map } = await import('maplibre-gl');
@@ -334,8 +389,6 @@ export async function mountMap(container: HTMLElement) {
   });
 }
 ```
-
-Sustituye `src/main.ts`:
 
 ```ts
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -360,63 +413,32 @@ document.querySelector('#open-map')!.addEventListener('click', async () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 npm run build
 npm run preview
 ```
 
-**Resultado esperado:** `dist/assets` contiene un chunk maps y Network no lo solicita en inicio; aparece al abrir mapa.
-
-**Fallo deliberado:** agrega además `import maplibregl from "maplibre-gl"` en `main.ts`. El chunk puede descargarse inicialmente o duplicar estrategia; inspecciona el grafo y elimina la importación ansiosa.
-
-#### Paso 5 · Práctica guiada
-
-Genera un reporte visual del bundle y establece presupuesto para chunk inicial. **Pista:** registra versión, bytes gzip/brotli y número de solicitudes, no solo nombres minificados.
-
-#### Paso 6 · Práctica independiente
-
-Compara manualChunks con import dinámico, precarga y caché HTTP. Simula red lenta y fallo de chunk; diseña mensaje/reintento y decide si la división mejora LCP/INP.
-
-#### Paso 7 · Cierre
-
-Ya puedes relacionar grafo, entrega y experiencia en vez de “hacer chunks”. El siguiente tema verificará que la interfaz resultante sea operable sin ratón ni visión.
-
-**Errores comunes:** dividir sin medir; importar lazy y eager; publicar source maps; crear chunks diminutos; olvidar estado de error; comparar tamaño sin compresión.
-
-**Fuentes oficiales:** [Vite — Build](https://vite.dev/guide/build.html), [Rollup — Configuration](https://rollupjs.org/configuration-options/) y [web.dev — Code splitting](https://web.dev/articles/reduce-javascript-payloads-with-code-splitting).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Divide la funcionalidad de mapa del seguimiento básico. Inspecciona los recursos descargados antes de abrirlo y confirma que un fallo del chunk del mapa no impide leer el estado textual.
-
-**Límites y decisión de uso:** Reducir bytes no basta si aumentas peticiones, trabajo de parseo o latencia al abrir una función. Mide recorridos reales y compatibilidad antes de dividir módulos o añadir transformaciones que dificulten depuración.
+</details>
 
 ### Tema 4: Accesibilidad web · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás construir una confirmación operable con teclado, foco visible, nombre accesible y feedback anunciado, y probarla manual y automáticamente. Harás que confirmar una entrega del proyecto no dependa de ratón, color o visión.
 
-**Prerrequisitos:** HTML semántico, eventos, formularios y lector de pantalla del sistema. Prueba primero con teclado; ARIA complementa semántica, no reemplaza un `<button>` real.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una confirmación operable con teclado, foco visible, nombre accesible y feedback anunciado, y probarla manual y automáticamente.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Confirmar entrega es una acción crítica. En este proyecto debe conservar foco, impedir duplicados, anunciar carga/éxito/error y explicar corrección sin mover inesperadamente al operador.
+#### ► LA ANALOGÍA
+Piensa en accesibilidad web como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** semántica nativa, foco visible, `aria-live`, rol implícito, activación por teclado.
-
-Un `<button>` nativo del navegador viene con activación por teclado (Enter/Espacio), rol semántico y foco visible incorporados sin ningún código adicional; reemplazarlo por un `<div>` con un `onclick` obliga a reimplementar manualmente cada una de esas capacidades, y es fácil olvidar alguna. `aria-live="polite"` anuncia cambios de contenido a un lector de pantalla sin mover el foco del usuario a la fuerza.
-
-**Analogía:** es como una puerta automática que ya sabe abrirse con una perilla, un sensor de proximidad y una rampa incorporados, frente a construir una pared con un hueco y pedirle a cada visitante que empuje de una forma específica que nadie le explicó.
-
-**¿Por qué es importante?** La semántica nativa (`<button>`) da gratis exactamente las capacidades que un `<div>` con handlers personalizados debe reimplementar manualmente, con alto riesgo de olvidar alguna de ellas.
-
-**Casos de uso reales:** confirmar una acción crítica sin perder el foco ni permitir doble envío; anunciar un estado de carga/éxito/error a un lector de pantalla; auditar el orden de Tab tras una navegación SPA.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   B["&lt;button&gt; nativo"] --> K["Teclado: Enter/Espacio ya funcionan"]
@@ -426,7 +448,53 @@ flowchart LR
   D -.-> F
   D -.-> R
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Accesibilidad web se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Accesibilidad web | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses accesibilidad web por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: accesibilidad web funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Accesibilidad web existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve accesibilidad web en tu contexto?
+2. ¿Cómo sabrías que accesibilidad web no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad web?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  B["&lt;button&gt; nativo"] --> K["Teclado: Enter/Espacio ya funcionan"]
+  B --> F["Foco visible ya funciona"]
+  B --> R["Rol semántico ya existe"]
+  D["&lt;div onclick&gt;"] -.->|hay que reimplementar manualmente| K
+  D -.-> F
+  D -.-> R
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-4
@@ -437,8 +505,6 @@ npm install --save-dev vitest jsdom
 npm pkg set scripts.test="vitest run"
 ```
 
-Sustituye el contenido de `<div id="app"></div>` en `index.html` por:
-
 ```html
 <div id="app">
   <h1>Entrega RF-101</h1>
@@ -446,8 +512,6 @@ Sustituye el contenido de `<div id="app"></div>` en `index.html` por:
   <p id="delivery-feedback" role="status" aria-live="polite"></p>
 </div>
 ```
-
-Crea `src/ui/delivery-button.ts`:
 
 ```ts
 export function mountDeliveryButton(button: HTMLButtonElement, feedback: HTMLElement,
@@ -467,8 +531,6 @@ export function mountDeliveryButton(button: HTMLButtonElement, feedback: HTMLEle
 }
 ```
 
-Sustituye `src/main.ts` para montar el botón con un servicio simulado:
-
 ```ts
 import { mountDeliveryButton } from './ui/delivery-button';
 
@@ -478,8 +540,6 @@ mountDeliveryButton(
   () => new Promise<void>((resolve) => setTimeout(resolve, 300)),
 );
 ```
-
-Crea `src/ui/delivery-button.test.ts`:
 
 ```ts
 // @vitest-environment jsdom
@@ -507,62 +567,27 @@ describe('confirmación accesible', () => {
 });
 ```
 
-Ejecuta:
-
-```bash
-npx tsc --noEmit
-npm test -- src/ui/delivery-button.test.ts
-npm run dev
-```
-
-**Resultado esperado:** la prueba pasa; en el navegador, Tab enfoca el botón, Enter/Espacio activan una sola vez, `aria-busy` existe durante la espera y el status anuncia éxito/error sin perder foco.
-
-**Fallo deliberado:** reemplaza `<button>` por `<div onclick>`. Desaparecen activación de teclado, rol y foco nativos. Restaura semántica antes de añadir ARIA o handlers personalizados.
-
-#### Paso 5 · Práctica guiada
-
-Tras navegación SPA, enfoca el `h1` con `tabindex="-1"` y conserva un enlace “Saltar al contenido”. **Pista:** inspecciona orden Tab y evita foco atrapado.
-
-#### Paso 6 · Práctica independiente
-
-Audita lista, formulario, error y diálogo con teclado, lector, zoom 200%, contraste y reduced motion. Ejecuta axe, pero documenta problemas manuales que la automatización no detecta.
-
-#### Paso 7 · Cierre
-
-Ya puedes verificar operabilidad y comunicación, no solo atributos. El siguiente tema evaluará WebAssembly para cálculo medido, manteniendo un fallback accesible.
-
-**Errores comunes:** div como botón; aria-label que contradice texto; quitar outline; feedback solo por color; mover foco sin razón; afirmar accesibilidad solo por Lighthouse.
-
-**Fuentes oficiales:** [WAI — ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/), [WCAG 2.2](https://www.w3.org/TR/WCAG22/) y [MDN — Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Completa búsqueda y lectura del historial con teclado y lector de pantalla. Verifica anuncio del resultado y foco tras un error, sin depender únicamente de colores para distinguir estados.
+</details>
 
 ### Tema 5: Web3 y machine learning en navegador · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás construir una puntuación local explicable, probar fronteras/sesgo y decidir si ML o una red distribuida resuelven un requisito real. Crearás una señal de riesgo del proyecto que nunca sanciona automáticamente.
 
-**Prerrequisitos:** funciones puras, estadística descriptiva básica, privacidad y threat modeling. Este laboratorio no es un modelo predictivo validado ni una recomendación laboral; usa datos sintéticos.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir una puntuación local explicable, probar fronteras/sesgo y decidir si ML o una red distribuida resuelven un requisito real.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Batería baja, GPS impreciso y retraso pueden sugerir que una entrega necesita asistencia, pero también reflejan dispositivo, cobertura o zona. El proyecto mostrará factores y permitirá revisión humana; no enviará ubicación a un tercero.
+#### ► LA ANALOGÍA
+Piensa en web3 y machine learning en navegador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** cómputo local explicable, privacidad por diseño, blockchain como integridad (no veracidad) de datos.
-
-Un modelo de riesgo simple que corre completamente en el navegador del usuario (sin enviar ubicación ni batería a ningún servidor) preserva la privacidad por diseño, a costa de no poder aprovechar el cómputo o los datos agregados de un servidor central; "blockchain" no es sinónimo automático de "datos confiables" — solo garantiza que los datos YA escritos no se alteran retroactivamente, no que lo escrito originalmente fuera correcto.
-
-**Analogía:** es como un termómetro doméstico que nunca envía tu temperatura a ningún lado (privacidad total, pero sin el panorama epidemiológico que tendría un hospital agregando miles de lecturas); un libro de actas notariado prueba que una página no se reescribió después, no que lo que se escribió originalmente fuera verdad.
-
-**¿Por qué es importante?** Un modelo local explicable preserva privacidad y da factores verificables, pero no reemplaza decisión humana; confundir "blockchain" con "dato verificado" ignora que la integridad retroactiva no implica veracidad original.
-
-**Casos de uso reales:** mostrar los factores que componen una puntuación de riesgo, nunca solo el número final; comparar grupos sintéticos por zona/dispositivo para detectar sesgo sin exponer datos reales; documentar por qué una base de datos firmada puede resolver el mismo problema de integridad sin la complejidad de una red distribuida.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
   I[battery, accuracy, minutesLate] --> R["deliveryRisk(): cálculo 100% local"]
@@ -570,7 +595,51 @@ flowchart TD
   S --> H["Revisión humana, nunca sanción automática"]
   R -.->|nunca sale del navegador| Net["red/servidor externo"]
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Web3 y machine learning en navegador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Web3 y machine learning en navegador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses web3 y machine learning en navegador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: web3 y machine learning en navegador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Web3 y machine learning en navegador existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve web3 y machine learning en navegador en tu contexto?
+2. ¿Cómo sabrías que web3 y machine learning en navegador no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar web3 y machine learning en navegador?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+  I[battery, accuracy, minutesLate] --> R["deliveryRisk(): cálculo 100% local"]
+  R --> S["score + factores explicables"]
+  S --> H["Revisión humana, nunca sanción automática"]
+  R -.->|nunca sale del navegador| Net["red/servidor externo"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-6
@@ -578,8 +647,6 @@ cd ejemplo-js-modulo-14-tema-6
 npm init -y
 npm install --save-dev tsx typescript
 ```
-
-Crea `src/risk/delivery-risk.ts`:
 
 ```ts
 interface RiskInput { battery: number; accuracyMeters: number; minutesLate: number }
@@ -595,54 +662,31 @@ export function deliveryRisk(input: RiskInput): number {
 console.log(deliveryRisk({ battery: 10, accuracyMeters: 120, minutesLate: 30 }));
 ```
 
-Ejecuta:
-
 ```bash
 npx tsx src/risk/delivery-risk.ts
 ```
 
-**Resultado esperado:** `0.95` (`batteryRisk=0.35` porque `10<15`, `gpsRisk=0.35` porque `120>80`, `delayRisk=min(30/120,0.3)=0.25`, suma `0.95`) y factores explicables; ningún dato sale del navegador.
-
-**Fallo deliberado:** pasa batería `-1` o precisión `NaN`. Sin validación se produce una puntuación aparentemente legítima. Rechaza rangos inválidos antes de calcular y añade regresión.
-
-#### Paso 5 · Práctica guiada
-
-Devuelve `{ score, factors }` y compara grupos sintéticos por zona/dispositivo. **Pista:** una correlación no prueba culpa; busca diferencias de error y falsos positivos.
-
-#### Paso 6 · Práctica independiente
-
-Compara regla explícita con un modelo pequeño local: precisión, latencia, tamaño, privacidad y explicabilidad. Escribe un ADR separado para Web3 que exija múltiples organizaciones sin autoridad común y contraste con base de datos firmada.
-
-#### Paso 7 · Cierre
-
-Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. El siguiente tema tratará GPS como dato sensible con incertidumbre.
-
-**Errores comunes:** llamar IA a una regla; automatizar sanciones; usar datos personales sin propósito/consentimiento; confundir blockchain con integridad; introducir dependencias pesadas antes de validar valor.
-
-**Fuentes oficiales:** [TensorFlow.js — Guides](https://www.tensorflow.org/js/guide), [WebNN API](https://www.w3.org/TR/webnn/) y [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Construye una demostración opcional de clasificación local de incidencias con datos sintéticos. Mide errores y tiempo de carga; no permitas que una predicción cambie por sí sola el estado operativo de una entrega.
+</details>
 
 ### Tema 6: Geolocalización, permisos y precisión GPS · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás solicitar ubicación con consentimiento, interpretar precisión y cancelar el seguimiento sin convertir una coordenada imprecisa en una decisión logística.
 
-**Conocimiento previo:** Promesas/callbacks, permisos, fechas y ciclo de vida. Geolocation requiere HTTPS o localhost y una acción visible; prepara un fallback manual.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás solicitar ubicación con consentimiento, interpretar precisión y cancelar el seguimiento sin convertir una coordenada imprecisa en una decisión logística.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** El proyecto necesita posición para mostrar avance, pero la API puede ser rechazada, tardar, entregar datos antiguos o reportar una precisión de cientos de metros. La ubicación es un dato sensible y debe pedirse solo mientras una función visible la necesita.
+#### ► LA ANALOGÍA
+Piensa en geolocalización, permisos y precisión gps como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Este incremento del proyecto inicia seguimiento únicamente al pulsar “Compartir ubicación”, muestra margen/tiempo y destruye el watch al salir de la entrega.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** una coordenada es como una dirección comunicada por radio junto con un margen de error; “estoy aquí” sin precisión ni momento de medición no es una evidencia suficiente.
-
-**Conceptos clave:** `getCurrentPosition` obtiene una muestra; `watchPosition` observa cambios; `accuracy` expresa radio estimado en metros; `Permissions API` consulta estado; `clearWatch` detiene el sensor.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     ACTION["persona inicia seguimiento"] --> PERMISSION{"permiso"}
@@ -650,7 +694,49 @@ flowchart LR
     PERMISSION -->|"denied"| FALLBACK["entrada manual / explicación"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Geolocalización, permisos y precisión GPS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Geolocalización, permisos y precisión GPS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses geolocalización, permisos y precisión gps por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: geolocalización, permisos y precisión gps funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Geolocalización, permisos y precisión GPS existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve geolocalización, permisos y precisión gps en tu contexto?
+2. ¿Cómo sabrías que geolocalización, permisos y precisión gps no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar geolocalización, permisos y precisión gps?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    ACTION["persona inicia seguimiento"] --> PERMISSION{"permiso"}
+    PERMISSION -->|"granted"| WATCH["watchPosition"] --> VALIDATE["precisión + antigüedad"] --> MAP["actualizar mapa"]
+    PERMISSION -->|"denied"| FALLBACK["entrada manual / explicación"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-7
@@ -658,8 +744,6 @@ cd ejemplo-js-modulo-14-tema-7
 npm create vite@latest . -- --template vanilla
 npm install
 ```
-
-Crea `src/location/watch-location.js`:
 
 ```js
 export function iniciarUbicacion({ onPosition, onError }) {
@@ -678,8 +762,6 @@ export function iniciarUbicacion({ onPosition, onError }) {
   return () => navigator.geolocation.clearWatch(id);
 }
 ```
-
-Sustituye `src/main.js` para solicitar el permiso solo tras una acción explícita:
 
 ```js
 import { iniciarUbicacion } from './location/watch-location';
@@ -707,70 +789,79 @@ document.querySelector('#share').addEventListener('click', () => {
 window.addEventListener('pagehide', () => detener(), { once: true });
 ```
 
-Ejecuta sobre HTTPS o localhost:
-
 ```bash
 npm run dev
 ```
 
-**Resultado esperado:** tras acción explícita y permiso concedido se muestran posición, precisión y hora; al desmontar deja de actualizarse.
-
-**Fallo deliberado:** simula `PERMISSION_DENIED` en DevTools. Debe aparecer explicación y entrada manual, sin reintentos automáticos que vuelvan a pedir permiso.
-
-#### Paso 5 · Práctica guiada
-
-Simula los tres códigos de error y presenta alternativas. **Pista:** diferencia `PERMISSION_DENIED`, `POSITION_UNAVAILABLE` y `TIMEOUT`.
-
-#### Paso 6 · Práctica independiente
-
-Rechaza para asignación automática muestras con más de 30 segundos o precisión peor que 100 m, pero permite mostrarlas como “aproximadas”. Prueba cleanup y batería.
-
-#### Paso 7 · Cierre
-
-Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El siguiente tema estudia qué datos pueden persistirse en cada almacén.
-
-**Errores comunes:** iniciar `watchPosition` al cargar; omitir `clearWatch`; tratar muestra vieja como actual; ocultar precisión; pedir high accuracy sin justificar batería.
-
-**Fuentes oficiales:** [MDN — Geolocation API](https://developer.mozilla.org/docs/Web/API/Geolocation_API) y [Permissions API](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Solicita ubicación solo al activar una función que la necesita y ofrece búsqueda manual. Prueba permiso denegado y baja precisión; el widget debe comunicar incertidumbre sin inventar una posición exacta.
+</details>
 
 ### Tema 7: sessionStorage, cookies e IndexedDB · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás elegir almacenamiento según vida útil, tamaño, consulta y riesgo, y construir un borrador offline sin guardar credenciales accesibles a JavaScript.
 
-**Conocimiento previo:** JSON, Promesas, transacciones y amenazas XSS/CSRF. Prueba siempre datos ausentes, corruptos y migraciones; el navegador puede borrar almacenamiento.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás elegir almacenamiento según vida útil, tamaño, consulta y riesgo, y construir un borrador offline sin guardar credenciales accesibles a JavaScript.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** `localStorage`, `sessionStorage`, cookies e IndexedDB no son alternativas equivalentes. Elegir por costumbre puede bloquear la UI, perder datos al cerrar una pestaña o exponer tokens ante XSS.
+#### ► LA ANALOGÍA
+Piensa en sessionstorage, cookies e indexeddb como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto conservará un borrador por pestaña y una cola offline estructurada con claves idempotentes, pero la sesión se manejará con cookie segura emitida por el servidor.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sessionstorage, cookies e indexeddb resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** `sessionStorage` es una mesa de trabajo de una pestaña; una cookie es una credencial que el navegador puede adjuntar a solicitudes; IndexedDB es un archivo estructurado local con transacciones.
-
-**Conceptos clave:** `sessionStorage` vive por pestaña; cookies `HttpOnly` no son legibles desde JS; `SameSite` reduce CSRF; IndexedDB guarda objetos y consultas asíncronas; cualquier almacenamiento cliente puede borrarse.
-
-| Necesidad | Opción | Límite principal |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| borrador de una pestaña | `sessionStorage` | desaparece al cerrar |
-| sesión enviada al servidor | cookie `HttpOnly; Secure; SameSite` | requiere diseño CSRF |
-| cola offline estructurada | IndexedDB | API transaccional y migraciones |
+| sessionStorage, cookies e IndexedDB se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar sessionStorage, cookies e IndexedDB | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses sessionstorage, cookies e indexeddb por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sessionstorage, cookies e indexeddb funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- sessionStorage, cookies e IndexedDB existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sessionstorage, cookies e indexeddb en tu contexto?
+2. ¿Cómo sabrías que sessionstorage, cookies e indexeddb no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sessionstorage, cookies e indexeddb?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-js-modulo-14-tema-8
 cd ejemplo-js-modulo-14-tema-8
 npm create vite@latest . -- --template vanilla
 npm install
 ```
-
-Crea `src/storage/delivery-draft.js`:
 
 ```js
 const KEY = 'app:delivery-draft';
@@ -785,8 +876,6 @@ export function loadDraft() {
   }
 }
 ```
-
-Sustituye `src/main.js` por un formulario mínimo que guarda y recupera el borrador:
 
 ```js
 import { loadDraft, saveDraft } from './storage/delivery-draft';
@@ -808,59 +897,74 @@ input.addEventListener('input', () => {
 npm run dev
 ```
 
-Escribe un destinatario y recarga la página.
-
-**Resultado esperado:** el borrador sobrevive a una recarga de la misma pestaña, pero no se comparte con otra sesión independiente.
-
-**Fallo deliberado:** escribe `{mal-json` bajo la clave desde DevTools. `loadDraft` se recupera con `null`, elimina corrupción y la pantalla continúa.
-
-#### Paso 5 · Práctica guiada
-
-Crea una base IndexedDB `academia-offline` y almacena confirmaciones con clave idempotente. **Pista:** resuelve la Promesa solo en `transaction.oncomplete`, no cuando termina una única request.
-
-#### Paso 6 · Práctica independiente
-
-Migra versión 1 a 2 agregando `createdAt`, prueba cuota, transacción abortada y reenvío idempotente. Documenta cookie `HttpOnly; Secure; SameSite` del servidor sin intentar crear HttpOnly desde JS.
-
-#### Paso 7 · Cierre
-
-La persistencia se elige por semántica y amenaza, no por comodidad. El próximo tema validará formatos textuales complejos.
-
-**Errores comunes:** guardar access tokens en almacenamiento legible; usar localStorage para colecciones grandes; ignorar transacciones/versiones; asumir persistencia permanente; confundir SameSite con solución total de CSRF.
-
-**Fuentes oficiales:** [MDN — Web Storage](https://developer.mozilla.org/docs/Web/API/Web_Storage_API), [IndexedDB](https://developer.mozilla.org/docs/Web/API/IndexedDB_API) y [Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Elige almacenamiento para una preferencia de idioma y para un borrador no sensible. Prueba pestaña nueva, recarga y limpieza; no persistas credenciales ni historial privado por comodidad.
+</details>
 
 ### Tema 8: Expresiones regulares avanzadas y Unicode · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás construir y probar una expresión regular con grupos, anclas y Unicode, medir backtracking y reconocer cuándo un parser explícito es más seguro.
 
-**Prerrequisitos:** strings, normalización Unicode, performance.now y pruebas. Define primero una gramática de código; una regex no debe inventar la regla.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y probar una expresión regular con grupos, anclas y Unicode, medir backtracking y reconocer cuándo un parser explícito es más seguro.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Los identificadores logísticos y entradas textuales necesitan validación consistente, pero una regex compleja puede aceptar formatos incorrectos o causar consumo excesivo de CPU con backtracking catastrófico.
+#### ► LA ANALOGÍA
+Piensa en expresiones regulares avanzadas y unicode como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto parseará códigos públicos `CO-2026-000123` y conservará política de normalización separada de validación.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que expresiones regulares avanzadas y unicode resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Expresiones regulares avanzadas y Unicode se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** una regex es una plantilla de inspección para etiquetas; funciona bien cuando el formato es regular, pero no reemplaza abrir y comprender un documento con gramática anidada.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Expresiones regulares avanzadas y Unicode | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:** grupos capturan partes; grupos nombrados documentan; lookahead verifica sin consumir; flags `u`/`v` tratan Unicode correctamente; anclas definen toda la entrada.
+#### ► CUÁNDO NO USAR ESTO
+No uses expresiones regulares avanzadas y unicode por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Cuando un fragmento de la expresión proviene de datos dinámicos (una búsqueda escrita por la persona usuaria, por ejemplo), insertarlo sin escapar permite que caracteres como `.`, `*` o `(` se interpreten como metacaracteres y rompan o manipulen la gramática esperada. Desde ECMAScript 2025 (Node.js 24 o superior; en Node.js 22 obtienes `TypeError: RegExp.escape is not a function`), `RegExp.escape(texto)` devuelve el texto con todos los metacaracteres escapados, reemplazando la función utilitaria casera que la mayoría de proyectos mantenía para este propósito:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: expresiones regulares avanzadas y unicode funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Expresiones regulares avanzadas y Unicode existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve expresiones regulares avanzadas y unicode en tu contexto?
+2. ¿Cómo sabrías que expresiones regulares avanzadas y unicode no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar expresiones regulares avanzadas y unicode?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```javascript
 const busqueda = 'CO-2026 (urgente)';
 const patronSeguro = new RegExp(RegExp.escape(busqueda), 'u');
 patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" actúe como grupo
 ```
-
-#### Paso 4 · Demostración guiada desde cero
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-9
@@ -868,8 +972,6 @@ cd ejemplo-js-modulo-14-tema-9
 npm init -y
 npm install --save-dev tsx typescript
 ```
-
-Crea `src/validation/tracking-code.js`:
 
 ```js
 const TRACKING_CODE = /^(?<country>[A-Z]{2})-(?<year>\d{4})-(?<sequence>\d{6})$/u;
@@ -880,8 +982,6 @@ export function parseTrackingCode(value) {
   return { ...match.groups, year: Number(match.groups.year) };
 }
 ```
-
-Crea `src/demo.ts` con casos válidos e inválidos:
 
 ```ts
 import { parseTrackingCode } from './validation/tracking-code.js';
@@ -896,54 +996,31 @@ for (const invalid of ['prefijo-CO-2026-000123', 'CO-2026-123']) {
 }
 ```
 
-Ejecuta:
-
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** `CO-2026-000123` produce `{ country: 'CO', year: 2026, sequence: '000123' }` y las cadenas parciales se rechazan con el mensaje del contrato.
-
-**Fallo deliberado:** mide `/^(a+)+$/` contra `"a".repeat(n) + "!"` incrementando n. El tiempo crece peligrosamente por backtracking; reemplázala por una condición lineal o regex sin cuantificadores anidados.
-
-#### Paso 5 · Práctica guiada
-
-Añade casos con espacios y minúsculas antes de decidir si normalizarlos. **Pista:** separar normalización de validación hace visible la política.
-
-#### Paso 6 · Práctica independiente
-
-Prueba Unicode compuesto, límites y 10 000 caracteres; crea benchmark y compara parser manual. Documenta máximo de entrada y timeout/cancelación donde aplique.
-
-#### Paso 7 · Cierre
-
-Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguiente tema organiza comportamientos mediante patrones deliberados.
-
-**Errores comunes:** parsear HTML/JSON; olvidar anclas; ignorar flag u/v; normalizar ocultamente; aceptar regex ilegible sin casos límite; procesar entrada ilimitada.
-
-**Fuentes oficiales:** [MDN — Regular expressions](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_expressions) y [Unicode escapes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Valida el formato público de una guía y normaliza texto de búsqueda según el contrato. Prueba caracteres Unicode y entradas largas, evitando que una expresión regular bloquee la interacción.
+</details>
 
 ### Tema 9: Patrones Factory, Strategy, Observer y Pub/Sub · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás reconocer Factory, Strategy, Observer y Pub/Sub, implementar una política intercambiable y justificar por qué no necesitas Singleton global para compartir estado.
 
-**Conocimiento previo:** funciones de primera clase, módulos, closures y pruebas. Parte del problema y sus fuerzas; no agregues una clase solo para poder nombrar un patrón.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reconocer Factory, Strategy, Observer y Pub/Sub, implementar una política intercambiable y justificar por qué no necesitas Singleton global para compartir estado.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Un patrón nombra una solución recurrente y sus consecuencias. Aplicarlo sin problema real añade capas, dependencias invisibles y dificultad de prueba.
+#### ► LA ANALOGÍA
+Piensa en patrones factory, strategy, observer y pub/sub como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto debe elegir una ruta por tiempo, batería o peajes sin modificar el planificador cada vez; Strategy representa esa variación explícita.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** Factory construye vehículos, Strategy cambia la regla de ruta, Observer notifica a quienes miran un tablero y Pub/Sub usa una central que desacopla emisores y receptores.
-
-**Conceptos clave:** Factory encapsula creación; Strategy intercambia algoritmos; Observer conoce suscriptores directos; Pub/Sub usa un canal intermediario; Singleton impone una instancia y estado global.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 classDiagram
     class RoutePlanner { +plan(delivery, strategy) }
@@ -953,7 +1030,51 @@ classDiagram
     RoutePlanner --> LowBatteryStrategy
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Patrones Factory, Strategy, Observer y Pub/Sub se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Patrones Factory, Strategy, Observer y Pub/Sub | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses patrones factory, strategy, observer y pub/sub por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: patrones factory, strategy, observer y pub/sub funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Patrones Factory, Strategy, Observer y Pub/Sub existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve patrones factory, strategy, observer y pub/sub en tu contexto?
+2. ¿Cómo sabrías que patrones factory, strategy, observer y pub/sub no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar patrones factory, strategy, observer y pub/sub?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+classDiagram
+    class RoutePlanner { +plan(delivery, strategy) }
+    class FastestStrategy { +calculate(delivery) }
+    class LowBatteryStrategy { +calculate(delivery) }
+    RoutePlanner --> FastestStrategy
+    RoutePlanner --> LowBatteryStrategy
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-10
@@ -961,8 +1082,6 @@ cd ejemplo-js-modulo-14-tema-10
 npm init -y
 npm install --save-dev tsx typescript
 ```
-
-Crea `src/routing/route-strategy.js`:
 
 ```js
 export const strategies = {
@@ -975,8 +1094,6 @@ export function planRoute(delivery, strategy) {
   return strategy(delivery);
 }
 ```
-
-Crea `src/demo.ts` con dos rutas y ambas estrategias:
 
 ```ts
 import { planRoute, strategies } from './routing/route-strategy.js';
@@ -991,56 +1108,73 @@ console.log(planRoute(delivery, strategies.fastest).id);
 console.log(planRoute(delivery, strategies.lowBattery).id);
 ```
 
-Ejecuta:
-
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** imprime `rápida` y después `ahorro`; cada Strategy selecciona una ruta distinta sin modificar `planRoute`.
-
-**Fallo deliberado:** pasa `"fastest"` directamente en vez de resolver la factory. `planRoute` lanza `Strategy requerida`; corrige la frontera para traducir nombres a funciones y rechazar claves desconocidas.
-
-#### Paso 5 · Práctica guiada
-
-Agrega `avoidTolls` registrándola en la factory `strategies`. **Pista:** la función central no debe contener otro `if` por estrategia.
-
-#### Paso 6 · Práctica independiente
-
-Implementa Observer con unsubscribe y compáralo con Pub/Sub para eventos entre módulos. Prueba cleanup, nombres y orden; documenta cuándo una llamada directa es más clara.
-
-#### Paso 7 · Cierre
-
-Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque ampliará plataforma offline, tiempo real y datos binarios.
-
-**Errores comunes:** convertir todo en Singleton; if central creciente; Observer sin unsubscribe; bus global sin contratos; patrones que agregan capas sin variación real.
-
-**Fuentes oficiales:** [web.dev — Design patterns](https://web.dev/learn/javascript) y [MDN — Working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa la selección del cliente, el formato del estado y la publicación de cambios. Prueba dos instancias del widget y verifica que sus suscriptores se liberan al desmontar.
+</details>
 
 ### Tema 10: WebSocket y comunicación en tiempo real · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás abrir un WebSocket, validar mensajes, mantener heartbeat y reconectar con backoff sin duplicar suscripciones.
 
-**Prerrequisitos:** eventos, JSON, temporizadores, backoff e idempotencia. Usa servidor local; define autenticación y autorización en servidor, no confíes en la conexión abierta.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás abrir un WebSocket, validar mensajes, mantener heartbeat y reconectar con backoff sin duplicar suscripciones.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** El seguimiento en vivo no debe consultar la API cada segundo. WebSocket mantiene un canal bidireccional, pero introduce conexión persistente, orden, duplicados, autenticación y recuperación.
+#### ► LA ANALOGÍA
+Piensa en websocket y comunicación en tiempo real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto mantendrá un socket por vista/servicio, validará cada evento y deduplicará `event.id` al reconectar.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que websocket y comunicación en tiempo real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| WebSocket y comunicación en tiempo real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** HTTP es enviar cartas independientes; WebSocket es una llamada abierta. Si la llamada se corta, necesitas saber qué conversación recuperar y qué mensajes ya procesaste.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar WebSocket y comunicación en tiempo real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:** handshake inicia sobre HTTP; estados `CONNECTING/OPEN/CLOSING/CLOSED`; mensajes son datos no confiables; heartbeat detecta conexiones muertas; backoff evita tormentas; SSE es alternativa unidireccional más simple.
+#### ► CUÁNDO NO USAR ESTO
+No uses websocket y comunicación en tiempo real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: websocket y comunicación en tiempo real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- WebSocket y comunicación en tiempo real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve websocket y comunicación en tiempo real en tu contexto?
+2. ¿Cómo sabrías que websocket y comunicación en tiempo real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar websocket y comunicación en tiempo real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-js-modulo-14-tema-12
 cd ejemplo-js-modulo-14-tema-12
@@ -1049,8 +1183,6 @@ npm install
 npm install --save-dev ws
 npm pkg set scripts.socket="node server/socket.mjs"
 ```
-
-Crea `src/realtime/tracking-socket.js`:
 
 ```js
 export function connectTracking(url, { onEvent, onState }) {
@@ -1069,8 +1201,6 @@ export function connectTracking(url, { onEvent, onState }) {
 }
 ```
 
-Crea `server/socket.mjs`:
-
 ```js
 import { WebSocketServer } from 'ws';
 
@@ -1085,8 +1215,6 @@ server.on('connection', (socket) => {
 });
 console.log('WebSocket local en ws://localhost:8080');
 ```
-
-Sustituye `src/main.js`:
 
 ```js
 import { connectTracking } from './realtime/tracking-socket';
@@ -1107,70 +1235,83 @@ const disconnect = connectTracking('ws://localhost:8080', {
 window.addEventListener('pagehide', disconnect, { once: true });
 ```
 
-Ejecuta servidor y app:
-
 ```bash
 npm run socket
 ```
-
-Mantén esa terminal abierta y en otra terminal, desde la misma carpeta:
 
 ```bash
 npm run dev
 ```
 
-**Resultado esperado:** UI anuncia conexión, procesa JSON válido, marca inválido sin caer y se desconecta al destruir.
-
-**Fallo deliberado:** agrega temporalmente `socket.send('{mal-json')` dentro del handler `connection` del servidor. Sin `try/catch` el handler lanza y pierde el evento; con frontera informa `invalid-message` y mantiene conexión.
-
-#### Paso 5 · Práctica guiada
-
-Añade reconexión exponencial con jitter y límite. **Pista:** cancela temporizador al destruir y reinicia intento solo tras conexión estable.
-
-#### Paso 6 · Práctica independiente
-
-Añade heartbeat, deduplicación, resume token y estados offline/auth. Compara SSE cuando solo se reciben eventos y prueba conexiones repetidas.
-
-#### Paso 7 · Cierre
-
-El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tema trabajará con bytes.
-
-**Errores comunes:** socket por render; reconectar sin límite; confiar JSON; no deduplicar; heartbeat sin timeout; olvidar cleanup o autorización.
-
-**Fuentes oficiales:** [MDN — WebSocket](https://developer.mozilla.org/docs/Web/API/WebSocket) y [WHATWG WebSockets](https://websockets.spec.whatwg.org/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Recibe eventos públicos con versión o secuencia y recupera el estado al reconectar. Simula duplicados y desorden: el historial visible no debe retroceder ni mostrar dos veces el mismo evento.
+</details>
 
 ### Tema 11: Typed Arrays, ArrayBuffer y DataView · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás interpretar un paquete binario con endianness explícito, validar fronteras y elegir entre `Uint8Array` y `DataView`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás interpretar un paquete binario con endianness explícito, validar fronteras y elegir entre Uint8Array y DataView.
 
-**Conocimiento previo:** representación binaria, enteros con signo, Workers y pruebas. Define el protocolo byte por byte antes de decodificar.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás interpretar un paquete binario con endianness explícito, validar fronteras y elegir entre Uint8Array y DataView.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** GPS, imágenes, archivos y protocolos pueden entregar bytes, no JSON. Interpretarlos con tamaño u orden incorrecto produce valores corruptos difíciles de diagnosticar.
+#### ► LA ANALOGÍA
+Piensa en typed arrays, arraybuffer y dataview como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-endian; el decoder será la frontera hacia dominio.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que typed arrays, arraybuffer y dataview resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Typed Arrays, ArrayBuffer y DataView se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** `ArrayBuffer` es una cinta de bytes; Typed Array coloca una regla uniforme sobre ella; DataView permite leer campos de tamaños distintos indicando el sentido de lectura.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Typed Arrays, ArrayBuffer y DataView | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:** buffer reserva memoria; una vista no copia; `byteOffset` ubica; endianness define orden; transferencia a Worker puede mover propiedad sin copiar; los límites deben validarse.
+#### ► CUÁNDO NO USAR ESTO
+No uses typed arrays, arraybuffer y dataview por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: typed arrays, arraybuffer y dataview funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Typed Arrays, ArrayBuffer y DataView existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve typed arrays, arraybuffer y dataview en tu contexto?
+2. ¿Cómo sabrías que typed arrays, arraybuffer y dataview no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar typed arrays, arraybuffer y dataview?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-js-modulo-14-tema-13
 cd ejemplo-js-modulo-14-tema-13
 npm init -y
 npm install --save-dev tsx typescript
 ```
-
-Crea `src/binary/decode-gps.js`:
 
 ```js
 export function decodeGps(buffer) {
@@ -1185,8 +1326,6 @@ export function decodeGps(buffer) {
   };
 }
 ```
-
-Crea `src/demo.ts` para escribir dos enteros big-endian y decodificarlos:
 
 ```ts
 import { decodeGps } from './binary/decode-gps.js';
@@ -1203,56 +1342,73 @@ try {
 }
 ```
 
-Ejecuta:
-
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** imprime `{ latitudeE6: 4600000, longitudeE6: -74100000 }`; el buffer inválido lanza `RangeError` con `Paquete GPS esperado: 8 bytes`.
-
-**Fallo deliberado:** cambia `false` por `true`. Los bytes se interpretan little-endian y producen coordenadas corruptas; restaura orden del protocolo, no ajustes valores a mano.
-
-#### Paso 5 · Práctica guiada
-
-Añade versión y flags con `Uint8Array`, manteniendo coordenadas con DataView. **Pista:** valida longitud antes de cada offset y documenta unidad/escala.
-
-#### Paso 6 · Práctica independiente
-
-Transfiere buffer a Worker, comprueba original detached y mide frente a copiar. Prueba extremos Int32, offset y paquete truncado.
-
-#### Paso 7 · Cierre
-
-Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente tema separará características estables de propuestas experimentales.
-
-**Errores comunes:** usar buffer.length; asumir offset cero; omitir endianness; no validar tamaño; transferir y reutilizar buffer detached; olvidar escala/unidad.
-
-**Fuentes oficiales:** [MDN — Typed arrays](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Typed_arrays), [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) y [DataView](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Decodifica un mensaje binario de posición con longitud y endianness explícitos. Prueba un buffer truncado y verifica que se rechaza antes de convertir bytes incompletos en coordenadas visibles.
+</details>
 
 ### Tema 12: ECMAScript moderno, Temporal e iterator helpers · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás verificar el estado de una característica, usar alternativas estables y aislar `Temporal`, iterator helpers y gestión explícita de recursos detrás de compatibilidad comprobada.
+#### ► DE QUÉ TRATA
+Al finalizar podrás verificar el estado de una característica, usar alternativas estables y aislar Temporal, iterator helpers y gestión explícita de recursos detrás de compatibilidad comprobada.
 
-**Prerrequisitos:** especificación TC39, feature detection, Intl, iteradores y bundling. Define runtimes objetivo y consulta fuentes oficiales; Stage 4 no implica soporte inmediato universal.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás verificar el estado de una característica, usar alternativas estables y aislar Temporal, iterator helpers y gestión explícita de recursos detrás de compatibilidad comprobada.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** ECMAScript evoluciona. Enseñar una propuesta como universal puede romper producción; ignorar características nuevas mantiene soluciones complejas cuando el runtime ya ofrece una mejor.
+#### ► LA ANALOGÍA
+Piensa en ecmascript moderno, temporal e iterator helpers como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto formateará instantes mediante un adaptador estable y cargará polyfill solo cuando el análisis de soporte/coste lo justifique.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    NEED["necesidad"] --> STATUS["estado TC39 / estándar"] --> SUPPORT["soporte objetivo"] --> COST["polyfill y tamaño"] --> ADAPTER["adaptador con fallback"]
+```
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| ECMAScript moderno, Temporal e iterator helpers se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Analogía:** TC39 es una línea de certificación: una pieza en prototipo no se instala en toda la flota; Stage 4 indica que está lista para entrar en la especificación, pero todavía debes verificar los vehículos reales.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar ECMAScript moderno, Temporal e iterator helpers | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Conceptos clave:** especificación y soporte son distintos; feature detection supera version sniffing; `Temporal` modela instante/zona/fecha civil; iterator helpers procesan perezosamente; `using`/`await using` expresa liberación determinista cuando el runtime lo soporta.
+#### ► CUÁNDO NO USAR ESTO
+No uses ecmascript moderno, temporal e iterator helpers por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-Un caso frecuente de iterador asíncrono es recorrer páginas sucesivas de una API y materializarlas en un array. Antes de ECMAScript 2026 esto exigía un bucle manual `for await...of` acumulando resultados. `Array.fromAsync(iterableAsincrono)` hace esa conversión directamente, análogo a `Array.from` pero esperando cada valor producido, y ya forma parte estable de la especificación —sin que la inclusión en el estándar garantice soporte en todos los runtimes. El adaptador de `Temporal` conserva feature detection por esa diferencia entre especificación e implementación—:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ecmascript moderno, temporal e iterator helpers funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- ECMAScript moderno, Temporal e iterator helpers existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ecmascript moderno, temporal e iterator helpers en tu contexto?
+2. ¿Cómo sabrías que ecmascript moderno, temporal e iterator helpers no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ecmascript moderno, temporal e iterator helpers?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```javascript
 async function* paginasDeEntregas() {
   yield { codigo: 'RF-101' };
@@ -1268,16 +1424,12 @@ flowchart LR
     NEED["necesidad"] --> STATUS["estado TC39 / estándar"] --> SUPPORT["soporte objetivo"] --> COST["polyfill y tamaño"] --> ADAPTER["adaptador con fallback"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
 ```bash
 mkdir ejemplo-js-modulo-14-tema-14
 cd ejemplo-js-modulo-14-tema-14
 npm init -y
 npm install --save-dev tsx typescript
 ```
-
-Crea `src/platform/time.js`:
 
 ```js
 export function formatDeliveryInstant(iso, timeZone, locale = 'es-CO') {
@@ -1290,8 +1442,6 @@ export function formatDeliveryInstant(iso, timeZone, locale = 'es-CO') {
 export const supportsTemporal = () => typeof globalThis.Temporal !== 'undefined';
 ```
 
-Crea `src/demo.ts`:
-
 ```ts
 import { formatDeliveryInstant, supportsTemporal } from './platform/time.js';
 
@@ -1301,64 +1451,31 @@ console.log('Madrid:', formatDeliveryInstant(iso, 'Europe/Madrid'));
 console.log('Temporal disponible:', supportsTemporal());
 ```
 
-Ejecuta con un instante y dos zonas:
-
 ```bash
 npx tsx src/demo.ts
 ```
 
-**Resultado esperado:** ambas salidas representan el mismo instante con horas locales diferentes; `Temporal disponible` informa `true` o `false` según la capacidad real del runtime.
-
-**Fallo deliberado:** usa `Temporal.Instant.from` sin feature detection en un runtime sin soporte. Obtendrás ReferenceError; restaura adaptador y carga polyfill de forma condicionada.
-
-#### Paso 5 · Práctica guiada
-
-Consulta compatibilidad antes de cargar un polyfill Temporal. **Pista:** usa import dinámico y mide coste del chunk, zona y horario de verano.
-
-#### Paso 6 · Práctica independiente
-
-Implementa secuencia perezosa con iterator helpers cuando existan y generadores como fallback; prueba ambos. Evalúa `using`/DisposableStack solo con soporte y necesidad de cleanup determinista.
-
-#### Paso 7 · Cierre
-
-Adoptar novedades es una decisión verificable. Con esto el track incorpora las brechas principales; el siguiente trabajo amplía Node y demás tracks.
-
-**Errores comunes:** copiar novedades por año; confundir Stage con soporte; cargar polyfill inicial innecesario; usar Date para fecha civil futura sin zona; no probar fallback.
-
-**Fuentes oficiales:** [TC39 — Proposals](https://github.com/tc39/proposals), [ECMAScript specification](https://tc39.es/ecma262/) y [ECMA-402](https://tc39.es/ecma402/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla las APIs modernas usadas para tiempo o iteración y comprueba disponibilidad en los navegadores objetivo. Prueba la alternativa configurada sin modificar el orden ni las fechas del historial.
+</details>
 
 ### Tema 13: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
 
-**Prerrequisito:** temas «try/catch en flujos asíncronos» (módulo 6) y «ECMAScript moderno, Temporal e iterator helpers» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** liberar conexiones y archivos automáticamente al salir de un bloque con `using` y `await using`, y agrupar varias limpiezas con `DisposableStack`.
+#### ► DE QUÉ TRATA
+Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior. Comprueba tu versión con node --version. Crea la carpeta academia-labs/javascript/recursos.
 
-**¿Por qué es importante?** Olvidar cerrar una conexión o un archivo agota recursos y produce fallos lentos y difíciles de reproducir. `using` hace que la limpieza ocurra siempre, incluso si hay un `return` o una excepción.
+#### ► LA IDEA EN UNA FRASE
+**Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior. Comprueba tu versión con `node --version`. Crea la carpeta `academia-labs/javascript/recursos`.
+#### ► LA ANALOGÍA
+Piensa en gestión explícita de recursos: using, await using y disposablestack como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El exportador de reportes de RutaFlow abre una conexión a la base de rutas y un archivo CSV. Antes usaba `try/finally` en cada función. Cuando alguien agregó un `return` temprano olvidó el `finally`, y el archivo quedó abierto hasta que el proceso se reinició.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** recurso, `Symbol.dispose`, `Symbol.asyncDispose`, `using`, `await using`, `DisposableStack`, orden inverso de liberación.
-
-Un objeto es **desechable** si tiene un método `[Symbol.dispose]()`. Si lo declaras con `using`, el motor llama ese método al salir del bloque, pase lo que pase. `await using` hace lo mismo con `[Symbol.asyncDispose]()`, que devuelve una promesa, y espera a que termine.
-
-Si declaras varios recursos en el mismo bloque, se liberan en **orden inverso**: el último en abrirse es el primero en cerrarse. Así una conexión se cierra antes que el archivo que la usaba.
-
-`DisposableStack` agrupa limpiezas: `use(recurso)` registra un desechable y `defer(fn)` registra una función cualquiera. Al liberar la pila, ejecuta todo en orden inverso.
-
-**Analogía:** `using` es la regla de una cocina: quien saca una olla la lava antes de salir, aunque lo llamen de urgencia. La analogía falla en que el motor no olvida nunca: la limpieza ocurre también si hay una excepción.
-
-**Límite de uso:** `using` solo sirve para recursos cuyo tiempo de vida termina con el bloque. Si el recurso debe vivir más (un pool de conexiones de toda la aplicación), no lo declares con `using`. En motores antiguos la sintaxis no existe: verifica la versión antes de usarla en una librería.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant F as exportar()
@@ -1371,9 +1488,54 @@ sequenceDiagram
     F->>A: await cierra reporte.csv
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Gestión explícita de recursos: using, await using y DisposableStack se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/javascript/recursos/recursos.mjs`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Gestión explícita de recursos: using, await using y DisposableStack | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses gestión explícita de recursos: using, await using y disposablestack por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: gestión explícita de recursos: using, await using y disposablestack funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Gestión explícita de recursos: using, await using y DisposableStack existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve gestión explícita de recursos: using, await using y disposablestack en tu contexto?
+2. ¿Cómo sabrías que gestión explícita de recursos: using, await using y disposablestack no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar gestión explícita de recursos: using, await using y disposablestack?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant F as exportar()
+    participant A as archivo (await using)
+    participant P as pila (DisposableStack)
+    F->>A: abre reporte.csv
+    F->>P: use(cache) y defer(borrar temporales)
+    Note over F: termina el bloque
+    F->>P: libera en orden inverso: cierra cache, borra temporales
+    F->>A: await cierra reporte.csv
+```
 
 ```js
 class Conexion {
@@ -1417,16 +1579,10 @@ console.log(leerRuta());
 await exportar();
 ```
 
-Ejecútalo con Node.js 24 o superior:
-
 ```bash
 cd academia-labs/javascript/recursos
 node recursos.mjs
 ```
-
-**Explicación por bloques:** `Conexion` es desechable porque implementa `[Symbol.dispose]`; `Archivo` es desechable de forma asíncrona con `[Symbol.asyncDispose]`. En `leerRuta`, `using db` garantiza el cierre después de calcular el `return`, por eso «cierra rutas-db» sale antes que «datos de rutas-db». En `exportar`, la pila se declara después del archivo, así que se libera primero: dentro de ella, `cache` se registró después del `defer`, por eso se cierra antes de borrar temporales. Por último, `await using` espera a que el archivo termine de cerrarse.
-
-**Resultado esperado:**
 
 ```text
 abre rutas-db
@@ -1440,60 +1596,27 @@ borra temporales
 cierra reporte.csv
 ```
 
-**Fallo deliberado:** en `exportar`, cambia `await using archivo` por `using archivo`. **Error esperado:** `TypeError` porque `Archivo` no tiene `[Symbol.dispose]`, solo la versión asíncrona. **Diagnóstico:** un recurso que se cierra con una promesa necesita `await using`. Vuelve a escribir `await using`.
+</details>
 
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el archivo y relaciona cada línea con la instrucción que la produce.
-2. **Variación:** lanza un `throw new Error("falla")` dentro de `exportar` después del `console.log` y comprueba que los tres recursos igual se cierran.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica la diferencia entre `Symbol.dispose` y `Symbol.asyncDispose`.
-4. **Integración:** agrega a la pila un segundo `defer` que imprima «registra métrica» y predice en qué lugar aparece.
-5. **Diseño:** escribe la misma función `exportar` con `try/finally` y compara cuántas líneas necesitas.
-
-**Pista:** para predecir el orden de cierre, lee las declaraciones de abajo hacia arriba.
-
-#### Paso 6 · Práctica independiente
-
-Crea un `Temporizador` desechable que en el constructor guarde `performance.now()` y en `[Symbol.dispose]` imprima cuántos milisegundos duró el bloque. Úsalo con `using` para medir `leerRuta()`.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué método llama `using` y cuál `await using`.
-- [ ] Predices el orden de las nueve líneas antes de ejecutar.
-- [ ] Reprodujiste el `TypeError` del fallo deliberado.
-- [ ] Sabes cuándo no usar `using` (recursos que viven toda la aplicación).
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un recurso que solo tiene `asyncDispose`, declarar con `using` un pool global y olvidar que el orden de cierre es inverso. **Siguiente paso:** el tema «Typed Arrays, ArrayBuffer y DataView» trabaja con búferes que también conviene liberar a tiempo.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
-
-**Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
 ### Tema 14: WebAssembly con Rust o C · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás compilar una función Rust a WebAssembly, cargarla con fallback JavaScript y medir carga/cómputo antes de decidir. Evaluarás un score de ruta del proyecto sin asumir que WASM siempre es más rápido.
 
-**Conocimiento previo:** Rust básico o capacidad de seguir una función pura, npm, Vite y medición. Instala Rust, `wasm-pack` y verifica sus versiones; si no están disponibles, conserva el fallback funcional.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás compilar una función Rust a WebAssembly, cargarla con fallback JavaScript y medir carga/cómputo antes de decidir.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El optimizador ejecuta un cálculo numérico muchas veces. En este proyecto se aislará una función pura, se comparará con JavaScript y el resto de la aplicación seguirá funcionando si descarga o instanciación WASM falla.
+#### ► LA ANALOGÍA
+Piensa en webassembly con rust o c como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** compilado vs. interpretado, costo fijo de carga/instanciación, medición separada de carga y cómputo, fallback funcional.
-
-WebAssembly ejecuta código compilado (no interpretado) a velocidad cercana a nativa dentro del navegador, pero cargar y compilar/instanciar el módulo `.wasm` tiene un costo fijo que una función pequeña puede no justificar frente al mismo cálculo en JavaScript puro; medir por separado "costo de carga" y "costo de cómputo" es indispensable antes de decidir, y un fallback a JavaScript evita que un módulo `.wasm` faltante o corrupto rompa la funcionalidad completa.
-
-**Analogía:** es como traer una máquina industrial especializada para cortar una sola hoja de papel — más rápida una vez instalada, pero el tiempo de instalarla puede superar por mucho el tiempo de usar una tijera común para esa tarea puntual.
-
-**¿Por qué es importante?** WASM no es automáticamente "más rápido"; sin medir por separado carga e instanciación frente al cómputo real, se puede adoptar una herramienta más compleja por una ganancia que nunca se verificó.
-
-**Casos de uso reales:** comparar la mediana de tiempo de un cálculo numérico repetido miles de veces en JS vs. WASM; recuperarse con un fallback JS cuando la descarga del `.wasm` falla; decidir el umbral de iteraciones a partir del cual WASM realmente compensa su costo de carga.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   L["Carga + instanciación (costo fijo)"] --> C{"¿Suficientes iteraciones para compensar?"}
@@ -1501,7 +1624,51 @@ flowchart LR
   C -->|no| J[JS puro gana]
   F[".wasm falla o no carga"] --> FB["Fallback JS: funcionalidad no se rompe"]
 ```
-#### Paso 4 · Demostración guiada desde cero
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| WebAssembly con Rust o C se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar WebAssembly con Rust o C | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses webassembly con rust o c por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: webassembly con rust o c funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- WebAssembly con Rust o C existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve webassembly con rust o c en tu contexto?
+2. ¿Cómo sabrías que webassembly con rust o c no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar webassembly con rust o c?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  L["Carga + instanciación (costo fijo)"] --> C{"¿Suficientes iteraciones para compensar?"}
+  C -->|sí| W[WASM gana]
+  C -->|no| J[JS puro gana]
+  F[".wasm falla o no carga"] --> FB["Fallback JS: funcionalidad no se rompe"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-5
@@ -1510,8 +1677,6 @@ npm create vite@latest . -- --template vanilla-ts
 npm install
 cargo init --lib wasm
 ```
-
-Sustituye `wasm/Cargo.toml`:
 
 ```toml
 [package]
@@ -1526,8 +1691,6 @@ crate-type = ["cdylib", "rlib"]
 wasm-bindgen = "0.2"
 ```
 
-Sustituye `wasm/src/lib.rs`:
-
 ```rust
 use wasm_bindgen::prelude::*;
 
@@ -1537,8 +1700,6 @@ pub fn route_score(distance_km: f64, late_stops: u32) -> f64 {
     distance_km + f64::from(late_stops) * 5.0
 }
 ```
-
-Crea `src/wasm/route-score.ts` con carga y fallback en la misma frontera:
 
 ```ts
 import init, { route_score } from '../../wasm/pkg/route_score.js';
@@ -1554,8 +1715,6 @@ export async function routeScore(distanceKm: number, lateStops: number) {
 }
 ```
 
-Crea `src/wasm-demo.ts`:
-
 ```ts
 import { routeScore } from './wasm/route-score';
 
@@ -1563,72 +1722,27 @@ const output = document.querySelector<HTMLOutputElement>('#score')!;
 output.value = String(await routeScore(12.5, 2));
 ```
 
-Crea `wasm.html` en la raíz del proyecto:
-
-```html
-<!doctype html>
-<html lang="es">
-  <head><meta charset="UTF-8"><title>Score de ruta</title></head>
-  <body>
-    <main><h1>Score de ruta</h1><output id="score">Calculando…</output></main>
-    <script type="module" src="/src/wasm-demo.ts"></script>
-  </body>
-</html>
-```
-
-Instala previamente Rust y wasm-pack según https://rustwasm.github.io/wasm-pack/installer/ y ejecuta:
-
-```bash
-wasm-pack build wasm --target web
-npm run dev
-```
-
-Abre `/wasm.html` después del build WASM; este punto de entrada es independiente de `index.html`.
-
-`--target` es la bandera que fija para qué entorno `wasm-pack` empaqueta el módulo (`web`, listo para importar directamente en el navegador).
-
-**Resultado esperado:** imprime `22.5`; Network muestra el módulo `.wasm` y la UI conserva un resultado equivalente al fallback JavaScript.
-
-**Fallo deliberado:** renombra temporalmente el `.wasm` generado. `init()` rechaza; captura el error, registra diagnóstico y usa la implementación JS en vez de dejar la pantalla rota.
-
-#### Paso 5 · Práctica guiada
-
-Ejecuta warm-up y compara mediana de 100, 10 000 y 1 000 000 iteraciones. **Pista:** mide por separado descarga/instanciación y cálculo; una función pequeña puede perder por overhead.
-
-#### Paso 6 · Práctica independiente
-
-Prueba paridad JS/WASM, límites numéricos, módulo corrupto y navegador compatible. Registra tamaño comprimido, complejidad de toolchain y criterio de retirada.
-
-#### Paso 7 · Cierre
-
-Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El siguiente tema aislará decisiones experimentales de ML/Web3 con revisión humana.
-
-**Errores comunes:** usar WASM para DOM; ignorar frontera/memoria; medir solo ejecución caliente; no ofrecer fallback; adoptar toolchain sin beneficio reproducible.
-
-**Fuentes oficiales:** [MDN — WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly), [Rust and WebAssembly](https://rustwasm.github.io/docs/book/) y [wasm-bindgen](https://wasm-bindgen.github.io/wasm-bindgen/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla un cálculo candidato a WebAssembly detrás de una función con alternativa JavaScript. Compara resultados y coste de transferencia con datos iguales antes de justificar su incorporación al widget.
+</details>
 
 ### Tema 15: Service Workers, PWA y estrategias de caché · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás registrar un Service Worker, precachear la aplicación mínima, diseñar una estrategia offline y actualizarla sin servir archivos incompatibles.
 
-**Conocimiento previo:** build de producción, Promesas, HTTP caching y DevTools Application. Service Worker requiere HTTPS o localhost; desregistra versiones del laboratorio al reiniciar pruebas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás registrar un Service Worker, precachear la aplicación mínima, diseñar una estrategia offline y actualizarla sin servir archivos incompatibles.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Una operación logística puede perder conectividad. Una PWA debe seguir mostrando el último estado seguro y encolar acciones idempotentes, sin fingir que una confirmación offline ya llegó al servidor.
+#### ► LA ANALOGÍA
+Piensa en service workers, pwa y estrategias de caché como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-El proyecto permitirá consultar el shell y último seguimiento público, pero una confirmación offline quedará “pendiente de sincronizar” hasta acuse del servidor.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** el Service Worker es una bodega intermedia entre la aplicación y la red: puede entregar una copia, pedir una nueva o guardar un envío pendiente, pero necesita reglas de inventario y renovación.
-
-**Conceptos clave:** ciclo `install/activate/fetch`; Cache Storage guarda respuestas; cache-first favorece disponibilidad; network-first favorece frescura; Background Sync es mejora progresiva; manifest no convierte por sí solo un sitio en PWA confiable.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     APP["App web"] --> SW["Service Worker"]
@@ -1637,7 +1751,50 @@ flowchart LR
     SW --> QUEUE["cola offline idempotente"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Service Workers, PWA y estrategias de caché se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Service Workers, PWA y estrategias de caché | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses service workers, pwa y estrategias de caché por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: service workers, pwa y estrategias de caché funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Service Workers, PWA y estrategias de caché existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve service workers, pwa y estrategias de caché en tu contexto?
+2. ¿Cómo sabrías que service workers, pwa y estrategias de caché no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar service workers, pwa y estrategias de caché?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    APP["App web"] --> SW["Service Worker"]
+    SW --> CACHE["Cache Storage"]
+    SW --> NETWORK["API / red"]
+    SW --> QUEUE["cola offline idempotente"]
+```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-11
@@ -1645,8 +1802,6 @@ cd ejemplo-js-modulo-14-tema-11
 npm create vite@latest . -- --template vanilla-ts
 npm install
 ```
-
-Crea `public/sw.js`:
 
 ```js
 const CACHE = 'academia-lab-shell-v1';
@@ -1667,8 +1822,6 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-Crea `src/pwa/register-service-worker.ts`; el registro se activa solo en producción:
-
 ```ts
 export function registerServiceWorker() {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
@@ -1679,8 +1832,6 @@ export function registerServiceWorker() {
   }, { once: true });
 }
 ```
-
-Sustituye `src/main.ts`:
 
 ```ts
 import { registerServiceWorker } from './pwa/register-service-worker';
@@ -1703,34 +1854,9 @@ document.querySelector('#refresh')!.addEventListener('click', async () => {
 registerServiceWorker();
 ```
 
-La instalación precachea HTML y assets del build; las bibliotecas opcionales del mapa no se prometen disponibles offline. Desde la carpeta del proyecto, ejecuta:
-
 ```bash
 npm run build
 npm run preview
 ```
 
-**Resultado esperado:** en Offline el shell abre; una API no cacheada muestra estado offline explícito y no una confirmación falsa.
-
-**Fallo deliberado:** cambia assets sin aumentar `CACHE` y conserva pestaña controlada. Puede aparecer una mezcla incompatible. Versiona, activa actualización consciente y prueba dos pestañas.
-
-#### Paso 5 · Práctica guiada
-
-Cambia `CACHE` a `v2` y verifica eliminación de `v1`. **Pista:** una actualización queda esperando mientras existan pestañas controladas por la versión anterior.
-
-#### Paso 6 · Práctica independiente
-
-Implementa stale-while-revalidate solo para seguimiento público, prueba expiración, cuota, instalación fallida y cola idempotente. Documenta qué nunca se cachea.
-
-#### Paso 7 · Cierre
-
-Ya puedes separar disponibilidad offline de confirmación remota. El siguiente tema mantendrá tiempo real con reconexión controlada.
-
-**Errores comunes:** cachear todo; datos privados; llamar skipWaiting sin coordinar; no versionar; asumir que manifest garantiza offline; marcar acción pendiente como confirmada.
-
-**Fuentes oficiales:** [MDN — Service Worker API](https://developer.mozilla.org/docs/Web/API/Service_Worker_API) y [web.dev — PWA](https://web.dev/learn/pwa/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Cachea recursos estáticos y distingue una respuesta de seguimiento desactualizada. Desconecta la red y comprueba que la interfaz informa la antigüedad del dato en vez de presentar una entrega como confirmada en vivo.
-
-**Límites y decisión de uso:** La caché del Service Worker puede servir datos obsoletos y conservar recursos de una versión anterior. Define actualización y recuperación; no reutilices respuestas privadas entre sesiones ni ocultes la falta de red con un estado presentado como actual.
-
+</details>

@@ -5,15 +5,22 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: XCTest clásico y Swift Testing · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir el mismo test para `EsEnvioAtrasado` (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real. Prerrequisitos: Módulo 8 completo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo de RutaFlow tiene tests viejos escritos con XCTest y quiere decidir si migrar los tests nuevos a Swift Testing vale la pena — necesitan ver ambas sintaxis resolviendo exactamente el mismo caso.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir el mismo test para EsEnvioAtrasado (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real. Prerrequisitos: Módulo 8 completo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir el mismo test para EsEnvioAtrasado (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 XCTest exige heredar de `XCTestCase` y elegir la aserción específica (`XCTAssertEqual`, `XCTAssertTrue`); Swift Testing usa `struct`s comunes con `@Test` y una única macro `#expect` para cualquier expresión booleana — un formulario con una casilla por tipo de verificación frente a una sola pregunta abierta.
 
 ```mermaid
@@ -67,7 +74,90 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 #expect(Calculadora().sumar(2, 3) == 5)
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["Dominio/EsEnvioAtrasado.swift\nuna sola regla"] --> B["EsEnvioAtrasadoXCTest.swift\nXCTAssertTrue"]
+    A --> C["EsEnvioAtrasadoTesting.swift\n@Test + #expect"]
+    B --> D["Misma fecha vencida\nmismo resultado esperado"]
+    C --> D
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| XCTest clásico y Swift Testing se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar XCTest clásico y Swift Testing | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses xctest clásico y swift testing por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: xctest clásico y swift testing funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- XCTest clásico y Swift Testing existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve xctest clásico y swift testing en tu contexto?
+2. ¿Cómo sabrías que xctest clásico y swift testing no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar xctest clásico y swift testing?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["Dominio/EsEnvioAtrasado.swift\nuna sola regla"] --> B["EsEnvioAtrasadoXCTest.swift\nXCTAssertTrue"]
+    A --> C["EsEnvioAtrasadoTesting.swift\n@Test + #expect"]
+    B --> D["Misma fecha vencida\nmismo resultado esperado"]
+    C --> D
+```
+
+```swift
+import XCTest
+
+final class CalculadoraTests: XCTestCase {
+    func testSuma() {
+        XCTAssertEqual(Calculadora().sumar(2, 3), 5)
+    }
+}
+```
+
+```swift
+import Testing
+
+struct CalculadoraTests {
+    @Test func suma() {
+        #expect(Calculadora().sumar(2, 3) == 5)
+    }
+}
+```
+
+```swift
+// XCTest
+XCTAssertEqual(Calculadora().sumar(2, 3), 5)
+
+// Swift Testing
+#expect(Calculadora().sumar(2, 3) == 5)
+```
+
 ```swift
 // XCTest clásico
 import XCTest
@@ -91,36 +181,27 @@ struct EsEnvioAtrasadoTests {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
-O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
 
-Resultado esperado: ambos tests verifican exactamente la misma regla de `EsEnvioAtrasado` (Módulo 8) sobre un envío con fecha estimada una hora en el pasado; el de Swift Testing es más corto porque `#expect` reemplaza la elección entre `XCTAssertTrue`, `XCTAssertEqual` y el resto de variantes.
-
-#### Paso 5 · Práctica guiada
-Pista: en el test de Swift Testing, cambiá `addingTimeInterval(-3600)` por `addingTimeInterval(3600)` (una hora en el futuro) sin cambiar el nombre del test — ese es el fallo deliberado: el test se sigue llamando "envioVencidoEstaAtrasado" pero ahora verifica justo lo contrario, y falla con un mensaje que no deja claro por qué.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `-3600`, y agregá un segundo test (en Swift Testing) que confirme que un envío con fecha estimada en el futuro NO está atrasado, usando `#expect(!EsEnvioAtrasado().ejecutar(envio))`.
-
-* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
-
-#### Paso 7 · Cierre
-Entregá los dos tests equivalentes del Paso 4, el fallo por fecha invertida del Paso 5, y el test del caso contrario del Paso 6; explicá con tus propias palabras qué gana Swift Testing frente a XCTest clásico en este caso, y qué NO cambia entre ambos (la regla de negocio verificada es idéntica). Siguiente paso: estudia cómo testear código async. Errores comunes: nombre de test que no coincide con lo que realmente verifica, elegir el `XCTAssert` incorrecto, y mezclar XCTest y Swift Testing sin un criterio claro de cuándo usar cada uno. Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/xctest.
+</details>
 
 ### Tema 2: Testing de código async · Avanzado · 40 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a testear `confirmarEntrega` (Módulo 5) con Swift Testing, marcando el test mismo como `async` en vez de usar una `XCTestExpectation` manual. Prerrequisitos: Módulo 5 completo, Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`confirmarEntrega` es una función `async throws`; testearla con el modelo antiguo de callbacks exigiría crear una `XCTestExpectation`, cumplirla dentro de un callback y esperarla con un timeout manual, solo para una operación que ya es una única llamada con resultado final.
+#### ► DE QUÉ TRATA
+Al finalizar vas a testear confirmarEntrega (Módulo 5) con Swift Testing, marcando el test mismo como async en vez de usar una XCTestExpectation manual. Prerrequisitos: Módulo 5 completo, Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a testear confirmarEntrega (Módulo 5) con Swift Testing, marcando el test mismo como async en vez de usar una XCTestExpectation manual.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Marcar el test mismo como `async` permite usar `await` directamente dentro del test, exactamente como en cualquier otro contexto asíncrono — poder simplemente esperar el resultado de un trámite, en vez de configurar una alarma de tiempo límite de antemano.
 
 ```mermaid
@@ -156,7 +237,73 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 * Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant Test as ConfirmacionEntregaAsyncTests.swift
+    participant Fake as ServicioConfirmacionFalso
+    Test->>Fake: await confirmarEntrega(guia, pin)
+    Fake-->>Test: ConfirmacionEntrega o ErrorEntrega
+    Test->>Test: #expect sobre resultado o throw
+    Note over Test,Fake: Sin red, expectation manual ni sleeps
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Testing de código async se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Testing de código async | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses testing de código async por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: testing de código async funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Testing de código async existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve testing de código async en tu contexto?
+2. ¿Cómo sabrías que testing de código async no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar testing de código async?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant Test as ConfirmacionEntregaAsyncTests.swift
+    participant Fake as ServicioConfirmacionFalso
+    Test->>Fake: await confirmarEntrega(guia, pin)
+    Fake-->>Test: ConfirmacionEntrega o ErrorEntrega
+    Test->>Test: #expect sobre resultado o throw
+    Note over Test,Fake: Sin red, expectation manual ni sleeps
+```
+
+```swift
+@Test func obtieneUsuario() async throws {
+    let usuario = try await servicio.obtenerUsuario(id: "1")
+    #expect(usuario.nombre == "Ana")
+}
+```
+
 ```swift
 import Testing
 @testable import RutaFlowApp
@@ -168,33 +315,27 @@ import Testing
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
-O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
 
-Resultado esperado: el test completa cuando `confirmarEntrega` efectivamente retorna, sin ningún `XCTestExpectation` ni timeout configurado a mano — `await` dentro de un test `async` espera exactamente como en código de producción.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `async` de la firma del test pero dejá el `await` adentro — ese es el fallo deliberado: el proyecto deja de compilar, porque `await` solo es válido dentro de un contexto asíncrono, y un test sin `async` no lo es.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `async`, y agregá un segundo test que llame a `confirmarEntrega` con un PIN incorrecto y confirme (con `#expect(throws:)` o un `do/catch`) que lanza el error esperado, en vez de retornar un resultado "entregado" falso.
-
-#### Paso 7 · Cierre
-Entregá el test async del Paso 4, el error de compilación del Paso 5, y el test del PIN incorrecto del Paso 6; explicá por qué testear una función `async throws` con `await` directo en el test es más simple que el modelo de callbacks + `XCTestExpectation`. Siguiente paso: estudia UI Tests con XCUITest. Errores comunes: olvidar `async` en la firma del test, testear solo el camino feliz sin el camino de error, y usar timeouts arbitrariamente largos "por si acaso". Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/swift/concurrency.
+</details>
 
 ### Tema 3: UI Tests con XCUITest · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada". Prerrequisitos: Tema 2 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-Un test unitario de `confirmarEntrega` (Tema 2) prueba la lógica en memoria, pero nadie confirmó todavía que un conductor real, tocando la pantalla, efectivamente ve el resultado — eso exige lanzar la app real y simular la interacción.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada".**
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 XCUITest lanza la app compilada e instalada y simula interacciones reales (`tap`, `typeText`) contra la UI efectivamente renderizada — una inspección de calidad de punta a punta, mucho más lenta que verificar un componente aislado en un banco de pruebas.
 **Conceptos clave:** simulación de interacciones reales contra la app compilada, más lento pero valida el recorrido end-to-end.
 
@@ -243,7 +384,88 @@ En tu propio proyecto RutaFlow, escribe la vista bajo prueba en `DetalleEntregaV
 
 ---
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant Test as XCUITest
+    participant App as App real
+    participant API as Red
+    Test->>App: tap(botonConfirmar)
+    App->>API: confirmarEntrega() (red real)
+    Note over Test,App: sin esperar: exists falla intermitente
+    Test->>App: waitForExistence(timeout: 5)
+    API-->>App: respuesta
+    App-->>Test: "Entrega confirmada" visible
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| UI Tests con XCUITest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar UI Tests con XCUITest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses ui tests con xcuitest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ui tests con xcuitest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- UI Tests con XCUITest existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ui tests con xcuitest en tu contexto?
+2. ¿Cómo sabrías que ui tests con xcuitest no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ui tests con xcuitest?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+func testCrearTarea() {
+    let app = XCUIApplication()
+    app.launch()
+    app.buttons["Agregar"].tap()
+    app.textFields["titulo"].typeText("Nueva tarea")
+    app.buttons["Guardar"].tap()
+    XCTAssertTrue(app.staticTexts["Nueva tarea"].exists)
+}
+```
+
+```
+Unit tests de dominio (Swift Testing) → rápidos, muchos, base de la pirámide
+UI Tests (XCUITest)                   → lentos, pocos, solo flujos críticos end-to-end
+```
+
+```mermaid
+sequenceDiagram
+    participant Test as XCUITest
+    participant App as App real
+    participant API as Red
+    Test->>App: tap(botonConfirmar)
+    App->>API: confirmarEntrega() (red real)
+    Note over Test,App: sin esperar: exists falla intermitente
+    Test->>App: waitForExistence(timeout: 5)
+    API-->>App: respuesta
+    App-->>Test: "Entrega confirmada" visible
+```
+
 ```swift
 import XCTest
 
@@ -262,49 +484,8 @@ final class ConfirmacionEntregaUITests: XCTestCase {
 }
 ```
 
-**Ejecuta el ejemplo:**
-
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
-O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
 
-Resultado esperado: el test lanza la app real, escribe guía y PIN como lo haría un conductor, y confirma que "Entrega confirmada" aparece en pantalla dentro de 5 segundos — valida el flujo completo, no solo la función `confirmarEntrega` en memoria.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `waitForExistence(timeout: 5)` por un simple `app.staticTexts["Entrega confirmada"].exists` inmediatamente después del `tap()`, sin esperar — ese es el fallo deliberado: el test falla intermitentemente, porque la confirmación tarda unos milisegundos en aparecer (hay una llamada de red real de por medio) y `exists` se evalúa antes de que la UI se actualice.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `waitForExistence`, y agregá un segundo test que escriba un PIN incorrecto y confirme que aparece un mensaje de error en pantalla en vez de "Entrega confirmada" — identificando qué `accessibility identifiers` necesitás agregar a esa vista de error si todavía no existen.
-
-**Proyecto integrador:** en el proyecto nuevo de este tema, crea una pantalla completa en `DetalleEntregaView.swift` con los identificadores `campoGuia`, `campoPin`, `botonConfirmar`, `mensajeExito` y `mensajeError`, usando un servicio local determinista para aceptar únicamente `837201`. En `RutaFlowAppUITests/ConfirmacionEntregaUITests.swift`, conserva el recorrido exitoso y agrega el recorrido con PIN `000000`; ejecuta ambos contra la app instalada. El primero debe mostrar «Entrega confirmada» y el segundo «PIN incorrecto», cada uno mediante `waitForExistence(timeout: 5)`, sin sleeps ni red externa.
-
-#### Paso 7 · Cierre
-Entregá el test del flujo feliz del Paso 4, la falla intermitente del Paso 5, y el test del flujo de error del Paso 6; explicá por qué un XCUITest necesita esperar explícitamente (`waitForExistence`) en vez de asumir que la UI ya se actualizó apenas después de un `tap()`. Siguiente paso: estudia cómo correr esta suite en CI. Errores comunes: no esperar explícitamente a que la UI se actualice, depender de texto visible en vez de accessibility identifiers estables, y cubrir solo el camino feliz en los UI Tests. Fuentes oficiales: https://developer.apple.com/documentation/xctest/xcuiapplication y https://developer.apple.com/documentation/testing.
-**Implicación práctica:** Un XCUITest valida el flujo completo end-to-end tal como lo experimenta un conductor real, pero exige esperar explícitamente a que la UI se actualice en vez de asumir que el `tap()` tiene efecto inmediato.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** construir una suite de tests sobre la capa de dominio usando Swift Testing.
-
-**Requisitos previos:** Módulo 8 completado.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Escribir un test con XCTest para una función pura | Ver Tema 1 | Capa de dominio |
-| 2 | Reescribirlo con Swift Testing | Ver Tema 1 | `@Test`, `#expect` |
-| 3 | Testear una función `async` con `await` en el test | Ver Tema 2 | Sin `XCTestExpectation` |
-| 4 | Escribir un UI Test con XCUITest | Ver Tema 3 | Verifica que un botón existe y es tappable |
-
-**Verificación:** el laboratorio se considera exitoso si la suite de Swift Testing pasa correctamente incluyendo al menos un test async, y si el UI Test valida el flujo completo de creación de una tarea de principio a fin.
-
-**Errores comunes y soluciones**
-
-- **Usar `XCTestExpectation` manual para testear código async en vez de marcar el test como `async`.** Simplifica el test con `await` directo.
-- **Depender únicamente de UI Tests para verificar lógica de negocio.** Prefiere unit tests rápidos de la capa de dominio para eso; reserva UI Tests para flujos críticos completos.
-- **No considerar la fragilidad inherente de los UI Tests al diseñar la suite.** Manténlos acotados a lo esencial, dado su mayor costo de mantenimiento.
-
----
-
-* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, recorre la confirmación de entrega con XCUITest.
+</details>

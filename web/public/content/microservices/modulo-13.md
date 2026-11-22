@@ -42,38 +42,27 @@ mismo con las piezas de producción. Para los temas 3 a 6 y 8 levanta la infraes
 `clave-demo`; las credenciales del laboratorio terminan en `-solo-dev` para que nunca las confundas con unas reales.
 
 ---
+
+
 ### Spring Security: filter chain
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 1 de 9 · Fase 1 · 2 h
-`f061-filter-chain`.
+#### ► DE QUÉ TRATA
+Configurar una SecurityFilterChain que deja pública una ruta, exige autenticación en el resto y el rol ADMIN en /admin/, insertar un filtro propio en la posición correcta y demostrarlo con 6 tests que distinguen 401 (no sé quién eres) de 403 (sé quién eres, pero no puedes).
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Configurar una SecurityFilterChain que deja pública una ruta, exige autenticación en el resto y el rol ADMIN en /admin/, insertar un filtro propio en la posición correcta y demostrarlo con 6 tests que distinguen 401 (no sé quién eres) de 403 (sé quién eres, pero no puedes).**
 
-- Módulo 2, lección 1: `DispatcherServlet`, controladores y códigos 200/401/403/404.
-- Módulo 0.4: cabeceras HTTP y `curl -u usuario:clave`.
-- Módulo 1: beans, `@Configuration` y perfiles (`@Profile`).
+#### ► POR QUÉ EXISTE ESTO
+Un filtro es un trozo de código que mira cada petición antes de que llegue a tu controlador y decide si la deja seguir, la modifica o la corta. Spring Security es, por dentro, una lista ordenada de filtros: uno lee la cabecera Authorization y averigua quién eres, otro decide si puedes entrar a esa ruta, otro convierte los rechazos en respuestas HTTP. Tú no escribes esos filtros: escribes reglas («/publico/ para todos…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en spring security: filter chain como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Configurar** una `SecurityFilterChain` que deja pública una ruta, exige autenticación en el resto y el rol `ADMIN`
-en `/admin/**`, **insertar** un filtro propio en la posición correcta y **demostrarlo** con 6 tests que distinguen
-`401` (no sé quién eres) de `403` (sé quién eres, pero no puedes).
-
-#### 4. ANALOGÍA VISUAL
-
-El **control de un aeropuerto**. Antes de llegar a la puerta de embarque (el controlador) pasas por una **fila de
-puestos en orden fijo**: el primero mira si ya traes una tarjeta de embarque (el contexto de seguridad), el segundo
-revisa tu documento contra la base de datos (autenticación), otro anota quién pasó (auditoría) y el último, frente a la
-sala VIP, compara tu tarjeta con la lista de quién puede entrar (autorización). Si no traes documento, te mandan al
-mostrador a identificarte (**401** con un letrero «identifíquese»); si tu documento es válido pero tu tarjeta no es
-VIP, te dicen «usted no puede pasar» (**403**). Los pasajeros que solo van a la cafetería pública ni siquiera hacen
-fila. En el dibujo: una cinta con cinco cabinas numeradas, un pasajero sin documento devuelto en la cabina 2 con un
-cartel «401» y otro con documento detenido en la cabina 5 con un cartel «403».
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant C as Cliente
@@ -107,74 +96,108 @@ sequenceDiagram
     end
 ```
 
-**Texto alternativo:** diagrama de secuencia. El cliente envía GET /admin/panel con credenciales Basic a Tomcat. El
-filtro del contenedor DelegatingFilterProxy delega en el bean FilterChainProxy, que elige la primera SecurityFilterChain
-que coincide con la petición. La petición recorre en orden SecurityContextHolderFilter, BasicAuthenticationFilter (que
-comprueba la contraseña), ExceptionTranslationFilter (que envuelve el resto), el filtro propio AuditoriaFilter y
-AuthorizationFilter. Si no hay identidad, AuthorizationFilter lanza AuthenticationException y ExceptionTranslationFilter
-responde 401 con WWW-Authenticate; si hay identidad sin el rol, lanza AccessDeniedException y se responde 403; si está
-permitido, la petición llega al DispatcherServlet y se responde 200.
+1. Un filtro es un trozo de código que mira cada petición antes de que llegue a tu controlador y decide si la deja seguir, la modifica o la corta.
+2. Spring Security es, por dentro, una lista ordenada de filtros: uno lee la cabecera Authorization y averigua quién eres, otro decide si puedes entrar a esa ruta, otro convierte los rechazos en respuestas HTTP.
+3. Tú no escribes esos filtros: escribes reglas («/publico/ para todos», «/admin/ solo ADMIN») y Spring arma la fila.
+4. Dos códigos que vas a ver todo e…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Spring Security: filter chain se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un **filtro** es un trozo de código que mira cada petición **antes** de que llegue a tu controlador y decide si la deja
-seguir, la modifica o la corta. Spring Security es, por dentro, **una lista ordenada de filtros**: uno lee la cabecera
-`Authorization` y averigua quién eres, otro decide si puedes entrar a esa ruta, otro convierte los rechazos en
-respuestas HTTP. Tú no escribes esos filtros: escribes **reglas** («`/publico/**` para todos», «`/admin/**` solo
-`ADMIN`») y Spring arma la fila. Dos códigos que vas a ver todo el tiempo: **401 Unauthorized** significa «no sé quién
-eres» (identifícate) y **403 Forbidden** significa «sé quién eres y no puedes».
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Spring Security: filter chain | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Seguridad hecha a mano dentro del controlador:
 
-- **Tres piezas encadenadas.** Tomcat solo conoce filtros de servlet; `DelegatingFilterProxy` es uno de ellos y delega
-  en un bean de Spring, el `FilterChainProxy` (nombre `springSecurityFilterChain`). Este tiene una o varias
-  `SecurityFilterChain` y usa **la primera que coincide** con la petición. Además limpia el `SecurityContext` al terminar
-  cada petición y aplica el `HttpFirewall`.
-- **Orden de los filtros.** Al arrancar, con `logging.level.org.springframework.security.web.DefaultSecurityFilterChain=DEBUG`,
-  Spring imprime «`Will secure any request with [...]`» con la lista. Los importantes, en orden: `SecurityContextHolderFilter`
-  (carga el contexto), `HeaderWriterFilter`, `CsrfFilter`, `LogoutFilter`, los de autenticación (`BasicAuthenticationFilter`,
-  `UsernamePasswordAuthenticationFilter`, `BearerTokenAuthenticationFilter`…), `AnonymousAuthenticationFilter` (si nadie
-  se identificó pone un usuario anónimo), `ExceptionTranslationFilter` y, al final, `AuthorizationFilter`.
-- **El desafío Basic.** Sin credenciales (o con credenciales malas), Spring Security 7 responde `401` con
-  `WWW-Authenticate: Basic realm="Realm", charset="UTF-8"`: `Realm` es el nombre por defecto (se cambia con
-  `httpBasic(b -> b.realmName("tienda"))`) y `charset` avisa al cliente de que codifique usuario y contraseña en UTF-8.
-- **`ExceptionTranslationFilter`** llama al resto de la cadena dentro de un `try`. Si sale una `AuthenticationException`
-  (o el usuario es anónimo y le niegan el acceso) invoca el `AuthenticationEntryPoint` → `401` con `WWW-Authenticate`.
-  Si sale una `AccessDeniedException` con un usuario autenticado invoca el `AccessDeniedHandler` → `403`.
-- **Reglas.** `authorizeHttpRequests(r -> r.requestMatchers("/publico/**").permitAll()...)`: se evalúan **en orden** y
-  gana la primera que coincide; por eso `anyRequest()` va al final. En Spring Security 7 los patrones usan
-  `PathPatternRequestMatcher` (desaparecieron `AntPathRequestMatcher` y `MvcRequestMatcher`) y el DSL solo acepta lambdas
-  (ya no existe `and()`).
-- **Filtros propios.** `addFilterBefore(filtro, AuthorizationFilter.class)` lo coloca justo antes de la autorización,
-  cuando ya se sabe quién llama. No lo anotes con `@Component`: Spring Boot registraría también el filtro en Tomcat y se
-  ejecutaría dos veces (una fuera de la cadena de seguridad).
-- **Contraseñas.** `PasswordEncoderFactories.createDelegatingPasswordEncoder()` guarda `{bcrypt}$2a$10$...`: el prefijo
-  dice qué algoritmo usó, para poder migrar de algoritmo sin invalidar a todos los usuarios.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: spring security: filter chain funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Un filtro es un trozo de código que mira cada petición antes de que llegue a tu controlador y decide si la deja seguir, la modifica o la corta.
+- Spring Security es, por dentro, una lista ordenada de filtros: uno lee la cabecera Authorization y averigua quién eres, otro decide si puedes entrar a esa ruta, otro convierte los rechazos en respuestas HTTP.
+- Tú no escribes esos filtros: escribes reglas («/publico/ para todos», «/admin/ solo ADMIN») y Spring arma la fila.
+- Dos códigos que vas a ver todo e…
 
-| Decisión | Opción A | Opción B | Cuándo cada una |
-|---|---|---|---|
-| Dónde autorizar | `authorizeHttpRequests` (por URL, en la cadena) | `@PreAuthorize` (por método, con `@EnableMethodSecurity`) | URL para reglas gruesas y uniformes; método para reglas que dependen del dominio («solo el dueño del pedido»). Lo habitual es combinar: `anyRequest().authenticated()` + `@PreAuthorize`. |
-| Cuántas cadenas | Una sola cadena | Varias `SecurityFilterChain` con `securityMatcher` y `@Order` | Varias cuando conviven estilos: `/api/**` sin estado con JWT y `/admin/**` con sesión y formulario. Cada una se configura aislada. |
-| Política por defecto | Lista de permitidos + `anyRequest().denyAll()` | `anyRequest().authenticated()` | `denyAll()` cierra lo que olvidaste declarar (más seguro, más fricción); `authenticated()` es razonable para APIs internas. |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve spring security: filter chain en tu contexto?
+2. ¿Cómo sabrías que spring security: filter chain no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar spring security: filter chain?
 
-**Trade-offs.** Cada filtro cuesta microsegundos; lo caro es lo que hacen (BCrypt tarda decenas de milisegundos a
-propósito, por eso HTTP Basic con BCrypt en cada petición no escala y se usan tokens, F062). La cadena es **síncrona y
-por hilo**: el `SecurityContextHolder` usa un `ThreadLocal`, así que si saltas a otro hilo (`@Async`, ejecutores) debes
-propagarlo (`DelegatingSecurityContextExecutor`). En WebFlux la cadena es otra (`SecurityWebFilterChain`) y el contexto
-viaja en el `Context` de Reactor.
+</details>
 
-**Alternativas:** autorizar en el API Gateway (Módulo 7) centraliza, pero cada servicio debe seguir validando (defensa
-en profundidad: el tráfico interno también puede ser hostil, ver F067); un *sidecar* de autorización como OPA mueve las
-reglas fuera del código, a costa de otra pieza que operar.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Cuándo NO:** un servicio que solo consume colas no tiene peticiones HTTP que filtrar (la seguridad va en el broker:
-usuarios y ACL de Kafka o RabbitMQ); y un *health check* público no necesita una cadena: decláralo `permitAll()` en
-lugar de inventar excepciones en un filtro propio.
+#### Construcción guiada
+1. Ejecuta la demostración sin dependencias (ejecutada con JDK 25.0.5):
 
-#### 9. CÓDIGO EJECUTABLE
+```bash
+java CadenaDeFiltros.java
+```
 
+   **Output esperado:**
+
+```text
+ANTES (vulnerable): sin cadena de filtros
+  GET /admin   anónimo      -> 200   <- cualquiera entra
+DESPUÉS (seguro): ExceptionTranslation -> BasicAuthentication -> Authorization -> handler
+  GET /publico  anónimo          -> 200
+  GET /admin    anónimo          -> 401  WWW-Authenticate: Basic realm="tienda"
+  GET /admin    ana:mala         -> 401  WWW-Authenticate: Basic realm="tienda"
+  GET /admin    ana:clave-ana    -> 403
+  GET /admin    root:clave-root  -> 200
+OK: la cadena responde 401 sin identidad y 403 sin el rol
+```
+
+2. Arranca la versión Spring y mira la lista de filtros en el log:
+
+```bash
+cd ../f061-filter-chain
+../gradlew -q bootRun
+```
+
+   **Output esperado:** una línea `DEBUG... o.s.s.web.DefaultSecurityFilterChain: Will secure any request with [...]`
+   cuya lista empieza por `DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter` y
+   termina en `ExceptionTranslationFilter, AuditoriaFilter, AuthorizationFilter`, y después
+   `Tomcat started on port 8080 (http)`.
+
+3. En otra terminal, prueba los cuatro casos:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" localhost:8080/publico/hola
+curl -s -o /dev/null -w "%{http_code} %header{www-authenticate}\n" localhost:8080/admin/panel
+curl -s -o /dev/null -w "%{http_code}\n" -u ana:clave-ana localhost:8080/admin/panel
+curl -s -w " %header{x-auditado-por}\n" -u root:clave-root localhost:8080/admin/panel
+```
+
+   **Output esperado:**
+
+```text
+200
+401 Basic realm="Realm", charset="UTF-8"
+403
+{"panel":"ventas del día: 42"} root
+```
+
+   **Captura comentada:** en la terminal de la app aparece una línea `INFO... AuditoriaFilter: auditoría: GET /admin/panel
+   por...` en las peticiones a `/admin/panel` (con `anonymousUser`, `ana` y `root`); la de `/publico/hola` también pasa
+   por el filtro, porque la cadena se aplica a todas las rutas: `permitAll()` decide en `AuthorizationFilter`, no evita la
+   cadena.
+
+4. **Fallo deliberado:** detén la app y arráncala con el perfil vulnerable:
+   `../gradlew -q bootRun --args='--spring.profiles.active=antes'`. Repite el segundo `curl`: ahora responde `200` sin
+   credenciales. Vuelve a arrancar sin perfil.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-security` (Spring Security 7.1.3) ·
 `spring-boot-starter-webmvc` · `spring-boot-starter-security-test` y `spring-boot-starter-webmvc-test` para los tests.
 La demostración de `jdk/` no necesita dependencias.
@@ -460,69 +483,7 @@ La misma idea sin Spring está en `jdk/CadenaDeFiltros.java` (168 líneas): tres
 (`traduccionDeExcepciones`, `autenticacionBasica` con PBKDF2 y `autorizacion`) encadenados delante del handler, con
 las excepciones `NoAutenticado` → 401 y `AccesoDenegado` → 403 que imitan a las de Spring.
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta la demostración sin dependencias (ejecutada con JDK 25.0.5):
-
-```bash
-java CadenaDeFiltros.java
-```
-
-   **Output esperado:**
-
-```text
-ANTES (vulnerable): sin cadena de filtros
-  GET /admin   anónimo      -> 200   <- cualquiera entra
-DESPUÉS (seguro): ExceptionTranslation -> BasicAuthentication -> Authorization -> handler
-  GET /publico  anónimo          -> 200
-  GET /admin    anónimo          -> 401  WWW-Authenticate: Basic realm="tienda"
-  GET /admin    ana:mala         -> 401  WWW-Authenticate: Basic realm="tienda"
-  GET /admin    ana:clave-ana    -> 403
-  GET /admin    root:clave-root  -> 200
-OK: la cadena responde 401 sin identidad y 403 sin el rol
-```
-
-2. Arranca la versión Spring y mira la lista de filtros en el log:
-
-```bash
-cd ../f061-filter-chain
-../gradlew -q bootRun
-```
-
-   **Output esperado:** una línea `DEBUG... o.s.s.web.DefaultSecurityFilterChain: Will secure any request with [...]`
-   cuya lista empieza por `DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter` y
-   termina en `ExceptionTranslationFilter, AuditoriaFilter, AuthorizationFilter`, y después
-   `Tomcat started on port 8080 (http)`.
-
-3. En otra terminal, prueba los cuatro casos:
-
-```bash
-curl -s -o /dev/null -w "%{http_code}\n" localhost:8080/publico/hola
-curl -s -o /dev/null -w "%{http_code} %header{www-authenticate}\n" localhost:8080/admin/panel
-curl -s -o /dev/null -w "%{http_code}\n" -u ana:clave-ana localhost:8080/admin/panel
-curl -s -w " %header{x-auditado-por}\n" -u root:clave-root localhost:8080/admin/panel
-```
-
-   **Output esperado:**
-
-```text
-200
-401 Basic realm="Realm", charset="UTF-8"
-403
-{"panel":"ventas del día: 42"} root
-```
-
-   **Captura comentada:** en la terminal de la app aparece una línea `INFO... AuditoriaFilter: auditoría: GET /admin/panel
-   por...` en las peticiones a `/admin/panel` (con `anonymousUser`, `ana` y `root`); la de `/publico/hola` también pasa
-   por el filtro, porque la cadena se aplica a todas las rutas: `permitAll()` decide en `AuthorizationFilter`, no evita la
-   cadena.
-
-4. **Fallo deliberado:** detén la app y arráncala con el perfil vulnerable:
-   `../gradlew -q bootRun --args='--spring.profiles.active=antes'`. Repite el segundo `curl`: ahora responde `200` sin
-   credenciales. Vuelve a arrancar sin perfil.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `src/test/java/academia/seguridad/cadena/CadenaDeFiltrosTest.java`:
 
 ```java
@@ -609,87 +570,27 @@ autenticación funciona, `AuthorizationFilter` niega `hasRole("ADMIN")` lanzando
 `ExceptionTranslationFilter` la traduce en `403`.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** los `GET` funcionan con credenciales, pero todo `POST`, `PUT` o `DELETE` responde `403 Forbidden` aunque el
-usuario tenga el rol correcto, y el controlador nunca se ejecuta.
-
-**Cómo se ve:** con `logging.level.org.springframework.security=TRACE` el log muestra que la petición no pasó del
-`CsrfFilter` (se ve `Invoking CsrfFilter (n/m)` y a continuación la línea de `Invalid CSRF token found for...`), y
-`curl -i` muestra `HTTP/1.1 403` sin cuerpo.
-
-**Diagnóstico:** la protección CSRF viene activada y exige un token en cada petición que cambia estado. Es correcta para
-navegadores con cookies de sesión, pero una API sin sesión que recibe el token en la cabecera `Authorization` no es
-vulnerable a CSRF (el navegador no adjunta esa cabecera solo).
-
-**Arreglo:** para una API REST sin cookies, declara `.sessionManagement(s -> s.sessionCreationPolicy(STATELESS))` y
-`.csrf(AbstractHttpConfigurer::disable)` **con un comentario que explique por qué** (como en F065). Para una aplicación web
-con sesión, mantén CSRF y envía el token (`http.csrf(csrf -> csrf.spa())` en Spring Security 7 para SPAs).
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Explica cómo llega una petición desde Tomcat hasta tu controlador cuando usas Spring Security y por qué a veces ves 401
-y a veces 403.»
-
-**Respuesta modelo:** Tomcat ejecuta sus filtros de servlet; uno es `DelegatingFilterProxy`, que delega en el bean
-`FilterChainProxy`. Este elige la primera `SecurityFilterChain` cuyo `securityMatcher` coincide y ejecuta sus filtros en
-orden fijo: carga del `SecurityContext`, cabeceras, CSRF, los filtros de autenticación (Basic, formulario, bearer),
-anónimo, `ExceptionTranslationFilter` y `AuthorizationFilter`. Si tras la autenticación nadie se identificó y la regla
-exige autenticación, `ExceptionTranslationFilter` llama al `AuthenticationEntryPoint` y responde 401 con
-`WWW-Authenticate`; si hay un usuario autenticado sin el permiso, llama al `AccessDeniedHandler` y responde 403. Para
-depurar, pongo `org.springframework.security` en TRACE y veo cada filtro invocado, o un *breakpoint* en
-`FilterChainProxy`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Seguridad hecha a mano dentro del controlador:**
-
-```java
-@GetMapping("/admin/panel")
-ResponseEntity<?> panel(@RequestHeader(value = "Authorization", required = false) String auth) {
-    if (auth == null || !auth.equals("Basic " + Base64.getEncoder().encodeToString("root:1234".getBytes()))) {
-        return ResponseEntity.status(401).build();      // contraseña en el código y comparada con equals()
-    }
-    return ResponseEntity.ok(panelService.datos());     // la próxima ruta nueva olvidará este if
-}
-```
-
-Cada endpoint repite (o se olvida de repetir) el chequeo, la contraseña queda en el código fuente, `equals()` filtra
-información por tiempo de respuesta y no hay un lugar único donde auditar las reglas. La seguridad va en la cadena de
-filtros y en reglas declarativas; el controlador solo hace negocio.
-
----
 ### JWT: firmas simétricas vs asimétricas
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 2 de 9 · Fase 1 · 2 h
-`f062-jwt`.
+#### ► DE QUÉ TRATA
+Diferenciar HS256 de RS256 explicando quién puede emitir y quién puede verificar con cada una, explotar dos fallos clásicos de un verificador ingenuo ("alg":"none" y confusión RS256→HS256) y configurar un resource server de Spring que los rechaza junto con tokens vencidos o de ot…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Diferenciar HS256 de RS256 explicando quién puede emitir y quién puede verificar con cada una, explotar dos fallos clásicos de un verificador ingenuo ("alg":"none" y confusión RS256→HS256) y configurar un resource server de Spring que los rechaza junto con tokens vencidos o de otra audiencia (6 tests en verde).**
 
-- F061: cadena de filtros, 401 frente a 403.
-- Módulo 0.4: JSON y codificación Base64.
-- Idea básica de *hash*: una función que convierte cualquier texto en una huella de tamaño fijo.
+#### ► POR QUÉ EXISTE ESTO
+Un JWT (JSON Web Token) es una credencial en texto: tres trozos separados por puntos. El primero dice cómo se firmó, el segundo dice quién eres y hasta cuándo vale (los *claims*) y el tercero es la firma, que demuestra que nadie cambió los dos primeros. Los dos primeros solo están codificados, no cifrados: cualquiera puede leerlos (por eso nunca pongas datos secretos ahí). Hay dos maneras de firmar: con un secreto co…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en jwt: firmas simétricas vs asimétricas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Diferenciar** HS256 de RS256 explicando quién puede emitir y quién puede verificar con cada una, **explotar** dos fallos
-clásicos de un verificador ingenuo (`"alg":"none"` y confusión RS256→HS256) y **configurar** un resource server de
-Spring que los rechaza junto con tokens vencidos o de otra audiencia (6 tests en verde).
-
-#### 4. ANALOGÍA VISUAL
-
-Dos formas de sellar un sobre. **Simétrica (HS256):** un **sello de lacre** idéntico que tienen el emisor y cada
-receptor; con él se sella y se comprueba, así que cualquier receptor podría sellar sobres falsos. **Asimétrica
-(RS256):** una **firma manuscrita** que solo el emisor sabe hacer (clave privada) y una **foto de esa firma pegada en
-la pared** de cada oficina (clave pública) para compararla; mirando la foto nadie aprende a firmar. El dibujo: a la
-izquierda, tres personas con el mismo sello y una de ellas sellando un sobre falso; a la derecha, un notario firmando y
-tres oficinas que solo comparan contra una foto enmarcada. Abajo, un falsificador que entrega un sobre con la etiqueta
-«sin sello, créame» (`alg: none`) a un empleado distraído que lo acepta.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
     subgraph JWT["JWT = cabecera . claims . firma (Base64URL)"]
@@ -709,61 +610,103 @@ flowchart TB
     end
 ```
 
-**Texto alternativo:** arriba, un JWT con sus tres partes separadas por puntos: cabecera con alg RS256 y kid, claims con
-iss, sub ana, aud pedidos y exp, y la firma. Abajo a la izquierda, HS256: el emisor firma con un secreto K y los
-servicios A y B verifican con el mismo K, por lo que B también podría emitir tokens. Abajo a la derecha, RS256: el
-emisor firma con su clave privada y los servicios A y B verifican solo con la clave pública, que obtienen de un endpoint
-JWKS que publica las claves por su identificador kid.
+1. Un JWT (JSON Web Token) es una credencial en texto: tres trozos separados por puntos.
+2. El primero dice cómo se firmó, el segundo dice quién eres y hasta cuándo vale (los *claims*) y el tercero es la firma, que demuestra que nadie cambió los dos primeros.
+3. Los dos primeros solo están codificados, no cifrados: cualquiera puede leerlos (por eso nunca pongas datos secretos ahí).
+4. Hay dos maneras de firmar: con un secreto compartido (HS256: el mismo secreto firma y verifica) o con un par de claves (RS25…
 
-#### 6. EXPLICACIÓN NIVEL 0
-
-Un **JWT** (JSON Web Token) es una credencial en texto: tres trozos separados por puntos. El primero dice cómo se firmó,
-el segundo dice **quién eres y hasta cuándo vale** (los *claims*) y el tercero es la **firma**, que demuestra que nadie
-cambió los dos primeros. Los dos primeros solo están codificados, **no cifrados**: cualquiera puede leerlos (por eso
-nunca pongas datos secretos ahí). Hay dos maneras de firmar: con **un secreto compartido** (HS256: el mismo secreto
-firma y verifica) o con **un par de claves** (RS256: la privada firma, la pública verifica).
-
-#### 7. EXPLICACIÓN INTERMEDIA
-
-- **Estructura.** `base64url(cabecera) + "." + base64url(claims) + "." + base64url(firma)`. La firma se calcula sobre los
-  dos primeros trozos **tal como están escritos** (RFC 7515). Claims registrados (RFC 7519): `iss` (emisor), `sub`
-  (sujeto), `aud` (para quién es), `exp` (vence), `iat` (emitido), `nbf` (no antes de), `jti` (identificador).
-- **HS256** = HMAC con SHA-256: firma de 32 bytes. El secreto debe tener al menos 256 bits (32 bytes) para SHA-256 (RFC
-  7518 §3.2); un secreto corto se adivina sin conexión probando un diccionario contra un token capturado.
-- **RS256** = RSASSA-PKCS1-v1_5 con SHA-256: con RSA 2048 la firma mide 256 bytes. El emisor publica sus claves públicas
-  en un **JWKS** (`/.well-known/jwks.json` o, en Keycloak, `/realms/<realm>/protocol/openid-connect/certs`) y la cabecera
-  `kid` dice cuál usar; así puede **rotar** claves sin coordinar a todos los servicios. Alternativas modernas: ES256
-  (ECDSA P-256, firmas de 64 bytes) y EdDSA.
-- **Validar un JWT** es: (1) aceptar solo el algoritmo que **tú** esperas, nunca el que dice la cabecera; (2) verificar
-  la firma; (3) comprobar `exp`/`nbf` (con un pequeño margen de reloj), `iss` y **`aud`**.
-- **En Spring.** `NimbusJwtDecoder.withPublicKey(clave).signatureAlgorithm(RS256)` o `withSecretKey(k).macAlgorithm(HS256)`;
-  `JwtValidators.createDefaultWithIssuer(iss)` añade `exp`/`nbf` + `iss`, y un `JwtClaimValidator` comprueba `aud`. El
-  filtro `BearerTokenAuthenticationFilter` lee `Authorization: Bearer...` y, si falla, responde `401` con
-  `WWW-Authenticate: Bearer error="invalid_token",...`. Por defecto `NimbusJwtDecoder` solo confía en RS256.
-
-#### 8. EXPLICACIÓN MAESTRA
-
-| Criterio | HS256 (simétrica) | RS256 / ES256 (asimétrica) |
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Quién puede emitir | Todo el que tenga el secreto | Solo quien tenga la clave privada |
-| Distribución de la clave | Secreto en cada servicio (Vault, F068): un servicio comprometido puede **forjar** tokens para todos | Clave pública sin riesgo; JWKS con caché |
-| Rotación | Coordinada: todos a la vez | Con `kid`: publicas la nueva, firmas con ella y retiras la vieja después de `exp` |
-| Coste | Muy barato | Verificar RS256 es barato; firmar es más caro (lo hace solo el emisor). ES256 da firmas más cortas |
-| Cuándo | Un único servicio que emite y verifica sus propios tokens (p. ej. enlaces firmados) | Cualquier sistema con varios servicios o un proveedor de identidad (Keycloak) |
+| JWT: firmas simétricas vs asimétricas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Por qué JWT y no sesiones.** Un JWT se verifica sin llamar a nadie (escala bien, funciona entre servicios), pero **no
-se puede revocar** antes de `exp`: por eso los *access tokens* duran minutos (Keycloak: 5 min por defecto en este realm)
-y se complementan con *refresh tokens*. Alternativas: **tokens opacos + introspección** (RFC 7662), revocables al
-instante a costa de una llamada al servidor de autorización por petición (o caché); **sesiones** con cookie para
-aplicaciones web monolíticas, más simples y revocables.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar JWT: firmas simétricas vs asimétricas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Cuándo NO usar JWT:** para guardar el carrito o permisos que cambian cada minuto (el token crece y queda obsoleto);
-para sesiones de navegador de larga duración guardadas en `localStorage` (cualquier XSS las roba: usa cookies
-`HttpOnly` con el patrón BFF del Módulo 7). Y nunca «cifres» datos poniéndolos en un JWT firmado: firmado no es
-cifrado (para eso existe JWE).
+#### ► CUÁNDO NO USAR ESTO
+Decodificar sin verificar «porque el gateway ya validó»:
 
-#### 9. CÓDIGO EJECUTABLE
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: jwt: firmas simétricas vs asimétricas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Un JWT (JSON Web Token) es una credencial en texto: tres trozos separados por puntos.
+- El primero dice cómo se firmó, el segundo dice quién eres y hasta cuándo vale (los *claims*) y el tercero es la firma, que demuestra que nadie cambió los dos primeros.
+- Los dos primeros solo están codificados, no cifrados: cualquiera puede leerlos (por eso nunca pongas datos secretos ahí).
+- Hay dos maneras de firmar: con un secreto compartido (HS256: el mismo secreto firma y verifica) o con un par de claves (RS25…
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve jwt: firmas simétricas vs asimétricas en tu contexto?
+2. ¿Cómo sabrías que jwt: firmas simétricas vs asimétricas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar jwt: firmas simétricas vs asimétricas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Construcción guiada
+1. Ejecuta la demostración (ejecutada con JDK 25.0.5; el par RSA se genera en cada ejecución, el token HS256 es fijo):
+
+```bash
+java JwtFirmas.java
+```
+
+   **Output esperado:**
+
+```text
+HS256 (43 bytes de secreto compartido)
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGllbmRhLmxvY2FsIiwic3ViIjoiYW5hIiwiYXVkIjoicGVkaWRvcyIsImV4cCI6NDEwMjQ0NDgwMH0.6tDsGdXB0_RDBVmFC3tZwoD1LY65ZJQCWZrum12Vf2s
+  verificado con el mismo secreto: true
+RS256 (RSA 2048, kid=clave-2026-11)
+  longitud de la firma: 256 bytes (HS256: 32)
+  verificado solo con la clave pública: aceptado sub=ana
+ANTES (vulnerable): el verificador lee el alg del token
+  alg=none                     -> ACEPTADO (sub=admin)
+  HS256 con la clave pública   -> ACEPTADO (sub=admin)
+  payload alterado             -> rechazado
+DESPUÉS (seguro): alg fijo RS256 + iss + aud + exp
+  alg=none                     -> rechazado: alg no permitido
+  HS256 con la clave pública   -> rechazado: alg no permitido
+  payload alterado             -> rechazado: firma inválida
+  token válido para "pagos"    -> rechazado: aud
+Secreto HS256 débil adivinado con un diccionario de 5 palabras: "secreto"
+OK: HS256 y RS256 verifican; el verificador seguro rechaza los 4 ataques
+```
+
+2. Comprueba que el token HS256 es un JWT estándar verificándolo con otra implementación (PyJWT,
+   `pip install pyjwt`):
+
+```bash
+python3 -c "
+import jwt; t = open('target/hs256.jwt').read()
+print(jwt.decode(t, 'un-secreto-de-al-menos-32-bytes-para-hs256!', algorithms=['HS256'],
+                 audience='pedidos', issuer='https://auth.tienda.local'))"
+```
+
+   **Output esperado:** `{'iss': 'https://auth.tienda.local', 'sub': 'ana', 'aud': 'pedidos', 'exp': 4102444800}`.
+   Con otro secreto PyJWT lanza `InvalidSignatureError: Signature verification failed`.
+
+3. Lee el token sin verificarlo, para recordar que los claims **no** son secretos:
+
+```bash
+java VerToken.java "$(cat target/hs256.jwt)"
+```
+
+   **Output esperado:** `cabecera: {"alg":"HS256","typ":"JWT"}`, `sub: "ana"`, `aud: "pedidos"` y
+   `exp: 2100-01-01T00:00:00Z (vence en... s)`.
+
+4. **Fallo deliberado:** en `JwtFirmas.java` cambia en `verificadorSeguro` la condición del `alg` por
+   `!List.of("RS256", "none").contains(campo(texto(p[0]), "alg"))`. Ejecuta: el programa termina con `FALLA: 1`
+   porque `alg=none` llega a la verificación de firma; restaura la línea.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS (la demostración solo usa `javax.crypto` y `java.security`) · Spring Boot 4.1.3 ·
 `spring-boot-starter-security-oauth2-resource-server` (Spring Security 7.1.3 con Nimbus JOSE + JWT) ·
 `spring-boot-starter-webmvc`. Comprobación cruzada del token HS256 con PyJWT 2.15.0.
@@ -952,64 +895,7 @@ rsa_keygen_bits:2048 -out privada-solo-pruebas.pem` y `openssl pkey -in privada-
 publica.pem`. La privada vive **solo** en `src/test/resources` porque los tests hacen de emisor; un servicio real nunca
 tiene la clave privada del servidor de autorización.
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta la demostración (ejecutada con JDK 25.0.5; el par RSA se genera en cada ejecución, el token HS256 es fijo):
-
-```bash
-java JwtFirmas.java
-```
-
-   **Output esperado:**
-
-```text
-HS256 (43 bytes de secreto compartido)
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgudGllbmRhLmxvY2FsIiwic3ViIjoiYW5hIiwiYXVkIjoicGVkaWRvcyIsImV4cCI6NDEwMjQ0NDgwMH0.6tDsGdXB0_RDBVmFC3tZwoD1LY65ZJQCWZrum12Vf2s
-  verificado con el mismo secreto: true
-RS256 (RSA 2048, kid=clave-2026-11)
-  longitud de la firma: 256 bytes (HS256: 32)
-  verificado solo con la clave pública: aceptado sub=ana
-ANTES (vulnerable): el verificador lee el alg del token
-  alg=none                     -> ACEPTADO (sub=admin)
-  HS256 con la clave pública   -> ACEPTADO (sub=admin)
-  payload alterado             -> rechazado
-DESPUÉS (seguro): alg fijo RS256 + iss + aud + exp
-  alg=none                     -> rechazado: alg no permitido
-  HS256 con la clave pública   -> rechazado: alg no permitido
-  payload alterado             -> rechazado: firma inválida
-  token válido para "pagos"    -> rechazado: aud
-Secreto HS256 débil adivinado con un diccionario de 5 palabras: "secreto"
-OK: HS256 y RS256 verifican; el verificador seguro rechaza los 4 ataques
-```
-
-2. Comprueba que el token HS256 es un JWT estándar verificándolo con otra implementación (PyJWT,
-   `pip install pyjwt`):
-
-```bash
-python3 -c "
-import jwt; t = open('target/hs256.jwt').read()
-print(jwt.decode(t, 'un-secreto-de-al-menos-32-bytes-para-hs256!', algorithms=['HS256'],
-                 audience='pedidos', issuer='https://auth.tienda.local'))"
-```
-
-   **Output esperado:** `{'iss': 'https://auth.tienda.local', 'sub': 'ana', 'aud': 'pedidos', 'exp': 4102444800}`.
-   Con otro secreto PyJWT lanza `InvalidSignatureError: Signature verification failed`.
-
-3. Lee el token sin verificarlo, para recordar que los claims **no** son secretos:
-
-```bash
-java VerToken.java "$(cat target/hs256.jwt)"
-```
-
-   **Output esperado:** `cabecera: {"alg":"HS256","typ":"JWT"}`, `sub: "ana"`, `aud: "pedidos"` y
-   `exp: 2100-01-01T00:00:00Z (vence en... s)`.
-
-4. **Fallo deliberado:** en `JwtFirmas.java` cambia en `verificadorSeguro` la condición del `alg` por
-   `!List.of("RS256", "none").contains(campo(texto(p[0]), "alg"))`. Ejecuta: el programa termina con `FALLA: 1`
-   porque `alg=none` llega a la verificación de firma; restaura la línea.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f062-jwt/src/test/java/academia/seguridad/jwt/Rs256Test.java` (los tokens los emite `FabricaDeTokens`, con la clave
 privada de prueba, `NimbusJwtEncoder` y dos tokens de ataque escritos a mano):
 
@@ -1100,89 +986,27 @@ válidos para todos los servicios (por ejemplo `sub=admin`). Con RS256 solo hace
 JWKS): pagos puede verificar, pero no emitir.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** después de que el servidor de autorización **rota** su clave, todas las peticiones responden `401` durante
-un rato, o el servicio no arranca con un secreto HS256 «de prueba».
-
-**Cómo se ve:** en el primer caso, `curl -i` muestra `WWW-Authenticate: Bearer error="invalid_token",
-error_description="An error occurred while attempting to decode the Jwt:..."` y el texto menciona que no hay una clave
-que coincida con el `kid`. En el segundo, el arranque de `f062-jwt` con `TIENDA_JWT_SECRETO=secreto` y el perfil `hs256`
-falla con `IllegalStateException: tienda.jwt.secreto debe tener al menos 32 bytes para HS256 (tiene 7)`; PyJWT avisa lo
-mismo (ejecutado aquí): `InsecureKeyLengthWarning: The HMAC key is 7 bytes long, which is below the minimum recommended
-length of 32 bytes for SHA256. See RFC 7518 Section 3.2.`
-
-**Diagnóstico:** decodifica la cabecera del token (`java VerToken.java "$TOKEN"`) y compara su `kid` con los de la JWKS
-(`curl -s.../certs | jq '.keys[].kid'`). Si el servicio tiene la clave pública **fija** (`public-key-location`), no se
-entera de la rotación.
-
-**Arreglo:** en producción usa `issuer-uri` o `jwk-set-uri` (Spring descarga y cachea la JWKS y la vuelve a pedir ante
-un `kid` desconocido) y pide al emisor que publique la clave nueva **antes** de empezar a firmar con ella. Para HS256,
-genera el secreto con `openssl rand -base64 48` y guárdalo en Vault.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿HS256 o RS256 para los tokens de una plataforma de 30 microservicios? ¿Qué validas en cada servicio?»
-
-**Respuesta modelo:** RS256 (o ES256). Con HS256 los 30 servicios tendrían el secreto que firma, así que cualquiera de
-ellos comprometido podría forjar tokens para los demás, y rotarlo exige coordinar a todos. Con firmas asimétricas solo el
-servidor de autorización tiene la clave privada; los servicios descargan la JWKS, la cachean y rotan por `kid` sin
-coordinación. En cada servicio valido: algoritmo fijado por configuración (nunca el de la cabecera, para evitar `alg:
-none` y la confusión RS→HS), firma, `exp`/`nbf` con poco margen de reloj, `iss` exacto y `aud` igual a mi servicio. No
-guardo en el token datos sensibles ni que cambien a menudo, y mantengo los access tokens cortos porque no se pueden
-revocar.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Decodificar sin verificar «porque el gateway ya validó»:**
-
-```java
-@GetMapping("/pedidos/mios")
-List<Pedido> mios(@RequestHeader("Authorization") String auth) throws Exception {
-    // Lee los claims SIN comprobar firma, exp ni aud: cualquiera que llegue a este puerto es "ana"
-    String sub = JWTParser.parse(auth.substring(7)).getJWTClaimsSet().getSubject();
-    return repositorio.porCliente(sub);
-}
-```
-
-Si alguien alcanza el servicio sin pasar por el gateway (otro pod, un puerto expuesto, una SSRF), le basta con escribir
-un JSON con `"sub":"otro-cliente"`. Cada servicio valida su token completo (defensa en profundidad) con su
-`JwtDecoder` configurado.
-
----
 ### OAuth2 y OIDC
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 3 de 9 · Fase 1 · 2,5 h
-`f063-oauth2-oidc`.
+#### ► DE QUÉ TRATA
+Distinguir OAuth2 (autorización delegada: *access token* para una API) de OIDC (autenticación: *id_token* para el cliente), ejecutar el flujo *Authorization Code* con PKCE paso a paso y demostrar que sin PKCE un code interceptado da tokens al atacante y con PKCE no; después, conf…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Distinguir OAuth2 (autorización delegada: *access token* para una API) de OIDC (autenticación: *id_token* para el cliente), ejecutar el flujo *Authorization Code* con PKCE paso a paso y demostrar que sin PKCE un code interceptado da tokens al atacante y con PKCE no; después, configurar oauth2Login en Spring y comprobar con 3 tests que la redirección lleva state, nonce y code_challenge.**
 
-- F062: JWT, firma RS256, claims `iss`, `aud`, `exp`.
-- Módulo 0.4: redirecciones HTTP (`302` + cabecera `Location`) y parámetros de *query string*.
-- Idea de hash SHA-256 (F062).
+#### ► POR QUÉ EXISTE ESTO
+OAuth2 resuelve esto: una aplicación quiere actuar en tu nombre (ver tus pedidos) sin conocer tu contraseña. Tú inicias sesión en un servidor de confianza (Keycloak, Google…), aceptas lo que la app pide (los *scopes*, como pedidos:leer) y ese servidor le entrega a la app un access token: una credencial temporal y limitada para llamar a la API. OIDC (OpenID Connect) es una capa encima de OAuth2 que además le dice a la…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en oauth2 y oidc como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Distinguir** OAuth2 (autorización delegada: *access token* para una API) de OIDC (autenticación: *id_token* para el
-cliente), **ejecutar** el flujo *Authorization Code* con PKCE paso a paso y **demostrar** que sin PKCE un `code`
-interceptado da tokens al atacante y con PKCE no; después, **configurar** `oauth2Login` en Spring y comprobar con 3 tests
-que la redirección lleva `state`, `nonce` y `code_challenge`.
-
-#### 4. ANALOGÍA VISUAL
-
-El **valet parking de un hotel**. No le das al aparcacoches la llave maestra de tu vida (tu contraseña): la recepción
-(el servidor de autorización) le entrega una **llave de valet** que solo enciende el carro y no abre la guantera
-(*access token* con *scopes*). Para recogerla, recepción no le da la llave directamente: le da un **tiquete numerado**
-(`code`) que se canjea en el mostrador. **PKCE** es que, al pedir el tiquete, el aparcacoches dejó en recepción **la mitad
-de una foto rota**; al canjear debe mostrar la **otra mitad**: si alguien le roba el tiquete por el camino, no tiene la
-otra mitad. **OIDC** añade una **tarjeta de identidad** sellada por recepción (*id_token*) que le dice al hotel quién es
-el huésped. El dibujo: huésped, recepción, aparcacoches con un tiquete y media foto, un ladrón con el tiquete pero sin la
-otra mitad, rechazado en el mostrador.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant U as Navegador de ana
@@ -1203,68 +1027,48 @@ sequenceDiagram
     C->>API: Authorization: Bearer access_token
 ```
 
-**Texto alternativo:** diagrama de secuencia del flujo Authorization Code con PKCE y OIDC. El navegador de ana pide /yo
-al cliente tienda-web. El cliente genera state, nonce y un code_verifier, calcula el code_challenge como el SHA-256 en
-Base64URL del verifier y redirige al navegador al endpoint de autorización de Keycloak con esos parámetros. Ana inicia
-sesión y Keycloak redirige de vuelta al cliente con un code y el mismo state. El cliente comprueba el state y canjea el
-code en el endpoint de token enviando el code_verifier y su secreto; Keycloak comprueba que el hash del verifier coincide
-con el challenge y responde con access_token e id_token. El cliente valida el id_token (firma, emisor, audiencia,
-expiración y nonce) y usa el access_token para llamar a la API de pedidos.
+1. OAuth2 resuelve esto: una aplicación quiere actuar en tu nombre (ver tus pedidos) sin conocer tu contraseña.
+2. Tú inicias sesión en un servidor de confianza (Keycloak, Google…), aceptas lo que la app pide (los *scopes*, como pedidos:leer) y ese servidor le entrega a la app un access token: una credencial temporal y limitada para llamar a la API.
+3. OIDC (OpenID Connect) es una capa encima de OAuth2 que además le dice a la app quién eres, con un segundo token, el id_token.
+4. Resumen: OAuth2 = «qué puede…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| OAuth2 y OIDC se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**OAuth2** resuelve esto: una aplicación quiere actuar en tu nombre (ver tus pedidos) **sin conocer tu contraseña**. Tú
-inicias sesión en un servidor de confianza (Keycloak, Google…), aceptas lo que la app pide (los *scopes*, como
-`pedidos:leer`) y ese servidor le entrega a la app un **access token**: una credencial temporal y limitada para llamar a
-la API. **OIDC** (OpenID Connect) es una capa encima de OAuth2 que además le dice a la app **quién eres**, con un segundo
-token, el **id_token**. Resumen: OAuth2 = «qué puede hacer esta app por ti»; OIDC = «quién eres».
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar OAuth2 y OIDC | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Flujo implícito con el token en la URL y guardado en localStorage:
 
-- **Roles (RFC 6749):** *resource owner* (ana), *client* (la app `tienda-web`), *authorization server* (Keycloak) y
-  *resource server* (la API que valida el access token, F062/F064).
-- **Flujos (*grants*):** `authorization_code` (usuarios con navegador; el único recomendado para ellos),
-  `client_credentials` (servicio a servicio, sin usuario), `refresh_token` (renovar sin volver a pedir login) y
-  `urn:ietf:params:oauth:grant-type:token-exchange` (F066). El *implicit* (token en la URL) y el *password* (la app ve tu
-  contraseña) están desaconsejados por las buenas prácticas de seguridad de **OAuth 2.0** (estándar de autorización delegada, RFC 9700); Spring Security 7
-  eliminó el soporte del *password grant* en el cliente.
-- **PKCE (RFC 7636):** el cliente inventa un `code_verifier` aleatorio (43–128 caracteres), envía su hash
-  `code_challenge = BASE64URL(SHA256(verifier))` al pedir el `code` y el `verifier` al canjearlo. Quien robe el `code` (una
-  app maliciosa con el mismo esquema de URL, un log de proxy) no puede canjearlo. Obligatorio para clientes públicos
-  (SPA, móvil) y recomendado también para confidenciales.
-- **`state`** une la respuesta con la petición que la originó (anti-CSRF del login). **`nonce`** viaja dentro del
-  id_token y une el token con la sesión del navegador (anti-reproducción).
-- **id_token (OIDC Core):** un JWT para el **cliente** (`aud` = `client_id`), con `sub`, `iss`, `exp`, `nonce` y datos
-  del usuario (`preferred_username`, `email` si se pide el scope). El cliente lo valida; **no** se envía a las APIs. El
-  access token sí va a las APIs (`aud` = la API).
-- **Descubrimiento:** `GET {issuer}/.well-known/openid-configuration` devuelve los endpoints (`authorization_endpoint`,
-  `token_endpoint`, `jwks_uri`, `userinfo_endpoint`). En Spring, `issuer-uri` lo usa.
-- **En Spring:** `oauth2Login()` añade `OAuth2AuthorizationRequestRedirectFilter` (arma la redirección y guarda `state`,
-  `nonce` y `code_verifier` en la sesión) y `OAuth2LoginAuthenticationFilter` (atiende `/login/oauth2/code/{id}`, canjea
-  el code y valida el id_token). `OAuth2AuthorizationRequestCustomizers.withPkce()` fuerza PKCE en clientes confidenciales.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: oauth2 y oidc funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- OAuth2 resuelve esto: una aplicación quiere actuar en tu nombre (ver tus pedidos) sin conocer tu contraseña.
+- Tú inicias sesión en un servidor de confianza (Keycloak, Google…), aceptas lo que la app pide (los *scopes*, como pedidos:leer) y ese servidor le entrega a la app un access token: una credencial temporal y limitada para llamar a la API.
+- OIDC (OpenID Connect) es una capa encima de OAuth2 que además le dice a la app quién eres, con un segundo token, el id_token.
+- Resumen: OAuth2 = «qué puede…
 
-| Patrón para una SPA o app móvil | Ventajas | Riesgos | Cuándo |
-|---|---|---|---|
-| **BFF** (el backend es el cliente OAuth2 y guarda los tokens; el navegador solo tiene una cookie `HttpOnly`) | Los tokens nunca llegan a JavaScript; el secreto del cliente queda en el servidor | Un componente más con estado (sesión) | Recomendado para aplicaciones web (Módulo 7) |
-| **Cliente público con PKCE** en el navegador | Sin backend propio | Tokens en memoria del navegador: un XSS los roba | SPAs sin backend, con access tokens muy cortos |
-| **Cliente nativo con PKCE** + navegador del sistema | Estándar para móviles (RFC 8252) | Esquemas de URL interceptables (por eso PKCE) | Apps iOS/Android |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve oauth2 y oidc en tu contexto?
+2. ¿Cómo sabrías que oauth2 y oidc no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar oauth2 y oidc?
 
-**OAuth2 no es autenticación.** Un access token prueba que *alguien* autorizó a *algún* cliente, no quién está frente a
-la app. Usar «si tengo un access token, el usuario inició sesión» abre ataques de sustitución de token (un token emitido
-para otra app y reutilizado en la tuya). Para iniciar sesión usa OIDC y valida el id_token con `aud` = tu `client_id`.
+</details>
 
-**Alternativas:** SAML 2.0 (XML, corporativo, solo navegador; Spring tiene `saml2Login`), sesiones locales con usuario y
-contraseña (F061, sin federación) y *passkeys*/WebAuthn (sin contraseña; Keycloak 26 las soporta como factor de login, y
-siguen terminando en un id_token).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Cuándo NO:** una herramienta interna con cinco usuarios y un único servicio no necesita un servidor de autorización:
-HTTP Basic sobre TLS o formulario con sesión (F061) bastan. OAuth2 compensa cuando hay varias aplicaciones, terceros o
-inicio de sesión único.
-
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS (la demostración levanta un servidor de autorización mínimo con `com.sun.net.httpserver`) ·
 Spring Boot 4.1.3 · `spring-boot-starter-security-oauth2-client` (Spring Security 7.1.3) · `spring-boot-starter-webmvc` ·
 Keycloak 26.8.2 para el login real.
@@ -1406,66 +1210,7 @@ server:
   port: 8080
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Recorre el flujo completo en memoria (ejecutado con JDK 25.0.5; el `code` y el `code_challenge` son aleatorios en
-   cada ejecución):
-
-```bash
-java OAuthPkce.java
-```
-
-   **Output esperado:**
-
-```text
-ANTES (vulnerable): Authorization Code sin PKCE ni state
-  un atacante intercepta la redirección y lee code=kr1i0l…
-  el atacante canjea el code -> HTTP 200 con access_token: true
-DESPUÉS (seguro): PKCE S256 + state + nonce + validación del id_token
-  S256 coincide con el vector de prueba del RFC 7636 (apéndice B): true
-  code_verifier (secreto del cliente, 43 caracteres) -> code_challenge=c70FHFZON3…
-  state devuelto coincide: true
-  atacante con el code pero sin el verifier -> HTTP 400 {"error":"invalid_grant"}
-  cliente legítimo con el verifier -> HTTP 200
-  id_token (OIDC, para el cliente): válido: sub=ana name=Ana Ruiz
-  mismo id_token en otra sesión: nonce inválido
-  access_token (OAuth2, para la API): aud=api-pedidos scope="openid pedidos:leer"
-OK: sin PKCE el code robado sirve; con PKCE no, y el id_token se valida
-```
-
-2. Levanta Keycloak y mira el documento de descubrimiento del realm:
-
-```bash
-docker compose up -d --wait keycloak
-curl -s localhost:8180/realms/tienda/.well-known/openid-configuration \
-  | jq '{issuer, authorization_endpoint, token_endpoint, jwks_uri, code_challenge_methods_supported}'
-```
-
-   **Output esperado:** `issuer` = `http://localhost:8180/realms/tienda`, los endpoints bajo
-   `/realms/tienda/protocol/openid-connect/` (`auth`, `token`, `certs`) y una lista de métodos PKCE que incluye `"S256"`.
-
-3. Inicia sesión de verdad con Spring:
-
-```bash
-cd f063-oauth2-oidc
-../gradlew -q bootRun --args='--spring.profiles.active=keycloak'
-```
-
-   Abre `http://localhost:8080/yo` en el navegador, entra con `ana` / `clave-demo`.
-
-   **Output esperado:** el navegador muestra `{"sub":"<uuid de ana>","usuario":"ana","emisor":"http://localhost:8180/realms/tienda"}`.
-
-   **Captura comentada:** en las herramientas de desarrollo (pestaña Red, «Conservar registro») verás tres saltos: `302`
-   de `/yo` a `/oauth2/authorization/keycloak`, `302` a `localhost:8180/.../auth?response_type=code&...&code_challenge=...`
-   y, tras el login, `302` de Keycloak a `/login/oauth2/code/keycloak?state=...&code=...`. El `code` aparece en la URL;
-   los tokens, nunca.
-
-4. **Fallo deliberado:** en `OAuthPkce.java` cambia `validarIdToken(..., cliente, nonce)` por
-   `validarIdToken(..., "otra-app", nonce)`: el programa imprime `id_token (OIDC, para el cliente): aud inválido` y termina
-   con `FALLA: 1`. Es el ataque de sustitución: un id_token emitido para otra aplicación.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f063-oauth2-oidc/src/test/java/academia/seguridad/oidc/OidcLoginTest.java` (no necesita Keycloak: los endpoints están en
 `application.yml` y el test no los llama):
 
@@ -1543,83 +1288,27 @@ A la API le envía el **access token** (su `aud` es la API y lleva los scopes). 
 (o, peor, una API que aceptara id_tokens aceptaría tokens emitidos para cualquier cliente).
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** después de iniciar sesión en Keycloak, el navegador muestra una página de error de Keycloak en lugar de
-volver a la aplicación.
-
-**Cómo se ve:** Keycloak responde con la pantalla «We are sorry... Invalid parameter: redirect_uri» y en su log
-(`docker compose logs keycloak`) aparece un `WARN` de tipo `LOGIN_ERROR` con `error="invalid_redirect_uri"` y el
-`redirect_uri` recibido.
-
-**Diagnóstico:** el `redirect_uri` que envía Spring (`{baseUrl}/login/oauth2/code/{registrationId}`) debe coincidir
-**exactamente** con uno de los `redirectUris` del cliente en Keycloak. Diferencias típicas: `127.0.0.1` frente a
-`localhost`, otro puerto, `http` frente a `https` detrás de un proxy, o un `registrationId` distinto de `keycloak`.
-
-**Arreglo:** compara el parámetro `redirect_uri` de la URL de autorización (pestaña Red) con
-`keycloak/tienda-realm.json` → `"redirectUris": ["http://localhost:8080/login/oauth2/code/keycloak"]`. Detrás de un proxy
-TLS configura `server.forward-headers-strategy=framework` para que `{baseUrl}` salga con `https`. Nunca uses comodines
-amplios (`*`) en `redirectUris`: convierten el servidor en un redirector abierto que entrega `code` a cualquiera.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué diferencia hay entre OAuth2 y OpenID Connect, y por qué se recomienda PKCE incluso para clientes con secreto?»
-
-**Respuesta modelo:** OAuth2 es un marco de autorización delegada: un cliente obtiene un access token con scopes para
-llamar a una API en nombre del usuario, sin conocer su contraseña. No define cómo saber quién es el usuario. OIDC añade
-autenticación: el id_token, un JWT para el cliente con `sub`, `iss`, `aud` igual al `client_id` y `nonce`, más el
-descubrimiento y el endpoint `userinfo`. PKCE liga el canje del `code` a quien inició el flujo mediante un verifier
-secreto y su hash: protege contra la interceptación del `code` y contra la inyección de un `code` robado en otra sesión.
-Un secreto de cliente no evita la inyección de código, por eso las buenas prácticas actuales (RFC 9700) recomiendan
-PKCE para todos los clientes, además de `state` y `nonce`.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Flujo implícito con el token en la URL y guardado en `localStorage`:**
-
-```javascript
-// Antiguo "implicit flow": el access token vuelve en el fragmento de la URL
-location.href = `${keycloak}/auth?response_type=token&client_id=spa&redirect_uri=${origen}`;
-// ...y al volver:
-const token = new URLSearchParams(location.hash.slice(1)).get("access_token");
-localStorage.setItem("token", token);   // cualquier script inyectado (XSS) lo lee y lo envía fuera
-```
-
-El token queda en el historial del navegador, en extensiones y en `localStorage`, sin PKCE ni posibilidad de cliente
-confidencial. Usa *Authorization Code* + PKCE y, en aplicaciones web, el patrón BFF: los tokens se quedan en el servidor
-y el navegador solo recibe una cookie `HttpOnly; Secure; SameSite`.
-
----
 ### Keycloak
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 4 de 9 · Fase 1 · 2 h
-`VerToken.java` y `f064-keycloak`.
+#### ► DE QUÉ TRATA
+Levantar Keycloak 26.8.2 con un realm versionado en JSON (roles, clientes, scopes y usuarios), obtener un token real con curl, leer sus claims (iss, aud, realm_access.roles) y conectar un resource server de Spring que convierte esos roles en autoridades, comprobado con 6 tests y…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Levantar Keycloak 26.8.2 con un realm versionado en JSON (roles, clientes, scopes y usuarios), obtener un token real con curl, leer sus claims (iss, aud, realm_access.roles) y conectar un resource server de Spring que convierte esos roles en autoridades, comprobado con 6 tests y con curl contra el Keycloak real (200, 403, 401).**
 
-- F062 (JWT, JWKS, `kid`) y F063 (OAuth2, OIDC, clientes públicos y confidenciales).
-- Módulo 0.5: Docker Compose (`up -d --wait`, `logs`, `down`).
-- F061: `hasRole`, 401 frente a 403.
+#### ► POR QUÉ EXISTE ESTO
+Keycloak es un programa gratuito (de la CNCF) que hace de servidor de identidad: guarda los usuarios y sus contraseñas, muestra la pantalla de login, emite los tokens de F062/F063 y publica las claves para verificarlos. Así tus microservicios no guardan contraseñas ni tienen pantallas de login: solo comprueban tokens. Todo se organiza en realms (espacios separados, como «tienda»), y dentro de cada uno defines usuario…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en keycloak como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Levantar** Keycloak 26.8.2 con un realm versionado en JSON (roles, clientes, scopes y usuarios), **obtener** un token
-real con `curl`, **leer** sus claims (`iss`, `aud`, `realm_access.roles`) y **conectar** un resource server de Spring que
-convierte esos roles en autoridades, comprobado con 6 tests y con `curl` contra el Keycloak real (`200`, `403`, `401`).
-
-#### 4. ANALOGÍA VISUAL
-
-La **oficina de pasaportes** de una ciudad. Cada país es un **realm** con sus propias leyes: sus ciudadanos (usuarios),
-sus cargos (roles) y la lista de **embajadas autorizadas** a pedir pasaportes (clientes). La oficina tiene un **sello
-oficial** cuya forma se publica en un cartel a la entrada (JWKS) para que cualquier frontera compruebe los pasaportes
-sin llamar a la oficina. En el dibujo: un edificio con el letrero «realm tienda», ventanillas para ana, sofía y root,
-un cartel con el sello público y, a lo lejos, un puesto fronterizo (el servicio Spring) comparando el sello del
-pasaporte con la foto del cartel y leyendo el cargo escrito en la página de «roles».
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph KC["Keycloak 26.8.2 · realm tienda (:8180)"]
@@ -1633,59 +1322,46 @@ flowchart LR
     API -.->|"1ª petición: descubre<br/>y cachea la JWKS"| K
 ```
 
-**Texto alternativo:** a la izquierda, Keycloak 26.8.2 con el realm tienda en el puerto 8180: usuarios ana, sofia y root
-asociados a los roles del realm cliente, soporte y admin; clientes tienda-web, tienda-cli, pedidos y pagos asociados a
-client scopes (basic, profile, roles y los scopes de pedidos con un mapper de audiencia), y las claves RS256 publicadas en
-el endpoint certs. curl, como cliente tienda-cli, pide un token en /token y recibe un access token con iss, aud pedidos y
-realm_access.roles. curl llama con ese token al servicio f064-keycloak en el puerto 8081, que convierte los roles en
-ROLE_cliente; en la primera petición el servicio descubre y cachea la JWKS de Keycloak.
+1. Keycloak es un programa gratuito (de la CNCF) que hace de servidor de identidad: guarda los usuarios y sus contraseñas, muestra la pantalla de login, emite los tokens de F062/F063 y publica las claves para verificarlos.
+2. Así tus microservicios no guardan contraseñas ni tienen pantallas de login: solo comprueban tokens.
+3. Todo se organiza en realms (espacios separados, como «tienda»), y dentro de cada uno defines usuarios, roles y clientes (las aplicaciones que pueden pedir tokens).
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Keycloak se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Keycloak** es un programa gratuito (de la CNCF) que hace de **servidor de identidad**: guarda los usuarios y sus
-contraseñas, muestra la pantalla de login, emite los tokens de F062/F063 y publica las claves para verificarlos. Así tus
-microservicios **no guardan contraseñas** ni tienen pantallas de login: solo comprueban tokens. Todo se organiza en
-**realms** (espacios separados, como «tienda»), y dentro de cada uno defines **usuarios**, **roles** y **clientes** (las
-aplicaciones que pueden pedir tokens).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Keycloak | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Llamar a Keycloak en cada petición «para estar seguros»:
 
-- **Arranque en desarrollo:** `start-dev` usa una base H2 en memoria, HTTP sin TLS y caché local; `--import-realm` lee
-  los JSON de `/opt/keycloak/data/import/` al iniciar. El administrador inicial se crea con
-  `KC_BOOTSTRAP_ADMIN_USERNAME`/`KC_BOOTSTRAP_ADMIN_PASSWORD`. `--health-enabled=true` publica `/health/ready` en el
-  puerto de gestión **9000**.
-- **Endpoints del realm** (`/realms/tienda/protocol/openid-connect/...`): `auth`, `token`, `certs` (JWKS), `userinfo`,
-  `logout`; y `/realms/tienda/.well-known/openid-configuration`.
-- **Clientes:** confidencial (con secreto: `tienda-web`, `pedidos`) o público (sin secreto: `tienda-cli`). Se activa por
-  cliente cada flujo: *standard flow* (authorization code), *direct access grants* (password, **solo laboratorio**),
-  *service accounts* (client credentials) y *standard token exchange* (F066).
-- **Client scopes y mappers:** deciden qué claims lleva el token. En este realm, `basic` añade `sub`, `profile` añade
-  `preferred_username`, `roles` añade `realm_access.roles` y cada `pedidos:*` añade `pedidos` al `aud` (mapper
-  `oidc-audience-mapper`). Un scope por defecto va siempre; uno opcional, solo si el cliente lo pide en `scope=`.
-- **`iss`:** en `start-dev` sin `hostname`, Keycloak arma el emisor con la URL por la que lo llamaste; si los servicios
-  validan `http://localhost:8180/realms/tienda`, pide los tokens por esa misma URL (en producción fija `--hostname`).
-- **En Spring:** `spring.security.oauth2.resourceserver.jwt.issuer-uri` hace que Spring descubra la JWKS **la primera vez
-  que la necesita** (el servicio arranca aunque Keycloak esté apagado) y valide `iss`; `...jwt.audiences=pedidos` añade la
-  validación de `aud`. Los roles de Keycloak no están en `scope`, así que hace falta un conversor propio.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: keycloak funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Keycloak es un programa gratuito (de la CNCF) que hace de servidor de identidad: guarda los usuarios y sus contraseñas, muestra la pantalla de login, emite los tokens de F062/F063 y publica las claves para verificarlos.
+- Así tus microservicios no guardan contraseñas ni tienen pantallas de login: solo comprueban tokens.
+- Todo se organiza en realms (espacios separados, como «tienda»), y dentro de cada uno defines usuarios, roles y clientes (las aplicaciones que pueden pedir tokens).
 
-| Opción | A favor | En contra | Cuándo |
-|---|---|---|---|
-| **Keycloak** (autoalojado, Apache 2.0) | Gratis, OIDC/SAML completos, federación LDAP, token exchange, personalizable | Lo operas tú: base de datos, alta disponibilidad, actualizaciones | Plataformas propias, requisitos de residencia de datos |
-| **IdP gestionado** (Auth0/Okta, Entra ID, Cognito) | Sin operación, cumplimiento listo | Coste por usuario activo, dependencia del proveedor | Productos B2C/B2B sin equipo de plataforma |
-| **Spring Authorization Server** | Embebido en Spring, total control | Construyes login, MFA, administración | Necesidades muy específicas o productos que *son* un IdP |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve keycloak en tu contexto?
+2. ¿Cómo sabrías que keycloak no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar keycloak?
 
-**Producción:** `start` (no `start-dev`) con PostgreSQL, `--hostname` fijo, TLS, al menos dos réplicas con caché
-distribuida, el realm como código (este JSON o `keycloak-config-cli`) y copias de seguridad. Mantén los access tokens
-cortos (5 min aquí) y los roles **gruesos**; los permisos finos de negocio (dueño del pedido) van en el servicio.
+</details>
 
-**Cuándo NO:** si solo necesitas que tus propios servicios se reconozcan entre sí, usa mTLS de la malla (F067) o
-client credentials de un IdP gestionado; montar Keycloak para un único servicio interno es operar una pieza crítica sin
-necesidad.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** Keycloak 26.8.2 (`quay.io/keycloak/keycloak:26.8.2`) · JDK 25 LTS · Spring Boot 4.1.3 ·
 `spring-boot-starter-security-oauth2-resource-server` (Spring Security 7.1.3) · Docker Compose v5.
 
@@ -1853,69 +1529,7 @@ spring.security.oauth2.resourceserver.jwt.issuer-uri=${KEYCLOAK_REALM_URL:http:/
 spring.security.oauth2.resourceserver.jwt.audiences=pedidos
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta Keycloak con el realm importado:
-
-```bash
-docker compose up -d --wait keycloak
-docker compose logs keycloak | grep -iE "import|started in"
-```
-
-   **Output esperado:** `docker compose up` termina con `Container modulo-13-keycloak-1  Healthy` y el log contiene una
-   línea de importación del realm `tienda` y otra `Keycloak 26.8.2 on JVM (powered by Quarkus...) started in...s`.
-   **Captura comentada:** en `http://localhost:8180` (usuario `admin`, clave `admin-solo-dev`) el selector de realms
-   muestra `tienda`, y en *Clients* aparecen `tienda-web`, `tienda-cli`, `pedidos` y `pagos`.
-
-2. Pide un token para ana y léelo:
-
-```bash
-TOKEN=$(curl -s localhost:8180/realms/tienda/protocol/openid-connect/token \
-  -d grant_type=password -d client_id=tienda-cli -d username=ana -d password=clave-demo \
-  -d scope="openid pedidos:leer" | jq -r .access_token)
-java jdk/VerToken.java "$TOKEN"
-```
-
-   **Output esperado** (el `kid`, el `sub` y las fechas cambian):
-
-```text
-cabecera: {"alg":"RS256","typ":"JWT","kid":"..."}
-iss:                "http://localhost:8180/realms/tienda"
-sub:                "<uuid de ana>"
-aud:                "pedidos"
-azp:                "tienda-cli"
-scope:              "openid profile pedidos:leer"
-preferred_username: "ana"
-realm_access:       {"roles":["cliente"]}
-act:                (no está)
-exp:                2026-...Z (vence en 299 s)
-```
-
-3. Llama al resource server con el token real:
-
-```bash
-cd f064-keycloak && ../gradlew -q bootRun &
-sleep 15
-curl -s -H "Authorization: Bearer $TOKEN" localhost:8081/pedidos; echo
-curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $TOKEN" localhost:8081/admin/reportes
-curl -s -o /dev/null -w "%{http_code}\n" localhost:8081/pedidos
-```
-
-   **Output esperado:**
-
-```text
-{"usuario":"ana","pedidos":3}
-403
-401
-```
-
-4. **Fallo deliberado:** pide el token por `127.0.0.1` en vez de `localhost`
-   (`curl -s 127.0.0.1:8180/realms/tienda/...`) y repite la primera llamada: responde `401` porque el `iss` del token es
-   `http://127.0.0.1:8180/realms/tienda` y el servicio exige `http://localhost:8180/realms/tienda`. Mira la cabecera con
-   `curl -i`: `WWW-Authenticate: Bearer error="invalid_token", error_description="...iss..."`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f064-keycloak/src/test/java/academia/seguridad/keycloak/ResourceServerKeycloakTest.java`. No necesita Keycloak:
 `TokensDePrueba` registra un `JwtDecoder` que convierte `token-ana`, `token-root` y `token-sin-roles` en JWT con la misma
 forma que los de Keycloak (`realm_access.roles`, `preferred_username`), así el test recorre la cadena real, conversor
@@ -2007,78 +1621,27 @@ El token deja de traer `realm_access` (lo añadía el mapper de ese scope). `Rol
 `hasAnyRole(...)` falla: la respuesta es `403` aunque la firma, `iss` y `aud` sean correctos.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** el token es válido, ana tiene el rol `cliente` en Keycloak, pero `GET /pedidos` responde `403`.
-
-**Cómo se ve:** con `logging.level.org.springframework.security=DEBUG` el servicio registra la autenticación de ana con
-`Granted Authorities=[SCOPE_openid, SCOPE_profile, SCOPE_pedidos:leer]`: ningún `ROLE_`.
-
-**Diagnóstico:** el `JwtAuthenticationConverter` por defecto solo convierte el claim `scope` en `SCOPE_*`. Los roles de
-Keycloak viven en `realm_access.roles` (y los de cliente en `resource_access.<cliente>.roles`), que Spring no lee solo.
-
-**Arreglo:** registra un conversor como `RolesDeKeycloak` (o combina scopes y roles, F065). Comprueba con `VerToken.java`
-que el claim existe; si no está, falta el client scope `roles` en el cliente que pidió el token.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo integras Keycloak con 20 microservicios Spring y qué pasa si Keycloak se cae?»
-
-**Respuesta modelo:** cada servicio es un resource server con `issuer-uri` del realm y `audiences` con su propio nombre;
-valida localmente la firma con la JWKS que descarga y cachea, así que una caída de Keycloak **no** afecta a las
-peticiones con tokens ya emitidos hasta que expiran (minutos). Lo que se cae es el login y la renovación, por eso
-Keycloak va en alta disponibilidad (dos o más réplicas, PostgreSQL, caché distribuida) y los servicios no lo llaman en
-cada petición. Los roles gruesos van en el token con un conversor de `realm_access`; los permisos de negocio se deciden
-en el servicio. El realm se versiona como código y se importa en cada entorno.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Llamar a Keycloak en cada petición «para estar seguros»:**
-
-```java
-@GetMapping("/pedidos")
-List<Pedido> pedidos(@RequestHeader("Authorization") String auth) {
-    // Una llamada HTTP a Keycloak por petición: latencia extra y Keycloak como punto único de fallo
-    Map<?, ?> info = rest.get().uri(keycloak + "/protocol/openid-connect/userinfo")
-        .header("Authorization", auth).retrieve().body(Map.class);
-    return repositorio.porCliente((String) info.get("sub"));
-}
-```
-
-Con 20 servicios y miles de peticiones por segundo, el IdP se convierte en el cuello de botella y en la caída de todo el
-sistema. Valida el JWT localmente con la JWKS cacheada; si necesitas revocación inmediata, usa tokens cortos o
-introspección con caché solo donde haga falta.
-
----
 ### RBAC y Scopes
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 5 de 9 · Fase 1 · 2 h
-`f065-rbac-scopes`.
+#### ► DE QUÉ TRATA
+Explicar la diferencia entre lo que un usuario puede hacer (roles, RBAC) y lo que una aplicación puede hacer en su nombre (scopes), implementar la regla «permiso del rol ∩ scope del token» con @PreAuthorize y verificar una matriz de 12 decisiones (401/200/201/204/403) con un test…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Explicar la diferencia entre lo que un usuario puede hacer (roles, RBAC) y lo que una aplicación puede hacer en su nombre (scopes), implementar la regla «permiso del rol ∩ scope del token» con @PreAuthorize y verificar una matriz de 12 decisiones (401/200/201/204/403) con un test parametrizado.**
 
-- F061 (reglas y `@PreAuthorize` mencionado), F063 (scopes que el usuario concede a un cliente) y F064 (roles del realm
-  en `realm_access.roles`).
+#### ► POR QUÉ EXISTE ESTO
+Autorizar es decidir si alguien que ya sabemos quién es puede hacer una acción concreta. RBAC (control de acceso basado en roles) agrupa permisos en roles —«cliente», «soporte», «admin»— y le asigna roles a cada persona; así no configuras permisos persona por persona. Los scopes son otra cosa: cuando una aplicación actúa en tu nombre, solo recibe una parte de lo que tú puedes hacer (por ejemplo, un widget que solo le…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en rbac y scopes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Explicar** la diferencia entre lo que un **usuario** puede hacer (roles, RBAC) y lo que una **aplicación** puede hacer
-en su nombre (scopes), **implementar** la regla «permiso del rol ∩ scope del token» con `@PreAuthorize` y **verificar**
-una matriz de 12 decisiones (401/200/201/204/403) con un test parametrizado.
-
-#### 4. ANALOGÍA VISUAL
-
-Un **edificio de oficinas con tarjetas**. Tu **cargo** (rol) define a qué pisos podrías entrar: la gerente puede a todos,
-el de soporte al 3 y al 4. Cuando le prestas tu tarjeta a un mensajero para que recoja un paquete, la recepción le entrega
-una **copia limitada** que solo abre el piso 3 (scope), aunque tu cargo abra más. La puerta se abre solo si **las dos
-cosas** coinciden: el cargo del dueño permite ese piso **y** la copia lo incluye. El dibujo: una tabla de pisos con
-candados de dos cerrojos (uno con el icono de un maletín —rol— y otro con el de una llave recortada —scope—), y un
-mensajero frente al piso 5 con la copia que no abre ese cerrojo.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     T["JWT de Keycloak<br/>scope: pedidos:leer pedidos:crear<br/>realm_access.roles: [cliente]"] --> C["AutoridadesDelToken"]
@@ -2091,55 +1654,48 @@ flowchart LR
     D -->|"falta uno"| NO["403"]
 ```
 
-**Texto alternativo:** un JWT de Keycloak con scope «pedidos:leer pedidos:crear» y el rol cliente pasa por el conversor
-AutoridadesDelToken, que produce dos autoridades SCOPE_ y una ROLE_cliente. Esas autoridades y una tabla que asigna
-permisos a cada rol (cliente: leer y crear; soporte: leer y reembolsar; admin: todos) alimentan la decisión
-@permisos.puede para un permiso concreto, por ejemplo pedidos:borrar. Si el rol concede el permiso y el scope está
-presente, la respuesta es 200, 201 o 204; si falta cualquiera de los dos, 403.
+1. Autorizar es decidir si alguien que ya sabemos quién es puede hacer una acción concreta.
+2. RBAC (control de acceso basado en roles) agrupa permisos en roles —«cliente», «soporte», «admin»— y le asigna roles a cada persona; así no configuras permisos persona por persona.
+3. Los scopes son otra cosa: cuando una aplicación actúa en tu nombre, solo recibe una parte de lo que tú puedes hacer (por ejemplo, un widget que solo lee pedidos).
+4. Una petición pasa si tu rol lo permite y la aplicación recibió ese s…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| RBAC y Scopes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Autorizar** es decidir si alguien que ya sabemos quién es puede hacer una acción concreta. **RBAC** (control de acceso
-basado en roles) agrupa permisos en **roles** —«cliente», «soporte», «admin»— y le asigna roles a cada persona; así no
-configuras permisos persona por persona. Los **scopes** son otra cosa: cuando una aplicación actúa en tu nombre, solo
-recibe **una parte** de lo que tú puedes hacer (por ejemplo, un widget que solo lee pedidos). Una petición pasa si tu
-rol lo permite **y** la aplicación recibió ese scope.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar RBAC y Scopes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Explosión de roles para expresar excepciones:
 
-- **En Spring todo son `GrantedAuthority`:** `hasRole("admin")` busca la autoridad `ROLE_admin`; `hasAuthority("SCOPE_x")`
-  busca `SCOPE_x` exacta. El `JwtGrantedAuthoritiesConverter` estándar convierte el claim `scope` (o `scp`) en `SCOPE_*`;
-  los roles de Keycloak necesitan un conversor (F064). `AutoridadesDelToken` produce ambos.
-- **Dónde se decide:** `authorizeHttpRequests` para reglas por URL; `@EnableMethodSecurity` + `@PreAuthorize("...")`
-  para reglas por método, con SpEL. `@permisos.puede(authentication, 'pedidos:borrar')` llama a un bean: la tabla
-  rol → permisos queda en **un** lugar y se puede probar sola.
-- **Combinación:** el permiso se concede si `algún rol del usuario lo incluye` **y** `el token trae SCOPE_<permiso>`. El
-  scope **reduce**, nunca amplía: sofía (soporte) con un token que trae `pedidos:borrar` sigue sin poder borrar.
-- **CSRF en APIs con token:** un resource server sin cookies desactiva CSRF (`csrf.disable()`), si no los `POST` y
-  `DELETE` responden 403 (F061, error común).
-- **Jerarquías:** si `admin` debe implicar `soporte`, Spring ofrece `RoleHierarchy` (`RoleHierarchyImpl.fromHierarchy("ROLE_admin > ROLE_soporte")`);
-  aquí se modela explícitamente en la tabla para que se lea sin magia.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: rbac y scopes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Autorizar es decidir si alguien que ya sabemos quién es puede hacer una acción concreta.
+- RBAC (control de acceso basado en roles) agrupa permisos en roles —«cliente», «soporte», «admin»— y le asigna roles a cada persona; así no configuras permisos persona por persona.
+- Los scopes son otra cosa: cuando una aplicación actúa en tu nombre, solo recibe una parte de lo que tú puedes hacer (por ejemplo, un widget que solo lee pedidos).
+- Una petición pasa si tu rol lo permite y la aplicación recibió ese s…
 
-| Modelo | Qué decide | Fortalezas | Límites | Ejemplo |
-|---|---|---|---|---|
-| **RBAC** | Rol del usuario | Simple, auditable | Explosión de roles cuando aparecen excepciones | `admin`, `soporte` |
-| **Scopes OAuth2** | Lo que el cliente puede hacer en nombre del usuario | Mínimo privilegio para apps de terceros | No sustituyen a los roles: los limitan | `pedidos:leer` |
-| **ABAC / políticas** | Atributos del sujeto, recurso y contexto | Reglas finas («solo el dueño», «en horario») | Más difícil de auditar; necesita un motor | OPA, Cedar, `@PreAuthorize("#p.dueno == authentication.name")` |
-| **ReBAC** | Relaciones (usuario ↔ recurso) | Compartir documentos, organizaciones | Infraestructura específica | OpenFGA, SpiceDB (modelo Zanzibar) |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve rbac y scopes en tu contexto?
+2. ¿Cómo sabrías que rbac y scopes no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar rbac y scopes?
 
-**Diseño de scopes:** granularidad por recurso y verbo (`pedidos:leer`), no por pantalla; pocos scopes estables (los
-clientes los piden en su configuración). **Diseño de roles:** roles de negocio gruesos en el IdP; la regla de propiedad
-(«solo tus pedidos») nunca en un rol, sino en el servicio, comparando `sub` con el dueño del recurso. Evita poner cientos
-de permisos en el token: crece, se desactualiza y viaja en cada petición.
+</details>
 
-**Cuándo NO:** si tu sistema no tiene clientes de terceros ni apps con permisos reducidos, los scopes añaden
-configuración sin aportar; bastan roles. Y si la regla depende de datos (dueño, monto), ni roles ni scopes alcanzan:
-necesitas una comprobación en el dominio.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-security-oauth2-resource-server` (Spring Security
 7.1.3, `@EnableMethodSecurity`) · JUnit Jupiter 6 (`@ParameterizedTest`).
 
@@ -2307,62 +1863,7 @@ class PedidosController {
 
 `application.properties`: `server.port=8082`, `issuer-uri` del realm `tienda` y `audiences=pedidos` (igual que F064).
 
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta la matriz sin dependencias (ejecutado con JDK 25.0.5):
-
-```bash
-java RbacScopes.java
-```
-
-   **Output esperado:**
-
-```text
-ANTES (vulnerable): rol leído de la cabecera X-Rol
-  ana (cliente) envía X-Rol: admin y DELETE /pedidos -> 200   <- escalada de privilegios
-DESPUÉS (seguro): permiso del rol ∩ scope del token
-                     GET /pedidos  POST /pedidos  POST /pedidos/reembolso  DELETE /pedidos
-  anónimo            401           401            401                      401
-  ana · app web      200           200            403                      403
-  ana · widget       200           403            403                      403
-  sofia · soporte    200           403            200                      403
-  root · admin       200           200            200                      200
-  (sofia tiene el scope pedidos:borrar, pero su rol no lo concede: 403)
-OK: 20 decisiones coinciden con la tabla esperada
-```
-
-2. Repite la matriz con tokens reales de Keycloak (`docker compose up -d --wait keycloak` y la app con
-   `cd../f065-rbac-scopes &&../gradlew -q bootRun`):
-
-```bash
-tok() { curl -s localhost:8180/realms/tienda/protocol/openid-connect/token -d grant_type=password \
-  -d client_id=tienda-cli -d username=$1 -d password=clave-demo -d scope="$2" | jq -r .access_token; }
-WEB=$(tok ana "pedidos:leer pedidos:crear"); WIDGET=$(tok ana "pedidos:leer")
-SOFIA=$(tok sofia "pedidos:leer pedidos:reembolsar pedidos:borrar")
-for par in "WEB:$WEB" "WIDGET:$WIDGET" "SOFIA:$SOFIA"; do
-  n=${par%%:*}; t=${par#*:}
-  printf "%-7s POST /pedidos -> %s · DELETE /pedidos/7 -> %s\n" "$n" \
-    "$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Authorization: Bearer $t" localhost:8082/pedidos)" \
-    "$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer $t" localhost:8082/pedidos/7)"
-done
-```
-
-   **Output esperado:**
-
-```text
-WEB     POST /pedidos -> 201 · DELETE /pedidos/7 -> 403
-WIDGET  POST /pedidos -> 403 · DELETE /pedidos/7 -> 403
-SOFIA   POST /pedidos -> 403 · DELETE /pedidos/7 -> 403
-```
-
-   **Captura comentada:** el token de sofía sí trae `pedidos:borrar` en `scope` (compruébalo con `java../jdk/VerToken.java
-   "$SOFIA"`), porque `tienda-cli` puede pedirlo; el rol `soporte` no lo concede y por eso el `DELETE` es 403.
-
-3. **Fallo deliberado:** en `Permisos.puede` cambia `return porRol && porScope;` por `return porRol || porScope;`.
-   Ejecuta `../gradlew test`: falla la fila `DELETE, /pedidos/7, sofia, 403` (ahora da 204). Restaura el `&&`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f065-rbac-scopes/src/test/java/academia/seguridad/rbac/MatrizDeAutorizacionTest.java` (con `TokensDePrueba`, un
 `JwtDecoder` de prueba que devuelve JWT con `scope` y `realm_access.roles` como los de Keycloak):
 
@@ -2428,74 +1929,27 @@ No. El rol `cliente` no incluye `pedidos:borrar`; el scope solo puede **restring
 ampliarlo. Si Keycloak se configura bien, ni siquiera debería ofrecer ese scope a ese cliente.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** `@PreAuthorize("hasRole('SCOPE_pedidos:leer')")` o `hasAuthority('admin')` nunca coinciden: todo es `403`.
-
-**Cómo se ve:** en DEBUG, la autenticación muestra `Granted Authorities=[SCOPE_pedidos:leer, ROLE_cliente]`, pero la
-decisión registra `AuthorizationDecision [granted=false]` para el método.
-
-**Diagnóstico:** `hasRole('x')` añade el prefijo y busca `ROLE_x`; `hasAuthority('x')` busca `x` tal cual. Mezclar
-prefijos (`hasRole('ROLE_admin')` → busca `ROLE_ROLE_admin`) o usar el nombre sin prefijo con `hasAuthority` falla en
-silencio.
-
-**Arreglo:** roles con `hasRole('admin')`; scopes con `hasAuthority('SCOPE_pedidos:leer')`. Mejor aún, centraliza la
-decisión en un bean (`@permisos.puede`) y pruébala con una matriz como la de este tema.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué diferencia hay entre un rol y un scope, y cómo los combinas en un resource server?»
-
-**Respuesta modelo:** el rol describe lo que el **usuario** puede hacer en el sistema (RBAC, asignado por la
-organización); el scope describe lo que una **aplicación cliente** puede hacer en nombre de ese usuario (concedido en el
-consentimiento OAuth2). En el resource server convierto ambos en autoridades (`ROLE_*` desde el claim de roles del IdP y
-`SCOPE_*` desde `scope`) y concedo una operación solo si el rol la permite y el token trae el scope; así un cliente con
-permisos reducidos no puede hacer más que su scope ni más que el rol del usuario. Las reglas de propiedad o de importe no
-van en roles ni scopes: las compruebo en el dominio.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Explosión de roles** para expresar excepciones:
-
-```text
-ROLE_soporte, ROLE_soporte_reembolsos, ROLE_soporte_reembolsos_bogota,
-ROLE_soporte_reembolsos_bogota_hasta_500k, ROLE_soporte_reembolsos_bogota_hasta_500k_fines_de_semana ...
-```
-
-Cada regla nueva se convierte en otro rol; nadie sabe qué permite cada uno y el token crece. Los roles se mantienen
-gruesos; las condiciones de datos (ciudad, monto, horario) se expresan como reglas sobre atributos (ABAC) en el servicio
-o en un motor de políticas.
-
----
 ### Token Exchange (RFC 8693)
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 6 de 9 · Fase 1 · 2 h
-`f066-token-exchange`.
+#### ► DE QUÉ TRATA
+Explicar por qué reenviar el token del usuario entre servicios es peligroso, ejecutar un canje RFC 8693 contra Keycloak que produce un token con aud=pagos y scope reducido, e implementar en Spring un servicio que canjea antes de llamar a otro, verificado con 2 tests que inspeccio…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Explicar por qué reenviar el token del usuario entre servicios es peligroso, ejecutar un canje RFC 8693 contra Keycloak que produce un token con aud=pagos y scope reducido, e implementar en Spring un servicio que canjea antes de llamar a otro, verificado con 2 tests que inspeccionan lo que recibe el STS y lo que recibe pagos.**
 
-- F062 (`aud`, `exp`), F063 (endpoint `/token`, clientes confidenciales), F064 (realm `tienda`) y F065 (scopes).
-- Módulo 6: un servicio que llama a otro con `RestClient`.
+#### ► POR QUÉ EXISTE ESTO
+Cuando un servicio necesita llamar a otro en nombre del usuario, la tentación es reenviar el mismo token. El problema: ese token se vuelve una llave maestra que sirve en muchos servicios, y si se filtra en un solo log, abre todo. Token Exchange (el estándar RFC 8693) es pedirle al servidor de identidad: «cámbiame este token por uno nuevo, solo para este otro servicio, con menos permisos y por poco tiempo». El token n…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en token exchange (rfc 8693) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Explicar** por qué reenviar el token del usuario entre servicios es peligroso, **ejecutar** un canje RFC 8693 contra
-Keycloak que produce un token con `aud=pagos` y scope reducido, e **implementar** en Spring un servicio que canjea antes
-de llamar a otro, verificado con 2 tests que inspeccionan lo que recibe el STS y lo que recibe pagos.
-
-#### 4. ANALOGÍA VISUAL
-
-La **pulsera de un festival**. Ana entra con una pulsera general (su token para `pedidos`). Para ir a la zona de
-camerinos (pagos), su acompañante del staff (el servicio pedidos) no le presta su pulsera al guardia de camerinos ni le
-pone a ana una pulsera «para todo»: va a la **taquilla** (el STS), muestra la pulsera de ana y su credencial de staff, y
-recibe una **pulsera nueva** que dice «Ana, acompañada por pedidos, solo camerinos, válida 1 minuto». Si alguien la
-roba, no abre el escenario ni el bar. El dibujo: una taquilla con un letrero «RFC 8693», una pulsera azul entrando y una
-roja más corta saliendo con las etiquetas `aud=pagos`, `act=pedidos`, `60 s`.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant A as App de ana
@@ -2513,59 +1967,48 @@ sequenceDiagram
     P-->>A: 200
 ```
 
-**Texto alternativo:** diagrama de secuencia. La app de ana llama a pedidos con el token T1, cuya audiencia es pedidos.
-Pedidos lo valida y hace un POST al endpoint de token de Keycloak autenticándose con su secreto, con grant_type de token
-exchange, T1 como subject_token, audience pagos y scope pagos:cobrar. Keycloak comprueba el cliente, que T1 sea válido y
-tenga a pedidos en su audiencia, y que la audiencia y el scope pedidos estén permitidos; responde con un token T2 con sub
-ana, audiencia pagos y scope pagos:cobrar. Pedidos llama a pagos con T2; pagos comprueba audiencia y scope y responde
-cobrado.
+1. Cuando un servicio necesita llamar a otro en nombre del usuario, la tentación es reenviar el mismo token.
+2. El problema: ese token se vuelve una llave maestra que sirve en muchos servicios, y si se filtra en un solo log, abre todo.
+3. Token Exchange (el estándar RFC 8693) es pedirle al servidor de identidad: «cámbiame este token por uno nuevo, solo para este otro servicio, con menos permisos y por poco tiempo».
+4. El token nuevo sigue diciendo que es ana, pero solo sirve donde hace falta.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Token Exchange (RFC 8693) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando un servicio necesita llamar a otro **en nombre del usuario**, la tentación es reenviar el mismo token. El problema:
-ese token se vuelve una **llave maestra** que sirve en muchos servicios, y si se filtra en un solo log, abre todo.
-**Token Exchange** (el estándar RFC 8693) es pedirle al servidor de identidad: «cámbiame este token por uno nuevo, solo
-para este otro servicio, con menos permisos y por poco tiempo». El token nuevo sigue diciendo que es ana, pero solo
-sirve donde hace falta.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Token Exchange (RFC 8693) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+El «token de Dios»: un único token con todas las audiencias y scopes del sistema que viaja por cada salto:
 
-- **Petición (RFC 8693 §2.1)** al endpoint de token, con el cliente autenticado: `grant_type=urn:ietf:params:oauth:grant-type:token-exchange`,
-  `subject_token` (el token de ana), `subject_token_type=urn:ietf:params:oauth:token-type:access_token` y, opcionalmente,
-  `audience`, `resource`, `scope`, `requested_token_type` y `actor_token` (para delegación).
-- **Respuesta (§2.2.1):** `access_token`, `issued_token_type`, `token_type` (`Bearer`) y `expires_in`. Errores OAuth2:
-  `invalid_request`, `invalid_client`, `invalid_grant`, `invalid_scope` e `invalid_target` (audiencia no permitida, §2.2.2).
-- **Suplantación frente a delegación:** en *impersonation* el token nuevo es indistinguible de uno de ana; en
-  *delegation* lleva el claim `act` (§4.1) con quién actúa en su nombre (`"act":{"sub":"pedidos"}`), útil para auditoría.
-- **Keycloak 26:** el *standard token exchange* (feature `token-exchange-standard:v2`) viene activado; se habilita por
-  cliente con el interruptor **Standard token exchange** (atributo `standard.token.exchange.enabled` en el JSON del
-  realm). El cliente que canjea debe ser **confidencial**, ambos clientes en el mismo realm, el `subject_token` debe
-  incluir al cliente que canjea en su `aud`, solo se aceptan access tokens como `subject_token_type`, `audience` **filtra**
-  (no añade) audiencias, `scope` pide scopes opcionales del cliente que canjea y el parámetro `resource` no se admite. La
-  suplantación de otro usuario no está implementada en esta versión del canje estándar.
-- **En Spring:** aquí se hace con `RestClient` para ver cada parámetro. Spring Security trae también
-  `TokenExchangeOAuth2AuthorizedClientProvider`, que integra el canje en el `OAuth2AuthorizedClientManager` (con caché del
-  token canjeado).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: token exchange (rfc 8693) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Cuando un servicio necesita llamar a otro en nombre del usuario, la tentación es reenviar el mismo token.
+- El problema: ese token se vuelve una llave maestra que sirve en muchos servicios, y si se filtra en un solo log, abre todo.
+- Token Exchange (el estándar RFC 8693) es pedirle al servidor de identidad: «cámbiame este token por uno nuevo, solo para este otro servicio, con menos permisos y por poco tiempo».
+- El token nuevo sigue diciendo que es ana, pero solo sirve donde hace falta.
 
-| Estrategia entre servicios | Seguridad | Coste | Cuándo |
-|---|---|---|---|
-| **Reenviar el token** (*passthrough*) | Débil: token con audiencias amplias, reutilizable en cualquier servicio | Nulo | Nunca entre dominios de confianza distintos; tolerable solo dentro de un mismo servicio lógico |
-| **Token Exchange** | Fuerte: audiencia y scope mínimos, vida corta, trazabilidad con `act` | Una llamada al STS por destino (cacheable hasta `exp`) | Llamadas en nombre del usuario que cruzan fronteras de confianza |
-| **Client credentials** del servicio | Identifica al servicio, pierde al usuario | Una llamada por token, cacheable | Procesos sin usuario (jobs, eventos) |
-| **mTLS + identidad del servicio** (F067) | Autentica la conexión, no al usuario | Malla de servicios | Complemento de las anteriores (Zero-Trust, Módulo 27) |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve token exchange (rfc 8693) en tu contexto?
+2. ¿Cómo sabrías que token exchange (rfc 8693) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar token exchange (rfc 8693)?
 
-**Trade-offs:** cada canje añade latencia (~ms) y carga al IdP: cachea el token canjeado por `(usuario, audiencia)`
-hasta poco antes de su `exp`; si el STS no responde, falla cerrado (502), nunca reenvíes el token original como
-«plan B». Un gateway puede hacer el canje en el borde (el token externo nunca entra a la red interna) y cada servicio
-recibe uno con su audiencia.
+</details>
 
-**Cuándo NO:** si el servicio de destino no necesita saber **qué usuario** pidió la operación (por ejemplo, un servicio
-de catálogo público), usa client credentials; canjear tokens de usuario para eso añade latencia y acoplamiento al IdP.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-security-oauth2-resource-server` y
 `spring-boot-starter-restclient` · Keycloak 26.8.2 con el cliente `pedidos` y `standard.token.exchange.enabled=true`.
 
@@ -2711,75 +2154,7 @@ El cliente `pedidos` en `keycloak/tienda-realm.json`:
 }
 ```
 
-#### 10. MINI-LABORATORIO
-
-1. Mira el canje y sus rechazos en un STS mínimo (ejecutado con JDK 25.0.5):
-
-```bash
-java IntercambioDeTokens.java
-```
-
-   **Output esperado:**
-
-```text
-ANTES (vulnerable): token de ana con aud amplia, reenviado tal cual
-  pagos acepta el token reenviado por pedidos -> 200 sub=ana
-  inventario acepta el token reenviado por pedidos -> 200 sub=ana
-  si ese token se filtra en un log de pedidos, abre pagos E inventario durante 5 minutos
-DESPUÉS (seguro): RFC 8693 en el STS
-  POST /token (client pedidos) grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-    audience=pagos scope="pagos:cobrar pagos:reembolsar" subject_token=<token de ana>
-  respuesta: issued_token_type=urn:ietf:params:oauth:token-type:access_token token_type=Bearer expires_in=60
-  claims nuevos: sub=ana aud=pagos scope="pagos:cobrar" act={"sub":"pedidos"}
-  pagos con el token canjeado      -> 200 sub=ana
-  inventario con el token canjeado -> 401 (aud=pagos)
-  pagos con el token original      -> 401 (aud=pedidos)
-  peticiones que el STS rechaza:
-    secreto de cliente incorrecto        -> invalid_client
-    audience no permitida (inventario)   -> invalid_target
-    subject_token emitido para facturas  -> invalid_grant
-    solo scopes no permitidos            -> invalid_scope
-OK: el token canjeado solo sirve en pagos, con pagos:cobrar y act.sub=pedidos
-```
-
-2. Haz el mismo canje contra Keycloak (`docker compose up -d --wait keycloak`):
-
-```bash
-cd ..
-ANA=$(curl -s localhost:8180/realms/tienda/protocol/openid-connect/token -d grant_type=password \
-  -d client_id=tienda-cli -d username=ana -d password=clave-demo -d scope="pedidos:crear" | jq -r .access_token)
-curl -s -u pedidos:solo-dev-pedidos localhost:8180/realms/tienda/protocol/openid-connect/token \
-  -d grant_type=urn:ietf:params:oauth:grant-type:token-exchange \
-  -d subject_token="$ANA" -d subject_token_type=urn:ietf:params:oauth:token-type:access_token \
-  -d audience=pagos -d scope=pagos:cobrar > target/canje.json
-jq '{issued_token_type, token_type, expires_in}' target/canje.json
-java jdk/VerToken.java "$(jq -r .access_token target/canje.json)" | grep -E "^(aud|azp|scope|preferred_username):"
-```
-
-   **Output esperado:**
-
-```text
-{
-  "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
-  "token_type": "Bearer",
-  "expires_in": 300
-}
-aud:                "pagos"
-azp:                "pedidos"
-scope:              "pagos:cobrar"
-preferred_username: (no está)
-```
-
-   **Captura comentada:** el token nuevo sigue siendo de ana (`sub` igual al del token original) pero lo pidió
-   `pedidos` (`azp`) y solo sirve en `pagos`. `preferred_username` no aparece porque el cliente `pedidos` no tiene el
-   scope `profile`: el canje solo emite lo que el cliente que canjea tiene permitido.
-
-3. **Fallo deliberado:** repite el canje con `-d audience=inventario`. Keycloak responde `400` con un `error` de OAuth2
-   (el cliente `pedidos` no tiene ningún scope que produzca la audiencia `inventario`). Ahora quita `pedidos:crear` del
-   `scope` al pedir el token de ana: el canje falla porque `pedidos` ya no está en el `aud` del `subject_token`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f066-token-exchange/src/test/java/academia/seguridad/intercambio/IntercambioTest.java`: un `HttpServer` del JDK hace de
 STS (`/token`) y de pagos (`/cobros`) y anota lo que recibe; el `JwtDecoder` de prueba acepta cualquier token como de ana.
 
@@ -2828,80 +2203,27 @@ No: falla cerrado (502 en este laboratorio, el segundo test). Reenviar el token 
 justo cuando algo va mal, y además pagos lo rechazaría por `aud=pedidos` si está bien configurado.
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** el canje contra Keycloak responde `400` o `403` aunque el secreto del cliente es correcto.
-
-**Cómo se ve:** `{"error":"...","error_description":"..."}`; las causas típicas son el `subject_token` sin el cliente
-que canjea en su `aud`, el interruptor *Standard token exchange* apagado en ese cliente o un cliente público.
-
-**Diagnóstico:** lee el `subject_token` con `VerToken.java` y comprueba que `aud` contiene `pedidos`; en la consola de
-Keycloak, *Clients → pedidos → Settings*, revisa que sea confidencial (*Client authentication* activado) y que *Standard
-token exchange* esté marcado; en `docker compose logs keycloak` busca el evento `TOKEN_EXCHANGE_ERROR` con su motivo.
-
-**Arreglo:** añade la audiencia `pedidos` al token de origen (en este realm, con el mapper de los scopes `pedidos:*`),
-activa el canje en el cliente y pide solo `audience` y `scope` que ese cliente tenga permitidos.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«Tu servicio de pedidos necesita llamar a pagos en nombre del usuario. ¿Reenvías el token? ¿Qué propones?»
-
-**Respuesta modelo:** no reenvío el token del usuario: tendría que llevar todas las audiencias y cualquier servicio que
-lo vea podría usarlo contra los demás. Uso Token Exchange (RFC 8693): pedidos, como cliente confidencial, envía el token
-del usuario como `subject_token` al endpoint de token con `audience=pagos` y el scope mínimo; el IdP valida que el token
-iba para pedidos y que pedidos puede pedir esa audiencia, y emite un token corto con `aud=pagos`, idealmente con `act`
-para auditar quién actuó. Pagos valida `aud` y scope. Cacheo el token canjeado hasta su expiración, fallo cerrado si el
-IdP no responde y, si la llamada no necesita al usuario, uso client credentials.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El «token de Dios»:** un único token con todas las audiencias y scopes del sistema que viaja por cada salto:
-
-```json
-{
-  "sub": "ana",
-  "aud": ["gateway", "pedidos", "pagos", "inventario", "envios", "admin-api"],
-  "scope": "pedidos:* pagos:* inventario:* envios:* admin:*",
-  "exp": 1798761600
-}
-```
-
-Cualquier servicio comprometido o cualquier log con cabeceras se convierte en acceso total durante horas. Cada salto
-debe recibir un token con su propia audiencia y lo justo de scope, con vida de minutos.
-
----
 ### mTLS con Service Mesh
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 7 de 9 · Fase 1 · 2,5 h
-`generar-certs.sh` y `mtls-kind` (kind + Istio).
+#### ► DE QUÉ TRATA
+Construir a mano un canal mTLS (CA, certificado de servidor, certificado de cliente con identidad SPIFFE) y demostrar que un espía lee el token en HTTP plano y no en mTLS; después, activar mTLS estricto en una malla Istio con PeerAuthentication y comprobar que un pod sin sidecar…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Construir a mano un canal mTLS (CA, certificado de servidor, certificado de cliente con identidad SPIFFE) y demostrar que un espía lee el token en HTTP plano y no en mTLS; después, activar mTLS estricto en una malla Istio con PeerAuthentication y comprobar que un pod sin sidecar pasa de 200 a ser rechazado (000, código 56).**
 
-- F062: firma con clave privada y verificación con clave pública.
-- Módulo 0.5: contenedores; Módulo 12 se estudia después, así que aquí se dan los comandos de Kubernetes justos
-  (`kubectl apply`, `kubectl exec`).
-- Idea de HTTPS: el candado del navegador.
+#### ► POR QUÉ EXISTE ESTO
+Cuando dos servicios hablan por la red de la empresa, cualquiera que logre meterse en esa red puede escuchar (leer tokens y datos) o hacerse pasar por un servicio. TLS cifra la conversación y demuestra la identidad del servidor; mTLS («TLS mutuo») hace que los dos lados demuestren quiénes son con un certificado. Configurarlo a mano en 50 servicios es mucho trabajo, así que una malla de servicios (*service mesh*, como…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en mtls con service mesh como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Construir** a mano un canal mTLS (CA, certificado de servidor, certificado de cliente con identidad SPIFFE) y
-**demostrar** que un espía lee el token en HTTP plano y no en mTLS; después, **activar** mTLS estricto en una malla Istio
-con `PeerAuthentication` y **comprobar** que un pod sin sidecar pasa de `200` a ser rechazado (`000`, código 56).
-
-#### 4. ANALOGÍA VISUAL
-
-Una **reunión de espías en un parque**. Con TLS normal solo el que espera **muestra su credencial** (el servidor); el que
-llega podría ser cualquiera. Con **mTLS** los dos se muestran credenciales emitidas por **la misma agencia** (la CA) y
-solo entonces hablan, en un idioma cifrado que el que escucha desde el banco de al lado no entiende. En una malla de
-servicios, cada servicio tiene un **guardaespaldas** pegado (el *sidecar*) que hace todo eso por él: muestra la
-credencial, comprueba la del otro y cifra la conversación; el servicio ni se entera. El dibujo: dos personajes con
-guardaespaldas intercambiando placas con el mismo escudo, un tercero sin guardaespaldas rechazado, y un curioso en un
-banco con un audífono que solo oye ruido.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph T["namespace tienda (istio-injection=enabled)"]
@@ -2922,56 +2244,124 @@ flowchart LR
     E2 -->|"rechaza: 000<br/>exit code 56"| C
 ```
 
-**Texto alternativo:** en el espacio de nombres tienda, con inyección de Istio, el pod curl tiene un Envoy con
-certificado SPIFFE de la cuenta de servicio curl, y el pod httpbin tiene un Envoy con PeerAuthentication en modo STRICT
-delante de httpbin. Istiod actúa como CA de la malla y emite y rota los certificados de ambos Envoy. El tráfico de curl a
-httpbin viaja por mTLS con TLS 1.3, presentando ambos su certificado. En el espacio legado, un curl sin Envoy envía HTTP
-plano al Envoy de httpbin, que lo rechaza; curl obtiene el código 000 y termina con exit code 56.
+1. Cuando dos servicios hablan por la red de la empresa, cualquiera que logre meterse en esa red puede escuchar (leer tokens y datos) o hacerse pasar por un servicio.
+2. TLS cifra la conversación y demuestra la identidad del servidor; mTLS («TLS mutuo») hace que los dos lados demuestren quiénes son con un certificado.
+3. Configurarlo a mano en 50 servicios es mucho trabajo, así que una malla de servicios (*service mesh*, como Istio o Linkerd) pone un pequeño proxy al lado de cada servicio que lo hace aut…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| mTLS con Service Mesh se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cuando dos servicios hablan por la red de la empresa, cualquiera que logre meterse en esa red puede **escuchar** (leer
-tokens y datos) o **hacerse pasar** por un servicio. **TLS** cifra la conversación y demuestra la identidad del
-servidor; **mTLS** («TLS mutuo») hace que **los dos** lados demuestren quiénes son con un certificado. Configurarlo a
-mano en 50 servicios es mucho trabajo, así que una **malla de servicios** (*service mesh*, como Istio o Linkerd) pone un
-pequeño proxy al lado de cada servicio que lo hace automáticamente, incluida la renovación de certificados.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar mTLS con Service Mesh | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+«La red interna es segura»: el tráfico entre servicios en HTTP plano, protegido solo por el firewall perimetral:
 
-- **Certificados:** una CA firma el certificado de cada servicio; cada lado confía solo en esa CA (*truststore*). En el
-  *handshake* TLS 1.3 el servidor pide certificado de cliente (`CertificateRequest`) y, si el cliente no envía uno
-  válido, corta con la alerta `certificate_required`. En Java: `SSLParameters.setNeedClientAuth(true)`.
-- **Identidad SPIFFE:** el certificado no lleva una IP sino una identidad de carga de trabajo en el SAN tipo URI:
-  `spiffe://cluster.local/ns/<namespace>/sa/<serviceaccount>`. Es lo que Istio pone en cada certificado y lo que
-  `AuthorizationPolicy` usa en `principals`.
-- **Istio (modo sidecar):** etiquetar el namespace con `istio-injection=enabled` hace que cada pod nuevo reciba un Envoy;
-  `istiod` actúa de CA y rota los certificados (por defecto de vida corta, 24 h). `PeerAuthentication` decide qué acepta
-  el lado servidor: `PERMISSIVE` (por defecto: mTLS o texto plano, para migrar), `STRICT` (solo mTLS) o `DISABLE`. El
-  lado cliente usa mTLS automáticamente cuando el destino tiene sidecar.
-- **Autorización por identidad:** con mTLS el servidor sabe quién llama; `AuthorizationPolicy` permite, por ejemplo, que
-  a httpbin solo llegue `cluster.local/ns/tienda/sa/curl`.
-- **Lo que mTLS no hace:** no sabe qué **usuario** originó la petición; eso sigue siendo el JWT (F062–F066). mTLS
-  autentica servicios; el JWT, personas.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mtls con service mesh funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Cuando dos servicios hablan por la red de la empresa, cualquiera que logre meterse en esa red puede escuchar (leer tokens y datos) o hacerse pasar por un servicio.
+- TLS cifra la conversación y demuestra la identidad del servidor; mTLS («TLS mutuo») hace que los dos lados demuestren quiénes son con un certificado.
+- Configurarlo a mano en 50 servicios es mucho trabajo, así que una malla de servicios (*service mesh*, como Istio o Linkerd) pone un pequeño proxy al lado de cada servicio que lo hace aut…
 
-| Opción | Cómo | A favor | En contra |
-|---|---|---|---|
-| **mTLS en la aplicación** (Spring con `server.ssl.client-auth=need` y SSL bundles) | Cada servicio gestiona keystore y truststore | Sin infraestructura extra | Rotación y distribución de certificados a mano en cada servicio y lenguaje |
-| **Istio sidecar** | Envoy por pod, `istiod` como CA | Funciones completas (políticas L7, telemetría, reintentos) | Memoria y latencia por pod, operación compleja |
-| **Istio ambient** | `ztunnel` por nodo para mTLS (L4) y *waypoints* opcionales para L7 | Sin sidecar por pod, menos recursos | Modelo más nuevo; L7 requiere waypoints |
-| **Linkerd** | Proxy propio en Rust, mTLS por defecto | Simple y ligero | Menos funciones; la estable la distribuye un proveedor (la edge es gratuita) |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mtls con service mesh en tu contexto?
+2. ¿Cómo sabrías que mtls con service mesh no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mtls con service mesh?
 
-**Migración:** empieza en `PERMISSIVE`, mira en la telemetría qué tráfico aún llega en texto plano, inyecta sidecars en
-los clientes y pasa a `STRICT` por namespace; luego `AuthorizationPolicy` con denegación por defecto. **Cuidado** con
-*health checks* y tráfico de nodos o de fuera de la malla (Istio reescribe las *probes* de Kubernetes para que pasen).
+</details>
 
-**Cuándo NO:** con dos o tres servicios en una sola máquina o una red privada sin terceros, el coste operativo de una
-malla supera el beneficio; usa TLS en el balanceador y JWT entre servicios. Tampoco la necesitas si tu plataforma ya cifra
-y autentica el tráfico entre cargas (algunas nubes lo ofrecen a nivel de red).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
+#### Construcción guiada
+1. Genera la PKI y ejecuta la demostración (ejecutado con OpenSSL 3.0.13 y JDK 25.0.5):
 
+```bash
+./generar-certs.sh
+java MtlsDemo.java
+```
+
+   **Output esperado** (primero `generar-certs.sh`, que comprueba la cadena de cada certificado; el autofirmado del
+   intruso no la tiene):
+
+```text
+pagos.crt: OK
+pedidos.crt: OK
+error 18 at 0 depth lookup: self-signed certificate
+```
+
+   y después `MtlsDemo.java`:
+
+```text
+ANTES (vulnerable): HTTP plano pedidos -> pagos: 200 cobro aceptado
+  el espía de la red lee: Authorization: Bearer tok-ana-123
+DESPUÉS (seguro): mTLS (TLSv1.3, certificados de la CA malla-ca)
+  pedidos con certificado de la malla -> 200 cobro aceptado para spiffe://cluster.local/ns/tienda/sa/pedidos
+  cliente sin certificado             -> conexión rechazada: SSLHandshakeException: (certificate_required) Received fatal alert: certificate_required
+  intruso con certificado autofirmado -> conexión rechazada: SSLHandshakeException: (certificate_required) Received fatal alert: certificate_required
+  el espía ve un registro TLS (primer byte 0x16 = handshake) y "tok-ana-123" legible: false
+OK: solo el cliente con certificado de la malla habla con pagos y nadie lee el tráfico
+```
+
+   **Captura comentada:** el intruso recibe `certificate_required` igual que el cliente sin certificado: en TLS 1.3 el
+   servidor anuncia qué CA acepta y el `KeyManager` del cliente solo ofrece certificados emitidos por ellas; el
+   autofirmado no califica y el cliente no envía ninguno.
+
+2. Mira la identidad dentro del certificado:
+
+```bash
+openssl x509 -in target/certs/pedidos.crt -noout -ext subjectAltName,extendedKeyUsage
+```
+
+   **Output esperado:**
+
+```text
+X509v3 Subject Alternative Name:
+    URI:spiffe://cluster.local/ns/tienda/sa/pedidos
+X509v3 Extended Key Usage:
+    TLS Web Client Authentication
+```
+
+3. Monta la malla en kind (necesita Docker Desktop con 8 GB, `kind`, `kubectl` e Internet):
+
+```bash
+cd ../mtls-kind
+./instalar.sh
+./verificar-mtls.sh
+```
+
+   **Output esperado** (de `verificar-mtls.sh`; el patrón es el de la tarea oficial de migración a mTLS de Istio):
+
+```text
+== ANTES: PeerAuthentication PERMISSIVE
+curl.tienda -> httpbin.tienda: 200
+curl.legado -> httpbin.tienda: 200
+== DESPUÉS: PeerAuthentication STRICT
+curl.tienda -> httpbin.tienda: 200
+curl.legado -> httpbin.tienda: 000command terminated with exit code 56
+RESULTADO: OK · F067 mTLS STRICT rechaza al cliente sin sidecar
+```
+
+   **Captura comentada:** `instalar.sh` termina mostrando los pods de `tienda` con dos contenedores (`httpbin,istio-proxy`
+   y `curl,istio-proxy`) y el de `legado` con uno (`curl`). El `000` es el código HTTP que `curl` imprime cuando no hubo
+   respuesta; el 56 es «fallo al recibir datos»: Envoy cerró la conexión en texto plano.
+
+4. **Fallo deliberado:** aplica `kubectl apply -f k8s/solo-pedidos.yaml` y repite `./verificar-mtls.sh`: la línea de
+   `curl.tienda` sigue en `200`. Ahora cambia el principal a `cluster.local/ns/tienda/sa/otro` y aplica de nuevo:
+   `curl.tienda` recibe `403` (`RBAC: access denied`), porque mTLS identifica al llamante y la política no lo incluye.
+   Borra la política con `kubectl delete -f k8s/solo-pedidos.yaml`.
+
+#### Código de referencia / ejecutable
 **Versiones:** JDK 25 LTS (TLS 1.3 de JSSE, `com.sun.net.httpserver.HttpsServer`) · OpenSSL 3 y `keytool` de JDK 25 para
 la PKI · kind con Kubernetes 1.37 · Istio 1.32 (`PeerAuthentication` y `AuthorizationPolicy` en `security.istio.io/v1`).
 
@@ -3093,191 +2483,27 @@ spec:
 más, como paso siguiente, `mtls-kind/k8s/solo-pedidos.yaml`, una `AuthorizationPolicy` que solo deja entrar a
 `principals: ["cluster.local/ns/tienda/sa/curl"]`.
 
-#### 10. MINI-LABORATORIO
-
-1. Genera la PKI y ejecuta la demostración (ejecutado con OpenSSL 3.0.13 y JDK 25.0.5):
-
-```bash
-./generar-certs.sh
-java MtlsDemo.java
-```
-
-   **Output esperado** (primero `generar-certs.sh`, que comprueba la cadena de cada certificado; el autofirmado del
-   intruso no la tiene):
-
-```text
-pagos.crt: OK
-pedidos.crt: OK
-error 18 at 0 depth lookup: self-signed certificate
-```
-
-   y después `MtlsDemo.java`:
-
-```text
-ANTES (vulnerable): HTTP plano pedidos -> pagos: 200 cobro aceptado
-  el espía de la red lee: Authorization: Bearer tok-ana-123
-DESPUÉS (seguro): mTLS (TLSv1.3, certificados de la CA malla-ca)
-  pedidos con certificado de la malla -> 200 cobro aceptado para spiffe://cluster.local/ns/tienda/sa/pedidos
-  cliente sin certificado             -> conexión rechazada: SSLHandshakeException: (certificate_required) Received fatal alert: certificate_required
-  intruso con certificado autofirmado -> conexión rechazada: SSLHandshakeException: (certificate_required) Received fatal alert: certificate_required
-  el espía ve un registro TLS (primer byte 0x16 = handshake) y "tok-ana-123" legible: false
-OK: solo el cliente con certificado de la malla habla con pagos y nadie lee el tráfico
-```
-
-   **Captura comentada:** el intruso recibe `certificate_required` igual que el cliente sin certificado: en TLS 1.3 el
-   servidor anuncia qué CA acepta y el `KeyManager` del cliente solo ofrece certificados emitidos por ellas; el
-   autofirmado no califica y el cliente no envía ninguno.
-
-2. Mira la identidad dentro del certificado:
-
-```bash
-openssl x509 -in target/certs/pedidos.crt -noout -ext subjectAltName,extendedKeyUsage
-```
-
-   **Output esperado:**
-
-```text
-X509v3 Subject Alternative Name:
-    URI:spiffe://cluster.local/ns/tienda/sa/pedidos
-X509v3 Extended Key Usage:
-    TLS Web Client Authentication
-```
-
-3. Monta la malla en kind (necesita Docker Desktop con 8 GB, `kind`, `kubectl` e Internet):
-
-```bash
-cd ../mtls-kind
-./instalar.sh
-./verificar-mtls.sh
-```
-
-   **Output esperado** (de `verificar-mtls.sh`; el patrón es el de la tarea oficial de migración a mTLS de Istio):
-
-```text
-== ANTES: PeerAuthentication PERMISSIVE
-curl.tienda -> httpbin.tienda: 200
-curl.legado -> httpbin.tienda: 200
-== DESPUÉS: PeerAuthentication STRICT
-curl.tienda -> httpbin.tienda: 200
-curl.legado -> httpbin.tienda: 000command terminated with exit code 56
-RESULTADO: OK · F067 mTLS STRICT rechaza al cliente sin sidecar
-```
-
-   **Captura comentada:** `instalar.sh` termina mostrando los pods de `tienda` con dos contenedores (`httpbin,istio-proxy`
-   y `curl,istio-proxy`) y el de `legado` con uno (`curl`). El `000` es el código HTTP que `curl` imprime cuando no hubo
-   respuesta; el 56 es «fallo al recibir datos»: Envoy cerró la conexión en texto plano.
-
-4. **Fallo deliberado:** aplica `kubectl apply -f k8s/solo-pedidos.yaml` y repite `./verificar-mtls.sh`: la línea de
-   `curl.tienda` sigue en `200`. Ahora cambia el principal a `cluster.local/ns/tienda/sa/otro` y aplica de nuevo:
-   `curl.tienda` recibe `403` (`RBAC: access denied`), porque mTLS identifica al llamante y la política no lo incluye.
-   Borra la política con `kubectl delete -f k8s/solo-pedidos.yaml`.
-
-#### 11. VERIFICACIÓN
-
-El test es el propio `MtlsDemo.java` (termina con código 0 solo si se cumplen las cinco condiciones) y, en la malla,
-`mtls-kind/verificar-mtls.sh`, que termina en `RESULTADO: OK` o con código 1:
-
-```bash
-  # incluye generar-certs.sh y MtlsDemo.java
-  # además, kind + Istio
-```
-
-```java
-// condiciones que comprueba MtlsDemo.java antes de imprimir OK
-if (!conCert.startsWith("200") || !sinCert.startsWith("conexión rechazada")
-        || !intruso.startsWith("conexión rechazada") || capturado.contains("tok-ana-123") || b[0] != 0x16) fallos++;
-```
-
-**Output esperado:** `OK: solo el cliente con certificado de la malla habla con pagos y nadie lee el tráfico` y, con
-`--mtls`, `RESULTADO: OK · F067 mTLS STRICT rechaza al cliente sin sidecar`.
-
-**Pregunta de comprobación:** con `STRICT` activo, ¿puede un pod de `tienda` con sidecar pero comprometido llamar a
-httpbin? ¿Qué añadirías?
-
-<details>
-<summary>Respuesta</summary>
-
-Sí: tiene un certificado válido de la malla, así que mTLS lo deja pasar. mTLS autentica, no autoriza. Añadiría una
-`AuthorizationPolicy` que solo permita los `principals` que deben llamar (y, para el usuario final, la validación del JWT
-en el servicio).
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** tras pasar a `STRICT`, los *health checks* o un servicio fuera de la malla empiezan a fallar con
-«connection reset by peer» o `upstream connect error or disconnect/reset before headers`.
-
-**Cómo se ve:** `kubectl get pods` muestra reinicios, o el cliente externo recibe `curl: (56) Recv failure: Connection
-reset by peer`; el mismo patrón que la línea `000... exit code 56` del laboratorio.
-
-**Diagnóstico:** el cliente no tiene sidecar (otro namespace sin inyección, un *job* creado antes de etiquetar el
-namespace, un servicio en una VM). `istioctl x describe pod <pod>` y `kubectl get pod <pod> -o jsonpath='{.spec.containers[*].name}'`
-muestran si tiene `istio-proxy`.
-
-**Arreglo:** inyecta el sidecar al cliente (etiqueta el namespace y **reinicia** los pods: la inyección ocurre al
-crearlos), o declara una excepción explícita por puerto con `portLevelMtls` mientras migras. No vuelvas todo el mesh a
-`PERMISSIVE`.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Qué aporta mTLS en una malla de servicios y qué no resuelve?»
-
-**Respuesta modelo:** cifra todo el tráfico entre servicios y autentica a ambos extremos con certificados de vida corta
-que la malla emite y rota sola, con identidades SPIFFE por cuenta de servicio; eso elimina el «confío porque estás en mi
-red» y permite políticas de autorización por identidad de servicio (`AuthorizationPolicy`). En Istio se activa con
-`PeerAuthentication` en `STRICT` tras una fase `PERMISSIVE`. No resuelve la identidad del **usuario** (eso es el JWT),
-no protege de un servicio legítimo comprometido sin políticas de autorización, no reemplaza la validación de entrada y
-añade coste: un proxy por pod (o `ztunnel` por nodo en modo ambient), latencia y operación.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**«La red interna es segura»:** el tráfico entre servicios en HTTP plano, protegido solo por el firewall perimetral:
-
-```yaml
-# Ingress con TLS hacia fuera... y todo lo de dentro en texto plano y sin identidad
-spec:
-  tls: [{ hosts: [tienda.example.com], secretName: tls-externo }]
----
-env:
-  - name: PAGOS_URL
-    value: http://pagos.tienda.svc:8080      # cualquiera dentro del clúster lee y suplanta
-```
-
-Una vez dentro (un pod vulnerable, una credencial filtrada), el atacante lee tokens y llama a cualquier servicio. El
-principio *Zero-Trust* (Módulo 27) exige cifrar y autenticar cada salto.
-
----
 ### HashiCorp Vault
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 8 de 9 · Fase 1 · 2 h
-`VaultKv.java` y `f068-vault`.
+#### ► DE QUÉ TRATA
+Sacar un secreto del repositorio y servirlo desde Vault (motor KV v2) a una aplicación Spring Boot con Spring Cloud Vault, restringir el acceso con una política de solo lectura y un token de vida corta, y verificar con 2 tests que el secreto llega desde Vault y nunca se expone po…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Sacar un secreto del repositorio y servirlo desde Vault (motor KV v2) a una aplicación Spring Boot con Spring Cloud Vault, restringir el acceso con una política de solo lectura y un token de vida corta, y verificar con 2 tests que el secreto llega desde Vault y nunca se expone por la API.**
 
-- Módulo 1: perfiles y configuración externalizada (`spring.config.import`, variables de entorno).
-- Módulo 7: Config Server (configuración centralizada).
-- Módulo 0.4: variables de entorno y `git log`.
+#### ► POR QUÉ EXISTE ESTO
+Un secreto es cualquier dato que da acceso: contraseñas de bases de datos, claves de APIs de pago, certificados. Si lo escribes en el código o en un archivo del repositorio, queda copiado en cada computador y en el historial de git para siempre. Vault es un programa que guarda los secretos cifrados, solo los entrega a quien tiene permiso, registra quién los pidió y puede cambiarlos sin tocar el código. Tu aplicación,…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en hashicorp vault como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Sacar** un secreto del repositorio y **servirlo** desde Vault (motor KV v2) a una aplicación Spring Boot con Spring
-Cloud Vault, **restringir** el acceso con una política de solo lectura y un token de vida corta, y **verificar** con 2
-tests que el secreto llega desde Vault y nunca se expone por la API.
-
-#### 4. ANALOGÍA VISUAL
-
-La **caja de seguridad de un banco** frente a la **llave debajo del tapete**. Escribir la contraseña en
-`application.properties` es dejar la llave bajo el tapete: cualquiera que pase por la puerta (quien clone el repositorio,
-quien vea un *backup*, quien lea el historial de git) la tiene para siempre. Vault es la caja del banco: la llave está
-dentro, el banco anota **quién abrió qué y cuándo** (auditoría), cada cliente tiene una **tarjeta que solo abre su caja**
-(política) y que **caduca** (token con TTL), y puede incluso **fabricar una llave nueva para cada visita** que se
-destruye al salir (secretos dinámicos). El dibujo: a la izquierda una puerta con una llave asomando bajo el tapete y
-varias personas copiándola; a la derecha una bóveda con un libro de registro y casilleros con nombre.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
     participant Op as Operador / CI
@@ -3295,58 +2521,48 @@ sequenceDiagram
     Note over App: GET /config/pagos solo devuelve una huella SHA-256
 ```
 
-**Texto alternativo:** diagrama de secuencia. El operador o el sistema de CI guarda el secreto en Vault con vault kv put
-en la ruta secret/f068-pagos, escribe una política de solo lectura y crea un token con esa política y una hora de vida.
-La aplicación f068-pagos arranca con ese token y, con Spring Cloud Vault, pide GET /v1/secret/data/f068-pagos. Vault
-comprueba la política, registra el acceso y responde con los datos y la versión del secreto. Spring lo añade como fuente
-de propiedades y la aplicación lo inyecta con @Value; el endpoint de la aplicación solo devuelve una huella SHA-256.
+1. Un secreto es cualquier dato que da acceso: contraseñas de bases de datos, claves de APIs de pago, certificados.
+2. Si lo escribes en el código o en un archivo del repositorio, queda copiado en cada computador y en el historial de git para siempre.
+3. Vault es un programa que guarda los secretos cifrados, solo los entrega a quien tiene permiso, registra quién los pidió y puede cambiarlos sin tocar el código.
+4. Tu aplicación, al arrancar, le pide a Vault lo que necesita en lugar de leerlo de un archivo.
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| HashiCorp Vault se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Un **secreto** es cualquier dato que da acceso: contraseñas de bases de datos, claves de APIs de pago, certificados.
-Si lo escribes en el código o en un archivo del repositorio, queda copiado en cada computador y en el historial de git
-**para siempre**. **Vault** es un programa que guarda los secretos cifrados, solo los entrega a quien tiene permiso,
-registra quién los pidió y puede cambiarlos sin tocar el código. Tu aplicación, al arrancar, le pide a Vault lo que
-necesita en lugar de leerlo de un archivo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar HashiCorp Vault | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+El secreto «escondido» en Base64 o en una variable de entorno impresa:
 
-- **Motores (*secrets engines*):**KV v2** guarda pares clave-valor con versiones (en modo dev viene montado en
-  `secret/`; la API añade `data/`: se lee en `GET /v1/secret/data/<ruta>`); **database** genera usuarios de base de
-  datos temporales (secretos dinámicos con *lease*); **transit** cifra datos sin entregar la clave; **pki** emite
-  certificados.
-- **Autenticación:** el token es la credencial final. Se obtiene con un método de autenticación: `token` (estático, solo
-  laboratorio), **AppRole** (role_id + secret_id para CI), **Kubernetes** (la cuenta de servicio del pod), **JWT/OIDC**
-  y los de cada nube. Los tokens tienen **TTL** y se pueden revocar.
-- **Políticas (HCL):** deniegan por defecto; cada `path` concede capacidades (`read`, `create`, `update`, `delete`,
-  `list`). En KV v2 la ruta de la política incluye `data/`.
-- **Sellado:** un Vault de producción arranca **sellado** y se desella con claves de Shamir o *auto-unseal* (KMS de la
-  nube); el modo `-dev` arranca desellado, en memoria y con un token raíz conocido: **nunca** en producción.
-- **Spring Cloud Vault 5.0:** `spring.config.import=vault://` monta Vault como `PropertySource` con todos los motores
-  activos (KV por defecto); con `spring.application.name=f068-pagos` lee `secret/f068-pagos` y `secret/application`
-  (y `secret/f068-pagos/<perfil>` con perfiles). El motor de bases de datos se activa con `spring.cloud.vault.database.*`
-  y rellena `spring.datasource.username`/`password` con credenciales temporales.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: hashicorp vault funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Un secreto es cualquier dato que da acceso: contraseñas de bases de datos, claves de APIs de pago, certificados.
+- Si lo escribes en el código o en un archivo del repositorio, queda copiado en cada computador y en el historial de git para siempre.
+- Vault es un programa que guarda los secretos cifrados, solo los entrega a quien tiene permiso, registra quién los pidió y puede cambiarlos sin tocar el código.
+- Tu aplicación, al arrancar, le pide a Vault lo que necesita en lugar de leerlo de un archivo.
 
-| Opción | A favor | En contra | Cuándo |
-|---|---|---|---|
-| **Variables de entorno** del orquestador | Simple, 12-Factor | Se ven en `docker inspect`/`ps e`, sin rotación ni auditoría | Secretos de bajo riesgo, entornos pequeños |
-| **Kubernetes Secrets** | Nativo, montaje como archivo | Base64, no cifrado por defecto en etcd (activa *encryption at rest*), RBAC grueso | Con cifrado en reposo y External Secrets Operator |
-| **Vault** (autoalojado; desde la 1.14 con licencia BSL) | Secretos dinámicos, cifrado como servicio, auditoría, multi-nube | Operación crítica: HA, desellado, copias | Plataformas con muchos servicios y requisitos de auditoría |
-| **OpenBao** (bifurcación de Vault con licencia MPL) | API compatible, abierta | Comunidad más joven | Si la licencia BSL es un problema |
-| **Gestor de la nube** (AWS Secrets Manager, Azure Key Vault, GCP Secret Manager) | Gestionado, IAM nativo | Atado a un proveedor | Todo en una sola nube |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve hashicorp vault en tu contexto?
+2. ¿Cómo sabrías que hashicorp vault no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar hashicorp vault?
 
-**Secretos dinámicos:** en vez de una contraseña de base de datos compartida y eterna, Vault crea un usuario por
-instancia con *lease* de, por ejemplo, 1 h y lo borra al vencer; si se filtra, caduca solo y la auditoría dice qué pod lo
-tenía. **Rotación:** un secreto KV cambiado no llega solo a la app: necesitas reinicio, `@RefreshScope` o leases.
+</details>
 
-**Cuándo NO:** para un prototipo local o un servicio con un único secreto en una nube que ya ofrece un gestor nativo,
-operar Vault (alta disponibilidad, desellado, actualizaciones) cuesta más de lo que protege; usa el gestor de la nube o
-variables del orquestador con cifrado en reposo.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
+#### Código de referencia / ejecutable
 **Versiones:** HashiCorp Vault 2.2.0 (`hashicorp/vault:2.2.0`) · Spring Boot 4.1.3 · Spring Cloud 2025.1.4 con
 `spring-cloud-starter-vault-config` (Spring Cloud Vault 5.0) · JDK 25 LTS.
 
@@ -3505,62 +2721,7 @@ El servicio de Vault en `docker-compose.yml`:
 `GET {VAULT_ADDR}/v1/secret/data/f068-pagos` con la cabecera `X-Vault-Token`, y muestra las claves con los valores
 ocultos y la versión del secreto.
 
-#### 10. MINI-LABORATORIO
-
-1. Levanta Vault, siembra el secreto y obtén un token restringido:
-
-```bash
-docker compose up -d --wait vault
-export VAULT_TOKEN=$(./vault/sembrar.sh)
-echo "${VAULT_TOKEN:0:4}…"
-```
-
-   **Output esperado:** `docker compose` termina con `Container modulo-13-vault-1  Healthy` y el `echo` muestra
-   `hvs.…` (los tokens de servicio de Vault empiezan por `hvs.`).
-
-2. Léelo con la API HTTP:
-
-```bash
-VAULT_ADDR=http://127.0.0.1:8200 java jdk/VaultKv.java secret f068-pagos
-```
-
-   **Output esperado:**
-
-```text
-HTTP 200
-claves (valores ocultos): {"tienda.pagos.api-key":"****"}
-versión del secreto: 1
-```
-
-3. Comprueba que la política es de **solo lectura** y **solo de esa ruta**:
-
-```bash
-docker compose exec -T -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN="$VAULT_TOKEN" vault \
-  vault kv put secret/f068-pagos tienda.pagos.api-key=otra
-VAULT_ADDR=http://127.0.0.1:8200 java jdk/VaultKv.java secret otra-app
-```
-
-   **Output esperado:** el primer comando falla con `Code: 403. Errors:` y `* permission denied`; el segundo imprime
-   `HTTP 403` y `{"errors":["permission denied"]}`.
-
-4. Arranca la app y pide la huella:
-
-```bash
-cd f068-vault && ../gradlew -q bootRun &
-sleep 15 && curl -s localhost:8085/config/pagos; echo
-```
-
-   **Output esperado:** `{"origen":"vault","huella":"sha256:4cf1a3d364d5"}` (las claves del JSON pueden salir en otro
-   orden). La huella es la de `clave-de-pagos-desde-vault`, calculada aquí con
-   `printf 'clave-de-pagos-desde-vault' | sha256sum | cut -c1-12`. Con el perfil `antes`
-   (`--args='--spring.profiles.active=antes'`) responde `{"origen":"archivo de propiedades","huella":"sha256:f061fd53677a"}`.
-
-5. **Fallo deliberado:** detén la app, `unset VAULT_TOKEN` y vuelve a arrancarla: el arranque falla porque no se puede
-   resolver `${VAULT_TOKEN}`. Exporta un token inventado (`export VAULT_TOKEN=hvs.falso`): ahora falla al leer Vault con un
-   `403` (`permission denied`). En ambos casos la app **no arranca sin su secreto**, que es lo que quieres.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 `f068-vault/src/test/java/academia/seguridad/vault/SecretoDesdeVaultTest.java` (necesita el Vault del laboratorio
 sembrado y `VAULT_TOKEN` exportado; los comandos de verificación indicados lo prepara):
 
@@ -3622,86 +2783,27 @@ política se escribe sobre la ruta de la API. El token solo tiene `read`: cualqu
 denied` (paso 3).
 </details>
 
-#### 12. ERROR COMÚN
+</details>
 
-**Síntoma:** la aplicación arranca, pero la propiedad sale vacía o falla con `Could not resolve placeholder
-'tienda.pagos.api-key'`, aunque `vault kv get secret/f068-pagos` sí la muestra.
-
-**Cómo se ve:** el contexto de Spring no arranca con ese mensaje; si Vault no está levantado, `VaultKv.java` muestra
-`Exception in thread "main" java.net.ConnectException` (ejecutado aquí sin Vault).
-
-**Diagnóstico:** revisa, en este orden: (1) `spring.application.name` debe coincidir con la ruta (`f068-pagos`); (2) la
-política debe incluir `data/` en KV v2; (3) el token debe ser el de la app, no uno caducado (`vault token lookup`); (4)
-`spring.config.import=vault://` debe estar presente. Lee con `VaultKv.java` usando el mismo token para separar «Vault
-niega» de «Spring no lo busca ahí».
-
-**Arreglo:** corrige el nombre o fija la ruta con `spring.cloud.vault.kv.application-name`, ajusta la política y emite
-un token nuevo. Nunca «arregles» volviendo a poner el secreto en el archivo.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo gestionas las credenciales de base de datos de 40 microservicios en Kubernetes?»
-
-**Respuesta modelo:** fuera del repositorio y sin credenciales compartidas eternas. Uso Vault con el método de
-autenticación de Kubernetes: cada pod se autentica con su cuenta de servicio y recibe un token con una política de
-mínimo privilegio. Para la base de datos uso el motor `database` con secretos dinámicos: cada instancia obtiene un
-usuario propio con *lease* corto que Vault revoca al vencer; Spring Cloud Vault lo inyecta en `spring.datasource.*` y
-renueva el lease. Activo auditoría, Vault en alta disponibilidad con auto-unseal, y escaneo de secretos en CI (por
-ejemplo, el escáner de secretos de Trivy) para que nada vuelva al repositorio. Si todo está en una nube, el gestor de
-secretos nativo con External Secrets es una alternativa con menos operación.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**El secreto «escondido» en Base64 o en una variable de entorno impresa:**
-
-```yaml
-# kubernetes: "lo pusimos en un Secret", pero el manifiesto con el valor está en git
-apiVersion: v1
-kind: Secret
-metadata: { name: pagos }
-data:
-  api-key: Y2xhdmUtZGUtcGFnb3MtZW4tdGV4dG8tcGxhbm8=   # base64 no es cifrado: echo ... | base64 -d
-```
-
-```java
-log.info("Arrancando con configuración: {}", System.getenv());   // imprime todos los secretos en los logs
-```
-
-Base64 es una codificación reversible y los logs se copian a muchos sistemas. Los secretos se leen de un gestor en
-tiempo de ejecución, nunca se registran y, si una aplicación necesita demostrar cuál cargó, muestra una huella.
-
----
 ### Escaneo de vulnerabilidades: Trivy, Snyk
 
-#### 1. UBICACIÓN
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Módulo 9, Lección 9 de 9 · Fase 1 · 1,5 h
-`MiniEscaner.java`.
+#### ► DE QUÉ TRATA
+Detectar dependencias con vulnerabilidades conocidas (CVE) y errores de configuración en un Dockerfile con Trivy y Snyk, interpretar el informe (paquete, versión instalada, CVE, severidad, versión corregida) y romper el build cuando aparezca algo HIGH o CRITICAL, comprobándolo co…
 
-#### 2. PRERREQUISITOS
+#### ► LA IDEA EN UNA FRASE
+**Detectar dependencias con vulnerabilidades conocidas (CVE) y errores de configuración en un Dockerfile con Trivy y Snyk, interpretar el informe (paquete, versión instalada, CVE, severidad, versión corregida) y romper el build cuando aparezca algo HIGH o CRITICAL, comprobándolo con códigos de salida (1 en el «antes», 0 en el «después»).**
 
-- Módulo 1: dependencias declaradas en el archivo de build. Aquí leerás un `pom.xml` de Maven: cada dependencia es un
-  `<dependency>` con `groupId`, `artifactId` y `version`.
-- Módulo 0.5: `Dockerfile` y `docker run`.
-- Idea de versión semántica (`2.14.1` < `2.15.0`).
+#### ► POR QUÉ EXISTE ESTO
+Tu servicio usa decenas de librerías escritas por otras personas, y cada imagen Docker trae un sistema operativo con cientos de paquetes. Cuando alguien descubre un fallo de seguridad en una de ellas, se publica con un identificador (CVE, como CVE-2021-44228) y una gravedad. Un escáner lee qué versiones usas y te avisa si alguna está en la lista. Trivy es gratuito y de código abierto; Snyk tiene un plan gratuito con…
 
-#### 3. OBJETIVO DE APRENDIZAJE
+#### ► LA ANALOGÍA
+Piensa en escaneo de vulnerabilidades: trivy, snyk como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Detectar** dependencias con vulnerabilidades conocidas (CVE) y errores de configuración en un `Dockerfile` con Trivy y
-Snyk, **interpretar** el informe (paquete, versión instalada, CVE, severidad, versión corregida) y **romper el build**
-cuando aparezca algo HIGH o CRITICAL, comprobándolo con códigos de salida (`1` en el «antes», `0` en el «después»).
-
-#### 4. ANALOGÍA VISUAL
-
-El **control de calidad de una fábrica de alimentos** que revisa **cada ingrediente contra la lista de lotes retirados**
-que publica el ministerio de salud. Tu servicio es el plato; las librerías son los ingredientes, que tú no cocinaste. La
-lista de retirados es la base de datos de vulnerabilidades (CVE/GHSA). El inspector (Trivy o Snyk) lee la etiqueta de cada
-ingrediente (nombre y versión), la compara con la lista y, si encuentra un lote retirado, detiene la línea antes de
-empaquetar. El dibujo: una cinta transportadora con frascos etiquetados `log4j-core 2.14.1` y `snakeyaml 1.33`, un
-inspector con una lista roja y una palanca de «parar línea» bajada.
-
-#### 5. DIAGRAMA TÉCNICO
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph CI["Pipeline de CI (cada PR y cada noche)"]
@@ -3721,250 +2823,49 @@ flowchart LR
     G -->|"no: exit 0"| R["Publica la imagen"]
 ```
 
-**Texto alternativo:** pipeline de integración continua. Tras mvn package, trivy fs escanea el pom.xml y los jars; tras
-docker build, trivy image escanea los paquetes del sistema operativo y los jars de la imagen y trivy config revisa el
-Dockerfile y los manifiestos; snyk test revisa el árbol de dependencias. Trivy consulta bases de avisos como NVD, GitHub
-Advisory y los avisos de cada distribución; Snyk usa su propia base. Todos alimentan una decisión: si hay hallazgos HIGH o
-CRITICAL el comando sale con código 1 y el build se pone rojo; si no, sale con 0 y se publica la imagen.
+1. Tu servicio usa decenas de librerías escritas por otras personas, y cada imagen Docker trae un sistema operativo con cientos de paquetes.
+2. Cuando alguien descubre un fallo de seguridad en una de ellas, se publica con un identificador (CVE, como CVE-2021-44228) y una gravedad.
+3. Un escáner lee qué versiones usas y te avisa si alguna está en la lista.
+4. Trivy es gratuito y de código abierto; Snyk tiene un plan gratuito con cuenta.
+5. Los dos se ejecutan en tu computador y en CI para que una librería pelig…
 
-#### 6. EXPLICACIÓN NIVEL 0
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Escaneo de vulnerabilidades: Trivy, Snyk se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Tu servicio usa decenas de **librerías** escritas por otras personas, y cada imagen Docker trae un sistema operativo con
-cientos de paquetes. Cuando alguien descubre un fallo de seguridad en una de ellas, se publica con un identificador
-(**CVE**, como `CVE-2021-44228`) y una gravedad. Un **escáner** lee qué versiones usas y te avisa si alguna está en la
-lista. **Trivy** es gratuito y de código abierto; **Snyk** tiene un plan gratuito con cuenta. Los dos se ejecutan en tu
-computador y en CI para que una librería peligrosa no llegue a producción.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Escaneo de vulnerabilidades: Trivy, Snyk | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### 7. EXPLICACIÓN INTERMEDIA
+#### ► CUÁNDO NO USAR ESTO
+Silenciar el escáner para que pase el build:
 
-- **Qué escanea Trivy:** `trivy fs <carpeta>` (manifiestos como `pom.xml`, `package-lock.json`, y jars), `trivy image
-  <imagen>` (paquetes del SO + dependencias de la aplicación dentro de la imagen), `trivy config` (errores de
-  configuración en `Dockerfile`, Kubernetes, Terraform) y `trivy k8s` (un clúster). `--scanners vuln,secret,misconfig`
-  elige qué buscar; el escáner de **secretos** encuentra claves pegadas en el código (F068).
-- **Cómo decide:** compara nombre y versión con bases de avisos (para Java, sobre todo GitHub Advisory Database; para el
-  SO, los avisos de cada distribución). `--severity HIGH,CRITICAL` filtra; `--exit-code 1` hace que el comando falle si
-  encuentra algo; `--ignore-unfixed` oculta lo que aún no tiene corrección; `.trivyignore` documenta excepciones
-  aceptadas. `--format sarif` o `cyclonedx` genera informes o un SBOM.
-- **Qué escanea Snyk:** `snyk test` (dependencias, resuelve el árbol con Maven), `snyk container test <imagen>`,
-  `snyk iac test` y `snyk code test` (análisis estático del código). Requiere `snyk auth` (cuenta gratuita). Códigos de
-  salida: `0` sin hallazgos, `1` con hallazgos, `2` error, `3` sin proyecto soportado. `--severity-threshold=high`
-  equivale al filtro de Trivy; `snyk monitor` sube una foto del proyecto para recibir alertas de CVE nuevos.
-- **Transitivas:** casi todas las vulnerabilidades vienen por dependencias que no declaraste. Los dos escáneres muestran
-  la ruta («introducido por»); en Maven se corrige subiendo la directa, con `<dependencyManagement>` o dejando que el BOM
-  de Spring Boot gestione la versión.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: escaneo de vulnerabilidades: trivy, snyk funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### 8. EXPLICACIÓN MAESTRA
+#### ► LO QUE DEBES RECORDAR
+- Tu servicio usa decenas de librerías escritas por otras personas, y cada imagen Docker trae un sistema operativo con cientos de paquetes.
+- Cuando alguien descubre un fallo de seguridad en una de ellas, se publica con un identificador (CVE, como CVE-2021-44228) y una gravedad.
+- Un escáner lee qué versiones usas y te avisa si alguna está en la lista.
+- Trivy es gratuito y de código abierto; Snyk tiene un plan gratuito con cuenta.
 
-| Herramienta | Licencia y coste | Fortalezas | Límites |
-|---|---|---|---|
-| **Trivy** | Apache 2.0, gratis | Un binario para dependencias, imágenes, IaC, secretos y SBOM; sin cuenta | Base de datos que se descarga (cachéala en CI); menos contexto de explotabilidad |
-| **Snyk** | Plan gratuito con límite de pruebas; planes de pago | Asesoría de corrección, PR automáticos, priorización, monitoreo continuo | Necesita cuenta y envía metadatos del proyecto a su servicio |
-| **OWASP Dependency-Check** | Apache 2.0 | Plugin de Maven, solo Java/.NET | Lento la primera vez; más falsos positivos |
-| **Grype** (+ Syft para SBOM) | Apache 2.0 | Rápido, buen soporte de SBOM | Solo vulnerabilidades |
-| **Dependabot / Renovate** | Gratis en GitHub / abierto | Abren PR con la actualización | No sustituyen el escaneo de la imagen final |
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve escaneo de vulnerabilidades: trivy, snyk en tu contexto?
+2. ¿Cómo sabrías que escaneo de vulnerabilidades: trivy, snyk no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar escaneo de vulnerabilidades: trivy, snyk?
 
-**Estrategia:** escanea en tres momentos: en el PR (rompe el build en HIGH/CRITICAL con corrección disponible), en el
-registro de imágenes cada noche (aparecen CVE nuevos en imágenes ya publicadas) y en el clúster. Reduce superficie
-(imágenes `-jre`, *distroless* o *chiseled*, Módulo 12) antes de ajustar filtros. Una vulnerabilidad no corregible se
-documenta en `.trivyignore`/`.snyk` con fecha de revisión, nunca se silencia sin explicación.
+</details>
 
-**Cuándo NO romper el build:** en ramas de exploración o en vulnerabilidades sin corrección disponible y no explotables
-en tu contexto (documentadas); romperlo siempre por LOW/MEDIUM entrena al equipo a ignorar el escáner.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### 9. CÓDIGO EJECUTABLE
-
-**Versiones:** Trivy 0.76.1 (`aquasec/trivy:0.76.1`) · Snyk CLI 1.1309.0 (`npx snyk@1.1309.0`) · JDK 25 LTS para
-`MiniEscaner.java` · avisos consultados en GitHub Advisory Database: GHSA-jfh8-c2jp-5v3q (CVE-2021-44228, CRITICAL 10.0,
-corregido en 2.15.0 para la rama 2.13+) y GHSA-mjmj-j48q-9wg2 (CVE-2022-1471, HIGH 8.3, afecta a snakeyaml ≤ 1.33,
-corregido en 2.0).
-
-> **Por qué aquí sigue habiendo `pom.xml`.** El resto del curso se construye con Gradle, pero `f069-escaneo/antes` y
-> `f069-escaneo/despues` no se compilan: son el material que leen `trivy fs`, `snyk test` y `jdk/MiniEscaner.java`, y
-> un `pom.xml` declara las versiones en un formato que los tres entienden sin ejecutar nada. Para escanear un
-> proyecto Gradle, Trivy necesita el archivo de bloqueo `gradle.lockfile` (lo genera el *dependency locking* de
-> Gradle) y Snyk ejecuta Gradle para resolver el árbol *(detalle de Trivy y Snyk con Gradle pendiente de verificación
-> en el Mac)*.
-
-**Antes (vulnerable)** — `f069-escaneo/antes/pom.xml`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F069 · ANTES (vulnerable): log4j-core 2.14.1 (Log4Shell) y snakeyaml 1.33.
-     Proyecto solo para escanear: trivy fs, snyk test y java ../../jdk/MiniEscaner.java lo leen. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f069-escaneo-antes</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <maven.compiler.release>25</maven.compiler.release>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.14.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.33</version>
-    </dependency>
-  </dependencies>
-</project>
-```
-
-y `f069-escaneo/antes/Dockerfile`:
-
-```dockerfile
-# F069 · ANTES (vulnerable): imagen completa, sin usuario propio (corre como root) y etiqueta móvil.
-FROM eclipse-temurin:latest
-COPY target/app.jar /app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
-
-**Después (seguro)** — `f069-escaneo/despues/pom.xml` es idéntico salvo las versiones: `log4j-core` **2.24.3** y
-`snakeyaml` **2.4** (en un proyecto Spring Boot, mejor aún: sin `<version>`, gestionadas por el BOM). Y
-`f069-escaneo/despues/Dockerfile`:
-
-```dockerfile
-# F069 · DESPUÉS (seguro): versión fijada, solo el JRE, usuario sin privilegios y healthcheck.
-FROM eclipse-temurin:25-jre
-RUN groupadd --system --gid 10001 app && useradd --system --uid 10001 --gid app app
-COPY --chown=app:app target/app.jar /app/app.jar
-USER 10001
-HEALTHCHECK --interval=30s --timeout=3s CMD ["java", "-version"]
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-```
-
-Para entender qué hace un escáner por dentro, `jdk/MiniEscaner.java` lee el `pom.xml`, compara versiones con dos avisos
-reales y sale con código 1 si hay HIGH/CRITICAL:
-
-```java
-// F069 · Escaneo de vulnerabilidades — qué hace por dentro Trivy/Snyk con tus dependencias, en JDK 25.
-// 1) Lee las dependencias declaradas en un pom.xml.  2) Las cruza con una base de avisos (aquí, 2
-// avisos reales copiados de GitHub Advisory Database; Trivy y Snyk descargan miles).  3) Si encuentra
-// algo de severidad HIGH o CRITICAL termina con código 1, como "trivy --exit-code 1".
-// Uso:  java MiniEscaner.java ../f069-escaneo/antes/pom.xml
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class MiniEscaner {
-
-    record Dependencia(String grupo, String artefacto, String version) { }
-    // Rango simplificado "versión < corregida". El aviso de Log4Shell tiene tres rangos
-    // (2.0-beta9 a <2.3.1, 2.4 a <2.12.2 y 2.13.0 a <2.15.0); para 2.13+ basta con este.
-    record Aviso(String id, String ghsa, String paquete, String corregida, String severidad, double cvss, String titulo) { }
-
-    static final List<Aviso> AVISOS = List.of(
-            new Aviso("CVE-2021-44228", "GHSA-jfh8-c2jp-5v3q", "org.apache.logging.log4j:log4j-core", "2.15.0",
-                    "CRITICAL", 10.0, "Log4Shell: ejecución remota de código vía JNDI en mensajes de log"),
-            new Aviso("CVE-2022-1471", "GHSA-mjmj-j48q-9wg2", "org.yaml:snakeyaml", "2.0",
-                    "HIGH", 8.3, "El Constructor de SnakeYAML permite deserializar clases arbitrarias"));
-
-    // Compara versiones numéricas por partes: 2.14.1 < 2.15.0, 1.33 < 2.0.
-    static int comparar(String a, String b) {
-        String[] x = a.split("[.-]"), y = b.split("[.-]");
-        for (int i = 0; i < Math.max(x.length, y.length); i++) {
-            int p = i < x.length && x[i].matches("\\d+") ? Integer.parseInt(x[i]) : 0;
-            int q = i < y.length && y[i].matches("\\d+") ? Integer.parseInt(y[i]) : 0;
-            if (p != q) return Integer.compare(p, q);
-        }
-        return 0;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String pom = Files.readString(Path.of(args[0]));
-        Matcher m = Pattern.compile("<dependency>\\s*<groupId>([^<]+)</groupId>\\s*<artifactId>([^<]+)</artifactId>\\s*"
-                + "<version>([^<]+)</version>").matcher(pom);
-        int graves = 0, total = 0;
-        System.out.println(args[0]);
-        System.out.printf("%-36s %-9s %-15s %-13s %-9s%n", "Librería", "Instalada", "Vulnerabilidad", "Severidad", "Corregida");
-        while (m.find()) {
-            Dependencia d = new Dependencia(m.group(1), m.group(2), m.group(3));
-            total++;
-            for (Aviso a : AVISOS) {
-                if (a.paquete().equals(d.grupo() + ":" + d.artefacto()) && comparar(d.version(), a.corregida()) < 0) {
-                    System.out.printf("%-36s %-9s %-15s %-13s %-9s %s%n", a.paquete(), d.version(), a.id(),
-                            a.severidad() + " " + a.cvss(), a.corregida(), a.titulo());
-                    graves++;
-                }
-            }
-        }
-        System.out.println("Dependencias revisadas: " + total + " · HIGH/CRITICAL: " + graves);
-        System.exit(graves > 0 ? 1 : 0);
-    }
-}
-```
-
-#### 10. MINI-LABORATORIO
-
-1. Ejecuta el mini escáner sobre el «antes» y el «después» (ejecutado con JDK 25.0.5):
-
-```bash
-java MiniEscaner.java ../f069-escaneo/antes/pom.xml; echo "código de salida: $?"
-java MiniEscaner.java ../f069-escaneo/despues/pom.xml; echo "código de salida: $?"
-```
-
-   **Output esperado:**
-
-```text
-../f069-escaneo/antes/pom.xml
-Librería                             Instalada Vulnerabilidad  Severidad     Corregida
-org.apache.logging.log4j:log4j-core  2.14.1    CVE-2021-44228  CRITICAL 10.0 2.15.0    Log4Shell: ejecución remota de código vía JNDI en mensajes de log
-org.yaml:snakeyaml                   1.33      CVE-2022-1471   HIGH 8.3      2.0       El Constructor de SnakeYAML permite deserializar clases arbitrarias
-Dependencias revisadas: 2 · HIGH/CRITICAL: 2
-código de salida: 1
-../f069-escaneo/despues/pom.xml
-Librería                             Instalada Vulnerabilidad  Severidad     Corregida
-Dependencias revisadas: 2 · HIGH/CRITICAL: 0
-código de salida: 0
-```
-
-2. Escanea lo mismo con Trivy (la primera vez descarga su base de datos):
-
-```bash
-cd ../f069-escaneo
-docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$PWD":/src:ro aquasec/trivy:0.76.1 \
-  fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 /src/antes; echo "código de salida: $?"
-```
-
-   **Output esperado:** una tabla para `pom.xml (pom)` con un total de hallazgos HIGH/CRITICAL mayor que cero (más que
-   los dos del mini escáner: Trivy conoce también CVE-2021-45046 y otros avisos de esas versiones), filas con
-   `org.apache.logging.log4j:log4j-core │ CVE-2021-44228 │ CRITICAL │ fixed │ 2.14.1 │ 2.15.0, 2.3.1, 2.12.2` y
-   `org.yaml:snakeyaml │ CVE-2022-1471 │ HIGH │... │ 1.33 │ 2.0`, y `código de salida: 1`. El mismo comando con
-   `/src/despues` termina con `código de salida: 0`.
-
-3. Revisa los `Dockerfile`:
-
-```bash
-docker run --rm -v "$PWD":/src:ro aquasec/trivy:0.76.1 config --severity HIGH,CRITICAL --exit-code 1 /src/antes
-echo "código de salida: $?"
-```
-
-   **Output esperado:** un hallazgo HIGH en `Dockerfile` del tipo «Image user should not be 'root'» (falta la
-   instrucción `USER`) y `código de salida: 1`; con `/src/despues`, `código de salida: 0`.
-
-4. (Opcional, con cuenta gratuita de Snyk) compara con Snyk:
-
-```bash
-npx snyk@1.1309.0 auth                      # abre el navegador una vez
-cd antes && npx snyk@1.1309.0 test --severity-threshold=high; echo "código de salida: $?"
-```
-
-   **Output esperado:** `Tested 2 dependencies for known issues` (o más, si cuenta transitivas), entradas `✗... [Critical
-   Severity]` para log4j-core con la ruta «introduced by» y `código de salida: 1`. Snyk necesita Maven en el `PATH`
-   para resolver el árbol: si no lo tienes instalado, usa `brew install maven`.
-
-5. **Fallo deliberado:** en `despues/pom.xml` vuelve a poner `log4j-core` en `2.14.1` y repite el paso 2 con
-   `/src/despues`: el código de salida pasa a `1`. Restaura `2.24.3`.
-
-#### 11. VERIFICACIÓN
-
+#### Verificación
 El test es el código de salida, igual que en CI. Puedes comprobarlo así:
 
 ```bash
@@ -3999,45 +2900,4 @@ del BOM (en Gradle, `extra["jackson-bom.version"] = "…"` con el plugin `io.spr
 `<jackson-bom.version>` o `<dependencyManagement>`), y retirar el ajuste cuando Boot la incluya.
 </details>
 
-#### 12. ERROR COMÚN
-
-**Síntoma:** el escaneo pasa en verde en el portátil pero el mismo commit sale rojo en CI (o al revés), o el job tarda
-minutos y a veces falla por red.
-
-**Cómo se ve:** en CI aparece la descarga de la base de datos en cada ejecución (líneas `Downloading vulnerability DB...`)
-y, a veces, un error de límite de peticiones del registro de la base; los resultados difieren entre máquinas.
-
-**Diagnóstico:** la base de vulnerabilidades cambia a diario: dos ejecuciones con días de diferencia ven CVE distintos.
-Sin caché, cada job descarga la base y queda expuesto a límites de la red.
-
-**Arreglo:** cachea `~/.cache/trivy` (en el laboratorio, el volumen `academia-trivy-cache`), fija la versión de Trivy
-(`aquasec/trivy:0.76.1`, nunca `latest`) y acepta que un build pueda ponerse rojo sin cambios de código: es la señal de
-que apareció un CVE nuevo. Escanea también cada noche para enterarte antes del siguiente PR.
-
-#### 13. PREGUNTA DE ENTREVISTA
-
-«¿Cómo integrarías el escaneo de vulnerabilidades en el ciclo de vida de 30 microservicios sin frenar al equipo?»
-
-**Respuesta modelo:** en tres puntos: en cada PR escaneo dependencias y `Dockerfile` (Trivy `fs` y `config`, o Snyk) y
-rompo el build solo por HIGH/CRITICAL con corrección disponible; tras construir la imagen la escaneo (`trivy image`) y
-genero un SBOM; y cada noche re-escaneo las imágenes publicadas porque aparecen CVE nuevos sobre código que no cambió.
-Reduzco ruido con imágenes mínimas y BOMs actualizados (Renovate o Dependabot abren los PR), documento excepciones con
-fecha de revisión en `.trivyignore` y mido el tiempo de corrección por severidad. Snyk me aporta asesoría y monitoreo;
-Trivy, cobertura amplia sin cuenta.
-
-#### 14. ANTI-PATRÓN RELACIONADO
-
-**Silenciar el escáner para que pase el build:**
-
-```yaml
-- run: trivy image --exit-code 0 --severity CRITICAL miapp:latest || true   # nunca falla, nadie lo mira
-```
-
-```text
-# .trivyignore
-CVE-2021-44228
-CVE-2022-1471
-```
-
-`--exit-code 0`, `|| true` y una lista de ignorados sin motivo ni fecha convierten el escáner en decoración. Cada
-excepción lleva comentario, responsable y fecha de revisión, y el job falla por defecto.
+</details>

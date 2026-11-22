@@ -6,43 +6,83 @@ Una API puede compilar, pasar pruebas y aun romper consumidores o duplicar cobro
 
 Cada tema comienza en una carpeta vacía y constituye un proyecto independiente. Escribe manualmente todos los archivos indicados: no copies ni abras ejemplos de la academia y no reutilices archivos de otros temas. Las pruebas de concurrencia son locales y acotadas; no necesitan credenciales reales, servicios externos, CI ni despliegues.
 
+
 ### Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Avanzado · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** Node.js LTS, npm, JavaScript básico y conocimiento elemental de TypeScript. Comprueba `node --version`; no necesitas una base de datos ni un framework HTTP.
+#### ► DE QUÉ TRATA
+Este tema te guía por tipos estáticos dentro, datos desconocidos en la frontera con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** validar como `unknown` el body de `POST /envios`, obtener un DTO tipado con zod, demostrar que `strict` y un cast no validan datos de red y traducir mediante una unión discriminada todos los resultados esperados de un caso de uso.
+#### ► LA IDEA EN UNA FRASE
+**Entender tipos estáticos dentro, datos desconocidos en la frontera te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** la app del conductor puede enviar un número donde RutaFlow espera una guía, aunque el frontend TypeScript declare lo contrario. Si la API confía en `as CreateEnvioInput`, el dato inválido llega al dominio y el fallo aparece lejos de su causa.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-TypeScript comprueba el programa durante el desarrollo y sus tipos se borran al compilar. `strict`, `noUncheckedIndexedAccess` y `exactOptionalPropertyTypes` mejoran las comprobaciones internas, pero ninguno inspecciona los bytes que llegan por HTTP, una cola, un archivo o una variable de entorno. El valor correcto en esa frontera es `unknown`.
+#### ► LA ANALOGÍA
+Piensa en tipos estáticos dentro, datos desconocidos en la frontera como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un parser de runtime sí examina el valor. zod permite declarar forma, longitud y formato, rechazar claves no previstas con `.strict()` e inferir el tipo TypeScript desde la misma definición. Valida una vez en la frontera y pasa el DTO resultante al caso de uso; repetir el mismo parseo en cada función interna añade trabajo sin mejorar la garantía.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Raw[Body recibido como unknown] --> Parse[Parser de runtime]
+  Parse -->|inválido| Bad[400 con errores seguros]
+  Parse -->|válido| DTO[DTO tipado]
+  DTO --> UseCase[Regla de aplicación]
+  UseCase --> Result[Resultado de dominio]
+```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tipos estáticos dentro, datos desconocidos en la frontera se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tipos estáticos dentro, datos desconocidos en la frontera | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses tipos estáticos dentro, datos desconocidos en la frontera por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tipos estáticos dentro, datos desconocidos en la frontera funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Tipos estáticos dentro, datos desconocidos en la frontera existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tipos estáticos dentro, datos desconocidos en la frontera en tu contexto?
+2. ¿Cómo sabrías que tipos estáticos dentro, datos desconocidos en la frontera no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tipos estáticos dentro, datos desconocidos en la frontera?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```text
 bytes/JSON -> unknown -> schema runtime -> DTO válido -> caso de uso
                          |
                          +-> 400 con errores de entrada
 ```
 
-Validar la forma no sustituye las reglas de negocio. «Guía con formato `RF-` y dígitos» pertenece a la entrada; «el plan no puede superar veinte envíos activos» necesita consultar estado y pertenece al caso de uso. Mantén separados DTO HTTP, comando de dominio y entidad persistente.
-
-Una unión discriminada representa resultados esperados sin convertirlos todos en excepciones. Un `switch` exhaustivo obliga a revisar el mapeo HTTP cuando se agrega una variante. Los branded types pueden evitar mezclar `EnvioId` y `ActorId`, pero también deben construirse después de validar.
-
-**Analogía:** TypeScript revisa los planos dentro de una fábrica; el parser inspecciona el cargamento en el muelle. La analogía tiene un límite: un parser puede validar estructura, pero no demuestra por sí solo autorización, cupos ni consistencia con la base de datos.
-
-#### Practica
-
-Desde una carpeta vacía, crea el directorio y entra en él:
-
 ```bash
 mkdir frontera-envios
 cd frontera-envios
 mkdir src
 ```
-
-Crea manualmente `package.json`:
 
 ```json
 {
@@ -56,8 +96,6 @@ Crea manualmente `package.json`:
   }
 }
 ```
-
-Crea `tsconfig.json`:
 
 ```json
 {
@@ -75,14 +113,10 @@ Crea `tsconfig.json`:
 }
 ```
 
-Instala las dependencias declarando su uso en el proyecto:
-
 ```bash
 npm install zod
 npm install --save-dev typescript tsx @types/node
 ```
-
-Crea `src/frontera.ts`:
 
 ```typescript
 import { z } from "zod";
@@ -121,115 +155,78 @@ function assertNever(value: never): never {
 }
 ```
 
-Crea `src/frontera.test.ts`:
-
-```typescript
-import test from "node:test";
-import assert from "node:assert/strict";
-import { parseCreateEnvio, toHttp } from "./frontera.js";
-
-test("convierte unknown válido en el DTO inferido", () => {
-  const entrada: unknown = { guia: "RF-4471", direccion: "  Calle 10  " };
-  assert.deepEqual(parseCreateEnvio(entrada), {
-    guia: "RF-4471",
-    direccion: "Calle 10",
-  });
-});
-
-test("rechaza tipos y formatos inválidos antes del dominio", () => {
-  assert.throws(() => parseCreateEnvio({ guia: 123, direccion: null }));
-  assert.throws(() => parseCreateEnvio({ guia: "XX", direccion: "Calle 10" }));
-});
-
-test("rechaza propiedades no declaradas y agota los resultados", () => {
-  assert.throws(() => parseCreateEnvio({
-    guia: "RF-4471",
-    direccion: "Calle 10",
-    interno: true,
-  }));
-  assert.deepEqual(toHttp({ kind: "cupo-excedido", limite: 20 }), {
-    status: 409,
-    body: { limite: 20 },
-  });
-});
-```
-
-Ejecuta la comprobación completa:
-
-```bash
-npm run check
-```
-
-**Resultado esperado:** TypeScript termina sin errores y `node:test`, mediante `tsx`, reporta tres pruebas superadas. La primera entrada queda recortada; los números, `null`, guías mal formadas y propiedades adicionales se rechazan.
-
-**Fallo deliberado y corrección:** sustituye temporalmente el cuerpo de `parseCreateEnvio` por `return value as CreateEnvioInput;`. Ejecuta otra vez `npm run check`: el typecheck sigue pasando, pero dos pruebas fallan porque el cast devuelve valores inválidos sin examinarlos. Restaura `return CreateEnvioInput.parse(value);` y comprueba que vuelven a pasar las tres pruebas. La evidencia importante es que `strict` no convirtió el cast en una validación de red.
-
-**Práctica guiada:** añade una función `parseCreateEnvioSeguro(value: unknown)` basada en `safeParse`. Debe devolver `{ ok: true, data }` o `{ ok: false, problem }`, donde `problem` tenga `status: 400`, `title: "Entrada inválida"` y una lista de errores de campos sin incluir el body completo. Prueba un objeto válido y otro con dos campos incorrectos.
-
-**Ejercicio independiente:** agrega a la entrada una `prioridad` opcional limitada a `normal` o `urgente` y una cuarta variante `direccion-invalida` en `CrearEnvioResultado`. Mapea esa variante a `422` en `toHttp`; elimina después una rama del `switch` para observar el error de exhaustividad y restáurala. Entrega pruebas para ambas prioridades y explica por qué una prioridad desconocida es un error de entrada, no una regla de cupos.
-
-#### Aplica
-
-En una API propia de entregas, define una única frontera para `POST /envios`: body como `unknown`, parser explícito, DTO inferido y caso de uso sin casts sobre datos externos. Configura y valida también las variables de entorno. Como evidencia, conserva una petición válida, una inválida con `400` y una regla de negocio con `409`; sus diferencias deben poder explicarse sin mirar la implementación.
-
-**Checklist de salida**
-
-- [ ] Creaste manualmente el proyecto, la configuración estricta, el parser y sus pruebas.
-- [ ] El body entra como `unknown` y solo se vuelve DTO después de parsear.
-- [ ] El fallo deliberado demostró que `strict` y `as Tipo` no validan la red.
-- [ ] Las claves desconocidas y los valores con tipos incorrectos se rechazan.
-- [ ] El `switch` cubre todas las variantes y falla al omitir una.
-- [ ] Distingues validación estructural, autorización y reglas de negocio.
-- [ ] No propagaste `any`, `@ts-ignore` ni non-null assertions para ocultar errores.
-
-**Cuándo no repetirlo:** no vuelvas a aplicar el mismo schema en cada capa interna. Cada frontera nueva sí necesita su propia validación, incluidos mensajes antiguos y respuestas de proveedores.
-
-```mermaid
-flowchart LR
-  Raw[Body recibido como unknown] --> Parse[Parser de runtime]
-  Parse -->|inválido| Bad[400 con errores seguros]
-  Parse -->|válido| DTO[DTO tipado]
-  DTO --> UseCase[Regla de aplicación]
-  UseCase --> Result[Resultado de dominio]
-```
-
-**Proyecto real:** integra una frontera validada en una API propia de entregas: body externo como `unknown`, parser en un solo punto y regla de negocio que recibe únicamente el DTO validado. Conserva como evidencia una petición aceptada, otra rechazada y una regla que falla después de validar la forma.
-
-**Fuentes oficiales:** [zod](https://zod.dev/) y [TypeScript: uso de `unknown` en variables `catch`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables).
+</details>
 
 ### Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** HTTP JSON, módulos ESM, `fetch` y pruebas básicas con Node. Este proyecto no usa el parser ni ningún archivo del ejercicio anterior.
+#### ► DE QUÉ TRATA
+Este tema te guía por un contrato http es comportamiento, no solo documentación con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** especificar el comportamiento observable de `POST /envios`, escribir pruebas de proveedor contra un servidor real y ejecutar expectativas mínimas registradas por un consumidor, incluidos estados, cabeceras, cuerpos y Problem Details.
+#### ► LA IDEA EN UNA FRASE
+**Entender un contrato http es comportamiento, no solo documentación te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** una app móvil puede depender de `201`, del campo `guia` y del estado `creado`, mientras un socio solo necesita `id`. Un cambio que parece correcto dentro del repositorio del proveedor puede romper cualquiera de esas expectativas si nadie las ejecuta contra la API real.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El contrato HTTP es lo que un consumidor puede observar: método, ruta, cabeceras, request, status, content type, cuerpo, errores y significado. Una descripción OpenAPI puede representar gran parte de ese contrato, pero el documento no ejecuta la aplicación ni demuestra que ambos coincidan.
+#### ► LA ANALOGÍA
+Piensa en un contrato http es comportamiento, no solo documentación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Las **pruebas de proveedor** parten de las promesas del servicio y envían requests reales a una instancia local. Comprueban, por ejemplo, que una creación devuelve `201` y que una entrada inválida devuelve `400` con `application/problem+json`. No bastan para conocer todos los usos externos.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Consumer[Expectativas del consumidor] --> Request[Request de prueba]
+  Request --> API[Servidor local real]
+  API --> Response[Status, headers y body]
+  Response --> Compare[Comparar comportamiento]
+  Compare -->|cambio incompatible| Fail[Prueba falla antes de liberar]
+```
 
-Las **pruebas dirigidas por consumidor** registran ejemplos mínimos que cada consumidor necesita. El proveedor ejecuta esos ejemplos como parte de sus pruebas. Así, «la app móvil necesita `guia` y `estado`» se convierte en evidencia ejecutable y no en una conversación olvidada. Estas pruebas no sustituyen pruebas funcionales, seguridad ni acuerdos sobre semántica.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Un contrato HTTP es comportamiento, no solo documentación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-RFC 9457 define Problem Details para errores HTTP. Una respuesta consistente puede incluir `type`, `title`, `status`, `detail` e `instance`, sin exponer stack traces. El status también debe coincidir con el campo `status` del cuerpo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Un contrato HTTP es comportamiento, no solo documentación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Agregar un campo opcional suele ser compatible, pero no siempre: un parser estricto puede rechazarlo. Cambiar el significado de `estado`, la precisión de un importe o un valor de enum puede romper sin cambiar el tipo. La compatibilidad es una propiedad observada entre proveedor y consumidores, no una lista universal.
+#### ► CUÁNDO NO USAR ESTO
+No uses un contrato http es comportamiento, no solo documentación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** el contrato de un enchufe incluye forma y voltaje. El dibujo ayuda, pero solo una prueba con ambos extremos demuestra que funcionan juntos; cambiar el voltaje sin cambiar la forma es especialmente peligroso porque parece compatible.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: un contrato http es comportamiento, no solo documentación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Practica
+#### ► LO QUE DEBES RECORDAR
+- Un contrato HTTP es comportamiento, no solo documentación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Crea un proyecto nuevo, sin abrir proyectos de otros temas:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve un contrato http es comportamiento, no solo documentación en tu contexto?
+2. ¿Cómo sabrías que un contrato http es comportamiento, no solo documentación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar un contrato http es comportamiento, no solo documentación?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir comportamiento-envios
 cd comportamiento-envios
 mkdir src test contracts
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -241,8 +238,6 @@ Crea `package.json`:
   }
 }
 ```
-
-Crea `test/server-harness.js` para compartir el servidor efímero y su cierre entre las pruebas del proveedor y del consumidor:
 
 ```javascript
 import { once } from "node:events";
@@ -269,8 +264,6 @@ export async function startTestServer() {
   };
 }
 ```
-
-Crea `src/server.js`:
 
 ```javascript
 import { createServer } from "node:http";
@@ -329,8 +322,6 @@ export function createApp() {
 }
 ```
 
-Crea `test/provider.test.js`:
-
 ```javascript
 import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
@@ -375,8 +366,6 @@ test("el proveedor devuelve Problem Details en una entrada inválida", async () 
 });
 ```
 
-Crea `contracts/movil.contract.json`, escrito desde la perspectiva de la app móvil:
-
 ```json
 {
   "consumer": "app-movil",
@@ -405,133 +394,80 @@ Crea `contracts/movil.contract.json`, escrito desde la perspectiva de la app mó
 }
 ```
 
-Crea `test/movil.contract.test.js`:
-
-```javascript
-import test, { after, before } from "node:test";
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { startTestServer } from "./server-harness.js";
-
-const contract = JSON.parse(await readFile(
-  new URL("../contracts/movil.contract.json", import.meta.url),
-  "utf8",
-));
-
-let testServer;
-
-before(async () => {
-  testServer = await startTestServer();
-});
-
-after(async () => {
-  if (testServer) await testServer.close();
-});
-
-test("el proveedor satisface los ejemplos mínimos de la app móvil", async () => {
-  for (const example of contract.cases) {
-    const response = await fetch(`${testServer.baseUrl}/envios`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(example.request),
-    });
-    assert.equal(response.status, example.expected.status, example.name);
-    assert.match(
-      response.headers.get("content-type"),
-      new RegExp(`^${example.expected.contentType.replace("+", "\\+")}`),
-      example.name,
-    );
-    const body = await response.json();
-    for (const field of example.expected.requiredFields) {
-      assert.equal(typeof body[field], "string", `${example.name}: ${field}`);
-    }
-    for (const [field, value] of Object.entries(example.expected.body)) {
-      assert.equal(body[field], value, `${example.name}: ${field}`);
-    }
-  }
-});
-```
-
-Ejecuta:
-
-```bash
-npm test
-```
-
-**Resultado esperado:** tres pruebas superadas: dos expresan promesas del proveedor y una ejecuta los dos ejemplos del consumidor. Los servidores usan puertos efímeros locales y se cierran al terminar.
-
-**Fallo deliberado y corrección:** cambia únicamente el `201` de creación en `src/server.js` por `200`. El servidor sigue funcionando, pero la prueba válida del proveedor y el contrato de la app móvil fallan; la prueba de error continúa verde. Restaura `201` y repite `npm test`. Después cambia `estado: "creado"` por `estado: "pendiente"`: observa que también rompe una expectativa semántica aunque el tipo siga siendo `string`; restaura el valor.
-
-**Práctica guiada:** añade al contrato móvil el caso de guía duplicada. Primero crea `RF-700` dentro del propio ejemplo y después repite la petición. Exige `409`, `application/problem+json` y `title: "Guía duplicada"`; conserva el aislamiento entre pruebas para que no dependan del orden de otros archivos.
-
-**Ejercicio independiente:** crea `contracts/almacen.contract.json` y su prueba. El almacén solo necesita `id` y `guia`, y debe ignorar campos adicionales. Demuestra que eliminar `id` rompe ese contrato, mientras añadir un campo `nota` no lo rompe. Explica por qué este resultado no prueba que todos los demás consumidores toleren `nota`.
-
-#### Aplica
-
-Para una operación real de creación de entregas, escribe una matriz con método, request, status, content type, campos imprescindibles, errores y significado. Añade pruebas del proveedor y un archivo de expectativas por consumidor conocido. La evidencia debe incluir una divergencia de status y otra de semántica corregidas; un documento que describe `201` mientras la API devuelve `200` no es un contrato verificado.
-
-**Checklist de salida**
-
-- [ ] Creaste un servidor y contratos nuevos, sin dependencias de otros ejercicios.
-- [ ] Las pruebas del proveedor envían requests HTTP reales a un puerto local.
-- [ ] Las expectativas del consumidor son mínimas, explícitas y ejecutables por el proveedor.
-- [ ] Éxito y error comprueban status, content type y campos relevantes.
-- [ ] Problem Details no expone stack traces y mantiene `status` coherente.
-- [ ] Los fallos deliberados cubrieron una divergencia de status y una de significado.
-- [ ] No confundiste «un consumidor lo tolera» con compatibilidad universal.
-
-**Gestión de cambios:** intenta primero evolución aditiva y conversación con consumidores. Para un cambio incompatible justificado, define versión, deprecación, telemetría de uso, alternativa y retiro comprobado; nunca reutilices un campo con otro significado.
-
-```mermaid
-flowchart LR
-  Consumer[Expectativas del consumidor] --> Request[Request de prueba]
-  Request --> API[Servidor local real]
-  API --> Response[Status, headers y body]
-  Response --> Compare[Comparar comportamiento]
-  Compare -->|cambio incompatible| Fail[Prueba falla antes de liberar]
-```
-
-**Cuándo añadir pruebas dirigidas por consumidor:** aportan valor cuando consumidores independientes dependen de partes distintas del contrato y el proveedor puede ejecutar sus expectativas. Para un cliente interno que siempre se despliega junto al servidor, una prueba de integración compartida puede ser más simple. Ninguna de las dos reemplaza autorización ni pruebas de carga.
-
-**Proyecto integrador:** en la API de entregas conserva las expectativas reales de la app móvil y de un socio como fixtures versionados; ejecuta ambos contra el servidor local y revisa una falla de compatibilidad antes de aprobar cambios.
-
-**Fuentes oficiales:** [OpenAPI Specification](https://swagger.io/specification/) y [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).
+</details>
 
 ### Tema 3: OpenAPI como contrato ejecutable · Avanzado · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** YAML, JSON Schema básico, HTTP y pruebas con `fetch`. Este proyecto parte de otra carpeta vacía; no reutiliza el servidor ni los contratos de comportamiento anteriores.
+#### ► DE QUÉ TRATA
+Este tema te guía por openapi como contrato ejecutable con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** escribir un documento OpenAPI 3.1 completo para una consulta de entregas, ejecutar lint, validar responses reales contra sus schemas y conservar una comprobación local de compatibilidad para las expectativas declaradas de un consumidor.
+#### ► LA IDEA EN UNA FRASE
+**Entender openapi como contrato ejecutable te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** web, Flutter y socios externos pueden generar clientes a partir del mismo archivo. Cambiar `trackingCode` por `tracking_code` puede romperlos aunque el lint siga verde. OpenAPI se vuelve útil cuando el documento es sintácticamente válido, la implementación lo cumple y los cambios se comparan con expectativas previas.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-OpenAPI describe operaciones, parámetros, seguridad, cuerpos, respuestas y schemas. `operationId` da una identidad estable a la operación; `schema` define forma y restricciones; las respuestas de error evitan que cada cliente improvise. Swagger UI puede presentar el documento, pero una interfaz visual no es validación.
+#### ► LA ANALOGÍA
+Piensa en openapi como contrato ejecutable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un contrato ejecutable necesita tres controles distintos:
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Contract[OpenAPI versionado] --> Lint[Lint del documento]
+  Server[Servidor local] --> Traffic[Requests y responses reales]
+  Contract --> Schema[Validar tráfico con schemas]
+  Traffic --> Schema
+  Consumer[Baseline de consumidor] --> Diff[Comparación de compatibilidad]
+  Schema --> Gate[Gate de release]
+  Diff --> Gate
+```
 
-1. **Lint:** detecta documentos inválidos o problemas de estructura OpenAPI.
-2. **Pruebas de implementación:** comparan responses reales con los schemas y content types publicados.
-3. **Compatibilidad:** compara la versión nueva con expectativas anteriores o de consumidores. Un documento distinto puede seguir siendo lint-valid y aun ser incompatible.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| OpenAPI como contrato ejecutable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-La dirección del dato importa. En una respuesta, retirar un campo usado, cambiar su tipo o agregar un valor de enum puede romper un consumidor exhaustivo. En un request, exigir de pronto un campo nuevo suele ser incompatible. Añadir un campo opcional de respuesta solo es compatible si los consumidores toleran propiedades desconocidas; `additionalProperties: false` muestra que no todos lo hacen. No existe una regla universal separada de esos consumidores.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar OpenAPI como contrato ejecutable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-El comprobador de compatibilidad de esta práctica es deliberadamente limitado: conserva campos de respuesta que un consumidor declaró y exige estabilidad del enum `status`. No sustituye una herramienta completa de diff ni pruebas con todos los clientes.
+#### ► CUÁNDO NO USAR ESTO
+No uses openapi como contrato ejecutable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** OpenAPI es el plano firmado de un edificio. Swagger UI es una vista del plano; el lint revisa que el plano esté bien formado, las pruebas inspeccionan la construcción y la comparación de versiones pregunta si una reforma bloquea una puerta que alguien ya usa.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: openapi como contrato ejecutable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Practica
+#### ► LO QUE DEBES RECORDAR
+- OpenAPI como contrato ejecutable existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Crea el proyecto independiente:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve openapi como contrato ejecutable en tu contexto?
+2. ¿Cómo sabrías que openapi como contrato ejecutable no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar openapi como contrato ejecutable?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir openapi-entregas
 cd openapi-entregas
 mkdir src test contracts
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -546,14 +482,10 @@ Crea `package.json`:
 }
 ```
 
-Instala las herramientas:
-
 ```bash
 npm install ajv ajv-formats yaml
 npm install --save-dev @redocly/cli
 ```
-
-Crea `src/openapi.yaml`:
 
 ```yaml
 openapi: 3.1.0
@@ -617,8 +549,6 @@ components:
           type: string
 ```
 
-Crea `src/server.js`:
-
 ```javascript
 import { createServer } from "node:http";
 
@@ -660,8 +590,6 @@ export function createApp() {
   });
 }
 ```
-
-Crea `test/openapi.test.js`:
 
 ```javascript
 import test, { after, before } from "node:test";
@@ -716,119 +644,74 @@ test("el 404 real cumple Problem", async () => {
 });
 ```
 
-Crea `contracts/consumidor-base.json`:
-
-```json
-{
-  "consumer": "portal-de-seguimiento",
-  "operationId": "getDelivery",
-  "successStatus": "200",
-  "requiredFields": ["id", "trackingCode", "status"],
-  "knownFields": ["id", "trackingCode", "status"],
-  "statusEnum": ["created", "assigned", "in_transit", "delivered"]
-}
-```
-
-Crea `test/compatibilidad.test.js`:
-
-```javascript
-import test from "node:test";
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import YAML from "yaml";
-
-const document = YAML.parse(await readFile(
-  new URL("../src/openapi.yaml", import.meta.url),
-  "utf8",
-));
-const baseline = JSON.parse(await readFile(
-  new URL("../contracts/consumidor-base.json", import.meta.url),
-  "utf8",
-));
-
-test("conserva la respuesta que el portal declaró consumir", () => {
-  const operation = document.paths["/deliveries/{id}"].get;
-  assert.equal(operation.operationId, baseline.operationId);
-  const response = operation.responses[baseline.successStatus];
-  assert.ok(response, "desapareció el status usado por el consumidor");
-  assert.ok(operation.responses["404"], "desapareció el error documentado");
-  assert.equal(response.content["application/json"].schema.$ref, "#/components/schemas/Delivery");
-
-  const schema = document.components.schemas.Delivery;
-  for (const field of baseline.requiredFields) {
-    assert.ok(schema.required.includes(field), `${field} dejó de ser requerido`);
-  }
-  for (const field of baseline.knownFields) {
-    assert.ok(schema.properties[field], `${field} desapareció o fue renombrado`);
-  }
-  assert.deepEqual(
-    schema.properties.status.enum,
-    baseline.statusEnum,
-    "el enum observable cambió y requiere revisar consumidores exhaustivos",
-  );
-});
-```
-
-Ejecuta los tres controles locales:
-
-```bash
-npm run check
-```
-
-**Resultado esperado:** Redocly no reporta errores de lint y Node reporta tres pruebas superadas: dos responses reales válidas y una comparación con la línea base del portal. Este comando local no afirma que se haya ejecutado CI ni que la API se haya desplegado.
-
-**Fallo deliberado y corrección:** en `src/openapi.yaml`, renombra temporalmente `trackingCode` a `tracking_code` tanto en `required` como en `properties`, sin tocar el servidor. El lint puede seguir aceptando el documento, pero `compatibilidad.test.js` falla porque el campo consumido desapareció. Restaura el nombre. Después añade una propiedad `interno` al JSON del servidor sin declararla: la prueba del `200` falla porque `additionalProperties: false`; retírala y vuelve a ejecutar `npm run check`.
-
-**Práctica guiada:** añade un ejemplo completo de `Delivery` dentro del schema y valida ese ejemplo con Ajv en una prueba nueva. Incluye un `404` de ejemplo y comprueba también que ninguno tenga propiedades internas. El objetivo es que ejemplos, documento e implementación no evolucionen por caminos separados.
-
-**Ejercicio independiente:** documenta e implementa `POST /deliveries` en este mismo proyecto, con `201`, `400`, `409`, Problem Details y cabecera `Idempotency-Key`. Añade pruebas reales para cada respuesta. Clasifica por escrito estos cambios: eliminar `trackingCode`, hacer obligatorio un nuevo campo de request, añadir un valor a `status`, añadir una propiedad opcional de respuesta y corregir una descripción. Justifica la dirección del dato y qué consumidor podría romperse en cada caso.
-
-#### Aplica
-
-Para una consulta pública de entregas, versiona el archivo OpenAPI junto con la implementación y conserva tres evidencias locales: lint, responses válidas y compatibilidad con una línea base de consumidor. No generes un SDK hasta que esas comprobaciones pasen. Si ya generas schemas desde una única fuente de verdad, evita mantener una segunda descripción manual divergente.
-
-**Checklist de salida**
-
-- [ ] Creaste OpenAPI, servidor, pruebas y línea base desde una carpeta vacía.
-- [ ] `operationId`, parámetros, content types, éxito y errores están declarados.
-- [ ] El lint y las pruebas de responses son controles separados.
-- [ ] Ajv valida el JSON real y los formatos usados por el schema.
-- [ ] La prueba de compatibilidad conserva campos y enum observados por un consumidor.
-- [ ] El fallo deliberado demostró que lint-valid no significa compatible.
-- [ ] Distingues cambios de request y response y no prometes compatibilidad universal.
-- [ ] No expones campos internos por reutilizar directamente una entidad de persistencia.
-
-**Cuándo no añadirlo:** para un endpoint interno con un solo consumidor que cambia y se despliega junto con el servidor, un contrato formal puede aportar menos que una prueba compartida. El coste cambia cuando existen consumidores independientes o versiones móviles antiguas.
-
-```mermaid
-flowchart LR
-  Contract[OpenAPI versionado] --> Lint[Lint del documento]
-  Server[Servidor local] --> Traffic[Requests y responses reales]
-  Contract --> Schema[Validar tráfico con schemas]
-  Traffic --> Schema
-  Consumer[Baseline de consumidor] --> Diff[Comparación de compatibilidad]
-  Schema --> Gate[Gate de release]
-  Diff --> Gate
-```
-
-**Proyecto real:** versiona el contrato de la API de entregas junto con la implementación, valida responses reales y conserva una baseline del cliente móvil. Si un cambio rompe un campo o enum usado, detén la publicación hasta acordar migración y evidencia de consumidores.
-
-**Fuentes oficiales:** [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html), [OpenAPI Specification, versión vigente](https://spec.openapis.org/oas/latest.html) y [Redocly CLI](https://redocly.com/docs/cli/).
+</details>
 
 ### Tema 4: Reintentar sin duplicar el efecto · Avanzado · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** SQL básico, transacciones, `async`/`await` y Docker con Docker Compose. El ejercicio usa una base PostgreSQL desechable en `127.0.0.1`; no reutiliza esquemas ni datos de otros proyectos.
+#### ► DE QUÉ TRATA
+Este tema te guía por reintentar sin duplicar el efecto con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** implementar idempotencia atómica con clave, actor, operación y hash del request; devolver respuestas repetidas estables; probar veinte requests concurrentes locales; y demostrar que transactional outbox entrega al menos una vez y requiere deduplicación en el consumidor.
+#### ► LA IDEA EN UNA FRASE
+**Entender reintentar sin duplicar el efecto te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** si PostgreSQL confirma un envío pero la respuesta se pierde, la app ve un timeout y reintenta. Un `POST` normal crea otro envío. La recuperación no debe convertir un resultado ambiguo en un cobro, pedido o envío duplicado.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Una clave de idempotencia identifica la **misma intención** durante los reintentos. Su identidad no es solo el texto de la cabecera: la restricción única debe incluir `actor_id`, `operation` y `key`. El `request_hash` vincula esa intención a un payload normalizado; reutilizar la clave con otro contenido devuelve `409`, no ejecuta una operación diferente bajo la identidad anterior.
+#### ► LA ANALOGÍA
+Piensa en reintentar sin duplicar el efecto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-«Buscar la clave y, si no existe, insertar» no es atómico: dos requests pueden observar ausencia antes de que cualquiera confirme. La reserva de la clave, el cambio de negocio, la respuesta registrada y el evento outbox deben quedar dentro de una transacción, con una restricción única como última defensa. Un reintento completado recupera exactamente el mismo status y body; una operación todavía en proceso puede responder `409` o `425` según la política definida.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+  Request[Request con clave estable] --> Reserve[Reservar actor, operación y clave]
+  Reserve --> Tx[Transacción única]
+  Tx -->|clave nueva| Effect[Aplicar efecto y guardar respuesta]
+  Tx -->|misma clave y mismo hash| Replay[Repetir respuesta almacenada]
+  Tx -->|misma clave y hash distinto| Conflict[Responder 409]
+  Effect --> Commit[Commit antes de responder]
+```
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Reintentar sin duplicar el efecto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Reintentar sin duplicar el efecto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses reintentar sin duplicar el efecto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: reintentar sin duplicar el efecto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Reintentar sin duplicar el efecto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve reintentar sin duplicar el efecto en tu contexto?
+2. ¿Cómo sabrías que reintentar sin duplicar el efecto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar reintentar sin duplicar el efecto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```text
 POST + actor A + operación crear + clave K + hash H
   -> transacción [reserva única + envío + respuesta + outbox E]
@@ -836,23 +719,11 @@ POST + actor A + operación crear + clave K + hash H
   -> reintento A/crear/K/H2 recibe 409
 ```
 
-Guardar el envío y publicar el evento en pasos independientes crea una doble escritura. Transactional outbox guarda ambos en el mismo commit. Un relay publica pendientes y puede caer después de publicar pero antes de marcar: el siguiente intento publicará otra vez. Por eso la garantía es **at-least-once**, no «exactamente una entrega». El consumidor debe guardar `event_id` junto a su efecto en otra transacción.
-
-La retención de claves debe cubrir la ventana real de reintento. Borrar evidencia demasiado pronto vuelve posible el duplicado. Los `GET` de solo lectura o un `PUT` de reemplazo naturalmente idempotente no necesitan automáticamente esta maquinaria.
-
-**Analogía:** una transferencia tiene un número de operación. Repetir la consulta con ese número recupera el comprobante; generar un número nuevo ordena otra transferencia. La analogía no elimina la necesidad de una restricción única y una transacción reales.
-
-#### Practica
-
-Crea el proyecto desde cero:
-
 ```bash
 mkdir idempotencia-envios
 cd idempotencia-envios
 mkdir -p src/db test
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -865,13 +736,9 @@ Crea `package.json`:
 }
 ```
 
-Instala el driver:
-
 ```bash
 npm install pg
 ```
-
-Crea `compose.yaml` con una base local y credenciales exclusivamente de laboratorio:
 
 ```yaml
 services:
@@ -889,8 +756,6 @@ services:
       timeout: 3s
       retries: 20
 ```
-
-Crea `src/db/schema.sql`:
 
 ```sql
 CREATE TABLE IF NOT EXISTS envios (
@@ -927,297 +792,79 @@ CREATE TABLE IF NOT EXISTS eventos_consumidos (
 );
 ```
 
-Crea `src/servicio.js`:
-
-```javascript
-import { createHash, randomUUID } from "node:crypto";
-import pg from "pg";
-
-const { Pool } = pg;
-
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL ??
-    "postgres://rutaflow:laboratorio-local@127.0.0.1:55432/rutaflow",
-  max: 10,
-});
-
-const OPERATION = "create-envio";
-
-export async function crearEnvio({ actorId, key, payload }) {
-  const normalized = { guia: payload.guia, direccion: payload.direccion };
-  const requestHash = createHash("sha256")
-    .update(JSON.stringify(normalized))
-    .digest("hex");
-  const client = await pool.connect();
-
-  try {
-    await client.query("BEGIN");
-    const reserved = await client.query(
-      `INSERT INTO idempotency_keys
-         (actor_id, operation, key, request_hash, status)
-       VALUES ($1, $2, $3, $4, 'processing')
-       ON CONFLICT DO NOTHING
-       RETURNING key`,
-      [actorId, OPERATION, key, requestHash],
-    );
-
-    if (reserved.rowCount === 0) {
-      const saved = await client.query(
-        `SELECT request_hash, status, response_status, response_body
-         FROM idempotency_keys
-         WHERE actor_id = $1 AND operation = $2 AND key = $3`,
-        [actorId, OPERATION, key],
-      );
-      const previous = saved.rows[0];
-
-      if (previous.request_hash !== requestHash) {
-        await client.query("ROLLBACK");
-        return {
-          status: 409,
-          body: { title: "La clave ya se usó con otro payload", status: 409 },
-        };
-      }
-      if (previous.status !== "completed") {
-        await client.query("ROLLBACK");
-        return { status: 409, body: { title: "Operación en proceso", status: 409 } };
-      }
-
-      await client.query("COMMIT");
-      return { status: previous.response_status, body: previous.response_body };
-    }
-
-    const id = randomUUID();
-    const eventId = randomUUID();
-    const response = {
-      status: 201,
-      body: { envio: { id, ...normalized } },
-    };
-
-    await client.query(
-      "INSERT INTO envios(id, actor_id, guia, direccion) VALUES ($1, $2, $3, $4)",
-      [id, actorId, normalized.guia, normalized.direccion],
-    );
-    await client.query(
-      `INSERT INTO outbox(event_id, event_type, aggregate_id, payload)
-       VALUES ($1, 'envio-creado', $2, $3::jsonb)`,
-      [eventId, id, JSON.stringify(response.body.envio)],
-    );
-    await client.query(
-      `UPDATE idempotency_keys
-       SET status = 'completed', response_status = $4, response_body = $5::jsonb
-       WHERE actor_id = $1 AND operation = $2 AND key = $3`,
-      [actorId, OPERATION, key, response.status, JSON.stringify(response.body)],
-    );
-    await client.query("COMMIT");
-    return response;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
-}
-
-export async function relayOnce(publish) {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const pending = await client.query(
-      `SELECT event_id, event_type, aggregate_id, payload
-       FROM outbox
-       WHERE published_at IS NULL
-       ORDER BY event_id
-       FOR UPDATE SKIP LOCKED
-       LIMIT 1`,
-    );
-    if (pending.rowCount === 0) {
-      await client.query("COMMIT");
-      return false;
-    }
-
-    const event = pending.rows[0];
-    await publish({
-      eventId: event.event_id,
-      type: event.event_type,
-      envioId: event.aggregate_id,
-      payload: event.payload,
-    });
-    await client.query(
-      "UPDATE outbox SET published_at = now() WHERE event_id = $1",
-      [event.event_id],
-    );
-    await client.query("COMMIT");
-    return true;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
-}
-
-export async function consumir(event) {
-  const result = await pool.query(
-    `INSERT INTO eventos_consumidos(event_id, envio_id)
-     VALUES ($1, $2)
-     ON CONFLICT DO NOTHING
-     RETURNING event_id`,
-    [event.eventId, event.envioId],
-  );
-  return result.rowCount === 1;
-}
-```
-
-Crea `test/idempotencia.test.js`:
-
-```javascript
-import test, { after, beforeEach } from "node:test";
-import assert from "node:assert/strict";
-import { consumir, crearEnvio, pool, relayOnce } from "../src/servicio.js";
-
-beforeEach(async () => {
-  await pool.query("TRUNCATE eventos_consumidos, outbox, idempotency_keys, envios");
-});
-
-after(async () => {
-  await pool.end();
-});
-
-test("20 reintentos locales concurrentes producen un efecto y respuestas estables", async () => {
-  const request = {
-    actorId: "actor-1",
-    key: "intento-unico-1",
-    payload: { guia: "RF-20", direccion: "Calle 20" },
-  };
-  const responses = await Promise.all(
-    Array.from({ length: 20 }, () => crearEnvio(request)),
-  );
-
-  for (const response of responses) assert.deepEqual(response, responses[0]);
-  assert.equal(responses[0].status, 201);
-  assert.equal(Number((await pool.query("SELECT count(*) FROM envios")).rows[0].count), 1);
-  assert.equal(Number((await pool.query("SELECT count(*) FROM outbox")).rows[0].count), 1);
-});
-
-test("la misma clave con otro hash devuelve 409 sin otro envío", async () => {
-  const base = { actorId: "actor-1", key: "intento-unico-2" };
-  await crearEnvio({ ...base, payload: { guia: "RF-21", direccion: "Calle 21" } });
-  const conflict = await crearEnvio({
-    ...base,
-    payload: { guia: "RF-999", direccion: "Otra dirección" },
-  });
-  assert.equal(conflict.status, 409);
-  assert.equal(Number((await pool.query("SELECT count(*) FROM envios")).rows[0].count), 1);
-});
-
-test("outbox reenvía tras una caída y el consumidor deduplica", async () => {
-  await crearEnvio({
-    actorId: "actor-1",
-    key: "intento-unico-3",
-    payload: { guia: "RF-22", direccion: "Calle 22" },
-  });
-  const deliveries = [];
-
-  await assert.rejects(relayOnce(async event => {
-    deliveries.push(event);
-    throw new Error("caída local después de publicar y antes de marcar");
-  }));
-  assert.equal(await relayOnce(async event => deliveries.push(event)), true);
-
-  assert.equal(deliveries.length, 2);
-  assert.equal(deliveries[0].eventId, deliveries[1].eventId);
-  assert.equal(await consumir(deliveries[0]), true);
-  assert.equal(await consumir(deliveries[1]), false);
-  assert.equal(Number((await pool.query("SELECT count(*) FROM eventos_consumidos")).rows[0].count), 1);
-});
-```
-
-Arranca PostgreSQL, espera su healthcheck, crea el esquema y ejecuta las pruebas:
-
-```bash
-docker compose up -d
-docker compose exec -T postgres psql -U rutaflow -d rutaflow < src/db/schema.sql
-npm test
-```
-
-Al terminar, detén y elimina los recursos locales del laboratorio:
-
-```bash
-docker compose down -v
-```
-
-**Resultado esperado:** tres pruebas superadas. Los veinte responses tienen el mismo `201`, `id` y body; existe un solo envío y un evento. El relay entrega dos veces el mismo `eventId` tras la caída simulada, pero `eventos_consumidos` contiene una sola fila. El experimento se limita a veinte solicitudes locales y un pool de diez conexiones; no es un benchmark ni una prueba de carga contra terceros.
-
-**Fallo deliberado y corrección:** en el primer `INSERT INTO idempotency_keys`, elimina temporalmente `ON CONFLICT DO NOTHING`. Repite `npm test`: la restricción única sigue impidiendo claves duplicadas, pero requests concurrentes terminan con errores de unicidad en lugar de recuperar una respuesta estable. Restaura la cláusula. No elimines la primary key para «arreglar» esos errores: sin ella, una variante no atómica de buscar-e-insertar sí podría crear efectos duplicados.
-
-**Práctica guiada:** añade una prueba en la que dos actores distintos usan la misma clave y el mismo payload. Deben crearse dos envíos, uno por actor, porque la identidad incluye `actor_id`. Después repite la misma clave con otra operación registrada explícitamente en la tabla y explica por qué `operation` también forma parte de la unicidad.
-
-**Ejercicio independiente:** apaga y vuelve a arrancar el proceso Node sin borrar el volumen, repite una clave completada y demuestra que recupera el mismo response. Añade una consulta de expiración que solo seleccione claves anteriores a una ventana documentada; no la ejecutes como borrado automático hasta justificar que ningún cliente puede reintentar después de ese plazo.
-
-#### Aplica
-
-En una operación propia de cobro o creación de envío, formula el invariante: «para actor, operación y clave, existe un solo efecto y una respuesta repetible». Conserva la restricción SQL, la transacción, el hash normalizado, las consultas de conteo y la prueba local concurrente. Añade outbox en el mismo commit y una deduplicación de consumidor demostrada con una caída entre publicación y marca.
-
-**Checklist de salida**
-
-- [ ] La unicidad contiene actor, operación y clave; el payload queda vinculado por hash.
-- [ ] Reserva, efecto, respuesta y outbox comparten una transacción.
-- [ ] Veinte reintentos locales devuelven exactamente la misma respuesta y un solo efecto.
-- [ ] Reutilizar la clave con otro payload devuelve `409` sin aplicar otro cambio.
-- [ ] La caída del relay produce una reentrega observable del mismo `event_id`.
-- [ ] El consumidor registra `event_id` y aplica una sola vez su efecto.
-- [ ] El experimento es local, acotado y no se presenta como garantía de carga o de «exactly once» universal.
-- [ ] Existe una política de retención alineada con la ventana de reintento.
-
-```mermaid
-flowchart TD
-  Request[Request con clave estable] --> Reserve[Reservar actor, operación y clave]
-  Reserve --> Tx[Transacción única]
-  Tx -->|clave nueva| Effect[Aplicar efecto y guardar respuesta]
-  Tx -->|misma clave y mismo hash| Replay[Repetir respuesta almacenada]
-  Tx -->|misma clave y hash distinto| Conflict[Responder 409]
-  Effect --> Commit[Commit antes de responder]
-```
-
-**Cuándo usar idempotencia:** úsala cuando un cliente puede reintentar después de perder una respuesta y repetir el efecto sería costoso, como cobrar o crear una entrega. No garantiza «exactly once» en cualquier sistema: delimita la clave, su duración y el efecto atómico; para publicar a otro sistema necesitas además un mecanismo recuperable como outbox y deduplicación del consumidor.
-
-**Proyecto real:** en el servicio de cobro de la API de entregas guarda clave, hash de request, efecto y respuesta en una transacción. Prueba retry idéntico, misma clave con payload diferente y caída después del commit antes de que llegue la respuesta.
-
-**Fuentes oficiales:** [Stripe: idempotent requests](https://docs.stripe.com/idempotency) y [node-postgres: transactions](https://node-postgres.com/features/transactions).
+</details>
 
 ### Tema 5: Webhooks verificables y recuperación por reconciliación · Avanzado · 45 min
 
-#### Aprende
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Prerrequisitos:** buffers, HMAC conceptual, JSON y pruebas con Node. El proyecto es nuevo y no utiliza la base, las claves ni los eventos del ejercicio anterior.
+#### ► DE QUÉ TRATA
+Este tema te guía por webhooks verificables y recuperación por reconciliación con foco en comprensión antes de implementación.
 
-**Al terminar podrás:** firmar y verificar webhooks sobre bytes crudos con timestamp y versión, rechazar cuerpos alterados, firmas de longitud inválida, mensajes antiguos y replays, y reparar una entrega ausente mediante reconciliación.
+#### ► LA IDEA EN UNA FRASE
+**Entender webhooks verificables y recuperación por reconciliación te permite tomar mejores decisiones técnicas.**
 
-**Por qué importa:** cualquiera que conozca la URL de un webhook podría simular un cobro si el receptor no autentica el contenido. Incluso un evento auténtico puede llegar dos veces o no llegar; una integración confiable necesita verificación, deduplicación y recuperación, no solo HTTPS.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El receptor debe conservar los **bytes exactos** recibidos y verificarlos antes de parsear JSON. En este esquema se firma `v1.<timestamp>.<rawBody>` con HMAC-SHA256. Firmar JSON reserializado cambia la entrada cuando varían espacios, orden o representación numérica. TLS protege el transporte; la firma autentica contenido, pero no lo cifra.
+#### ► LA ANALOGÍA
+Piensa en webhooks verificables y recuperación por reconciliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`timingSafeEqual` compara buffers en tiempo constante, pero exige igual longitud. Hay que validar el formato hexadecimal y comprobar la longitud antes de llamarlo. Un `===` entre strings puede producir el mismo booleano en pruebas funcionales y aun filtrar información por diferencias de temporización.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Bytes[Bytes crudos y headers] --> Verify[Verificar firma, versión y ventana]
+  Verify -->|inválido| Reject[Rechazar sin aplicar]
+  Verify -->|válido| Dedup[Deduplicar delivery]
+  Dedup --> Apply[Aplicar evento una sola vez]
+  Source[Fuente autoritativa] --> Reconcile[Reconciliar proyección]
+  Reconcile --> Repair[Reparar evento ausente]
+```
 
-El timestamp firmado permite aplicar una ventana, por ejemplo cinco minutos, y limitar replays antiguos. Un `deliveryId` único detecta reenvíos dentro de la ventana de retención. La ventana de reloj y la deduplicación se complementan: ninguna sustituye a la otra. Para rotar secretos, acepta temporalmente la versión actual y la anterior sin registrar los secretos.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Webhooks verificables y recuperación por reconciliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-El emisor registra cada delivery, respuesta y próximo intento. Reintenta timeouts, errores transitorios y `429` respetando `Retry-After`, con backoff exponencial, jitter y un presupuesto máximo. No reintenta indefinidamente un `400`. Limita concurrencia por destino para no amplificar una caída. El receptor persiste antes de confirmar y procesa de forma idempotente.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Webhooks verificables y recuperación por reconciliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Los reintentos no bastan: una reconciliación periódica compara la fuente de verdad con las entregas o proyecciones y repara ausencias. Una DLQ necesita dueño, alerta y runbook; acumular mensajes no equivale a recuperarlos. Un replay administrativo debe quedar autorizado y auditado.
+#### ► CUÁNDO NO USAR ESTO
+No uses webhooks verificables y recuperación por reconciliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Analogía:** una entrega certificada tiene sello, fecha, número, intentos y un libro maestro. El sello autentica el sobre; el libro permite descubrir que un destinatario nunca lo recibió. Ninguno de los dos mecanismos reemplaza al otro.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: webhooks verificables y recuperación por reconciliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Practica
+#### ► LO QUE DEBES RECORDAR
+- Webhooks verificables y recuperación por reconciliación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Crea una carpeta y archivos nuevos:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve webhooks verificables y recuperación por reconciliación en tu contexto?
+2. ¿Cómo sabrías que webhooks verificables y recuperación por reconciliación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar webhooks verificables y recuperación por reconciliación?
 
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir webhooks-cobros
 cd webhooks-cobros
 mkdir src test
 ```
-
-Crea `package.json`:
 
 ```json
 {
@@ -1229,8 +876,6 @@ Crea `package.json`:
   }
 }
 ```
-
-Crea `src/webhook.js`:
 
 ```javascript
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -1291,8 +936,6 @@ export function reconciliar({ fuente, procesados, aplicar }) {
   return reparados;
 }
 ```
-
-Crea `test/webhook.test.js`:
 
 ```javascript
 import test from "node:test";
@@ -1362,34 +1005,9 @@ test("la reconciliación repara solo la fuente ausente", () => {
 });
 ```
 
-Ejecuta:
-
 ```bash
 npm test
 ```
-
-**Resultado esperado:** cinco pruebas superadas. El cuerpo original es válido; reserializarlo, alterar un byte, envejecer el timestamp, repetir el delivery o cambiar la longitud de la firma produce un rechazo controlado. La reconciliación aplica únicamente `evt_2`.
-
-**Fallo deliberado y corrección:** en `verificar`, reemplaza temporalmente `.update(rawBody)` por `.update(JSON.stringify(JSON.parse(rawBody.toString("utf8"))))`. La primera prueba falla incluso con la firma legítima porque el cuerpo original contiene espacios. Restaura `.update(rawBody)` y repite las pruebas. El proveedor y el receptor deben firmar los mismos bytes; la corrección no consiste en normalizar cada uno por su cuenta.
-
-**Práctica guiada:** sustituye la comparación segura por `received.toString("hex") === signature` después de la comprobación de longitud. Las pruebas funcionales seguirán verdes, lo que demuestra que no miden el canal lateral de temporización. Restaura `timingSafeEqual(received, expected)`, conserva la validación de longitud y registra en una nota por qué una salida booleana correcta no acredita una comparación segura.
-
-**Ejercicio independiente:** crea manualmente `src/politica-reintentos.js` y `test/politica-reintentos.test.js`. Implementa una función pura que reciba un resultado (`400`, `429` con `Retry-After`, timeout o `503`), intento y aleatorio inyectado. Debe no reintentar `400`, respetar `Retry-After`, acotar backoff con jitter y devolver un destino DLQ al agotar cinco intentos. Prueba cada rama sin red ni esperas reales y añade un runbook con responsable, inspección y replay auditado.
-
-#### Aplica
-
-En un receptor propio de confirmación de cobros, captura el body crudo antes de cualquier middleware JSON. Registra versión de firma, timestamp, delivery ID y resultado sin guardar secretos. Demuestra por separado autenticidad, ventana temporal, replay y reconciliación de un evento perdido; ambos caminos de entrega deben converger al mismo estado sin duplicar el cobro aplicado.
-
-**Checklist de salida**
-
-- [ ] HMAC cubre versión, timestamp y los bytes crudos exactos.
-- [ ] La verificación ocurre antes de parsear o aplicar el evento.
-- [ ] `timingSafeEqual` solo se llama después de validar formato e igual longitud.
-- [ ] Un timestamp antiguo y un replay tienen diagnósticos y pruebas propios.
-- [ ] El cuerpo alterado y el cuerpo reserializado se rechazan.
-- [ ] La reconciliación compara fuente y proyección y repara solo ausencias.
-- [ ] La política de reintento distingue permanente, rate limit y transitorio.
-- [ ] DLQ y replay tienen responsable, autorización, auditoría y procedimiento.
 
 ```mermaid
 flowchart LR
@@ -1401,18 +1019,69 @@ flowchart LR
   Reconcile --> Repair[Reparar evento ausente]
 ```
 
-**Proyecto real:** conecta un proveedor de pagos simulado con la API de entregas: conserva el body crudo, registra deliveries procesados y añade una tarea local de reconciliación que detecta un evento omitido. Documenta qué operaciones requieren autorización para reproducir un mensaje.
-
-**Fuentes oficiales:** [Node.js: `crypto.timingSafeEqual`](https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b) y [GitHub: validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries).
-
-## Laboratorio práctico
+</details>
 
 ### Proyecto: API contractual con efectos recuperables
 
-Construye desde una carpeta vacía `rutaflow-confiable/`, sin copiar archivos de los proyectos anteriores ni de ejemplos de la academia. La vertical será «crear una tarea de entrega y notificarla». Usa Node.js LTS, TypeScript estricto, zod, PostgreSQL local, Redocly y `node:test`; todos los requests, webhooks, consumidores y experimentos concurrentes se ejecutan localmente. No uses credenciales reales ni endpoints de terceros.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Crea manualmente esta estructura y completa cada archivo con la responsabilidad indicada:
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto: api contractual con efectos recuperables con foco en comprensión antes de implementación.
 
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto: api contractual con efectos recuperables te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en proyecto: api contractual con efectos recuperables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto: api contractual con efectos recuperables resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto: API contractual con efectos recuperables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto: API contractual con efectos recuperables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto: api contractual con efectos recuperables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto: api contractual con efectos recuperables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto: API contractual con efectos recuperables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto: api contractual con efectos recuperables en tu contexto?
+2. ¿Cómo sabrías que proyecto: api contractual con efectos recuperables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto: api contractual con efectos recuperables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```text
 rutaflow-confiable/
 ├── compose.yaml
@@ -1447,19 +1116,6 @@ rutaflow-confiable/
 └── RUNBOOK.md
 ```
 
-**Contenido y construcción por hitos**
-
-1. **Base estricta y configuración.** En `tsconfig.json` activa `strict`, `noUncheckedIndexedAccess` y `exactOptionalPropertyTypes`. En `config.ts` parsea `process.env` como `unknown`, exige `DATABASE_URL` y un secreto de laboratorio, y no imprimas secretos. En `schemas.ts` separa `CreateTaskInput`, comando de aplicación y entidad persistente. No uses `any`, `@ts-ignore` ni non-null assertions.
-2. **Frontera HTTP.** En `server.ts` implementa `POST /tareas` y `GET /tareas/:id`. Conserva el body crudo para poder validarlo, parsea JSON como `unknown` y aplica el schema antes del caso de uso. Devuelve `201`, `400`, `404`, `409` y Problem Details coherentes.
-3. **Comportamiento proveedor/consumidor.** En `consumidor-movil.json` registra los campos mínimos de la app. En `proveedor.test.ts` comprueba las promesas generales; en `consumidor.test.ts` ejecuta los ejemplos móviles. Incluye una prueba semántica del estado inicial `creada`, no solo su tipo.
-4. **OpenAPI ejecutable.** En `openapi.yaml` documenta requests, responses, autenticación de laboratorio, rate limit y Problem Details. En `openapi.test.ts` valida responses reales. En `consumidor-base.json` guarda campos y enums usados; en `compatibilidad.test.ts` impide retirarlos o cambiarlos sin revisión. Declara los límites de ese comprobador.
-5. **Idempotencia atómica.** En `schema.sql` crea tareas, claves, outbox y eventos consumidos. La primary key de idempotencia será `(actor_id, operation, key)`; guarda `request_hash`, status y response completos. En `idempotencia.ts`, reserva clave, crea tarea, registra respuesta y escribe outbox en una sola transacción. Un hash distinto devuelve `409`.
-6. **Outbox recuperable.** En `outbox.ts`, implementa un relay que seleccione un pendiente con lock, publique a un consumidor local inyectado y después marque. Si falla antes de marcar, la transacción vuelve atrás y permite reentrega. El consumidor deduplica por `event_id` junto a su efecto.
-7. **Webhook y reconciliación.** En `webhook.ts`, firma `v1.<timestamp>.<rawBody>`, comprueba longitud antes de `timingSafeEqual`, aplica una ventana de cinco minutos y deduplica delivery IDs. En `reconciliacion.ts`, compara la fuente local con la proyección y repara ausencias. En `reintentos.ts`, clasifica `400`, `429`, timeout y `503` con presupuesto máximo y DLQ.
-8. **Operación escrita.** En `RUNBOOK.md` documenta invariantes, estados de idempotencia y outbox, métricas, rotación de secreto, retención, alertas, dueño de DLQ, replay administrativo autorizado y auditoría. Incluye comandos de recuperación y criterios para no reintentar indefinidamente.
-
-En `package.json` define manualmente scripts equivalentes a:
-
 ```json
 {
   "scripts": {
@@ -1471,50 +1127,10 @@ En `package.json` define manualmente scripts equivalentes a:
 }
 ```
 
-Arranca únicamente la infraestructura local, aplica el schema y ejecuta la verificación:
-
 ```bash
 docker compose up -d
 docker compose exec -T postgres psql -U rutaflow -d rutaflow < src/db/schema.sql
 npm run check
 ```
 
-**Resultado esperado:** typecheck y lint terminan sin errores; todas las pruebas locales pasan. Las consultas SQL muestran una tarea, un evento outbox y un efecto consumido para una misma intención. Repetir la petición devuelve el mismo status y body. Este resultado esperado describe lo que debes observar al ejecutarlo; no afirma que el laboratorio ya se haya ejecutado, integrado en CI o desplegado.
-
-**Fallo deliberado y corrección:** ejecuta veinte requests locales concurrentes con la misma clave, actor, operación y payload. Después inyecta una caída del relay inmediatamente después de publicar y antes de marcar. Deben observarse dos entregas del mismo `event_id`, una tarea y un solo efecto consumido. Si aparecen dos tareas, detén el experimento y revisa unicidad y transacción; si aparecen dos efectos, revisa deduplicación. Restaura el relay normal y repite la comprobación con el límite de veinte requests.
-
-**Práctica guiada:** firma un webhook local con un body que contiene espacios significativos. Verifica el original, uno reserializado, uno con timestamp de seis minutos de antigüedad, una firma hexadecimal corta y un replay. Corrige cada rechazo por la causa apropiada —bytes, ventana, formato o deduplicación— sin desactivar todos los controles para aceptar el evento.
-
-**Ejercicio independiente:** elimina de la proyección local una notificación que sí existe en la fuente. Ejecuta reconciliación y demuestra que repara solo esa ausencia. Después propón un cambio OpenAPI compatible para el consumidor móvil y otro incompatible, ejecuta la comparación y documenta qué evidencia adicional necesitarías antes de una migración o retiro.
-
-**Criterios de aceptación observables**
-
-- [ ] Todos los archivos del laboratorio fueron creados manualmente en un proyecto nuevo.
-- [ ] TypeScript estricto no se usa como sustituto de validación runtime.
-- [ ] Requests, responses, errores y semántica tienen pruebas de proveedor y consumidor.
-- [ ] OpenAPI pasa lint, valida tráfico real y conserva expectativas de compatibilidad declaradas.
-- [ ] La clave incluye actor, operación y hash; veinte reintentos producen un solo efecto y respuestas estables.
-- [ ] Outbox demuestra at-least-once y el consumidor demuestra deduplicación.
-- [ ] El webhook valida bytes crudos, timestamp, replay, longitud y comparación segura.
-- [ ] Reconciliación y replay administrativo recuperan ausencias con auditoría.
-- [ ] Los experimentos son locales y acotados; no hay afirmaciones de CI, despliegue ni «exactly once» universal.
-- [ ] Otra persona puede seguir el runbook y explicar qué evidencia falta para una revisión pedagógica o profesional.
-
-**Errores comunes y soluciones:** parsea en lugar de usar `as Tipo`; ejecuta contratos en lugar de solo publicar documentación; coordina clave, efecto, respuesta y outbox en una transacción; firma bytes crudos en lugar de JSON reserializado; clasifica reintentos y asigna un procedimiento real a la DLQ.
-
-**Referencia general del runtime:** [documentación oficial de Node.js](https://nodejs.org/api/).
-
-## Atlas completo de temas oficiales
-
-Este atlas sirve para localizar áreas de la plataforma, no sustituye las cinco prácticas del módulo ni afirma que cada tema sea una lección independiente. El baseline consultado el 1 de noviembre de 2026 es **Node.js 24 LTS y Node.js 26 LTS**; las versiones admitidas pueden cambiar y deben comprobarse antes de fijar una versión de producción. La nota de lanzamiento de Node.js 26 documenta que **Temporal** quedó habilitado por defecto en esa versión.
-
-| Área | Temas |
-|---|---|
-| Runtime | event loop; timers; microtasks; EventEmitter; buffers; streams; backpressure; ESM y CommonJS |
-| Sistema | filesystem; paths y URLs; procesos; señales; child_process; worker_threads; cluster; permission model |
-| Red | HTTP/HTTPS; HTTP/2; DNS; TCP/UDP; TLS; proxies; timeouts; Web APIs compatibles |
-| Datos | SQLite; serialización; compresión; crypto; blobs; variables de entorno; configuración validada |
-| Calidad | node:test; mocks; coverage; benchmarks; diagnostics_channel; AsyncLocalStorage; inspector; heap snapshots |
-| Producción | TypeScript; package exports; semver; seguridad de dependencias; graceful shutdown; observabilidad; idempotencia |
-
-**Fuentes primarias:** [documentación de la API de Node.js](https://nodejs.org/api/), [calendario y estado de las versiones](https://nodejs.org/en/about/previous-releases), [anuncio de Node.js 26.0.0 y Temporal](https://nodejs.org/en/blog/release/v26.0.0).
+</details>

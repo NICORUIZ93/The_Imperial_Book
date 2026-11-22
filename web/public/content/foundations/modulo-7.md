@@ -3,25 +3,69 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Requisitos, stakeholders y criterios verificables · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla de confirmación `recipientPin`: debe tener exactamente 6 dígitos. Prerrequisitos: ninguno adicional.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos, y en este módulo en particular vas a organizar el código en módulos para reutilizar funciones. "El sistema debe confirmar entregas de forma segura" no es verificable. El código real ya lo resolvió con una regla concreta: `recipientPin` debe tener exactamente 6 dígitos — esa es la especificación que faltaba poner en palabras antes de escribirse en código.
+#### ► DE QUÉ TRATA
+Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla de confirmación recipientPin: debe tener exactamente 6 dígitos. Prerrequisitos: ninguno adicional.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un criterio de aceptación convierte una intención vaga en ejemplos con entrada y salida esperada — el contrato de resultado de una obra, no una sensación de "que quede bien".
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla de confirmación recipientPin: debe tener exactamente 6 dígitos.**
 
-**Conceptos clave:** stakeholder, necesidad, requisito funcional, atributo de calidad, restricción, historia, criterio de aceptación, supuesto y trazabilidad.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Software exitoso no es el que contiene más funciones, sino el que satisface necesidades relevantes bajo restricciones explícitas. Un stakeholder puede ser usuario, operador, negocio, auditor o equipo de soporte; sus objetivos pueden entrar en tensión.
+#### ► LA ANALOGÍA
+Piensa en requisitos, stakeholders y criterios verificables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-“El sistema debe ser rápido” no es verificable. “El 95 % de búsquedas por SKU debe responder en menos de 200 ms con 100 000 productos en el entorno de referencia” define operación, métrica, umbral y contexto.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    ST["stakeholder"] --> NEED["necesidad"] --> REQ["requisito"] --> CRITERIA["criterio"]
+    CRITERIA --> DESIGN["diseño"] --> TEST["prueba"] --> EVIDENCE["evidencia"]
+```
 
-Una historia organiza valor, pero no sustituye especificación:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Requisitos, stakeholders y criterios verificables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Requisitos, stakeholders y criterios verificables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses requisitos, stakeholders y criterios verificables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: requisitos, stakeholders y criterios verificables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Requisitos, stakeholders y criterios verificables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve requisitos, stakeholders y criterios verificables en tu contexto?
+2. ¿Cómo sabrías que requisitos, stakeholders y criterios verificables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar requisitos, stakeholders y criterios verificables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```text
 Como operador de bodega
 quiero registrar una retirada por SKU
@@ -33,42 +77,21 @@ Criterios:
 - Un lector autenticado no puede retirar.
 ```
 
-Los criterios usan ejemplos que luego pueden convertirse en pruebas. Registra supuestos (“una sola moneda”), exclusiones (“no sincroniza sucursales todavía”) y fuente. Mantén trazabilidad requisito → decisión → código → prueba → evidencia.
-
-Prioriza por valor, riesgo, dependencia y coste de retraso. “Todo es prioridad alta” elimina la utilidad de priorizar. Descubrimiento continúa durante desarrollo: prototipos y pruebas con usuarios pueden revelar que el problema estaba mal entendido.
-
-**Analogía:** requisitos son el contrato de resultado de una obra; “que sea cómoda” necesita convertirse en medidas y escenarios sin fingir que toda experiencia humana se reduce a números.
-
-**¿Por qué es importante?** Porque `confirmDelivery()` ya fue programado correctamente contra una regla de 6 dígitos: el riesgo real en este tema nunca fue el código, sino quedarse con un requisito ambiguo antes de escribirlo.
-
-**Límite de uso:** escribir un criterio por cada detalle trivial convierte el documento en burocracia; el umbral es que el criterio cambie una decisión de diseño o una prueba observable.
-
-**Casos de uso reales:** historias, contratos API, SLO, accesibilidad, cumplimiento, migraciones y aceptación.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     ST["stakeholder"] --> NEED["necesidad"] --> REQ["requisito"] --> CRITERIA["criterio"]
     CRITERIA --> DESIGN["diseño"] --> TEST["prueba"] --> EVIDENCE["evidencia"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `criterios.md` y `verificar_criterios.py`, los dos archivos del ejemplo:
-
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
-
-Archivo `criterios.md`:
 
 ```text
 - Dado un comando con recipientPin de 6 dígitos y shipmentId válido, cuando se confirma, entonces el envío queda "delivered".
 - Dado un recipientPin de 4 dígitos, cuando se confirma, entonces se rechaza con TypeError, sin cambiar el estado del envío.
 - Dado un commandId ya procesado antes, cuando se reenvía el mismo comando, entonces se devuelve el resultado anterior sin volver a confirmar.
 ```
-
-Archivo `verificar_criterios.py`:
 
 ```python
 import re
@@ -97,32 +120,23 @@ sys.exit(1 if fallos else 0)
 python3 verificar_criterios.py
 ```
 
-Resultado esperado:
+</details>
 
-```text
-criterios: 3
-verificables: 3
-```
-
-Las tres líneas tienen dado/cuando/entonces, ninguna usa un adjetivo sin medida y la regla del PIN aparece escrita. El script comprueba la forma del criterio, no que `confirmDelivery()` la cumpla; esa correspondencia exige una prueba sobre el código real.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá a `criterios.md` la línea "Dado cualquier comando, cuando se confirma, entonces el sistema debe responder rápido" y volvé a ejecutar el verificador. Ese es el fallo deliberado: imprime `verificables: 3` y `fallo: criterio 4: adjetivo sin medida numérica`, con código de salida 1, porque "rápido" no tiene métrica, umbral ni contexto. Corregilo con "95 % de confirmaciones en menos de 200 ms con el motor de pruebas local" y el criterio pasa.
-
-#### Paso 6 · Práctica independiente
-Escribí 5 criterios verificables para el CLI del proyecto integrador Fundamentos. Por ejemplo: "tarea add 'hacer compras' debe guardar y después listar mostrará esa tarea", con una condición observable y sin adjetivos sin número.
-
-#### Paso 7 · Cierre
-Entregá los tres criterios verificables del Paso 4, la salida del criterio vago y su corrección del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Como siguiente paso, usá estos criterios en el proyecto del módulo antes de escribir el código correspondiente. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuente oficial primaria: https://www.rfc-editor.org/rfc/rfc2119.
 ### Tema 2: Arquitectura guiada por atributos de calidad · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir el escenario de calidad que justifica una línea real de `confirm-delivery.ts`: la restricción `UNIQUE(command_id)`. Prerrequisitos: Tema 1 de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El comentario del código real dice: "La implementación SQL debe insertar `commandId` y cambiar el envío en una única transacción con restricción `UNIQUE(command_id)`" — esa frase es la respuesta a un escenario de calidad que nunca se escribió explícitamente hasta ahora.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir el escenario de calidad que justifica una línea real de confirm-delivery.ts: la restricción UNIQUE(command_id). Prerrequisitos: Tema 1 de este módulo.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir el escenario de calidad que justifica una línea real de confirm-delivery.ts: la restricción UNIQUE(command_id).**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Un escenario de calidad tiene fuente, estímulo, artefacto, entorno, respuesta y medida — no es un diagrama bonito, es una frase verificable sobre qué pasa cuando algo sale mal.
 
 **Conceptos clave:** arquitectura, componente, conector, límite, dependencia, atributo de calidad, escenario, trade-off, C4 y fitness function.
@@ -167,14 +181,73 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Define disponibilidad, facilidad de prueba y recuperación requeridas por el gestor. Compara dos diseños mediante un escenario concreto de archivo corrupto, en vez de elegir capas solo por su nombre.
 
-#### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con `escenario.txt` y `escenario.py`, el escenario y su comprobación en SQLite:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    PERSON["Operador"] --> WEB["App Web"] --> APP["Aplicación"] --> DB["Base de datos"]
+    APP --> ID["Servicio de identidad"]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura guiada por atributos de calidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura guiada por atributos de calidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura guiada por atributos de calidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura guiada por atributos de calidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura guiada por atributos de calidad existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura guiada por atributos de calidad en tu contexto?
+2. ¿Cómo sabrías que arquitectura guiada por atributos de calidad no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura guiada por atributos de calidad?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    PERSON["Operador"] --> WEB["App Web"] --> APP["Aplicación"] --> DB["Base de datos"]
+    APP --> ID["Servicio de identidad"]
+```
+
+```mermaid
+flowchart LR
+    UI["presentación"] --> APP2["aplicación"] --> DOMAIN["dominio"]
+    INFRA["infraestructura"] -->|"implementa puertos"| APP2
+```
+
+```mermaid
+flowchart LR
+    QUALITY["atributos + restricciones"] --> OPTIONS["alternativas"] --> TRADE["trade-offs"]
+    TRADE --> DECISION["decisión"] --> MEASURE["fitness function"]
+```
 
 ```bash
 mkdir ejemplo && cd ejemplo
 ```
-
-Archivo `escenario.txt`:
 
 ```text
 Fuente: red inestable del conductor
@@ -184,8 +257,6 @@ Entorno: operación normal con conexión intermitente
 Respuesta: la segunda llamada devuelve el resultado ya guardado, sin volver a confirmar ni duplicar
 Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
 ```
-
-Archivo `escenario.py`:
 
 ```python
 import sqlite3
@@ -214,37 +285,23 @@ print("filas sin restricción:", filas(False))
 print("filas con UNIQUE(command_id):", filas(True))
 ```
 
-```bash
-python3 escenario.py
-```
+</details>
 
-Resultado esperado:
-
-```text
-campos del escenario: 6/6
-filas sin restricción: 2
-filas con UNIQUE(command_id): 1
-```
-
-El escenario completo explica por qué el código del Tema 1 necesita esa restricción: sin ella, dos reintentos del mismo comando dejan dos filas y la medida "cero entregas duplicadas" deja de cumplirse.
-
-#### Paso 5 · Práctica guiada
-Pista: en `escenario.py`, quitá `UNIQUE` de la definición de la tabla y volvé a ejecutar. Ese es el fallo deliberado: la última línea pasa a `filas con UNIQUE(command_id): 2`, porque sin la restricción la segunda inserción del mismo `cmd-1` se acepta y la medida del escenario ya no se cumple.
-
-#### Paso 6 · Práctica independiente
-Restaurá la restricción y agregá un segundo escenario para otro atributo, por ejemplo rendimiento: "el 95 % de las confirmaciones se procesa en menos de 200 ms con 100 conductores simultáneos". Documentá qué decisión de diseño —no solo de base de datos— favorece ese escenario.
-
-#### Paso 7 · Cierre
-Entregá el escenario verificado y las dos corridas del Paso 4, la fila duplicada del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten (durabilidad frente a velocidad) y cómo la arquitectura hace explícito ese trade-off. Como siguiente paso, llevá el escenario al ADR del Tema 4 y dejá registrada la restricción que lo hace cumplir. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
 ### Tema 3: Diseño modular, principios, patrones y refactoring · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a definir el puerto `DeliveryRepository`, implementar `confirmDelivery` y escribir un segundo adaptador sin tocar el caso de uso. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos, y Python 3 para el verificador estructural.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-En esta práctica `DeliveryRepository` será una interfaz con dos operaciones (`findCommandResult`/`confirm`): el mismo patrón `Protocol` + inyección de dependencias que acabás de ver en `RepositorioProductos`. Escribirás todos los archivos en una carpeta vacía para comprobar que el dominio no necesita conocer el mecanismo de persistencia.
+#### ► DE QUÉ TRATA
+Al finalizar vas a definir el puerto DeliveryRepository, implementar confirmDelivery y escribir un segundo adaptador sin tocar el caso de uso. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos, y Python 3 para el verificador estructural.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a definir el puerto DeliveryRepository, implementar confirmDelivery y escribir un segundo adaptador sin tocar el caso de uso.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
 
 **Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, puerto, Repository, Adapter y prueba caracterizadora (el catálogo de patrones está en el Módulo 13 y el refactoring en el Módulo 14).
@@ -290,14 +347,78 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Refactoriza el almacenamiento detrás de un contrato pequeño conservando las pruebas de uso. Sustituye el archivo por un fake y demuestra que crear y completar tareas mantienen su comportamiento.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente `confirm-delivery.ts` y `verificar_puerto.py`:
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    SMELL["smell"] --> CHARACTERIZE["prueba caracterizadora"] --> REFACTOR["refactor pequeño"]
+    REFACTOR --> GREEN["suite verde"] --> SMELL
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Diseño modular, principios, patrones y refactoring se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Diseño modular, principios, patrones y refactoring | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses diseño modular, principios, patrones y refactoring por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: diseño modular, principios, patrones y refactoring funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Diseño modular, principios, patrones y refactoring existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve diseño modular, principios, patrones y refactoring en tu contexto?
+2. ¿Cómo sabrías que diseño modular, principios, patrones y refactoring no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar diseño modular, principios, patrones y refactoring?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```python
+from typing import Protocol
+
+class RepositorioProductos(Protocol):
+    def obtener_por_sku(self, sku: str): ...
+    def guardar(self, producto): ...
+
+class RetirarStock:
+    def __init__(self, repositorio: RepositorioProductos):
+        self.repositorio = repositorio
+
+    def ejecutar(self, sku: str, cantidad: int):
+        producto = self.repositorio.obtener_por_sku(sku)
+        producto.retirar(cantidad)
+        self.repositorio.guardar(producto)
+```
+
+```mermaid
+flowchart LR
+    SMELL["smell"] --> CHARACTERIZE["prueba caracterizadora"] --> REFACTOR["refactor pequeño"]
+    REFACTOR --> GREEN["suite verde"] --> SMELL
+```
 
 ```bash
 mkdir ejemplo-puerto && cd ejemplo-puerto
 ```
-
-Archivo `confirm-delivery.ts`:
 
 ```typescript
 export type DeliveryCommand = Readonly<{
@@ -330,8 +451,6 @@ export async function confirmDelivery(
 }
 ```
 
-Archivo `verificar_puerto.py`:
-
 ```python
 import re
 from pathlib import Path
@@ -352,151 +471,350 @@ print("referencias de infraestructura:", len(infra))
 python3 verificar_puerto.py
 ```
 
-Resultado esperado:
+</details>
 
-```text
-métodos: findCommandResult, confirm
-métodos esperados: True
-referencias de infraestructura: 0
-```
-
-El contrato expone solo los dos métodos que `confirmDelivery` necesita y ninguna referencia a SQL, HTTP ni DynamoDB. El script verifica la forma del contrato, no que una implementación cumpla el comportamiento; eso se demuestra con el adaptador del Paso 5.
-
-#### Paso 5 · Práctica guiada
-Crea `adaptador-memoria.ts` con un repositorio en memoria y un contador de efectos. El fallo deliberado a evitar es volver a confirmar en el segundo intento: `findCommandResult` debe devolver el resultado ya guardado y el contador debe quedar en 1. **Pista:** si el contador llega a 2, revisa primero qué devuelve `findCommandResult` después de la primera confirmación y no cambies la validación del PIN.
-
-```typescript
-import { confirmDelivery, type DeliveryRepository, type DeliveryResult } from './confirm-delivery.ts';
-
-const resultados = new Map<string, DeliveryResult>();
-let confirmaciones = 0;
-const repo: DeliveryRepository = {
-  async findCommandResult(commandId) { return resultados.get(commandId) ?? null; },
-  async confirm(command) {
-    confirmaciones += 1;
-    const result = { shipmentId: command.shipmentId, status: 'delivered' as const };
-    resultados.set(command.commandId, result);
-    return result;
-  },
-};
-
-const comando = {
-  commandId: 'cmd-1', shipmentId: 'env-4471',
-  occurredAt: '2026-10-05', recipientPin: '837201',
-};
-console.log(await confirmDelivery(comando, repo));
-console.log(await confirmDelivery(comando, repo));
-console.log('confirmaciones reales:', confirmaciones);
-if (confirmaciones !== 1) throw new Error('el reintento repitió el efecto');
-```
-
-Ejecuta:
-
-```bash
-node adaptador-memoria.ts
-```
-
-Resultado esperado: dos resultados idénticos con estado `delivered` y `confirmaciones reales: 1`. Si el contador llega a 2, revisa la deduplicación antes de culpar al adaptador.
-
-#### Paso 6 · Práctica independiente
-Escribí una prueba caracterizadora sobre `confirmDelivery` usando el adaptador en memoria del Paso 5: documentá qué devuelve con PIN válido, con PIN de 4 dígitos y con `commandId` repetido, antes de proponer cualquier cambio al código real.
-
-#### Paso 7 · Cierre
-Entregá la salida del contrato verificada en el Paso 4, el adaptador con su contador de confirmaciones del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué escribir ese segundo adaptador sin tocar `confirmDelivery` demuestra que el diseño real separó dominio de infraestructura. Como siguiente paso, escribí la prueba caracterizadora sobre el repositorio real antes de refactorizarlo. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
 ### Tema 4: Decisiones, documentación, deuda y evolución · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir el ADR real que justifica por qué RutaFlow usa DynamoDB para `ShipmentEvents` en vez de una base relacional. Prerrequisitos: ninguno adicional (el Módulo 4 del track Cloud profundiza la decisión en sí).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Esa decisión ya está tomada en el código (`ShipmentEvents` con clave `shipmentId`+`sequence`), pero nadie documentó todavía el contexto y las consecuencias — exactamente lo que un ADR existe para registrar antes de que la próxima persona se pregunte "¿por qué no es SQL?". **¿Por qué es importante?** Porque una decisión importante sin contexto documentado se reinterpreta como accidente, y una deuda sin condición de pago se convierte en una reescritura total sin criterio.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir el ADR real que justifica por qué RutaFlow usa DynamoDB para ShipmentEvents en vez de una base relacional. Prerrequisitos: ninguno adicional (el Módulo 4 del track Cloud profundiza la decisión en sí).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un ADR es la bitácora de navegación: no vende la decisión, registra el contexto que la motivó y qué consecuencias aceptaste a cambio — para que la próxima tripulación no la confunda con un accidente. **Conceptos clave:** ADR, documentación viva, deuda técnica, mantenimiento correctivo/adaptativo/perfectivo/preventivo, compatibilidad, deprecación, migración y observabilidad.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir el ADR real que justifica por qué RutaFlow usa DynamoDB para ShipmentEvents en vez de una base relacional.**
 
-Documentación profesional responde preguntas para una audiencia: README permite ejecutar; arquitectura explica estructura; runbook opera; ADR registra una decisión significativa y su contexto. Deuda técnica es una decisión que aumenta coste futuro, a veces consciente: registra principal (trabajo pendiente), interés (coste recurrente), riesgo, propietario y condición de pago; no es deuda cualquier código desagradable ni sirve para justificar una reescritura total. Mantenimiento incluye corregir defectos, adaptarse a entornos, mejorar capacidad y prevenir degradación; un cambio público requiere versionado, migración, periodo de deprecación, telemetría de uso y rollback. La ética atraviesa esas decisiones: accesibilidad, privacidad, sesgo, sostenibilidad y condiciones laborales; un requisito legal es el mínimo, no siempre el límite de responsabilidad.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Diagrama:**
+#### ► LA ANALOGÍA
+Piensa en decisiones, documentación, deuda y evolución como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     DEC["decisión"] --> ADR["ADR"] --> IMPL["implementación"] --> METRICS["métricas"]
     METRICS --> EVIDENCE2["nueva evidencia"] --> REVIEW["mantener o revisar"]
 ```
 
-Un ADR no vende la decisión; registra consecuencias y disparadores de revisión. Diagramas sin fecha y alcance se vuelven engañosos; validá enlaces, ejemplos y comandos de la documentación en CI. **Límites:** un ADR no sustituye el diseño ni la prueba; si el código y el ADR discrepan, alguno está desactualizado y hay que decidir cuál corregir.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Decisiones, documentación, deuda y evolución se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** crea una **carpeta vacía** y dentro el ADR como archivo real; no hace falta ningún proyecto previo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Decisiones, documentación, deuda y evolución | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses decisiones, documentación, deuda y evolución por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: decisiones, documentación, deuda y evolución funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Decisiones, documentación, deuda y evolución existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve decisiones, documentación, deuda y evolución en tu contexto?
+2. ¿Cómo sabrías que decisiones, documentación, deuda y evolución no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar decisiones, documentación, deuda y evolución?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    DEC["decisión"] --> ADR["ADR"] --> IMPL["implementación"] --> METRICS["métricas"]
+    METRICS --> EVIDENCE2["nueva evidencia"] --> REVIEW["mantener o revisar"]
+```
+
 ```bash
 mkdir -p ejemplo-adr/docs/adr && cd ejemplo-adr
 ```
 
-```markdown
-# ADR-004: DynamoDB para ShipmentEvents
-
-Estado: aceptada
+</details>
 
 ### Contexto
-El patrón de acceso dominante es "todos los eventos de este envío, en orden" — una
-consulta por clave conocida, no joins complejos ni consultas ad hoc.
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por contexto con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender contexto te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en contexto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que contexto resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Contexto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Contexto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses contexto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: contexto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Contexto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve contexto en tu contexto?
+2. ¿Cómo sabrías que contexto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar contexto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar contexto.
+
+</details>
 
 ### Decisión
-Usar DynamoDB con clave compuesta (shipmentId HASH, sequence RANGE).
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por decisión con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender decisión te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en decisión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que decisión resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Decisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Decisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses decisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: decisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Decisión existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve decisión en tu contexto?
+2. ¿Cómo sabrías que decisión no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar decisión?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar decisión.
+
+</details>
 
 ### Consecuencias
-Query eficiente por envío sin importar el volumen total de la tabla; a cambio,
-ninguna consulta ad hoc nueva ("todos los envíos de este mes") es gratis sin un GSI
-diseñado para ese patrón específico.
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Este tema te guía por consecuencias con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender consecuencias te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en consecuencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que consecuencias resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Consecuencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Consecuencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses consecuencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: consecuencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Consecuencias existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve consecuencias en tu contexto?
+2. ¿Cómo sabrías que consecuencias no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar consecuencias?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 
 **Ejecuta la verificación** (comprueba que el ADR tiene las tres secciones):
 
-```bash
-python3 -c "import pathlib,sys; t=pathlib.Path('docs/adr/ADR-004-dynamodb-shipmentevents.md').read_text(); faltan=[s for s in ('### Contexto','### Decisión','### Consecuencias') if s not in t]; print('faltan:', faltan) if faltan else print('ADR completo'); sys.exit(1 if faltan else 0)"
 ```
-Observa la salida y compárala con el resultado esperado.
 
-Resultado esperado: `ADR completo`. Explica cada parte: `Estado` dice si la decisión sigue vigente; `Contexto` registra las fuerzas y alternativas; `Decisión` responde qué se eligió; `Consecuencias` acepta el costo y deja el disparador de revisión (aquí, un GSI si aparece una consulta ad hoc recurrente).
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** borra la sección `### Consecuencias` y vuelve a ejecutar la verificación. Falla con `faltan: ['### Consecuencias']`, porque el ADR ya no registra qué se sacrificó. **Pista:** ese es el fallo de un ADR que solo vende la decisión: cualquiera que necesite una consulta ad hoc nueva en seis meses asumirá que DynamoDB "simplemente no sirve para eso", en vez de entender que fue un trade-off consciente con una salida conocida (agregar un GSI, Módulo 4 Tema 5 del track Cloud). Corrige el archivo y confirma que vuelve a imprimir `ADR completo`.
-
-#### Paso 6 · Práctica independiente
-Documentá, como deuda técnica explícita (no como ADR) y en un archivo propio `docs/deuda.md`, que `ShipmentEvents` no tiene todavía un GSI para "envíos por estado actual": escribí principal (el trabajo pendiente), interés (qué cuesta no tenerlo hoy), riesgo, propietario y condición de pago (qué señal dispararía construirlo). Después llevá lo aprendido al **proyecto integrador** Fundamentos: documentá en `docs/adr/0001-almacenamiento-json.md` por qué su `almacenamiento.py` guarda las tareas en un archivo JSON plano y no en SQLite, con las consecuencias de esa elección (simple de inspeccionar a mano, sin escritura concurrente segura), y verificá con `python3 -m pytest tests/test_almacenamiento.py` que el comportamiento documentado sigue siendo el real.
-
-#### Paso 7 · Cierre
-Como **siguiente** paso, usá ese estándar en el proyecto del módulo: requisitos con criterios medibles, ADRs para SQLite, arquitectura modular, autenticación y audit log, pruebas caracterizadoras antes de refactorizar y una fitness function que impida que el dominio importe infraestructura. **Errores comunes:** escribir un ADR que solo vende la decisión sin registrar las consecuencias negativas, llamar "deuda técnica" a cualquier código desprolijo sin principal ni condición de pago, y dejar una decisión importante sin documentar porque "ya se sabe por qué se hizo". **Límites y decisión de uso:** un ADR por cada detalle táctico (nombre de variable, `if` frente a ternario) cuesta más de lo que documenta; el umbral es "difícil de cambiar". **Fuentes oficiales:** https://adr.github.io/ y https://refactoring.com/catalog/.
-
-## Aplicación del material de referencia
+</details>
 
 ### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar ejecutarás un record C#, crearás una copia con `with` y demostrarás qué ocurre con una lista compartida. **Prerrequisitos:** objetos, referencias y colecciones; es una comparación de diseño, no un curso completo de C#. Instala el SDK .NET 10 y comprueba `dotnet --version`. El ejemplo independiente parte de carpeta vacía.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una propuesta habitual es usar records para registros de auditoría. En el proyecto integrador, una copia del registro no debería alterar inesperadamente un historial anterior. **¿Por qué es importante?** Menos código generado no elimina la necesidad de decidir mutabilidad y propiedad de los datos.
+#### ► DE QUÉ TRATA
+Al finalizar ejecutarás un record C#, crearás una copia con with y demostrarás qué ocurre con una lista compartida. Prerrequisitos: objetos, referencias y colecciones; es una comparación de diseño, no un curso completo de C#. Instala el SDK .NET 10 y comprueba dotnet --version. E…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un `record class` de C# tiene semántica de igualdad por valor generada por el compilador; un record posicional genera propiedades con acceso `init`. `with` crea una copia superficial: no clona automáticamente los objetos a los que apuntan sus propiedades. También puedes definir records mutables. No es correcto afirmar que todos los records son profundamente inmutables ni que los records de Java y C# tienen exactamente el mismo contrato.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar ejecutarás un record C#, crearás una copia con with y demostrarás qué ocurre con una lista compartida.**
 
-**Analogía:** fotocopiar una ficha que contiene una dirección no duplica el almacén al que esa dirección apunta. El límite es que la igualdad de los miembros también depende de sus tipos: dos listas con elementos iguales no necesariamente comparan como iguales por contenido.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente el proyecto con estos dos archivos:
+#### ► LA ANALOGÍA
+Piensa en records de c#: igualdad por valor no implica inmutabilidad profunda como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que records de c#: igualdad por valor no implica inmutabilidad profunda resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Records de C#: igualdad por valor no implica inmutabilidad profunda se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Records de C#: igualdad por valor no implica inmutabilidad profunda | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses records de c#: igualdad por valor no implica inmutabilidad profunda por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: records de c#: igualdad por valor no implica inmutabilidad profunda funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Records de C#: igualdad por valor no implica inmutabilidad profunda existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve records de c#: igualdad por valor no implica inmutabilidad profunda en tu contexto?
+2. ¿Cómo sabrías que records de c#: igualdad por valor no implica inmutabilidad profunda no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar records de c#: igualdad por valor no implica inmutabilidad profunda?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```bash
 mkdir ejemplo-records && cd ejemplo-records
 ```
-
-Crea `Records.csproj` con esta configuración:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>
 ```
 
-Crea `Program.cs` con el programa y sus dos records:
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -515,48 +833,31 @@ public record Registro(int Id, List<string> Estados);
 public record Punto(int X, int Y);
 ```
 
-Ejecuta el proyecto desde la carpeta que contiene ambos archivos:
-
 ```bash
 dotnet run --project Records.csproj
 ```
 
-**Resultado esperado:** `IDs independientes; lista compartida` y `Records con valores iguales comparan igual`. Explica cada bloque: `var` deja que el compilador infiera el tipo, `new` crea objetos, `with` cambia un valor escalar y conserva la referencia de Estados. Añadir un estado desde la copia cambia la lista que también observa el original; los checks lanzan una excepción si el contrato deja de cumplirse.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambia la expectativa de `original.Estados.Count` a 1. El programa falla porque no se copió profundamente la lista. **Pista:** observa la referencia compartida; no atribuyas el comportamiento a un fallo del compilador.
-
-#### Paso 6 · Práctica independiente
-Crea la copia con `Estados = new List<string>(original.Estados)`, modifica la nueva lista y exige que la original conserve su longitud. Explica por qué eso sigue sin ser copia profunda si cada elemento fuera a su vez mutable. Si ya conoces los records de Java, compara los dos contratos; si no, omite esta comparación.
-
-#### Paso 7 · Cierre
-El siguiente paso es decidir ownership de colecciones en tus DTOs. **Errores comunes:** equiparar record con seguridad, comparar lenguajes por nombre de característica y exponer colecciones mutables de un historial. **Límites y decisión de uso:** el ejemplo no demuestra concurrencia segura, persistencia ni equivalencia estructural arbitraria.
-
-**Fuente oficial:** [Microsoft: records de C#](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record).
+</details>
 
 ### Tema 6: Desarrollo guiado por especificación con agentes de IA · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una especificación pequeña con criterios numerados, pedir a un agente de IA un cambio contra esa especificación y comprobar con un script que cada criterio quedó cubierto por una prueba. **Prerrequisitos:** el Tema 1 de este módulo (criterios dado/cuando/entonces), pruebas con `unittest` del Módulo 5 y Git básico.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Pedirle código a un asistente de IA con un mensaje suelto ("haz que confirmar entrega valide el PIN") suele funcionar la primera vez y fallar la tercera: el agente no recuerda qué se acordó, cambia cosas que nadie pidió y rompe lo que ya funcionaba. A ese ciclo de prompt → resultado → corrección → otra vez se le llama coloquialmente *vibe coding*. El desarrollo guiado por especificación (*spec-driven development*) invierte el orden: primero se escribe la especificación como única fuente de verdad, el agente trabaja contra ella y el cambio entra al repositorio solo si pasa revisión y CI. **¿Por qué es importante?** Porque en el proyecto integrador el mismo `confirmDelivery()` lo van a tocar varias sesiones de IA distintas; sin un documento estable, cada sesión reinterpreta la regla del PIN de 6 dígitos.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir una especificación pequeña con criterios numerados, pedir a un agente de IA un cambio contra esa especificación y comprobar con un script que cada criterio quedó cubierto por una prueba. Prerrequisitos: el Tema 1 de este módulo (criterios dado/cuando/e…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Conceptos clave:** especificación como fuente de verdad, criterio con identificador, trazabilidad criterio → prueba, cambio pequeño y revisable, ciclo de mejora de la especificación.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir una especificación pequeña con criterios numerados, pedir a un agente de IA un cambio contra esa especificación y comprobar con un script que cada criterio quedó cubierto por una prueba.**
 
-Una especificación útil para un agente tiene tres partes: **contexto** (qué existe y qué no se toca), **criterios numerados** (`C1`, `C2`… en forma dado/cuando/entonces) y **límites** (archivos permitidos, dependencias prohibidas). El agente recibe la especificación completa en cada sesión, no un resumen de memoria. Cada prueba nombra el criterio que verifica, así un script puede detectar criterios sin prueba o pruebas que no corresponden a ningún criterio.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-El ciclo no termina en el código: si la revisión descubre un caso no previsto, primero se agrega el criterio a la especificación y después se pide el cambio. Así el conocimiento queda en el repositorio y la próxima sesión empieza con el contexto correcto.
+#### ► LA ANALOGÍA
+Piensa en desarrollo guiado por especificación con agentes de ia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Analogía:** el *vibe coding* es dictarle una casa a un maestro de obra distinto cada día; la especificación es el plano firmado que cualquier maestro de obra puede leer, y la interventoría (revisión + CI) solo aprueba lo que coincide con el plano.
-
-**Límite de uso:** para un script de una sola vez o una exploración que se va a tirar, escribir una especificación cuesta más de lo que ahorra; el método paga cuando el código vive, lo tocan varias personas o agentes, y un error tiene coste.
-
-**Casos de uso reales:** contratos de API, reglas de negocio con cumplimiento legal, migraciones, y cualquier repositorio donde agentes de IA abren *pull requests*.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     SPEC["especificación (fuente de verdad)"] --> AGENT["agente de IA"]
@@ -566,14 +867,55 @@ flowchart LR
     CI -->|"aprobado"| MAIN["rama principal"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Crea una carpeta nueva con la especificación, el código, sus pruebas y el verificador de trazabilidad:
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Desarrollo guiado por especificación con agentes de IA se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Desarrollo guiado por especificación con agentes de IA | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses desarrollo guiado por especificación con agentes de ia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: desarrollo guiado por especificación con agentes de ia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Desarrollo guiado por especificación con agentes de IA existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve desarrollo guiado por especificación con agentes de ia en tu contexto?
+2. ¿Cómo sabrías que desarrollo guiado por especificación con agentes de ia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar desarrollo guiado por especificación con agentes de ia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    SPEC["especificación (fuente de verdad)"] --> AGENT["agente de IA"]
+    AGENT --> PR["cambio pequeño + pruebas"]
+    PR --> CI["revisión + CI"]
+    CI -->|"caso no previsto"| SPEC
+    CI -->|"aprobado"| MAIN["rama principal"]
+```
 
 ```bash
 mkdir -p ejemplo-spec && cd ejemplo-spec
 ```
-
-Archivo `SPEC.md` (lo que se le entrega al agente en cada sesión):
 
 ```text
 # Confirmar entrega
@@ -583,8 +925,6 @@ C2: Dado un recipientPin con menos o más de 6 dígitos, cuando se confirma, ent
 C3: Dado un recipientPin con letras, cuando se confirma, entonces se lanza ValueError.
 ```
 
-Archivo `entregas.py` (el cambio que produjo el agente):
-
 ```python
 def confirmar(envio: dict, pin: str) -> dict:
     """Devuelve una copia del envío confirmado; no muta el original."""
@@ -592,8 +932,6 @@ def confirmar(envio: dict, pin: str) -> dict:
         raise ValueError("recipientPin debe tener exactamente 6 dígitos")
     return {**envio, "estado": "delivered"}
 ```
-
-Archivo `test_entregas.py` (cada prueba declara su criterio en el nombre):
 
 ```python
 import unittest
@@ -615,8 +953,6 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-Archivo `verificar_trazabilidad.py`:
-
 ```python
 import re
 import sys
@@ -635,70 +971,27 @@ for sobra in sorted(cubiertos - criterios):
 sys.exit(1 if criterios != cubiertos else 0)
 ```
 
-Ejecuta primero las pruebas y luego el verificador:
-
-```bash
-python3 -m unittest -q
-python3 verificar_trazabilidad.py; echo "salida: $?"
-```
-
-![Captura de terminal: las pruebas unitarias pasan con OK, pero el verificador informa 3 criterios, 2 cubiertos, C3 sin prueba y salida 1](content/figures/foundations/spec-driven-trazabilidad.svg)
-
-**Resultado esperado:** las pruebas pasan (`OK`), pero el verificador imprime `criterios: 3  cubiertos: 2`, `sin prueba: C3` y `salida: 1`. Ese es el **fallo deliberado** del ejemplo: el código del agente sí rechaza letras, pero nadie lo demostró. En *vibe coding* ese hueco pasa desapercibido; aquí lo detecta el script antes de la revisión.
-
-**Explicación por bloques:** `re.findall(r"^(C\d+):", ..., re.M)` extrae los identificadores al inicio de cada línea de la especificación; el conjunto `cubiertos` sale de los nombres de las pruebas; la diferencia de conjuntos dice qué falta y qué sobra, y el código de salida `1` permite usarlo como paso de CI.
-
-#### Paso 5 · Práctica guiada
-Agrega `test_C3_pin_con_letras_rechaza` que espere `ValueError` con `"12ab56"` y vuelve a ejecutar ambos comandos: ahora el verificador imprime `criterios: 3  cubiertos: 3` y sale con `0`. **Pista:** si renombras una prueba a `test_C4_...` sin escribir `C4` en `SPEC.md`, el script la reporta como `prueba sin criterio`; esa es la señal de que el agente inventó comportamiento que nadie pidió.
-
-#### Paso 6 · Práctica independiente
-En la revisión aparece un caso nuevo: un PIN con espacios al inicio (`" 123456"`). Sin tocar todavía el código, agrega `C4` a `SPEC.md` decidiendo si se rechaza o se recorta, escribe la prueba `test_C4_...` y solo entonces cambia `entregas.py`. Registra en un `git commit` separado la especificación y en otro el código, para que el historial muestre que la decisión fue anterior a la implementación.
-
-#### Paso 7 · Cierre
-Entregá la salida del verificador con `C3` sin prueba, la salida corregida con los tres criterios cubiertos y el commit de `C4` antes del commit del código. Explicá en una frase por qué "las pruebas pasan" no es lo mismo que "la especificación está cumplida". Como siguiente paso, agregá `python3 verificar_trazabilidad.py` al flujo de CI del Módulo 5 para que ningún cambio de un agente entre sin cubrir sus criterios.
-
-**Errores comunes:** darle al agente solo el último mensaje en lugar de la especificación completa; aceptar un cambio grande de muchos archivos que nadie puede revisar; corregir el código sin actualizar la especificación, con lo que la siguiente sesión repite el error.
-
-**Cuándo no usarlo:** en prototipos desechables o en exploraciones de una tarde; ahí basta un criterio de salida claro y se borra el código al terminar.
-
-**Fuente oficial:** [GitHub Docs — Prácticas recomendadas para usar Copilot en tareas](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/best-practices-for-using-copilot-to-work-on-tasks).
+</details>
 
 ### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Avanzado · 40 min
 
-**Prerrequisito:** tema «Desarrollo guiado por especificación con agentes de IA» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** revisar un conjunto de skills de un agente de IA en tres niveles: que estén bien formadas y sin datos personales, que no repitan otra skill, y que mejoren el resultado en una prueba A/B.
+#### ► DE QUÉ TRATA
+Usa Python 3.14, la línea del curso. Crea la carpeta academia-labs/fundamentos/evaluar-skills con una subcarpeta skills/ que tenga una carpeta por skill y su SKILL.md.
 
-**¿Por qué es importante?** Una skill es una instrucción que el agente sigue sin preguntar. Si filtra datos personales, choca con otra parecida o no mejora nada, el agente trabaja peor y nadie lo nota. Evaluarla antes de publicarla es como revisar código antes de fusionarlo.
+#### ► LA IDEA EN UNA FRASE
+**Usa Python 3.14, la línea del curso.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa Python 3.14, la línea del curso. Crea la carpeta `academia-labs/fundamentos/evaluar-skills` con una subcarpeta `skills/` que tenga una carpeta por skill y su `SKILL.md`.
+#### ► LA ANALOGÍA
+Piensa en evaluar una skill de agente antes de usarla: validar, deduplicar y medir como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-El equipo de RutaFlow tenía tres skills para su agente. Una tenía en su ejemplo el correo y la cédula de un revisor real, y otra hacía casi lo mismo que una existente. La evaluación las encontró antes de publicarlas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** skill de agente, `SKILL.md`, cabecera **YAML** (formato de texto para datos estructurados, legible por personas), datos personales (PII), duplicado, índice de Jaccard, prueba A/B, tasa de éxito, mejora mínima.
-
-NVIDIA publicó SkillEvaluator con tres niveles, de más barato a más caro:
-
-| Nivel | Pregunta | Qué revisa | Costo |
-|---|---|---|---|
-| 1 · Validación | ¿Está bien formada y es segura? | cabecera, nombre igual a la carpeta, largo de la descripción, datos personales | sin modelo de IA |
-| 2 · Duplicados | ¿Ya existe otra igual? | parecido entre descripciones | embeddings o comparación de palabras |
-| 3 · Evaluación | ¿Ayuda de verdad? | las mismas tareas con y sin la skill (A/B) | muchas ejecuciones del agente |
-
-Se corre en orden: no tiene sentido medir con A/B una skill que ni siquiera está bien escrita.
-
-Este tema implementa los tres niveles en pequeño. El nivel 2 usa el **índice de Jaccard** (palabras en común divididas entre todas las palabras) en lugar de embeddings, y el nivel 3 lee resultados ya medidos.
-
-**Analogía:** es la revisión de una receta antes de imprimirla en el menú: que tenga ingredientes y pasos claros (nivel 1), que no sea otro plato con distinto nombre (nivel 2) y que los clientes la prefieran en una cata a ciegas (nivel 3).
-
-**Límite de uso:** Jaccard solo ve palabras iguales: dos descripciones con sinónimos parecen distintas. Para eso SkillEvaluator usa embeddings. Una prueba A/B con 10 tareas es una señal, no una prueba estadística; con pocas tareas la diferencia puede ser suerte.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     S["skills/*/SKILL.md"] --> N1{"Nivel 1<br/>¿bien formada y sin PII?"}
@@ -710,9 +1003,53 @@ flowchart LR
     N3 -->|no| R["reescribir o descartar"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Evaluar una skill de agente antes de usarla: validar, deduplicar y medir se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/fundamentos/evaluar-skills/skills/resumir-pr/SKILL.md`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Evaluar una skill de agente antes de usarla: validar, deduplicar y medir | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses evaluar una skill de agente antes de usarla: validar, deduplicar y medir por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: evaluar una skill de agente antes de usarla: validar, deduplicar y medir funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Evaluar una skill de agente antes de usarla: validar, deduplicar y medir existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve evaluar una skill de agente antes de usarla: validar, deduplicar y medir en tu contexto?
+2. ¿Cómo sabrías que evaluar una skill de agente antes de usarla: validar, deduplicar y medir no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar evaluar una skill de agente antes de usarla: validar, deduplicar y medir?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    S["skills/*/SKILL.md"] --> N1{"Nivel 1<br/>¿bien formada y sin PII?"}
+    N1 -->|no| X["corregir antes de seguir"]
+    N1 -->|sí| N2{"Nivel 2<br/>¿se parece a otra?"}
+    N2 -->|sí| M["fusionar o separar"]
+    N2 -->|no| N3{"Nivel 3<br/>¿mejora el A/B?"}
+    N3 -->|sí| P["publicar"]
+    N3 -->|no| R["reescribir o descartar"]
+```
 
 ```markdown
 ---
@@ -723,8 +1060,6 @@ description: Revisa un pull request de RutaFlow buscando errores de lógica y pr
 2. Resume los cambios. Contacto del equipo: soporte@rutaflow.co, cédula del revisor 1020304050.
 ```
 
-Archivo `academia-labs/fundamentos/evaluar-skills/resultados-ab.json`:
-
 ```json
 {
   "skill": "generar-changelog",
@@ -733,8 +1068,6 @@ Archivo `academia-labs/fundamentos/evaluar-skills/resultados-ab.json`:
   "con_skill": [1, 1, 1, 1, 0, 1, 1, 1, 1, 0]
 }
 ```
-
-Archivo `academia-labs/fundamentos/evaluar-skills/evaluar_skill.py`:
 
 ```python
 """Evalúa skills de agentes en tres niveles, como SkillEvaluator de NVIDIA.
@@ -818,18 +1151,10 @@ print(f"  {nivel3(Path('resultados-ab.json'))}")
 sys.exit(1 if fallas or duplicados else 0)
 ```
 
-Crea también `skills/revisar-pr/SKILL.md` (revisa un PR buscando errores, pruebas faltantes y secretos) y `skills/generar-changelog/SKILL.md` (genera el CHANGELOG desde los commits), con la misma cabecera.
-
 ```bash
 cd academia-labs/fundamentos/evaluar-skills
 python3 evaluar_skill.py; echo "salida: $?"
 ```
-
-**Explicación por bloques:** `leer` separa la cabecera YAML del cuerpo de cada `SKILL.md`. `nivel1` exige que el nombre coincida con la carpeta, que la descripción tenga entre 20 y 1024 caracteres (la especificación de Agent Skills pide de 1 a 1024; el mínimo de 20 es una regla propia contra descripciones vagas) y que el cuerpo no tenga correos ni números de 8 a 10 dígitos. `nivel2` compara cada par de descripciones con Jaccard y avisa desde el 60 %. `nivel3` calcula la tasa de éxito con y sin la skill y exige una mejora de 20 puntos. El script termina con código 1 si hay fallas o duplicados, para que un pipeline lo detenga.
-
-![Captura de terminal: resumir-pr falla por datos personales, se parece 91 % a revisar-pr, y generar-changelog sube del 40 % al 80 % de éxito](content/figures/foundations/evaluar-skill-agente.svg)
-
-**Resultado esperado:**
 
 ```text
 Nivel 1 · validación
@@ -843,32 +1168,4 @@ Nivel 3 · prueba A/B
 salida: 1
 ```
 
-**Fallo deliberado:** sube `UMBRAL_DUPLICADO` a 0.95. **Error esperado:** el nivel 2 dice «sin duplicados» aunque `resumir-pr` y `revisar-pr` tienen casi la misma descripción. **Diagnóstico:** un umbral muy alto deja pasar duplicados reales. Ajusta el umbral con pares que sepas que son duplicados y pares que no.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el evaluador y explica cada línea.
-2. **Variación:** quita el correo y la cédula de `resumir-pr` y vuelve a ejecutar.
-3. **Diagnóstico:** reproduce el fallo deliberado con el umbral en 0.95.
-4. **Integración:** cambia la descripción de `resumir-pr` para que diga qué la diferencia de `revisar-pr` y comprueba que el parecido baja.
-5. **Diseño:** cambia `con_skill` en `resultados-ab.json` para que la mejora sea de 10 puntos y explica el nuevo veredicto.
-
-**Pista:** una descripción buena dice cuándo usar la skill y en qué se diferencia de las otras; eso también baja el parecido del nivel 2.
-
-#### Paso 6 · Práctica independiente
-
-Evalúa las skills de este repositorio (`.claude/skills/`) con el nivel 1 de SkillEvaluator: `skillevaluator quality-check`. Compara su reporte con el tuyo y anota qué revisa que tu script no revisa.
-
-#### Paso 7 · Cierre
-
-- [ ] Nombras los tres niveles y por qué van en ese orden.
-- [ ] El evaluador detecta los datos personales y el duplicado.
-- [ ] Reprodujiste el duplicado perdido con un umbral alto.
-- [ ] Sabes por qué 10 tareas no bastan para una conclusión fuerte.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** publicar skills sin revisarlas, poner datos reales en ejemplos y medir solo con el promedio de pocas tareas. **Siguiente paso:** el módulo 8 aplica la misma idea de puerta de calidad a las pruebas del código.
-
-**Transferencia al proyecto integrador «RutaFlow»:** agrega la evaluación de skills al pipeline del repositorio de RutaFlow para que una skill con datos personales o duplicada no llegue a la rama principal.
-
-**Fuente oficial:** [NVIDIA SkillEvaluator](https://github.com/NVIDIA/skillevaluator) y [Agent Skills — especificación](https://agentskills.io/specification).
-
+</details>

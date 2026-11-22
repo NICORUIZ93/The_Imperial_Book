@@ -4,39 +4,133 @@
 
 Java estándar incluye un cliente HTTP moderno, pero un cliente seguro no equivale a un servidor seguro. En este módulo construirás una llamada saliente robusta y reconocerás cómo transportar credenciales sin confundir JWT con autorización.
 
+
 ### Dos ejemplos: primero visible, luego real
 
-- **Ejemplo sencillo:** consulta un `/health` local con `HttpClient`, límite de conexión y límite total; prueba 200, 404 y timeout.
-- **Caso RutaFlow:** consulta un proveedor de geocodificación con host configurado por entorno, allowlist, TLS, `X-Correlation-ID` y presupuesto total de tiempo. Un 503 puede reintentarse con backoff y jitter; un POST de liquidación no se reintenta sin una clave idempotente.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-La prueba real debe incluir timeout, límite de intentos, respuesta inválida y rechazo de destino no permitido. La autenticación del proveedor no autoriza por sí sola a un usuario de RutaFlow para consultar el envío de otro tenant.
+#### ► DE QUÉ TRATA
+Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
+
+#### ► LA IDEA EN UNA FRASE
+**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
+2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
+
+</details>
 
 ### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás enviar un GET HTTP con `HttpClient`, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada. Comprueba `java -version` y crea la carpeta `mkdir -p java-http-t01/src`.
-**Conocimiento previo:** Java M0 Temas 1–3 (clases, excepciones y métodos); no se necesita un servidor externo.
-#### Paso 2 · Contexto y caso real
+#### ► DE QUÉ TRATA
+Al finalizar podrás enviar un GET HTTP con HttpClient, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada. Comprueba java -version y crea la carpeta mkdir -p java-http-t01/src. Conocimiento previo: Java…
 
-El servicio de envíos consulta una API externa para validar una dirección. Si esa API no responde, los hilos pueden quedar ocupados y acumular solicitudes.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás enviar un GET HTTP con HttpClient, timeout acotado, validación del estado y parseo separado de la respuesta.**
 
-#### Paso 3 · Teoría y modelo mental
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-`HttpClient` reutilizable administra conexiones; `HttpRequest` define destino, método, headers y timeout; `HttpResponse` contiene estado y cuerpo. Un timeout limita la espera, pero no crea un retry seguro. Reintenta solo fallos transitorios y operaciones idempotentes, con límite, espera creciente y jitter. No reintentes automáticamente un POST que podría haber sido aplicado aunque la respuesta se perdiera.
+#### ► LA ANALOGÍA
+Piensa en httpclient, rest, timeouts y fallos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Piensa en el timeout como el tiempo máximo que mantienes abierta una llamada telefónica, no como una garantía de que el otro sistema no haya recibido el mensaje.
-**Analogía:** llamar a un servicio remoto es como pedir algo por teléfono a otra oficina: a veces no contestan (timeout), a veces contestan tarde o con un "no" (fallo). El `HttpClient` es tu teléfono; poner un timeout es colgar si nadie responde en vez de esperar para siempre con el auricular en la oreja.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que httpclient, rest, timeouts y fallos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** Porque un timeout explícito y un manejo de errores diferenciado por código de estado protegen la capacidad del propio servicio cuando una dependencia externa falla o no responde, en vez de acumular hilos bloqueados indefinidamente.
-**Conceptos clave:** `HttpClient`, `HttpRequest`/`HttpResponse`, timeout, reintento idempotente con backoff y jitter.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| HttpClient, REST, timeouts y fallos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Cuándo no usarlo:** llamadas con cuerpo enorme no deben cargarse sin límite en memoria; usa un `BodyHandler` de streaming.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar HttpClient, REST, timeouts y fallos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
+#### ► CUÁNDO NO USAR ESTO
+No uses httpclient, rest, timeouts y fallos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-En `src/main/java/academia/http/ConsultaDireccion.java`:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: httpclient, rest, timeouts y fallos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- HttpClient, REST, timeouts y fallos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve httpclient, rest, timeouts y fallos en tu contexto?
+2. ¿Cómo sabrías que httpclient, rest, timeouts y fallos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar httpclient, rest, timeouts y fallos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 package academia.http;
 
@@ -66,37 +160,12 @@ public final class ConsultaDireccion {
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
 ```bash
 # Maven
 mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app && mvn test
 # Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
 ```
-
-Ejecuta un servidor local de prueba y llama a `consultar(URI.create("http://localhost:8080/health"))`; ejecuta tests con `./mvnw test`.
-
-**Resultado esperado:** HTTP 200 devuelve el cuerpo; 404 y timeout aparecen como errores explícitos. **Fallo deliberado:** elimina el timeout del request y detén el servidor de prueba; observa la llamada bloqueada. Restaura el límite y verifica que el test termina acotadamente.
-
-#### Paso 5 · Práctica guiada
-
-Agrega manejo distinto para 4xx, 5xx y timeout. Implementa un retry de máximo dos intentos únicamente para GET ante 502/503/504, con backoff. El test debe verificar el máximo de intentos y que un 400 no se reintenta.
-**Pista:** si el test cuenta más de dos llamadas para un 503, o ve que un 400 también se reintentó, la condición del retry está mal acotada: debe comprobar el código de estado (502/503/504) Y el método (solo GET) antes de reintentar, no solo uno de los dos.
-
-#### Paso 6 · Práctica independiente
-
-Consume un endpoint de RutaFlow con un DTO validado. Añade correlación de request, límite de tamaño de respuesta y una allowlist de hosts configurada por el servicio. No aceptes URLs arbitrarias del usuario.
-
-#### Subtema 1.1: Consultar un health local · 10 min
-
-**1. Contexto**
-
-Prueba el cliente sin depender de internet ni cuentas externas.
-
-**2. Hazlo tú**
-
-Crea `java-http-t01/src/Salud.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -124,30 +193,6 @@ public class Salud {
     }
 }
 ```
-
-Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Salud.java`.
-
-**Resultado esperado:** `HTTP 200: ok`.
-
-**Fallo deliberado**: cambia `/health` por `/healthz`. **Resultado del fallo:** el estado pasa a HTTP 404; el servidor devuelve su respuesta 404 por defecto. **Diagnóstico:** la ruta no coincide con la que registró el servidor local.
-
-**3. Entiende**
-
-El puerto 0 permite que el sistema elija uno libre; el programa consulta el puerto asignado.
-
-**4. Cierra**
-
-Guarda respuesta y estado HTTP observados.
-
-#### Subtema 1.2: Mostrar el motivo de un 404 · 10 min
-
-**1. Contexto**
-
-una respuesta HTTP puede llegar bien y comunicar que el recurso no existe.
-
-**2. Hazlo tú**
-
-Crea `java-http-t01/src/NoExiste.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -177,30 +222,6 @@ public class NoExiste {
 }
 ```
 
-Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/NoExiste.java`.
-
-**Resultado esperado:** `IllegalStateException: API respondió HTTP 404: Guía no existe`.
-
-**Fallo deliberado**: acepta cualquier estado menor que 500. **Resultado del fallo:** el 404 pasa como si fuera éxito. **Diagnóstico:** la conexión contestó, pero no encontró el envío.
-
-**3. Entiende**
-
-Comprueba estado y cuerpo antes de entregar una respuesta como resultado válido.
-
-**4. Cierra**
-
-Conserva la respuesta 404 y el texto que diagnosticó la ruta.
-
-#### Subtema 1.3: Limitar la espera con timeout · 10 min
-
-**1. Contexto**
-
-Si una dependencia tarda demasiado, el cliente debe dejar libre el hilo y reportar el timeout.
-
-**2. Hazlo tú**
-
-Crea `java-http-t01/src/Espera.java`:
-
 ```java
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
@@ -227,30 +248,6 @@ public class Espera {
     }
 }
 ```
-
-Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Espera.java`.
-
-**Resultado esperado:** `timeout: 100 ms`.
-
-**Fallo deliberado**: sube el timeout a 2 segundos. **Resultado del fallo:** el request acaba después de la demora y no informa timeout. **Diagnóstico:** el límite ahora es mayor que los 800 ms simulados.
-
-**3. Entiende**
-
-timeout limita cuánto espera el cliente; no demuestra que el servidor no recibiera el request.
-
-**4. Cierra**
-
-Anota el timeout configurado, el observado y por qué el servidor aún pudo recibir la petición.
-
-#### Subtema 1.4: Reintentar un GET con un límite · 15 min
-
-**1. Contexto**
-
- un 503 puede ser temporal; repetir indefinidamente aumenta la carga cuando el proveedor está caído.
-
-**2. Hazlo tú**
-
-Crea `java-http-t01/src/Reintento.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -286,52 +283,69 @@ public class Reintento {
 }
 ```
 
-Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Reintento.java`.
-
-**Resultado esperado:** `intento=1 HTTP 503`, `intento=2 HTTP 200`, `llamadas=2`.
-
-**Fallo deliberado**: cambia GET por un POST que liquida un pago y conserva el retry. **Resultado del fallo:** el pago podría enviarse dos veces. **Diagnóstico:** un POST de escritura necesita idempotencia y una política acordada antes de repetirlo.
-
-**3. Entiende**
-
-Limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
-
-**Evidencia de aprendizaje:** entrega los tests de éxito (200), error de cliente (404) y timeout, junto con el reintento acotado verificado solo para operaciones idempotentes.
-**4. Cierra**
-
-Guarda secuencia de respuestas y cantidad de intentos.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado para el proyecto integrador de RutaFlow, usando el cliente para consultar un proveedor externo; como siguiente paso transporta una credencial de forma segura sobre ese mismo cliente. Errores comunes: no fijar un timeout explícito y dejar que una API externa caída bloquee hilos indefinidamente, reintentar automáticamente un POST no idempotente ante una respuesta perdida, y cargar un cuerpo de respuesta potencialmente enorme completo en memoria sin un `BodyHandler` de streaming. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html.
+</details>
 
 ### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia. Crea la carpeta `mkdir -p java-http-t02/src`.
-**Conocimiento previo:** Java M18 Tema 1 (cliente HTTP y estados de respuesta) y Java M0 Temas 1–3; usa credenciales ficticias del laboratorio.
-#### Paso 2 · Contexto y caso real
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia. Crea la carpeta mkdir -p java-http-t02/s…
 
-El cliente móvil envía el token de un usuario junto a una solicitud de consulta. Un token válido confirma una identidad, pero no demuestra que ese usuario pueda leer cualquier envío.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización.**
 
-#### Paso 3 · Teoría y modelo mental
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-JWT es un formato de claims firmado, no necesariamente cifrado: quien lo obtiene puede leer sus claims. OAuth 2.0 es un marco de autorización; OpenID Connect añade una capa de identidad. Un cliente Java normalmente obtiene un token de un proveedor confiable y lo envía por HTTPS como `Authorization: Bearer ...`; el servidor valida firma, emisor, audiencia, expiración y permisos. No registres tokens ni los guardes en el código fuente.
+#### ► LA ANALOGÍA
+Piensa en tokens, validación y límites de seguridad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Valida longitud, formato, rangos y reglas de negocio en cada frontera. Las consultas parametrizadas evitan inyección SQL, pero no reemplazan autorización por objeto. Para SSRF, valida esquema/host, resuelve DNS y bloquea rangos privados/no enrutable también en la conexión; una comprobación textual de URL no es suficiente.
-**Analogía:** un token es como la pulsera de un festival: demuestra que pagaste la entrada sin tener que mostrar el DNI en cada puesto. Validarlo es revisar que la pulsera sea auténtica y no haya caducado; el límite de seguridad es que la pulsera de la zona general no te abre el backstage.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que tokens, validación y límites de seguridad resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**¿Por qué es importante?** Porque la identidad (quién eres), los permisos sobre cada recurso específico (qué podés hacer con ESTE envío) y la protección de la credencial misma resuelven tres amenazas distintas; un token válido nunca implica por sí solo que su dueño pueda leer cualquier recurso.
-**Conceptos clave:** JWT, OAuth 2.0, OpenID Connect, autenticación frente a autorización, SSRF.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Tokens, validación y límites de seguridad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Tokens, validación y límites de seguridad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Paso 4 · Demostración guiada
+#### ► CUÁNDO NO USAR ESTO
+No uses tokens, validación y límites de seguridad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-En el cliente del tema anterior, añade una credencial cargada desde una variable de entorno y evita imprimirla:
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: tokens, validación y límites de seguridad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Tokens, validación y límites de seguridad existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve tokens, validación y límites de seguridad en tu contexto?
+2. ¿Cómo sabrías que tokens, validación y límites de seguridad no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar tokens, validación y límites de seguridad?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 String token = System.getenv("ACADEMIA_API_TOKEN");
 if (token == null || token.isBlank()) {
@@ -345,36 +359,12 @@ HttpRequest request = HttpRequest.newBuilder(uri)
     .build();
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto desde cero con Maven o Gradle, pega el código y corre las pruebas; equivalencias en el Módulo 8, Tema 4):
-
 ```bash
 # Maven
 mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd app && mvn test
 # Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
 ```
-
-Ejecuta con `ACADEMIA_API_TOKEN=token-de-prueba ./mvnw test` (en PowerShell, configura `$env:ACADEMIA_API_TOKEN` antes). Un test con servidor stub debe comprobar el header sin escribir el valor en logs.
-
-**Resultado esperado:** el servidor de laboratorio recibe el bearer; no hay secreto en el repositorio. **Fallo deliberado:** usa HTTP plano contra una máquina externa o registra el header completo. Identifica exposición en tránsito/logs y retira ambas prácticas; no uses tokens reales.
-
-#### Paso 5 · Práctica guiada
-
-Prueba valores vacíos, excesivamente largos y con formato inválido antes de construir el request. A continuación intenta consultar una IP privada con una URL configurada externamente: debe rechazarse por política, no por una expresión regular improvisada.
-**Pista:** si tu validación solo revisa el texto de la URL (por ejemplo, rechazar "localhost" con una expresión regular), una URL que resuelve por DNS a `127.0.0.1` la esquiva igual; resuelve el host primero y bloquea el rango de IP resultante, no solo el string original.
-#### Paso 6 · Práctica independiente
-
-Diseña una matriz de autorización para `envio:leer`, `envio:asignar` y `envio:liquidar`. Escribe pruebas de acceso permitido/denegado y agrega expiración corta al token de test. Explica por qué TLS, expiración, audience y autorización de propiedad resuelven problemas diferentes.
-
-#### Subtema 2.1: Enviar un bearer local sin imprimir el secreto · 10 min
-
-**1. Contexto**
-
-El servidor debe recibir una credencial ficticia sin que el programa la escriba en la terminal.
-
-**2. Hazlo tú**
-
-Crea `java-http-t02/src/BearerLocal.java`:
 
 ```java
 import com.sun.net.httpserver.HttpServer;
@@ -405,30 +395,6 @@ public class BearerLocal {
 }
 ```
 
-Ejecuta `ACADEMIA_API_TOKEN=prueba-local java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java` (PowerShell: `$env:ACADEMIA_API_TOKEN='prueba-local'; java --add-modules jdk.httpserver java-http-t02/src/BearerLocal.java`).
-
-**Resultado esperado:** `HTTP 200: credencial presente`; la salida nunca muestra el token.
-
-**Fallo deliberado**: agrega `System.out.println(token)`. **Resultado del fallo:** se expone el valor ficticio en la terminal. **Diagnóstico:** registra si hay credencial, nunca su contenido; en producción usa un secreto real solo desde un gestor de secretos y HTTPS.
-
-**3. Entiende**
-
-El laboratorio usa token inventado y loopback; no pegues secretos reales en comandos o código.
-
-**4. Cierra**
-
-Conserva prueba válida, faltante y token ficticio sin copiar el secreto.
-
-#### Subtema 2.2: Rechazar destinos fuera de una lista permitida · 10 min
-
-**1. Contexto**
-
-no permitas que una URL externa apunte a una consola o base de datos interna.
-
-**2. Hazlo tú**
-
-Crea `java-http-t02/src/DestinoSeguro.java`:
-
 ```java
 import java.net.URI;
 import java.util.Set;
@@ -449,30 +415,6 @@ public class DestinoSeguro {
 }
 ```
 
-Ejecuta `java java-http-t02/src/DestinoSeguro.java`.
-
-**Resultado esperado:** `rechazada: Se requiere HTTPS`.
-
-**Fallo deliberado**: quita la comprobación del host y prueba `https://127.0.0.1/admin`. **Resultado del fallo:** el destino privado pasa el chequeo de esquema. **Diagnóstico:** HTTPS cifra el canal, no restringe el destino; en producción combina allowlist con bloqueo de rangos privados en red y revisión de DNS/redirecciones.
-
-**3. Entiende**
-
- una URL con esquema seguro aún puede apuntar a una dirección prohibida.
-
-**4. Cierra**
-
-Guarda los dos destinos permitidos y el rechazado.
-
-#### Subtema 2.3: Comprobar quién puede leer cada envío · 10 min
-
-**1. Contexto**
-
- autenticar a Ana no significa que pueda leer los envíos de otras personas.
-
-**2. Hazlo tú**
-
-Crea `java-http-t02/src/Propiedad.java`:
-
 ```java
 public class Propiedad {
     record Envio(String guia, String propietario) {}
@@ -486,30 +428,6 @@ public class Propiedad {
     }
 }
 ```
-
-Ejecuta `java java-http-t02/src/Propiedad.java`.
-
-**Resultado esperado:** `ana=true` y `leo=false`.
-
-**Fallo deliberado**: haz que `puedeLeer` siempre devuelva `true`. **Resultado del fallo:** Leo obtiene acceso al envío de Ana. **Diagnóstico:** comprobar el rol general no comprueba la propiedad de este objeto.
-
-**3. Entiende**
-
-Decide el permiso para cada envío y acción, además de validar la identidad.
-
-**4. Cierra**
-
-Conserva una autorización permitida y otra denegada.
-
-#### Subtema 2.4: Rechazar identificadores con formato inválido · 10 min
-
-**1. Contexto**
-
- valida una guía antes de pasarla a SQL o a otro servicio.
-
-**2. Hazlo tú**
-
-Crea `java-http-t02/src/ValidarGuia.java`:
 
 ```java
 public class ValidarGuia {
@@ -526,60 +444,27 @@ public class ValidarGuia {
 }
 ```
 
-Ejecuta `java java-http-t02/src/ValidarGuia.java`.
-
-**Resultado esperado:** `RT-82` y después `Guía inválida`.
-
-**Fallo deliberado**: reemplaza la expresión completa por `guia.startsWith("RT-")`. **Resultado del fallo:** `RT-82 OR 1=1` pasa. **Diagnóstico:** un prefijo no valida toda la entrada; comprueba el formato completo y usa consultas parametrizadas en la capa de datos.
-
-**3. Entiende**
-
-Formato, autorización y parametrización SQL resuelven problemas distintos.
-
-**Evidencia de aprendizaje:** entrega la prueba del header `Authorization: Bearer` sin exponerlo en logs, la validación de entradas hostiles, y el rechazo de una URL con IP privada por política explícita.
-**4. Cierra**
-
-Guarda entrada válida, inválida y la regla que la rechazó.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega pruebas del header, validación y denegación, sin incluir credenciales reales, como incremento del proyecto integrador de RutaFlow: cada consulta de envío debe comprobar la propiedad o el permiso además del rol; con esto cerrás el módulo. Errores comunes: registrar el token completo en logs o guardarlo en el código fuente, confundir un token válido (autenticación) con permiso sobre un recurso específico (autorización), y validar una URL externa solo con una expresión regular en vez de resolver DNS y bloquear rangos privados. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html y https://cheatsheetseries.owasp.org/.
+</details>
 
 ### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
 
-**Prerrequisito:** tema «Tokens, validación y límites de seguridad» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** calcular un hash SHA-256, firmar y verificar un mensaje con HMAC, y cifrar con AES-GCM detectando cualquier alteración, usando solo la Java Cryptography Architecture.
+#### ► DE QUÉ TRATA
+Usa JDK 17 o superior; todo viene en el JDK. Crea la carpeta academia-labs/java/cripto.
 
-**¿Por qué es importante?** Casi todo error de criptografía viene de elegir mal la herramienta: hashear una contraseña con SHA-256, cifrar sin autenticar o repetir un IV. Saber qué resuelve cada primitiva evita esos errores.
+#### ► LA IDEA EN UNA FRASE
+**Usa JDK 17 o superior; todo viene en el JDK.**
 
-#### Paso 1 · Objetivo y preparación
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Usa JDK 17 o superior; todo viene en el JDK. Crea la carpeta `academia-labs/java/cripto`.
+#### ► LA ANALOGÍA
+Piensa en criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 2 · Contexto y caso real
-
-RutaFlow recibe avisos de entrega de un socio por webhook. Hay que comprobar que el aviso viene del socio (HMAC) y guardar la dirección del cliente cifrada en la base (AES-GCM). Un desarrollador había usado AES en modo ECB: los datos se cifraban, pero un atacante podía cambiar bloques sin que nadie lo notara.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** hash, HMAC, cifrado simétrico, AES-GCM, IV (*nonce*), etiqueta de autenticación, comparación en tiempo constante, `SecureRandom`.
-
-| Necesitas | Usa | No uses |
-|---|---|---|
-| huella de un archivo | SHA-256 (`MessageDigest`) | MD5, SHA-1 |
-| saber que un mensaje viene de quien tiene la clave | HMAC-SHA256 (`Mac`) | un hash sin clave |
-| ocultar datos y detectar cambios | AES-GCM (`Cipher`) | AES/ECB, AES/CBC sin MAC |
-| guardar contraseñas | Argon2, bcrypt o PBKDF2 | SHA-256 directo |
-
-**AES-GCM** cifra y además calcula una **etiqueta** de 16 bytes. Al descifrar, si un solo bit cambió, lanza `AEADBadTagException`. Necesita un **IV** de 12 bytes **distinto en cada cifrado con la misma clave**: repetirlo rompe la seguridad. Se genera con `SecureRandom` y se guarda junto al texto cifrado (no es secreto).
-
-Para comparar firmas usa `MessageDigest.isEqual`, que tarda lo mismo sin importar dónde está la diferencia.
-
-**Analogía:** un hash es la huella digital de un documento; HMAC es la huella con un sello que solo tú y tu socio tienen; AES-GCM es una caja fuerte con precinto: además de cerrarla, sabes si alguien la abrió. La analogía falla en que el precinto (la etiqueta) no impide que alguien rompa la caja: solo garantiza que lo notarás.
-
-**Límite de uso:** nunca inventes algoritmos ni combines primitivas a mano. Las claves no van en el código: van en un gestor de secretos. Para contraseñas usa una función lenta diseñada para eso.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     D["datos"] -->|"SHA-256"| H["huella"]
@@ -588,9 +473,50 @@ flowchart LR
     C -->|"un bit cambiado"| X["AEADBadTagException"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `academia-labs/java/cripto/Cripto.java`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos en tu contexto?
+2. ¿Cómo sabrías que criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    D["datos"] -->|"SHA-256"| H["huella"]
+    D -->|"HMAC + clave compartida"| F["firma: ¿viene del socio?"]
+    D -->|"AES-GCM + clave + IV nuevo"| C["cifrado + etiqueta"]
+    C -->|"un bit cambiado"| X["AEADBadTagException"]
+```
 
 ```java
 import java.nio.charset.StandardCharsets;
@@ -647,18 +573,10 @@ public class Cripto {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 cd academia-labs/java/cripto
 java Cripto.java
 ```
-
-**Explicación por bloques:** El hash SHA-256 siempre da la misma huella para los mismos bytes. El HMAC usa una clave compartida y `MessageDigest.isEqual` compara las firmas en tiempo constante. Para AES-GCM se genera una clave de 256 bits y un IV de 12 bytes aleatorio; el texto cifrado mide 36 bytes: 20 de datos más 16 de etiqueta. El descifrado devuelve el texto original. Al cambiar un solo bit, la etiqueta ya no coincide y Java lanza `AEADBadTagException` en lugar de devolver datos falsos.
-
-![Captura de terminal: SHA-256 del envío, HMAC válido, cifrado AES-GCM de 36 bytes, descifrado correcto y alteración detectada con AEADBadTagException](content/figures/java/criptografia-jca.svg)
-
-**Resultado esperado:**
 
 ```text
 SHA-256: 4ae9d9fa731b5bbc…
@@ -668,32 +586,4 @@ Descifrado: ENV-42;Calle 26;5000
 Alteración detectada: AEADBadTagException
 ```
 
-**Fallo deliberado:** cifra dos veces con el mismo `cifrador` y el mismo IV (llama otra vez `cifrador.init(Cipher.ENCRYPT_MODE, clave, new GCMParameterSpec(128, iv))` y `doFinal`). **Error esperado:** `InvalidAlgorithmParameterException: Cannot reuse iv for GCM encryption`. **Diagnóstico:** Java protege contra el error más grave de GCM. Genera un IV nuevo para cada cifrado y guárdalo junto al resultado.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el ejemplo y explica de dónde salen los 36 bytes.
-2. **Variación:** cambia una letra de los datos y compara la nueva huella SHA-256.
-3. **Diagnóstico:** reproduce el fallo deliberado del IV repetido.
-4. **Integración:** guarda el IV y el texto cifrado juntos en Base64 (`iv:cifrado`) y escribe el método que los separa y descifra.
-5. **Diseño:** para cada dato de RutaFlow (contraseña, dirección, webhook, archivo de respaldo) elige la primitiva de la tabla.
-
-**Pista:** si dudas entre hash, HMAC y cifrado, pregunta: ¿necesito ocultar el dato, probar quién lo envió o solo saber si cambió?
-
-#### Paso 6 · Práctica independiente
-
-Implementa `verificarWebhook(cuerpo, firmaHexRecibida, clave)` que calcule el HMAC-SHA256 del cuerpo y lo compare con `MessageDigest.isEqual`. Pruébalo con una firma correcta y con una alterada.
-
-#### Paso 7 · Cierre
-
-- [ ] Eliges hash, HMAC o AES-GCM según el problema.
-- [ ] El programa imprime las cinco líneas esperadas.
-- [ ] Reprodujiste el rechazo de un IV repetido.
-- [ ] Sabes por qué SHA-256 no sirve para contraseñas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar AES/ECB, repetir el IV, comparar firmas con `Arrays.equals` y guardar claves en el código. **Siguiente paso:** el módulo 19 vuelve a la seguridad con assertions y diseño por contrato.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, verifica los webhooks del socio con HMAC-SHA256 y cifra la dirección del cliente con AES-GCM antes de guardarla, con la clave en un gestor de secretos.
-
-**Fuente oficial:** [Oracle — Java Cryptography Architecture Reference Guide](https://docs.oracle.com/en/java/javase/21/security/java-cryptography-architecture-jca-reference-guide.html) y [OWASP — Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html).
-
+</details>

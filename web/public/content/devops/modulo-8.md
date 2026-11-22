@@ -3,28 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Providers, resources y data sources · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás declarar un provider, un resource y un data source en HCL, entendiendo la diferencia entre gestionar infraestructura y solo consultarla.
 
-**Conocimiento previo:** conceptos de infraestructura del track Cloud; Terraform instalado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás declarar un provider, un resource y un data source en HCL, entendiendo la diferencia entre gestionar infraestructura y solo consultarla.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: usar un `resource` para algo que ya existe y no debería gestionar esta configuración puede llevar a Terraform a intentar modificarlo o eliminarlo si la declaración se retira; un `data source` evita ese riesgo siendo puramente de solo lectura.
+#### ► LA ANALOGÍA
+Piensa en providers, resources y data sources como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** provider, resource, data source, HCL (HashiCorp Configuration Language).
-
-Un provider es un plugin que sabe comunicarse con una plataforma específica, traduciendo HCL a llamadas de API reales. Un resource declara una pieza de infraestructura que Terraform debe crear, actualizar o eliminar. Un data source consulta información ya existente sin gestionar su ciclo de vida. HCL es declarativo: describes el estado final deseado, y Terraform calcula qué acciones concretas son necesarias.
-
-**Analogía:** un provider es el traductor especializado para hablar con un proveedor específico. Un resource es una orden de compra ("necesito que exista un bucket con este nombre"). Un data source es consultar un catálogo existente sin pedir que se cree nada nuevo.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A["provider aws: region us-east-1"] -->|significa| A2["plugin para hablar con AWS"]
@@ -32,9 +30,49 @@ flowchart TD
     C["data aws_ami ubuntu: most_recent true"] -->|significa| C2["consulta, no crees"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Providers, resources y data sources se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo8/providers-resources` con el provider local (sin depender de credenciales de nube reales, usando el provider `local` de Terraform):
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Providers, resources y data sources | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses providers, resources y data sources por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: providers, resources y data sources funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Providers, resources y data sources existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve providers, resources y data sources en tu contexto?
+2. ¿Cómo sabrías que providers, resources y data sources no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar providers, resources y data sources?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    A["provider aws: region us-east-1"] -->|significa| A2["plugin para hablar con AWS"]
+    B["resource aws_s3_bucket datos"] -->|significa| B2["debe existir este bucket"]
+    C["data aws_ami ubuntu: most_recent true"] -->|significa| C2["consulta, no crees"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/providers-resources
@@ -59,59 +97,32 @@ EOF
 terraform init
 ```
 
-**Explicación línea por línea:** `resource "local_file" "config"` declara un archivo que Terraform debe crear y gestionar; `data "local_file" "leido"` lee ese mismo archivo (después de que el `resource` lo cree) sin gestionar su ciclo de vida, ilustrando la diferencia entre ambos conceptos con un provider simple que no requiere ninguna cuenta cloud.
-
-Aplica la configuración y confirma que el `resource` creó el archivo:
-
 ```bash
 terraform apply -auto-approve
 cat config-generado.txt
 ```
 
-**Resultado esperado:** `terraform apply` reporta `1 added` (el `local_file.config`); `cat config-generado.txt` muestra el contenido exacto declarado en `content`, confirmando que el resource efectivamente gestionó la creación del archivo real en disco.
-
-**Fallo deliberado:** borra manualmente `config-generado.txt` con `rm config-generado.txt` (fuera de Terraform, simulando un cambio externo no gestionado) y ejecuta `terraform plan`. Terraform detecta que el recurso ya no existe y planea recrearlo — diagnostica revisando la salida de `plan`, que muestra `+ create` de nuevo para un recurso que "ya estaba aplicado", exactamente la señal de que algo cambió la infraestructura real por fuera de Terraform.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un segundo `resource "local_file"` para un archivo de log inicial vacío, y confirma con `terraform plan` que solo ese recurso nuevo aparece como `+ create`, sin afectar el ya existente. **Pista:** Terraform solo actúa sobre la diferencia entre el estado actual y la configuración declarada, no sobre todo de nuevo.
-
-#### Paso 6 · Práctica independiente
-
-Cambia el `content` del `local_file.config` y ejecuta `terraform plan`; confirma que el resultado es `~ update in-place` (modificación), no `-/+ destroy and re-create`, y explica por qué el contenido de un archivo local se puede actualizar sin recrearlo.
-
-#### Paso 7 · Cierre
-
-Ya distingues cuándo declarar un `resource` gestionado y cuándo solo consultar con un `data` source. El siguiente tema protege el registro de qué gestiona realmente tu configuración. Fuente oficial: [Terraform — Resources](https://developer.hashicorp.com/terraform/language/resources).
-
-**Errores comunes:** declarar como `resource` algo que en realidad ya existe y es gestionado por otro medio, arriesgando que Terraform intente eliminarlo; confundir el nombre local del recurso (el segundo identificador) con el nombre real en la plataforma de destino.
-
-**Cuándo no usarlo:** para información que cambia constantemente por fuera de tu control y que solo necesitas leer una vez (como el ID de la última AMI publicada), declarar eso como `resource` sería incorrecto; un `data` source es el límite correcto ahí.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Declara recursos y consultas de datos de la infraestructura del servicio. Ejecuta un plan limpio y verifica que no intenta recrear un recurso que solo debía consultar.
+</details>
 
 ### Tema 2: State remoto y locking · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás explicar por qué un backend remoto con locking es no negociable para trabajo en equipo con Terraform, y qué riesgo corre el estado sin él.
 
-**Conocimiento previo:** Tema 1 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás explicar por qué un backend remoto con locking es no negociable para trabajo en equipo con Terraform, y qué riesgo corre el estado sin él.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de trabajo en equipo: sin un backend remoto compartido, cada persona tiene su propia copia local del estado, con riesgo real de que dos personas apliquen cambios conflictivos sin que ninguna sepa del trabajo de la otra.
+#### ► LA ANALOGÍA
+Piensa en state remoto y locking como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** archivo de estado (`terraform.tfstate`), backend remoto, locking, desincronización del estado.
-
-Terraform mantiene un archivo de estado que registra qué recursos gestiona y con qué configuración. Editarlo manualmente es una de las operaciones más peligrosas y desaconsejadas: puede desincronizar el estado registrado de la realidad. Un backend remoto almacena ese archivo en un lugar compartido (un bucket S3, por ejemplo). El locking bloquea el estado durante un `apply` en curso, evitando que dos aplicaciones concurrentes lo corrompan.
-
-**Analogía:** el archivo de estado es el inventario maestro de un almacén. Editarlo manualmente sin que corresponda a la realidad física es como escribir a mano que hay 50 unidades cuando hay 30. Un backend remoto mantiene ese inventario centralizado y accesible por todo el equipo. El locking impide que dos personas lo modifiquen exactamente al mismo tiempo.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     subgraph SR["Sin backend remoto"]
@@ -125,9 +136,55 @@ flowchart LR
     end
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| State remoto y locking se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo8/state-local` y demuestra qué pasa con dos copias del estado simulando dos personas:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar State remoto y locking | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses state remoto y locking por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: state remoto y locking funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- State remoto y locking existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve state remoto y locking en tu contexto?
+2. ¿Cómo sabrías que state remoto y locking no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar state remoto y locking?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    subgraph SR["Sin backend remoto"]
+        A1["Estado local A"]
+        A2["Estado local B"]
+        N1["(pueden estar desactualizados)"]
+    end
+    subgraph CR["Con backend remoto + locking"]
+        S1["Estado remoto compartido (S3)"]
+        N2["+ lock activo durante cualquier apply"]
+    end
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/state-local && cd academia-devops/src/modulo8/state-local
@@ -144,60 +201,33 @@ terraform init && terraform apply -auto-approve
 cp terraform.tfstate estado-copia-persona-b.tfstate
 ```
 
-**Explicación línea por línea:** `cp terraform.tfstate estado-copia-persona-b.tfstate` simula que "Persona B" descargó una copia del estado en un momento dado, antes de que "Persona A" aplique cualquier cambio adicional.
-
-Simula que "Persona A" aplica un cambio, y observa la discrepancia con la copia de "Persona B":
-
 ```bash
 sed -i 's/version-1/version-2-de-A/' main.tf
 terraform apply -auto-approve
 diff <(cat terraform.tfstate) <(cat estado-copia-persona-b.tfstate) | head -5
 ```
 
-**Resultado esperado:** el `diff` muestra diferencias reales entre el estado actual (con `version-2-de-A`) y la copia desactualizada de "Persona B", confirmando que sin un backend compartido, cada copia local diverge tan pronto como cualquiera de las dos partes aplica un cambio.
-
-**Fallo deliberado:** intenta que "Persona B" aplique un cambio usando su copia desactualizada del estado (`terraform apply -state=estado-copia-persona-b.tfstate -auto-approve` con una modificación adicional en `main.tf`). Terraform, operando sobre el estado desactualizado, puede planear acciones incorrectas (como recrear el recurso que "Persona A" ya había actualizado) — diagnostica comparando el resultado contra lo que realmente existe en disco.
-
-#### Paso 5 · Práctica guiada
-
-Ejecuta `terraform state list` para ver qué recursos registra el estado actual, y `terraform state show local_file.compartido` para ver el detalle completo de ese recurso específico dentro del estado. **Pista:** estos comandos son de solo lectura, seguros de ejecutar para inspeccionar el estado sin riesgo de modificarlo.
-
-#### Paso 6 · Práctica independiente
-
-Investiga y documenta (sin necesariamente configurarlo) qué recurso adicional de AWS (por ejemplo, una tabla DynamoDB) se usa tradicionalmente junto a un backend S3 específicamente para implementar el locking, y qué pasaría si ese mecanismo de locking no estuviera disponible durante un `apply` concurrente.
-
-#### Paso 7 · Cierre
-
-Ya entiendes por qué el estado compartido con locking es indispensable para trabajo en equipo real. El siguiente tema evita repetir la misma infraestructura entre proyectos con módulos reutilizables. Fuente oficial: [Terraform — Backends](https://developer.hashicorp.com/terraform/language/backend).
-
-**Errores comunes:** editar manualmente el archivo `.tfstate` en vez de usar comandos `terraform state` dedicados; trabajar en equipo sin backend remoto, confiando en coordinación manual para evitar aplicar sobre estados desactualizados.
-
-**Cuándo no usarlo:** para un experimento personal de aprendizaje sin ningún otro colaborador, un backend remoto con locking es una formalidad innecesaria; el estado local es suficiente hasta que de verdad hay más de una persona operando la misma configuración.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura un backend de estado compartido con control de acceso y bloqueo compatible. Simula dos operaciones concurrentes en laboratorio y verifica que no escriben el estado simultáneamente.
+</details>
 
 ### Tema 3: Módulos reutilizables · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás extraer infraestructura repetida en un módulo con variables de entrada y outputs, reutilizándola con distintos parámetros sin duplicar código.
 
-**Conocimiento previo:** Temas 1 y 2 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás extraer infraestructura repetida en un módulo con variables de entrada y outputs, reutilizándola con distintos parámetros sin duplicar código.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: los módulos evitan la duplicación de configuración entre proyectos y entornos, centralizando buenas prácticas en un único lugar mantenido y probado.
+#### ► LA ANALOGÍA
+Piensa en módulos reutilizables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** módulo, variables de entrada, outputs, composición de infraestructura.
-
-Un módulo encapsula un conjunto de recursos relacionados como unidad reutilizable con variables de entrada y outputs, análogo a una función. un bloque `module "vpc"` con `source = "./modulos/vpc"` y `cidr = "10.0.0.0/16"`, cada argumento en su propia línea (HCL no admite `;` como separador y un bloque de una sola línea solo puede llevar un argumento), invoca un módulo pasándole `cidr`, sin que el código invocador conozca los detalles internos. Los módulos pueden vivir localmente o publicarse en registros compartidos.
-
-**Analogía:** un módulo es un plano arquitectónico estandarizado de una habitación de hotel: cada hotel nuevo reutiliza el mismo plano probado, ajustando solo parámetros específicos (tamaño, color), sin rediseñar tuberías y electricidad desde cero.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     M["modulos/archivo/"] --> F1["main.tf (resource local_file)"]
@@ -207,9 +237,51 @@ flowchart TD
     M --> PB["Proyecto B: modulo archivo, source modulos/archivo, nombre config-b"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Módulos reutilizables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo8/modulos-demo` con un módulo reutilizable y dos invocaciones distintas:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Módulos reutilizables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses módulos reutilizables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: módulos reutilizables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Módulos reutilizables existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve módulos reutilizables en tu contexto?
+2. ¿Cómo sabrías que módulos reutilizables no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar módulos reutilizables?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    M["modulos/archivo/"] --> F1["main.tf (resource local_file)"]
+    M --> F2["variables.tf (nombre, contenido)"]
+    M --> F3["outputs.tf (ruta_generada)"]
+    M --> PA["Proyecto A: modulo archivo, source modulos/archivo, nombre config-a"]
+    M --> PB["Proyecto B: modulo archivo, source modulos/archivo, nombre config-b"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/modulos-demo/modulos/archivo-config
@@ -245,60 +317,33 @@ EOF
 terraform init && terraform apply -auto-approve
 ```
 
-**Explicación línea por línea:** el mismo módulo `archivo-config` se invoca dos veces con valores distintos de `nombre`/`contenido`, generando dos archivos independientes desde una única definición de infraestructura reutilizable.
-
-Confirma que ambas invocaciones generaron archivos independientes con sus propios outputs:
-
 ```bash
 cat config-desarrollo.txt
 cat config-produccion.txt
 terraform output
 ```
 
-**Resultado esperado:** `config-desarrollo.txt` contiene "entorno=desarrollo" y `config-produccion.txt` contiene "entorno=produccion", ambos generados por el mismo código del módulo; `terraform output` no muestra nada porque los outputs están definidos dentro de los módulos, no en la raíz (se verían con `module.config_desarrollo.ruta_generada` si se declararan también como output raíz).
-
-**Fallo deliberado:** invoca un tercer módulo con el mismo `nombre = "config-desarrollo"` que el primero (duplicando el nombre de archivo). Terraform no detecta ningún conflicto a nivel de Terraform (son instancias de módulo distintas), pero ambas escriben al mismo archivo físico — diagnostica revisando el contenido final del archivo, que refleja solo la última escritura aplicada, un riesgo real de colisión de nombres que el propio módulo no previene automáticamente.
-
-#### Paso 5 · Práctica guiada
-
-Agrega un output raíz en `main.tf` (`output "ruta_dev" { value = module.config_desarrollo.ruta_generada }`) y confirma con `terraform output` que ahora sí es visible desde la raíz. **Pista:** los outputs de un módulo solo son visibles fuera de él si se re-exponen explícitamente con un output raíz.
-
-#### Paso 6 · Práctica independiente
-
-Agrega una tercera variable opcional al módulo (`variable "prefijo" { type = string; default = "" }`) con un valor por defecto, y confirma que las invocaciones existentes siguen funcionando sin especificarla, mientras una nueva invocación puede sobrescribirla explícitamente.
-
-#### Paso 7 · Cierre
-
-Ya reutilizas la misma infraestructura parametrizada sin duplicar definiciones entre entornos o proyectos. El siguiente tema revisa el impacto de un cambio antes de aplicarlo. Fuente oficial: [Terraform — Modules](https://developer.hashicorp.com/terraform/language/modules).
-
-**Errores comunes:** diseñar un módulo con una interfaz demasiado rígida que limita la reutilización a un único caso; permitir que dos invocaciones del mismo módulo generen nombres de recursos físicos colisionantes sin ninguna validación.
-
-**Cuándo no usarlo:** para un recurso único que nunca se repetirá en ningún otro contexto del proyecto, envolverlo en un módulo añade una capa de indirección sin beneficio real; el límite es cuándo existe reutilización genuina entre al menos dos invocaciones distintas.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Extrae la infraestructura repetida de dos servicios a un módulo con entradas explícitas. Cambia una instancia y comprueba en el plan que la otra conserva sus recursos.
+</details>
 
 ### Tema 4: terraform plan vs apply · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás revisar exactamente qué cambiaría antes de aplicar cualquier cambio de infraestructura, distinguiendo creación, modificación y destrucción en el plan.
 
-**Conocimiento previo:** Temas 1 a 3 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás revisar exactamente qué cambiaría antes de aplicar cualquier cambio de infraestructura, distinguiendo creación, modificación y destrucción en el plan.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de seguridad operativa: la separación explícita entre calcular el impacto (`plan`) y ejecutarlo (`apply`) es una de las razones principales por las que Terraform se considera seguro para infraestructura crítica.
+#### ► LA ANALOGÍA
+Piensa en terraform plan vs apply como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `terraform plan`, `terraform apply`, diff de cambios, revisión antes de aplicar.
-
-`terraform plan` calcula y muestra, sin aplicar nada todavía, qué recursos se crearían, modificarían o destruirían. `terraform apply` ejecuta esos cambios, típicamente mostrando el mismo plan como confirmación final. En pipelines de CI/CD, es práctica común ejecutar `plan` en cada pull request, publicando el resultado como comentario visible para revisión, reservando `apply` para después de la fusión.
-
-**Analogía:** `terraform plan` es pedir un presupuesto detallado antes de autorizar cualquier obra real. `terraform apply` es dar la autorización final para que la obra comience, ejecutando exactamente lo presupuestado.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     C["Configuración HCL + Estado actual conocido"] --> P["terraform plan"]
@@ -307,9 +352,50 @@ flowchart TD
     A --> E["ejecuta exactamente esos cambios, actualiza el estado"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| terraform plan vs apply se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo8/plan-apply` y observa las tres categorías de cambio en un mismo plan:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar terraform plan vs apply | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses terraform plan vs apply por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: terraform plan vs apply funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- terraform plan vs apply existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve terraform plan vs apply en tu contexto?
+2. ¿Cómo sabrías que terraform plan vs apply no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar terraform plan vs apply?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    C["Configuración HCL + Estado actual conocido"] --> P["terraform plan"]
+    P --> R["muestra: + crear (2), ~ modificar (1), - destruir (0)"]
+    R -->|"revisión humana, o aprobación de PR"| A["terraform apply"]
+    A --> E["ejecuta exactamente esos cambios, actualiza el estado"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/plan-apply && cd academia-devops/src/modulo8/plan-apply
@@ -323,10 +409,6 @@ EOF
 terraform init && terraform apply -auto-approve
 ```
 
-**Explicación línea por línea:** se crean dos recursos (`a`, `b`) en el estado inicial, para tener algo real que modificar y destruir en el siguiente paso del plan.
-
-Modifica uno, elimina otro de la configuración, y agrega uno nuevo, todo en la misma revisión:
-
 ```bash
 cat > main.tf <<'EOF'
 terraform {
@@ -338,50 +420,27 @@ EOF
 terraform plan
 ```
 
-**Resultado esperado:** `terraform plan` muestra tres acciones distintas: `~ update in-place` para `local_file.a` (contenido modificado), `- destroy` para `local_file.b` (removido de la configuración), y `+ create` para `local_file.c` (nuevo), todo calculado sin haber tocado aún ningún archivo real.
-
-**Fallo deliberado:** ejecuta `terraform apply -auto-approve` inmediatamente después de ver el plan, sin revisarlo con cuidado, y confirma que `b.txt` efectivamente se eliminó del disco. Si esa eliminación no era intencional, ya es demasiado tarde — diagnostica revisando siempre la sección `- destroy` de cualquier plan antes de aprobar un `apply`, precisamente el hábito que este flujo de dos pasos está diseñado para forzar.
-
-#### Paso 5 · Práctica guiada
-
-Ejecuta `terraform plan -out=cambios.tfplan` para guardar el plan calculado en un archivo, y luego `terraform apply cambios.tfplan` para aplicar exactamente ese plan guardado, sin recalcularlo. **Pista:** guardar el plan es útil quando el `apply` real (por ejemplo, en un pipeline de CI/CD) debe ejecutarse más tarde que el `plan` revisado.
-
-#### Paso 6 · Práctica independiente
-
-Modifica `b.txt` sea recreado en vez de recreado sea cambiando la definición de `local_file.a` de forma que fuerce una recreación completa en vez de una modificación in situ (cambia `filename` en vez de `content`), y confirma que el plan ahora muestra `-/+ destroy and re-create` en vez de `~ update in-place`.
-
-#### Paso 7 · Cierre
-
-Ya revisas el impacto exacto de cualquier cambio antes de comprometerte a aplicarlo. El siguiente tema reutiliza la misma configuración para múltiples entornos con estados separados. Fuente oficial: [Terraform — Plan](https://developer.hashicorp.com/terraform/cli/commands/plan).
-
-**Errores comunes:** aplicar automáticamente sin revisar la sección `- destroy` del plan; asumir que cambiar cualquier atributo siempre resulta en una modificación in situ, cuando algunos atributos fuerzan recreación completa.
-
-**Cuándo no usarlo:** en un entorno de aprendizaje puramente personal y desechable, revisar cada plan con el mismo rigor que en producción puede ser excesivo; el rigor de revisión debe ser proporcional al riesgo real de la infraestructura afectada.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Genera un plan para el cambio de tamaño del servicio, revísalo y aplica ese artefacto. Compara el estado final con las acciones previstas y registra cualquier divergencia antes de continuar.
+</details>
 
 ### Tema 5: Workspaces para múltiples entornos · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás mantener estados completamente separados para el mismo código de infraestructura, uno por entorno, usando workspaces de Terraform.
 
-**Conocimiento previo:** Temas 1 a 4 de este módulo.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás mantener estados completamente separados para el mismo código de infraestructura, uno por entorno, usando workspaces de Terraform.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real: los workspaces evitan duplicar código de configuración para entornos que comparten esencialmente la misma estructura, manteniendo el estado de cada uno completamente aislado.
+#### ► LA ANALOGÍA
+Piensa en workspaces para múltiples entornos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** workspace, estado separado por entorno, mismo código con distintos parámetros.
-
-Un workspace permite mantener múltiples estados independientes para la misma configuración de código, típicamente uno por entorno. `terraform workspace new staging` crea un workspace con estado vacío propio; `terraform workspace select prod` cambia el activo. Los workspaces comparten el mismo backend y la misma configuración base; lo que varía es el estado y, típicamente, valores de variables ajustados según el workspace activo.
-
-**Analogía:** los workspaces son como usar el mismo plano de una casa para construir varias casas idénticas en estructura pero en terrenos distintos, cada una con su propia dirección y registro de propiedad independiente.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     H["Mismo código HCL"] --> W1["workspace desarrollo (estado propio)"]
@@ -389,9 +448,49 @@ flowchart TD
     H --> W3["workspace produccion (estado propio)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Workspaces para múltiples entornos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Desde una carpeta vacía crea `academia-devops/src/modulo8/workspaces` con una variable que ajusta el contenido según el workspace activo:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Workspaces para múltiples entornos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses workspaces para múltiples entornos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: workspaces para múltiples entornos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Workspaces para múltiples entornos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve workspaces para múltiples entornos en tu contexto?
+2. ¿Cómo sabrías que workspaces para múltiples entornos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar workspaces para múltiples entornos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    H["Mismo código HCL"] --> W1["workspace desarrollo (estado propio)"]
+    H --> W2["workspace staging (estado propio)"]
+    H --> W3["workspace produccion (estado propio)"]
+```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/workspaces && cd academia-devops/src/modulo8/workspaces
@@ -410,10 +509,6 @@ terraform apply -auto-approve
 cat entorno-default.txt
 ```
 
-**Explicación línea por línea:** `terraform.workspace` es una variable interna que Terraform expone automáticamente con el nombre del workspace actualmente activo, usada aquí tanto en el nombre del archivo como en su contenido.
-
-Crea un segundo workspace y confirma que su estado es completamente independiente del primero:
-
 ```bash
 terraform workspace new staging
 terraform apply -auto-approve
@@ -425,60 +520,75 @@ terraform workspace select staging
 terraform state list
 ```
 
-**Resultado esperado:** `entorno-default.txt` y `entorno-staging.txt` coexisten con contenidos distintos, cada uno mencionando su propio workspace; `terraform state list` en `default` muestra solo el recurso de ese workspace, y lo mismo en `staging`, confirmando que cada uno mantiene su propio estado completamente separado, a pesar de compartir el mismo archivo `main.tf`.
-
-**Fallo deliberado:** desde el workspace `staging`, ejecuta `terraform destroy -auto-approve` pensando que solo afecta al entorno de pruebas actual. Confirma con `terraform workspace select default && terraform state list` que el recurso de `default` sigue intacto — pero si por error hubieras estado parado en `default` sin darte cuenta al ejecutar el `destroy`, habrías eliminado el entorno equivocado. Diagnostica el riesgo confirmando siempre `terraform workspace show` antes de cualquier `destroy`.
-
-#### Paso 5 · Práctica guiada
-
-Agrega una variable `replicas` con un valor distinto por workspace usando una expresión condicional (`var.replicas = terraform.workspace == "staging" ? 2 : 1`) y confirma con `terraform plan` en cada workspace que el valor calculado difiere. **Pista:** puedes usar `terraform.workspace` directamente dentro de expresiones condicionales en cualquier parte de tu configuración.
-
-#### Paso 6 · Práctica independiente
-
-Ejecuta `terraform workspace delete staging` después de destruir su infraestructura (`terraform destroy -auto-approve` estando en ese workspace) y confirma que el workspace `default` permanece completamente intacto durante todo el proceso.
-
-#### Paso 7 · Cierre
-
-Ya mantienes entornos paralelos con el mismo código sin arriesgar mezclar sus estados. Esto cierra la parte de Terraform de este módulo; el siguiente tema introduce una herramienta complementaria para configurar software dentro de máquinas ya existentes. Fuente oficial: [Terraform — Workspaces](https://developer.hashicorp.com/terraform/language/state/workspaces).
-
-**Errores comunes:** ejecutar un `destroy` sin confirmar antes en qué workspace estás parado; usar workspaces para entornos con arquitecturas fundamentalmente distintas, cuando directorios de configuración separados serían más apropiados.
-
-**Cuándo no usarlo:** si producción necesita una arquitectura de red significativamente más compleja que desarrollo (no solo "el mismo tipo de recurso pero más grande"), workspaces no es el límite adecuado; ahí directorios de configuración completamente separados por entorno son preferibles.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Prueba separación de nombres, estado y credenciales entre entornos. Un plan en pruebas no debe mencionar recursos productivos; documenta por qué un workspace por sí solo no establece permisos.
+</details>
 
 ### Tema 6: Ansible — playbooks, roles, inventory y módulos · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás escribir un playbook de Ansible que configura software dentro de una máquina ya aprovisionada, entendiendo la diferencia con el rol de Terraform.
 
-**Conocimiento previo:** Temas 1 a 5 de este módulo; SSH por clave (Módulo 0).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás escribir un playbook de Ansible que configura software dentro de una máquina ya aprovisionada, entendiendo la diferencia con el rol de Terraform.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de flujo de trabajo complementario: Terraform aprovisiona la infraestructura base (crea las máquinas), y Ansible se ejecuta después para configurar el software dentro de esas máquinas ya creadas.
+#### ► LA ANALOGÍA
+Piensa en ansible — playbooks, roles, inventory y módulos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que ansible — playbooks, roles, inventory y módulos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** playbook, role, inventory, módulo de Ansible, enfoque imperativo/procedural sobre infraestructura existente.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Ansible — playbooks, roles, inventory y módulos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Ansible configura software en máquinas ya existentes conectándose por SSH, sin agente permanente. Un playbook es un YAML con una secuencia de tareas; cada tarea invoca un módulo de Ansible, diseñado para ser idempotente (ejecutar el mismo playbook varias veces no produce cambios adicionales si el estado ya se alcanzó), el mismo principio de idempotencia de los scripts bash del Módulo 0. Un role empaqueta tareas, variables y plantillas reutilizables. Un inventory lista las máquinas objetivo, organizadas en grupos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Ansible — playbooks, roles, inventory y módulos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** si Terraform construye el edificio desde los cimientos, Ansible es el equipo que entra después a amueblar y configurar cada oficina específica dentro de ese edificio ya construido.
+#### ► CUÁNDO NO USAR ESTO
+No uses ansible — playbooks, roles, inventory y módulos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: ansible — playbooks, roles, inventory y módulos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Ansible — playbooks, roles, inventory y módulos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve ansible — playbooks, roles, inventory y módulos en tu contexto?
+2. ¿Cómo sabrías que ansible — playbooks, roles, inventory y módulos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar ansible — playbooks, roles, inventory y módulos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Terraform (aprovisiona) ──────┐   ┌── Ansible (configura después) ──────┐
 │ crea la máquina virtual, la red     │──▶│ instala paquetes, copia configuración, │
 │ y el disco                            │   │ aplica hardening, etc.                    │
 └─────────────────────────┘   └─────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo8/ansible-demo` y ejecuta un playbook contra un contenedor local que simula una máquina ya aprovisionada (en vez de una VM real, usando el conector `docker` de Ansible para no depender de infraestructura cloud):
 
 ```bash
 mkdir -p academia-devops/src/modulo8/ansible-demo && cd academia-devops/src/modulo8/ansible-demo
@@ -503,58 +613,73 @@ EOF
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
-**Explicación línea por línea:** `ansible-playbook` es el comando que ejecuta un playbook contra el inventario indicado (`-i inventory.ini`); `ansible_connection=docker` le indica a Ansible que se conecte al contenedor directamente en vez de por SSH, útil para practicar sin una VM real; cada tarea del playbook invoca un módulo específico (`apk` para paquetes Alpine, `copy` para archivos) declarando el estado deseado, no los comandos exactos para lograrlo.
-
-Ejecuta el mismo playbook una segunda vez y confirma la idempotencia:
-
 ```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
-**Resultado esperado:** en la primera ejecución, ambas tareas reportan `changed`; en la segunda ejecución, sin haber modificado nada externamente, ambas tareas reportan `ok` (sin cambios), confirmando que el playbook es idempotente: repetirlo no produce efectos adicionales porque el estado deseado ya se había alcanzado.
-
-**Fallo deliberado:** modifica manualmente `/etc/mi-app.conf` dentro del contenedor (`docker exec maquina-objetivo sh -c "echo 'modificado a mano' > /etc/mi-app.conf"`) y vuelve a correr el playbook. La tarea `copy` detecta la discrepancia y reporta `changed`, restaurando el contenido declarado — diagnostica que Ansible, al igual que Terraform, reconcilia el estado real hacia el estado deseado declarado, sobrescribiendo cualquier cambio manual no gestionado.
-
-#### Paso 5 · Práctica guiada
-
-Agrupa las dos tareas del playbook en un role (`roles/base/tasks/main.yml`) e invócalo desde el playbook con `roles: [base]` en vez de listar las tareas directamente. **Pista:** la estructura de directorios de un role sigue una convención fija que Ansible reconoce automáticamente (`roles/<nombre>/tasks/main.yml`).
-
-#### Paso 6 · Práctica independiente
-
-Agrega una segunda máquina al inventory (`docker run -d --name maquina-objetivo-2 alpine sleep 3600`, agregada al grupo `web`) y confirma que el mismo playbook se aplica a ambas máquinas del grupo en una sola ejecución.
-
-#### Paso 7 · Cierre
-
-Ya configuras software dentro de máquinas ya existentes de forma idempotente, complementando lo que Terraform aprovisionó. El siguiente tema explora una alternativa a HCL usando lenguajes de programación reales. Fuente oficial: [Ansible — Playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/index.html).
-
-**Errores comunes:** escribir tareas que ejecutan comandos shell arbitrarios (`ansible.builtin.shell`) en vez de módulos idempotentes específicos, perdiendo la garantía de idempotencia; confundir el rol de Ansible (configurar) con el de Terraform (aprovisionar), intentando crear máquinas virtuales completas con un playbook.
-
-**Cuándo no usarlo:** para aprovisionar la infraestructura misma (crear una máquina virtual, una red), Ansible no es la herramienta correcta aunque técnicamente pueda invocar APIs de nube; ese es exactamente el rol de Terraform (Temas 1-5).
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura el host de laboratorio mediante un playbook idempotente. Ejecútalo dos veces y comprueba que la segunda no introduce cambios innecesarios ni reinicia el servicio sin causa.
+</details>
 
 ### Tema 7: Pulumi como alternativa a HCL · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
 Al finalizar podrás explicar el compromiso entre usar HCL (Terraform) y un lenguaje de programación real (Pulumi) para infraestructura como código.
 
-**Conocimiento previo:** Temas 1 a 6 de este módulo; JavaScript/TypeScript básico (track JavaScript).
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás explicar el compromiso entre usar HCL (Terraform) y un lenguaje de programación real (Pulumi) para infraestructura como código.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Este es un caso real de decisión de equipo: conocer que existen alternativas a HCL, con sus propios compromisos, prepara para una decisión informada si un equipo real ya usa Pulumi o evalúa esta elección para un proyecto nuevo.
+#### ► LA ANALOGÍA
+Piensa en pulumi como alternativa a hcl como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría con analogía
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pulumi como alternativa a hcl resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-**Conceptos clave:** infraestructura como código con lenguajes de programación reales, tipado estático, reutilización de herramientas del ecosistema del lenguaje.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Pulumi como alternativa a HCL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Pulumi ofrece el mismo concepto de infraestructura declarativa que Terraform, pero usando lenguajes de propósito general (TypeScript, Python, Go) en vez de HCL. Esto permite bucles, condicionales, funciones reutilizables y tipado estático del propio lenguaje, detectando errores en tiempo de compilación. El compromiso es una dependencia adicional del runtime del lenguaje elegido, y el riesgo de abstracciones excesivamente elaboradas si se abusa de las capacidades de un lenguaje completo.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Pulumi como alternativa a HCL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** HCL es un formulario estandarizado con campos específicos y limitados, fácil de aprender por su alcance acotado. Pulumi es escribir esa misma descripción con el idioma completo que ya dominas, con toda su expresividad, a costa de permitir también descripciones innecesariamente complejas.
+#### ► CUÁNDO NO USAR ESTO
+No uses pulumi como alternativa a hcl por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Diagrama:**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pulumi como alternativa a hcl funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
+#### ► LO QUE DEBES RECORDAR
+- Pulumi como alternativa a HCL existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pulumi como alternativa a hcl en tu contexto?
+2. ¿Cómo sabrías que pulumi como alternativa a hcl no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pulumi como alternativa a hcl?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```
 ┌── Terraform (HCL) ──────────┐     ┌── Pulumi (TypeScript, Python, Go) ──┐
 │ resource "aws_s3_bucket" "datos" {│     │ new aws.s3.Bucket("datos", {           │
@@ -562,10 +687,6 @@ Pulumi ofrece el mismo concepto de infraestructura declarativa que Terraform, pe
 │ }                                     │     │ }); (tipado estático, bucles reales)      │
 └─────────────────────────┘     └─────────────────────────────┘
 ```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `academia-devops/src/modulo8/pulumi-vs-hcl` y compara ambos enfoques resolviendo el mismo problema: generar 3 archivos de configuración con un bucle.
 
 ```bash
 mkdir -p academia-devops/src/modulo8/pulumi-vs-hcl && cd academia-devops/src/modulo8/pulumi-vs-hcl
@@ -593,76 +714,69 @@ EOF
 node pulumi-style/generar.js
 ```
 
-**Explicación línea por línea:** `node` es el comando que ejecuta un archivo JavaScript fuera del navegador (el runtime de Node.js); el lado HCL usa `for_each` (una construcción específica del lenguaje de configuración) para iterar sobre la lista; el lado "Pulumi-style" usa un `for...of` real de JavaScript, la misma lógica de iteración pero con la sintaxis completa de un lenguaje de programación general.
-
-**Resultado esperado:** ambos enfoques generan los mismos tres archivos (`dev.txt`, `staging.txt`, `prod.txt`) con contenido equivalente; `ls hcl/*.txt pulumi-style/*.txt` confirma que ambos directorios tienen los tres archivos, demostrando que el resultado final es el mismo aunque el mecanismo de expresión sea distinto.
-
-**Fallo deliberado:** en el archivo `generar.js`, introduce un error de tipo deliberado (usa `entornos.lenght` en vez de `entornos.length` en algún punto, si lo usaras) o, más simple, referencia una variable no declarada. Node.js falla en tiempo de ejecución con un error claro — diagnostica que, a diferencia de un lenguaje con tipado estático real (TypeScript compilado), este error de JavaScript puro no se habría detectado hasta la ejecución, exactamente la ventaja que Pulumi con TypeScript ofrece sobre HCL y sobre JavaScript sin tipos.
-
-#### Paso 5 · Práctica guiada
-
-Cuenta cuántas líneas de código tomó cada enfoque (`wc -l hcl/main.tf pulumi-style/generar.js`) para resolver exactamente el mismo problema, y documenta si la diferencia de longitud te parece significativa para una decisión real de herramienta. **Pista:** la extensión de código no es el único criterio relevante; considera también legibilidad y familiaridad del equipo.
-
-#### Paso 6 · Práctica independiente
-
-Investiga (documentando, sin necesariamente instalarlo) los comandos reales de `pulumi new`, `pulumi up` y `pulumi destroy`, y compáralos explícitamente contra `terraform init`, `terraform apply` y `terraform destroy`, confirmando que el ciclo de vida conceptual es equivalente entre ambas herramientas.
-
-#### Paso 7 · Cierre
-
-Ya conoces el compromiso explícito entre HCL declarativo y un lenguaje de programación real para infraestructura como código. Esto cierra el módulo de infraestructura como código; el siguiente módulo cubre observabilidad con Prometheus y Grafana. Fuente oficial: [Pulumi — How Pulumi Works](https://www.pulumi.com/docs/iac/concepts/how-pulumi-works/).
-
-**Errores comunes:** elegir Pulumi únicamente por preferencia de lenguaje sin considerar el ecosistema más maduro y los módulos públicos más abundantes de Terraform; construir abstracciones de infraestructura excesivamente elaboradas en Pulumi solo porque el lenguaje lo permite, sacrificando legibilidad.
-
-**Cuándo no usarlo:** para un equipo sin experiencia previa en ningún lenguaje de programación de propósito general soportado por Pulumi, pero con familiaridad amplia en configuración declarativa simple, HCL/Terraform sigue siendo el límite de menor fricción de adopción.
-
----
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Describe una parte pequeña del entorno con Pulumi en un stack aislado. Compara vista previa y estado con Terraform sin asignar a ambas herramientas la propiedad del mismo recurso.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** provisionar un recurso simple con Terraform, revisar el plan antes de aplicar, modularizar la definición, y configurar un backend remoto (o documentar cómo se haría si no tienes acceso a uno real para este laboratorio).
-
-**Requisitos previos:** Terraform instalado, acceso a un proveedor cloud o el provider `local` para practicar sin credenciales.
-
-| Paso | Acción | Comando/Configuración | Explicación | Resultado esperado |
-|---|---|---|---|---|
-| 1 | Escribir la configuración inicial | `provider` y `resource` simple en `main.tf` | Define la infraestructura deseada mínima | El archivo se guarda sin errores de sintaxis HCL |
-| 2 | Inicializar Terraform | `terraform init` | Descarga el provider necesario | Confirma que el provider se descargó |
-| 3 | Revisar el plan antes de aplicar | `terraform plan` | Muestra qué se crearía, sin aplicar | La salida muestra `+ crear` |
-| 4 | Aplicar el cambio | `terraform apply` | Ejecuta la creación real | El recurso se crea, Terraform confirma éxito |
-| 5 | Modificar y observar el diff | Cambia un atributo, `terraform plan` de nuevo | Verifica detección del cambio específico | Muestra `~ modificar` con el atributo cambiado |
-| 6 | Extraer en un módulo | Mueve la definición a `modulos/mi-recurso/` | Aplica el patrón del Tema 3 | `terraform plan` sin cambios inesperados tras modularizar |
-| 7 | Documentar un backend remoto | Bloque `terraform { backend "s3" { ... } }` | Aplica el razonamiento del Tema 2 | Un bloque correctamente documentado |
-
-**Verificación:** el laboratorio se considera exitoso si el plan del paso 5 muestra solo una modificación (no destrucción y recreación) y si tras modularizar en el paso 6 no hay cambios inesperados sobre la infraestructura ya existente.
-
-**Errores comunes y soluciones**
-
-- **`terraform init` falla al descargar el provider.** Verifica conexión a internet y el nombre/versión del provider.
-- **El plan muestra destrucción y recreación cuando esperabas solo modificación.** Algunos atributos fuerzan recreación completa; revisa la documentación del provider para ese atributo.
-- **Tras modularizar, el recurso existente se destruye y recrea dentro del módulo.** Usa `terraform state mv` para mover la entrada del estado a su nueva dirección, en vez de dejar que se recree.
-- **El plan de un compañero muestra cambios que tú no hiciste.** El estado no está compartido correctamente; confirma que el backend remoto está bien configurado.
-
----
-
-
-## Ampliación de la página 17 del PDF
+</details>
 
 ### Tema 8: OpenTofu, plan y estado sin recursos cloud · Avanzado · 25 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás observar un cambio declarativo en un estado local antes de usar un proveedor cloud. **Prerrequisitos:** conceptos HCL y estado de este módulo; OpenTofu instalado desde su documentación oficial y `tofu version` funcionando. Este laboratorio no fue ejecutado en la revisión porque el binario no estaba disponible; se publica con comandos y comportamiento esperado contrastados con la documentación.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El proyecto integrador DevOps necesita comparar planes antes de cambiar infraestructura de RutaFlow. OpenTofu mantiene un estado que relaciona configuración y recursos. Migrar un proyecto existente exige revisar compatibilidad, provider lock, backend, permisos y respaldo del estado; compartir sintaxis no garantiza una migración automática.
+#### ► DE QUÉ TRATA
+Al finalizar podrás observar un cambio declarativo en un estado local antes de usar un proveedor cloud. Prerrequisitos: conceptos HCL y estado de este módulo; OpenTofu instalado desde su documentación oficial y tofu version funcionando. Este laboratorio no fue ejecutado en la rev…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía:** configuración es el inventario deseado, estado es el registro de lo administrado y plan es la propuesta de cambio. `terraform_data` es un recurso incorporado que conserva valores con lifecycle; no crea servidor ni archivo de negocio. Permite separar el aprendizaje del flujo de cualquier credencial cloud.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás observar un cambio declarativo en un estado local antes de usar un proveedor cloud.**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `academia-tofu/main.tf` en un proyecto nuevo:
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
+#### ► LA ANALOGÍA
+Piensa en opentofu, plan y estado sin recursos cloud como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que opentofu, plan y estado sin recursos cloud resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| OpenTofu, plan y estado sin recursos cloud se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar OpenTofu, plan y estado sin recursos cloud | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses opentofu, plan y estado sin recursos cloud por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: opentofu, plan y estado sin recursos cloud funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- OpenTofu, plan y estado sin recursos cloud existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve opentofu, plan y estado sin recursos cloud en tu contexto?
+2. ¿Cómo sabrías que opentofu, plan y estado sin recursos cloud no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar opentofu, plan y estado sin recursos cloud?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```hcl
 resource "terraform_data" "sensor" {
   # Solo información didáctica almacenada en el estado local.
@@ -672,8 +786,6 @@ output "sensor" {
   value = terraform_data.sensor.output
 }
 ```
-
-Corre el ciclo completo sobre esa carpeta:
 
 ```bash
 mkdir -p academia-tofu
@@ -687,49 +799,27 @@ tofu apply plan-local
 tofu output sensor
 ```
 
-**Resultado esperado:** primer plan con un recurso a crear; output con nombre y periodo; el plan siguiente sin cambios. Explicación por bloques: `input` registra el objeto, `output` lo expone y el plan guardado determina lo aplicado. No ejecutes desde una carpeta con un backend o estado de producción.
-
-**Fallo deliberado:** escribe `periodo_ms =` sin valor. `validate` falla por sintaxis; diagnostica archivo y expresión, restáurala y valida antes de planificar.
-
-#### Paso 5 · Práctica guiada
-**Pista:** cambia periodo a 2000 y revisa el diff. Conserva el plan y explica por qué cambió solo el dato del sensor.
-
-#### Paso 6 · Práctica independiente
-Añade una validación de variable para exigir periodo positivo y documenta el equivalente contra el runtime local de Floci con endpoints explícitos. **Límites:** este recurso no comprueba APIs cloud, locking remoto ni drift de un servicio externo; ese ensayo sigue pendiente.
-
-#### Paso 7 · Cierre
-Entrega configuración, salida, plan inicial y plan modificado. **Errores comunes:** usar el estado equivocado, versionar estado con secretos, aplicar un plan no revisado. Antes del siguiente tema responde: ¿qué administra este recurso?, ¿qué comprueba validate?, ¿qué falta antes de migrar un backend? **Fuente oficial:** [OpenTofu terraform_data](https://opentofu.org/docs/language/resources/tf-data/).
+</details>
 
 ### Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min
 
-**Prerrequisito:** temas «terraform plan vs apply» y «State remoto y locking» de este módulo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Al finalizar podrás:** traer a Terraform un recurso creado a mano con un bloque `import`, generar su configuración y bloquear en CI los planes que violan reglas (por ejemplo, un bucket público) con Conftest y OPA.
-
-**¿Por qué es importante?** Casi ningún equipo empieza con todo en código: hay recursos creados desde la consola. Importarlos evita recrearlos. Y una vez en código, las reglas de seguridad se pueden revisar automáticamente antes de aplicar.
-
-#### Paso 1 · Objetivo y preparación
-
+#### ► DE QUÉ TRATA
 Usa Terraform 1.5 o superior y Conftest. Para no depender de la nube, trabaja con el proveedor AWS apuntando a un emulador local (LocalStack o Floci en el puerto 4566), como en el track de cloud.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Usa Terraform 1.5 o superior y Conftest.**
 
-RutaFlow tenía el bucket de fotos de entrega creado a mano. Un día alguien lo hizo público por error desde la consola y nadie lo notó en una semana. Al importarlo a Terraform y revisar los planes con políticas, ese cambio habría fallado en el pull request.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA ANALOGÍA
+Piensa en terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-**Conceptos clave:** bloque `import`, `-generate-config-out`, estado, policy as code, OPA, Rego, Conftest, `terraform show -json`.
-
-**Importar:** un bloque `import { to = aws_s3_bucket.fotos  id = "rutaflow-fotos" }` le dice a Terraform que el recurso ya existe. Con `terraform plan -generate-config-out=generado.tf`, Terraform escribe la configuración a partir del recurso real. Revisas, ajustas y aplicas: el recurso pasa al estado **sin recrearse**.
-
-**Policy as code:** las reglas se escriben en un lenguaje (Rego, de OPA) y se evalúan contra el plan en formato JSON (`terraform show -json plan.out`). **Conftest** ejecuta esas reglas: si alguna devuelve un mensaje `deny`, termina con error y el CI se detiene.
-
-Las reglas viven en el repositorio, se revisan como código y se aplican igual para todos.
-
-**Analogía:** importar es registrar en el catastro una casa que ya estaba construida; las políticas son el inspector que revisa cada plano nuevo antes de construir. La analogía falla en que el inspector aquí es un programa que no se cansa ni hace excepciones.
-
-**Límite de uso:** la configuración generada puede traer atributos innecesarios: límpiala antes de fusionar. Las políticas revisan el plan, no lo que alguien cambie después desde la consola; combina con detección de deriva.
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     M["bucket creado a mano"] -->|"bloque import"| P["terraform plan -generate-config-out"]
@@ -740,9 +830,52 @@ flowchart LR
     R -->|ok| A["apply"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Archivo `infra/importar.tf`:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas en tu contexto?
+2. ¿Cómo sabrías que terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    M["bucket creado a mano"] -->|"bloque import"| P["terraform plan -generate-config-out"]
+    P --> S["estado: recurso adoptado"]
+    C["cambio en PR"] --> J["terraform show -json plan"]
+    J --> R["conftest + reglas Rego"]
+    R -->|deny| X["CI falla"]
+    R -->|ok| A["apply"]
+```
 
 ```hcl
 import {
@@ -750,8 +883,6 @@ import {
   id = "rutaflow-fotos"
 }
 ```
-
-Archivo `infra/proveedor.tf`:
 
 ```hcl
 provider "aws" {
@@ -764,8 +895,6 @@ provider "aws" {
   endpoints { s3 = "http://localhost:4566" } # emulador local
 }
 ```
-
-Archivo `infra/politicas/s3.rego`:
 
 ```rego
 package main
@@ -781,8 +910,6 @@ deny contains mensaje if {
 }
 ```
 
-Ejecútalo:
-
 ```bash
 aws --endpoint-url http://localhost:4566 s3 mb s3://rutaflow-fotos   # el recurso «creado a mano»
 cd infra
@@ -793,42 +920,10 @@ terraform plan -out plan.out && terraform show -json plan.out > plan.json
 conftest test plan.json --policy politicas
 ```
 
-**Explicación por bloques:** El bucket se crea primero con la CLI para simular un recurso manual. `importar.tf` declara la importación y `proveedor.tf` apunta al emulador con credenciales de prueba. `terraform plan -generate-config-out` escribe `generado.tf` con el recurso real y el `apply` lo adopta en el estado sin recrearlo. La regla Rego recorre los cambios del plan en JSON y emite un mensaje `deny` si un bloqueo de acceso público se desactiva. `conftest test` evalúa el plan contra esa carpeta de reglas.
-
-**Resultado esperado:**
-
 ```text
 terraform plan: «Plan: 1 to import, 0 to add, 0 to change, 0 to destroy.» y se crea generado.tf con resource "aws_s3_bucket" "fotos".
 terraform apply: «Apply complete! Resources: 1 imported, 0 added, 0 changed, 0 destroyed.»
 conftest test plan.json: «1 test, 1 passed, 0 warnings, 0 failures, 0 exceptions» mientras nadie desactive el bloqueo.
 ```
 
-**Fallo deliberado:** agrega un recurso `aws_s3_bucket_public_access_block` para el bucket con `block_public_acls = false`, genera de nuevo `plan.json` y ejecuta Conftest. **Error esperado:** `FAIL - plan.json - main - aws_s3_bucket_public_access_block.fotos permite ACL públicas` y código de salida 1. **Diagnóstico:** la regla detectó el cambio antes de aplicarlo. En CI, ese código de salida detiene el pipeline.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** importa el bucket y revisa `generado.tf`.
-2. **Variación:** quita de `generado.tf` los atributos que no quieres gestionar y vuelve a planear sin cambios.
-3. **Diagnóstico:** reproduce el fallo deliberado con el bloqueo desactivado.
-4. **Integración:** agrega una regla que exija la etiqueta `proyecto = "rutaflow"` en todos los buckets.
-5. **Diseño:** agrega `conftest test` al pipeline de infraestructura después de `terraform plan`.
-
-**Pista:** para escribir reglas, mira primero `plan.json` con `jq ".resource_changes[] | {type, address}"`: la regla debe navegar esa estructura.
-
-#### Paso 6 · Práctica independiente
-
-Importa con un segundo bloque `import` una cola SQS creada a mano y escribe una regla que obligue a que tenga una cola de mensajes muertos.
-
-#### Paso 7 · Cierre
-
-- [ ] Importaste un recurso sin recrearlo.
-- [ ] Explicas cómo Conftest evalúa un plan.
-- [ ] Reprodujiste el bloqueo de un bucket público.
-- [ ] Las reglas corren en CI.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** fusionar la configuración generada sin limpiarla, escribir reglas sin probarlas con un caso que falle y revisar solo el código pero no el plan. **Siguiente paso:** el tema «Workspaces para múltiples entornos» aplica las mismas reglas en cada entorno.
-
-**Transferencia al proyecto integrador «RutaFlow»:** importa a Terraform los buckets y colas de RutaFlow creados a mano y bloquea en CI cualquier plan que los haga públicos.
-
-**Fuente oficial:** [HashiCorp — Import](https://developer.hashicorp.com/terraform/language/import) y [Conftest](https://www.conftest.dev/) y [Open Policy Agent — Terraform](https://www.openpolicyagent.org/docs/latest/terraform/).
-
+</details>

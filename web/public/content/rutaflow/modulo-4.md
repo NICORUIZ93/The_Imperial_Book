@@ -3,28 +3,26 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Arquitectura Flutter por capacidades · Avanzado · 45 min
 
-**Conceptos clave:** features, dominio, repositorios, estado, navegación y pruebas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-La app separa jornada, paradas, escaneo, evidencia y sincronización. Widgets renderizan estado; casos de uso coordinan; repositorios aíslan SQLite, cámara, GPS y red. Las dependencias apuntan hacia políticas estables y no hacia plugins. Se prueban dominio, adapters y flujos críticos. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 1: Arquitectura Flutter por capacidades dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Dart y Flutter (track Flutter).
 
-**Analogía:** Es como una caja de herramientas: cada instrumento tiene propósito y puede reemplazarse sin reconstruir la casa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 1: Arquitectura Flutter por capacidades dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque reduce acoplamiento a plugins y hace verificables las reglas offline. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** cambiar el plugin de cámara sin tocar el dominio; probar la regla offline sin emulador; reemplazar SQLite por otro almacenamiento local. Comprueba que las dependencias apunten hacia las políticas, no al revés.
+#### ► LA ANALOGÍA
+Piensa en arquitectura flutter por capacidades como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 1: Arquitectura Flutter por capacidades** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** el equipo agrega soporte offline: antes de sincronizar, la app debe poder mostrar la lista de entregas guardada en SQLite cuando no hay señal. Si `ListaEnvios` crea su propio cliente HTTP adentro del widget en vez de pedirle los datos a un `EnvioRepository`, no hay forma de intercalar una fuente local sin reescribir la pantalla.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   P["ListaEnvios (presentation)"] -->|usa contrato| R[["EnvioRepository (interfaz)"]]
@@ -33,9 +31,50 @@ flowchart LR
   P -.->|acoplamiento indebido| DIO["Cliente HTTP creado dentro del widget"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Arquitectura Flutter por capacidades se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea un proyecto Flutter independiente (necesitas el SDK de Flutter estable; `flutter doctor` debe quedar sin errores para tu plataforma) y, dentro, la estructura por capacidades. El nombre del proyecto usa `minusculas_con_guion_bajo`, como pide Dart:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Arquitectura Flutter por capacidades | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses arquitectura flutter por capacidades por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: arquitectura flutter por capacidades funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Arquitectura Flutter por capacidades existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve arquitectura flutter por capacidades en tu contexto?
+2. ¿Cómo sabrías que arquitectura flutter por capacidades no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar arquitectura flutter por capacidades?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  P["ListaEnvios (presentation)"] -->|usa contrato| R[["EnvioRepository (interfaz)"]]
+  R --> DOM["Envio (dominio)"]
+  R --> HTTP["EnvioRepositoryHttp (datos: dio)"]
+  P -.->|acoplamiento indebido| DIO["Cliente HTTP creado dentro del widget"]
+```
 
 ```bash
 mkdir -p rutaflow-labs && cd rutaflow-labs
@@ -43,8 +82,6 @@ flutter create --empty tema_1_arquitectura
 cd tema_1_arquitectura
 mkdir -p lib/features/entrega/domain lib/features/entrega/data lib/features/entrega/presentation
 ```
-
-Define el contrato en el dominio, sin ninguna dependencia de Flutter ni de HTTP:
 
 ```dart
 // lib/features/entrega/domain/envio.dart
@@ -61,8 +98,6 @@ abstract class EnvioRepository {
   Future<List<Envio>> obtenerPendientes();
 }
 ```
-
-Implementa el contrato en la capa de datos, y usalo desde presentación solo a través de la interfaz:
 
 ```dart
 // lib/features/entrega/data/envio_repository_http.dart
@@ -113,10 +148,6 @@ EOF
 dart run verificar.dart
 ```
 
-**Resultado esperado:** `OK pendientes=2` — `ListaEnvios` nunca importó `dart:io` ni ningún cliente HTTP; solo conoce `EnvioRepository`, así que `verificar.dart` pudo inyectarle una implementación de prueba sin tocar la pantalla.
-
-**Fallo deliberado:** en `lista_envios.dart`, hacé que `ListaEnvios` ignore el repositorio recibido y llame directo a la implementación HTTP concreta:
-
 ```dart
 // lib/features/entrega/presentation/lista_envios.dart (versión acoplada)
 import '../data/envio_repository_http.dart';
@@ -132,50 +163,27 @@ class ListaEnvios {
 }
 ```
 
-Al correr `dart run verificar.dart` de nuevo, ya no compila: `verificar.dart` todavía llama `ListaEnvios(repo)`, y la versión acoplada no recibe ningún repositorio. Cambia esa línea por `ListaEnvios()` y vuelve a ejecutar: imprime `OK pendientes=1`, el dato fijo escrito dentro de la pantalla y no los dos envíos de `repo`. La prueba perdió la capacidad de elegir la fuente, y `lista_envios.dart` importa `../data/envio_repository_http.dart` directamente: si más adelante agregas `EnvioRepositorySqlite` para la caché offline, no hay forma de usarla sin editar esta pantalla, porque el nombre de la clase concreta quedó escrito adentro de `presentation/`. Diagnóstico: `ListaEnvios` dejó de depender de una interfaz y pasó a depender de una clase concreta; corrección: devuelve el constructor a recibir `EnvioRepository repositorio` por parámetro y deja que quien arma la pantalla decida qué implementación inyectar.
+</details>
 
-#### Paso 5 · Práctica guiada
-
-1. Agregá una segunda implementación, `EnvioRepositorySqlite`, que devuelva una lista fija simulando una caché local, sin tocar `ListaEnvios`.
-2. Hacé que `verificar.dart` construya `ListaEnvios` dos veces, una con cada repositorio, y confirmá que el conteo cambia según la fuente sin que la pantalla lo sepa.
-3. Pista: si para agregar `EnvioRepositorySqlite` tuviste que tocar `lista_envios.dart`, la interfaz todavía tiene una fuga.
-
-#### Paso 6 · Práctica independiente
-
-Agregá un método `obtenerPorGuia(String guia)` a `EnvioRepository` y a ambas implementaciones, y hacé que `ListaEnvios` lo use para resaltar un envío específico — sin que la pantalla conozca en ningún momento si la respuesta vino de HTTP o de SQLite. Escribí primero la firma en la interfaz del dominio y después implementala en cada capa de datos.
-
-#### Paso 7 · Cierre y proyecto
-
-Entregá la estructura de carpetas por capacidades, la salida `OK pendientes=2` del Paso 4, el acoplamiento reproducido al saltar la interfaz y la segunda implementación del Paso 5. El **Tema 2: GPS, permisos y batería** retoma exactamente este `EnvioRepository` para agregar una fuente de datos de ubicación que respete permisos y batería sin tocar la pantalla. **Fuente oficial:** [Flutter — Guía de arquitectura de apps](https://docs.flutter.dev/app-architecture/guide).
-
-**Errores comunes:** instanciar una clase concreta de `data/` directamente desde un widget en vez de recibir la interfaz del dominio; dejar que la capa de dominio importe Flutter o un paquete HTTP; agregar una segunda fuente de datos editando la pantalla en vez de solo agregar una clase nueva que implemente el mismo contrato.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Separa ruta, evidencia y sincronización como capacidades de la app móvil. Prueba el caso de uso de entrega sin montar widgets y evita que cada pantalla construya su propia cola de cambios.
-
-**Límites y decisión de uso:** Las capas no justifican duplicar modelos y adaptadores sin una frontera real. Separa dominio de dispositivo y transporte donde facilite pruebas y sustitución; conserva un flujo simple para decisiones puramente visuales.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 2: GPS, permisos y batería · Avanzado · 45 min
 
-**Conceptos clave:** precisión, frecuencia, distancia, background, consentimiento y muestreo adaptativo.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-La política combina movimiento, etapa y carga: detenido usa menor frecuencia; ruta activa aumenta muestreo; batería baja reduce precisión. Permiso se pide al iniciar una función comprensible, no al abrir la app. Android e iOS imponen límites de background que deben probarse en dispositivos reales. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 2: GPS, permisos y batería dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Dart y Flutter (track Flutter).
 
-**Analogía:** Es como un fotógrafo no dispara cien veces por segundo cuando la escena no cambia.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 2: GPS, permisos y batería dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque preserva jornada y privacidad sin perder señal operacional útil. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** un conductor detenido que no necesita muestreo alto; un permiso denegado al abrir la app sin contexto; un servicio en segundo plano limitado por el sistema. Prueba en dispositivo real y documenta la frecuencia elegida.
+#### ► LA ANALOGÍA
+Piensa en gps, permisos y batería como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 2: GPS, permisos y batería** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** un conductor instala la app y, por error o apuro, rechaza el diálogo de permiso de ubicación dos veces seguidas; en Android eso activa `deniedForever` automáticamente, sin un tercer diálogo posible. Si el código solo contempla los casos `granted` y `denied`, la app queda pidiendo una posición que nunca va a llegar, sin ofrecerle al conductor ninguna forma de corregirlo desde la propia app.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["checkPermission()"] --> B{"¿Permiso?"}
@@ -187,9 +195,53 @@ flowchart LR
   F -->|"no"| H["Intervalo corto: ruta activa"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| GPS, permisos y batería se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea un proyecto Flutter independiente y agrega los paquetes reales de ubicación y batería. `geolocator_android` se agrega aparte porque el código importa sus ajustes específicos de Android:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar GPS, permisos y batería | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses gps, permisos y batería por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: gps, permisos y batería funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- GPS, permisos y batería existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve gps, permisos y batería en tu contexto?
+2. ¿Cómo sabrías que gps, permisos y batería no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar gps, permisos y batería?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["checkPermission()"] --> B{"¿Permiso?"}
+  B -->|"whileInUse / always"| C["getPositionStream()"]
+  B -->|"deniedForever"| D["openAppSettings() + aviso al conductor"]
+  B -->|"denied"| E["requestPermission()"]
+  C --> F{"¿Batería baja?"}
+  F -->|"sí"| G["Intervalo largo: muestreo reducido"]
+  F -->|"no"| H["Intervalo corto: ruta activa"]
+```
 
 ```bash
 mkdir -p rutaflow-labs && cd rutaflow-labs
@@ -198,10 +250,6 @@ cd tema_2_gps
 mkdir -p lib/features/entrega/data
 flutter pub add geolocator geolocator_android battery_plus
 ```
-
-Declara el permiso en `android/app/src/main/AndroidManifest.xml`, como hijos directos de `<manifest>`: `<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />` y `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`. En iOS, agrega a `ios/Runner/Info.plist` la clave `NSLocationWhenInUseUsageDescription` con un texto que explique para qué usas la ubicación.
-
-Crea `lib/features/entrega/data/politica_ubicacion.dart`:
 
 ```dart
 // lib/features/entrega/data/politica_ubicacion.dart
@@ -241,8 +289,6 @@ class PoliticaUbicacion {
   }
 }
 ```
-
-Reemplaza `lib/main.dart` por una pantalla mínima que use la política:
 
 ```dart
 // lib/main.dart
@@ -290,58 +336,33 @@ class _PantallaUbicacionState extends State<PantallaUbicacion> {
 flutter run -d <tu-dispositivo-o-emulador>
 ```
 
-**Resultado esperado:** en un emulador con el permiso en "Solo mientras se usa la app", `asegurarPermiso()` devuelve `LocationPermission.whileInUse` y la app sigue reportando posición mientras está abierta; bajando la batería simulada por debajo de 20% (`adb shell dumpsys battery set level 15` en un emulador Android), `configurarMuestreo()` pasa a devolver un intervalo de 30 segundos en vez de 5: después de detener y volver a pulsar el botón, la consola de `flutter run` muestra `intervalo=0:00:30.000000`.
-
-**Fallo deliberado:** quitá el manejo explícito de `deniedForever` y pedí permiso sin revisar el resultado, como en una primera versión ingenua:
-
 ```dart
 Future<void> asegurarPermisoIngenuo() async {
   await Geolocator.requestPermission(); // nunca revisa qué devolvió
 }
 ```
 
-En un emulador donde el conductor ya rechazó el permiso dos veces (estado real `deniedForever` en Android), `requestPermission()` devuelve `deniedForever` sin mostrar ningún diálogo nuevo — el valor de retorno se descarta, así que el código sigue llamando a `Geolocator.getPositionStream()` más adelante, que lanza `PermissionDeniedException` en tiempo de ejecución sin ningún mensaje explicativo para el conductor, y el mapa queda congelado sin que nadie sepa por qué. Diagnóstico: el código nunca distingue `deniedForever` de los demás casos; corrección: volver a `asegurarPermiso()`, que lanza `PermisoUbicacionDenegadoPermanente`, y que la pantalla capture esa excepción para ofrecer un botón "Abrir Ajustes" (`Geolocator.openAppSettings()`) en vez de reintentar un diálogo que el sistema ya no va a mostrar.
+</details>
 
-#### Paso 5 · Práctica guiada
-
-1. Agregá un tercer nivel de muestreo: batería entre 20% y 50% usa un intervalo intermedio (15 segundos), y por debajo de 20% usa 30 segundos.
-2. Escribí una función que, dado un `LocationPermission`, devuelva un mensaje distinto para cada caso (`denied`, `deniedForever`, `whileInUse`, `always`) en vez de un solo texto genérico de error.
-3. Pista: `Geolocator.getPositionStream(locationSettings: ...)` acepta directamente el `LocationSettings` que devuelve `configurarMuestreo()`; no necesitás un timer manual para cambiar el intervalo.
-
-#### Paso 6 · Práctica independiente
-
-Implementá una clase `MuestreoAdaptativo` que escuche el `Stream` de `Geolocator.getPositionStream()` junto con `Battery().onBatteryStateChanged`, y reconfigure el intervalo de muestreo cada vez que la batería cruce el umbral de 20%, sin reiniciar la jornada del conductor ni perder la posición ya capturada.
-
-#### Paso 7 · Cierre y proyecto
-
-Entregá `politica_ubicacion.dart` con el manejo explícito de `deniedForever`, la excepción reproducida al usar la versión ingenua y el muestreo adaptativo de tres niveles del Paso 5. El **Tema 3: Offline-first y prueba de entrega** usa esta misma posición capturada para adjuntarla, junto con la foto, a la confirmación de entrega que se guarda en SQLite cuando no hay señal. **Fuente oficial:** [geolocator — pub.dev](https://pub.dev/packages/geolocator).
-
-**Errores comunes:** pedir `LocationPermission.always` de entrada sin verificar si la función realmente necesita segundo plano; descartar el valor de retorno de `requestPermission()`; fijar un intervalo de muestreo constante sin medir el impacto real en la batería del dispositivo.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Solicita ubicación con una explicación vinculada a la función activa. Prueba permiso revocado y ejecución en segundo plano, registrando precisión y consumo observado sin prometer seguimiento continuo.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ### Tema 3: Offline-first y prueba de entrega · Avanzado · 45 min
 
-**Conceptos clave:** SQLite, outbox local, estados de sincronización, conflictos y evidencia.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Confirmar entrega guarda primero un comando local con UUID y evidencia; luego sincroniza con idempotency key. Pendiente no significa fallido. Un conflicto de versión requiere política explícita. Fotografías se comprimen, cifran, suben con URL temporal y retención definida; firma no sustituye identidad. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+#### ► DE QUÉ TRATA
+Al finalizar podrás construir y verificar Tema 3: Offline-first y prueba de entrega dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Dart y Flutter (track Flutter).
 
-**Analogía:** Es como un mensajero conserva recibos numerados hasta entregarlos en oficina.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás construir y verificar Tema 3: Offline-first y prueba de entrega dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
 
-**¿Por qué es importante?** Porque el trabajo del conductor no desaparece al entrar a un ascensor sin señal. En RutaFlow la decisión se valida con una prueba automatizada y una observación operativa, no solo con una captura de pantalla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Casos de uso reales:** confirmar una entrega dentro de un ascensor; una foto que se sube dos veces al recuperar señal; un conflicto de versión al sincronizar. Conserva el comando local y define qué significa «pendiente».
+#### ► LA ANALOGÍA
+Piensa en offline-first y prueba de entrega como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y verificar **Tema 3: Offline-first y prueba de entrega** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
-
-#### Paso 2 · Contexto y caso real
-
-**Caso real:** el conductor confirma la entrega del envío `RF-4471` dentro de un edificio sin señal. La app guarda la confirmación localmente y, cuando vuelve a haber datos móviles intermitentes (una barra que aparece y desaparece), el proceso de sincronización se dispara dos veces antes de que la primera respuesta del servidor termine de procesarse — sin un control explícito, eso produce dos eventos "entregado" para el mismo envío.
-
-#### Paso 3 · Teoría, conceptos y analogía
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["confirmarEntrega(RF-4471)"] --> B[("sqflite: confirmaciones_pendientes<br/>sincronizado=0")]
@@ -352,9 +373,52 @@ flowchart LR
   D -->|"no"| G["Omitida: ya sincronizada"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Offline-first y prueba de entrega se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Crea un proyecto Flutter independiente y agrega `sqflite` junto con `sqflite_common_ffi`, la variante que corre en tu computador para verificar sin un emulador:
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Offline-first y prueba de entrega | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses offline-first y prueba de entrega por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: offline-first y prueba de entrega funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Offline-first y prueba de entrega existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve offline-first y prueba de entrega en tu contexto?
+2. ¿Cómo sabrías que offline-first y prueba de entrega no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar offline-first y prueba de entrega?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["confirmarEntrega(RF-4471)"] --> B[("sqflite: confirmaciones_pendientes<br/>sincronizado=0")]
+  B --> C["sincronizar()"]
+  C --> D{"¿sincronizado = 0?"}
+  D -->|"sí"| E["POST /envios/RF-4471/confirmar"]
+  E --> F["UPDATE sincronizado = 1"]
+  D -->|"no"| G["Omitida: ya sincronizada"]
+```
 
 ```bash
 mkdir -p rutaflow-labs && cd rutaflow-labs
@@ -364,8 +428,6 @@ mkdir -p lib/features/entrega/data test
 flutter pub add sqflite
 flutter pub add sqflite_common_ffi --dev
 ```
-
-Crea `lib/features/entrega/data/outbox_entregas.dart`:
 
 ```dart
 // lib/features/entrega/data/outbox_entregas.dart
@@ -411,8 +473,6 @@ class OutboxEntregas {
 }
 ```
 
-`outbox_entregas.dart` importa `sqflite`, que depende de Flutter; por eso la verificación corre con `flutter test`, que ejecuta en tu computador sin emulador. Crea `test/outbox_entregas_test.dart`:
-
 ```dart
 // test/outbox_entregas_test.dart
 import 'package:flutter_test/flutter_test.dart';
@@ -448,10 +508,6 @@ void main() {
 flutter test test/outbox_entregas_test.dart
 ```
 
-**Resultado esperado:** `POST confirmar RF-4471` se imprime una sola vez, aparece `OK llamadas=1` y la prueba pasa (`All tests passed!`) — la segunda llamada a `sincronizar()` no reenvía nada porque la fila ya quedó `sincronizado = 1`.
-
-**Fallo deliberado:** en `sincronizar`, quitá el filtro `where: 'sincronizado = 0'` (sincronizar "todo lo que haya, por las dudas"):
-
 ```dart
 Future<void> sincronizar(Future<void> Function(String guia) enviarAlServidor) async {
   final todas = await db.query('confirmaciones_pendientes'); // sin filtro: reenvía todo
@@ -462,25 +518,4 @@ Future<void> sincronizar(Future<void> Function(String guia) enviarAlServidor) as
 }
 ```
 
-Ejecuta `flutter test test/outbox_entregas_test.dart` de nuevo: ahora imprime `POST confirmar RF-4471` dos veces y `OK llamadas=2`, y la prueba falla porque esperaba 1 — la segunda llamada a `sincronizar()` (la reconexión) reenvía una confirmación que el servidor ya había recibido, generando un segundo evento "entregado" duplicado para la misma guía. Diagnóstico: `sincronizar()` dejó de distinguir entre filas pendientes y filas ya confirmadas; corrección: devolver el filtro `where: 'sincronizado = 0'`, que convierte cada fila en un registro idempotente — una vez marcada, ningún llamado posterior a `sincronizar()` vuelve a tocarla.
-
-#### Paso 5 · Práctica guiada
-
-1. Agregá una columna `intentos INTEGER NOT NULL DEFAULT 0` y hacé que `sincronizar` la incremente en cada intento, aunque el envío falle.
-2. Simulá que `enviarAlServidor` lanza una excepción la primera vez y confirmá que la fila sigue con `sincronizado = 0` después de ese intento fallido, para que un reintento posterior sí la reenvíe.
-3. Pista: envolvé la llamada a `enviarAlServidor` en un `try/catch` dentro del `for`, y actualizá `sincronizado = 1` solo si no hubo excepción.
-
-#### Paso 6 · Práctica independiente
-
-Implementá un método `confirmacionesVencidas(Duration umbral)` que devuelva las filas con `sincronizado = 0` cuyo `creado_en` sea más viejo que el umbral dado, para poder alertar a soporte cuando una confirmación lleva demasiado tiempo sin sincronizar (por ejemplo, el conductor estuvo offline varios días). No reutilices `sincronizar` para esto: es una consulta de solo lectura, no un intento de reenvío.
-
-#### Paso 7 · Cierre y proyecto
-
-Entregá `outbox_entregas.dart`, la salida `OK llamadas=1` del Paso 4, la duplicación reproducida al quitar el filtro de idempotencia y el manejo de fallos parciales del Paso 5. Con los tres Temas completos, el **Módulo 5: Rutas, mapas y seguimiento en tiempo real** retoma esta misma posición GPS y estas confirmaciones de entrega para calcular ETAs y tracking en vivo sobre datos que ya llegan sin duplicados. **Fuente oficial:** [sqflite — pub.dev](https://pub.dev/packages/sqflite).
-
-**Errores comunes:** sincronizar sin filtrar por `sincronizado = 0` "para no perder nada"; marcar una fila como sincronizada antes de confirmar que el servidor la recibió; no incrementar un contador de intentos y perder visibilidad de una confirmación que lleva días sin sincronizar.
-
-**Transferencia al proyecto integrador «RutaFlow»:** Conserva evidencia y comando de confirmación localmente antes de sincronizar. Reinicia sin red y reintenta dos veces: la entrega debe quedar aplicada una sola vez y el archivo disponible hasta su recepción.
-
-**Límites y decisión de uso:** Guardar offline no implica confirmación del servidor ni elimina conflictos. Conserva estado pendiente y evidencia hasta recibir una respuesta durable, define reintentos y permite intervención cuando la guía cambió mientras no había conexión.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+</details>

@@ -11,117 +11,68 @@ Sistemas mecánicos, motores, hornos y tanques se describen con las mismas ecuac
 
 ## Aprende construyendo
 
+
 ### Tema 1: Mecánico de traslación · Avanzado · 40 min
 
-**¿Por qué es importante?** La masa-resorte-amortiguador es el modelo de suspensiones, estructuras y sensores, y tiene la misma forma que un RLC.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por mecánico de traslación con foco en comprensión antes de implementación.
 
-| Elemento | Ley | En Laplace |
+#### ► LA IDEA EN UNA FRASE
+**Entender mecánico de traslación te permite tomar mejores decisiones técnicas.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
+Piensa en mecánico de traslación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mecánico de traslación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Masa \(m\) | \(F = m\ddot x\) (Newton) | \(ms^2X\) |
-| Resorte \(k\) | \(F = kx\) (Hooke) | \(kX\) |
-| Amortiguador \(b\) | \(F = b\dot x\) | \(bsX\) |
+| Mecánico de traslación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Demostración · Derivación · masa, resorte y amortiguador
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mecánico de traslación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Diagrama de cuerpo libre: sobre la masa actúa la fuerza aplicada \(f\) hacia la derecha; el resorte (\(-kx\)) y el amortiguador (\(-b\dot x\)) se oponen al movimiento.
-2. Segunda ley de Newton: \(m\ddot x = f - b\dot x - kx\), es decir \(m\ddot x + b\dot x + kx = f\).
-3. Laplace: \((ms^2 + bs + k)X = F\), así que \(G(s) = \dfrac{X}{F} = \dfrac{1}{ms^2+bs+k}\).
-4. Forma estándar: \(\dfrac{1/k\cdot\omega_n^2}{s^2+2\zeta\omega_ns+\omega_n^2}\) con \(\omega_n = \sqrt{k/m}\), \(\zeta = \dfrac{b}{2\sqrt{km}}\), \(K = 1/k\).
+#### ► CUÁNDO NO USAR ESTO
+No uses mecánico de traslación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-∎
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mecánico de traslación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Ejemplo 1 · Suspensión · *Intermedio*
+#### ► LO QUE DEBES RECORDAR
+- Mecánico de traslación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-**Enunciado.** \(m = 1\) kg, \(b = 4\) N·s/m, \(k = 20\) N/m. Halla \(\omega_n\), \(\zeta\), \(M_p\) y el desplazamiento final con 10 N.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mecánico de traslación en tu contexto?
+2. ¿Cómo sabrías que mecánico de traslación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mecánico de traslación?
 
-1. \(G = \dfrac{1}{s^2+4s+20}\).
+</details>
 
-   **¿Por qué?** Fórmula \(\dfrac{1}{ms^2+bs+k}\) con \(m = 1\).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-2. \(\omega_n = \sqrt{k/m} = \sqrt{20} = 4{,}47\) rad/s.
-
-   **¿Por qué?** El término independiente es \(\omega_n^2\) (módulo 12).
-
-3. \(\zeta = \dfrac{b}{2\sqrt{km}} = \dfrac{4}{2\cdot4{,}47} = 0{,}447\).
-
-   **¿Por qué?** El coeficiente de \(s\) es \(2\zeta\omega_n\).
-
-4. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} = e^{-0{,}447\pi/0{,}894} = 20{,}8\,\%\).
-
-   **¿Por qué?** Fórmula del sobrepico (módulo 12).
-
-5. Final: \(10\cdot G(0) = 10\cdot\dfrac{1}{20} = 0{,}5\) m.
-
-   **¿Por qué?** Ante escalón, el valor final es la amplitud por \(G(0)\).
-
-**Resultado:** Oscila un 20,8 % por encima y queda 0,5 m desplazada
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Masa-resorte-amortiguador: M = 1, B = 4, K = 20 · *Básico*
-
-**Enunciado.** Halla \(X(s)/F(s)\), \(\omega_n\) y \(\zeta\).
-
-1. Newton: \(1\ddot x + 4\dot x + 20x = f\).
-
-   **¿Por qué?** Suma de fuerzas sobre la masa: fuerza aplicada menos la del amortiguador menos la del resorte.
-
-2. \(\dfrac{X}{F} = \frac{1}{s^{2} + 4 s + 20}\).
-
-   **¿Por qué?** Transformando con condiciones iniciales cero.
-
-**Resultado.** \(\omega_n = \sqrt{K/M} = 2 \sqrt{5}\approx 4{,}472\) rad/s, \(\zeta = \dfrac{B}{2\sqrt{MK}} \approx 0{,}447\); ganancia DC \(1/K = \frac{1}{20}\) m/N.
-
-#### Ejemplo 3 · Masa-resorte-amortiguador: M = 2, B = 8, K = 50 · *Intermedio*
-
-**Enunciado.** Halla \(X(s)/F(s)\), \(\omega_n\) y \(\zeta\).
-
-1. Newton: \(2\ddot x + 8\dot x + 50x = f\).
-
-   **¿Por qué?** Suma de fuerzas sobre la masa: fuerza aplicada menos la del amortiguador menos la del resorte.
-
-2. \(\dfrac{X}{F} = \frac{1}{2 s^{2} + 8 s + 50}\).
-
-   **¿Por qué?** Transformando con condiciones iniciales cero.
-
-**Resultado.** \(\omega_n = \sqrt{K/M} = 5\) rad/s, \(\zeta = \dfrac{B}{2\sqrt{MK}} \approx 0{,}4\); ganancia DC \(1/K = \frac{1}{50}\) m/N.
-
-#### Ejemplo 4 · Masa-resorte-amortiguador: M = 0,5, B = 1, K = 8 · *Intermedio*
-
-**Enunciado.** Halla \(X(s)/F(s)\), \(\omega_n\) y \(\zeta\).
-
-1. Newton: \(\frac{1}{2}\ddot x + 1\dot x + 8x = f\).
-
-   **¿Por qué?** Suma de fuerzas sobre la masa: fuerza aplicada menos la del amortiguador menos la del resorte.
-
-2. \(\dfrac{X}{F} = \frac{1}{\frac{s^{2}}{2} + s + 8}\).
-
-   **¿Por qué?** Transformando con condiciones iniciales cero.
-
-**Resultado.** \(\omega_n = \sqrt{K/M} = 4\) rad/s, \(\zeta = \dfrac{B}{2\sqrt{MK}} \approx 0{,}25\); ganancia DC \(1/K = \frac{1}{8}\) m/N.
-
-#### Ejemplo 5 · Dos masas acopladas · *Avanzado*
-
-**Enunciado.** Dos masas \(M_1, M_2\) unidas por un resorte \(K\); la fuerza actúa sobre \(M_1\) y \(M_2\) tiene amortiguador \(B\) a tierra.
-
-1. Ecuaciones: \(M_1\ddot x_1 + K(x_1-x_2) = f\) y \(M_2\ddot x_2 + B\dot x_2 + K(x_2-x_1) = 0\).
-
-   **¿Por qué?** Una ecuación de Newton por cada masa; el resorte actúa según la diferencia de posiciones.
-
-2. De la segunda: \(X_2 = \dfrac{K}{M_2s^2+Bs+K}X_1\).
-
-   **¿Por qué?** Se despeja una variable y se sustituye en la otra.
-
-**Resultado.** \(\dfrac{X_2}{F} = \dfrac{K}{(M_1s^2+K)(M_2s^2+Bs+K)-K^2}\): un sistema de cuarto orden.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (suspensión).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import sqrt, Rational, N
@@ -135,104 +86,73 @@ print("zeta:", N(zeta, 3))
 print("final:", final)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `wn: 4.47`, `zeta: 0.447` y `final: 1/2`, igual al Ejemplo 1.
-
-#### Practica
-
-cambia `m, b, k` a `2, 8, 50` y confirma \(\omega_n=5\), \(\zeta=0{,}4\) (práctica 1 de esta sección). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** estas fórmulas valen para un sistema lineal de un solo grado de libertad; con dos masas acopladas (Ejemplo 5) el sistema es de cuarto orden y \(\zeta\), \(\omega_n\) ya no se leen de un solo término cuadrático.
+</details>
 
 ### Tema 2: Mecánico de rotación · Avanzado · 40 min
 
-**¿Por qué es importante?** Los sistemas rotacionales modelan ejes, brazos robóticos y antenas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por mecánico de rotación con foco en comprensión antes de implementación.
 
-Las mismas leyes con ángulo \(\theta\) y torque \(T\): inercia \(J\) (\(J\ddot\theta\)), fricción viscosa \(B\) (\(B\dot\theta\)) y resorte torsional \(K\) (\(K\theta\)):
+#### ► LA IDEA EN UNA FRASE
+**Entender mecánico de rotación te permite tomar mejores decisiones técnicas.**
 
-\[J\ddot\theta + B\dot\theta + K\theta = T \quad\Rightarrow\quad \frac{\Theta(s)}{T(s)} = \frac{1}{Js^2+Bs+K}\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Más ejemplos resueltos
+#### ► LA ANALOGÍA
+Piensa en mecánico de rotación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que mecánico de rotación resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Ejemplo 1 · Eje con J = 0,1 kg·m², B = 1 N·m·s, K = 0 N·m/rad · *Básico*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Mecánico de rotación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-**Enunciado.** Halla \(\Theta(s)/T(s)\) y, si aplica, \(\Omega(s)/T(s)\).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Mecánico de rotación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-1. Newton rotacional: \(\frac{1}{10}\ddot\theta + 1\dot\theta = \tau\).
+#### ► CUÁNDO NO USAR ESTO
+No uses mecánico de rotación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-   **¿Por qué?** Torque aplicado = inercia × aceleración angular + fricción viscosa + torsión del eje.
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: mecánico de rotación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-2. \(\dfrac{\Theta}{T} = \frac{1}{\frac{s^{2}}{10} + s}\).
+#### ► LO QUE DEBES RECORDAR
+- Mecánico de rotación existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Transformada con condiciones iniciales nulas.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve mecánico de rotación en tu contexto?
+2. ¿Cómo sabrías que mecánico de rotación no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar mecánico de rotación?
 
-**Resultado.** Hay un polo en \(s=0\): la posición crece sin límite ante un torque constante. En velocidad, \(\dfrac{\Omega}{T} = \frac{10}{s + 10}\), primer orden con \(\tau = J/B = \frac{1}{10}\) s.
+</details>
 
-#### Ejemplo 2 · Eje con J = 0,5 kg·m², B = 2 N·m·s, K = 10 N·m/rad · *Intermedio*
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Enunciado.** Halla \(\Theta(s)/T(s)\) y, si aplica, \(\Omega(s)/T(s)\).
-
-1. Newton rotacional: \(\frac{1}{2}\ddot\theta + 2\dot\theta + 10\theta = \tau\).
-
-   **¿Por qué?** Torque aplicado = inercia × aceleración angular + fricción viscosa + torsión del eje.
-
-2. \(\dfrac{\Theta}{T} = \frac{1}{\frac{s^{2}}{2} + 2 s + 10}\).
-
-   **¿Por qué?** Transformada con condiciones iniciales nulas.
-
-**Resultado.** Segundo orden con \(\omega_n = \sqrt{K/J} \approx 4{,}472\) rad/s.
-
-#### Ejemplo 3 · Eje con J = 1 kg·m², B = 3 N·m·s, K = 0 N·m/rad · *Básico*
-
-**Enunciado.** Halla \(\Theta(s)/T(s)\) y, si aplica, \(\Omega(s)/T(s)\).
-
-1. Newton rotacional: \(1\ddot\theta + 3\dot\theta = \tau\).
-
-   **¿Por qué?** Torque aplicado = inercia × aceleración angular + fricción viscosa + torsión del eje.
-
-2. \(\dfrac{\Theta}{T} = \frac{1}{s^{2} + 3 s}\).
-
-   **¿Por qué?** Transformada con condiciones iniciales nulas.
-
-**Resultado.** Hay un polo en \(s=0\): la posición crece sin límite ante un torque constante. En velocidad, \(\dfrac{\Omega}{T} = \frac{1}{s + 3}\), primer orden con \(\tau = J/B = \frac{1}{3}\) s.
-
-#### Ejemplo 4 · Eje con J = 2 kg·m², B = 1 N·m·s, K = 8 N·m/rad · *Intermedio*
-
-**Enunciado.** Halla \(\Theta(s)/T(s)\) y, si aplica, \(\Omega(s)/T(s)\).
-
-1. Newton rotacional: \(2\ddot\theta + 1\dot\theta + 8\theta = \tau\).
-
-   **¿Por qué?** Torque aplicado = inercia × aceleración angular + fricción viscosa + torsión del eje.
-
-2. \(\dfrac{\Theta}{T} = \frac{1}{2 s^{2} + s + 8}\).
-
-   **¿Por qué?** Transformada con condiciones iniciales nulas.
-
-**Resultado.** Segundo orden con \(\omega_n = \sqrt{K/J} \approx 2\) rad/s.
-
-#### Ejemplo 5 · Engranajes · *Intermedio*
-
-**Enunciado.** Un motor mueve una carga \(J_L = 2\) kg·m² a través de engranajes \(N_1 = 10\), \(N_2 = 50\) dientes. ¿Qué inercia ve el motor?
-
-1. Inercia reflejada: \(J_L\left(\tfrac{N_1}{N_2}\right)^2 = 2\cdot(0{,}2)^2 = 0{,}08\) kg·m².
-
-   **¿Por qué?** Los engranajes reducen la velocidad y aumentan el torque; la carga se ve "más liviana" por el cuadrado de la relación.
-
-**Resultado.** El motor ve 0,08 kg·m² más su propia inercia.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 2 (eje J=0,5, B=2, K=10).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import sqrt, Rational, N
@@ -242,132 +162,73 @@ wn = sqrt(K / J)
 print("wn:", N(wn, 4))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `wn: 4.472`, igual al Ejemplo 2.
-
-#### Practica
-
-cambia `J, K` a `2, 8` y confirma \(\omega_n=2\) (Ejemplo 4). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** esto asume el eje rígido conectado directamente a la carga; con engranajes (Ejemplo 5) la inercia y la fricción de la carga deben reflejarse multiplicando por el cuadrado de la relación de transmisión antes de aplicar esta fórmula.
+</details>
 
 ### Tema 3: Motor DC (electromecánico) · Avanzado · 40 min
 
-**¿Por qué es importante?** El motor DC es el actuador más común en control; su función de transferencia aparece en casi todos los proyectos.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por motor dc (electromecánico) con foco en comprensión antes de implementación.
 
-Un motor DC une un circuito (la armadura) con un sistema rotacional (el eje). Dos leyes los conectan: el torque es proporcional a la corriente, \(T = K_t i\), y el motor genera un voltaje que se opone, proporcional a la velocidad, \(e_b = K_b\omega\).
+#### ► LA IDEA EN UNA FRASE
+**Entender motor dc (electromecánico) te permite tomar mejores decisiones técnicas.**
 
-#### Demostración · Derivación de ω/V
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-1. Circuito de armadura (Kirchhoff): \(v = Ri + L\dfrac{di}{dt} + K_b\omega\). En Laplace: \(V = (Ls+R)I + K_b\Omega\).
-2. Eje (Newton rotacional): \(J\dot\omega + B\omega = K_ti\). En Laplace: \((Js+B)\Omega = K_tI\), así que \(I = \dfrac{(Js+B)\Omega}{K_t}\).
-3. Reemplaza \(I\) en la primera: \(V = \left[\dfrac{(Ls+R)(Js+B)}{K_t} + K_b\right]\Omega\).
-4. \(\dfrac{\Omega(s)}{V(s)} = \dfrac{K_t}{(Ls+R)(Js+B) + K_tK_b}\).
-5. Si \(L\) es muy pequeña (\(L\approx0\)): \(\dfrac{K_t}{R(Js+B)+K_tK_b}\), un primer orden. Para la posición, \(\Theta = \Omega/s\): se agrega un integrador.
+#### ► LA ANALOGÍA
+Piensa en motor dc (electromecánico) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-∎
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que motor dc (electromecánico) resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Ejemplo 1 · Motor DC con valores · *Nivel parcial*
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Motor DC (electromecánico) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-> **Qué cambia respecto al anterior:** Dos dominios (eléctrico y mecánico) conectados.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Motor DC (electromecánico) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Enunciado.** \(R = 1\) Ω, \(L = 0{,}5\) H, \(J = 0{,}01\), \(B = 0{,}1\), \(K_t = K_b = 0{,}01\). Halla \(\Omega/V\), los polos y la velocidad con 12 V.
+#### ► CUÁNDO NO USAR ESTO
+No uses motor dc (electromecánico) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-1. Reemplaza en \(\dfrac{K_t}{(Ls+R)(Js+B)+K_tK_b}\).
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: motor dc (electromecánico) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-   \[\frac{0{,}01}{(0{,}5s+1)(0{,}01s+0{,}1)+0{,}0001}\]
+#### ► LO QUE DEBES RECORDAR
+- Motor DC (electromecánico) existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Es la fórmula derivada arriba.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve motor dc (electromecánico) en tu contexto?
+2. ¿Cómo sabrías que motor dc (electromecánico) no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar motor dc (electromecánico)?
 
-2. Expande: \((0{,}5s+1)(0{,}01s+0{,}1) = 0{,}005s^2 + 0{,}05s + 0{,}01s + 0{,}1 = 0{,}005s^2+0{,}06s+0{,}1\). Más 0,0001.
+</details>
 
-   **¿Por qué?** Distributiva.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-3. Divide todo por 0,005: \(\dfrac{2}{s^2+12s+20{,}02}\).
-
-   **¿Por qué?** Para que \(s^2\) tenga coeficiente 1.
-
-4. Polos: \(-6\pm\sqrt{36-20{,}02} = -6\pm4{,}0\): \(-2\) y \(-10\).
-
-   **¿Por qué?** \(\Delta > 0\): reales. El lento (\(-2\)) es el mecánico y el rápido (\(-10\)) el eléctrico.
-
-5. \(G(0) = 2/20{,}02 = 0{,}0999\) rad/s por voltio. Con 12 V: 1,2 rad/s.
-
-   **¿Por qué?** Valor final.
-
-**Resultado:** \(\dfrac{\Omega}{V} = \dfrac{2}{s^2+12s+20{,}02}\), \(\omega_\infty = 1{,}2\) rad/s
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Motor DC (inductancia despreciable): Ra = 1 Ω, K = 0,1, J = 0,01, B = 0,001 · *Intermedio*
-
-**Enunciado.** Halla \(\Omega(s)/V(s)\), la ganancia y la constante de tiempo.
-
-1. Eléctrica: \(V = R_aI + K\Omega\). Mecánica: \(J s\Omega + B\Omega = KI\).
-
-   **¿Por qué?** La fuerza contraelectromotriz \(K\Omega\) se opone al voltaje; el torque \(KI\) mueve el eje.
-
-2. Despeja \(I\) de la eléctrica y sustituye en la mecánica.
-
-   **¿Por qué?** Así queda solo la relación entre voltaje y velocidad.
-
-**Resultado.** \(\dfrac{\Omega}{V} = \dfrac{K}{JR_as + BR_a + K^2} \approx \dfrac{9{,}091}{0{,}909s + 1}\): primer orden con \(\tau = 0{,}909\,\text{s}\) y ganancia \(9{,}091\) rad/s por voltio.
-
-#### Ejemplo 3 · Motor DC (inductancia despreciable): Ra = 2 Ω, K = 0,5, J = 0,05, B = 0,01 · *Intermedio*
-
-**Enunciado.** Halla \(\Omega(s)/V(s)\), la ganancia y la constante de tiempo.
-
-1. Eléctrica: \(V = R_aI + K\Omega\). Mecánica: \(J s\Omega + B\Omega = KI\).
-
-   **¿Por qué?** La fuerza contraelectromotriz \(K\Omega\) se opone al voltaje; el torque \(KI\) mueve el eje.
-
-2. Despeja \(I\) de la eléctrica y sustituye en la mecánica.
-
-   **¿Por qué?** Así queda solo la relación entre voltaje y velocidad.
-
-**Resultado.** \(\dfrac{\Omega}{V} = \dfrac{K}{JR_as + BR_a + K^2} \approx \dfrac{1{,}852}{0{,}37s + 1}\): primer orden con \(\tau = 0{,}37\,\text{s}\) y ganancia \(1{,}852\) rad/s por voltio.
-
-#### Ejemplo 4 · Motor DC (inductancia despreciable): Ra = 0,5 Ω, K = 0,05, J = 0,001, B = 0 · *Avanzado*
-
-**Enunciado.** Halla \(\Omega(s)/V(s)\), la ganancia y la constante de tiempo.
-
-1. Eléctrica: \(V = R_aI + K\Omega\). Mecánica: \(J s\Omega + B\Omega = KI\).
-
-   **¿Por qué?** La fuerza contraelectromotriz \(K\Omega\) se opone al voltaje; el torque \(KI\) mueve el eje.
-
-2. Despeja \(I\) de la eléctrica y sustituye en la mecánica.
-
-   **¿Por qué?** Así queda solo la relación entre voltaje y velocidad.
-
-**Resultado.** \(\dfrac{\Omega}{V} = \dfrac{K}{JR_as + BR_a + K^2} \approx \dfrac{20}{0{,}2s + 1}\): primer orden con \(\tau = 0{,}2\,\text{s}\) y ganancia \(20\) rad/s por voltio.
-
-#### Ejemplo 5 · Motor DC (inductancia despreciable): Ra = 4 Ω, K = 0,2, J = 0,02, B = 0,005 · *Intermedio*
-
-**Enunciado.** Halla \(\Omega(s)/V(s)\), la ganancia y la constante de tiempo.
-
-1. Eléctrica: \(V = R_aI + K\Omega\). Mecánica: \(J s\Omega + B\Omega = KI\).
-
-   **¿Por qué?** La fuerza contraelectromotriz \(K\Omega\) se opone al voltaje; el torque \(KI\) mueve el eje.
-
-2. Despeja \(I\) de la eléctrica y sustituye en la mecánica.
-
-   **¿Por qué?** Así queda solo la relación entre voltaje y velocidad.
-
-**Resultado.** \(\dfrac{\Omega}{V} = \dfrac{K}{JR_as + BR_a + K^2} \approx \dfrac{3{,}333}{1{,}333s + 1}\): primer orden con \(\tau = 1{,}333\,\text{s}\) y ganancia \(3{,}333\) rad/s por voltio.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar los polos del Ejemplo 1 (motor DC completo).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols, solve, N
@@ -379,105 +240,73 @@ polos = solve(den, s)
 print("polos:", sorted(N(p, 3) for p in polos))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `polos: [-10.0, -2.00]`, igual al Ejemplo 1 (polo eléctrico rápido en −10, polo mecánico lento en −2).
-
-#### Practica
-
-usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin inductancia) para construir \(G=\dfrac{K}{JR_as+BR_a+K^2}\) y confirma \(\tau\approx0{,}37\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** cuando \(L\) no es despreciable el sistema es de segundo orden con dos polos (eléctrico y mecánico); la aproximación de primer orden de los Ejemplos 2 a 5 solo es válida si el polo eléctrico \(R/L\) es mucho más rápido que el mecánico.
+</details>
 
 ### Tema 4: Sistemas térmicos e hidráulicos · Avanzado · 40 min
 
-**¿Por qué es importante?** Hornos y tanques son los procesos típicos de la industria y se modelan como sistemas de primer orden.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por sistemas térmicos e hidráulicos con foco en comprensión antes de implementación.
 
-- Térmico (horno)Capacidad térmica \(C\) y resistencia térmica \(R\) hacia el ambiente. Balance de energía: lo que entra menos lo que sale se acumula.
+#### ► LA IDEA EN UNA FRASE
+**Entender sistemas térmicos e hidráulicos te permite tomar mejores decisiones técnicas.**
 
-  \[C\frac{dT}{dt} = q - \frac{T - T_a}{R}\]
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-  Con \(\theta = T - T_a\): \(\dfrac{\Theta}{Q} = \dfrac{R}{RCs+1}\).
-- Hidráulico (tanque)Área \(A\) y válvula de salida con resistencia \(R\) (\(q_o = h/R\)). Balance de masa:
+#### ► LA ANALOGÍA
+Piensa en sistemas térmicos e hidráulicos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-  \[A\frac{dh}{dt} = q_i - \frac{h}{R}\]
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que sistemas térmicos e hidráulicos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-  \(\dfrac{H}{Q_i} = \dfrac{R}{ARs+1}\).
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Sistemas térmicos e hidráulicos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Ejemplo 1 · Tanque · *Intermedio*
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Sistemas térmicos e hidráulicos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-> **Qué cambia respecto al anterior:** Otro dominio físico, primer orden.
+#### ► CUÁNDO NO USAR ESTO
+No uses sistemas térmicos e hidráulicos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Enunciado.** \(A = 2\) m², \(R = 5\) s/m². El caudal de entrada sube 0,1 m³/s. ¿Cuánto sube el nivel y en cuánto tiempo?
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: sistemas térmicos e hidráulicos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-1. \(G = \dfrac{R}{ARs+1} = \dfrac{5}{10s+1}\).
+#### ► LO QUE DEBES RECORDAR
+- Sistemas térmicos e hidráulicos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Fórmula del tanque.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve sistemas térmicos e hidráulicos en tu contexto?
+2. ¿Cómo sabrías que sistemas térmicos e hidráulicos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar sistemas térmicos e hidráulicos?
 
-2. Lee \(K = 5\), \(\tau = AR = 10\) s.
+</details>
 
-   **¿Por qué?** Forma estándar de primer orden (módulo 11).
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-3. \(\Delta h = 0{,}1\cdot5 = 0{,}5\) m; \(t_s = 4\tau = 40\) s.
-
-   **¿Por qué?** Amplitud por \(K\); establecimiento en \(4\tau\).
-
-**Resultado:** Sube 0,5 m y se estabiliza en 40 s
-
-#### Más ejemplos resueltos
-
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
-
-#### Ejemplo 2 · Horno con resistencia térmica · *Básico*
-
-**Enunciado.** Capacidad térmica \(C_t = 500\) J/°C y resistencia térmica \(R_t = 0{,}2\) °C/W. Halla \(\Theta(s)/Q(s)\).
-
-1. Balance: \(C_t\dot\theta = q - \dfrac{\theta}{R_t}\).
-
-   **¿Por qué?** El calor que entra menos el que se pierde se acumula como aumento de temperatura.
-
-**Resultado.** \(\dfrac{\Theta}{Q} = \dfrac{R_t}{R_tC_ts+1} = \dfrac{0{,}2}{100s+1}\): \(\tau = 100\) s y 0,2 °C por vatio en régimen permanente.
-
-#### Ejemplo 3 · Tanque con salida libre (linealizado) · *Intermedio*
-
-**Enunciado.** Área \(A = 2\) m² y resistencia hidráulica \(R_h = 50\) s/m². Halla \(H(s)/Q_i(s)\).
-
-1. Balance de volumen: \(A\dot h = q_i - \dfrac{h}{R_h}\).
-
-   **¿Por qué?** Lo que entra menos lo que sale cambia el volumen \(Ah\).
-
-**Resultado.** \(\dfrac{H}{Q_i} = \dfrac{50}{100s+1}\): \(\tau = AR_h = 100\) s.
-
-#### Ejemplo 4 · Dos tanques en cascada (no interactuantes) · *Avanzado*
-
-**Enunciado.** Tanque 1 (\(\tau_1 = 50\) s, ganancia 2) descarga en el tanque 2 (\(\tau_2 = 20\) s, ganancia 1).
-
-1. Como el segundo no afecta al primero, las funciones se multiplican.
-
-   **¿Por qué?** Bloques en serie sin carga mutua.
-
-**Resultado.** \(\dfrac{H_2}{Q_i} = \dfrac{2}{(50s+1)(20s+1)}\): segundo orden sobreamortiguado (dos polos reales).
-
-#### Ejemplo 5 · Termómetro como sistema de primer orden · *Básico*
-
-**Enunciado.** Un termómetro tarda 30 s en marcar el 63 % de un salto de temperatura. ¿Cuál es su modelo?
-
-1. El 63,2 % se alcanza en \(t = \tau\).
-
-   **¿Por qué?** En \(1-e^{-t/\tau}\), para \(t=\tau\) queda \(1-e^{-1} = 0{,}632\).
-
-**Resultado.** \(G(s) = \dfrac{1}{30s+1}\) (ganancia 1, porque al final marca la temperatura real).
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 1 (tanque).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import symbols
@@ -488,102 +317,73 @@ G = R / (A * R * s + 1)
 print("G(s):", G)
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `G(s): 5/(10*s + 1)`, igual a \(K=5\), \(\tau=10\) del Ejemplo 1.
-
-#### Practica
-
-cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando \(G=R_t/(R_tC_ts+1)\)) y confirma \(\tau=100\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** este modelo de primer orden asume mezcla perfecta y una pérdida lineal con la salida; un tanque con válvula de salida turbulenta real (\(q\propto\sqrt h\)) no es lineal y esta fórmula es solo una linealización alrededor de un punto de operación.
-
-**Conexión con el proyecto integrador:** el proyecto `control-1-tanque` usa exactamente este modelo lineal, con \(A=2\) m² y salida \(q=0{,}5h\) (es decir \(R=1/0{,}5=2\) s/m²). Calcula \(G(s)=R/(ARs+1)\) con esos valores (\(K=2\), \(\tau=4\) s) y anótalo como el primer dato de tu bitácora antes de ejecutar `simular.py`.
+</details>
 
 ### Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos · Avanzado · 40 min
 
-**¿Por qué es importante?** Las analogías te permiten reutilizar lo aprendido en un dominio para entender cualquier otro.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
+#### ► DE QUÉ TRATA
+Este tema te guía por analogías entre sistemas eléctricos, mecánicos y térmicos con foco en comprensión antes de implementación.
 
-| Eléctrico | Traslación | Rotación | Hidráulico | Térmico |
-|---|---|---|---|---|
-| Voltaje \(v\) | Fuerza \(f\) | Torque \(T\) | Presión / nivel \(h\) | Temperatura \(\theta\) |
-| Corriente \(i\) | Velocidad \(\dot x\) | Velocidad angular \(\omega\) | Caudal \(q\) | Flujo de calor \(q\) |
-| Resistencia \(R\) | Amortiguador \(b\) | Fricción \(B\) | Válvula \(R\) | Resistencia térmica \(R\) |
-| Inductancia \(L\) | Masa \(m\) | Inercia \(J\) | Inercia del fluido | — |
-| Capacitancia \(C\) | \(1/k\) | \(1/K\) | Área \(A\) | Capacidad térmica \(C\) |
+#### ► LA IDEA EN UNA FRASE
+**Entender analogías entre sistemas eléctricos, mecánicos y térmicos te permite tomar mejores decisiones técnicas.**
 
-Con esta tabla, el RLC serie \(LC\ddot q + RC\dot q + q\) y la masa-resorte \(m\ddot x + b\dot x + kx\) son la misma ecuación. Lo que aprendes en uno vale para el otro.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Errores comunes
+#### ► LA ANALOGÍA
+Piensa en analogías entre sistemas eléctricos, mecánicos y térmicos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-- Equivocar el signo de las fuerzas que se oponen al movimiento.
-- Olvidar la fuerza contraelectromotriz \(K_b\omega\) en el motor.
-- Confundir la velocidad \(\Omega\) con la posición \(\Theta = \Omega/s\).
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que analogías entre sistemas eléctricos, mecánicos y térmicos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Más ejemplos resueltos
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Analogías entre sistemas eléctricos, mecánicos y térmicos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados se comprobaron con cálculo simbólico (sympy).
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Analogías entre sistemas eléctricos, mecánicos y térmicos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-#### Ejemplo 1 · Analogía fuerza–voltaje: Masa \(M\) · *Básico*
+#### ► CUÁNDO NO USAR ESTO
+No uses analogías entre sistemas eléctricos, mecánicos y térmicos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**Enunciado.** ¿A qué equivale Masa \(M\) en un circuito y en un sistema rotacional?
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: analogías entre sistemas eléctricos, mecánicos y térmicos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-1. Circuito: Inductancia \(L\). Rotación: Inercia \(J\).
+#### ► LO QUE DEBES RECORDAR
+- Analogías entre sistemas eléctricos, mecánicos y térmicos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-   **¿Por qué?** Ambos acumulan energía cinética / magnética: \(\tfrac12Mv^2\) ↔ \(\tfrac12Li^2\).
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve analogías entre sistemas eléctricos, mecánicos y térmicos en tu contexto?
+2. ¿Cómo sabrías que analogías entre sistemas eléctricos, mecánicos y térmicos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar analogías entre sistemas eléctricos, mecánicos y térmicos?
 
-**Resultado.** Por eso sus ecuaciones tienen la misma forma y se resuelven igual.
+</details>
 
-#### Ejemplo 2 · Analogía fuerza–voltaje: Amortiguador \(B\) · *Básico*
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Enunciado.** ¿A qué equivale Amortiguador \(B\) en un circuito y en un sistema rotacional?
-
-1. Circuito: Resistencia \(R\). Rotación: Fricción viscosa \(B\).
-
-   **¿Por qué?** Disipan energía: fuerza \(Bv\) ↔ voltaje \(Ri\).
-
-**Resultado.** Por eso sus ecuaciones tienen la misma forma y se resuelven igual.
-
-#### Ejemplo 3 · Analogía fuerza–voltaje: Resorte \(K\) · *Básico*
-
-**Enunciado.** ¿A qué equivale Resorte \(K\) en un circuito y en un sistema rotacional?
-
-1. Circuito: Capacitor \(1/C\). Rotación: Rigidez torsional \(K\).
-
-   **¿Por qué?** Acumulan energía potencial: \(\tfrac12Kx^2\) ↔ \(\tfrac12q^2/C\).
-
-**Resultado.** Por eso sus ecuaciones tienen la misma forma y se resuelven igual.
-
-#### Ejemplo 4 · Del RLC serie a la masa-resorte · *Intermedio*
-
-**Enunciado.** Escribe el sistema mecánico análogo de un RLC serie con \(R = 4\), \(L = 1\), \(C = 0{,}05\).
-
-1. \(L\ddot q + R\dot q + q/C = v\) se compara con \(M\ddot x + B\dot x + Kx = f\).
-
-   **¿Por qué?** Misma ecuación con otros nombres.
-
-**Resultado.** \(M = 1\), \(B = 4\), \(K = 20\): \(\omega_n = \sqrt{20}\approx4{,}47\) rad/s y \(\zeta \approx 0{,}45\) en los dos sistemas.
-
-#### Ejemplo 5 · Elegir el análogo eléctrico de un eje · *Intermedio*
-
-**Enunciado.** Un eje con \(J = 0{,}5\), \(B = 2\) y sin resorte. ¿Qué circuito se comporta igual en velocidad?
-
-1. Velocidad: \(J\dot\omega + B\omega = \tau\) ↔ \(L\,di/dt + Ri = v\).
-
-   **¿Por qué?** Primer orden en ambos casos.
-
-**Resultado.** Un RL serie con \(L = 0{,}5\) y \(R = 2\): constante de tiempo \(L/R = J/B = 0{,}25\) s.
-
-#### Verificación con código
-
-Guarda este script como `verificacion.py` y ejecútalo para comprobar el Ejemplo 4 (RLC a masa-resorte).
-
+#### Código y verificación
 ```python
 # verificacion.py
 from sympy import sqrt, Rational, N
@@ -596,34 +396,8 @@ print("wn:", N(wn, 3))
 print("zeta:", N(zeta, 3))
 ```
 
-Ejecuta:
-
 ```bash
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `wn: 4.47` y `zeta: 0.447`, igual al Ejemplo 4.
-
-#### Practica
-
-usa la analogía del Ejemplo 5 (\(J=0{,}5\), \(B=2\) ↔ \(L=0{,}5\), \(R=2\)) y confirma que \(\tau=L/R=J/B=0{,}25\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
-
-**Límite:** la analogía fuerza-voltaje empareja masa↔inductancia y resorte↔capacitancia; existe otra convención (fuerza-corriente) que empareja al revés — mezclar las dos convenciones en el mismo problema da un modelo incorrecto.
-
-#### Práctica para resolver sola o solo
-
-- **1.**\(m = 2\), \(b = 8\), \(k = 50\). \(\omega_n\), \(\zeta\), \(G(s)\).
-
-  <details><summary>Respuesta</summary>
-
-  \(G = \dfrac{1}{2s^2+8s+50} = \dfrac{0{,}5}{s^2+4s+25}\); \(\omega_n = 5\), \(\zeta = 0{,}4\).
-
-  </details>
-
-- **2.**Horno con \(R = 0{,}5\) °C/W y \(C = 400\) J/°C. \(\tau\) y aumento con 200 W.
-
-  <details><summary>Respuesta</summary>
-
-  \(\tau = RC = 200\) s; \(\Delta\theta = 200\cdot0{,}5 = 100\) °C.
-
-  </details>
+</details>

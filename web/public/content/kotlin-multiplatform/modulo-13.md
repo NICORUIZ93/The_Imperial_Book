@@ -3,25 +3,68 @@
 
 ## Aprende construyendo
 
+
 ### Tema 1: Kotlin/Native · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y empaquetarlos juntos en un XCFramework. Prerrequisitos: macOS con Xcode instalado, módulo `shared` del proyecto integrador (Módulo 11).
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Un desarrollador corre la app en un dispositivo físico sin problema, pero al intentar correrla en el Simulador de Xcode obtiene el error "building for iOS Simulator, but linking against a dylib built for iOS" — el framework que el equipo distribuye solo se compiló para el target de dispositivo.
+#### ► DE QUÉ TRATA
+Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y empaquetarlos juntos en un XCFramework. Prerrequisitos: macOS con Xcode instalado, módulo shared del proyecto integrador (Módulo 11).
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Kotlin/Native compila directamente a código máquina nativo por arquitectura/target específico (no una VM compartida); un framework para dispositivo físico (`iosArm64`) y uno para el simulador (`iosSimulatorArm64`) son binarios distintos que deben distribuirse juntos para funcionar en ambos contextos. Los dos son arm64, así que no caben en un único binario universal ("fat"): `lipo` solo admite un binario por arquitectura y rechaza dos arm64. El formato que los reúne es el XCFramework, una carpeta con un framework por plataforma (dispositivo y simulador) que Xcode elige al compilar. La analogía es una pieza industrial con medidas distintas según la máquina que la recibe: no alcanza con fabricar una sola versión y esperar que encaje en todas.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y empaquetarlos juntos en un XCFramework.**
 
-**¿Por qué es importante?** Kotlin/Native compila a binarios específicos por arquitectura; un framework que no cubre explícitamente el target del Simulador bloquea el flujo de desarrollo diario de todo el equipo, no solo un caso extremo.
-**Conceptos clave:** compilación nativa por target, iosArm64, iosSimulatorArm64, framework, XCFramework, toolchain Apple y cross-compilation.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Límites y decisión de uso:** Compartir Kotlin no elimina diferencias del entorno nativo, herramientas y bibliotecas disponibles. Verifica cada target y las reglas de interacción con memoria externa; una compilación JVM exitosa no demuestra que el binario iOS funcione.
+#### ► LA ANALOGÍA
+Piensa en kotlin/native como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada desde cero
-**Desde el proyecto:** trabaja en el módulo `shared` del proyecto integrador (Módulo 11). En `shared/build.gradle.kts`, declara los dos targets iOS y añade sus frameworks a un XCFramework:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que kotlin/native resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Kotlin/Native se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Kotlin/Native | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses kotlin/native por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: kotlin/native funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Kotlin/Native existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve kotlin/native en tu contexto?
+2. ¿Cómo sabrías que kotlin/native no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar kotlin/native?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
@@ -36,45 +79,74 @@ kotlin {
 }
 ```
 
-En macOS, genera el XCFramework de release:
-
 ```bash
 ./gradlew :shared:assembleSharedReleaseXCFramework
 ls shared/build/XCFrameworks/release/Shared.xcframework
 ```
 
-`XCFramework()` registra las tareas `assembleXCFramework`, `assembleSharedDebugXCFramework` y `assembleSharedReleaseXCFramework` (el nombre incluye el `baseName`). Cada `xcf.add(this)` aporta el framework de un target.
-
-Resultado esperado: `Shared.xcframework` contiene una carpeta para el dispositivo y otra para el simulador, y la misma app corre en un dispositivo físico y en el Simulador de Xcode sin recompilar el framework.
-
-#### Paso 5 · Práctica guiada
-Pista: distribuye únicamente el framework compilado con `./gradlew :shared:linkReleaseFrameworkIosArm64` (solo para dispositivo), asumiendo que "el simulador es solo para desarrollo, no importa". Ese es el fallo deliberado: cualquier desarrollador que intente correr la app en el Simulador de Xcode obtiene el error de arquitectura incompatible, bloqueando su trabajo local aunque el framework funcione perfectamente en un dispositivo real.
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 distribuyendo el XCFramework del Paso 4, que incluye también el build de `iosSimulatorArm64`, y verifica corriendo la app tanto en un dispositivo físico como en el Simulador sin recompilar nada entre ambas corridas. Si intentas unir los dos binarios con `lipo -create`, `lipo` falla porque ambos son arm64: anota ese mensaje como evidencia de por qué se usa el XCFramework.
-
-#### Paso 7 · Cierre
-Entrega el XCFramework del Paso 4, el error de arquitectura del Simulador del Paso 5, y la verificación en ambos contextos del Paso 6; explicá por qué "funciona en mi dispositivo" no es evidencia suficiente de que un framework nativo está completo. Siguiente paso: si el proyecto necesita interactuar con una librería C existente, estudiá cómo Kotlin/Native expone ese interop. Errores comunes: distribuir un framework compilado para una sola arquitectura asumiendo que cubre todos los casos de uso del equipo, no probar el Simulador antes de distribuir un build, e intentar unir con `lipo` los frameworks de dispositivo y de simulador, que comparten arquitectura arm64. Fuentes oficiales: https://kotlinlang.org/docs/native-overview.html y https://kotlinlang.org/docs/multiplatform-build-native-binaries.html.
+</details>
 
 ### Tema 2: Interop con C · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar `usePinned` correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque. Prerrequisitos: Tema 1 de este módulo; macOS con Xcode para ejecutar el target `iosSimulatorArm64`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Una función que envuelve una llamada C guarda el puntero obtenido dentro de `usePinned` en una variable fuera del bloque "para reusarlo después sin tener que pinnear de nuevo" — la app funciona en pruebas rápidas pero falla de forma intermitente y difícil de reproducir en uso real.
+#### ► DE QUÉ TRATA
+Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar usePinned correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque. Prerrequisitos: Tema 1 de este módulo; macOS con Xcode para ejecutar el…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-El interop con C permite llamar funciones nativas que esperan punteros estables en memoria; `usePinned` garantiza que el objeto Kotlin no se mueva durante la llamada, pero esa garantía termina exactamente al cerrar el bloque. La analogía es una pieza prestada temporalmente con medidas garantizadas solo mientras dura el préstamo; conservarla más allá de ese tiempo ya no garantiza nada.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar usePinned correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque.**
 
-**¿Por qué es importante?** Un puntero colgante hacia memoria gestionada por Kotlin/Native produce corrupción intermitente difícil de reproducir, no un fallo inmediato y obvio, lo que lo vuelve particularmente peligroso en producción.
-**Conceptos clave:** cinterop, puntero C, usePinned, memoria estable, binding .def, ownership nativo, dangling pointer y stress test.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Encapsula la llamada C detrás de una interfaz del núcleo compartido. Prueba propiedad y liberación de memoria con datos pequeños y devuelve errores tipados a consumidores Android e iOS.
+#### ► LA ANALOGÍA
+Piensa en interop con c como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 4 · Demostración guiada desde cero
-Archivo `shared/src/nativeInterop/cinterop/nativo.def` (la ruta por defecto de cinterop es `src/nativeInterop/cinterop/<nombre>.def`). El código C después de `---` se compila junto al binding; por eso la función se declara `static`:
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que interop con c resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Interop con C se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Interop con C | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses interop con c por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: interop con c funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Interop con C existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve interop con c en tu contexto?
+2. ¿Cómo sabrías que interop con c no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar interop con c?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```c
 package = com.academia.kmp.nativo
 ---
@@ -85,8 +157,6 @@ static int c_funcion_nativa(char* datos, int largo) {
 }
 ```
 
-Registra el binding en `shared/build.gradle.kts`, dentro del bloque `kotlin { }`:
-
 ```kotlin
 iosSimulatorArm64 {
     compilations.getByName("main") {
@@ -94,8 +164,6 @@ iosSimulatorArm64 {
     }
 }
 ```
-
-Archivo `shared/src/iosSimulatorArm64Main/kotlin/com/academia/kmp/Buffer.kt`:
 
 ```kotlin
 package com.academia.kmp
@@ -112,8 +180,6 @@ fun procesarBuffer(datos: ByteArray): Int =
     }
 ```
 
-Y su prueba en `shared/src/iosSimulatorArm64Test/kotlin/com/academia/kmp/BufferTest.kt`:
-
 ```kotlin
 package com.academia.kmp
 
@@ -128,34 +194,27 @@ class BufferTest {
 }
 ```
 
-Usa `char*` y no `const char*`: cinterop representa los parámetros `const char*` como `String` de Kotlin, mientras que `char*` llega como `CPointer<ByteVar>`, el tipo que devuelve `addressOf(0)` sobre un `ByteArray`. Todas las declaraciones generadas por cinterop exigen `@OptIn(ExperimentalForeignApi::class)`.
-
-**Ejecuta el ejemplo** en macOS:
-
 ```bash
 ./gradlew :shared:iosSimulatorArm64Test
 ```
 
-Resultado esperado: la prueba pasa. `c_funcion_nativa` recibe un puntero válido porque la llamada ocurre completamente dentro del bloque `usePinned`; apenas termina el bloque, el runtime de Kotlin/Native puede volver a mover o liberar esa memoria libremente.
-
-#### Paso 5 · Práctica guiada
-Pista: extraé el puntero fuera del bloque con `val puntero = datos.usePinned { it.addressOf(0) }` y usalo después en una segunda llamada C separada "para no pinnear dos veces". Ese es el fallo deliberado: ese puntero queda apuntando a memoria que el runtime ya puede haber movido o reutilizado apenas terminó el bloque `usePinned`, y la segunda llamada C corrompe datos o crashea de forma intermitente.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 asegurando que toda llamada C que use ese puntero ocurra dentro del mismo bloque `usePinned`, y agregá una prueba que repita la operación 1000 veces buscando corrupción intermitente.
-
-#### Paso 7 · Cierre
-Entregá el uso correcto de `usePinned` del Paso 4, el puntero colgante del Paso 5, y la prueba repetida 1000 veces del Paso 6; explicá por qué un bug de memoria de este tipo puede no manifestarse en pruebas rápidas pero sí en uso prolongado o bajo presión de memoria real. Siguiente paso: si necesitás exponer esta misma funcionalidad directamente a Swift, explorá qué ofrece Swift Export frente al interop manual. Errores comunes: retener un puntero obtenido de `usePinned` fuera de su bloque, asumir que una prueba rápida sin crash es evidencia suficiente de manejo correcto de memoria, y copiar buffers innecesariamente cuando pinnear directamente sería más simple y igual de seguro. Fuentes oficiales: https://kotlinlang.org/docs/native-c-interop.html y https://kotlinlang.org/api/core/kotlin-stdlib/kotlinx.cinterop/use-pinned.html.
+</details>
 
 ### Tema 3: Swift Export · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a exportar una función `suspend` de `TaskClient` directamente como una función `async` de Swift usando Swift Export, y a aislar su uso detrás de un experimento verificable. Prerrequisitos: Tema 2 de este módulo; Swift Export habilitado en el proyecto.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-El equipo adoptó Swift Export como la única forma de consumir `TaskClient` desde Swift, reemplazando todos los wrappers manuales existentes — en el siguiente upgrade de Kotlin, un cambio en el mapeo de Swift Export (todavía en estado Alpha) rompe la compilación de toda la app iOS de una sola vez.
+#### ► DE QUÉ TRATA
+Al finalizar vas a exportar una función suspend de TaskClient directamente como una función async de Swift usando Swift Export, y a aislar su uso detrás de un experimento verificable. Prerrequisitos: Tema 2 de este módulo; Swift Export habilitado en el proyecto.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a exportar una función suspend de TaskClient directamente como una función async de Swift usando Swift Export, y a aislar su uso detrás de un experimento verificable.**
+
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Swift Export mapea tipos Kotlin (incluyendo funciones `suspend`) de forma más directa que el interop manual tradicional, pero su estado de estabilidad concreto determina si puede ser la única vía de producción o debe convivir como experimento aislado junto a los wrappers manuales existentes. La analogía es adoptar una herramienta nueva y prometedora en todas las líneas de producción de una vez, en vez de probarla primero en una línea aislada mientras la línea estable sigue funcionando.
 
 **¿Por qué es importante?** Una característica en estado Alpha puede cambiar su comportamiento entre versiones menores de Kotlin; tratarla como la única vía de producción traslada ese riesgo a toda la app de una sola vez.
@@ -173,48 +232,95 @@ flowchart TD
 
 El proyecto integrador RutaFlow aplicaría la misma cautela si expusiera `SyncEngine.drain()` (`shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt`) vía Swift Export: la app de entregas seguiría consumiendo el wrapper manual como vía estable, dejando el `async` exportado detrás de un flag mientras Swift Export madura. **Cuándo no conviene** adoptarlo todavía: si la app ya tiene wrappers manuales estables y funcionando, migrar todo de una sola vez a una herramienta en estado Alpha es un trade-off que cambia riesgo conocido (mantenimiento manual) por riesgo desconocido (una dependencia que puede romper el mapeo en el siguiente upgrade de Kotlin) — conviene esperar a Beta/estable antes de ese reemplazo total.
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    TaskClient[TaskClient suspend] --> Manual[wrapper manual Swift estable]
+    TaskClient --> Export[Swift Export async experimental]
+    Manual --> AppProd[App iOS produccion]
+    Export --> Lab[modulo experimental aislado]
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Swift Export se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Swift Export | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses swift export por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: swift export funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Swift Export existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve swift export en tu contexto?
+2. ¿Cómo sabrías que swift export no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar swift export?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    TaskClient[TaskClient suspend] --> Manual[wrapper manual Swift estable]
+    TaskClient --> Export[Swift Export async experimental]
+    Manual --> AppProd[App iOS produccion]
+    Export --> Lab[modulo experimental aislado]
+```
+
 ```kotlin
 public suspend fun TaskClient.task(id: TaskId): TaskResult // Swift Export lo expone como una función async que puede lanzar: se llama con try await
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
 ```swift
 let resultado = try await taskClient.task(id: taskId) // consumido directamente como async de Swift, con try
 ```
-Resultado esperado: la función `suspend` de Kotlin se consume en Swift como una función `async` nativa, sin necesidad de un wrapper manual de cancelación como el de `TaskScreenModel` (Módulo 12) para este caso específico — pero esta vía queda documentada explícitamente como dependiente del estado de estabilidad actual de Swift Export.
 
-#### Paso 5 · Práctica guiada
-Pista: reemplazá TODOS los wrappers manuales de interop existentes (incluyendo los de la facade `TaskClient` del Módulo 12) por Swift Export, eliminando el código manual "porque ya no hace falta". Ese es el fallo deliberado: en el siguiente upgrade de versión de Kotlin, un cambio en cómo Swift Export (todavía Alpha) mapea `sealed interface` rompe la compilación de `TaskResult` en Swift, y como no queda ningún wrapper manual de respaldo, toda la app iOS deja de compilar.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 manteniendo la facade manual de `TaskClient` (Módulo 12) como la vía estable de producción, y aislando el uso de Swift Export detrás de un flag o módulo claramente marcado como experimental, documentando su versión y estado de estabilidad exactos.
-
-#### Paso 7 · Cierre
-Entregá el mapeo de la función async del Paso 4, la ruptura total del build tras el upgrade del Paso 5, y el aislamiento del experimento del Paso 6; explicá por qué adoptar una herramienta en estado Alpha como única vía de producción traslada el riesgo de su inestabilidad a toda la app de una sola vez. Siguiente paso: empaquetá el framework resultante en un XCFramework con una API pública explícita. Errores comunes: adoptar Swift Export como única vía de producción sin revisar su estado de estabilidad declarado, eliminar wrappers manuales de respaldo antes de confirmar la estabilidad del reemplazo, y no fijar la versión de Kotlin exacta cuando se depende de una característica en estado Alpha. Fuentes oficiales: https://kotlinlang.org/docs/native-swift-export.html y https://kotlinlang.org/docs/components-stability.html.
+</details>
 
 ### Tema 4: XCFramework y API pública · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a empaquetar el framework compartido en un XCFramework con una API pública mínima, decidiendo explícitamente qué dependencias transitivas exportar. Prerrequisitos: Tema 3 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-La app iOS que consume el XCFramework del proyecto integrador falla al compilar con un error de "símbolo duplicado" para una librería de networking — tanto el XCFramework como un Pod que la app ya usaba de forma independiente incluyen la misma dependencia nativa.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a empaquetar el framework compartido en un XCFramework con una API pública mínima, decidiendo explícitamente qué dependencias transitivas exportar.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Construir un XCFramework exige decidir explícitamente si cada dependencia es estática o dinámica, y si se exporta transitivamente o no: exportar una dependencia transitiva aumenta la superficie y el tamaño del framework, y puede duplicar símbolos si la app consumidora ya incluye esa misma dependencia por otra vía. La analogía es empaquetar una pieza industrial con todos sus repuestos internos incluidos, cuando la fábrica que la recibe ya tiene esos mismos repuestos en su inventario.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** No exportar todas las dependencias transitivas por defecto, decidiendo explícitamente qué forma parte de la API pública, evita conflictos de símbolos duplicados en los consumidores reales del framework.
-**Conceptos clave:** XCFramework, static vs dynamic framework, export transitivo, duplicate symbol, API pública mínima, linker y consumidor real.
+#### ► LA ANALOGÍA
+Piensa en xcframework y api pública como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-La configuración de export vive en `shared/build.gradle.kts`, junto al `TaskClient.kt` del Módulo 12 cuya facade es justamente lo único que debería cruzar hacia Swift. Antes de empaquetar, conviene confirmar el toolchain de Swift disponible en el runner con `swift --version`, porque `xcodebuild -create-xcframework` depende de él:
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     Domain["project domain"] -->|export explicito| XCF[Shared.xcframework]
@@ -223,9 +329,51 @@ flowchart LR
     PodExterno[Pod de networking existente] -.conflicto si se duplica.-> AppIOS
 ```
 
-**Cuándo no conviene** exportar una dependencia transitiva, incluso si "simplifica" la integración: cuando la app consumidora ya trae esa misma librería nativa por otra vía (un Pod, otro XCFramework), exportarla de nuevo no es una conveniencia sino la causa directa del error de símbolo duplicado — la decisión correcta depende de qué trae realmente cada consumidor, no de una regla universal de "exportar todo por si acaso".
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| XCFramework y API pública se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar XCFramework y API pública | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses xcframework y api pública por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: xcframework y api pública funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- XCFramework y API pública existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve xcframework y api pública en tu contexto?
+2. ¿Cómo sabrías que xcframework y api pública no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar xcframework y api pública?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    Domain["project domain"] -->|export explicito| XCF[Shared.xcframework]
+    Ktor[HttpClient interno] -.NO exportar.-> XCF
+    XCF --> AppIOS[App iOS consumidora]
+    PodExterno[Pod de networking existente] -.conflicto si se duplica.-> AppIOS
+```
+
 ```kotlin
 kotlin {
     listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
@@ -237,32 +385,31 @@ kotlin {
     }
 }
 ```
+
 ```bash
 xcodebuild -create-xcframework \
   -framework shared-iosArm64/Shared.framework \
   -framework shared-iosSimulatorArm64/Shared.framework \
   -output Shared.xcframework
 ```
-Resultado esperado: el XCFramework resultante expone únicamente los módulos marcados explícitamente con `export(...)`, sin incluir transitivamente el motor HTTP interno de Ktor ni otras dependencias que la app consumidora pueda ya tener por su cuenta.
 
-#### Paso 5 · Práctica guiada
-Pista: agregá `export(project(":networking-engine"))` a la configuración del framework "para que el consumidor tenga todo disponible sin instalar nada aparte". Ese es el fallo deliberado: la app iOS que consume este XCFramework y que ya incluye esa misma librería de networking como Pod independiente ahora tiene dos copias de los mismos símbolos nativos en el binario final, y el linker falla con "duplicate symbol" al compilar la app.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el `export` de la dependencia de networking interna, dejando que solo el dominio (`:domain`) se exporte explícitamente, y verificá que la app consumidora compila sin conflictos aunque ya tenga su propio Pod de networking instalado por separado.
-
-#### Paso 7 · Cierre
-Entregá el XCFramework con export explícito del Paso 4, el conflicto de símbolos duplicados del Paso 5, y la corrección verificada del Paso 6; explicá por qué "incluir todo para comodidad del consumidor" puede romper exactamente a los consumidores que ya tienen esas dependencias por su cuenta. Siguiente paso: publicá este mismo artefacto en un repositorio donde otros equipos puedan consumirlo de forma versionada. Errores comunes: exportar transitivamente todas las dependencias internas sin evaluar conflictos con el consumidor, no decidir explícitamente entre framework estático y dinámico, y no probar la integración contra una app consumidora real antes de publicar. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks y https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle.
+</details>
 
 ### Tema 5: Publicación en Maven Central · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a publicar el módulo compartido en un repositorio Maven con coordenadas, firma y checksums inmutables. Prerrequisitos: Tema 4 de este módulo; credenciales de publicación configuradas.
 
-#### Paso 2 · Contexto y caso real
-Alguien del equipo encuentra un bug menor inmediatamente después de publicar la versión `1.2.0`, y en vez de publicar `1.2.1`, vuelve a publicar `1.2.0` con la corrección "porque el cambio es mínimo y nadie debería notar la diferencia".
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a publicar el módulo compartido en un repositorio Maven con coordenadas, firma y checksums inmutables.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+
+#### ► LA ANALOGÍA
 Una publicación Maven produce metadata raíz y artefactos firmados por target, con checksums que los consumidores verifican al resolver una dependencia; esas coordenadas deben ser inmutables porque otros sistemas (incluyendo cachés de dependencias) asumen que una misma versión siempre resuelve exactamente al mismo contenido. La analogía es un número de lote de un producto industrial — una vez impreso y distribuido, no puede referirse después a un contenido distinto.
 
 **¿Por qué es importante?** Las coordenadas de una versión publicada deben ser inmutables porque todo el ecosistema de dependencias asume que una misma versión siempre resuelve exactamente al mismo contenido.
@@ -278,7 +425,62 @@ flowchart LR
     V120 -.nunca se reescribe.-> V120
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    V120[1.2.0 publicado] -->|cache de consumidores| Cliente[apps que ya resolvieron 1.2.0]
+    Bug[bug encontrado] --> V121[1.2.1 nueva version]
+    V121 --> NuevoCliente[apps que resuelven despues]
+    V120 -.nunca se reescribe.-> V120
+```
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Publicación en Maven Central se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Publicación en Maven Central | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses publicación en maven central por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: publicación en maven central funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Publicación en Maven Central existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve publicación en maven central en tu contexto?
+2. ¿Cómo sabrías que publicación en maven central no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar publicación en maven central?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    V120[1.2.0 publicado] -->|cache de consumidores| Cliente[apps que ya resolvieron 1.2.0]
+    Bug[bug encontrado] --> V121[1.2.1 nueva version]
+    V121 --> NuevoCliente[apps que resuelven despues]
+    V120 -.nunca se reescribe.-> V120
+```
+
 ```kotlin
 publishing {
     publications.withType<MavenPublication> {
@@ -288,36 +490,32 @@ publishing {
     }
 }
 ```
+
 ```bash
 ./gradlew publishAllPublicationsToMavenCentralRepository
 ```
-Resultado esperado: la versión `1.2.1` se publica como una entrada completamente nueva e inmutable; cualquier consumidor que ya haya resuelto y cacheado `1.2.0` sigue recibiendo exactamente el mismo contenido que resolvió originalmente, sin sorpresas.
 
-#### Paso 5 · Práctica guiada
-Pista: volvé a publicar bajo la misma coordenada `1.2.0` con el fix aplicado, sobrescribiendo el artefacto original "porque el repositorio lo permite técnicamente". Ese es el fallo deliberado: un consumidor que ya había cacheado localmente la `1.2.0` original nunca vuelve a descargarla, mientras que un consumidor nuevo que resuelve `1.2.0` por primera vez obtiene un contenido distinto bajo la misma versión exacta, rompiendo la garantía fundamental de que una versión siempre significa el mismo contenido.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 publicando el fix como `1.2.1` (nunca reescribiendo `1.2.0`), y documentá en el changelog del proyecto que `1.2.0` queda marcada como conocida con el bug, dirigiendo a todos los consumidores hacia `1.2.1`.
-
-#### Paso 7 · Cierre
-Entregá la publicación inmutable del Paso 4, la reescritura de versión detectada del Paso 5, y el changelog corregido del Paso 6; explicá por qué sobrescribir una versión ya publicada rompe una garantía que todo el ecosistema de dependencias asume como verdadera. Siguiente paso: asegurate de que esta versión sea binariamente compatible antes de publicarla, verificándolo en el pipeline de CI multi-target. Errores comunes: sobrescribir una versión ya publicada en vez de incrementarla, no firmar los artefactos publicados, y no publicar sources/docs junto con el binario principal. Fuentes oficiales: https://central.sonatype.org/publish/publish-portal-guide/ y https://kotlinlang.org/docs/multiplatform/multiplatform-publish-lib-setup.html.
+</details>
 
 ### Tema 6: Compatibilidad binaria y CI multi-target · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
 Al finalizar vas a configurar una matriz de CI que pruebe la compilación del módulo compartido contra la versión mínima soportada de Xcode, no solo la más reciente. Prerrequisitos: Tema 5 de este módulo.
 
-#### Paso 2 · Contexto y caso real
-El equipo publica una nueva versión del módulo compartido probada únicamente con la versión más reciente de Xcode instalada en las máquinas del equipo — un equipo consumidor externo, todavía en una versión de Xcode anterior pero oficialmente soportada, no puede compilar la nueva versión.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a configurar una matriz de CI que pruebe la compilación del módulo compartido contra la versión mínima soportada de Xcode, no solo la más reciente.**
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La matriz de CI debe probar explícitamente las versiones mínimas soportadas declaradas (Kotlin, Gradle, JDK, Xcode), no solo las más recientes disponibles: no es viable toda combinación posible, así que hay que priorizar los límites declarados y los consumidores reales conocidos. La analogía es certificar un producto solo con el combustible premium más reciente, cuando el manual promete compatibilidad también con el combustible estándar más antiguo que los clientes reales siguen usando.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** Una matriz de CI que solo prueba las versiones más recientes no detecta regresiones contra la versión mínima que el proyecto promete soportar, dejando a consumidores reales con un build roto.
-**Conceptos clave:** target matrix, versión mínima soportada, CI multi-target, Xcode version, JDK version, consumidor real y bloqueo de pipeline.
+#### ► LA ANALOGÍA
+Piensa en compatibilidad binaria y ci multi-target como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-La matriz vive en `.github/workflows/ci.yml`, el mismo workflow del Módulo 10 ahora extendido con `strategy.matrix`:
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     Matrix["matrix xcode 16.2 y 26.3"] --> J1[job build-ios xcode 16.2]
@@ -328,9 +526,53 @@ flowchart TD
     Gate -->|no| Rojo[pipeline falla]
 ```
 
----
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Compatibilidad binaria y CI multi-target se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Compatibilidad binaria y CI multi-target | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses compatibilidad binaria y ci multi-target por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: compatibilidad binaria y ci multi-target funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Compatibilidad binaria y CI multi-target existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve compatibilidad binaria y ci multi-target en tu contexto?
+2. ¿Cómo sabrías que compatibilidad binaria y ci multi-target no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar compatibilidad binaria y ci multi-target?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    Matrix["matrix xcode 16.2 y 26.3"] --> J1[job build-ios xcode 16.2]
+    Matrix --> J2[job build-ios xcode 26.3]
+    J1 --> Gate{ambos compilan?}
+    J2 --> Gate
+    Gate -->|si| Verde[pipeline verde]
+    Gate -->|no| Rojo[pipeline falla]
+```
+
 ```yaml
 name: CI
 on: [push, pull_request]
@@ -352,48 +594,8 @@ jobs:
       - run: ./gradlew :shared:linkDebugFrameworkIosArm64
 ```
 
-`strategy.matrix` va dentro del job: GitHub crea una copia del job por cada valor de `xcode`. `fail-fast: false` deja terminar todas las combinaciones para que veas cuáles fallan; cualquier combinación en rojo sigue marcando el workflow como fallido. Las rutas `/Applications/Xcode_<versión>.app` existen solo si esa versión está instalada en la imagen del runner: consulta la lista de la imagen (`macos-15`) antes de declarar la versión mínima.
-
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
-
 ```bash
 ./gradlew :shared:allTests
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: el pipeline de CI compila explícitamente contra la versión mínima de Xcode declarada como soportada (`16.2`) y contra la más reciente (`26.3`), detectando si un cambio reciente usa accidentalmente una API solo disponible en la versión más nueva.
-
-#### Paso 5 · Práctica guiada
-Pista: deja la matriz con un solo valor, la versión de Xcode más reciente instalada en el runner, asumiendo que "si compila con la más nueva, compila con todas". Ese es el fallo deliberado: un cambio reciente usa accidentalmente una API de Swift interop disponible solo desde Xcode 26, el pipeline pasa en verde porque solo prueba esa versión, y un equipo consumidor que todavía usa Xcode 16.2 (la versión mínima que el proyecto declara soportar) no puede compilar la nueva versión en absoluto.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando ambas versiones en la matriz (mínima declarada y más reciente), y agregá una verificación explícita: el pipeline debe fallar si cualquier combinación de la matriz no compila, no solo reportarlo como advertencia.
-
-#### Paso 7 · Cierre
-Entregá la matriz de CI del Paso 4, la API exclusiva de la versión nueva no detectada del Paso 5, y la verificación obligatoria de toda la matriz del Paso 6; explicá por qué "compila con la versión más nueva" no implica "compila con la versión mínima que el proyecto promete soportar". Siguiente paso: con esta matriz verificada, el proyecto integrador queda listo para publicarse y ser consumido por otros equipos con garantías reales de compatibilidad. Errores comunes: probar la matriz de CI solo contra las versiones más recientes disponibles, no declarar explícitamente cuál es la versión mínima soportada en la documentación del proyecto, y tratar un fallo de una combinación de la matriz como advertencia en vez de bloquear el pipeline. Fuentes oficiales: https://kotlinlang.org/docs/gradle-configure-project.html y https://developer.apple.com/support/xcode/.
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** empaquetar y publicar el framework Kotlin/Native del proyecto integrador (Módulo 11) como un artefacto real consumible desde Xcode y Maven, validado contra interop C seguro, con Swift Export aislado como experimento y una matriz de CI que cubre la versión mínima de Xcode soportada.
-
-**Requisitos previos:** Módulos 0-12 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Compilar el framework para dispositivo físico y para el simulador, y empaquetarlos en un XCFramework | Ver Tema 1 | Un XCFramework que corre en ambos contextos |
-| 2 | Declarar un binding cinterop hacia una función C que recibe un buffer | Ver Tema 2 | `usePinned` limitado estrictamente al bloque, sin puntero colgante |
-| 3 | Exportar una función `suspend` como `async` nativo de Swift con Swift Export | Ver Tema 3 | Aislado detrás de un experimento; la facade manual sigue siendo la vía estable |
-| 4 | Empaquetar el framework en un XCFramework con export explícito | Ver Tema 4 | Solo el dominio, nunca dependencias transitivas internas como Ktor |
-| 5 | Publicar el módulo compartido en Maven Central con una versión nueva | Ver Tema 5 | Coordenadas y checksums inmutables; nunca se reescribe una versión ya publicada |
-| 6 | Configurar la matriz de CI contra la versión mínima y la más reciente de Xcode soportadas | Ver Tema 6 | El pipeline falla si cualquier combinación de la matriz no compila |
-
-**Verificación:** el laboratorio se considera exitoso si el XCFramework generado con `assembleSharedReleaseXCFramework` corre tanto en un dispositivo físico como en el Simulador de Xcode, si una prueba de 1000 repeticiones del binding cinterop no muestra corrupción de memoria, si el experimento de Swift Export queda aislado detrás de un flag sin reemplazar la facade manual estable, si el XCFramework expone únicamente el dominio (sin conflicto de símbolo duplicado con dependencias del consumidor), si la versión publicada en Maven Central es nueva e inmutable, y si la matriz de CI bloquea el pipeline ante cualquier combinación de Xcode que no compile.
-
-**Errores comunes y soluciones**
-
-- **Distribuir el framework compilado solo para el target de dispositivo físico.** Genera también el build para `iosSimulatorArm64` y distribuye ambos en un XCFramework (`assembleSharedReleaseXCFramework`); `lipo` no sirve aquí porque los dos binarios son arm64.
-- **Retener un puntero obtenido de `usePinned` fuera de su bloque.** Usa ese puntero exclusivamente dentro del mismo bloque `usePinned`, nunca después de que termine.
-- **Reemplazar todos los wrappers manuales de interop por Swift Export mientras sigue en estado Alpha.** Mantén la facade manual como vía estable de producción y aísla Swift Export detrás de un experimento documentado.
-- **Exportar dependencias transitivas internas (como el motor HTTP de Ktor) en el XCFramework "para comodidad del consumidor".** Exporta explícitamente solo el dominio; evita conflictos de símbolo duplicado con Pods o paquetes que el consumidor ya incluye.
-- **Sobrescribir una versión ya publicada en Maven Central.** Publica siempre una versión nueva e inmutable; nunca reescribas `1.2.0`.
-- **Probar la matriz de CI solo contra la versión de Xcode más reciente disponible.** Incluye también la versión mínima soportada que el proyecto declara, no solo la más nueva.
+</details>

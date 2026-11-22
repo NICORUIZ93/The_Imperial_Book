@@ -5,48 +5,76 @@ Las matemáticas de este módulo no son una colección de fórmulas para memoriz
 
 ## Aprende construyendo
 
+
 ### Tema 1: Lógica para especificar antes de programar · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir pre/postcondiciones formales para `transition()` de RutaFlow y a buscarle un contraejemplo con `hypothesis`. Prerrequisitos: instala la dependencia en tu entorno con `python3 -m pip install hypothesis`.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-A lo largo de estos 12 módulos vas a construir el proyecto integrador Fundamentos; en este módulo le toca guardar tareas en un archivo persistente. `transition()` ya impone una regla (`requested not in ALLOWED_TRANSITIONS[current]` lanza error), pero nadie escribió todavía la precondición/postcondición formal que esa regla implementa.
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir pre/postcondiciones formales para transition() de RutaFlow y a buscarle un contraejemplo con hypothesis. Prerrequisitos: instala la dependencia en tu entorno con python3 -m pip install hypothesis.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una precondición es lo que debe cumplirse antes de llamar a `transition`; una postcondición describe el resultado — el contrato de una caja fuerte, no todavía cómo están hechas las bisagras.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a escribir pre/postcondiciones formales para transition() de RutaFlow y a buscarle un contraejemplo con hypothesis.**
 
-**Escenario:** RutaFlow permite transiciones: CREATED → ASSIGNED → OUT_FOR_DELIVERY → DELIVERED. Pero una secuencia de updates puede dejar un envío en estado inconsistente si una falla.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Tu tarea:**
-1. Escribe el invariante global en lógica formal.
-2. ¿Cómo garantizas que toda transacción que cambia estado respeta ese invariante?
-3. ¿Puede haber un envío en estado sin representación? (Ej. `estado=NULL`.)
-4. ¿Transacciones anidadas rompen el invariante?
+#### ► LA ANALOGÍA
+Piensa en lógica para especificar antes de programar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    PRE["entrada cumple precondición"] --> OP["operación"] --> POST["postcondición"]
+    INV["invariante"] -. "antes y después" .-> PRE
+    INV -. "debe conservarse" .-> POST
+```
 
-> Invariante: `∀s ∈ Shipments: s.status ∈ {CREATED, ASSIGNED, OUT_FOR_DELIVERY, DELIVERED} ∧ s.created_at ≤ s.assigned_at ≤ s.delivered_at`. Garantía: restricción CHECK en DB + validación en dominio. Envío NULL es violación, DB rechaza. Transacción anidada (SAVEPOINT) preserva invariante si rollback parcial restaura estado válido. Prueba: hypothes con `status` generado y verifica que toda secuencia deja invariante cierto.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Lógica para especificar antes de programar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Lógica para especificar antes de programar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses lógica para especificar antes de programar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: lógica para especificar antes de programar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Lógica para especificar antes de programar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve lógica para especificar antes de programar en tu contexto?
+2. ¿Cómo sabrías que lógica para especificar antes de programar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar lógica para especificar antes de programar?
 
 </details>
 
-**Conceptos clave:** proposición, valor de verdad, negación, conjunción, disyunción, implicación, equivalencia, predicado, cuantificador universal, cuantificador existencial, precondición, postcondición e invariante.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Una proposición afirma algo que puede ser verdadero o falso. `stock >= 0` es una proposición cuando `stock` tiene un valor; `stock(x) >= 0` es un predicado sobre productos. Los conectores permiten formar reglas: un retiro es aceptable si el producto existe **y** el stock alcanza. La implicación `P -> Q` exige que cuando P sea verdadera, Q también lo sea; no afirma que P sea verdadera.
-
-Los cuantificadores evitan ambigüedad. “Para todo producto, el stock no es negativo” se escribe `∀p: stock(p) >= 0`. “Existe un administrador activo” se expresa `∃u: admin(u) ∧ activo(u)`. Negar correctamente importa: la negación de “todos pasaron” es “existe al menos uno que no pasó”, no “nadie pasó”. Las leyes de De Morgan permiten transformar condiciones y revisar autorizaciones complejas.
-
-Una precondición debe cumplirse antes de una operación; una postcondición describe el resultado; un invariante debe preservarse durante toda transición válida. El método de retiro puede especificarse así:
-
+#### Código y verificación
 ```text
 Pre: cantidad > 0 y producto existe
 Transición: stock_nuevo = stock_anterior - cantidad
 Post: retiro aceptado implica stock_nuevo >= 0
 Invariante global: para todo producto, stock >= 0
 ```
-
-En Python una propiedad puede comprobar miles de entradas generadas, aunque eso no equivale por sí solo a una demostración:
 
 ```python
 from hypothesis import given, strategies as st
@@ -58,12 +86,6 @@ def test_retirar_preserva_stock_no_negativo(stock, cantidad):
     assert resultado.aceptado == (cantidad <= stock)
 ```
 
-**Analogía:** una especificación lógica se parece al contrato de una caja fuerte: define qué condiciones permiten abrirla y qué propiedad debe continuar cierta; no prescribe todavía la forma de las bisagras.
-
-**Casos de uso reales:** reglas de autorización, validación de formularios, restricciones SQL, contratos de API, estados de pedidos y pruebas basadas en propiedades.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     PRE["entrada cumple precondición"] --> OP["operación"] --> POST["postcondición"]
@@ -71,21 +93,9 @@ flowchart LR
     INV -. "debe conservarse" .-> POST
 ```
 
-En la práctica escribirás una implementación mínima de `transition()` para que la precondición, transición y postcondición descritas arriba se conviertan en un contrato ejecutable y comprobable.
-
-**Límites y decisión de uso:** Una especificación lógica solo protege las propiedades que expresa. Añade casos límite y supuestos del entorno; una implementación puede satisfacer una condición parcial y seguir siendo incorrecta para requisitos omitidos.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-**¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente `contrato.txt`, `domain.py` y `test_contrato.py`:
-
 ```bash
 mkdir ejemplo-logica && cd ejemplo-logica
 ```
-
-Archivo `contrato.txt`:
 
 ```text
 Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
@@ -93,8 +103,6 @@ Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; 
 Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
 Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
 ```
-
-Archivo `domain.py`:
 
 ```python
 from enum import Enum
@@ -118,80 +126,79 @@ def transition(current: ShipmentStatus, requested: ShipmentStatus) -> ShipmentSt
     return requested
 ```
 
-Archivo `test_contrato.py`:
-
-```python
-import unittest
-from hypothesis import given, strategies as st
-from domain import ShipmentStatus, ALLOWED_TRANSITIONS, transition
-
-class ContratoTransicion(unittest.TestCase):
-    @given(st.sampled_from(ShipmentStatus), st.sampled_from(ShipmentStatus))
-    def test_transition_respeta_el_contrato(self, current, requested):
-        if requested in ALLOWED_TRANSITIONS[current]:
-            self.assertEqual(transition(current, requested), requested)
-        else:
-            with self.assertRaises(ValueError):
-                transition(current, requested)
-
-if __name__ == "__main__":
-    unittest.main()
-```
-
-Ejecuta la prueba generativa:
-
-```bash
-python3 test_contrato.py
-```
-
-Resultado esperado: `Ran 1 test` seguido de `OK`. Hypothesis genera pares de estados y busca contraejemplos; el contrato, no unos pocos casos felices elegidos a mano, determina qué comportamiento se acepta.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá la postcondición para afirmar `transition(current, requested) == requested` SIN la condición `if` (es decir, asumí que siempre devuelve lo pedido) — ese es el fallo deliberado: la prueba generativa encuentra un contraejemplo real (por ejemplo `current=DELIVERED, requested=CREATED`) donde `transition` lanza `ValueError` en vez de devolver nada, rompiendo la postcondición mal escrita.
-
-#### Paso 6 · Práctica independiente
-Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.DELIVERED: {ShipmentStatus.CREATED}`) y volvé a correr la prueba del Paso 4 — documentá si la prueba generativa la detecta como problema o simplemente la acepta como parte del contrato ahora ampliado (pista: la prueba generativa valida CONSISTENCIA con `ALLOWED_TRANSITIONS`, no que `ALLOWED_TRANSITIONS` en sí sea la regla de negocio correcta).
-
-#### Paso 7 · Cierre
-Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
+</details>
 
 ### Tema 2: Conjuntos, relaciones, funciones e inducción · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a confirmar que `ALLOWED_TRANSITIONS` de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia. Prerrequisitos: Python 3 instalado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-`ALLOWED_TRANSITIONS` es literalmente un subconjunto de pares (`ShipmentStatus × ShipmentStatus`) — exactamente la definición de una relación — pero nadie verificó todavía qué propiedades formales cumple.
+#### ► DE QUÉ TRATA
+Al finalizar vas a confirmar que ALLOWED_TRANSITIONS de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia. Prerrequisitos: Python 3 instalado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Una relación de equivalencia es reflexiva, simétrica y transitiva; un orden parcial es reflexivo, antisimétrico y transitivo — "es prerrequisito de" debería ser un orden, nunca una equivalencia, porque un envío entregado nunca vuelve a estar creado.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a confirmar que ALLOWED_TRANSITIONS de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia.**
 
-**Conceptos clave:** conjunto, pertenencia, subconjunto, unión, intersección, diferencia, producto cartesiano, función, inyección, sobreyección, relación, equivalencia, orden parcial, caso base, paso inductivo y recursión.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-Un conjunto agrupa elementos sin orden ni repetición. Si `A` contiene permisos concedidos y `R` permisos requeridos, la autorización puede expresarse `R ⊆ A`. La intersección encuentra elementos comunes; la diferencia identifica faltantes. Estas operaciones están detrás de roles, filtros, etiquetas y consultas.
+#### ► LA ANALOGÍA
+Piensa en conjuntos, relaciones, funciones e inducción como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una relación es un subconjunto de pares. “Usuario tiene rol” relaciona usuarios y roles; “módulo depende de módulo” relaciona componentes. Una relación de equivalencia es reflexiva, simétrica y transitiva y divide elementos en clases. Un orden parcial es reflexivo, antisimétrico y transitivo: no obliga a que cada par sea comparable. La relación “es prerrequisito de” debería formar un orden sin ciclos.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    R["R = leer, editar"] --> CHECK{"R ⊆ A"}
+    A["A = leer, editar, exportar"] --> CHECK
+    CHECK --> AUTH["autorizado"]
+    CHECK -->|"no: falta un permiso"| DENY["no autorizado"]
+    BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
+```
 
-Una función asigna exactamente una salida a cada entrada de su dominio. Puede ser total o parcial según esté definida para todas. Distinguir esto mejora APIs: buscar por ID puede devolver `Producto | None`; pretender que siempre existe oculta una función parcial.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Conjuntos, relaciones, funciones e inducción se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-La inducción demuestra propiedades indexadas por naturales. Primero prueba un caso base. Luego supone que la propiedad vale para `n` y demuestra que vale para `n+1`. Para la suma de una lista, el caso vacío devuelve cero; al agregar un elemento, la suma nueva es el elemento más la suma de la lista restante. La hipótesis inductiva conecta la estructura recursiva con su corrección.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Conjuntos, relaciones, funciones e inducción | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► CUÁNDO NO USAR ESTO
+No uses conjuntos, relaciones, funciones e inducción por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: conjuntos, relaciones, funciones e inducción funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Conjuntos, relaciones, funciones e inducción existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve conjuntos, relaciones, funciones e inducción en tu contexto?
+2. ¿Cómo sabrías que conjuntos, relaciones, funciones e inducción no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar conjuntos, relaciones, funciones e inducción?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 def suma(valores: list[int]) -> int:
     if not valores:                 # caso base
         return 0
     return valores[0] + suma(valores[1:])
 ```
-
-Una prueba de corrección no demuestra eficiencia ni ausencia de errores de implementación ajenos a sus supuestos. Declara dominio, propiedad y supuestos explícitamente.
-
-**Analogía:** la inducción es una fila de fichas de dominó: verificas que la primera cae y que cada ficha que cae derriba la siguiente. Ambas partes son necesarias.
-
-**¿Por qué es importante?** Porque modelar una regla de negocio como relación matemática (orden parcial, no equivalencia) permite demostrar con precisión qué transiciones son imposibles, en vez de confiar en que el código "simplemente funciona así".
-
-**Casos de uso reales:** permisos por conjuntos, deduplicación, modelos relacionales, orden de migraciones, tipos opcionales, recorridos recursivos y pruebas de algoritmos.
-
-**Diagrama:**
 
 ```mermaid
 flowchart TD
@@ -202,14 +209,9 @@ flowchart TD
     BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía, crea manualmente `domain.py` y `relacion.py`, y verificá las propiedades de la relación:
-
 ```bash
 mkdir ejemplo-relacion && cd ejemplo-relacion
 ```
-
-Archivo `domain.py`:
 
 ```python
 from enum import Enum
@@ -228,8 +230,6 @@ ALLOWED_TRANSITIONS = {
 }
 ```
 
-Archivo `relacion.py`:
-
 ```python
 from domain import ALLOWED_TRANSITIONS
 
@@ -245,44 +245,72 @@ print("antisimétrica:", antisimetrica)
 python3 relacion.py
 ```
 
-Resultado esperado:
-
-```text
-pares: 3
-simétrica: False
-antisimétrica: True
-```
-
-`simétrica: False` confirma que la relación no es de equivalencia: existe `CREATED → ASSIGNED`, pero no `ASSIGNED → CREATED`. `antisimétrica: True` confirma que es un orden parcial: ningún par tiene su inverso, y por eso un envío no retrocede de estado.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `from domain import ShipmentStatus` e insertá `ALLOWED_TRANSITIONS[ShipmentStatus.ASSIGNED].add(ShipmentStatus.CREATED)` antes de calcular `antisimetrica`, y volvé a ejecutar. Ese es el fallo deliberado: la salida pasa a `antisimétrica: False`, porque `(CREATED, ASSIGNED)` y `(ASSIGNED, CREATED)` existen a la vez. Una transición de vuelta rompe el orden que un pipeline de entregas necesita.
-
-#### Paso 6 · Práctica independiente
-Deshacé el Paso 5 y comprobá la propiedad reflexiva: ¿existe algún par `(a, a)`? Documentá por qué permitir `DELIVERED → DELIVERED` (idempotencia) es una decisión de negocio distinta de permitir retroceder de estado, y cómo cambia la relación en cada caso. En el proyecto integrador Fundamentos, usá esta propiedad para justificar qué transiciones del gestor de tareas no deben existir.
-
-#### Paso 7 · Cierre
-Entregá la salida de las tres propiedades del Paso 4, la relación rota del Paso 5, y el análisis de reflexividad del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como orden parcial (no equivalencia) es la razón matemática detrás de la regla "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
+</details>
 
 ### Tema 3: Conteo, grafos y estructuras conectadas · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a tratar `ALLOWED_TRANSITIONS` como el grafo dirigido que realmente es, y a confirmar con el `tiene_ciclo()` de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (grafos, lista de adyacencia, BFS y DFS), que es la introducción única a grafos del curso; aquí no se vuelve a explicar.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo volver a `CREATED`), un envío podría quedar dando vueltas indefinidamente sin nunca completarse de forma predecible — por eso importa confirmar formalmente que es un DAG, no solo "parece que no tiene ciclos".
+#### ► DE QUÉ TRATA
+Al finalizar vas a tratar ALLOWED_TRANSITIONS como el grafo dirigido que realmente es, y a confirmar con el tiene_ciclo() de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (grafos, lista de adyacencia, BFS y DFS), que es la introducción ún…
 
-#### Paso 3 · Teoría, modelo mental y analogía
-Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una lista de tareas donde cada una depende solo de las anteriores, nunca de una futura.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a tratar ALLOWED_TRANSITIONS como el grafo dirigido que realmente es, y a confirmar con el tiene_ciclo() de este mismo Tema que es un DAG.**
 
-**Conceptos clave:** regla de suma, regla de producto, permutación, combinación, principio del palomar, grado, camino, ciclo, grafo dirigido, DAG y orden topológico. Vértice, arista, lista de adyacencia, BFS y DFS se dan por aprendidos en el Módulo 2, Tema 7.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-La combinatoria responde cuántas posibilidades existen sin enumerarlas. Si una API tiene 3 roles, 4 operaciones y 2 estados de cuenta, hay hasta `3 × 4 × 2 = 24` combinaciones de decisión. Esa cifra ayuda a diseñar particiones de prueba, aunque no obliga a ejecutar cada combinación si algunas son equivalentes.
+#### ► LA ANALOGÍA
+Piensa en conteo, grafos y estructuras conectadas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una permutación considera orden; una combinación no. Elegir 3 revisores entre 10 produce `C(10,3)`, mientras asignarles tres turnos distintos introduce orden. El principio del palomar afirma que al colocar más objetos que contenedores, alguno contiene más de uno; explica por qué hashes finitos necesariamente tienen colisiones, aunque una función buena las haga poco probables.
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    DOMAIN["dominio"] --> APP["aplicación"] --> INFRA["infraestructura"]
+    DOMAIN --> TESTS["pruebas"]
+    APP --> TESTS
+    A["A"] --> B["B"] --> C["C"] --> A
+```
 
-Sobre la base del Módulo 2, Tema 7 (si no recuerdas cómo DFS usa una pila o recursión y BFS una cola, repásalo allí antes de seguir), este tema añade la **dirección** de las aristas. Las dependencias de módulos forman un grafo dirigido. Si no hay ciclos es un DAG y puede obtenerse un orden topológico de build o migración. El DFS del Módulo 2 solo marcaba `visitados`; para detectar un ciclo dirigido necesita además saber qué nodos están en la ruta actual.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Conteo, grafos y estructuras conectadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Conteo, grafos y estructuras conectadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses conteo, grafos y estructuras conectadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: conteo, grafos y estructuras conectadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Conteo, grafos y estructuras conectadas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve conteo, grafos y estructuras conectadas en tu contexto?
+2. ¿Cómo sabrías que conteo, grafos y estructuras conectadas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar conteo, grafos y estructuras conectadas?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```python
 def tiene_ciclo(grafo: dict[str, set[str]]) -> bool:
     visitados, activos = set(), set()
@@ -303,16 +331,6 @@ def tiene_ciclo(grafo: dict[str, set[str]]) -> bool:
     return any(visitar(n) for n in grafo)
 ```
 
-La terminación depende de marcar visitados; la detección del ciclo usa el conjunto de nodos activos en la ruta actual. Confundir ambos conjuntos produce falsos positivos.
-
-**Analogía:** un grafo de dependencias es un mapa de tareas. Un ciclo significa que A espera a B mientras B, directa o indirectamente, espera a A: ninguna puede empezar.
-
-**¿Por qué es importante?** Porque confirmar formalmente que un grafo de dependencias es un DAG es la diferencia entre saber que un pipeline siempre termina y simplemente no haber visto todavía el ciclo que lo cuelga.
-
-**Casos de uso reales:** dependencias de paquetes, planificación de cursos, rutas de red, motores de recomendación, detección de fraude, árboles del DOM y análisis de arquitectura.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     DOMAIN["dominio"] --> APP["aplicación"] --> INFRA["infraestructura"]
@@ -321,14 +339,9 @@ flowchart LR
     A["A"] --> B["B"] --> C["C"] --> A
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía, crea manualmente `domain.py` y `grafo.py`, y comprobá si su grafo de estados tiene ciclos:
-
 ```bash
 mkdir ejemplo-grafo && cd ejemplo-grafo
 ```
-
-Archivo `domain.py`:
 
 ```python
 from enum import Enum
@@ -346,8 +359,6 @@ ALLOWED_TRANSITIONS = {
     ShipmentStatus.DELIVERED: set(),
 }
 ```
-
-Archivo `grafo.py`:
 
 ```python
 from domain import ALLOWED_TRANSITIONS
@@ -374,60 +385,71 @@ print("tiene ciclo:", tiene_ciclo(grafo))
 python3 grafo.py
 ```
 
-Resultado esperado:
+</details>
 
-```text
-nodos: 4
-tiene ciclo: False
-```
-
-`ALLOWED_TRANSITIONS` es un DAG real de cuatro estados. La función distingue `visitados` de `activos`: solo un nodo en la ruta actual (`activos`) indica un ciclo; marcar todo lo visitado como ciclo produciría falsos positivos.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá `print("con ciclo:", tiene_ciclo({**grafo, "delivered": {"created"}}))` al final de `grafo.py` y volvé a ejecutar. Ese es el fallo deliberado: la salida añade `con ciclo: True`, porque se forma `created → assigned → out_for_delivery → delivered → created`. Un envío podría procesarse indefinidamente sin que el sistema lo detecte como terminado.
-
-#### Paso 6 · Práctica independiente
-Deshacé el Paso 5 y calculá a mano un orden topológico de los cuatro estados. Luego agregá un nodo `cancelled` con aristas desde `created` y `assigned`, y documentá cuántos órdenes topológicos válidos aparecen y por qué el orden deja de ser único. En el proyecto integrador RutaFlow, aplicá el mismo chequeo al grafo de dependencias de los módulos antes de fijar el orden de build.
-
-#### Paso 7 · Cierre
-Entregá la salida del DAG del Paso 4, el ciclo detectado del Paso 5, y el análisis del orden topológico del Paso 6; explicá por qué un ciclo en este grafo sería un defecto de diseño, no solo una curiosidad matemática. Como siguiente paso, aplicá `tiene_ciclo` a las dependencias reales de tu proyecto antes de automatizar el orden de build. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
 ### Tema 4: Probabilidad y evidencia para decisiones técnicas · Avanzado · 45 min
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a medir la distribución real de tiempos de `nearest_neighbor_route` de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio. Prerrequisitos: Python 3 instalado.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Paso 2 · Contexto y caso real
-Si RutaFlow necesitara decidir cuántas paradas por zona puede manejar antes de que el cálculo de ruta tarde demasiado, un promedio de tiempos ocultaría exactamente el caso que importa: la cola larga de zonas con muchas paradas.
+#### ► DE QUÉ TRATA
+Al finalizar vas a medir la distribución real de tiempos de nearest_neighbor_route de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio. Prerrequisitos: Python 3 instalado.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-La mediana y los percentiles describen mejor una distribución asimétrica que el promedio — informar solo el promedio puede ocultar que el 5% de las zonas con más paradas tarda muchísimo más que el resto.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a medir la distribución real de tiempos de nearest_neighbor_route de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio.**
 
-**Escenario:** Mediste que "confirmación de entrega" tiene p95 = 150ms. Pero ¿qué confianza tienes? ¿Eso vale para hoy? ¿La semana que viene con el doble de entregas?
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**Tu tarea:**
-1. Explica qué es un intervalo de confianza (no solo la fórmula).
-2. ¿Cuántas muestras necesitas para confiar en p95?
-3. ¿Cómo el volumen de entregas afecta el p95?
-4. ¿Con qué frecuencia re-medir?
+#### ► LA ANALOGÍA
+Piensa en probabilidad y evidencia para decisiones técnicas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    POP["población"] --> DESIGN["diseño de muestreo"] --> SAMPLE["muestra"] --> STAT["estadístico"]
+    STAT --> CONCLUSION["conclusión con incertidumbre"]
+    BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
+```
 
-> 1. **Intervalo de confianza:** es un rango calculado con un **procedimiento** que, repetido sobre muchas muestras, contiene el p95 verdadero en el 95 % de los casos (p. ej. 140–160 ms al 95 %). No es «el rango donde crees que está»: el 95 % describe el método, no una creencia sobre este intervalo concreto.
-> 2. **Muestras:** no hay un número mágico. Con \(n\) muestras solo unas \(0{,}05\,n\) quedan por encima del p95 (5 con 100 muestras, 50 con 1000), así que con pocas muestras el p95 depende de muy pocos valores. Calcula el intervalo (por ejemplo, con *bootstrap*: remuestrear con reemplazo y recalcular el p95 muchas veces) y aumenta \(n\) hasta que sea lo bastante estrecho para tu decisión.
-> 3. **Volumen:** más carga suele aumentar la contención y la cola larga; si duplicas las entregas, el p95 puede crecer mucho más que el promedio. Mídelo con la carga nueva en vez de suponerlo.
-> 4. **Frecuencia:** vuelve a medir de forma continua o, como mínimo, ante cambios de arquitectura o de carga. Aquí entran dos términos distintos: el **SLI** (indicador) es la medida, por ejemplo «p95 de latencia de confirmación de entrega en los últimos 30 días»; el **SLO** (objetivo) es la meta sobre esa medida, por ejemplo «p95 < 200 ms en cada ventana de 30 días». «p95 < 200 ms por mes» es un SLO, no un SLI.
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Probabilidad y evidencia para decisiones técnicas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Probabilidad y evidencia para decisiones técnicas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses probabilidad y evidencia para decisiones técnicas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: probabilidad y evidencia para decisiones técnicas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Probabilidad y evidencia para decisiones técnicas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve probabilidad y evidencia para decisiones técnicas en tu contexto?
+2. ¿Cómo sabrías que probabilidad y evidencia para decisiones técnicas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar probabilidad y evidencia para decisiones técnicas?
 
 </details>
 
-**Conceptos clave:** experimento, espacio muestral, evento, probabilidad condicional, independencia, variable aleatoria, esperanza, varianza, distribución, población, muestra, sesgo, intervalo de confianza, correlación, causalidad y prueba de hipótesis.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-La probabilidad modela incertidumbre, no ignorancia absoluta. Una variable aleatoria asigna un número a cada resultado: latencia, errores por minuto o demanda diaria. La media resume centro, pero es sensible a extremos; mediana y percentiles describen mejor latencias asimétricas. La varianza y desviación expresan dispersión. Informar solo el promedio puede ocultar usuarios que sufren una cola larga.
-
-La probabilidad condicional `P(A|B)` mide A sabiendo B. Independencia significa que conocer B no cambia la probabilidad de A. Confundirla con ausencia de relación visible produce errores. El teorema de Bayes actualiza una creencia inicial usando evidencia, pero una prueba con pocos falsos positivos aún puede generar muchas alertas falsas cuando el evento buscado es muy raro.
-
-Una muestra debe representar la población sobre la que concluirás. Medir únicamente durante la noche no permite afirmar rendimiento diurno. Repetir observaciones del mismo entorno no elimina sesgo. Un intervalo de confianza comunica incertidumbre del procedimiento; no convierte una muestra mala en buena.
-
+#### Código y verificación
 ```python
 import random
 from statistics import mean, median, quantiles
@@ -440,16 +462,6 @@ p95 = quantiles(latencias, n=100)[94]
 print({"n": len(latencias), "media": round(mean(latencias), 1), "p50": round(p50, 1), "p95": round(p95, 1)})
 ```
 
-Este ejemplo simula las latencias para que puedas ejecutarlo solo; en el Paso 4 medirás tiempos reales. Con Python 3.14 imprime `{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}`: la media queda por encima de la mediana y el p95 duplica la mediana, la firma de una cola larga.
-
-Comparar dos versiones exige controlar calentamiento, carga, datos, hardware y orden; registrar semilla y ambiente; repetir; mostrar distribución y tamaño del efecto. Un valor p no mide importancia práctica ni probabilidad de que una hipótesis sea verdadera. Correlación tampoco prueba causalidad: una tercera variable puede explicar ambas.
-
-**Analogía:** probar una cucharada de sopa informa sobre toda la olla solo si antes se mezcló bien y la muestra no fue elegida para confirmar el sabor esperado.
-
-**Casos de uso reales:** pruebas A/B, SLO de latencia, detección de anomalías, planificación de capacidad, backoff aleatorio, muestreo de logs y análisis de defectos.
-
-**Diagrama:**
-
 ```mermaid
 flowchart LR
     POP["población"] --> DESIGN["diseño de muestreo"] --> SAMPLE["muestra"] --> STAT["estadístico"]
@@ -457,21 +469,9 @@ flowchart LR
     BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
 ```
 
-Esta medición de percentiles corre sobre una implementación manual de `nearest_neighbor_route`: escribirás la función en tu propia carpeta y la medirás en tiempo real en vez de limitarte a leer su lógica.
-
-**Límites y decisión de uso:** Una muestra pequeña o sesgada no permite generalizar resultados con certeza. Registra procedencia, tamaño y variabilidad, y distingue asociación de causalidad antes de elegir una solución a partir de una medición.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
-**¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
-
-#### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea manualmente `domain.py` y `medir.py`:
-
 ```bash
 mkdir ejemplo-medicion && cd ejemplo-medicion
 ```
-
-Archivo `domain.py`:
 
 ```python
 from dataclasses import dataclass
@@ -497,8 +497,6 @@ def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> li
     return ordered
 ```
 
-Archivo `medir.py`:
-
 ```python
 import time
 from statistics import mean, median, quantiles
@@ -516,46 +514,73 @@ p95 = quantiles(tiempos, n=100)[94]
 print({"n": len(tiempos), "media": mean(tiempos), "p50": p50, "p95": p95})
 ```
 
-Ejecuta la medición:
-
 ```bash
 python3 medir.py
 ```
-Observa la salida impresa y compárala con el resultado esperado.
 
-Resultado esperado: un diccionario con media, p50 y p95 reales de 30 repeticiones — la heurística O(n²) sobre 200 paradas da tiempos consistentes, y podés comparar si la media y la mediana están cerca (señal de distribución simétrica) o lejos (señal de cola larga).
-
-#### Paso 5 · Práctica guiada
-Pista: repetí la medición con solo 3 repeticiones en vez de 30, y afirmá una conclusión sobre el "tiempo típico" basándote en esas 3 — ese es el fallo deliberado: con una muestra tan chica, un solo valor atípico (por ejemplo, si el primer cálculo coincidió con el arranque en frío del intérprete) puede distorsionar completamente la media, sin que tengas suficientes repeticiones para distinguir ruido de señal real.
-
-#### Paso 6 · Práctica independiente
-Repetí el Paso 4 con 1000 paradas en vez de 200, y compará el p95 de ambos tamaños — documentá si el crecimiento del tiempo es lineal, cuadrático o algo distinto, usando los números reales medidos, no la complejidad teórica O(n²) citada en el docstring de la función.
-
-#### Paso 7 · Cierre
-Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil con 3 repeticiones del Paso 5, y la comparación de tamaños del Paso 6; explicá por qué el tamaño de muestra y los percentiles importan más que un único número de "tiempo promedio" al decidir cuántas paradas por zona puede manejar RutaFlow. Errores comunes: sacar conclusiones de una muestra demasiado chica, reportar solo el promedio y ocultar la dispersión, y no documentar bajo qué condiciones (tamaño de entrada, hardware, repeticiones) se midió. Fuente oficial: https://docs.python.org/3/library/statistics.html.
-
-## Construcción guiada del capítulo
+</details>
 
 ### Proyecto 9: cuaderno de propiedades, grafos y evidencia
 
-Crea `analysis/fundamentos-matematicos.ipynb` o un documento ejecutable equivalente y un script reproducible sin depender del estado oculto del cuaderno.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-1. Escribe cinco invariantes del inventario con lenguaje natural, predicados y ejemplos/contraejemplos.
-2. Implementa pruebas generativas para retiro, devolución y autorización. Conserva el contraejemplo mínimo de un defecto introducido deliberadamente.
-3. Define dominio, caso base, hipótesis y paso inductivo para demostrar una propiedad de búsqueda, suma o recorrido.
-4. Extrae dependencias internas y represéntalas como grafo dirigido. Implementa DFS para ciclos y compara el resultado con una herramienta visual.
-5. Calcula el número de combinaciones relevantes de rol, operación y estado; reduce casos mediante clases de equivalencia justificadas.
-6. Compara latencia de búsqueda con y sin índice usando datos sintéticos, semilla fija, calentamiento y al menos 30 repeticiones por condición.
-7. Presenta mediana, p95, dispersión y tamaño del efecto. Escribe qué puede y qué no puede concluirse.
-8. Añade `make analysis` o comando equivalente que reconstruya datos, ejecute pruebas y produzca tablas desde un clon limpio.
+#### ► DE QUÉ TRATA
+Este tema te guía por proyecto 9: cuaderno de propiedades, grafos y evidencia con foco en comprensión antes de implementación.
 
-**Verificación:** el pipeline debe fallar cuando un contraejemplo rompe un invariante o aparece un ciclo prohibido. El experimento debe registrar versión, máquina, semilla, tamaño de datos y comandos. Cambiar la semilla no debería invertir sistemáticamente la conclusión; si lo hace, informa inestabilidad en lugar de ocultarla.
+#### ► LA IDEA EN UNA FRASE
+**Entender proyecto 9: cuaderno de propiedades, grafos y evidencia te permite tomar mejores decisiones técnicas.**
 
-**Errores comunes y soluciones**
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-- Tratar implicación como equivalencia: escribe tabla de verdad y busca el caso donde la conclusión ocurre sin la condición.
-- Usar ejemplos como demostración: declara qué entradas no cubren y añade argumento formal o propiedad.
-- DFS infinito: marca nodos y distingue visitados de activos.
-- Comparar promedios aislados: muestra distribución, percentiles y tamaño muestral.
-- Concluir causalidad por correlación: identifica variables de confusión y diseña control o experimento.
-- Ejecutar celdas fuera de orden: reinicia y ejecuta todo automáticamente antes de entregar.
+#### ► LA ANALOGÍA
+Piensa en proyecto 9: cuaderno de propiedades, grafos y evidencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que proyecto 9: cuaderno de propiedades, grafos y evidencia resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Proyecto 9: cuaderno de propiedades, grafos y evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Proyecto 9: cuaderno de propiedades, grafos y evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses proyecto 9: cuaderno de propiedades, grafos y evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: proyecto 9: cuaderno de propiedades, grafos y evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Proyecto 9: cuaderno de propiedades, grafos y evidencia existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve proyecto 9: cuaderno de propiedades, grafos y evidencia en tu contexto?
+2. ¿Cómo sabrías que proyecto 9: cuaderno de propiedades, grafos y evidencia no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar proyecto 9: cuaderno de propiedades, grafos y evidencia?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto 9: cuaderno de propiedades, grafos y evidencia.
+
+</details>

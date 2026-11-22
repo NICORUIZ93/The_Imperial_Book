@@ -6,20 +6,68 @@ El módulo se amplía de 3 a 13 temas para cubrir el inventario del prompt: func
 
 Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error real, no para describirlo.
 
+
 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
 
-**Duración:** 30 min. **Prerrequisitos:** Java M0 T1–T3 (clases, métodos y tipos). **Proyecto continuo:** Motor de asignación de entregas.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-**¿Por qué es importante?** Estas cuatro interfaces convierten reglas pequeñas en piezas que se pueden pasar y probar sin mezclar todo en un solo método.
+#### ► DE QUÉ TRATA
+Este tema te guía por las cuatro formas: predicate, function, consumer y supplier con foco en comprensión antes de implementación.
 
-#### Subtema 1.1: Elige una interfaz por la salida que necesitas · 10 min
+#### ► LA IDEA EN UNA FRASE
+**Entender las cuatro formas: predicate, function, consumer y supplier te permite tomar mejores decisiones técnicas.**
 
-**1. Contexto**
-Para revisar envíos, el programa debe decidir si un paquete pesa demasiado, transformar sus datos, registrar el aviso y obtener el turno actual.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**2. Hazlo tú**
-Crea `java-funcional/src/Formas.java`:
+#### ► LA ANALOGÍA
+Piensa en las cuatro formas: predicate, function, consumer y supplier como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que las cuatro formas: predicate, function, consumer y supplier resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
+
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Las cuatro formas: Predicate, Function, Consumer y Supplier se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Las cuatro formas: Predicate, Function, Consumer y Supplier | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+
+#### ► CUÁNDO NO USAR ESTO
+No uses las cuatro formas: predicate, function, consumer y supplier por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: las cuatro formas: predicate, function, consumer y supplier funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Las cuatro formas: Predicate, Function, Consumer y Supplier existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve las cuatro formas: predicate, function, consumer y supplier en tu contexto?
+2. ¿Cómo sabrías que las cuatro formas: predicate, function, consumer y supplier no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar las cuatro formas: predicate, function, consumer y supplier?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.List;
 import java.util.function.Consumer;
@@ -47,31 +95,11 @@ public final class Formas {
 }
 ```
 
-Desde `java-funcional/`, ejecuta:
-
 ```bash
 mkdir -p out
 javac -d out src/Formas.java
 java -cp out Formas
 ```
-
-**Resultado esperado:** `[log] Turno AM | ENV-2 -> Medellín`.
-
-**Fallo deliberado:** modifica la declaración a `Function<Envio, String> etiqueta = (guia, destino) -> guia;`. **Resultado esperado:** `javac` indica que la lambda recibe una cantidad de parámetros incompatible. **Diagnóstico:** `Function<T,R>` recibe exactamente un valor; usa `BiFunction` cuando el cálculo necesita dos.
-
-**3. Entiende**
-`Predicate` decide, `Function` transforma, `Consumer` realiza una acción y `Supplier` entrega un valor cuando se lo piden.
-
-**4. Cierra**
-Anota qué método ejecutó cada forma: `test`, `apply`, `accept` o `get`.
-
-#### Subtema 1.2: Normaliza una guía con Function · 10 min
-
-**1. Contexto**
-El sistema recibe guías con espacios y distintas mayúsculas; la etiqueta impresa debe tener un formato consistente.
-
-**2. Hazlo tú**
-Crea `java-funcional/src/Etiqueta.java`:
 
 ```java
 import java.util.function.Function;
@@ -84,30 +112,10 @@ public final class Etiqueta {
 }
 ```
 
-Desde `java-funcional/`, ejecuta:
-
 ```bash
 javac -d out src/Etiqueta.java
 java -cp out Etiqueta
 ```
-
-**Resultado esperado:** `RT-8`.
-
-**Fallo deliberado:** modifica la llamada `normalizar.apply(" rt-8 ")` a `normalizar.apply(8)`. **Resultado esperado:** error de compilación porque `8` no es un `String`. **Diagnóstico:** el primer tipo de `Function<String, String>` indica qué valor acepta `apply`.
-
-**3. Entiende**
-Una función recibe un dato y devuelve otro. `trim()` quita espacios de los extremos; `toUpperCase()` cambia letras a mayúsculas.
-
-**4. Cierra**
-Conserva la salida y explica qué pasaría si quitas `trim()`.
-
-#### Subtema 1.3: Provee un turno y registra la etiqueta · 10 min
-
-**1. Contexto**
-El turno se obtiene sin una entrada; el registro sí recibe una guía para imprimirla.
-
-**2. Hazlo tú**
-Crea `java-funcional/src/Registro.java`:
 
 ```java
 import java.util.function.Consumer;
@@ -122,55 +130,74 @@ public final class Registro {
 }
 ```
 
-Desde `java-funcional/`, ejecuta:
-
 ```bash
 javac -d out src/Registro.java
 java -cp out Registro
 ```
 
-**Resultado esperado:** `Turno AM | RT-8`.
-
-**Fallo deliberado:** modifica `registrar.accept("RT-8")` a `registrar.get()`. **Resultado esperado:** `javac` informa que `Consumer` no tiene el método `get`. **Diagnóstico:** `accept` pertenece a `Consumer`; `get` pertenece a `Supplier`.
-
-**3. Entiende**
-`Supplier` no tiene entrada; `Consumer` recibe una entrada y no devuelve un resultado.
-
-**4. Cierra**
-Entrega `Formas.java`, `Etiqueta.java`, `Registro.java` y las tres salidas.
-
-**Hito del tema:**
-
-- [ ] Asigné cada interfaz según lo que recibe y devuelve.
-- [ ] Compilé y ejecuté los tres ejemplos.
-- [ ] Reproduje un error de tipos y uno de método incorrecto.
-- [ ] Expliqué con mis palabras la diferencia entre `Function` y `Consumer`.
-
-**Proyecto integrador:** usa `Predicate` para decidir qué envíos requieren revisión; registra la salida antes de integrarlo con la siguiente regla.
-
-**Fuente oficial:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [expresiones lambda](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
+</details>
 
 ### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás escoger `Function<T,R>` cuando entra un dato y `BiFunction<T,U,R>` cuando entran dos, y ejecutar cada regla con valores de RutaFlow. **Prerrequisito:** Java M20 Tema 1, `java -version` 21 o superior. Crea su carpeta: `mkdir -p java-funcional-t04/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás escoger Function<T,R> cuando entra un dato y BiFunction<T,U,R> cuando entran dos, y ejecutar cada regla con valores de RutaFlow. Prerrequisito: Java M20 Tema 1, java -version 21 o superior. Crea su carpeta: mkdir -p java-funcional-t04/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás escoger Function<T,R> cuando entra un dato y BiFunction<T,U,R> cuando entran dos, y ejecutar cada regla con valores de RutaFlow.**
 
-**¿Por qué es importante?** Una tarifa se calcula con peso y distancia; un formato de guía se transforma a partir de una sola cadena. La cantidad de entradas ayuda a elegir la interfaz sin envolver datos en arreglos o clases innecesarias.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en function y bifunction: transformar uno o dos datos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Piensa en una función como una máquina: recibe lo que necesita y entrega un resultado. `Function` recibe una entrada; `BiFunction`, dos. Ambas devuelven un valor y no describen por sí solas una acción que guarda datos.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que function y bifunction: transformar uno o dos datos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Function y BiFunction: transformar uno o dos datos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 2.1: Transformar una entrada · 10 min
-**1. Contexto** la vista debe convertir el peso de un envío a una etiqueta legible.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Function y BiFunction: transformar uno o dos datos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** desde la raíz del repositorio crea `java-funcional-t04/src/Peso.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses function y bifunction: transformar uno o dos datos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: function y bifunction: transformar uno o dos datos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Function y BiFunction: transformar uno o dos datos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve function y bifunction: transformar uno o dos datos en tu contexto?
+2. ¿Cómo sabrías que function y bifunction: transformar uno o dos datos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar function y bifunction: transformar uno o dos datos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.function.Function;
 
@@ -183,31 +210,10 @@ public class Peso {
 }
 ```
 
-Ejecuta `cd java-funcional-t04 && java src/Peso.java`.
-
 ```bash
 cd java-funcional-t04
 java src/Peso.java
 ```
-
-**Resultado esperado:** `normal` y luego `pesado`.
-
-**Fallo deliberado:** cambia `apply(8.5)` por `apply("8.5")`. **Error esperado:** el compilador indica que `String` no se puede convertir a `Double`. **Diagnóstico:** el tipo de entrada de `Function<Double, String>` es `Double`.
-
-**3. Entiende** `apply` entrega un valor nuevo. El dato original no cambia si la función solo lo calcula.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 2.2: Combinar dos entradas · 10 min
-**1. Contexto** el código de envío necesita unir un prefijo con un número.
-
-**2. Hazlo tú** crea `java-funcional-t04/src/Guia.java`:
 
 ```java
 import java.util.function.BiFunction;
@@ -220,31 +226,10 @@ public class Guia {
 }
 ```
 
-Ejecuta `cd java-funcional-t04 && java src/Guia.java`.
-
 ```bash
 cd java-funcional-t04
 java src/Guia.java
 ```
-
-**Resultado esperado:** `RT-18`.
-
-**Fallo deliberado:** reemplaza el segundo argumento por `"18"`. **Error esperado:** `String cannot be converted to Integer`. **Diagnóstico:** `BiFunction` tiene dos tipos de entrada y ambos deben respetarse.
-
-**3. Entiende** los dos primeros parámetros genéricos son las entradas; el tercero es el resultado.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 2.3: Calcular un valor con ambos datos · 10 min
-**1. Contexto** una tarifa usa el precio por kilómetro y la distancia.
-
-**2. Hazlo tú** crea `java-funcional-t04/src/Tarifa.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -259,68 +244,78 @@ public class Tarifa {
 }
 ```
 
-Ejecuta `cd java-funcional-t04 && java src/Tarifa.java`.
-
 ```bash
 cd java-funcional-t04
 java src/Tarifa.java
 ```
 
-**Resultado esperado:** `3000.00`.
-
-**Fallo deliberado:** cambia `multiplicar.apply` a `multiplicar.apply("1250", new BigDecimal("2.4"))`. **Error esperado:** argumento `String` no compatible con `BigDecimal`. **Diagnóstico:** crea valores decimales desde texto antes de pasarlos.
-
-**3. Entiende** usa `BiFunction` cuando el resultado depende de dos valores; para dinero, representa ambos con `BigDecimal`.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** corre los tres archivos; muestra el resultado de cada uno; reproduce y diagnostica un error de tipo; explica cuándo la regla necesita una entrada y cuándo dos. **Proyecto integrador (RutaFlow):** usa una función para describir el peso y una bifunción para calcular la tarifa. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+</details>
 
 ### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar vas a encadenar reglas con `and`, `or`, `negate`, `andThen` y `compose`, y a explicar por qué el orden de composición cambia el resultado.
+#### ► DE QUÉ TRATA
+Al finalizar vas a encadenar reglas con and, or, negate, andThen y compose, y a explicar por qué el orden de composición cambia el resultado.
 
-**Conocimiento previo:** Java M20 Tema 1 y Java M0 (lambdas, métodos y genéricos); `javac` funcionando.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a encadenar reglas con and, or, negate, andThen y compose, y a explicar por qué el orden de composición cambia el resultado.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** El proyecto integrador valida correos que llegan de un formulario. Si se valida antes de normalizar, un correo correcto con espacios alrededor se rechaza; si se normaliza antes de validar, pasa. El error no está en la regla sino en el orden en que se compone.
+#### ► LA ANALOGÍA
+Piensa en componer sin anidar: andthen, compose, negate y reglas encadenadas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Componer con las interfaces de Java hace visible ese orden en una sola expresión, en lugar de esconderlo en una sucesión de `if` que nadie revisa.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que componer sin anidar: andthen, compose, negate y reglas encadenadas resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Componer sin anidar: andThen, compose, negate y reglas encadenadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-`Predicate` ofrece `and`, `or` y `negate`; `Function` ofrece `andThen` y `compose`. La diferencia es el sentido de la lectura: `f.andThen(g)` aplica `f` y luego `g`; `g.compose(f)` aplica `f` y luego `g`. Son equivalentes, pero una se lee de izquierda a derecha y la otra de derecha a izquierda.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Componer sin anidar: andThen, compose, negate y reglas encadenadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**Analogía:** es una cadena de montaje. `andThen` añade una estación al final; `compose` declara que la estación actual va después de otra. El límite es que la cadena no valida la semántica: si el orden es incorrecto, compila y produce el resultado equivocado.
+#### ► CUÁNDO NO USAR ESTO
+No uses componer sin anidar: andthen, compose, negate y reglas encadenadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: componer sin anidar: andthen, compose, negate y reglas encadenadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-#### Subtema 3.1: Encadenar una validación y una transformación · 10 min
-**1. Contexto**
+#### ► LO QUE DEBES RECORDAR
+- Componer sin anidar: andThen, compose, negate y reglas encadenadas existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Un correo con espacios puede ser válido después de limpiarlo; el orden de composición determina si el validador lo acepta.
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve componer sin anidar: andthen, compose, negate y reglas encadenadas en tu contexto?
+2. ¿Cómo sabrías que componer sin anidar: andthen, compose, negate y reglas encadenadas no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar componer sin anidar: andthen, compose, negate y reglas encadenadas?
 
-**2. Hazlo tú**
+</details>
 
-Desde una carpeta vacía, crea `Composicion.java` y ejecuta primero la función compuesta y luego el caso invertido.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-Desde una carpeta vacía:
-
+#### Código y verificación
 ```bash
 mkdir java-composicion && cd java-composicion
 mkdir src
 ```
-
-Crea `src/Composicion.java`:
 
 ```java
 import java.util.function.Function;
@@ -357,34 +352,11 @@ javac -d out src/Composicion.java
 java -cp out Composicion
 ```
 
-**Resultado esperado:**
-
 ```text
 normalizado: true
 sospechoso: false
 sospechoso vacío: true
 ```
-
-**Fallo deliberado:** invierte el orden. Crea `Function<String, Boolean> sinNormalizar = correo::test;` y evalúa `sinNormalizar.apply("  ANA@ACADEMIA.COM  ")`. Obtienes `false`: la regla es correcta, pero recibe el texto crudo. El diagnóstico es que `correo::test` no normaliza; la composición `andThen` es la que aporta el orden. Corrige usando `normalizar.andThen(correo::test)`.
-
-**Conceptos clave:** `andThen`, `compose`, `and`, `or`, `negate`, orden de evaluación.
-
-**3. Entiende**
-
-Identifica qué función recibe primero el dato y qué cambia si inviertes el orden.
-
-**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
-
-#### Paso 5 · Práctica guiada
-
-#### Subtema 3.2: Combinar dos condiciones · 10 min
-**1. Contexto** RutaFlow acepta destinos habilitados solo si el nombre está presente y tiene el prefijo del país.
-
-**2. Hazlo tú** crea `src/Destino.java` dentro de `java-composicion`:
 
 ```java
 import java.util.function.Predicate;
@@ -399,27 +371,6 @@ public class Destino {
     }
 }
 ```
-
-Ejecuta `javac -d out src/Destino.java && java -cp out Destino`.
-
-**Resultado esperado:** `true` y luego `false`.
-
-**Fallo deliberado:** cambia `.and` por `.or`. **Resultado del fallo:** `MX-CDMX` también queda habilitado. **Diagnóstico:** `or` permite que una sola regla pase; aquí las dos condiciones son obligatorias.
-
-**3. Entiende** nombra cada regla por separado; así puedes comprobar cuál condición estás combinando.
-
-**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
-
-#### Paso 6 · Práctica independiente
-
-#### Subtema 3.3: Hacer visible el orden de ejecución · 10 min
-**1. Contexto** el correo del formulario puede traer espacios y mayúsculas; la regla solo acepta el texto limpio.
-
-**2. Hazlo tú** crea `src/OrdenCorreo.java` dentro de `java-composicion`:
 
 ```java
 import java.util.function.Function;
@@ -438,52 +389,27 @@ public class OrdenCorreo {
 }
 ```
 
-Ejecuta `javac -d out src/OrdenCorreo.java && java -cp out OrdenCorreo`.
-
-**Resultado esperado:** `true` y luego `false`.
-
-**Fallo deliberado:** usa `flujoIncorrecto` para decidir si guarda el correo. **Resultado del fallo:** una entrada válida se rechaza. **Diagnóstico:** la función de validación recibió el texto sin limpiar; conecta `limpiar.andThen(...)` antes de guardar.
-
-**3. Entiende** las funciones se ejecutan en el orden de la composición; el compilador no puede decidir si ese orden tiene sentido para el negocio.
-
-**Diagnóstico:** sigue el valor de entrada en cada paso; comprueba cuál regla recibió el dato crudo y cuál recibió el valor normalizado.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado con composición y el resultado al cambiar el orden.
-
-#### Paso 7 · Cierre y evidencia
-
-Siguiente paso: aplicar composición a colecciones con Streams. **Evidencia de aprendizaje:** entrega `Composicion.java`, la salida de los tres `println` y la comparación entre validar antes y después de normalizar.
-
-**Errores comunes:** confundir `andThen` con `compose`; validar antes de normalizar; encadenar `or` donde la regla pedía `and`; usar `negate` para esconder una condición que debería tener nombre propio.
-
-**Límites y decisión de uso:** componer es útil cuando las reglas son independientes y se combinan; si dependen entre sí o necesitan explicar el motivo del rechazo, un tipo de resultado (`Resultado`) comunica más que un `boolean` compuesto. En el proyecto integrador, la validación que debe informar al usuario usa motivos, no solo `Predicate`.
-
-**Fuente oficial:** [Predicate](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html) y [Function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html).
-
-**Hito del tema:** confirma que puedes (1) decidir con `Predicate`, (2) transformar con `Function`, (3) ejecutar un efecto con `Consumer` y (4) pedir un dato con `Supplier`; anota el método usado (`test`, `apply`, `accept` o `get`) y su salida.
+</details>
 
 ### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con `peek` sin confundirlo con un `for`, y a diagnosticar el error de reutilizar un Stream consumido.
+#### ► DE QUÉ TRATA
+Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con peek sin confundirlo con un for, y a diagnosticar el error de reutilizar un Stream consumido.
 
-**Conocimiento previo:** Java M20 Temas 1 y 3 y Java M2 (colecciones); `javac` y `java` funcionando.
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con peek sin confundirlo con un for, y a diagnosticar el error de reutilizar un Stream consumido.**
 
-#### Paso 2 · Contexto y caso real
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-**¿Por qué es importante?** En el proyecto integrador, un informe procesa miles de envíos. Si el pipeline se ejecuta dos veces o se mezclan efectos dentro de `map`, el informe puede duplicar registros o tardar el doble sin que nadie lo note. La pereza de Streams es una ventaja solo si se entiende: el trabajo ocurre en la operación terminal, no donde se declara.
+#### ► LA ANALOGÍA
+Piensa en streams como composición: pereza, orden y efectos que se esconden como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Un `Stream` es una descripción de trabajo, no una colección. `filter`, `map` y `peek` son perezosas; `count`, `collect`, `forEach` y `reduce` son terminales y disparan el recorrido. Un Stream se consume una sola vez.
-
-**Analogía:** es una receta escrita frente a una comida cocinada. Escribir la receta no cocina nada; el primer plato que se sirve dispara el trabajo. El límite es que, a diferencia de una receta, el Stream no se puede volver a cocinar: si lo intentas, la API lanza una excepción.
-
-**Diagrama:**
-
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["lista.stream()"] --> B["filter (perezoso)"]
@@ -492,25 +418,55 @@ flowchart LR
     D --> E["count (terminal)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streams como composición: pereza, orden y efectos que se esconden se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 4.1: Observar cuándo empieza el trabajo · 10 min
-**1. Contexto**
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streams como composición: pereza, orden y efectos que se esconden | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-Un informe de envíos puede definir varias transformaciones antes de producir una sola salida.
+#### ► CUÁNDO NO USAR ESTO
+No uses streams como composición: pereza, orden y efectos que se esconden por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
-**2. Hazlo tú**
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streams como composición: pereza, orden y efectos que se esconden funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
 
-Crea `Pereza.java` desde una carpeta vacía, ejecútalo y compara el momento en que se declara el filtro con el momento en que se llama a `count`.
+#### ► LO QUE DEBES RECORDAR
+- Streams como composición: pereza, orden y efectos que se esconden existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
 
-Desde una carpeta vacía:
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streams como composición: pereza, orden y efectos que se esconden en tu contexto?
+2. ¿Cómo sabrías que streams como composición: pereza, orden y efectos que se esconden no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streams como composición: pereza, orden y efectos que se esconden?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["lista.stream()"] --> B["filter (perezoso)"]
+    B --> C["map (perezoso)"]
+    C --> D["peek (perezoso)"]
+    D --> E["count (terminal)"]
+```
 
 ```bash
 mkdir java-streams && cd java-streams
 mkdir src
 ```
-
-Crea `src/Pereza.java`:
 
 ```java
 import java.util.List;
@@ -542,144 +498,80 @@ javac -d out src/Pereza.java
 java -cp out Pereza
 ```
 
-**Resultado esperado:**
-
 ```text
 antes de la operación terminal: no se ejecutó ningún filtro
 filtrado ENV-2
 pesados=1
 ```
 
-La línea «filtrado» aparece después del mensaje, no antes: el `peek` no se ejecutó al declarar el pipeline.
-
-**Fallo deliberado:** reutiliza el Stream consumido:
-
 ```java
 long primero = pesados.count();
 long segundo = pesados.count();
 ```
 
-Al ejecutar, la JVM responde:
-
-```text
-Exception in thread "main" java.lang.IllegalStateException: stream has already been operated upon or closed
-```
-
-**Diagnóstico:** `count` es una operación terminal y consume el Stream; para un segundo recorrido vuelve a crearlo desde la lista. No es un problema de `count`: es que un Stream no es una colección reutilizable. Corrige guardando el resultado en una variable o creando un Stream nuevo desde la lista.
-
-**Conceptos clave:** operación perezosa, operación terminal, consumo único, `peek` para depurar.
-
-**3. Entiende**
-
-Las operaciones intermedias describen el trabajo; una operación terminal lo ejecuta y consume ese Stream.
-
-**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
-
-**4. Cierra**
-
-Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
-
-#### Paso 5 · Práctica guiada
-
-#### Subtema 4.2: No reutilizar un Stream consumido · 10 min
-**1. Contexto** cada informe debe crear su propio recorrido; un Stream solo sirve para una operación terminal.
-
-**2. Hazlo tú** crea `src/UnaVez.java` dentro de `java-streams`:
-
-```java
-import java.util.List;
-import java.util.stream.Stream;
-
-public class UnaVez {
-    public static void main(String[] args) {
-        Stream<String> guias = List.of("RT-1", "RT-2").stream();
-        System.out.println(guias.count());
-        System.out.println(guias.count());
-    }
-}
-```
-
-Ejecuta `javac -d out src/UnaVez.java && java -cp out UnaVez`.
-
-**Resultado esperado:** imprime `2` y después termina con `IllegalStateException: stream has already been operated upon or closed`.
-
-**Fallo deliberado:** mantén ambas llamadas a `count`. **Error esperado:** la JVM informa que el Stream ya se usó o cerró. **Diagnóstico:** el primer `count` es terminal; vuelve a crear el Stream desde la lista para el segundo cálculo.
-
-**3. Entiende** conserva la colección como dato reutilizable y crea desde ella un Stream nuevo para cada recorrido.
-
-**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
-
-**4. Cierra**
-
-Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
-
-#### Paso 6 · Práctica independiente
-
-#### Subtema 4.3: Dejar los efectos en el borde del flujo · 10 min
-**1. Contexto** una transformación calcula una etiqueta; el registro la imprime solo cuando se consume el resultado.
-
-**2. Hazlo tú** crea `src/Efectos.java` dentro de `java-streams`:
-
-```java
-import java.util.List;
-import java.util.function.Function;
-
-public class Efectos {
-    public static void main(String[] args) {
-        Function<String, String> etiqueta = guia -> "Guía " + guia;
-        var etiquetas = List.of("RT-1", "RT-2").stream().map(etiqueta).toList();
-        etiquetas.forEach(System.out::println);
-    }
-}
-```
-
-Ejecuta `javac -d out src/Efectos.java && java -cp out Efectos`.
-
-**Resultado esperado:** `Guía RT-1` y luego `Guía RT-2`.
-
-**Fallo deliberado:** declara el pipeline con `.map(etiqueta)` pero elimina `.toList()` y `forEach`. **Resultado del fallo:** no aparece ninguna guía porque no hay operación terminal. **Diagnóstico:** `map` describe la conversión; una terminal consume el flujo y hace visible el resultado.
-
-**3. Entiende** mantén `map` para transformar; ejecuta notificaciones o escrituras en una terminal explícita.
-
-**Diagnóstico:** busca dónde se crea la terminal y comprueba si hubo un recorrido previo que consumió el Stream.
-
-**4. Cierra**
-
-Guarda el orden de los mensajes y la excepción que aparece al intentar reutilizar el flujo.
-
-#### Paso 7 · Cierre y evidencia
-
-Siguiente paso: decidir cuándo Streams no conviene. **Evidencia de aprendizaje:** entrega `Pereza.java`, la salida que demuestra la pereza y la excepción completa de reutilizar el Stream con su corrección.
-
-**Errores comunes:** creer que `filter` ejecuta el trabajo al declararlo; usar `peek` para lógica de negocio; reutilizar un Stream; usar `parallelStream` sin medir; esconder efectos en `map`.
-
-**Límites y decisión de uso:** un `for` es más claro cuando hay índices, `break`, `continue` o efectos que deben ocurrir en orden; Streams brillan cuando la operación es una transformación o agregación sin efectos. En el proyecto integrador, el cálculo de totales usa Streams y el envío de notificaciones usa un `for`, porque el efecto importa.
-
-**Fuente oficial:** [Stream](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html) y [procesamiento de datos con Streams](https://docs.oracle.com/javase/tutorial/collections/streams/index.html).
-
-**Hito del tema:** identifica la operación terminal; muestra el mensaje que no aparece antes de ella; reproduce la excepción al reutilizar el Stream; corrige el caso creando un Stream nuevo.
+</details>
 
 ### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás usar `UnaryOperator<T>` para transformar un valor de tipo `T` en otro `T`, y `BinaryOperator<T>` para combinar dos valores `T` en uno. **Prerrequisito:** Java M20 Tema 2. Crea su carpeta: `mkdir -p java-funcional-t05/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás usar UnaryOperator<T> para transformar un valor de tipo T en otro T, y BinaryOperator<T> para combinar dos valores T en uno. Prerrequisito: Java M20 Tema 2. Crea su carpeta: mkdir -p java-funcional-t05/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás usar UnaryOperator<T> para transformar un valor de tipo T en otro T, y BinaryOperator<T> para combinar dos valores T en uno.**
 
-**¿Por qué es importante?** Normalizar el nombre de una ciudad mantiene el tipo `String`. Sumar dos importes mantiene `BigDecimal`. Los operadores nombran esas formas frecuentes sin repetir los tres tipos genéricos.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en unaryoperator y binaryoperator: la salida conserva el tipo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`UnaryOperator<String>` es una función de `String` a `String`. `BinaryOperator<BigDecimal>` combina dos importes y entrega otro importe. No son operadores matemáticos especiales: son interfaces funcionales.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que unaryoperator y binaryoperator: la salida conserva el tipo resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| UnaryOperator y BinaryOperator: la salida conserva el tipo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 5.1: Normalizar una cadena · 10 min
-**1. Contexto** las ciudades deben compararse sin espacios sobrantes.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar UnaryOperator y BinaryOperator: la salida conserva el tipo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t05/src/Ciudad.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses unaryoperator y binaryoperator: la salida conserva el tipo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: unaryoperator y binaryoperator: la salida conserva el tipo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- UnaryOperator y BinaryOperator: la salida conserva el tipo existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve unaryoperator y binaryoperator: la salida conserva el tipo en tu contexto?
+2. ¿Cómo sabrías que unaryoperator y binaryoperator: la salida conserva el tipo no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar unaryoperator y binaryoperator: la salida conserva el tipo?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.function.UnaryOperator;
 
@@ -691,31 +583,10 @@ public class Ciudad {
 }
 ```
 
-Ejecuta `cd java-funcional-t05 && java src/Ciudad.java`.
-
 ```bash
 cd java-funcional-t05
 java src/Ciudad.java
 ```
-
-**Resultado esperado:** `bogotá`.
-
-**Fallo deliberado:** cambia la lambda a `texto -> texto.length()`. **Error esperado:** `int cannot be converted to String`. **Diagnóstico:** la salida de `UnaryOperator<String>` también debe ser `String`.
-
-**3. Entiende** usa este alias si el tipo de entrada y salida es el mismo.
-
-**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
-
-**4. Cierra**
-
-Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 5.2: Sumar dos importes · 10 min
-**1. Contexto** el total reúne tarifa y seguro.
-
-**2. Hazlo tú** crea `java-funcional-t05/src/Total.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -729,31 +600,10 @@ public class Total {
 }
 ```
 
-Ejecuta `cd java-funcional-t05 && java src/Total.java`.
-
 ```bash
 cd java-funcional-t05
 java src/Total.java
 ```
-
-**Resultado esperado:** `1550.00`.
-
-**Fallo deliberado:** pasa `350` como entero. **Error esperado:** no se encuentra un método `apply(BigDecimal, int)`. **Diagnóstico:** convierte el segundo dato a `BigDecimal` antes de llamar al operador.
-
-**3. Entiende** `BinaryOperator<T>` recibe dos valores `T` y devuelve un valor `T`.
-
-**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
-
-**4. Cierra**
-
-Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 5.3: Comparar dos valores del mismo tipo · 10 min
-**1. Contexto** escoge la tarifa menor entre dos cotizaciones.
-
-**2. Hazlo tú** crea `java-funcional-t05/src/Minimo.java`:
 
 ```java
 import java.math.BigDecimal;
@@ -767,50 +617,74 @@ public class Minimo {
 }
 ```
 
-Ejecuta `cd java-funcional-t05 && java src/Minimo.java`.
-
 ```bash
 cd java-funcional-t05
 java src/Minimo.java
 ```
 
-**Resultado esperado:** `4800`.
-
-**Fallo deliberado:** cambia `BigDecimal::compareTo` por `(a, b) -> a`. **Error esperado:** el compilador rechaza que la comparación devuelva `BigDecimal` en vez de `int`. **Diagnóstico:** el comparador debe indicar cuál valor va primero.
-
-**3. Entiende** `minBy` necesita una regla que compare los dos valores y devuelve uno de ellos.
-
-**Diagnóstico:** compara los tipos de entrada y salida; el operador debe devolver el mismo tipo `T` declarado.
-
-**4. Cierra**
-
-Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** demuestra una transformación del mismo tipo; una suma; una selección de mínimo; diagnostica el fallo de tipo. **Proyecto integrador (RutaFlow):** normaliza el destino y escoge la menor tarifa entre dos opciones. **Límite:** `UnaryOperator`/`BinaryOperator` solo aplican cuando entrada y salida comparten exactamente el mismo tipo `T`; si la tarifa final debe ser otro tipo (por ejemplo un `Resultado` con motivo de rechazo), usa `Function`/`BiFunction` normales en vez de forzar el mismo tipo de entrada y salida. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+</details>
 
 ### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar identificarás referencias estáticas, ligadas a un objeto, no ligadas y de constructor. **Prerrequisito:** Java M20 Temas 1–2. Crea su carpeta: `mkdir -p java-funcional-t06/src`.
+#### ► DE QUÉ TRATA
+Al finalizar identificarás referencias estáticas, ligadas a un objeto, no ligadas y de constructor. Prerrequisito: Java M20 Temas 1–2. Crea su carpeta: mkdir -p java-funcional-t06/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar identificarás referencias estáticas, ligadas a un objeto, no ligadas y de constructor.**
 
-**¿Por qué es importante?** Al convertir una lista de guías, una lambda puede limitarse a llamar un método existente. La referencia a métodos hace visible esa llamada y deja la colección libre de detalles repetidos.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en referencias a métodos: escribir la operación sin repetirla como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una referencia a método no agrega comportamiento nuevo: conecta una interfaz funcional con un método compatible. El tipo de la variable permite saber qué datos recibirá y qué devolverá.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que referencias a métodos: escribir la operación sin repetirla resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Referencias a métodos: escribir la operación sin repetirla se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 6.1: Referencia a un método estático · 10 min
-**1. Contexto** lee un número de guía que llega como texto.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Referencias a métodos: escribir la operación sin repetirla | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t06/src/Parsear.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses referencias a métodos: escribir la operación sin repetirla por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: referencias a métodos: escribir la operación sin repetirla funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Referencias a métodos: escribir la operación sin repetirla existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve referencias a métodos: escribir la operación sin repetirla en tu contexto?
+2. ¿Cómo sabrías que referencias a métodos: escribir la operación sin repetirla no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar referencias a métodos: escribir la operación sin repetirla?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.function.Function;
 
@@ -822,31 +696,10 @@ public class Parsear {
 }
 ```
 
-Ejecuta `cd java-funcional-t06 && java src/Parsear.java`.
-
 ```bash
 cd java-funcional-t06
 java src/Parsear.java
 ```
-
-**Resultado esperado:** `42`.
-
-**Fallo deliberado:** reemplaza por `Integer::sum`. **Error esperado:** el método requiere dos argumentos. **Diagnóstico:** `Function<String,Integer>` entrega un solo argumento; `parseInt` coincide.
-
-**3. Entiende** `Tipo::metodoEstatico` no requiere crear primero un objeto.
-
-**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
-
-**4. Cierra**
-
-Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 6.2: Referencia ligada a un objeto · 10 min
-**1. Contexto** antepone el prefijo que ya eligió la sesión.
-
-**2. Hazlo tú** crea `java-funcional-t06/src/Prefijo.java`:
 
 ```java
 import java.util.function.UnaryOperator;
@@ -860,31 +713,10 @@ public class Prefijo {
 }
 ```
 
-Ejecuta `cd java-funcional-t06 && java src/Prefijo.java`.
-
 ```bash
 cd java-funcional-t06
 java src/Prefijo.java
 ```
-
-**Resultado esperado:** `RT-42`.
-
-**Fallo deliberado:** cambia `prefijo::concat` por `String::concat`. **Error esperado:** los parámetros no coinciden con `UnaryOperator<String>`. **Diagnóstico:** una referencia ligada ya conserva el objeto `prefijo`.
-
-**3. Entiende** `objeto::metodo` usa el objeto indicado al crear la referencia.
-
-**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
-
-**4. Cierra**
-
-Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 6.3: Referencia no ligada y constructor · 10 min
-**1. Contexto** limpia una guía y después crea un objeto `Envio` con el texto.
-
-**2. Hazlo tú** crea `java-funcional-t06/src/CrearEnvio.java`:
 
 ```java
 import java.util.function.Function;
@@ -904,50 +736,74 @@ public class CrearEnvio {
 }
 ```
 
-Ejecuta `cd java-funcional-t06 && java src/CrearEnvio.java`.
-
 ```bash
 cd java-funcional-t06
 java src/CrearEnvio.java
 ```
 
-**Resultado esperado:** `RT-7`, `Envio[guia=RT-7]`, `Envio[guia=SIN-GUIA]`.
-
-**Fallo deliberado:** cambia `Function<String, Envio> crear = Envio::new` por `Supplier<Envio> crear = Envio::new`. **Error esperado:** el constructor necesita un `String`. **Diagnóstico:** usa `Function` cuando el constructor recibe el dato, `Supplier` cuando no recibe ninguno.
-
-**3. Entiende** `Tipo::metodoDeInstancia` puede usar el primer argumento como receptor; `Tipo::new` apunta al constructor compatible.
-
-**Diagnóstico:** compara los parámetros y el resultado del método con los tipos que exige la interfaz funcional.
-
-**4. Cierra**
-
-Guarda la salida y explica si la referencia necesitó un objeto, una clase o creó una instancia.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** muestra las cuatro formas; asocia cada forma con su sintaxis; ejecuta la conversión de guía; diagnostica la referencia de constructor incompatible. **Proyecto integrador (RutaFlow):** normaliza y construye una guía con referencias legibles. **Límite:** usa una referencia a método solo cuando ya existe un método o constructor que calza exactamente con la firma de la interfaz funcional; si necesitas transformar un argumento antes de llamarlo, escribe una lambda explícita en vez de forzar una referencia. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+</details>
 
 ### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás convertir un resultado que puede faltar en `Optional`, transformarlo y decidir qué hacer con la ausencia. **Prerrequisito:** Java M20 Tema 2; no uses `Optional` como campo de entidad ni como reemplazo de una lista. Crea su carpeta: `mkdir -p java-funcional-t07/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás convertir un resultado que puede faltar en Optional, transformarlo y decidir qué hacer con la ausencia. Prerrequisito: Java M20 Tema 2; no uses Optional como campo de entidad ni como reemplazo de una lista. Crea su carpeta: mkdir -p java-funcional-t07/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás convertir un resultado que puede faltar en Optional, transformarlo y decidir qué hacer con la ausencia.**
 
-**¿Por qué es importante?** Buscar una guía puede devolver un envío o no encontrar nada. El programa debe mostrar esa diferencia en vez de fallar después con un `NullPointerException`.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en optional: buscar un envío que puede no existir como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`Optional` es una cajita que puede tener un valor o estar vacía. `map` transforma el valor si está; `filter` lo conserva si cumple una condición; `orElseGet` calcula una alternativa solo cuando falta.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que optional: buscar un envío que puede no existir resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Optional: buscar un envío que puede no existir se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 7.1: Representar una búsqueda vacía · 10 min
-**1. Contexto** el diccionario puede no tener la guía solicitada.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Optional: buscar un envío que puede no existir | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t07/src/Buscar.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses optional: buscar un envío que puede no existir por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: optional: buscar un envío que puede no existir funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Optional: buscar un envío que puede no existir existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve optional: buscar un envío que puede no existir en tu contexto?
+2. ¿Cómo sabrías que optional: buscar un envío que puede no existir no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar optional: buscar un envío que puede no existir?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.Map;
 import java.util.Optional;
@@ -962,31 +818,10 @@ public class Buscar {
 }
 ```
 
-Ejecuta `cd java-funcional-t07 && java src/Buscar.java`.
-
 ```bash
 cd java-funcional-t07
 java src/Buscar.java
 ```
-
-**Resultado esperado:** `false` y `No existe`.
-
-**Fallo deliberado:** cambia `orElse` por `get()`. **Error esperado:** `NoSuchElementException: No value present`. **Diagnóstico:** `get()` exige un valor, pero esta búsqueda está vacía.
-
-**3. Entiende** pregunta por la ausencia o entrega una alternativa antes de usar el valor.
-
-**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
-
-**4. Cierra**
-
-Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 7.2: Transformar solo cuando hay valor · 10 min
-**1. Contexto** convierte el estado guardado a minúsculas, pero solo si existe.
-
-**2. Hazlo tú** crea `java-funcional-t07/src/Transformar.java`:
 
 ```java
 import java.util.Optional;
@@ -1002,31 +837,10 @@ public class Transformar {
 }
 ```
 
-Ejecuta `cd java-funcional-t07 && java src/Transformar.java`.
-
 ```bash
 cd java-funcional-t07
 java src/Transformar.java
 ```
-
-**Resultado esperado:** `en_ruta`.
-
-**Fallo deliberado:** cambia `contains("ruta")` por `contains("pago")`. **Resultado del fallo:** `sin estado`. **Diagnóstico:** el valor existe, pero `filter` lo descarta cuando la condición no coincide.
-
-**3. Entiende** las operaciones siguen dentro de la cajita hasta pedir el resultado final.
-
-**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
-
-**4. Cierra**
-
-Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 7.3: Fallar con un mensaje útil · 10 min
-**1. Contexto** una factura sí necesita existir; si falta, informa qué guía se buscó.
-
-**2. Hazlo tú** crea `java-funcional-t07/src/Exigir.java`:
 
 ```java
 import java.util.Map;
@@ -1041,50 +855,74 @@ public class Exigir {
 }
 ```
 
-Ejecuta `cd java-funcional-t07 && java src/Exigir.java`.
-
 ```bash
 cd java-funcional-t07
 java src/Exigir.java
 ```
 
-**Resultado esperado:** el programa termina con `IllegalArgumentException: Guía RT-404 no existe`.
-
-**Fallo deliberado:** quita el mensaje y usa `orElseThrow()`. **Resultado del fallo:** la excepción ya no dice qué guía faltó. **Diagnóstico:** incluye contexto que ayude a encontrar el dato incorrecto.
-
-**3. Entiende** `Optional` sirve para resultados que pueden faltar; en un campo obligatorio, valida y reporta el problema en el límite de entrada.
-
-**Diagnóstico:** verifica si el dato existe antes de transformarlo o de pedir un valor obligatorio; usa una alternativa o un error con contexto.
-
-**4. Cierra**
-
-Guarda los casos con valor y vacío y explica qué decisión tomó el programa en cada uno.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** demuestra una búsqueda vacía; transforma un valor presente; muestra el error útil de una búsqueda obligatoria; explica por qué `Optional` no reemplaza una lista. **Proyecto integrador (RutaFlow):** busca el estado de una guía e informa cuál referencia falta. Fuente: [Optional de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html).
+</details>
 
 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás transformar una lista de entregas con `filter`, `map`, `flatMap` y `sorted`. **Prerrequisito:** Java M20 Tema 4. Crea su carpeta: `mkdir -p java-funcional-t08/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás transformar una lista de entregas con filter, map, flatMap y sorted. Prerrequisito: Java M20 Tema 4. Crea su carpeta: mkdir -p java-funcional-t08/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás transformar una lista de entregas con filter, map, flatMap y sorted.**
 
-**¿Por qué es importante?** Un reporte muestra las guías pesadas y las ciudades que visitará cada ruta. Las operaciones intermedias permiten describir esos cambios y dejan la lista original quieta.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en streams intermedios: filtrar, transformar, aplanar y ordenar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`filter` conserva elementos; `map` convierte cada elemento en uno; `flatMap` convierte uno en varios y aplana el resultado; `sorted` pone los valores en orden. Son estaciones antes del resultado.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que streams intermedios: filtrar, transformar, aplanar y ordenar resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streams intermedios: filtrar, transformar, aplanar y ordenar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 8.1: Filtrar y convertir · 10 min
-**1. Contexto** la pantalla muestra solo envíos de más de 20 kg y sus guías.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streams intermedios: filtrar, transformar, aplanar y ordenar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t08/src/Pesados.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses streams intermedios: filtrar, transformar, aplanar y ordenar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streams intermedios: filtrar, transformar, aplanar y ordenar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Streams intermedios: filtrar, transformar, aplanar y ordenar existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streams intermedios: filtrar, transformar, aplanar y ordenar en tu contexto?
+2. ¿Cómo sabrías que streams intermedios: filtrar, transformar, aplanar y ordenar no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streams intermedios: filtrar, transformar, aplanar y ordenar?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.List;
 
@@ -1100,29 +938,10 @@ public class Pesados {
 }
 ```
 
-Ejecuta `cd java-funcional-t08 && java src/Pesados.java`.
-
 ```bash
 cd java-funcional-t08
 java src/Pesados.java
 ```
-
-**Resultado esperado:** `[RT-2]`.
-
-**Fallo deliberado:** cambia `.filter` por `.map`. **Error esperado:** el compilador dice que el resultado de `map` no es `boolean`. **Diagnóstico:** `filter` recibe una condición; `map` necesita producir un valor.
-
-**3. Entiende** primero decides cuáles pasan y luego eliges qué dato mostrar.
-
-**4. Cierra**
-
-Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 8.2: Aplanar varias paradas · 10 min
-**1. Contexto** cada ruta tiene varias ciudades y el reporte necesita una sola lista.
-
-**2. Hazlo tú** crea `java-funcional-t08/src/Paradas.java`:
 
 ```java
 import java.util.List;
@@ -1139,29 +958,10 @@ public class Paradas {
 }
 ```
 
-Ejecuta `cd java-funcional-t08 && java src/Paradas.java`.
-
 ```bash
 cd java-funcional-t08
 java src/Paradas.java
 ```
-
-**Resultado esperado:** `[Cali, Pasto, Bogotá]`.
-
-**Fallo deliberado:** cambia `flatMap` por `map`. **Resultado del fallo:** imprime dos listas internas, no una lista de ciudades. **Diagnóstico:** `map` conserva un resultado por ruta; `flatMap` combina las listas.
-
-**3. Entiende** `flatMap` abre cada lista pequeña y las reúne en una sola secuencia.
-
-**4. Cierra**
-
-Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 8.3: Ordenar un reporte · 10 min
-**1. Contexto** los paquetes se agrupan en la pantalla por peso ascendente.
-
-**2. Hazlo tú** crea `java-funcional-t08/src/Ordenar.java`:
 
 ```java
 import java.util.List;
@@ -1176,48 +976,74 @@ public class Ordenar {
 }
 ```
 
-Ejecuta `cd java-funcional-t08 && java src/Ordenar.java`.
-
 ```bash
 cd java-funcional-t08
 java src/Ordenar.java
 ```
 
-**Resultado esperado:** `[Envio[guia=RT-1, kg=8], Envio[guia=RT-2, kg=20], Envio[guia=RT-3, kg=32]]`.
-
-**Fallo deliberado:** elimina `.sorted(java.util.Comparator.comparingInt(Envio::kg))`. **Error esperado:** el resultado deja de estar ordenado; este código no lanza excepción porque `Stream.toList()` conserva el orden de encuentro. **Diagnóstico:** `sorted` necesita una regla de comparación para cambiar el orden; elimina también la salida esperada anterior y comprueba que el orden original se conserva.
-
-**3. Entiende** ordena con una regla que tenga sentido para el reporte; no dependas del orden incidental de una lista.
-
-**4. Cierra**
-
-Guarda la colección inicial, la salida final y el orden de operaciones que la produjo.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** filtra por peso; transforma a guía; aplana paradas; ordena una lista con criterio explícito. **Proyecto integrador (RutaFlow):** genera el resumen de paquetes pesados y paradas de la ruta. **Límite:** encadena operaciones intermedias solo mientras cada paso siga siendo legible; si la cadena supera cuatro o cinco operadores o mezcla responsabilidades distintas (filtrar, transformar y agrupar a la vez), divídela en variables intermedias con nombre en vez de un único stream ilegible. Fuente: [java.util.stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
+</details>
 
 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar distinguirás entre `findFirst`, `forEach`, `reduce` y operaciones que terminan el recorrido. **Prerrequisito:** Java M20 Temas 4 y 8. Crea su carpeta: `mkdir -p java-funcional-t09/src`.
+#### ► DE QUÉ TRATA
+Al finalizar distinguirás entre findFirst, forEach, reduce y operaciones que terminan el recorrido. Prerrequisito: Java M20 Temas 4 y 8. Crea su carpeta: mkdir -p java-funcional-t09/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar distinguirás entre findFirst, forEach, reduce y operaciones que terminan el recorrido.**
 
-**¿Por qué es importante?** El sistema busca una guía urgente, suma el peso de una ruta y escribe las etiquetas. Cada pedido necesita una acción terminal distinta.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en streams terminales: encontrar, contar y combinar resultados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una operación terminal hace que el Stream recorra los datos. Algunas devuelven un resultado; otras hacen una acción. Después de esa llamada no puedes volver a usar ese mismo Stream.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que streams terminales: encontrar, contar y combinar resultados resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streams terminales: encontrar, contar y combinar resultados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 9.1: Encontrar el primer resultado · 10 min
-**1. Contexto** busca el primer paquete que supera el límite.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streams terminales: encontrar, contar y combinar resultados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t09/src/Encontrar.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses streams terminales: encontrar, contar y combinar resultados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streams terminales: encontrar, contar y combinar resultados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Streams terminales: encontrar, contar y combinar resultados existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streams terminales: encontrar, contar y combinar resultados en tu contexto?
+2. ¿Cómo sabrías que streams terminales: encontrar, contar y combinar resultados no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streams terminales: encontrar, contar y combinar resultados?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.List;
 
@@ -1231,29 +1057,10 @@ public class Encontrar {
 }
 ```
 
-Ejecuta `cd java-funcional-t09 && java src/Encontrar.java`.
-
 ```bash
 cd java-funcional-t09
 java src/Encontrar.java
 ```
-
-**Resultado esperado:** `RT-2`.
-
-**Fallo deliberado:** cambia el límite a 50. **Resultado del fallo:** `ninguno`. **Diagnóstico:** `findFirst` devuelve vacío si ningún elemento cumple.
-
-**3. Entiende** `findFirst` puede parar cuando encuentra el primer dato que sirve.
-
-**4. Cierra**
-
-Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 9.2: Sumar con reduce · 10 min
-**1. Contexto** calcula el total de kilos que van en el camión.
-
-**2. Hazlo tú** crea `java-funcional-t09/src/Sumar.java`:
 
 ```java
 import java.util.List;
@@ -1266,29 +1073,10 @@ public class Sumar {
 }
 ```
 
-Ejecuta `cd java-funcional-t09 && java src/Sumar.java`.
-
 ```bash
 cd java-funcional-t09
 java src/Sumar.java
 ```
-
-**Resultado esperado:** `25`.
-
-**Fallo deliberado:** elimina el `0` inicial. **Resultado del fallo:** Java devuelve `Optional<Integer>`, por lo que no puedes guardarlo directamente en `int`. **Diagnóstico:** sin valor inicial, la lista podría estar vacía.
-
-**3. Entiende** el valor inicial es el resultado para una lista vacía y el punto desde el cual se combinan los demás números.
-
-**4. Cierra**
-
-Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 9.3: Ejecutar una acción · 10 min
-**1. Contexto** imprime cada guía de un lote.
-
-**2. Hazlo tú** crea `java-funcional-t09/src/Imprimir.java`:
 
 ```java
 import java.util.List;
@@ -1300,48 +1088,74 @@ public class Imprimir {
 }
 ```
 
-Ejecuta `cd java-funcional-t09 && java src/Imprimir.java`.
-
 ```bash
 cd java-funcional-t09
 java src/Imprimir.java
 ```
 
-**Resultado esperado:** tres guías en tres líneas, en el orden indicado.
-
-**Fallo deliberado:** cambia a `parallelStream().forEach(...)`. **Resultado del fallo:** el orden puede cambiar. **Diagnóstico:** si necesitas conservar el orden, usa `forEachOrdered` o un bucle normal.
-
-**3. Entiende** `forEach` produce una acción; no lo uses para construir una lista que `collect` ya puede devolver.
-
-**4. Cierra**
-
-Guarda el resultado terminal y explica si produjo un valor, un conteo, una combinación o un efecto.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** encuentra el primer envío; suma los pesos; imprime el lote; explica por qué cada terminal consume el Stream. **Proyecto integrador (RutaFlow):** busca guías urgentes y suma la carga del vehículo. Fuente: [Stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html).
+</details>
 
 ### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás reunir resultados con `toList`, `toMap`, `groupingBy` y `joining`. **Prerrequisito:** Java M20 Tema 9. Crea su carpeta: `mkdir -p java-funcional-t10/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás reunir resultados con toList, toMap, groupingBy y joining. Prerrequisito: Java M20 Tema 9. Crea su carpeta: mkdir -p java-funcional-t10/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás reunir resultados con toList, toMap, groupingBy y joining.**
 
-**¿Por qué es importante?** El reporte necesita una lista de guías, agrupar por ciudad y mostrar nombres en una línea. `Collectors` convierte el flujo en el formato que la pantalla necesita.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en collectors: formar listas, mapas, grupos y texto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Un collector junta resultados mientras el Stream recorre datos. Para crear un mapa, define qué hacer si dos elementos tienen la misma llave; no dejes que el primer duplicado sorprenda al alumno.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que collectors: formar listas, mapas, grupos y texto resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Collectors: formar listas, mapas, grupos y texto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 10.1: Crear lista y mapa · 10 min
-**1. Contexto** exporta las guías y su ciudad de destino.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Collectors: formar listas, mapas, grupos y texto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t10/src/Mapa.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses collectors: formar listas, mapas, grupos y texto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: collectors: formar listas, mapas, grupos y texto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Collectors: formar listas, mapas, grupos y texto existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve collectors: formar listas, mapas, grupos y texto en tu contexto?
+2. ¿Cómo sabrías que collectors: formar listas, mapas, grupos y texto no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar collectors: formar listas, mapas, grupos y texto?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1358,29 +1172,10 @@ public class Mapa {
 }
 ```
 
-Ejecuta `cd java-funcional-t10 && java src/Mapa.java`.
-
 ```bash
 cd java-funcional-t10
 java src/Mapa.java
 ```
-
-**Resultado esperado:** `[RT-1, RT-2]` y `{RT-1=Cali, RT-2=Pasto}`.
-
-**Fallo deliberado:** cambia la primera guía a `RT-2`. **Error esperado:** `IllegalStateException: Duplicate key`. **Diagnóstico:** `toMap` exige llaves únicas o una regla para resolver choques.
-
-**3. Entiende** una lista admite repetidos; un mapa necesita una llave única o una política explícita.
-
-**4. Cierra**
-
-Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 10.2: Agrupar por ciudad · 10 min
-**1. Contexto** calcula cuántos paquetes van a cada ciudad.
-
-**2. Hazlo tú** crea `java-funcional-t10/src/Agrupar.java`:
 
 ```java
 import java.util.List;
@@ -1396,29 +1191,10 @@ public class Agrupar {
 }
 ```
 
-Ejecuta `cd java-funcional-t10 && java src/Agrupar.java`.
-
 ```bash
 cd java-funcional-t10
 java src/Agrupar.java
 ```
-
-**Resultado esperado:** `{Cali=2, Pasto=1}`.
-
-**Fallo deliberado:** usa `Collectors.toMap(Envio::ciudad, Envio::guia)` sin regla de duplicados. **Error esperado:** `Duplicate key Cali`. **Diagnóstico:** varias guías pueden compartir la ciudad; agrupa una colección por llave.
-
-**3. Entiende** `groupingBy` guarda todos los resultados que pertenecen a la misma categoría.
-
-**4. Cierra**
-
-Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 10.3: Unir resultados en texto · 10 min
-**1. Contexto** imprime las ciudades en un resumen que pueda leerse en pantalla.
-
-**2. Hazlo tú** crea `java-funcional-t10/src/Unir.java`:
 
 ```java
 import java.util.List;
@@ -1433,48 +1209,74 @@ public class Unir {
 }
 ```
 
-Ejecuta `cd java-funcional-t10 && java src/Unir.java`.
-
 ```bash
 cd java-funcional-t10
 java src/Unir.java
 ```
 
-**Resultado esperado:** `Ruta: Cali -> Pasto -> Bogotá`.
-
-**Fallo deliberado:** elimina el delimitador. **Resultado del fallo:** los nombres quedan pegados. **Diagnóstico:** `joining` necesita un separador que haga visible el límite entre elementos.
-
-**3. Entiende** el collector transforma muchos textos en una sola cadena.
-
-**4. Cierra**
-
-Guarda la estructura final y anota qué datos se usaron como elemento, clave o grupo.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** crea una lista; crea un mapa sin duplicados; agrupa por ciudad; une textos con separador. **Proyecto integrador (RutaFlow):** produce un resumen de destinos por lote. Fuente: [Collectors de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Collectors.html).
+</details>
 
 ### Tema 11: Streams paralelos: comparar antes de acelerarlos · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar compararás el mismo cálculo secuencial y paralelo, y elegirás una operación que no dependa de un orden compartido. **Prerrequisito:** Java M20 Temas 9–10. Crea su carpeta: `mkdir -p java-funcional-t11/src`.
+#### ► DE QUÉ TRATA
+Al finalizar compararás el mismo cálculo secuencial y paralelo, y elegirás una operación que no dependa de un orden compartido. Prerrequisito: Java M20 Temas 9–10. Crea su carpeta: mkdir -p java-funcional-t11/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar compararás el mismo cálculo secuencial y paralelo, y elegirás una operación que no dependa de un orden compartido.**
 
-**¿Por qué es importante?** Un informe grande puede repartirse entre procesadores, pero dividir y reunir resultados también cuesta. Si el cálculo es pequeño, el trabajo extra puede tardar más que hacerlo en orden.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en streams paralelos: comparar antes de acelerarlos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`parallelStream` puede procesar partes en paralelo. Para obtener un resultado correcto, la función no debe alterar datos compartidos y la combinación debe funcionar con cualquier agrupación.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que streams paralelos: comparar antes de acelerarlos resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Streams paralelos: comparar antes de acelerarlos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 11.1: Comparar resultados · 10 min
-**1. Contexto** suma los kilos de 100 000 envíos.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Streams paralelos: comparar antes de acelerarlos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t11/src/Comparar.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses streams paralelos: comparar antes de acelerarlos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: streams paralelos: comparar antes de acelerarlos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Streams paralelos: comparar antes de acelerarlos existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve streams paralelos: comparar antes de acelerarlos en tu contexto?
+2. ¿Cómo sabrías que streams paralelos: comparar antes de acelerarlos no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar streams paralelos: comparar antes de acelerarlos?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.stream.LongStream;
 
@@ -1488,29 +1290,10 @@ public class Comparar {
 }
 ```
 
-Ejecuta `cd java-funcional-t11 && java src/Comparar.java`.
-
 ```bash
 cd java-funcional-t11
 java src/Comparar.java
 ```
-
-**Resultado esperado:** ambos muestran `5000050000`.
-
-**Fallo deliberado:** cambia la suma por restas en una combinación paralela. **Resultado del fallo:** el resultado deja de ser una suma estable. **Diagnóstico:** la operación de combinación debe tener el mismo sentido cuando Java junta grupos distintos.
-
-**3. Entiende** primero comprueba que ambas versiones dan la misma respuesta; medir velocidad viene después.
-
-**4. Cierra**
-
-Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 11.2: Mantener el orden de salida · 10 min
-**1. Contexto** una etiqueta se imprime siguiendo el número de guía.
-
-**2. Hazlo tú** crea `java-funcional-t11/src/OrdenParalelo.java`:
 
 ```java
 import java.util.List;
@@ -1522,29 +1305,10 @@ public class OrdenParalelo {
 }
 ```
 
-Ejecuta `cd java-funcional-t11 && java src/OrdenParalelo.java`.
-
 ```bash
 cd java-funcional-t11
 java src/OrdenParalelo.java
 ```
-
-**Resultado esperado:** tres guías en el orden `RT-1`, `RT-2`, `RT-3`.
-
-**Fallo deliberado:** cambia a `forEach`. **Resultado del fallo:** el orden deja de estar garantizado. **Diagnóstico:** un stream paralelo no promete el orden de `forEach`.
-
-**3. Entiende** conservar el orden puede reducir la ventaja de paralelizar; si el orden importa, decláralo.
-
-**4. Cierra**
-
-Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 11.3: Medir sin prometer un ganador · 10 min
-**1. Contexto** registra cuánto tarda cada forma en tu equipo.
-
-**2. Hazlo tú** crea `java-funcional-t11/src/Medir.java`:
 
 ```java
 import java.util.stream.LongStream;
@@ -1563,48 +1327,74 @@ public class Medir {
 }
 ```
 
-Ejecuta `cd java-funcional-t11 && java src/Medir.java` varias veces.
-
 ```bash
 cd java-funcional-t11
 java src/Medir.java
 ```
 
-**Resultado esperado:** `iguales=true` y dos tiempos medidos. No esperes el mismo tiempo en cada corrida.
-
-**Fallo deliberado:** mide una lista de tres elementos y concluye que esa prueba representa producción. **Diagnóstico:** una muestra pequeña y una sola corrida no describen el costo real de la aplicación.
-
-**3. Entiende** compara valores de salida primero; usa datos y repeticiones representativos antes de cambiar el sistema.
-
-**4. Cierra**
-
-Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** iguala resultados; conserva orden con `forEachOrdered`; registra tiempos repetidos; explica por qué no se promete que paralelo sea más rápido. **Proyecto integrador (RutaFlow):** evalúa paralelismo solo en un cálculo grande sin efectos externos. **Límite:** no conviene usar `parallelStream()` en colecciones pequeñas, con efectos secundarios (I/O, impresión, acceso a estado compartido) o cuando no mediste antes un cuello de botella real; el paralelismo solo gana frente al stream secuencial en cómputo puro y grande, y tiene costo de coordinación que puede hacerlo más lento. Fuente: [Parallelism de Streams, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
+</details>
 
 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar separarás cálculos repetibles de acciones como imprimir o escribir a un archivo. **Prerrequisito:** Java M20 Temas 8–11. Crea su carpeta: `mkdir -p java-funcional-t12/src`.
+#### ► DE QUÉ TRATA
+Al finalizar separarás cálculos repetibles de acciones como imprimir o escribir a un archivo. Prerrequisito: Java M20 Temas 8–11. Crea su carpeta: mkdir -p java-funcional-t12/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar separarás cálculos repetibles de acciones como imprimir o escribir a un archivo.**
 
-**¿Por qué es importante?** Si una función cambia una lista que vive afuera, el resultado puede depender de cuántas veces corrió. Separar el cálculo del guardado ayuda a repetir una prueba sin mandar mensajes reales.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en pureza y efectos: calcular separado de guardar o imprimir como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-Una función pura devuelve el mismo resultado para los mismos datos y no cambia cosas externas. Imprimir, guardar o llamar una API son efectos: hazlos en un paso visible.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que pureza y efectos: calcular separado de guardar o imprimir resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Pureza y efectos: calcular separado de guardar o imprimir se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 12.1: Calcular sin cambiar la entrada · 10 min
-**1. Contexto** redondea una tarifa sin modificar la lista original.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Pureza y efectos: calcular separado de guardar o imprimir | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t12/src/Calcular.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses pureza y efectos: calcular separado de guardar o imprimir por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: pureza y efectos: calcular separado de guardar o imprimir funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Pureza y efectos: calcular separado de guardar o imprimir existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve pureza y efectos: calcular separado de guardar o imprimir en tu contexto?
+2. ¿Cómo sabrías que pureza y efectos: calcular separado de guardar o imprimir no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar pureza y efectos: calcular separado de guardar o imprimir?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.List;
 
@@ -1618,29 +1408,10 @@ public class Calcular {
 }
 ```
 
-Ejecuta `cd java-funcional-t12 && java src/Calcular.java`.
-
 ```bash
 cd java-funcional-t12
 java src/Calcular.java
 ```
-
-**Resultado esperado:** `[7500, 15000, 30000]` y la lista original `[5, 10, 20]`.
-
-**Fallo deliberado:** reemplaza la lista con `new ArrayList` y cambia sus elementos dentro de un `forEach` paralelo. **Resultado del fallo:** las modificaciones no tienen un orden fiable. **Diagnóstico:** el cálculo comparte y altera un contenedor externo.
-
-**3. Entiende** `map` produce una lista nueva; no modifica el origen.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 12.2: Hacer visible el efecto · 10 min
-**1. Contexto** registra el costo calculado solo después de terminar el cálculo.
-
-**2. Hazlo tú** crea `java-funcional-t12/src/Registrar.java`:
 
 ```java
 import java.util.List;
@@ -1655,29 +1426,10 @@ public class Registrar {
 }
 ```
 
-Ejecuta `cd java-funcional-t12 && java src/Registrar.java`.
-
 ```bash
 cd java-funcional-t12
 java src/Registrar.java
 ```
-
-**Resultado esperado:** `costo=7500` y `costo=15000`.
-
-**Fallo deliberado:** mueve el `println` dentro de `map`. **Resultado del fallo:** `map` deja de expresar una transformación sencilla y retorna `null` si el lambda no devuelve un valor. **Diagnóstico:** `map` debe transformar; `Consumer` puede hacer el efecto al final.
-
-**3. Entiende** puedes probar `costos` sin invocar la acción de registrar.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 12.3: Repetir la misma regla · 10 min
-**1. Contexto** una regla decide si una ruta cobra recargo por peso.
-
-**2. Hazlo tú** crea `java-funcional-t12/src/ReglaPura.java`:
 
 ```java
 import java.util.function.Function;
@@ -1691,48 +1443,74 @@ public class ReglaPura {
 }
 ```
 
-Ejecuta `cd java-funcional-t12 && java src/ReglaPura.java`.
-
 ```bash
 cd java-funcional-t12
 java src/ReglaPura.java
 ```
 
-**Resultado esperado:** `5000` dos veces.
-
-**Fallo deliberado:** agrega una variable externa que se sume cada vez que corre la regla. **Resultado del fallo:** la segunda salida cambia aunque la entrada sea igual. **Diagnóstico:** el resultado ahora depende de un estado compartido.
-
-**3. Entiende** una regla sin cambios externos se vuelve fácil de repetir y comprobar.
-
-**4. Cierra**
-
-Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto externo.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** muestra que la lista de entrada no cambia; realiza el registro después del cálculo; repite una entrada y obtiene la misma salida; señala qué línea produce el efecto. **Proyecto integrador (RutaFlow):** separa el costo de envío del envío de notificaciones. **Límite:** mantén la lambda pura (sin leer ni escribir estado externo) mientras calcula; cuando el paso realmente necesite guardar, notificar o imprimir, sepáralo en una llamada aparte después del cálculo en vez de mezclar cómputo y efecto en la misma función. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+</details>
 
 ### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
 
-#### Paso 1 · Objetivo y preparación
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-Al finalizar podrás conectar un `Publisher` con un `Subscriber`, pedir datos mediante `Subscription.request` y cerrar el flujo. **Prerrequisito:** Java M20 Temas 1–12 y Java 9 o superior. Crea su carpeta: `mkdir -p java-funcional-t13/src`.
+#### ► DE QUÉ TRATA
+Al finalizar podrás conectar un Publisher con un Subscriber, pedir datos mediante Subscription.request y cerrar el flujo. Prerrequisito: Java M20 Temas 1–12 y Java 9 o superior. Crea su carpeta: mkdir -p java-funcional-t13/src.
 
-#### Paso 2 · Contexto y caso real
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás conectar un Publisher con un Subscriber, pedir datos mediante Subscription.request y cerrar el flujo.**
 
-**¿Por qué es importante?** Una ruta puede emitir muchas actualizaciones mientras la pantalla está ocupada. El consumidor puede pedir un elemento a la vez para no recibir más trabajo del que procesa.
+#### ► POR QUÉ EXISTE ESTO
+Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
-#### Paso 3 · Entiende
+#### ► LA ANALOGÍA
+Piensa en flow api: publicar datos con demanda y cierre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
+**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
-`Publisher` emite datos; `Subscriber` los recibe; `Subscription` permite pedir más o cancelar. La cantidad pedida limita cuánto envía el publicador antes de recibir otra solicitud.
+#### ► CÓMO FUNCIONA
+1. Identifica el problema que flow api: publicar datos con demanda y cierre resuelve.
+2. Observa sus componentes y relaciones.
+3. Aplica la opción más simple que funcione.
+4. Verifica el resultado y los límites.
 
-#### Paso 4 · Ejercicio 1
+#### ► LO QUE PUEDE SALIR MAL
+| Síntoma | Causa probable | Arreglo |
+|---|---|---|
+| Flow API: publicar datos con demanda y cierre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
+| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
+| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
 
-#### Subtema 13.1: Recibir datos de un publicador · 10 min
-**1. Contexto** imprime los estados que publica un envío.
+#### ► TRADE-OFFS
+| Opción | Cuándo usarla | Cuándo NO usarla |
+|---|---|---|
+| Usar Flow API: publicar datos con demanda y cierre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
+| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
+| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
-**2. Hazlo tú** crea `java-funcional-t13/src/Estados.java`:
+#### ► CUÁNDO NO USAR ESTO
+No uses flow api: publicar datos con demanda y cierre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
+#### ► DE VUELTA A LA ANALOGÍA
+Volviendo a la analogía: flow api: publicar datos con demanda y cierre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+
+#### ► LO QUE DEBES RECORDAR
+- Flow API: publicar datos con demanda y cierre existe para resolver un problema específico.
+- Mide antes de adoptar complejidad.
+- Conoce el caso donde NO usarlo.
+- Verifica con evidencia observable.
+
+#### ► PREGUNTAS PARA PENSAR
+1. ¿Qué problema concreto resuelve flow api: publicar datos con demanda y cierre en tu contexto?
+2. ¿Cómo sabrías que flow api: publicar datos con demanda y cierre no está funcionando bien?
+3. ¿Qué alternativa más simple considerarías antes de usar flow api: publicar datos con demanda y cierre?
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```java
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
@@ -1757,29 +1535,10 @@ public class Estados {
 }
 ```
 
-Ejecuta `cd java-funcional-t13 && java src/Estados.java`.
-
 ```bash
 cd java-funcional-t13
 java src/Estados.java
 ```
-
-**Resultado esperado:** `RECIBIDO`, `EN_RUTA`, `fin`, en ese orden.
-
-**Fallo deliberado:** omite `publisher.close()`. **Resultado del fallo:** el callback `onComplete` no llega antes del tiempo límite. **Diagnóstico:** el suscriptor no sabe que el productor terminó.
-
-**3. Entiende** el cierre también es una señal del flujo, no solo liberar un recurso.
-
-**4. Cierra**
-
-Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 13.2: Pedir un elemento por vez · 10 min
-**1. Contexto** el consumidor procesa cada actualización antes de pedir la siguiente.
-
-**2. Hazlo tú** crea `java-funcional-t13/src/Demanda.java`:
 
 ```java
 import java.util.concurrent.CountDownLatch;
@@ -1806,29 +1565,10 @@ public class Demanda {
 }
 ```
 
-Ejecuta `cd java-funcional-t13 && java src/Demanda.java`.
-
 ```bash
 cd java-funcional-t13
 java src/Demanda.java
 ```
-
-**Resultado esperado:** llegan `1`, `2` y luego `fin`; el suscriptor solicita el siguiente después de procesar cada uno.
-
-**Fallo deliberado:** elimina `subscription.request(1)` al final de `onNext`. **Resultado del fallo:** solo llega `1` y no se completa antes del límite de espera. **Diagnóstico:** se solicitó un solo elemento y no se pidió demanda nueva; restaura la solicitud al final de `onNext`.
-
-**3. Entiende** `request(1)` comunica cuántos elementos estás listo para procesar.
-
-**4. Cierra**
-
-Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 13.3: Cancelar una suscripción · 10 min
-**1. Contexto** una pantalla deja de observar el envío cuando el usuario la cierra.
-
-**2. Hazlo tú** crea `java-funcional-t13/src/Cancelar.java`:
 
 ```java
 import java.util.concurrent.CountDownLatch;
@@ -1855,52 +1595,9 @@ public class Cancelar {
 }
 ```
 
-Ejecuta `cd java-funcional-t13 && java src/Cancelar.java`.
-
 ```bash
 cd java-funcional-t13
 java src/Cancelar.java
 ```
 
-**Resultado esperado:** se procesa el primer estado; no aparece el segundo para ese suscriptor.
-
-**Fallo deliberado:** comenta `cancel()` y solicita `Long.MAX_VALUE`. **Resultado del fallo:** el suscriptor sigue recibiendo estados después de que la pantalla ya no los necesita. **Diagnóstico:** deja de pedir cuando se cancela el trabajo.
-
-**3. Entiende** cancelar detiene futuras entregas a ese suscriptor; no equivale a cerrar a todos los suscriptores.
-
-**4. Cierra**
-
-Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o se canceló el flujo.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** conecta publisher y subscriber; recibe estados en orden; procesa bajo demanda; cancela un suscriptor. **Proyecto integrador (RutaFlow):** adapta el ejemplo a cambios de estado visibles en una pantalla y conserva un límite de demanda. Fuente: [Flow de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) y [SubmissionPublisher](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/SubmissionPublisher.html).
-
-## Laboratorio práctico
-
-**Entregable:** el motor de reglas del proyecto integrador, compuesto con las cuatro interfaces funcionales y con un informe de envíos que no recorra la lista dos veces.
-
-**Criterio de aceptación (se ejecuta, no se opina):**
-
-1. `javac -d out src/*.java` termina con código 0.
-2. `java -cp out Formas` imprime exactamente `[log] Turno AM | ENV-2 -> Medellín`.
-3. `java -cp out Pereza` imprime el aviso de pereza **antes** de la línea `filtrado ENV-2`.
-4. Un correo con espacios se acepta solo si se normaliza antes de validar.
-5. El informe calcula total y conteo en una sola pasada; el código no contiene dos `stream()` sobre la misma lista para el mismo cálculo.
-
-**Checkpoint:** guarda este verificador junto a tus fuentes en tu carpeta de trabajo y ejecútalo antes de entregar:
-
-```bash
-cat > verificar.sh <<'SCRIPT'
-#!/usr/bin/env bash
-set -euo pipefail
-javac -d out src/*.java
-salida=$(java -cp out Formas)
-[ "$salida" = "[log] Turno AM | ENV-2 -> Medellín" ] || { echo "FALLA: Formas imprimió: $salida"; exit 1; }
-java -cp out Pereza | head -1 | grep -q "antes de la operación terminal" || { echo "FALLA: el pipeline no es perezoso"; exit 1; }
-echo "Checkpoint OK"
-SCRIPT
-bash verificar.sh
-```
-
-**Resultado esperado:** `Checkpoint OK`. Si falla, el mensaje dice qué criterio no se cumplió; no hay que adivinar.
+</details>
