@@ -5698,12 +5698,12 @@
     ],
     "2": [
       {
-        "title": "Java y Node.js lado a lado: sintaxis y ejecución",
-        "fragment": "java-y-node-js-lado-a-lado-sintaxis-y-ejecucion"
+        "title": "Sintaxis y ejecución",
+        "fragment": "tema-1-sintaxis-y-ejecucion"
       },
       {
-        "title": "Java y Node.js lado a lado: tipos, errores y concurrencia",
-        "fragment": "java-y-node-js-lado-a-lado-tipos-errores-y-concurrencia"
+        "title": "Tipos, errores y concurrencia",
+        "fragment": "tema-2-tipos-errores-y-concurrencia"
       }
     ],
     "20": [
