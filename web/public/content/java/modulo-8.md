@@ -19,17 +19,13 @@ Compilar a mano con `javac` sirve para aprender, pero un proyecto real necesita 
 
 Recibes dos proyectos Java: uno usa Maven, otro Gradle. Necesitas saber dónde están las dependencias, la versión de Java, el nombre del artefacto y cómo ejecutar tests.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Aspecto | Maven | Gradle |
-|---|---|---|
-| Archivo principal | `pom.xml` | `build.gradle.kts` |
-| Modelo | Declarativo, convención fuerte | DSL programable sobre tareas |
-| Dependencias | `<dependencies>` | `dependencies { ... }` |
-| Salida típica | `target/` | `build/` |
-| Wrapper | `mvnw` | `gradlew` |
+**Definición formal.** Un *build tool* automatiza la transformación de código fuente y recursos en artefactos verificables. Maven usa un modelo declarativo basado en POM (Project Object Model) y ciclo de vida. Gradle usa un grafo de tareas dirigido acíclico (DAG) configurado por DSL.
 
-Maven favorece convención y uniformidad; Gradle favorece flexibilidad y rendimiento. Ambos son herramientas maduras.
+**Contrato / invariantes / reglas.** Maven favorece convención sobre configuración; la estructura estándar (`src/main/java`, `src/test/java`) activa comportamientos por defecto. Gradle evalúa scripts y construye un grafo de tareas; las dependencias de tareas determinan el orden. Ambos resuelven dependencias desde repositorios, soportan wrappers (`mvnw`/`gradlew`) y producen artefactos reproducibles si la configuración está fijada.
+
+**Modelo mental.** Maven es una línea de ensamblaje con estaciones predefinidas; Gradle es un plano de tareas donde declaras qué depende de qué.
 
 **Implementación desde cero**
 
@@ -100,20 +96,13 @@ Crea un proyecto mínimo, agrega JUnit y ejecuta `test` con wrapper. El build de
 
 Un colega dice “corre `mvn package`” y otro “corre `./gradlew build`”. Quieres saber qué etapas se ejecutan y por qué una dependencia está en `test` y no en producción.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Maven tiene ciclos de vida por fases: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Ejecutar una fase ejecuta las anteriores.
+**Definición formal.** El *ciclo de vida* en Maven es una secuencia de fases; cada fase puede tener goals vinculados. En Gradle, las *tareas* forman un DAG; ejecutar una tarea ejecuta sus dependencias. Los *scopes/configurations* definen en qué classpath participa una dependencia.
 
-Gradle tiene tareas y grafo de dependencias entre tareas: `build` depende de `check`, `check` depende de `test`, etc.
+**Contrato / invariantes / reglas.** En Maven, invocar una fase ejecuta las fases previas del mismo ciclo. En Gradle, la ejecución la determina el grafo de dependencias de tareas. Las dependencias de test no deben filtrarse a runtime de producción. La resolución transitiva puede traer conflictos de versión; se deben inspeccionar con `dependency:tree`/`dependencies`.
 
-Scopes/configurations:
-
-| Maven | Gradle | Uso |
-|---|---|---|
-| `compile` | `implementation` | Código de producción |
-| `test` | `testImplementation` | Solo tests |
-| `runtime` | `runtimeOnly` | Necesario al ejecutar, no al compilar |
-| `provided` | `compileOnly` | Lo provee el entorno |
+**Modelo mental.** Scope/configuration es la etiqueta de equipaje: indica si viaja en cabina, bodega o solo en pruebas.
 
 **Implementación desde cero**
 
@@ -174,18 +163,13 @@ Ejecuta `mvn test` o `./gradlew test` y confirma que solo se ejecutan pruebas, n
 
 Tu aplicación crece: dominio, API y persistencia empiezan a mezclarse. Quieres separar módulos con límites claros y builds reutilizables.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un multi-módulo divide un proyecto en artefactos/módulos con dependencias explícitas.
+**Definición formal.** Un *proyecto multi-módulo* es un agregado de módulos con builds independientes pero coordinados. En Maven, un POM padre agrega módulos; en Gradle, `settings.gradle.kts` incluye subproyectos.
 
-Usa multi-módulo cuando:
+**Contrato / invariantes / reglas.** Los módulos deben tener dependencias acíclicas. Los contratos entre módulos deben ser explícitos. La versionado/configuración puede centralizarse (BOM, dependencyManagement, plataformas Gradle). Modularizar prematuramente aumenta complejidad sin beneficio.
 
-- hay límites claros entre componentes;
-- equipos trabajan en partes distintas;
-- quieres reutilizar módulos;
-- el build/ownership se beneficia.
-
-Evítalo al inicio si solo agrega complejidad.
+**Modelo mental.** Multi-módulo es dividir una casa en departamentos con contratos claros, no levantar muros al azar.
 
 **Implementación desde cero**
 
@@ -247,17 +231,13 @@ Crea dos módulos (`domain`, `api`) donde `api` depende de `domain` y verifica q
 
 En equipos reales te encontrarás ambos. Saber traducir mentalmente de uno a otro te evita quedarte bloqueado por la herramienta.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-No memorices comandos aislados; mapea intenciones:
+**Definición formal.** La equivalencia entre build tools no es sintáctica, sino funcional: ambas resuelven dependencias, compilan, prueban, empaquetan y publican. El mapeo correcto es por intención/resultado.
 
-| Intención | Maven | Gradle |
-|---|---|---|
-| Compilar | `mvn compile` | `./gradlew classes` |
-| Tests | `mvn test` | `./gradlew test` |
-| Empaquetar | `mvn package` | `./gradlew build` |
-| Limpiar | `mvn clean` | `./gradlew clean` |
-| Dependencias | `mvn dependency:tree` | `./gradlew dependencies` |
+**Contrato / invariantes / reglas.** Un mismo proyecto puede construirse con Maven o Gradle si las dependencias, versiones, layout y plugins/tareas equivalentes están bien definidos. El árbol de dependencias es la fuente para diagnosticar conflictos transitivos. Las opciones de depuración (`mvn -X`, `gradle --info/--scan`) deben usarse con criterio por volumen de salida.
+
+**Modelo mental.** Son dos idiomas distintos para describir el mismo proceso industrial.
 
 **Implementación desde cero**
 

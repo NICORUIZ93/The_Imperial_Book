@@ -19,19 +19,13 @@ El código que no se prueba se rompe en silencio. Las pruebas automatizadas no g
 
 Tienes una calculadora de descuentos. Quieres probar casos normales, bordes y errores sin ejecutar todo manualmente.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-JUnit Jupiter proporciona el modelo de pruebas moderno de JUnit. Conceptos clave:
+**Definición formal.** Una *prueba automatizada* es un programa que verifica un comportamiento esperado bajo condiciones controladas. JUnit Jupiter es el modelo de programación y extensión para escribir tests en JUnit 5/6. El *ciclo de vida* del test define cuándo se crean y destruyen fixtures.
 
-| Anotación | Uso |
-|---|---|
-| `@Test` | Método de prueba |
-| `@BeforeEach` | Se ejecuta antes de cada test |
-| `@AfterEach` | Se ejecuta después de cada test |
-| `@BeforeAll/@AfterAll` | Una vez por clase (método estático) |
-| `@DisplayName` | Nombre legible |
+**Contrato / invariantes / reglas.** Un test debe ser determinista, aislado y repetible. `@BeforeEach` crea estado fresco por prueba; `@BeforeAll` se ejecuta una vez por clase (normalmente estático). Las aserciones verifican invariantes del comportamiento observable. `assertThrows` verifica contrato de error. Un test que depende del orden o de estado compartido es frágil.
 
-Un buen test es: rápido, aislado, determinista y claro.
+**Modelo mental.** Cada test es un experimento de laboratorio con montaje limpio, acción y medición.
 
 **Implementación desde cero**
 
@@ -101,14 +95,13 @@ Rompe deliberadamente la lógica de `aplicar` y confirma que el test falla; lueg
 
 Tu servicio envía notificaciones usando un cliente externo. En tests no quieres enviar correos reales. Necesitas un doble de prueba que simule la dependencia.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Mockito crea mocks/stubs para dependencias. Un mock permite:
+**Definición formal.** Un *test double* es un objeto que reemplaza una dependencia real en pruebas. Un *mock* es un doble que puede verificar interacciones; un *stub* devuelve respuestas predefinidas. Mockito es un framework para crear y configurar estos dobles.
 
-- definir comportamiento (`when(...).thenReturn(...)`);
-- verificar interacciones (`verify(...)`).
+**Contrato / invariantes / reglas.** El objeto bajo prueba debe ser real; las dependencias externas/lentas/no deterministas son candidatas a mock. `when(...).thenReturn(...)` define comportamiento; `verify(...)` verifica interacciones observables relevantes. Sobre-verificar implementación vuelve el test frágil. La inyección por constructor facilita sustituir dependencias.
 
-Usa mocks en límites externos o dependencias costosas. No mockees todo: si mockeas el objeto bajo prueba, el test no sirve.
+**Modelo mental.** Un mock es un actor de reparto que sustituye a un sistema externo durante el ensayo.
 
 **Implementación desde cero**
 
@@ -133,9 +126,7 @@ class NotifierTest {
     void enviaEmail() {
         EmailClient email = mock(EmailClient.class);
         Notifier notifier = new Notifier(email);
-
         notifier.avisar("ada@example.com");
-
         verify(email).send("ada@example.com", "Hola");
     }
 
@@ -178,9 +169,13 @@ Cambia `notifier.avisar` para no enviar email y observa que `verify` falla.
 
 Quieres probar la misma regla con muchos valores. Copiar/pegar tests genera ruido y omite casos.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Los tests parametrizados ejecutan la misma aserción con distintos inputs. Cobertura mide qué líneas/ramas ejecutaron los tests, pero cobertura alta no equivale a buena calidad.
+**Definición formal.** Un *test parametrizado* ejecuta la misma lógica de verificación con múltiples conjuntos de datos. La *cobertura de código* es una métrica que indica qué líneas/ramas/condiciones fueron ejecutadas por las pruebas.
+
+**Contrato / invariantes / reglas.** La parametrización reduce duplicación y mejora cobertura de casos. La cobertura es necesaria pero no suficiente: se puede ejecutar una línea sin afirmar su comportamiento correcto. Se deben incluir casos borde, valores inválidos y equivalencias. Las métricas de cobertura deben usarse para encontrar huecos, no como meta aislada.
+
+**Modelo mental.** El mismo examen, con distintos cuestionarios; la cobertura solo dice qué páginas se abrieron, no si las respuestas estaban bien.
 
 **Implementación desde cero**
 
@@ -231,18 +226,13 @@ Agrega un caso borde más en `CsvSource`. Si el comportamiento cambia, el test d
 
 En vez de probar solo ejemplos, quieres verificar una regla: “revertir una lista dos veces devuelve la lista original” para muchas entradas generadas.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Property-based testing genera muchos inputs y verifica propiedades/invariantes. No reemplaza tests de ejemplo: los complementa.
+**Definición formal.** El *property-based testing* (PBT) verifica propiedades/invariantes que deben cumplirse para un dominio de entradas, generando casos automáticamente. Cuando falla, el framework intenta *shrinking* para encontrar un contraejemplo mínimo.
 
-Herramientas comunes en Java: jqwik, QuickTheories.
+**Contrato / invariantes / reglas.** Una propiedad debe ser más general que un ejemplo, pero más precisa que “no falla”. El generador debe producir entradas válidas dentro del dominio. Las propiedades deben ser deterministas y sin efectos externos no controlados. PBT complementa, no reemplaza, tests basados en ejemplos.
 
-Propiedad típica:
-
-- idempotencia;
-- inversa (`reverse(reverse(x)) == x`);
-- invariantes (`size` no cambia);
-- equivalencia con implementación de referencia.
+**Modelo mental.** En vez de probar 3 llaves, pruebas la regla “toda llave de esta forma abre esta cerradura” con muchas llaves generadas.
 
 **Implementación desde cero**
 

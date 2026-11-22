@@ -18,21 +18,13 @@ Cuando un programa falla en producción, `System.out.println` no alcanza: no tie
 
 Tu aplicación procesa guías. En desarrollo usabas `println`, pero en producción necesitas saber si un mensaje es información, advertencia o error, y poder activarlo por nivel sin recompilar.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-SLF4J es una fachada de logging: tu código depende de la API SLF4J. Logback (u otro backend) implementa el comportamiento real.
+**Definición formal.** SLF4J (Simple Logging Facade for Java) es una fachada (abstracción) de logging; Logback es una implementación de backend. Un *logger* emite eventos con nivel, mensaje, metadatos y opcionalmente una excepción.
 
-Niveles comunes:
+**Contrato / invariantes / reglas.** El código debe depender de la API de la fachada (`org.slf4j.Logger`) y no del backend concreto. Los niveles (`TRACE < DEBUG < INFO < WARN < ERROR`) filtran eventos según configuración. El placeholder `{}` delega el formateo al backend, evitando concatenación innecesaria cuando el nivel está deshabilitado. Registrar excepciones debe incluir el `Throwable` como último argumento para preservar stack trace. No se deben registrar secretos/PII sin política de redacción.
 
-| Nivel | Uso |
-|---|---|
-| `ERROR` | Fallo que requiere atención |
-| `WARN` | Situación anómala pero recuperable |
-| `INFO` | Eventos normales relevantes |
-| `DEBUG` | Detalle para diagnóstico |
-| `TRACE` | Detalle muy fino |
-
-Usa placeholders `{}` en vez de concatenar strings: evita construir mensajes innecesarios cuando el nivel está desactivado.
+**Modelo mental.** SLF4J es el tomacorriente estándar; Logback es el aparato conectado. Cambias el aparato sin cambiar la instalación.
 
 **Implementación desde cero**
 
@@ -94,15 +86,13 @@ Ejecuta con un backend SLF4J en classpath y verifica que el nivel INFO aparece y
 
 Dos solicitudes se procesan al mismo tiempo. En los logs ves “procesando guía”, pero no sabes a qué request pertenece cada línea. Necesitas un identificador de correlación.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-MDC (Mapped Diagnostic Context) es un mapa de contexto asociado al hilo actual. Puedes poner valores como `requestId` y hacer que el patrón de logging los imprima en cada línea.
+**Definición formal.** MDC (Mapped Diagnostic Context) es un mapa clave-valor asociado al contexto de ejecución (típicamente por hilo) que los appenders pueden incluir en cada evento de log.
 
-Reglas:
+**Contrato / invariantes / reglas.** Los valores en MDC son visibles para el hilo actual. En pools de hilos o ejecución asíncrona, el contexto debe limpiarse (`remove/clear`) en `finally` y propagarse explícitamente al cruzar límites de hilo. No almacenar objetos grandes o sensibles sin control. El patrón de layout debe incluir `%X{clave}` para emitirlo.
 
-- pon el valor al inicio del procesamiento;
-- límpialo en `finally`;
-- en virtual threads/tareas async, propaga el contexto explícitamente si cruza límites.
+**Modelo mental.** MDC es una etiqueta adhesiva que el hilo lleva puesta mientras procesa una solicitud; todos los logs que emite salen con esa etiqueta.
 
 **Implementación desde cero**
 
@@ -133,7 +123,7 @@ public class DemoMDC {
 
 - `MDC.put("requestId", requestId)` agrega contexto al hilo actual.
 - El layout de logging debe incluir `%X{requestId}` o equivalente.
-- `MDC.remove`/`clear` en `finally` evita fugas de contexto en pools de hilos.
+- `MDC.remove` en `finally` evita fugas de contexto en pools de hilos.
 - El contexto facilita correlacionar logs en sistemas concurrentes.
 
 **Ejecución y salida real**
@@ -165,18 +155,13 @@ Configura el patrón de logging para mostrar `requestId` y verifica que cada blo
 
 Un programa lanza `NullPointerException` solo con ciertos datos. Necesitas encontrar la causa raíz, no solo el síntoma.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Depurar es reducir incertidumbre: reproducir, observar, aislar, corregir, verificar.
+**Definición formal.** Un *stack trace* es la traza de marcos de llamada activos al momento de lanzar una excepción. La *depuración* es el proceso sistemático de reproducir, aislar, diagnosticar y corregir una falla, verificando la corrección con evidencia.
 
-Stack trace: léelo de arriba hacia abajo para el tipo de error, y busca la primera línea de **tu** código: suele ser el punto más cercano a la causa.
+**Contrato / invariantes / reglas.** La excepción reporta tipo, mensaje, stack trace y causa encadenada (`getCause`). El primer marco relevante del código propio suele indicar el punto de fallo; la causa raíz puede estar más abajo o en `Caused by`. Una corrección debe validarse con un caso que reproduzca el fallo y con regresiones. En producción, se prefiere logging estructurado sobre `printStackTrace`.
 
-Herramientas:
-
-- mensajes de excepción y causa (`getCause`);
-- breakpoints y step over/into;
-- logs con contexto;
-- pruebas pequeñas que reproduzcan el fallo.
+**Modelo mental.** El stack trace es la migaja de pan hacia atrás: te dice por qué camino llegó el programa hasta caerse.
 
 **Implementación desde cero**
 
