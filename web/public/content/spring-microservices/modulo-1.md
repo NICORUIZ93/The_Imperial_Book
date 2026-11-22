@@ -46,6 +46,8 @@ javac Mvc.java
 java Mvc
 ```
 
+**Contrato / internals.** `DispatcherServlet` enruta a handler, aplica binding/validación y convierte respuesta con `HttpMessageConverter`. Controller orquesta HTTP; servicio ejecuta caso de uso; repositorio persiste.
+
 **Caso de uso real.** `@PostMapping` con `@Valid @RequestBody`.
 
 **Error común.** Confiar en validación del cliente.
@@ -88,6 +90,8 @@ public class Dto {
 javac Dto.java
 java Dto
 ```
+
+**Contrato / internals.** DTO separa contrato HTTP de entidad persistida. Jackson serializa/deserializa por record/constructor/getters; Bean Validation ejecuta antes de entrar al caso de uso.
 
 **Caso de uso real.** `@JsonProperty("order_id")` para compatibilidad de contrato.
 
@@ -134,6 +138,8 @@ public class Err {
 javac Err.java
 java Err
 ```
+
+**Contrato / internals.** `@ControllerAdvice` mapea excepciones a respuestas; `ProblemDetail` (RFC 9457) define `type/title/status/detail/instance`. No exponer stack traces ni detalles internos.
 
 **Caso de uso real.** `@ExceptionHandler(MethodArgumentNotValidException.class)` devuelve 400 con campos.
 
@@ -185,6 +191,8 @@ javac Tx.java
 java Tx
 ```
 
+**Contrato / internals.** JPA gestiona estados entidad (transient/managed/detached/removed). `@Transactional` delimita unidad atómica, rollback por RuntimeException por defecto; LAZY requiere sesión o fetch plan.
+
 **Caso de uso real.** `@Transactional` en servicio de aplicación.
 
 **Error común.** N+1 queries.
@@ -231,6 +239,8 @@ javac Spec.java
 java Spec
 ```
 
+**Contrato / internals.** Criteria/Specifications construyen predicados tipados parametrizados; combinables con `and/or`. Útiles para filtros dinámicos; evitar concatenar JPQL con input.
+
 **Caso de uso real.** `Specification.where(byStatus).and(byCustomer)`.
 
 **Error común.** Concatenar JPQL/SQL con input.
@@ -276,6 +286,8 @@ javac Mig.java
 java Mig
 ```
 
+**Contrato / internals.** Flyway/Liquibase aplican migraciones versionadas en orden y guardan checksum en tabla metadata. Migración aplicada es inmutable; cambios via nueva versión.
+
 **Caso de uso real.** Flyway en startup de Spring Boot.
 
 **Error común.** Editar migración aplicada.
@@ -291,6 +303,9 @@ Caso guía: elegir DB relacional por capacidades operativas.
 #### Diferencias prácticas
 
 **Definición formal.** PostgreSQL y MySQL son RDBMS. Ambos soportan SQL, transacciones e índices; difieren en features, tipos, MVCC, extensiones y comportamiento operativo.
+
+**Contrato / internals.** PostgreSQL/MySQL: drivers JDBC, URL `jdbc:postgresql://host:db`, dialecto Hibernate, pool HikariCP. Diferencias: tipos, JSON, locks, upsert, comportamiento transaccional; pruebas con misma BD que producción.
+
 
 **Cuándo usarlo / cuándo no.** Elige por requisitos reales: tipos JSON, extensiones, replicación, tooling, equipo. No elijas por moda.
 

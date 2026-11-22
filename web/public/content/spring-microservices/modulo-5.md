@@ -14,6 +14,9 @@ Caso guía: `orders` consulta `catalog` por HTTP.
 
 **Definición formal.** REST expone recursos por HTTP. WebClient es cliente HTTP no bloqueante de Spring; RestClient/RestTemplate son alternativas (RestTemplate en mantenimiento).
 
+**Contrato / internals.** REST sobre HTTP: recursos, verbos, códigos de estado, contratos JSON. WebClient: cliente reactivo/no bloqueante con filtros, timeout y codecs. Configurar `connectTimeout/readTimeout`; manejar errores por status.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo para request-response simple/interoperable. No hagas cadenas síncronas largas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -58,6 +61,9 @@ Caso guía: comunicación interna de baja latencia.
 
 **Definición formal.** gRPC usa HTTP/2 y Protobuf para contratos tipados y streaming.
 
+**Contrato / internals.** gRPC usa HTTP/2 + Protobuf; contrato en `.proto`, stubs generados. Soporta unary/streaming. Requiere compatibilidad de esquema (campos, números); no exponer directamente a browsers sin gateway.
+
+
 **Cuándo usarlo / cuándo no.** Interno alto volumen. No público browser-first sin gateway.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -96,6 +102,9 @@ Caso guía: publicar `OrderCreated` a Kafka/Rabbit.
 #### Cloud Stream
 
 **Definición formal.** Spring Cloud Stream abstrae binder de mensajería (Kafka/RabbitMQ) mediante bindings funcionales.
+
+**Contrato / internals.** Spring Cloud Stream abstrae binder (Kafka/RabbitMQ); app produce/consume por bindings `Supplier/Function/Consumer`. Configura destination, group, content-type, errores/DLQ por binder.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo para eventos/integración desacoplada. No para respuesta inmediata simple.
 
@@ -138,6 +147,9 @@ Caso guía: cobro inmediato vs notificación diferida.
 
 **Definición formal.** Sync acopla tiempo; async acopla por contrato de mensaje y tolera demora.
 
+**Contrato / internals.** Sync: caller espera respuesta; acopla disponibilidad/latencia. Async: mensaje/evento desacopla tiempo; requiere idempotencia, retries, DLQ. Timeout obligatorio en sync; correlation/trace en ambos.
+
+
 ```mermaid
 flowchart TD
   Q{Necesita respuesta inmediata?} -->|si| S[Sync REST/gRPC]
@@ -169,9 +181,16 @@ java Decide
 
 **Síntoma.** cascada de fallos. **Causa.** acoplamiento temporal. **Corrección.** async, timeout, bulkhead. **Señal observable.** waterfall de spans largos.
 
+**Caso real.** Consulta de stock al cobrar: sync con timeout corto. Envío de email: async por evento, con idempotencia y DLQ.
+
+
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `sync`, `async`.
 
 ### Tema 5: HTTP Service Clients declarativos y RSocket · Avanzado · 120 min
+
+**Contrato / internals.** HTTP Service Client declarativo: interface Java anotada, Spring genera proxy. RSocket: protocolo reactivo con request-response/stream/fire-and-forget/channel sobre TCP/WebSocket. Elegir por semántica y tooling.
+
+
 
 Caso guía: `orders-service` debe consultar `users-service`. Quieres un contrato tipado sin boilerplate, con timeout y observabilidad. Además, un canal interno de telemetría necesita streaming; evalúas RSocket.
 

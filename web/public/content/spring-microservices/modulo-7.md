@@ -38,6 +38,8 @@ javac Res.java
 java Res
 ```
 
+**Contrato / internals.** Resilience4j: circuit breaker (open/half-open/closed), retry con backoff/jitter, bulkhead aísla concurrencia, rate limiter limita tasa, time limiter acota espera. Métricas por instancia.
+
 **Caso de uso real.** Resilience4j con `@CircuitBreaker`, `@Retry`.
 
 **Error común.** Retry sin backoff en operaciones no idempotentes.
@@ -76,6 +78,8 @@ public class Budget {
 javac Budget.java
 java Budget
 ```
+
+**Contrato / internals.** Timeout budget se reparte por hop; total < SLA del usuario. Timeout sin cancelación/aislamiento propaga saturación. Configurar connect/read/write/request timeout.
 
 **Caso de uso real.** time limiter Resilience4j + timeout HTTP.
 
@@ -117,6 +121,8 @@ javac Fb.java
 java Fb
 ```
 
+**Contrato / internals.** Fallback debe ser seguro, determinista y observable; puede ser cache stale, valor por defecto o degradación funcional. No usar fallback que viole invariantes de negocio.
+
 **Caso de uso real.** devolver cache stale marcado o lista vacía.
 
 **Error común.** Fallback que viola negocio.
@@ -155,6 +161,8 @@ public class Chaos {
 javac Chaos.java
 java Chaos
 ```
+
+**Contrato / internals.** Chaos experiment: hipótesis, steady state, inyección de fallo, medición, rollback. Limitar blast radius; ejecutar en entorno controlado con observabilidad.
 
 **Caso de uso real.** Toxiproxy/Chaos Monkey con hipótesis y métricas.
 

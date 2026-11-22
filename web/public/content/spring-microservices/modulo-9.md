@@ -14,6 +14,9 @@ Caso guía: medir tasa de requests y latencia.
 
 **Definición formal.** Micrometer es fachada de métricas para JVM. Prometheus scrapea métricas; Grafana las visualiza.
 
+**Contrato / internals.** Micrometer es fachada de métricas; Prometheus scrapea `/actuator/prometheus`. Usar counters para acumulados, gauges para estado, timers/histograms para latencia; controlar cardinalidad de tags.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo para RED/USE. No uses labels de alta cardinalidad.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -42,6 +45,9 @@ java Metrics
 **Error común.** Label `userId` en métrica.
 
 **Síntoma.** Prometheus se degrada. **Causa.** cardinalidad alta. **Corrección.** labels bajos en cardinalidad. **Señal observable.** series activas crecen sin límite.
+
+**Caso real.** `catalog-service` expone `http.server.requests` y un counter `cache.hit` para medir efectividad de Redis.
+
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `2`, `1`.
 
@@ -182,6 +188,9 @@ Caso guía: alertar por degradación de usuario, no por ruido interno.
 
 **Definición formal.** SLI mide; SLO objetivo; alerta avisa cuando se quema presupuesto de error o se afecta usuario.
 
+**Contrato / internals.** SLO define objetivo medible; SLI es la métrica; error budget es la tolerancia. Alertar por síntomas/SLO burn rate, no por cada CPU spike.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo para servicios productivos. No alertes por toda causa interna.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -208,6 +217,9 @@ java Slo
 **Error común.** Alert fatigue.
 
 **Síntoma.** alertas ignoradas. **Causa.** alertar por CPU sin impacto. **Corrección.** alertas por síntoma/SLO. **Señal observable.** páginas sin acción.
+
+**Caso real.** SLO: 99.9% de `GET /productos/{id}` < 300ms. Alerta cuando el burn rate consume 5% del budget en 1h.
+
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `false`, `true`.
 

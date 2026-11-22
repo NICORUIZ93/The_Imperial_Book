@@ -14,6 +14,9 @@ Caso guía: probar un servicio sin levantar toda la infraestructura.
 
 **Definición formal.** JUnit 5 es el framework de tests para Java. Mockito crea dobles para aislar dependencias. MockMvc prueba la capa web de Spring MVC sin servidor HTTP real completo.
 
+**Contrato / internals.** JUnit 5: `@Test`, lifecycle `@BeforeEach`, extensiones. Mockito: `mock/when/verify`, dobles en fronteras. MockMvc: prueba capa web con DispatcherServlet simulado, sin servidor real completo. Aislar dependencias externas; no mockear el dominio.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo para lógica y contratos web. No reemplaces toda integración con mocks.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -61,6 +64,9 @@ Caso guía: probar repositorio contra PostgreSQL real efímero.
 
 **Definición formal.** Testcontainers levanta dependencias reales en contenedores Docker durante tests, proporcionando aislamiento y realismo.
 
+**Contrato / internals.** Testcontainers levanta contenedores Docker efímeros para tests; JDBC URL dinámica/`@ServiceConnection` inyecta conexión. Ciclo: start antes de tests, stop al finalizar. Requiere Docker; en CI usar runner con Docker.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo para DB/broker/colas reales. No lo uses para cada unit test; es más lento.
 
 **Ejemplo mínimo enfocado (ejecutable: contrato de test).**
@@ -102,6 +108,9 @@ Caso guía: `orders` consume `catalog`; un cambio en catalog no debe romper orde
 #### Contrato consumer-driven
 
 **Definición formal.** Pact captura expectativas del consumidor como contrato; el provider verifica que las cumple. Pact Broker publica/versiona contratos.
+
+**Contrato / internals.** Pact consumer genera contrato (pact file) desde expectativas; provider verifica contra ese pacto. Detecta quiebres de compatibilidad antes de deploy; no reemplaza tests funcionales/E2E.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo entre servicios con despliegue independiente. No reemplaza tests E2E ni unit tests.
 
@@ -147,6 +156,9 @@ Caso guía: impedir que `domain` dependa de `spring-web`.
 #### Fitness function arquitectónica
 
 **Definición formal.** ArchUnit ejecuta reglas de arquitectura como tests JUnit sobre el bytecode/clases.
+
+**Contrato / internals.** ArchUnit ejecuta reglas sobre bytecode/clases Java en tests JUnit. Reglas típicas: capas, dependencias prohibidas, naming, ciclos. Falla el build ante violación.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo para reglas estables. No codifiques reglas volátiles.
 
@@ -194,6 +206,9 @@ Caso guía: detectar smells, bugs y deuda técnica en CI.
 
 **Definición formal.** SonarQube analiza código para bugs, vulnerabilidades, code smells y cobertura, aplicando quality gates.
 
+**Contrato / internals.** SonarQube/SonarCloud analiza código fuente, cobertura, smells, bugs, vulnerabilidades y quality gates. Se integra en CI; quality gate bloquea merge si no cumple umbrales.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo como guardrail en CI. No persigas el número sin entender hallazgos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -229,6 +244,10 @@ java Quality
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** SonarQube requiere servidor/scanner.
 
 ### Tema 6: Floci para emular dependencias cloud en tests/CI · Avanzado · 120 min
+
+**Contrato / internals.** Floci emula APIs cloud localmente (S3/SQS/SNS/etc.) en endpoint compatible; Testcontainers puede levantarlo para CI. Credenciales de prueba, sin cuenta cloud real; validar paridad de API según servicio.
+
+
 
 Caso guía: un microservicio procesa archivos en S3 y publica mensajes en SQS. En CI no hay cuenta cloud real, pero necesitas validar integración con AWS SDK, serialización y manejo de errores.
 

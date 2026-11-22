@@ -43,6 +43,8 @@ javac Decision.java
 java Decision
 ```
 
+**Contrato / internals.** Monolito modular: un despliegue, límites internos por módulos. Microservicios: despliegues independientes, contratos remotos, datos propios, costo operativo distribuido.
+
 **Caso de uso real.** Extraer billing cuando tiene escala/regulatorio distinto.
 
 **Error común.** Microservicios prematuros.
@@ -93,6 +95,8 @@ javac Ddd.java
 java Ddd
 ```
 
+**Contrato / internals.** Bounded context delimita modelo; aggregate define invariante y raíz transaccional; domain event expresa hecho pasado inmutable. Integración entre contextos por contratos/eventos.
+
 **Caso de uso real.** Aggregate `Order` publica `OrderCreated`; billing consume evento.
 
 **Error común.** Aggregate gigante.
@@ -131,6 +135,8 @@ public class Modulith {
 javac Modulith.java
 java Modulith
 ```
+
+**Contrato / internals.** Spring Modulith verifica dependencias entre módulos, publica eventos internos y permite tests de módulo. Reglas declaradas en código/estructura de paquetes.
 
 **Caso de uso real.** `ApplicationModules.verify()` en tests.
 
@@ -175,6 +181,8 @@ javac Strangler.java
 java Strangler
 ```
 
+**Contrato / internals.** Strangler Fig: proxy/fachada enruta capacidades por ruta/feature; coexistencia legacy+nuevo; cortar tráfico gradualmente con rollback. Requiere source of truth claro por dato.
+
 **Caso de uso real.** Gateway enruta `/catalog` a servicio nuevo.
 
 **Error común.** Doble escritura sin estrategia.
@@ -217,6 +225,8 @@ public class Owner {
 javac Owner.java
 java Owner
 ```
+
+**Contrato / internals.** Database-per-service: cada servicio es dueño de su esquema; no SQL cross-service. Integración por API/eventos; duplicación controlada por proyecciones/read models.
 
 **Caso de uso real.** Orders publica evento; billing mantiene su proyección.
 

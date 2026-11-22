@@ -5,7 +5,7 @@ Estado inicial antes de remediación "desde cero" solicitada por el usuario.
 ## Resumen
 - Java: 23 módulos, 122 temas.
 - Spring Boot: 21 módulos, 123 temas.
-- Spring microservicios: 16 módulos, 68 temas. M0-M3 reescritos al estándar libro vivo; M4-M15 creados/reescritos a cero-a-experto con mínimos ejecutables Java/Node y notas honestas donde falta infraestructura (Spring Cloud/Kafka/K8s/OTel/IdP).
+- Spring microservicios: 16 módulos, 68 temas. M0-M15 alineados con track, elevados al DoD libro vivo (definición, contrato/internals, cuándo sí/no, ejemplo mínimo ejecutable, caso real, error con síntoma/causa/corrección/señal, verificación/nota honesta). M3 reescrito con patrón de 5 pasos (dolor, intuición, construcción, experimento, cierre) como ejemplo canónico. Diseño de curso 22 semanas y guía editorial agregados en docs/.
 - Node microservicios: 16 módulos, 61 temas (lote previo, verificado con Node 24.18.0).
 - Módulos con compresión/tabla-sustituto detectada: 18 (auditoría inicial; Java/Spring Boot remediados, microservicios split/remediado).
 - Estado actual repo: 17 tracks, 319 módulos, 1687 temas.

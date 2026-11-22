@@ -14,6 +14,9 @@ Caso guía: proteger `/orders/**` y dejar `/health` público.
 
 **Definición formal.** Spring Security procesa requests mediante una cadena de filtros que autentican, autorizan y protegen contra ataques comunes.
 
+**Contrato / internals.** Spring Security usa cadena de filtros Servlet; cada request pasa por autenticación, autorización y manejo de excepciones de seguridad. Configurar `SecurityFilterChain` explícita y stateless para APIs.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo en todo endpoint. No deshabilites seguridad por comodidad en prod.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -41,6 +44,9 @@ java Sec
 
 **Síntoma.** acceso directo a API sin auth. **Causa.** falta control backend. **Corrección.** authZ/authN en backend. **Señal observable.** 200 en endpoint protegido sin token.
 
+**Caso real.** Tienda Aurora protege `/api/pedidos/**` con JWT y deja `/actuator/health` público para probes.
+
+
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `200`, `401`, `200`.
 
 ### Tema 2: JWT y OAuth2/OIDC · Avanzado · 180 min
@@ -50,6 +56,9 @@ Caso guía: validar access token emitido por IdP.
 #### Tokens
 
 **Definición formal.** JWT es formato de token firmado/cifrado. OAuth2 delega autorización; OIDC agrega identidad sobre OAuth2. Access token autoriza; ID token identifica.
+
+**Contrato / internals.** OAuth2 delega autorización; OIDC añade identidad. Access token autoriza API; ID token identifica usuario. Validar issuer, audience, firma, expiración y scopes/roles.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo con expiración corta y validación completa. No aceptes tokens sin validar firma/aud/iss/exp.
 
@@ -78,6 +87,9 @@ java Jwt
 **Error común.** Solo decodificar JWT.
 
 **Síntoma.** token forjado aceptado. **Causa.** no validar firma/claims. **Corrección.** validar firma, iss, aud, exp, alg permitido. **Señal observable.** tokens alterados pasan.
+
+**Caso real.** Gateway valida JWT emitido por Keycloak; servicios internos confían en claims propagados y aplican RBAC por recurso.
+
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** Keycloak/OIDC real requiere IdP.
 

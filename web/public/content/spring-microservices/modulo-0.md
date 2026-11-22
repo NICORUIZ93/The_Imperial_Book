@@ -46,6 +46,8 @@ javac DemoStream.java
 java DemoStream
 ```
 
+**Contrato / internals.** Stream: fuente + intermedias lazy + terminal eager; no reutilizable. `Optional`: 0/1 valor, evitar en campos/params. Record: inmutable superficial, accessors `x()`. Pattern matching/switch: exhaustivo con sealed/guardas (JDK 21+).
+
 **Caso de uso real.** Filtrar pedidos válidos y mapearlos a DTOs antes de responder una API.
 
 **Error común.** Usar streams con efectos secundarios ocultos.
@@ -178,6 +180,8 @@ javac DemoVT.java
 java DemoVT
 ```
 
+**Contrato / internals.** Virtual threads: manejados por JVM, se desmontan del carrier en bloqueos; no aceleran CPU-bound. Evitar pinning (`synchronized` largo/código nativo); limitar recursos externos con semáforos/bulkheads.
+
 **Caso de uso real.** Servicio que hace muchas llamadas HTTP/DB bloqueantes.
 
 **Error común.** Usar virtual threads para CPU-bound o con secciones `synchronized` largas.
@@ -226,6 +230,8 @@ javac DemoDI.java
 java DemoDI
 ```
 
+**Contrato / internals.** Contenedor crea beans, resuelve dependencias y aplica ciclo de vida (`@PostConstruct`, `@PreDestroy`). Constructor injection hace dependencias explícitas e inmutables; scopes: singleton/prototype/request.
+
 **Caso de uso real.** `@Service` con dependencia `@Repository` inyectada por constructor.
 
 **Error común.** Field injection.
@@ -267,6 +273,8 @@ public class Cond {
 javac Cond.java
 java Cond
 ```
+
+**Contrato / internals.** Auto-config se evalúa por condiciones de classpath/beans/propiedades. `@ConditionalOnClass/OnMissingBean/OnProperty` controlan activación. Orden y overrides visibles con `--debug`/Actuator conditions.
 
 **Caso de uso real.** `@ConditionalOnProperty(name="feature.x.enabled", havingValue="true")`.
 
@@ -314,6 +322,8 @@ javac Modules.java
 java Modules
 ```
 
+**Contrato / internals.** Multi-módulo: límites por dependencias Gradle/Maven; módulos `api/domain/infra/app`; dependencias acíclicas. Contratos estables evitan recompilación/cascada.
+
 **Caso de uso real.** Maven multi-module con `domain` sin dependencia de Spring.
 
 **Error común.** Ciclos entre módulos.
@@ -356,6 +366,8 @@ javac Profile.java
 java Profile
 ```
 
+**Contrato / internals.** Precedencia: defaults < `application.yml` < profile < env vars < args. `spring.profiles.active`/`SPRING_PROFILES_ACTIVE` activan perfil. Secretos fuera de git (Vault/env/secret manager).
+
 **Caso de uso real.** `SPRING_PROFILES_ACTIVE=prod`, secretos en Vault/AWS Secrets Manager.
 
 **Error común.** Secretos en `application-prod.yml`.
@@ -397,6 +409,8 @@ public class Crac {
 javac Crac.java
 java Crac
 ```
+
+**Contrato / internals.** CRaC coordina `checkpoint`/`restore`; requiere librerías compatibles y manejo de sockets/archivos/secretos. Validar estado externo tras restore; no es magia universal.
 
 **Caso de uso real.** Servicios serverless/scale-to-zero donde cold start importa.
 
@@ -444,6 +458,8 @@ public class NativeDecision {
 javac NativeDecision.java
 java NativeDecision
 ```
+
+**Contrato / internals.** Native image usa AOT closed-world; menor reflexión dinámica por defecto. Requiere reachability metadata/hints; trade-off arranque/memoria vs throughput/observabilidad/dinamismo.
 
 **Caso de uso real.** CLI o función serverless con arranque crítico.
 

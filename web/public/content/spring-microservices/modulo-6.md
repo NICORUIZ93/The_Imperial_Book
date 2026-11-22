@@ -8,6 +8,10 @@ Una vez que hay múltiples servicios, aparecen problemas transversales: descubri
 
 ### Tema 1: Service discovery con Eureka/Consul/Nacos · Intermedio · 150 min
 
+**Contrato / internals.** Discovery registra instancias y estado de salud; clientes consultan registry o DNS. Eureka/Consul/Nacos: registry+health+metadata. En Kubernetes, DNS/Service suele bastar; evitar doble discovery sin necesidad.
+
+
+
 Caso guía: `orders` necesita llamar a `inventory`, pero las instancias cambian por autoscaling, despliegues y fallos. No puede depender de IPs fijas.
 
 #### Definición formal
@@ -94,6 +98,9 @@ Caso guía: un único punto de entrada con routing y filtros.
 
 **Definición formal.** Spring Cloud Gateway enruta requests, aplica filtros (auth, rate limit, headers, logging) y desacopla clientes de topología interna.
 
+**Contrato / internals.** Spring Cloud Gateway: rutas, predicados, filtros (auth, rate limit, rewrite, headers). Corre en edge; no debe contener lógica de dominio. Timeouts, circuit breakers y observabilidad obligatorios.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo como borde. No pongas lógica de dominio.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -135,6 +142,9 @@ Caso guía: cambiar config sin rebuild.
 
 **Definición formal.** Config Server externaliza configuración de múltiples servicios desde Git u otras fuentes, con perfiles y refresh controlado.
 
+**Contrato / internals.** Config Server centraliza configuración versionada (Git/Vault). Clientes leen al arrancar/refresh; secretos no en texto plano. Refresh con cuidado en estado mutable; preferir configuración inmutable por despliegue.
+
+
 **Cuándo usarlo / cuándo no.** Úsalo cuando hay muchas instancias/servicios. No metas secretos planos; integra secret manager.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -174,6 +184,9 @@ Caso guía: balancear instancias y adaptar API a móvil/web.
 #### Load balancing
 
 **Definición formal.** Load balancing distribuye requests entre instancias. Spring Cloud LoadBalancer reemplaza Ribbon en el stack moderno.
+
+**Contrato / internals.** Load balancing client-side/server-side distribuye requests entre instancias sanas. BFF agrega/adapta APIs por canal cliente; no duplica reglas de dominio, delega a servicios.
+
 
 #### BFF
 

@@ -14,6 +14,9 @@ Caso guía: empaquetar Spring Boot con JRE mínimo.
 
 **Definición formal.** Multi-stage separa build y runtime; la imagen final contiene solo lo necesario.
 
+**Contrato / internals.** Dockerfile multi-stage separa build y runtime; imagen runtime contiene solo JRE/binario y artefacto. Define usuario no root, puerto, variables, healthcheck e inmutabilidad de imagen.
+
+
 **Cuándo usarlo / cuándo no.** Siempre en servicios Java. No uses imagen con toolchain completo en runtime.
 
 **Ejemplo mínimo enfocado (ejecutable).**
@@ -46,6 +49,9 @@ node -e "const fs=require('fs');const d=fs.readFileSync('Dockerfile','utf8');con
 
 **Síntoma.** mayor superficie de ataque. **Causa.** imagen sin usuario no root. **Corrección.** `USER` no root, imagen mínima. **Señal observable.** scanner/policy falla.
 
+**Caso real.** `catalog-service` se construye en etapa Maven y corre en JRE slim, reduciendo tamaño y superficie de ataque.
+
+
 **Verificación (Node 24.18.0 para check, 2026-05-22).** Salida: `true`, `true`. **Nota de verificación:** build Docker no ejecutado.
 
 ### Tema 2: Kubernetes Deployments, Services, ConfigMaps, Secrets, probes · Avanzado · 150 min
@@ -55,6 +61,9 @@ Caso guía: desplegar orders-api con readiness/liveness.
 #### Objetos K8s
 
 **Definición formal.** Deployment gestiona réplicas; Service red estable; ConfigMap/Secret config; probes salud.
+
+**Contrato / internals.** Deployment gestiona réplicas/rollout; Service expone red estable; ConfigMap/Secret inyectan config; probes controlan tráfico y reinicio. Requests/limits definen recursos.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo con orquestación. No omitas probes/resources.
 
@@ -92,6 +101,9 @@ node -e "const fs=require('fs');const y=fs.readFileSync('deploy.yaml','utf8');co
 
 **Síntoma.** reinicios en cascada. **Causa.** probe mal diseñado. **Corrección.** liveness local, readiness por dependencias. **Señal observable.** restart count sube.
 
+**Caso real.** `orders-service` usa readiness para no recibir tráfico antes de cargar cache y liveness para recuperarse de deadlocks.
+
+
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `true`.
 
 ### Tema 3: HPA, Helm y despliegues progresivos · Avanzado · 120 min
@@ -101,6 +113,9 @@ Caso guía: escalar y liberar canary.
 #### HPA y rollout
 
 **Definición formal.** HPA escala réplicas por métricas. Helm empaqueta manifests. Blue/green y canary reducen riesgo.
+
+**Contrato / internals.** HPA escala por métricas CPU/custom; Helm empaqueta manifests parametrizados; canary/blue-green despliegan progresivamente con rollback. Definir SLO y métricas de rollback.
+
 
 **Cuándo usarlo / cuándo no.** HPA para stateless; canary con métricas y rollback.
 
@@ -130,6 +145,9 @@ node -e "const fs=require('fs');const y=fs.readFileSync('hpa.yaml','utf8');conso
 
 **Síntoma.** versión mala avanza. **Causa.** no hay gates. **Corrección.** SLO gates y rollback. **Señal observable.** 5xx sube en canary.
 
+**Caso real.** En Black Friday, HPA escala `catalog-service` por CPU/p95; canary libera 10% de tráfico antes de 100%.
+
+
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `true`.
 
 ### Tema 4: GitOps con ArgoCD · Avanzado · 120 min
@@ -139,6 +157,9 @@ Caso guía: Git como fuente de verdad.
 #### GitOps
 
 **Definición formal.** GitOps reconcilia estado deseado en Git con el cluster.
+
+**Contrato / internals.** GitOps: Git como fuente declarativa deseada; ArgoCD reconcilia cluster al estado de Git. Drift se detecta/corrige; rollback es revertir commit.
+
 
 **Cuándo usarlo / cuándo no.** Úsalo con disciplina declarativa. No hagas hotfix manual sin reconciliar.
 
@@ -171,6 +192,9 @@ node check.mjs
 **Error común.** Drift manual.
 
 **Síntoma.** Git no refleja cluster. **Causa.** kubectl ad hoc. **Corrección.** PR + reconciliación. **Señal observable.** OutOfSync.
+
+**Caso real.** Un cambio de `replicas` se hace por PR; ArgoCD aplica y audita la reconciliación.
+
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `false`.
 
