@@ -1,469 +1,347 @@
 # Módulo 4: Streams y programación funcional
 
+Procesar colecciones con bucles `for` funciona, pero cuando la lógica crece aparecen tuberías de código imperativo difíciles de leer: filtrar, transformar, agrupar, ordenar, acumular. La Stream API permite expresar esas transformaciones de forma declarativa. Este módulo cubre streams, `Optional`, gatherers y paralelismo, con criterio sobre cuándo usarlos y cuándo no.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Crear pipelines con `filter`, `map`, `collect` y `reduce` |
+| 2 | Usar `Optional` para modelar ausencia sin `null` |
+| 3 | Aplicar gatherers de Java 24 para operaciones avanzadas |
+| 4 | Evaluar streams paralelos con medición, no por intuición |
 
 ## Aprende construyendo
 
+### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 45 min
 
-### Tema 1: Stream API — map, filter, reduce, collect · Básico · 35 min
+**Caso guía**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Tienes una lista de empleados y necesitas obtener los nombres de los que ganan más de 2000, en mayúsculas, ordenados. Con bucles se puede, pero la intención queda mezclada con la mecánica de iteración.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por stream api — map, filter, reduce, collect con foco en comprensión antes de implementación.
+**Concepto clave / modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender stream api — map, filter, reduce, collect te permite tomar mejores decisiones técnicas.**
+Un stream es una tubería de datos: fuente → operaciones intermedias → operación terminal.
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en stream api — map, filter, reduce, collect como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que stream api — map, filter, reduce, collect resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Tipo | Ejemplos | Efecto |
 |---|---|---|
-| Stream API — map, filter, reduce, collect se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Intermedia | `filter`, `map`, `sorted`, `distinct` | Devuelve otro stream; es perezosa |
+| Terminal | `collect`, `reduce`, `forEach`, `count` | Produce resultado; ejecuta la tubería |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Stream API — map, filter, reduce, collect | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+Las operaciones intermedias no se ejecutan hasta que hay una terminal. No reutilices un stream ya consumido.
 
-#### ► CUÁNDO NO USAR ESTO
-No uses stream api — map, filter, reduce, collect por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: stream api — map, filter, reduce, collect funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Stream API — map, filter, reduce, collect existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve stream api — map, filter, reduce, collect en tu contexto?
-2. ¿Cómo sabrías que stream api — map, filter, reduce, collect no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar stream api — map, filter, reduce, collect?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/Reporte.java
-java -cp out Reporte
-```
+**Implementación desde cero**
 
 ```java
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
-public class Reporte {
-    record Envio(String guia, boolean activo) {}
-
-    public static void main(String[] args) {
-        var envios = List.of(new Envio("RT-1", true), new Envio("RT-2", false));
-        var activas = envios.stream()
-            .filter(Envio::activo)
-            .map(Envio::guia)
-            .toList();
-        System.out.println(activas);
-        var editables = envios.stream()
-            .filter(Envio::activo)
-            .map(Envio::guia)
-            .collect(Collectors.toCollection(ArrayList::new));
-        editables.add("RT-3");
-        System.out.println(editables);
-    }
-}
-```
-
-```java
-import java.util.List;
-
-public class Reporte {
-    record Envio(String guia, long centavos) {}
+public class DemoStreams {
+    record Empleado(String nombre, int salario) {}
 
     public static void main(String[] args) {
-        var envios = List.of(new Envio("RT-1", 250), new Envio("RT-2", 300));
-        long total = envios.stream()
-            .map(Envio::centavos)
-            .reduce(0L, Long::sum);
-        long totalPrimitivo = envios.stream()
-            .mapToLong(Envio::centavos)
+        List<Empleado> empleados = List.of(
+            new Empleado("Ada", 3000),
+            new Empleado("Linus", 1800),
+            new Empleado("Grace", 2500),
+            new Empleado("Ken", 1500)
+        );
+
+        List<String> nombres = empleados.stream()
+            .filter(e -> e.salario() > 2000)
+            .map(Empleado::nombre)
+            .map(String::toUpperCase)
+            .sorted()
+            .collect(Collectors.toList());
+        System.out.println(nombres);
+
+        int total = empleados.stream()
+            .mapToInt(Empleado::salario)
             .sum();
-        System.out.println("totalCentavos=" + total);
-        System.out.println("coinciden=" + (total == totalPrimitivo));
+        System.out.println(total);
+
+        int max = empleados.stream()
+            .mapToInt(Empleado::salario)
+            .reduce(0, Integer::max);
+        System.out.println(max);
     }
 }
 ```
 
-```java
-import java.util.List;
-import java.util.stream.Stream;
+**Desglose del código**
 
-public class UnaVez {
-    public static void main(String[] args) {
-        Stream<String> guias = List.of("RT-1", "RT-2").stream();
-        System.out.println(guias.count());
-        System.out.println(guias.toList());
-    }
-}
+- `filter` conserva elementos que cumplen el predicado.
+- `map` transforma cada elemento; `Empleado::nombre` es una referencia a método.
+- `collect(Collectors.toList())` materializa el resultado. En Java 16+ también puedes usar `toList()` (lista inmutable).
+- `mapToInt` evita boxing/unboxing en operaciones numéricas.
+- `reduce(0, Integer::max)` acumula un resultado; el primer argumento es la identidad.
+
+**Ejecución y salida real**
+
+```text
+[ADA, GRACE]
+8800
+3000
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
 
-### Tema 2: Optional — evitar null explícitamente · Básico · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por optional — evitar null explícitamente con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender optional — evitar null explícitamente te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en optional — evitar null explícitamente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que optional — evitar null explícitamente resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Optional — evitar null explícitamente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `IllegalStateException: stream has already been operated upon` | Reutilizaste un stream | Crea un nuevo stream desde la fuente |
+| Pipeline sin resultado | Falta operación terminal | Agrega `collect`, `forEach`, `reduce`, etc. |
+| Código difícil de leer en lambdas grandes | Metiste demasiada lógica en la lambda | Extrae un método con nombre claro |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Optional — evitar null explícitamente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses optional — evitar null explícitamente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: optional — evitar null explícitamente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Optional — evitar null explícitamente existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve optional — evitar null explícitamente en tu contexto?
-2. ¿Cómo sabrías que optional — evitar null explícitamente no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar optional — evitar null explícitamente?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```bash
-javac -d out src/Buscar.java
-java -cp out Buscar RT-9
+javac DemoStreams.java && java DemoStreams
 ```
 
-```java
-import java.util.List;
-import java.util.Optional;
+Cambia el filtro a `salario >= 2000` y verifica que la salida incluya los casos límite esperados.
 
-public class Buscar {
-    public static void main(String[] args) {
-        Optional<String> resultado = List.of("RT-1", "RT-2").stream()
-            .filter(guia -> guia.equals(args[0]))
+### Tema 2: Optional — evitar null explícitamente · Intermedio · 35 min
+
+**Caso guía**
+
+Buscas un usuario por email. A veces existe, a veces no. Devolver `null` obliga a cada llamador a recordar la comprobación; olvidarla produce `NullPointerException` en otro lugar, lejos del origen.
+
+**Concepto clave / modelo mental**
+
+`Optional<T>` representa “puede haber un valor o no”. No es un reemplazo para todos los nulls; úsalo principalmente como tipo de retorno cuando la ausencia es un resultado esperado.
+
+Métodos clave:
+
+| Método | Uso |
+|---|---|
+| `Optional.of(value)` | Valor no nulo |
+| `Optional.ofNullable(value)` | Valor que puede ser nulo |
+| `Optional.empty()` | Ausencia |
+| `orElse(default)` | Valor por defecto |
+| `orElseThrow()` | Falla si no hay valor |
+| `map/flatMap/filter` | Transformar si hay valor |
+
+**Implementación desde cero**
+
+```java
+import java.util.*;
+
+public class DemoOptional {
+    record Usuario(String email, String nombre) {}
+
+    static Optional<Usuario> buscar(String email, List<Usuario> usuarios) {
+        return usuarios.stream()
+            .filter(u -> u.email().equalsIgnoreCase(email))
             .findFirst();
-        System.out.println(resultado);
     }
-}
-```
 
-```java
-import java.util.List;
-
-public class Buscar {
     public static void main(String[] args) {
-        String destino = List.of("RT-1", "RT-2").stream()
-            .filter(guia -> guia.equals(args[0]))
-            .findFirst()
-            .map(guia -> "Encontrada: " + guia)
-            .orElse("Guía no encontrada");
-        System.out.println(destino);
+        List<Usuario> usuarios = List.of(
+            new Usuario("ada@example.com", "Ada"),
+            new Usuario("linus@example.com", "Linus")
+        );
+
+        String nombre = buscar("ada@example.com", usuarios)
+            .map(Usuario::nombre)
+            .orElse("DESCONOCIDO");
+        System.out.println(nombre);
+
+        String otro = buscar("nadie@example.com", usuarios)
+            .map(Usuario::nombre)
+            .orElse("DESCONOCIDO");
+        System.out.println(otro);
+
+        try {
+            buscar("nadie@example.com", usuarios).orElseThrow();
+        } catch (NoSuchElementException e) {
+            System.out.println("No encontrado");
+        }
     }
 }
 ```
+
+**Desglose del código**
+
+- `findFirst()` ya devuelve `Optional`; encaja natural con búsquedas.
+- `map` transforma solo si hay valor; si está vacío, sigue vacío.
+- `orElse` da un valor por defecto. `orElseThrow` hace explícito que la ausencia es excepcional en ese contexto.
+- Evita `Optional.get()` sin comprobar; pierde el beneficio del tipo.
+
+**Ejecución y salida real**
+
+```text
+Ada
+DESCONOCIDO
+No encontrado
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `NoSuchElementException` con `get()` | Llamaste `get()` sin verificar | Usa `orElse`, `orElseThrow`, `ifPresent` o `map` |
+| `Optional` como campo/parametro por todas partes | Sobreuso | Úsalo principalmente en retornos; evalúa el caso |
+| `orElse` ejecuta código costoso siempre | `orElse` evalúa el argumento | Usa `orElseGet` para cálculo perezoso |
+
+**Verificación rápida**
 
 ```bash
-javac -d out src/Buscar.java
-java -cp out Buscar RT-9
+javac DemoOptional.java && java DemoOptional
 ```
 
-```java
-import java.util.Optional;
+Prueba `orElseThrow(() -> new IllegalArgumentException("Email no encontrado"))` para dar un error de dominio más claro.
 
-public class OptionalSeguro {
-    static Optional<String> normalizar(String guia) {
-        return Optional.ofNullable(guia).map(String::trim);
-    }
+### Tema 3: Stream Gatherers (Java 24) · Avanzado · 40 min
 
-    public static void main(String[] args) {
-        System.out.println(normalizar(null));
-        System.out.println(normalizar(" RT-8 "));
-    }
-}
-```
+**Caso guía**
 
-</details>
+Necesitas ventanas deslizantes de 3 elementos para detectar picos, o agrupar por lotes fijos. Con `map/filter/reduce` puro puedes hacerlo, pero el código queda retorcido. Los gatherers añaden operaciones intermedias personalizadas al pipeline.
 
-### Tema 3: Stream Gatherers (Java 24) · Intermedio · 40 min
+> **Nota de versión:** `Stream.gather()` y `Gatherers` son características de Java 24+. Verifica con `javac -version`.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Concepto clave / modelo mental**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por stream gatherers (java 24) con foco en comprensión antes de implementación.
+Un gatherer es una operación intermedia personalizada. Java incluye gatherers útiles en `java.util.stream.Gatherers`:
 
-#### ► LA IDEA EN UNA FRASE
-**Entender stream gatherers (java 24) te permite tomar mejores decisiones técnicas.**
+| Gatherer | Qué hace |
+|---|---|
+| `windowFixed(n)` | Agrupa en ventanas fijas de tamaño `n` |
+| `windowSliding(n)` | Ventanas deslizantes de tamaño `n` |
+| `fold(...)` | Acumulación con estado |
+| `scan(...)` | Acumulación emitiendo estados intermedios |
+| `mapConcurrent(...)` | Mapeo concurrente con límite |
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Implementación desde cero**
 
-#### ► LA ANALOGÍA
-Piensa en stream gatherers (java 24) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que stream gatherers (java 24) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Stream Gatherers (Java 24) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Stream Gatherers (Java 24) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses stream gatherers (java 24) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: stream gatherers (java 24) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Stream Gatherers (Java 24) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve stream gatherers (java 24) en tu contexto?
-2. ¿Cómo sabrías que stream gatherers (java 24) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar stream gatherers (java 24)?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
 import java.util.List;
 import java.util.stream.Gatherers;
 
-public class Rachas {
+public class DemoGatherers {
     public static void main(String[] args) {
-        List<Boolean> atrasadas = List.of(true, true, true, false, true);
-        var ventanas = atrasadas.stream()
+        List<Integer> valores = List.of(1, 2, 3, 4, 5);
+
+        var ventanas = valores.stream()
             .gather(Gatherers.windowSliding(3))
-            .filter(ventana -> ventana.stream().allMatch(Boolean::booleanValue))
             .toList();
         System.out.println(ventanas);
-    }
-}
-```
 
-```java
-var bloques = atrasadas.stream()
-    .gather(Gatherers.windowFixed(2))
-    .toList();
-System.out.println(bloques);
-```
-
-```java
-import java.util.List;
-import java.util.stream.Gatherers;
-
-public class Rachas {
-    static List<List<Boolean>> detectar(List<Boolean> valores) {
-        return valores.stream()
-            .gather(Gatherers.windowSliding(3))
-            .filter(ventana -> ventana.size() == 3
-                && ventana.stream().allMatch(Boolean::booleanValue))
+        var lotes = valores.stream()
+            .gather(Gatherers.windowFixed(2))
             .toList();
-    }
-
-    public static void main(String[] args) {
-        List<Boolean> consecutivas = List.of(true, true, true, false, true);
-        List<Boolean> separadas = List.of(true, false, true, false, true);
-        List<Boolean> insuficientes = List.of(true, true);
-        System.out.println("individuales=" + separadas.stream()
-            .filter(Boolean::booleanValue).count());
-        System.out.println("separadas=" + detectar(separadas));
-        System.out.println("consecutivas=" + detectar(consecutivas));
-        System.out.println("insuficientes=" + detectar(insuficientes));
+        System.out.println(lotes);
     }
 }
 ```
+
+**Desglose del código**
+
+- `windowSliding(3)` produce `[1,2,3], [2,3,4], [3,4,5]`.
+- `windowFixed(2)` produce `[1,2], [3,4], [5]`.
+- `gather(...)` se integra en el pipeline como cualquier operación intermedia.
+- Si tu JDK es anterior a 24, esta API no existe; la alternativa es implementar la lógica con un colector personalizado o bucle explícito.
+
+**Ejecución y salida real**
+
+En JDK 24+:
+
+```text
+[[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+[[1, 2], [3, 4], [5]]
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `cannot find symbol Gatherers` | JDK < 24 | Actualiza JDK o usa alternativa con bucle/colector |
+| Ventana más grande que el stream | Resultado vacío o menor al esperado, según gatherer | Valida tamaño de entrada |
+| Usas gatherer para algo que `map/filter` resuelve | Sobreingeniería | Prefiere operaciones estándar cuando alcancen |
+
+**Verificación rápida**
 
 ```bash
-javac -d out src/Rachas.java
-java -cp out Rachas
+javac DemoGatherers.java && java DemoGatherers
 ```
 
-</details>
+Si no tienes JDK 24+, valida la lógica equivalente con bucles y deja el gatherer como versión objetivo.
 
-### Tema 4: Streams paralelos y referencias a métodos · Avanzado · 45 min
+### Tema 4: Streams paralelos y referencias a métodos · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Contexto y para qué sirve**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por streams paralelos y referencias a métodos con foco en comprensión antes de implementación.
+`parallelStream()` promete usar varios núcleos, pero no siempre mejora el rendimiento. En colecciones pequeñas, operaciones baratas o fuentes difíciles de dividir, el overhead puede hacerla más lenta. La regla es medir.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender streams paralelos y referencias a métodos te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Un stream paralelo divide el trabajo en subtareas y las ejecuta en el ForkJoinPool común. Funciona mejor cuando:
 
-#### ► LA ANALOGÍA
-Piensa en streams paralelos y referencias a métodos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+- hay muchos datos;
+- cada operación es costosa;
+- la fuente se divide bien (`ArrayList`, arrays);
+- no hay estado mutable compartido.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que streams paralelos y referencias a métodos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+Evítalo cuando hay I/O bloqueante, orden estricto importante o colecciones pequeñas.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+**Implementación desde cero**
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class DemoParallel {
+    public static void main(String[] args) {
+        List<Integer> datos = IntStream.rangeClosed(1, 1_000_000)
+            .boxed().toList();
+
+        long t1 = System.nanoTime();
+        long sumaSec = datos.stream().mapToLong(Integer::longValue).sum();
+        long t2 = System.nanoTime();
+
+        long t3 = System.nanoTime();
+        long sumaPar = datos.parallelStream().mapToLong(Integer::longValue).sum();
+        long t4 = System.nanoTime();
+
+        System.out.println(sumaSec == sumaPar);
+        System.out.println("sec ms: " + (t2 - t1) / 1_000_000);
+        System.out.println("par ms: " + (t4 - t3) / 1_000_000);
+    }
+}
+```
+
+**Desglose del código**
+
+- `Integer::longValue` es una referencia a método; equivalente a `x -> x.longValue()`.
+- Comparamos el resultado, no solo el tiempo: la paralelización no debe cambiar la corrección.
+- La medición simple con `nanoTime` es orientativa. Para benchmarks serios usa JMH.
+- `parallelStream()` usa el pool común; tareas bloqueantes pueden afectar otras partes del proceso.
+
+**Ejecución y salida real**
+
+```text
+true
+sec ms: 12
+par ms: 8
+```
+
+Los tiempos varían por máquina, carga y calentamiento de JVM.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Streams paralelos y referencias a métodos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Resultado incorrecto en paralelo | Estado mutable compartido | Evita mutar estado externo; usa collectors thread-safe |
+| Paralelo más lento | Overhead mayor que el trabajo | Mide y mantén secuencial si gana |
+| Bloqueas otras tareas | Uso de ForkJoinPool común con I/O bloqueante | Usa otro mecanismo de concurrencia |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Streams paralelos y referencias a métodos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses streams paralelos y referencias a métodos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: streams paralelos y referencias a métodos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Streams paralelos y referencias a métodos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve streams paralelos y referencias a métodos en tu contexto?
-2. ¿Cómo sabrías que streams paralelos y referencias a métodos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar streams paralelos y referencias a métodos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```bash
-javac -d out src/Comparar.java
-java -cp out Comparar
+javac DemoParallel.java && java DemoParallel
 ```
 
-```java
-import java.util.List;
+Ejecuta varias veces. Si el paralelo no gana consistentemente, no lo uses: la simplicidad secuencial es mejor.
 
-public class Referencias {
-    public static void main(String[] args) {
-        List<String> guias = List.of("rt-1", "rt-2");
-        guias.stream().map(String::toUpperCase).forEach(System.out::println);
-    }
-}
-```
+## Cierre del módulo
 
-```java
-import java.util.stream.LongStream;
-
-public class Comparar {
-    public static void main(String[] args) {
-        long secuencial = LongStream.rangeClosed(1, 1_000_000).sum();
-        long paralelo = LongStream.rangeClosed(1, 1_000_000).parallel().sum();
-        System.out.println(secuencial);
-        System.out.println(paralelo);
-    }
-}
-```
-
-```java
-import java.util.List;
-
-public class Orden {
-    public static void main(String[] args) {
-        List.of("RT-1", "RT-2", "RT-3").parallelStream()
-            .map(String::toUpperCase)
-            .forEachOrdered(System.out::println);
-    }
-}
-```
-
-</details>
+Puedes transformar colecciones con streams, expresar ausencia con `Optional`, aplicar gatherers cuando el pipeline lo justifica y evaluar paralelismo con medición. El próximo módulo entra en concurrencia: hilos, virtual threads y coordinación segura de tareas.
