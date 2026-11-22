@@ -16,84 +16,48 @@ Cuando un proyecto crece, el classpath plano permite que cualquier clase acceda 
 
 **Caso guía**
 
-Tienes dos componentes: `core` con lógica de dominio y `app` que la consume. Quieres que `app` solo use la API pública de `core`, no sus clases internas.
+`app` debe usar la API pública de `core`, no sus clases internas. Quieres fronteras verificadas por compilador/JVM.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** JPMS (Java Platform Module System) es el sistema de módulos introducido en Java 9 que añade una unidad de descripción a nivel superior al paquete: el *módulo*. Un módulo es un conjunto nombrado de paquetes, recursos y un descriptor `module-info.java` que declara sus dependencias (`requires`), su API exportada (`exports`), sus paquetes abiertos a reflexión (`opens`) y sus usos/provisiones de servicios.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La accesibilidad en JPMS combina la visibilidad del lenguaje Java (`public/protected/private`) con la legibilidad del módulo: un tipo público solo es accesible desde otro módulo si su paquete está `exports` (o `opens` para reflexión profunda). `requires` establece legibilidad en tiempo de compilación y ejecución. `requires transitive` reexporta legibilidad. Los módulos no pueden tener *split packages* (el mismo paquete en múltiples módulos). La resolución de módulos ocurre al arrancar con module path; `--module-path` reemplaza el rol del classpath plano para módulos nombrados.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **`module-info.java`** | Descriptor de módulo JPMS con `requires/exports/opens/...`. | Declarar dependencias y superficie pública. | Proyectos modularizados. | Olvidar exportar paquete necesario. |
+| **Encapsulación fuerte** | Accesibilidad = visibilidad Java + legibilidad de módulo. | Impedir acceso a internos no exportados. | Arquitecturas grandes. | Creer que `public` siempre es accesible. |
+| **`requires`** | Declara dependencia de otro módulo. | Legibilidad en compile/runtime. | Consumir API de otro módulo. | `module not found` por module-path. |
+| **`exports`** | Expone un paquete para acceso normal. | Definir API pública. | Paquetes de contrato. | Exportar todo por comodidad. |
 
-**Modelo mental.** El classpath es una plaza abierta; JPMS es un edificio con puertas declaradas: solo lo que expones en el descriptor puede cruzar la frontera.
+**Contrato / invariantes / reglas.** Un paquete público no exportado no es accesible desde otro módulo. Sin split packages. `--module-path` en compilación/ejecución. `requires transitive` reexporta legibilidad (usar con cuidado).
 
 **Implementación desde cero**
 
-Desde una carpeta vacía:
-
 ```bash
-mkdir -p ~/academia-java/modulo-10/core/src/com/academia/core/internal
+mkdir -p ~/academia-java/modulo-10/core/src/com/academia/core
 mkdir -p ~/academia-java/modulo-10/app/src/com/academia/app
 cd ~/academia-java/modulo-10
 ```
 
-Estructura objetivo:
-
-```text
-core/
-  src/module-info.java
-  src/com/academia/core/Api.java
-  src/com/academia/core/internal/Detalle.java
-app/
-  src/module-info.java
-  src/com/academia/app/Main.java
-```
-
 `core/src/module-info.java`:
-
 ```java
-module com.academia.core {
-    exports com.academia.core;
-}
+module com.academia.core { exports com.academia.core; }
 ```
-
 `core/src/com/academia/core/Api.java`:
-
 ```java
 package com.academia.core;
-
-public class Api {
-    public static String saludar() { return "hola desde core"; }
-}
+public class Api { public static String saludar() { return "hola desde core"; } }
 ```
-
 `app/src/module-info.java`:
-
 ```java
-module com.academia.app {
-    requires com.academia.core;
-}
+module com.academia.app { requires com.academia.core; }
 ```
-
 `app/src/com/academia/app/Main.java`:
-
 ```java
 package com.academia.app;
-
 import com.academia.core.Api;
-
-public class Main {
-    public static void main(String[] args) {
-        System.out.println(Api.saludar());
-    }
-}
+public class Main { public static void main(String[] args){ System.out.println(Api.saludar()); } }
 ```
-
-**Desglose del código**
-
-- `exports com.academia.core` expone solo ese paquete.
-- `com.academia.core.internal` no se exporta: `app` no debería depender de él.
-- `requires com.academia.core` declara la dependencia explícita.
-- Esto se verifica en compilación y en ejecución con el module path.
 
 **Ejecución y salida real**
 
@@ -107,113 +71,82 @@ java --module-path out -m com.academia.app/com.academia.app.Main
 hola desde core
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**: `package is not visible` (no exportado), `module not found` (module-path/requires). **Verificación**: intenta importar paquete no exportado y confirma error de compilación.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `package is not visible` | Paquete no exportado | Exporta el paquete correcto o rediseña la API |
-| `module not found` | Falta `--module-path` o dependencia | Revisa module path y `requires` |
-| Dependencia cíclica entre módulos | Diseño acoplado | Extrae API común o invierte dependencia |
-
-**Verificación rápida**
-
-Intenta importar una clase de un paquete no exportado desde `app`: el compilador debe rechazarlo.
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 35 min
 
-**Contexto y para qué sirve**
+**Caso guía**
 
-No todos los proyectos necesitan JPMS. Migrar un monolito grande con muchas librerías no modularizadas puede costar más que el beneficio. Necesitas criterio.
+Monolito con muchas dependencias: migrar todo a JPMS de golpe es riesgoso. Necesitas criterio y plan incremental.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La *migración incremental* a JPMS es la adopción gradual de descriptores de módulo, manteniendo compatibilidad con el classpath o usando módulos automáticos durante la transición. Un *módulo automático* es un JAR no modular colocado en module path; un *módulo sin nombre* (unnamed module) es el contenido del classpath.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Los módulos automáticos exportan todos sus paquetes y leen todos los demás módulos, lo que debilita la encapsulación y los hace frágiles ante nombres derivados del JAR. El unnamed module puede leer módulos nombrados, pero los módulos nombrados no pueden declarar `requires` al unnamed module. `split packages` están prohibidos en module path. La viabilidad de la migración depende del grafo de dependencias, el soporte de librerías y los límites arquitectónicos reales.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Migración incremental** | Adopción gradual de módulos, no big-bang. | Reducir riesgo. | Bases grandes/legacy. | Modularizar todo a la vez. |
+| **Módulo automático** | JAR no modular en module-path; exporta todo. | Puente temporal. | Dependencias no modularizadas. | Confiar en él como frontera fuerte. |
+| **Unnamed module** | Contenido del classpath. | Compatibilidad legacy. | Transición. | Esperar `requires` hacia unnamed (no funciona). |
+| **Cuándo JPMS aporta valor** | Cuando la encapsulación/arquitectura/ mantenimiento lo justifican. | Tomar decisión costo/beneficio. | Plataformas grandes, librerías internas. | Adoptar por moda. |
 
-**Modelo mental.** Migrar a JPMS es cambiar de barrio: puedes mudarte por etapas (módulos automáticos) pero mientras no declares dirección oficial, las garantías de frontera son débiles.
+**Contrato / invariantes / reglas.** Módulos nombrados no pueden `requires` unnamed. Split packages prohibidos en module-path. Automáticos son frágiles ante nombre de JAR. Evalúa grafo de dependencias, soporte de libs y límites reales.
 
-**Implementación desde cero**
-
-Desde la carpeta del Tema 1 (`~/academia-java/modulo-10`) o un proyecto Maven/Gradle existente con múltiples módulos.
-
-Checklist de decisión:
+**Implementación desde cero (checklist + comando mixto)**
 
 ```text
-¿Necesito encapsulación fuerte entre componentes?  sí/no
-¿Puedo controlar dependencias internas?            sí/no
-¿Mis librerías clave soportan JPMS?               sí/no
-¿El costo de migración es menor que el beneficio? sí/no
+¿Encapsulación fuerte necesaria? si/no
+¿Dependencias controlables?      si/no
+¿Librerías compatibles?          si/no
+¿Beneficio > costo?              si/no
 ```
 
-Ejemplo de comando mixto (classpath + module path) durante migración:
+Comando mixto en transición:
 
 ```bash
 java --module-path mods --class-path libs/* -m app/com.academia.app.Main
 ```
 
-**Desglose del código**
-
-- La migración incremental evita “big bang”.
-- Los módulos automáticos permiten usar JARs no modularizados, pero con menos garantías.
-- La decisión debe basarse en coste/beneficio, no en moda.
-
 **Ejecución y salida real**
 
-No hay una salida única: el resultado esperado es un plan de migración con alcance, riesgos y orden.
+Artefacto esperado: plan de migración (alcance, orden, riesgos), no una salida única.
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**: split packages, big-bang, módulos automáticos permanentes. **Verificación**: clasifica componentes en modularizar/automático/classpath.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Migración atascada | Intentaste modularizar todo a la vez | Migra por bordes y componentes |
-| `split package` | El mismo paquete existe en varios módulos/JARs | Refactoriza paquetes |
-| Adopción por moda | No había problema real | Evalúa costo/beneficio antes |
-
-**Verificación rápida**
-
-Toma un proyecto existente y clasifica sus componentes: candidato a módulo, librería automática, o mantener en classpath.
 
 ### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 35 min
 
 **Caso guía**
 
-Un framework usa reflexión para serializar tus DTOs. Con JPMS, la reflexión profunda sobre paquetes no abiertos falla. Necesitas abrir solo lo necesario.
+Jackson/Hibernate usan reflexión. En JPMS, reflexión profunda sobre paquetes no abiertos falla. Necesitas abrir solo lo necesario.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La *reflexión profunda* (deep reflection) permite a código externo inspeccionar/acceder a miembros no públicos mediante la API de reflexión. En JPMS, `opens` declara que un paquete es accesible por reflexión en runtime; `exports` controla acceso normal en compilación/runtime.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `exports` no equivale a `opens`. `opens package to module` abre reflexión solo a un módulo específico (más seguro que `open module`). Abrir paquetes indiscriminadamente debilita encapsulación. Los frameworks modernos documentan qué paquetes deben abrirse. Para JPMS estricto, `--add-opens` es parche de runtime, no diseño deseable.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **`opens`** | Permite reflexión profunda en runtime sobre un paquete. | Frameworks que inspeccionan campos/constructores no públicos. | DTOs/entidades para Jackson/JPA. | `open module` completo (superficie grande). |
+| **Acceso reflexivo controlado** | `opens ... to <module>` limita qué módulo puede reflejar. | Principio de mínimo privilegio. | Siempre que conozcas el framework. | Abrir a todos sin necesidad. |
+| **`exports` vs `opens`** | `exports` = acceso normal compile/runtime; `opens` = reflexión profunda runtime. | Diferenciar API pública de acceso reflexivo. | Diseño de módulos. | Creer que exportar basta para reflexión profunda. |
+| **`--add-opens`** | Flag runtime para abrir paquete. | Parche temporal. | Diagnóstico/migración. | Dejarlo como solución permanente. |
 
-**Modelo mental.** `exports` es abrir la puerta de atención al público; `opens` es permitir que un técnico autorizado revise el interior de una sala específica.
+**Contrato / invariantes / reglas.** No abras paquetes internos innecesariamente. Prefiere `opens X to Y`. Frameworks modernos documentan requisitos. En Java 9+ la encapsulación fuerte puede lanzar `InaccessibleObjectException`.
 
 **Implementación desde cero**
 
-En una carpeta nueva (o sobre el proyecto JPMS):
-
 ```bash
 mkdir -p ~/academia-java/modulo-10-opens/src/com/academia/infra/dto
-mkdir -p ~/academia-java/modulo-10-opens/src/com/academia/infra/api
-mkdir -p ~/academia-java/modulo-10-opens/libs
 cd ~/academia-java/modulo-10-opens
-```
-
-Descarga Jackson (para `requires com.fasterxml.jackson.databind`):
-
-```bash
-curl -L -o libs/jackson-databind.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar
-curl -L -o libs/jackson-core.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.jar
-curl -L -o libs/jackson-annotations.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar
 ```
 
 `src/module-info.java`:
 
 ```java
 module com.academia.infra {
-    requires com.fasterxml.jackson.databind;
+    exports com.academia.infra.dto;
     opens com.academia.infra.dto to com.fasterxml.jackson.databind;
-    exports com.academia.infra.api;
 }
 ```
 
@@ -221,57 +154,23 @@ module com.academia.infra {
 
 ```java
 package com.academia.infra.dto;
-public class GuiaDto {
-    public String id;
-    public GuiaDto() {}
-    public GuiaDto(String id) { this.id = id; }
-}
+public class GuiaDto { public String id; public GuiaDto() {} public GuiaDto(String id){ this.id=id; } }
 ```
 
-`src/com/academia/infra/api/ApiMarker.java`:
-
-```java
-package com.academia.infra.api;
-public class ApiMarker {}
-```
-
-Compila:
+**Ejecución y salida real (verificación de compilación del descriptor)**
 
 ```bash
-javac --module-path libs -d out $(find src -name "*.java")
-```
-
-**Desglose del código**
-
-- `opens ... to ...` habilita reflexión profunda solo para `com.fasterxml.jackson.databind`.
-- `exports` expone el paquete API para acceso normal.
-- Si quitas `opens`, Jackson puede fallar con `InaccessibleObjectException` en modos que requieren reflexión profunda.
-- Restringir destino (`to ...`) reduce superficie de ataque.
-
-**Ejecución y salida real**
-
-```bash
+javac -d out $(find src -name "*.java")
 ls out/com/academia/infra/dto
 ```
-
-Salida esperada:
 
 ```text
 GuiaDto.class
 ```
 
-**Errores comunes y cómo resolverlos**
+> **Nota de verificación**: la comprobación completa de reflexión con Jackson requiere jars en module-path; el descriptor muestra la regla JPMS. Prueba quitando `opens` con un framework reflexivo para ver `InaccessibleObjectException`.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `InaccessibleObjectException` | Paquete no abierto | Agrega `opens paquete to modulo` |
-| Abriste todo el módulo | `open module` por conveniencia | Restringe a paquetes/módulos necesarios |
-| Confusión exports vs opens | Conceptos mezclados | Exports=acceso normal; opens=reflexión profunda |
+**Errores comunes**: usar `exports` en vez de `opens`, abrir todo el módulo, depender de `--add-opens`. **Verificación**: restringe `opens` al módulo framework específico.
 
-**Verificación rápida**
-
-Compila el módulo con y sin la línea `opens`; el descriptor sin `opens` puede compilar, pero el fallo aparecerá en runtime al usar reflexión profunda.
-
-## Cierre del módulo
 
 JPMS no es obligatorio para todo proyecto, pero da herramientas reales para encapsulación y arquitectura en sistemas grandes. El siguiente módulo baja al runtime: memoria, GC, JIT y herramientas de diagnóstico de la JVM.
