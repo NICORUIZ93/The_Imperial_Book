@@ -4664,16 +4664,16 @@
     ],
     "7": [
       {
-        "title": "sealed — jerarquías cerradas y exhaustividad",
-        "fragment": "tema-1-sealed-jerarquias-cerradas-y-exhaustividad"
+        "title": "SLF4J y Logback — logging estructurado",
+        "fragment": "tema-1-slf4j-y-logback-logging-estructurado"
       },
       {
-        "title": "Pattern matching exhaustivo y para instanceof",
-        "fragment": "tema-2-pattern-matching-exhaustivo-y-para-instanceof"
+        "title": "MDC — contexto por request/hilo",
+        "fragment": "tema-2-mdc-contexto-por-request-hilo"
       },
       {
-        "title": "Unnamed variables y patterns (_, Java 22)",
-        "fragment": "tema-3-unnamed-variables-y-patterns-java-22"
+        "title": "Depuración y stack traces",
+        "fragment": "tema-3-depuracion-y-stack-traces"
       }
     ],
     "8": [
