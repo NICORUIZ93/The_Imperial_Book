@@ -17,66 +17,64 @@ Procesar colecciones con bucles `for` funciona, pero cuando la lógica crece apa
 
 **Caso guía**
 
-Tienes una lista de empleados y necesitas obtener los nombres de los que ganan más de 2000, en mayúsculas, ordenados. Con bucles se puede, pero la intención queda mezclada con la mecánica de iteración.
+De una lista de empleados, quieres nombres en mayúsculas de quienes ganan >2000, ordenados, y además total y máximo salarial. Quieres expresar intención, no mecánica de bucles.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un `Stream<T>` es una secuencia de elementos que soporta operaciones agregadas secuenciales o paralelas. Las operaciones se clasifican en *intermedias* (devuelven stream, perezosas) y *terminales* (producen resultado o efecto, disparan la evaluación).
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Un stream no almacena datos; consume una fuente. Es perezoso: las intermedias no ejecutan hasta una terminal. Un stream es de un solo uso: tras una operación terminal, está consumido. Las operaciones deben ser preferentemente no interferentes y, en paralelo, stateless/thread-safe según el caso. `reduce` requiere función asociativa para resultados deterministas en paralelo.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Stream API** | API para procesar secuencias con operaciones agregadas. | Pipelines declarativos sobre datos. | Transformar/filtrar/agregar colecciones. | Usarla para todo, incluso lógica simple/legible con bucle. |
+| **`map`** | Operación intermedia que transforma cada elemento. | Proyección/cambio de forma. | `Empleado`→`nombre`, `String`→`upper`. | Efectos secundarios dentro de map. |
+| **`filter`** | Operación intermedia que conserva elementos que cumplen predicado. | Selección. | Reglas de inclusión. | Predicados con estado mutable compartido. |
+| **`reduce`** | Operación terminal que combina elementos en un resultado. | Acumulación (suma, max, concatenación). | Cuando no hay colector directo. | Usar función no asociativa en paralelo. |
+| **`collect`** | Operación terminal que materializa en colección/mapa/resultado mutable. | Obtener `List`, `Map`, `groupingBy`. | Fin de pipeline. | Mutar fuente; asumir stream reutilizable. |
 
-**Modelo mental.** Un stream es una cinta transportadora: configuras estaciones (filter/map) y al final colocas una caja de salida (collect/reduce) que pone la cinta en marcha.
+**Contrato / invariantes / reglas.** Stream es perezoso: intermedias no ejecutan sin terminal. Un stream se consume una vez. Operaciones preferentemente stateless/no interferentes. `reduce` requiere identidad + acumulador asociativo para paralelismo correcto. `mapToInt` evita boxing.
+
+**Modelo mental.** Cinta transportadora: `filter/map` son estaciones; `collect/reduce` es la caja final que enciende la cinta.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
 ```
 
-Crea `DemoStreams.java`:
+`DemoStreams.java`:
+
 ```java
 import java.util.*;
 import java.util.stream.*;
-
 public class DemoStreams {
     record Empleado(String nombre, int salario) {}
-
     public static void main(String[] args) {
         List<Empleado> empleados = List.of(
-            new Empleado("Ada", 3000),
-            new Empleado("Linus", 1800),
-            new Empleado("Grace", 2500),
-            new Empleado("Ken", 1500)
-        );
+            new Empleado("Ada", 3000), new Empleado("Linus", 1800),
+            new Empleado("Grace", 2500), new Empleado("Ken", 1500));
 
         List<String> nombres = empleados.stream()
-            .filter(e -> e.salario() > 2000)
-            .map(Empleado::nombre)
-            .map(String::toUpperCase)
+            .filter(e -> e.salario() > 2000) // filter
+            .map(Empleado::nombre)            // map
+            .map(String::toUpperCase)         // map
             .sorted()
-            .collect(Collectors.toList());
+            .collect(Collectors.toList());    // collect
         System.out.println(nombres);
 
         int total = empleados.stream().mapToInt(Empleado::salario).sum();
+        int max = empleados.stream().mapToInt(Empleado::salario).reduce(0, Integer::max); // reduce
         System.out.println(total);
-
-        int max = empleados.stream().mapToInt(Empleado::salario).reduce(0, Integer::max);
         System.out.println(max);
     }
 }
 ```
 
-**Desglose del código**
-
-- `filter` conserva elementos que cumplen el predicado.
-- `map` transforma cada elemento; `Empleado::nombre` es una referencia a método.
-- `collect` materializa el resultado; la tubería se ejecuta al llegar a la terminal.
-- `mapToInt` evita boxing/unboxing en operaciones numéricas.
-- `reduce(0, Integer::max)` acumula un resultado con identidad.
-
 **Ejecución y salida real**
+
+```bash
+javac DemoStreams.java
+java DemoStreams
+```
 
 ```text
 [ADA, GRACE]
@@ -84,86 +82,71 @@ public class DemoStreams {
 3000
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `IllegalStateException: stream has already been operated upon` | Reutilizaste un stream | Crea un nuevo stream desde la fuente |
-| Pipeline sin resultado | Falta operación terminal | Agrega `collect`, `forEach`, `reduce`, etc. |
-| Código difícil de leer en lambdas grandes | Metiste demasiada lógica en la lambda | Extrae un método con nombre claro |
+| `stream has already been operated upon` | Reuso de stream | Crear nuevo stream |
+| Nada pasa | Falta terminal | Agregar `collect/reduce/forEach` |
+| Bug en paralelo con `reduce` | Función no asociativa/identidad mala | Respetar contrato de `reduce` |
 
-**Verificación rápida**
+**Verificación rápida:** cambia filtro a `>=2000` y confirma resultado.
 
-```bash
-javac DemoStreams.java && java DemoStreams
-```
-
-Cambia el filtro a `salario >= 2000` y verifica que la salida incluya los casos límite esperados.
 
 ### Tema 2: Optional — evitar null explícitamente · Intermedio · 35 min
 
 **Caso guía**
 
-Buscas un usuario por email. A veces existe, a veces no. Devolver `null` obliga a cada llamador a recordar la comprobación; olvidarla produce `NullPointerException` en otro lugar, lejos del origen.
+Buscas usuario por email. Puede no existir. Devolver `null` obliga a recordar checks; olvidarlos produce NPE lejos del origen.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** `Optional<T>` es un contenedor objeto que puede contener o no un valor no nulo. Es un tipo destinado principalmente a modelar ausencia en retornos.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `Optional.of(null)` lanza `NullPointerException`; `Optional.ofNullable` acepta null. `get()` lanza `NoSuchElementException` si está vacío. `Optional` no debe usarse como campo serializable por defecto, ni como parámetro generalizado en todos los casos; su valor principal es en el contrato de retorno. `orElse` evalúa su argumento siempre; `orElseGet` lo evalúa perezosamente.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **`Optional<T>`** | Contenedor que puede tener o no un valor no nulo. | Modelar ausencia en retornos. | Búsquedas, lookups, APIs donde ausencia es normal. | Usarlo como campo/param everywhere. |
+| **Evitar `null` explícitamente** | Reemplazar contrato implícito “puede ser null” por tipo explícito. | Hacer visible la ausencia en la firma. | Retornos de búsqueda. | Llamar `get()` sin verificar. |
+| **`map/flatMap/filter`** | Transforman solo si hay valor. | Componer sin if-null anidados. | Pipelines seguros. | Usar `map` cuando la función ya devuelve Optional (usar `flatMap`). |
+| **`orElse/orElseGet/orElseThrow`** | Extraen valor con default/eager/lazy/exception. | Definir política ante ausencia. | Default, cálculo diferido, error de dominio. | `orElse` ejecuta costo siempre; usar `orElseGet` si es caro. |
 
-**Modelo mental.** `Optional` es una caja etiquetada: “puede haber algo”. Obliga a abrir la caja conscientemente.
+**Contrato / invariantes / reglas.** `Optional.of(null)` lanza NPE; `ofNullable` acepta null. `get()` en vacío lanza `NoSuchElementException`. No recomendado como campo serializable ni parámetro general. `orElse` evalúa argumento siempre; `orElseGet` solo si vacío.
+
+**Modelo mental.** Caja etiquetada “puede haber algo”: te obliga a abrirla conscientemente.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
 ```
 
-Crea `DemoOptional.java`:
+`DemoOptional.java`:
+
 ```java
 import java.util.*;
-
 public class DemoOptional {
     record Usuario(String email, String nombre) {}
-
     static Optional<Usuario> buscar(String email, List<Usuario> usuarios) {
-        return usuarios.stream()
-            .filter(u -> u.email().equalsIgnoreCase(email))
-            .findFirst();
+        return usuarios.stream().filter(u -> u.email().equalsIgnoreCase(email)).findFirst();
     }
-
     public static void main(String[] args) {
-        List<Usuario> usuarios = List.of(
-            new Usuario("ada@example.com", "Ada"),
-            new Usuario("linus@example.com", "Linus")
-        );
-
+        List<Usuario> usuarios = List.of(new Usuario("ada@example.com","Ada"), new Usuario("linus@example.com","Linus"));
         String nombre = buscar("ada@example.com", usuarios).map(Usuario::nombre).orElse("DESCONOCIDO");
         System.out.println(nombre);
-
-        String otro = buscar("nadie@example.com", usuarios).map(Usuario::nombre).orElse("DESCONOCIDO");
+        String otro = buscar("nadie@example.com", usuarios).map(Usuario::nombre).orElseGet(() -> "DESCONOCIDO");
         System.out.println(otro);
-
-        try {
-            buscar("nadie@example.com", usuarios).orElseThrow();
-        } catch (NoSuchElementException e) {
-            System.out.println("No encontrado");
-        }
+        try { buscar("nadie@example.com", usuarios).orElseThrow(); }
+        catch (NoSuchElementException e) { System.out.println("No encontrado"); }
     }
 }
 ```
 
-**Desglose del código**
-
-- `findFirst()` devuelve `Optional`; encaja natural con búsquedas.
-- `map` transforma solo si hay valor; si está vacío, sigue vacío.
-- `orElse` da un valor por defecto. `orElseThrow` hace explícito que la ausencia es excepcional en ese contexto.
-- Evita `get()` sin comprobar.
-
 **Ejecución y salida real**
+
+```bash
+javac DemoOptional.java
+java DemoOptional
+```
 
 ```text
 Ada
@@ -171,47 +154,48 @@ DESCONOCIDO
 No encontrado
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `NoSuchElementException` con `get()` | Llamaste `get()` sin verificar | Usa `orElse`, `orElseThrow`, `ifPresent` o `map` |
-| `Optional` como campo/parámetro por todas partes | Sobreuso | Úsalo principalmente en retornos; evalúa el caso |
-| `orElse` ejecuta código costoso siempre | `orElse` evalúa el argumento | Usa `orElseGet` para cálculo perezoso |
+| `NoSuchElementException` | `get()` en vacío | `orElse/orElseThrow/map/ifPresent` |
+| Costo innecesario | `orElse` evalúa siempre | `orElseGet` para lazy |
+| Optional en todos lados | Sobreuso | Principalmente en retornos |
 
-**Verificación rápida**
+**Verificación rápida:** usa `orElseThrow(() -> new IllegalArgumentException("email no encontrado"))`.
 
-```bash
-javac DemoOptional.java && java DemoOptional
-```
-
-Prueba `orElseThrow(() -> new IllegalArgumentException("Email no encontrado"))` para dar un error de dominio más claro.
 
 ### Tema 3: Stream Gatherers (Java 24) · Avanzado · 40 min
 
 **Caso guía**
 
-Necesitas ventanas deslizantes de 3 elementos para detectar picos, o agrupar por lotes fijos. Con `map/filter/reduce` puro puedes hacerlo, pero el código queda retorcido. Los gatherers añaden operaciones intermedias personalizadas al pipeline.
-
-> **Nota de versión:** `Stream.gather()` y `Gatherers` son características de Java 24+. Verifica con `javac -version`.
+Necesitas agrupar un stream en ventanas deslizantes de 3 y lotes fijos de 2. Con `map/filter/reduce` puro es incómodo; Gatherers agrega operaciones intermedias personalizadas al pipeline.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *gatherer* es una operación intermedia de stream que transforma elementos mediante un estado y una función de integración/salida. `Gatherers` provee implementaciones estándar (`windowFixed`, `windowSliding`, `fold`, `scan`, `mapConcurrent`).
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `gather()` es intermedia y perezosa, como otras operaciones intermedias. El gatherer puede mantener estado por pipeline; por tanto, su uso en paralelo requiere cuidado con la semántica del gatherer específico. La API requiere Java 24+; en versiones anteriores se debe usar alternativas (`Collector`, bucles, librerías).
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Stream Gatherers (Java 24)** | API (`java.util.stream.Gatherer`, `Stream.gather`) para definir operaciones intermedias personalizadas que pueden emitir 0..N elementos por entrada. | Extender pipelines cuando `map/filter/flatMap` no expresan bien la operación. | Ventanas, lotes, scan, operaciones stateful controladas. | Usarlos para algo simple ya cubierto por API estándar. |
+| **`windowSliding`** | Gatherer que emite ventanas deslizantes de tamaño n, compartiendo elementos entre ventanas consecutivas. | Análisis por ventana móvil (promedios, tendencias). | Series temporales, n-grams. | Esperar ventanas parciales si no las define el gatherer. |
+| **`windowFixed`** | Gatherer que emite lotes fijos consecutivos sin solapamiento. | Procesamiento por bloques. | Batching, paginación en memoria. | Asumir que último lote siempre tiene tamaño completo. |
+| **Operación intermedia personalizada** | Paso en pipeline que transforma flujo con estado/localidad controlada. | Encapsular patrones complejos reutilizables. | Cuando la lógica de flujo es la abstracción. | Estado mutable compartido inseguro en paralelo. |
 
-**Modelo mental.** Un gatherer es una estación personalizada que puedes insertar en la cinta transportadora cuando las estaciones estándar no alcanzan.
+**Contrato / invariantes / reglas.** Requiere JDK 24+ (API estándar en 24; antes preview). `gather(...)` es intermedia y perezosa. Gatherers integrados: `windowFixed`, `windowSliding`, `fold`, `scan`, `mapConcurrent` (según JDK). Para paralelismo, el gatherer debe cumplir contrato de combiner/estado; no todos son igual de paralelizables.
+
+**Modelo mental.** Gatherer = estación custom en la cinta transportadora: recibe items, puede acumular y emitir paquetes según su regla.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
 ```
 
-Crea `DemoGatherers.java`:
+> **Nota de verificación**: requiere JDK 24+. Confirma con `java -version`.
+
+`DemoGatherers.java`:
+
 ```java
 import java.util.List;
 import java.util.stream.Gatherers;
@@ -231,27 +215,29 @@ public class DemoGatherers {
 
 **Desglose del código**
 
-- `windowSliding(3)` produce `[1,2,3], [2,3,4], [3,4,5]`.
-- `windowFixed(2)` produce `[1,2], [3,4], [5]`.
-- `gather(...)` se integra en el pipeline como cualquier operación intermedia.
-- Si tu JDK es anterior a 24, esta API no existe.
+- **Gatherer**: `gather(...)` inserta operación intermedia custom.
+- **windowSliding(3)**: solapa elementos: `[1,2,3],[2,3,4],[3,4,5]`.
+- **windowFixed(2)**: lotes disjuntos: `[1,2],[3,4],[5]`.
 
 **Ejecución y salida real**
 
-En JDK 24+:
+```bash
+javac DemoGatherers.java
+java DemoGatherers
+```
 
 ```text
 [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
 [[1, 2], [3, 4], [5]]
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
 | `cannot find symbol Gatherers` | JDK < 24 | Actualiza JDK o usa alternativa con bucle/colector |
-| Ventana más grande que el stream | Resultado vacío o menor al esperado, según gatherer | Valida tamaño de entrada |
-| Usas gatherer para algo que `map/filter` resuelve | Sobreingeniería | Prefiere operaciones estándar cuando alcancen |
+| Usas gatherer para `map/filter` | Sobreingeniería | Prefiere operación estándar |
+| Estado mutable inseguro | Gatherer custom mal diseñado | Respetar contrato de Gatherer |
 
 **Verificación rápida**
 
@@ -259,31 +245,36 @@ En JDK 24+:
 javac DemoGatherers.java && java DemoGatherers
 ```
 
-Si no tienes JDK 24+, valida la lógica equivalente con bucles y deja el gatherer como versión objetivo.
 
 ### Tema 4: Streams paralelos y referencias a métodos · Intermedio · 35 min
 
-**Contexto y para qué sirve**
+**Caso guía**
 
-`parallelStream()` promete usar varios núcleos, pero no siempre mejora el rendimiento. En colecciones pequeñas, operaciones baratas o fuentes difíciles de dividir, el overhead puede hacerla más lenta. La regla es medir.
+Tienes 1 millón de números y quieres sumarlos. ¿`parallelStream()` lo hace más rápido? Depende: hay que medir y mantener corrección.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *stream paralelo* particiona el trabajo en subtareas ejecutadas sobre el ForkJoinPool común (por defecto). Una *referencia a método* (`Class::method`, `obj::method`) es una forma compacta de lambda cuando la firma coincide.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La corrección en paralelo requiere operaciones sin efectos secundarios compartidos no sincronizados y funciones asociativas/idempotentes según la operación. El orden de encuentro puede no preservarse salvo operaciones que lo mantengan. El rendimiento depende de tamaño de datos, costo por elemento, divisibilidad de la fuente, localidad de memoria y contención del pool común.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Streams paralelos** | Stream que particiona trabajo en subtareas, por defecto sobre ForkJoinPool común. | Aprovechar varios núcleos en operaciones CPU-bound divisibles. | Grandes volúmenes, operaciones costosas, fuente divisible. | Usarlo por defecto en colecciones pequeñas/I/O bloqueante. |
+| **Referencias a métodos** | Sintaxis compacta de lambda (`obj::met`, `Clase::met`, `Clase::new`). | Legibilidad cuando la firma coincide. | `map(Integer::longValue)`, `System.out::println`. | Forzar referencia cuando una lambda es más clara. |
+| **Corrección en paralelo** | El resultado debe ser igual al secuencial; requiere no interferencia y funciones adecuadas. | Evitar race conditions. | Siempre validar antes de medir rendimiento. | Mutar estado compartido desde lambdas. |
+| **Medición (no intuición)** | Comparar con medición real (JMH ideal; nanoTime como aproximación). | Decidir si paralelizar vale. | Antes de adoptar paralelo. | Creer que paralelo siempre es más rápido. |
 
-**Modelo mental.** Paralelizar es dividir una carga entre varios trabajadores: útil si la carga es grande; contraproducente si coordinar a los trabajadores cuesta más que el trabajo.
+**Contrato / invariantes / reglas.** Operaciones deben ser stateless/no interferentes o usar colectores concurrentes seguros. `reduce`/`collect` deben cumplir identidad/asociatividad/combiner según corresponda. `parallelStream()` comparte ForkJoinPool común: no bloquearlo con I/O. Orden de encuentro puede variar; usa `forEachOrdered` si necesitas orden (con costo).
+
+**Modelo mental.** Paralelizar = dividir carga entre trabajadores; coordinar cuesta. Referencia a método = atajo legible a una lambda existente.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
 ```
 
-Crea `DemoParallel.java`:
+`DemoParallel.java`:
+
 ```java
 import java.util.*;
 import java.util.stream.*;
@@ -293,14 +284,14 @@ public class DemoParallel {
         List<Integer> datos = IntStream.rangeClosed(1, 1_000_000).boxed().toList();
 
         long t1 = System.nanoTime();
-        long sumaSec = datos.stream().mapToLong(Integer::longValue).sum();
+        long sumaSec = datos.stream().mapToLong(Integer::longValue).sum(); // referencia a método
         long t2 = System.nanoTime();
 
         long t3 = System.nanoTime();
         long sumaPar = datos.parallelStream().mapToLong(Integer::longValue).sum();
         long t4 = System.nanoTime();
 
-        System.out.println(sumaSec == sumaPar);
+        System.out.println(sumaSec == sumaPar); // corrección primero
         System.out.println("sec ms: " + (t2 - t1) / 1_000_000);
         System.out.println("par ms: " + (t4 - t3) / 1_000_000);
     }
@@ -309,12 +300,17 @@ public class DemoParallel {
 
 **Desglose del código**
 
-- `Integer::longValue` es una referencia a método; equivalente a `x -> x.longValue()`.
-- Se compara resultado antes que tiempo: paralelizar no debe romper corrección.
-- `nanoTime` es orientativo; benchmarks serios usan JMH.
-- `parallelStream()` usa el pool común; I/O bloqueante puede afectar otras tareas.
+- **Referencia a método**: `Integer::longValue` equivale a `x -> x.longValue()`.
+- **Stream paralelo**: `parallelStream()` divide el trabajo.
+- **Corrección**: compara sumas antes que tiempos.
+- **Medición**: `nanoTime` aproximado; para serio usar JMH.
 
 **Ejecución y salida real**
+
+```bash
+javac DemoParallel.java
+java DemoParallel
+```
 
 ```text
 true
@@ -322,23 +318,18 @@ sec ms: 12
 par ms: 8
 ```
 
-Los tiempos varían por máquina, carga y calentamiento de JVM.
+(Tiempos varían por máquina/JVM/carga; lo importante es `true`).
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Resultado incorrecto en paralelo | Estado mutable compartido | Evita mutar estado externo; usa collectors thread-safe |
-| Paralelo más lento | Overhead mayor que el trabajo | Mide y mantén secuencial si gana |
-| Bloqueas otras tareas | Uso de ForkJoinPool común con I/O bloqueante | Usa otro mecanismo de concurrencia |
+| Resultado incorrecto | Estado mutable compartido | Elimina side effects; usa collectors seguros |
+| Paralelo más lento | Overhead/datos pequeños/I/O | Mide; mantén secuencial si gana |
+| Bloqueas sistema | I/O bloqueante en pool común | Usa ejecutor dedicado/virtual threads |
 
-**Verificación rápida**
+**Verificación rápida:** ejecuta varias veces; si paralelo no gana consistentemente, no lo uses.
 
-```bash
-javac DemoParallel.java && java DemoParallel
-```
-
-Ejecuta varias veces. Si el paralelo no gana consistentemente, no lo uses: la simplicidad secuencial es mejor.
 
 ## Cierre del módulo
 
