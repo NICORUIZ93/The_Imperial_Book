@@ -411,7 +411,7 @@ La lectura completa es cómoda para archivos chicos; el streaming mantiene bajo 
 
 **4. Cierra**
 
-Anota el tamaño del archivo y cuál lectura elegiste. Fuentes oficiales: [BufferedReader](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html) y [recursos de clase](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getResourceAsStream(java.lang.String)).
+Anota el tamaño del archivo y cuál lectura elegiste. Fuentes oficiales: [BufferedReader](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html) y [recursos de clase](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getResourceAsStream-java.lang.String-.
 
 **Proyecto integrador:** procesa comprobantes grandes línea por línea y empaqueta la configuración con el JAR. **Límite:** usa `readAllLines`/`Files.readString` solo cuando el archivo cabe con holgura en memoria; para reportes de cientos de miles de filas o tamaño desconocido, procesa línea por línea con `BufferedReader` en vez de materializar la lista completa. **Práctica:** modifica `ContarLineas.java` para además contar cuántas líneas contienen la palabra `ENTREGADO`, sin dejar de leer el archivo línea por línea.
 

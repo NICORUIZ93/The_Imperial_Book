@@ -681,7 +681,7 @@ El equipo de RutaFlow tenía tres skills para su agente. Una tenía en su ejempl
 
 #### Paso 3 · Teoría, modelo mental y analogía
 
-**Conceptos clave:** skill de agente, `SKILL.md`, cabecera YAML, datos personales (PII), duplicado, índice de Jaccard, prueba A/B, tasa de éxito, mejora mínima.
+**Conceptos clave:** skill de agente, `SKILL.md`, cabecera **YAML** (formato de texto para datos estructurados, legible por personas), datos personales (PII), duplicado, índice de Jaccard, prueba A/B, tasa de éxito, mejora mínima.
 
 NVIDIA publicó SkillEvaluator con tres niveles, de más barato a más caro:
 

@@ -570,7 +570,7 @@ sequenceDiagram
     Note over M: reloj = max(0, 4) + 1 = 5
 ```
 
-**¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
+**¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, **Kubernetes** (plataforma para orquestar contenedores en varios nodos) y cualquier sistema con varios nodos.
 **Fuentes oficiales y primarias:** [Lamport: *Time, Clocks, and the Ordering of Events* (Microsoft Research)](https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/) y [transacciones en dos fases de PostgreSQL](https://www.postgresql.org/docs/current/two-phase.html). La primera sustenta el orden causal mediante relojes lógicos; la segunda documenta `PREPARE TRANSACTION`, `COMMIT PREPARED` y `ROLLBACK PREPARED` en una implementación real. Como lectura de contexto permanece Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3, pendiente de revisión completa en el disco externo.
 **Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
 **Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.

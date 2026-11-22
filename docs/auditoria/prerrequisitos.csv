@@ -149,15 +149,6 @@ flutter,web/public/content/flutter/modulo-7.md,"Tema 4: Cámara, galería y carg
 flutter,web/public/content/flutter/modulo-7.md,Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Avanzado · 20 min,0,gradle
 flutter,web/public/content/flutter/modulo-9.md,Tema 2: Mocking con mocktail · Intermedio · 30 min,0,latencia
 flutter,web/public/content/flutter/modulo-14.md,Tema 1: Diseño de pantallas y Riverpod · Intermedio · 35 min,0,concurrencia
-foundations,web/public/content/foundations/modulo-2.md,"Tema 4: Complejidad, medición, ordenamiento y recursión · Básico · 45 min",0,url
-foundations,web/public/content/foundations/modulo-2.md,Tema 5: Árboles y árboles binarios de búsqueda (BST) · Básico · 45 min,0,java
-foundations,web/public/content/foundations/modulo-3.md,"Tema 1: De una URL al servidor: red, DNS, IP y puertos · Básico · 45 min",0,docker tcp
-foundations,web/public/content/foundations/modulo-3.md,Tema 2: HTTP como contrato observable · Básico · 45 min,0,https rest
-foundations,web/public/content/foundations/modulo-3.md,"Tema 4: CSS, layout responsive y accesibilidad verificable · Básico · 45 min",0,sql
-foundations,web/public/content/foundations/modulo-4.md,"Tema 4: Transacciones, concurrencia y elección SQL/NoSQL · Intermedio · 45 min",0,git
-foundations,web/public/content/foundations/modulo-6.md,"Tema 2: Identidad, contraseñas, sesiones y autorización · Avanzado · 45 min",0,endpoint jwt oauth
-foundations,web/public/content/foundations/modulo-7.md,"Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Avanzado · 40 min",0,yaml
-foundations,web/public/content/foundations/modulo-10.md,"Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases · Avanzado · 45 min",0,kubernetes
 ios,web/public/content/ios/modulo-0.md,Tema 1: Optionals y unwrapping seguro · Básico · 45 min,0,java
 ios,web/public/content/ios/modulo-0.md,"Tema 4: Closures, colecciones y genéricos con propósito · Básico · 30 min",0,proceso
 ios,web/public/content/ios/modulo-0.md,"Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min",0,concurrencia terminal

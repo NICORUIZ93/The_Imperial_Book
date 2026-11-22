@@ -149,7 +149,7 @@ Agrega la guía RF-999 con estado `EN_RUTA`, observa qué devuelve `getOrDefault
 - [ ] Consulté y actualicé un estado con una clave de Map.
 - [ ] Distinguí una clave ausente de una clave asociada a `null`.
 
-**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [LinkedHashSet](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashSet.html) y [contrato de Map.getOrDefault](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html#getOrDefault(java.lang.Object,V)).
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [LinkedHashSet](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashSet.html) y [contrato de Map.getOrDefault](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html).
 
 **Transferencia al proyecto integrador:** almacena guías en una lista ordenada, usa un Set para rechazar importaciones duplicadas y conserva el estado actual en un Map por código. **Límite:** usa `ArrayList` cuando el orden de llegada importa y habrá lecturas frecuentes por índice; usa `HashSet` solo para descartar duplicados sin importar el orden; si necesitas orden de inserción y descarte de duplicados a la vez, usa `LinkedHashSet` en vez de combinar las dos estructuras a mano. **Práctica:** modifica `ColeccionesDemo.java` para usar `getOrDefault("RF-999", "SIN_REGISTRO")` en vez de `get`, y confirma que ya no se produce `NullPointerException`.
 
@@ -967,7 +967,7 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 - [ ] Recorrí pares de un Map mediante entrySet.
 - [ ] Eliminé la entrada actual con `Iterator.remove` y reproduje el fallo al modificar el mapa directamente durante el recorrido.
 
-**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación estable de listas](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html#sort(java.util.Comparator)), [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html), [contrato de Iterator.remove](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Iterator.html#remove()) y [límites de fail-fast en LinkedHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashMap.html).
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación estable de listas](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html), [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html), [contrato de Iterator.remove](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Iterator.html#remove() y [límites de fail-fast en LinkedHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashMap.html).
 
 **Transferencia al proyecto integrador:** ordena las guías por el criterio natural acordado, agrega vistas alternativas con Comparator y elimina del registro entradas completadas durante su recorrido seguro. **Límite:** implementa `Comparable` solo cuando la clase tiene un único orden natural y obvio (por ejemplo el código de guía); si necesitas varios criterios de orden distintos según la pantalla o el reporte, usa `Comparator` externos en vez de forzar varios "órdenes naturales" en la misma clase.
 

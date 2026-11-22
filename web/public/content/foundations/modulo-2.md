@@ -630,7 +630,7 @@ Pista: anotá el cociente `tiempo_bubble / tiempo_sorted` en cada tamaño del Pa
 Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de ordenamiento intermedia (por ejemplo insertion sort) para ver dónde queda ubicada respecto a `sorted()` y `bubble_sort()`. Anotá si el orden relativo de las tres (quién es más rápida) se mantiene igual en los tres tamaños.
 
 #### Paso 7 · Cierre
-Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
+Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL (dirección web, como la de una página) hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
 **Implicación práctica:** La teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 
 ### Tema 5: Árboles y árboles binarios de búsqueda (BST) · Básico · 45 min
@@ -733,7 +733,7 @@ Añade un recorrido en orden (`inorder`) que imprima los valores de menor a mayo
 Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo hijo. Entrega el árbol antes y después de eliminar, y explica por qué eliminar un nodo con dos hijos es el caso difícil.
 
 #### Paso 7 · Cierre
-Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en Java, `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
+Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en **Java**, un lenguaje de programación, o `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
 
 ### Tema 6: Tablas hash — búsqueda en tiempo constante · Básico · 45 min
 

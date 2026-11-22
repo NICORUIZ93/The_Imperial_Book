@@ -1,6 +1,6 @@
 {
   "topics": 1608,
-  "findings": 374,
+  "findings": 365,
   "courses": [
     {
       "course": "android",
@@ -1062,84 +1062,7 @@
     {
       "course": "foundations",
       "topics": 88,
-      "findings": [
-        {
-          "file": "web/public/content/foundations/modulo-2.md",
-          "title": "Tema 4: Complejidad, medición, ordenamiento y recursión · Básico · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "url"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-2.md",
-          "title": "Tema 5: Árboles y árboles binarios de búsqueda (BST) · Básico · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "java"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-3.md",
-          "title": "Tema 1: De una URL al servidor: red, DNS, IP y puertos · Básico · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "docker",
-            "tcp"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-3.md",
-          "title": "Tema 2: HTTP como contrato observable · Básico · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "https",
-            "rest"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-3.md",
-          "title": "Tema 4: CSS, layout responsive y accesibilidad verificable · Básico · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "sql"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-4.md",
-          "title": "Tema 4: Transacciones, concurrencia y elección SQL/NoSQL · Intermedio · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "git"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-6.md",
-          "title": "Tema 2: Identidad, contraseñas, sesiones y autorización · Avanzado · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "endpoint",
-            "jwt",
-            "oauth"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-7.md",
-          "title": "Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Avanzado · 40 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "yaml"
-          ]
-        },
-        {
-          "file": "web/public/content/foundations/modulo-10.md",
-          "title": "Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases · Avanzado · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "kubernetes"
-          ]
-        }
-      ]
+      "findings": []
     },
     {
       "course": "ios",

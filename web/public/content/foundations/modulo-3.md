@@ -12,7 +12,7 @@ Al finalizar vas a levantar un servidor HTTP local, confirmar con `curl` que res
 El proyecto integrador Fundamentos necesita, además de su CLI, una interfaz web que puedas abrir en el navegador. Cuando alguien te diga "no carga el sitio", separa las hipótesis: resolución del nombre, conexión al puerto y respuesta HTTP. En esta práctica, `127.0.0.1` evita depender de un nombre y permite probar si el proceso escucha en el puerto esperado.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Abrir una URL dispara pasos distintos: si el host es un dominio público, el sistema de nombres resuelve el nombre a una dirección IP; después el cliente abre una conexión TCP contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. En una configuración habitual, `localhost` se resuelve a una dirección de loopback (`127.0.0.1` o `::1`) sin consultar DNS público. Por eso, en este ejercicio, la causa a comprobar es que el servidor escuche en la dirección y el puerto que estás probando. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
+Abrir una URL dispara pasos distintos: si el host es un dominio público, el sistema de nombres resuelve el nombre a una dirección IP; después el cliente abre una conexión **TCP** (protocolo de transporte que garantiza entrega ordenada de datos) contra esa IP en un puerto específico; solo entonces viaja el mensaje HTTP. En una configuración habitual, `localhost` se resuelve a una dirección de loopback (`127.0.0.1` o `::1`) sin consultar DNS público. Por eso, en este ejercicio, la causa a comprobar es que el servidor escuche en la dirección y el puerto que estás probando. La analogía: la IP es la dirección de un edificio, el puerto es el número de oficina dentro de ese edificio — podés tener la dirección perfecta y aun así golpear una puerta vacía si memorizaste mal el número de oficina.
 
 **Conceptos clave:** cliente, servidor, protocolo, URL, dominio, DNS, dirección IP, puerto, TCP y localhost.
 
@@ -36,7 +36,7 @@ Este comando inicia un servidor de desarrollo en la carpeta actual, accesible so
 
 **¿Por qué es importante?** Diagnosticar requiere separar resolución de nombre, conexión y aplicación. “No carga” puede significar DNS incorrecto, puerto cerrado, proceso caído o respuesta HTTP de error.
 
-**Casos de uso reales:** configurar APIs locales, Docker, bases de datos, proxies, firewalls y servicios cloud.
+**Casos de uso reales:** configurar APIs locales, Docker (plataforma para ejecutar aplicaciones en contenedores, que verás en módulos posteriores), bases de datos, proxies, firewalls y servicios cloud.
 
 **Diagrama:**
 
@@ -173,13 +173,13 @@ curl -i http://127.0.0.1:8000/no-existe
 
 `-i` incluye headers. Compara 200 y 404. En DevTools → Network inspecciona método, URL, estado, tamaño y tiempo. Desactiva caché y observa nuevas solicitudes.
 
-HTTPS añade TLS: autentica el servidor mediante certificados y cifra el tránsito. No vuelve correcto ni seguro todo el código, pero evita que intermediarios lean o modifiquen fácilmente el contenido.
+**HTTPS** (HTTP seguro) añade TLS, una capa de cifrado: autentica el servidor mediante certificados y cifra el tránsito. No vuelve correcto ni seguro todo el código, pero evita que intermediarios lean o modifiquen fácilmente el contenido.
 
 **Analogía:** HTTP es un formulario de solicitud y respuesta con campos estandarizados; TLS introduce un sobre cifrado y una identificación del destinatario.
 
 En Windows PowerShell, usa `curl.exe` en vez de `curl` para llamar al ejecutable de curl y no al alias `Invoke-WebRequest`.
 
-**Casos de uso reales:** APIs REST, navegación, descargas, autenticación, webhooks y comunicación entre microservicios.
+**Casos de uso reales:** APIs **REST** (estilo de API que usa recursos y métodos HTTP), navegación, descargas, autenticación, webhooks y comunicación entre microservicios.
 
 **Diagrama:**
 
@@ -629,7 +629,7 @@ Pista: no te quedes en "se ve mejor" — recalculá el ratio o volvé a mirar el
 Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya usás en los bordes o enlaces de tu sitio), calculá o verificá su ratio con la misma herramienta, y documentá cuáles cumplen 4.5:1 (texto normal) y cuáles necesitarían ser texto grande para que alcance con el mínimo de 3:1.
 
 #### Paso 7 · Cierre
-Entrega el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1 y las combinaciones adicionales del Paso 6; explica por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitas un número verificable. Con esto cierras el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: [MDN Learn](https://developer.mozilla.org/es/docs/Learn), [WAI, contraste mínimo WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) y [WAI, introducción a accesibilidad](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
+Entrega el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1 y las combinaciones adicionales del Paso 6; explica por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitas un número verificable. Con esto cierras el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con **SQL** (lenguaje para consultar y modificar datos en bases relacionales). Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: [MDN Learn](https://developer.mozilla.org/es/docs/Learn), [WAI, contraste mínimo WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) y [WAI, introducción a accesibilidad](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 
 ## Construcción guiada del capítulo
 
