@@ -7,9 +7,9 @@ En el Módulo 0 escribiste programas pequeños con variables, condiciones, bucle
 | Tema | Qué vas a poder hacer al terminar |
 |---|---|
 | 1 | Modelar una entidad con clase, campos, métodos y objetos |
-| 2 | Usar constructores y encapsulación para proteger el estado |
-| 3 | Reutilizar comportamiento con herencia y sobreescritura |
-| 4 | Definir contratos con interfaces y clases abstractas |
+| 2 | Reutilizar comportamiento con herencia y sobreescritura |
+| 3 | Definir contratos con interfaces y clases abstractas |
+| 4 | Distinguir sobrecarga, sobreescritura y modificadores de acceso |
 | 5 | Usar records para modelos de datos inmutables |
 | 6 | Aplicar constructores flexibles de Java moderno con validación temprana |
 
@@ -21,16 +21,13 @@ En el Módulo 0 escribiste programas pequeños con variables, condiciones, bucle
 
 Necesitas representar una cuenta bancaria. No basta con una variable `double saldo`: también debes saber de quién es la cuenta, permitir depósitos y retiros, y evitar que el saldo quede en un estado inválido. Este caso obliga a agrupar datos y comportamiento en una misma unidad.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- **Clase**: el plano. Define qué datos tiene un objeto y qué operaciones puede hacer.
-- **Objeto**: una instancia concreta de la clase. Cada objeto tiene su propio estado.
-- **Campo**: variable dentro del objeto (`numero`, `titular`, `saldo`).
-- **Método**: comportamiento asociado al objeto (`depositar`, `retirar`).
-- **Constructor**: método especial que se ejecuta al crear el objeto con `new`.
-- **Encapsulación**: ocultar el estado interno y exponer operaciones controladas.
+**Definición formal.** Una *clase* es un tipo de referencia que define la estructura (campos) y el comportamiento (métodos/constructores) de sus instancias. Un *objeto* es una instancia de una clase, creada en tiempo de ejecución mediante `new`, con identidad, estado y comportamiento. Un *constructor* es una rutina especial de inicialización invocada durante la creación del objeto. La *encapsulación* es el principio de ocultar la representación interna y exponer una interfaz controlada.
 
-La regla práctica: si un dato puede quedar inválido, no lo expongas directamente; protégelo con `private` y valida en métodos o constructores.
+**Contrato / invariantes / reglas.** Los campos `private` solo son accesibles dentro del cuerpo de la clase que los declara (según reglas del lenguaje). `final` en un campo implica que debe asignarse exactamente una vez, a más tardar al finalizar la construcción del objeto. Un constructor no tiene tipo de retorno; si no se declara ninguno, el compilador genera un constructor por defecto solo cuando no hay otros constructores. Las excepciones en tiempo de ejecución (`RuntimeException`) señalan violaciones de precondición/estado; `IllegalArgumentException` indica argumento inválido, `IllegalStateException` indica estado inválido para la operación.
+
+**Modelo mental.** La clase es el plano arquitectónico; el objeto es la casa construida. La encapsulación es poner cerraduras a las puertas críticas: no cualquiera entra a mover la estructura, solo operaciones autorizadas.
 
 **Implementación desde cero**
 
@@ -57,17 +54,9 @@ public class CuentaBancaria {
         this.saldo = saldoInicial;
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
-    public String getTitular() {
-        return titular;
-    }
-
-    public double getSaldo() {
-        return saldo;
-    }
+    public String getNumero() { return numero; }
+    public String getTitular() { return titular; }
+    public double getSaldo() { return saldo; }
 
     public void depositar(double monto) {
         if (monto <= 0) {
@@ -96,7 +85,6 @@ public class DemoCuenta {
         CuentaBancaria cuenta = new CuentaBancaria("001-123", "Ada", 1000.0);
         cuenta.depositar(250.0);
         cuenta.retirar(100.0);
-
         System.out.println(cuenta.getNumero());
         System.out.println(cuenta.getTitular());
         System.out.println(cuenta.getSaldo());
@@ -109,9 +97,8 @@ public class DemoCuenta {
 - `private` impide modificar `saldo` directamente desde fuera. Solo los métodos de la clase lo cambian.
 - `final` en `numero` indica que, una vez asignado en el constructor, no cambia.
 - `this.numero = numero` distingue el campo del parámetro con el mismo nombre.
-- El constructor valida el estado inicial. Es mejor rechazar un objeto inválido al crearlo que permitirlo y depurar después.
+- El constructor valida el estado inicial: rechazar un objeto inválido temprano preserva invariantes.
 - `depositar` y `retirar` son guardas de comportamiento: aplican reglas antes de modificar el estado.
-- `IllegalArgumentException` indica un argumento inválido; `IllegalStateException` indica que la operación no es válida en el estado actual.
 
 **Ejecución y salida real**
 
@@ -137,8 +124,7 @@ Ada
 **Verificación rápida**
 
 ```bash
-javac CuentaBancaria.java DemoCuenta.java
-java DemoCuenta
+javac CuentaBancaria.java DemoCuenta.java && java DemoCuenta
 ```
 
 Prueba también un retiro mayor al saldo: debe lanzar `IllegalStateException: Saldo insuficiente`.
@@ -149,13 +135,13 @@ Prueba también un retiro mayor al saldo: debe lanzar `IllegalStateException: Sa
 
 Un sistema de notificaciones envía mensajes por distintos canales: email, SMS, push. Todos son notificaciones, pero cada una se envía de forma diferente. Quieres reutilizar lo común y especializar lo que cambia.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- **Herencia (`extends`)**: una subclase hereda campos y métodos de una superclase.
-- **Sobrescritura (`@Override`)**: la subclase reemplaza el comportamiento de un método heredado.
-- **Polimorfismo**: una referencia del tipo base puede apuntar a objetos de subclases; el método ejecutado se decide en tiempo de ejecución.
+**Definición formal.** La *herencia* es una relación de subtipado/implementación donde una subclase (`extends`) hereda miembros accesibles de su superclase. La *sobrescritura* (override) es la redefinición en una subclase de un método de instancia heredado con firma compatible. El *polimorfismo de subtipo* permite que una referencia de tipo base invoque la implementación concreta del objeto real en tiempo de ejecución (dynamic dispatch).
 
-Usa herencia cuando haya una relación real “es un”. `EmailNotification` es una `Notification`. No uses herencia solo para reutilizar código si la relación no es natural.
+**Contrato / invariantes / reglas.** La primera instrucción de un constructor de subclase debe ser `super(...)` o `this(...)`; si se omite, el compilador inserta `super()` implícito. `@Override` solicita verificación en compilación de que el método efectivamente sobrescribe. Un método sobrescrito no puede reducir la visibilidad, no puede declarar excepciones checked más amplias incompatibles y debe respetar el contrato del método base (principio de sustitución de Liskov, a nivel de diseño).
+
+**Modelo mental.** La superclase es el contrato general “notificación”; las subclases son especializaciones que cumplen ese contrato con su propio mecanismo.
 
 **Implementación desde cero**
 
@@ -171,13 +157,8 @@ public class Notification {
         this.mensaje = mensaje;
     }
 
-    public String getDestinatario() {
-        return destinatario;
-    }
-
-    public String getMensaje() {
-        return mensaje;
-    }
+    public String getDestinatario() { return destinatario; }
+    public String getMensaje() { return mensaje; }
 
     public void enviar() {
         System.out.println("Enviando notificación genérica a " + destinatario);
@@ -215,8 +196,7 @@ public class SmsNotification extends Notification {
 
     @Override
     public void enviar() {
-        System.out.println("SMS a " + getDestinatario()
-                + " | mensaje=" + getMensaje());
+        System.out.println("SMS a " + getDestinatario() + " | mensaje=" + getMensaje());
     }
 }
 ```
@@ -228,7 +208,6 @@ public class DemoNotificaciones {
     public static void main(String[] args) {
         Notification email = new EmailNotification("ada@example.com", "Tu pedido salió", "Estado");
         Notification sms = new SmsNotification("+34123456789", "Tu pedido salió");
-
         email.enviar();
         sms.enviar();
     }
@@ -238,9 +217,9 @@ public class DemoNotificaciones {
 **Desglose del código**
 
 - `extends Notification` indica que `EmailNotification` hereda de `Notification`.
-- `super(destinatario, mensaje)` llama al constructor de la superclase. Debe ser la primera instrucción del constructor.
-- `@Override` le pide al compilador verificar que realmente estás sobrescribiendo un método existente. Si te equivocas en el nombre, falla la compilación.
-- En `DemoNotificaciones`, ambas variables son de tipo `Notification`, pero cada objeto ejecuta su propia versión de `enviar()`. Eso es polimorfismo.
+- `super(destinatario, mensaje)` llama al constructor de la superclase. Debe ser la primera instrucción.
+- `@Override` hace que el compilador verifique la sobrescritura real.
+- Las variables de tipo `Notification` ejecutan `enviar()` según el objeto real: despacho dinámico.
 
 **Ejecución y salida real**
 
@@ -264,7 +243,7 @@ SMS a +34123456789 | mensaje=Tu pedido salió
 
 **Verificación rápida**
 
-Agrega una clase `PushNotification` con su propio `@Override enviar()`. No debes modificar `DemoNotificaciones` más que para instanciarla: el tipo base `Notification` debe seguir funcionando.
+Agrega una clase `PushNotification` con su propio `@Override enviar()`. No debes modificar la lógica del cliente basada en `Notification`.
 
 ### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
 
@@ -272,17 +251,13 @@ Agrega una clase `PushNotification` con su propio `@Override enviar()`. No debes
 
 Un proceso de cobro puede usar tarjeta, transferencia o billetera. Quieres que el sistema dependa de “algo que puede cobrar”, no de cada implementación concreta. Además, hay comportamientos comunes que no quieres repetir.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Herramienta | Úsala cuando | No la uses cuando |
-|---|---|---|
-| Interfaz | Quieres definir un contrato/capacidad | Necesitas mucho estado compartido |
-| Clase abstracta | Quieres compartir base común y forzar implementación parcial | Solo necesitas un contrato simple |
-| Clase concreta | El comportamiento ya está completo | Quieres impedir instanciación directa |
+**Definición formal.** Una *interfaz* es un tipo que declara un contrato de miembros (métodos abstractos, default, static, constantes). Una *clase abstracta* es una clase que no puede instanciarse directamente y puede contener estado, implementación parcial y métodos abstractos. El *polimorfismo* permite programar contra un supertipo (interfaz/clase base) delegando la implementación concreta al objeto real.
 
-- **Interfaz**: define qué se puede hacer. Una clase puede implementar varias interfaces.
-- **Clase abstracta**: puede tener estado, métodos concretos y métodos abstractos. No se instancia directamente.
-- **Polimorfismo**: el código cliente trabaja con el contrato, no con la implementación concreta.
+**Contrato / invariantes / reglas.** Una clase implementa una interfaz con `implements` y debe proveer implementaciones para sus métodos abstractos (salvo que la clase sea abstracta). Una clase solo puede extender una clase, pero puede implementar múltiples interfaces. Un método `default` en interfaz provee comportamiento heredable; si hay conflicto entre defaults, la clase debe resolverlo. Los miembros de interfaz son `public` por defecto en los casos relevantes del contrato clásico.
+
+**Modelo mental.** La interfaz es el enchufe estándar; la clase abstracta es una base semiarmada; la clase concreta es el aparato listo para funcionar.
 
 **Implementación desde cero**
 
@@ -304,9 +279,7 @@ public abstract class BasePayment implements PaymentMethod {
         this.owner = owner;
     }
 
-    protected String getOwner() {
-        return owner;
-    }
+    protected String getOwner() { return owner; }
 
     protected void validateAmount(double amount) {
         if (amount <= 0) {
@@ -320,9 +293,7 @@ Crea `CardPayment.java`:
 
 ```java
 public class CardPayment extends BasePayment {
-    public CardPayment(String owner) {
-        super(owner);
-    }
+    public CardPayment(String owner) { super(owner); }
 
     @Override
     public void pay(double amount) {
@@ -336,9 +307,7 @@ Crea `WalletPayment.java`:
 
 ```java
 public class WalletPayment extends BasePayment {
-    public WalletPayment(String owner) {
-        super(owner);
-    }
+    public WalletPayment(String owner) { super(owner); }
 
     @Override
     public void pay(double amount) {
@@ -355,7 +324,6 @@ public class Checkout {
     public static void main(String[] args) {
         PaymentMethod method = new CardPayment("Ada");
         method.pay(49.99);
-
         method = new WalletPayment("Linus");
         method.pay(15.00);
     }
@@ -364,10 +332,10 @@ public class Checkout {
 
 **Desglose del código**
 
-- `PaymentMethod` define el contrato `pay(double amount)`. El cliente solo necesita saber que puede pagar.
-- `BasePayment` es abstracta: comparte validación y el dueño, pero no decide cómo se cobra.
-- `CardPayment` y `WalletPayment` implementan el detalle concreto.
-- `Checkout` depende de `PaymentMethod`, no de una clase concreta. Puedes añadir `BankTransferPayment` sin cambiar la idea del cliente.
+- `PaymentMethod` define el contrato `pay(double amount)`.
+- `BasePayment` comparte validación y estado común, pero no implementa el cobro concreto.
+- `CardPayment` y `WalletPayment` especializan el comportamiento.
+- `Checkout` depende del contrato, no de las clases concretas.
 
 **Ejecución y salida real**
 
@@ -399,23 +367,13 @@ Crea `BankTransferPayment extends BasePayment` y úsala desde `Checkout`. Si no 
 
 Java usa varias palabras para controlar visibilidad y varias formas de definir métodos con el mismo nombre. Confundir sobrecarga con sobreescritura, o hacer todo `public`, genera APIs difíciles de usar y errores de diseño.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-**Modificadores de acceso**
+**Definición formal.** La *sobrecarga* (overloading) es la definición de múltiples métodos con el mismo nombre pero distinta lista de parámetros en el mismo ámbito. La *sobrescritura* (overriding) es la redefinición de un método heredado con firma compatible en una subclase. Los *modificadores de acceso* controlan la visibilidad de tipos y miembros.
 
-| Modificador | Visible en | Uso típico |
-|---|---|---|
-| `private` | Misma clase | Estado interno y helpers |
-| (sin modificador) | Mismo paquete | Colaboración interna de paquete |
-| `protected` | Mismo paquete y subclases | Extensión controlada |
-| `public` | Todas partes | API pública estable |
+**Contrato / invariantes / reglas.** La sobrecarga se resuelve en compilación por firma (nombre + parámetros). La sobrescritura se resuelve en ejecución por despacho dinámico. El tipo de retorno no es suficiente para diferenciar sobrecargas. Visibilidades: `private` (clase), package-private (paquete), `protected` (paquete + subclases), `public` (todas). Una sobrescritura no puede ser menos visible que el método sobrescrito.
 
-**Sobrecarga vs sobreescritura**
-
-| Concepto | Ocurre cuando | Se resuelve en | Firma |
-|---|---|---|---|
-| Sobrecarga (overload) | Mismo nombre, distintos parámetros | Compilación | Distinta |
-| Sobrescritura (override) | Subclase redefine método heredado | Ejecución | Igual |
+**Modelo mental.** Sobrecarga es el mismo verbo con distintas entradas (mismo nombre, distinta forma). Sobrescritura es el mismo verbo con el mismo contrato, pero ejecutado por un actor distinto.
 
 **Implementación desde cero**
 
@@ -423,17 +381,9 @@ Crea `Calculator.java`:
 
 ```java
 public class Calculator {
-    public int sum(int a, int b) {
-        return a + b;
-    }
-
-    public double sum(double a, double b) {
-        return a + b;
-    }
-
-    public int sum(int a, int b, int c) {
-        return a + b + c;
-    }
+    public int sum(int a, int b) { return a + b; }
+    public double sum(double a, double b) { return a + b; }
+    public int sum(int a, int b, int c) { return a + b + c; }
 }
 ```
 
@@ -442,14 +392,8 @@ Crea `Animal.java`:
 ```java
 public class Animal {
     protected String name;
-
-    public Animal(String name) {
-        this.name = name;
-    }
-
-    public String speak() {
-        return "...";
-    }
+    public Animal(String name) { this.name = name; }
+    public String speak() { return "..."; }
 }
 ```
 
@@ -457,14 +401,9 @@ Crea `Dog.java`:
 
 ```java
 public class Dog extends Animal {
-    public Dog(String name) {
-        super(name);
-    }
-
+    public Dog(String name) { super(name); }
     @Override
-    public String speak() {
-        return name + " dice: guau";
-    }
+    public String speak() { return name + " dice: guau"; }
 }
 ```
 
@@ -488,8 +427,8 @@ public class DemoOver {
 
 - `sum` está sobrecargado tres veces: mismo nombre, distinta lista de parámetros.
 - `speak()` en `Dog` sobrescribe el método de `Animal`. La firma es la misma.
-- `protected String name` permite que la subclase lo use, pero no lo expone como API pública global.
-- `Animal animal = new Dog(...)` muestra despacho dinámico: se ejecuta `Dog.speak()`.
+- `protected String name` permite acceso a subclases/paquete sin exponerlo públicamente.
+- `Animal animal = new Dog(...)` muestra despacho dinámico.
 
 **Ejecución y salida real**
 
@@ -527,17 +466,13 @@ Quita `@Override` en `Dog.speak()` y cámbialo por `speak(String extra)`: observ
 
 Necesitas representar un punto de coordenadas o un DTO simple: dos o tres campos, igualdad por valor, sin comportamiento complejo. Escribir constructor, getters, `equals`, `hashCode` y `toString` a mano es repetitivo y propenso a errores.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un `record` (Java 16+) es una clase especial para datos inmutables. El compilador genera:
+**Definición formal.** Un `record` (Java 16+) es una clase especial declarada con `record` cuyo estado se define por sus componentes. El compilador genera implícitamente miembros canónicos: campos privados finales, accesores, constructor canónico, `equals`, `hashCode` y `toString` basados en componentes.
 
-- campos privados finales;
-- constructor canónico;
-- accesores (`x()`, no `getX()`);
-- `equals()` y `hashCode()` basados en componentes;
-- `toString()` legible.
+**Contrato / invariantes / reglas.** Un record es implícitamente `final` y no puede extender otra clase (pero puede implementar interfaces). Sus componentes son inmutables por diseño de la API generada; si un componente es una referencia mutable, la inmutabilidad superficial no protege el contenido interno. El constructor compacto permite validar/normalizar antes de la asignación implícita de componentes. `equals`/`hashCode` se basan en todos los componentes.
 
-Usa `record` cuando el objeto representa un valor. No lo uses cuando necesitas mutabilidad, herencia de clase o identidad compleja.
+**Modelo mental.** Un record es una ficha de datos sellada: define qué campos tiene y el lenguaje garantiza la mecánica repetitiva de valor.
 
 **Implementación desde cero**
 
@@ -578,10 +513,10 @@ public class DemoRecord {
 
 **Desglose del código**
 
-- `record Point(int x, int y)` declara los componentes. Son finales e inmutables.
-- El bloque `public Point { ... }` es el constructor compacto: permite validar antes de asignar los componentes.
-- `distanceSquaredFromOrigin()` es un método adicional; los records pueden tener comportamiento, pero deben seguir siendo principalmente datos.
-- `equals` compara por valor. Por eso `a.equals(b)` es `true` aunque sean objetos distintos.
+- `record Point(int x, int y)` declara componentes finales e inmutables.
+- El constructor compacto valida antes de asignar los componentes.
+- `distanceSquaredFromOrigin()` agrega comportamiento, manteniendo el foco en datos.
+- `equals` compara por valor; `a.equals(b)` es `true` aunque sean instancias distintas.
 
 **Ejecución y salida real**
 
@@ -623,15 +558,13 @@ En Java clásico, un constructor de subclase debía llamar `super(...)` o `this(
 
 > **Nota de versión:** esta característica corresponde a Java 25. Si compilas con un JDK anterior, el ejemplo puede no compilar. Verifica tu versión con `javac -version`.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un constructor flexible permite ejecutar código antes de `super(...)`, pero con restricciones:
+**Definición formal.** Los *constructores flexibles* (Java 25) relajan la restricción histórica de que `super(...)`/`this(...)` sea la primera sentencia, permitiendo un *prologue* limitado antes de la invocación del constructor delegado/superior, seguido de un *epilogue* normal.
 
-- puedes validar/normalizar parámetros;
-- no puedes usar el objeto en construcción como si ya estuviera inicializado (`this` no está listo para uso general);
-- debes llegar a `super(...)` o `this(...)` por un camino válido.
+**Contrato / invariantes / reglas.** Antes de `super(...)`/`this(...)` el objeto aún no está completamente inicializado: no se debe usar `this` de forma que dependa de la instancia inicializada (acceso a campos de instancia, invocación de métodos de instancia, etc., según reglas del JLS). El prologue debe garantizar que la invocación delegada ocurra exactamente por un camino válido. El objetivo es preparar argumentos y validar precondiciones sin recurrir a fábricas artificiales.
 
-La idea es simple: preparar datos primero, delegar después.
+**Modelo mental.** Antes, debías entregar el paquete al padre apenas entrabas por la puerta. Ahora puedes revisar y etiquetar el paquete en el vestíbulo, pero sin usar las habitaciones de la casa porque todavía no te las entregaron.
 
 **Implementación desde cero**
 
@@ -640,14 +573,8 @@ Crea `UserBase.java`:
 ```java
 public class UserBase {
     private final String email;
-
-    public UserBase(String email) {
-        this.email = email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
+    public UserBase(String email) { this.email = email; }
+    public String getEmail() { return email; }
 }
 ```
 
@@ -666,9 +593,7 @@ public class AdminUser extends UserBase {
         this.role = "ADMIN";
     }
 
-    public String getRole() {
-        return role;
-    }
+    public String getRole() { return role; }
 }
 ```
 
