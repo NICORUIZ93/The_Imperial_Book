@@ -1,246 +1,191 @@
-# Módulo 22: El objeto por dentro: copia, enums y tipos anidados
+# Módulo 22: Fundamentos avanzados de objetos
 
-Este módulo cierra el track con detalles de diseño de objetos que evitan bugs sutiles: copiar sin compartir estado accidentalmente, modelar estados con enums ricos y entender el costo oculto de clases internas.
+Este módulo cierra Java con fundamentos de objetos que suelen causar bugs sutiles: copia defensiva vs superficial vs clone, enums ricos de dominio y clases anidadas con captura de `this$0`. Dominar esto evita fugas de mutabilidad, modelos pobres y memory leaks inesperados.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Copia defensiva, copia superficial y clone · Intermedio · 40 min
 
-Expones una lista interna y el llamador la modifica, rompiendo invariantes.
+Caso guía: un pedido expone su lista de items; si devuelves la lista interna mutable, el llamador rompe invariantes.
 
 #### Copia defensiva
 
-**Definición formal.** Técnica de copiar objetos mutables al entrar o salir de una API para proteger invariantes internos.
+**Definición formal.** Copia defensiva es crear copias de objetos mutables al entrar o salir de una frontera para proteger invariantes internos.
 
-**Para qué sirve.** Evita aliasing accidental.
-
-**Cuándo usarla.** Cuando el campo interno es mutable (List, Date, arrays, objetos mutables).
+```mermaid
+flowchart LR
+  E[Estado interno mutable] -->|getter devuelve copia/inmutable| C[Cliente]
+  C -.no puede mutar interno.-x E
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j22-t1 && cd /tmp/j22-t1
-cat > DemoDef.java << 'JAVA'
+mkdir -p java-m22-def
+cd java-m22-def
+```
+
+Crea el archivo `DemoDef.java`:
+
+```java
 import java.util.*;
 class Pedido {
   private final List<String> items;
   Pedido(List<String> items){ this.items = new ArrayList<>(items); }
-  public List<String> items(){ return List.copyOf(items); }
+  List<String> items(){ return List.copyOf(items); }
 }
-public class DemoDef { public static void main(String[] args){ List<String> base=new ArrayList<>(List.of("A")); Pedido p=new Pedido(base); base.add("B"); System.out.println(p.items()); try { p.items().add("X"); } catch(Exception e){ System.out.println("inmutable"); } } }
-JAVA
-javac DemoDef.java && java DemoDef
-```
-
-**Caso de uso real.** Entidad que no debe exponer su lista mutable.
-
-**Error común.** Retornar la colección interna. Corrección: copia defensiva o vista inmutable.
-
-**Verificación (2026-05-22).** Salida: `[A]`, `inmutable`.
-
-#### Copia superficial vs profunda
-
-**Definición formal.** Superficial copia el primer nivel; profunda copia también objetos mutables internos para aislar estado.
-
-**Para qué sirve.** Elegir el nivel de aislamiento correcto.
-
-**Cuándo usarla.** Superficial si internos inmutables; profunda si hay mutables anidados.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-cd /tmp/j22-t1
-cat > DemoDeep.java << 'JAVA'
-import java.util.*;
-public class DemoDeep {
+public class DemoDef {
   public static void main(String[] args) {
-    List<String> inner = new ArrayList<>(List.of("x"));
-    List<List<String>> a = new ArrayList<>(); a.add(inner);
-    List<List<String>> shallow = new ArrayList<>(a);
-    List<List<String>> deep = new ArrayList<>(); deep.add(new ArrayList<>(a.get(0)));
-    inner.add("y");
-    System.out.println(shallow.get(0).size()+" "+deep.get(0).size());
+    Pedido p = new Pedido(new ArrayList<>(List.of("A")));
+    System.out.println(p.items());
+    try { p.items().add("B"); } catch (UnsupportedOperationException e) { System.out.println("protegido"); }
   }
 }
-JAVA
-javac DemoDeep.java && java DemoDeep
 ```
 
-**Caso de uso real.** Clonar plantilla con listas anidadas.
+```bash
+javac DemoDef.java
+java DemoDef
+```
 
-**Error común.** Creer que `new ArrayList<>(lista)` es deep copy. Corrección: copiar elementos mutables.
+**Error común.** Devolver la colección mutable interna. Corrección: `List.copyOf`/copia defensiva.
 
-**Verificación (2026-05-22).** Salida: `2 1`.
+**Verificación (JDK 27, 2026-05-22).** `[A]`, `protegido`.
 
-#### `clone`
+#### Shallow vs deep copy y `clone`
 
-**Definición formal.** Mecanismo histórico de Java (`Cloneable`, `Object.clone`) con contrato frágil y copia superficial por defecto.
-
-**Para qué sirve.** Compatibilidad legacy; en código moderno suele evitarse.
-
-**Cuándo usarlo.** Casi nunca en diseño nuevo; prefiere copy constructor/factory.
+**Definición formal.** Shallow copy copia referencias de objetos anidados; deep copy copia también la estructura anidada. `clone()` es el mecanismo histórico de Java, con muchas trampas (Cloneable, casting, shallow por defecto).
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j22-t1
-cat > DemoClone.java << 'JAVA'
-class A implements Cloneable { int x=1; public A copia(){ try { return (A) super.clone(); } catch(CloneNotSupportedException e){ throw new RuntimeException(e); } } }
-public class DemoClone { public static void main(String[] args){ A a=new A(); A b=a.copia(); b.x=2; System.out.println(a.x+" "+b.x); } }
-JAVA
-javac DemoClone.java && java DemoClone
+mkdir -p java-m22-clone
+cd java-m22-clone
 ```
 
-**Caso de uso real.** Código legacy que ya depende de Cloneable.
+Crea el archivo `DemoClone.java`:
 
-**Error común.** Asumir deep copy automática. Corrección: implementar copia explícita.
+```java
+import java.util.*;
+class Caja implements Cloneable {
+  List<String> items = new ArrayList<>(List.of("A"));
+  public Caja clone() { try { return (Caja) super.clone(); } catch (CloneNotSupportedException e) { throw new AssertionError(e); } }
+}
+public class DemoClone {
+  public static void main(String[] args) {
+    Caja a = new Caja();
+    Caja b = a.clone(); // shallow
+    b.items.add("B");
+    System.out.println(a.items);
+  }
+}
+```
 
-**Verificación (2026-05-22).** Salida: `1 2`.
+```bash
+javac DemoClone.java
+java DemoClone
+```
+
+**Error común.** Asumir que `clone()` hace deep copy. Síntoma: mutación compartida. Corrección: copiar explícitamente campos mutables o preferir constructores/factorías de copia.
+
+**Verificación (JDK 27, 2026-05-22).** `[A, B]` (prueba de shallow copy).
 
 ### Tema 2: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min
 
-Modelar estados de guía con reglas asociadas.
+Caso guía: estados de pedido con transición válida y código.
 
-#### `enum`
+#### Enum rico
 
-**Definición formal.** Tipo Java que representa un conjunto cerrado de constantes con identidad propia.
-
-**Para qué sirve.** Modelar estados/categorías cerradas con seguridad de tipos.
-
-**Cuándo usarlo.** Conjunto conocido en compile time. No para valores abiertos arbitrarios del usuario.
+**Definición formal.** Un `enum` define un conjunto cerrado de constantes. Puede llevar campos, constructor y métodos para modelar comportamiento de dominio.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j22-t2 && cd /tmp/j22-t2
-cat > DemoEnum.java << 'JAVA'
-enum Estado { CREADA, ENVIADA }
-public class DemoEnum { public static void main(String[] args){ System.out.println(Estado.CREADA.name()); } }
-JAVA
-javac DemoEnum.java && java DemoEnum
+mkdir -p java-m22-enum
+cd java-m22-enum
 ```
 
-**Caso de uso real.** Estado de pedido.
+Crea el archivo `DemoEnum.java`:
 
-**Error común.** Usar strings mágicos. Corrección: enum.
-
-**Verificación (2026-05-22).** Salida: `CREADA`.
-
-#### Campos, métodos y strategy con enum
-
-**Definición formal.** Un enum puede tener campos, constructor, métodos y comportamiento por constante (strategy).
-
-**Para qué sirve.** Asociar datos/reglas al estado.
-
-**Cuándo usarlo.** Cuando cada constante tiene comportamiento estable.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-cd /tmp/j22-t2
-cat > DemoEnumRich.java << 'JAVA'
-enum EstadoGuia {
-  CREADA("C") { public boolean puedeEnviar(){ return true; } },
-  ENVIADA("E") { public boolean puedeEnviar(){ return false; } };
-  final String codigo;
-  EstadoGuia(String c){ codigo=c; }
-  public abstract boolean puedeEnviar();
+```java
+enum Estado {
+  CREADO(1), PAGADO(2), ENVIADO(3);
+  final int code;
+  Estado(int c){ code=c; }
+  boolean puedeEnviar(){ return this == PAGADO; }
 }
-public class DemoEnumRich { public static void main(String[] args){ System.out.println(EstadoGuia.CREADA.puedeEnviar()); System.out.println(EstadoGuia.ENVIADA.codigo); } }
-JAVA
-javac DemoEnumRich.java && java DemoEnumRich
+public class DemoEnum {
+  public static void main(String[] args) {
+    System.out.println(Estado.PAGADO.puedeEnviar());
+    System.out.println(Estado.CREADO.puedeEnviar());
+  }
+}
 ```
-
-**Caso de uso real.** Reglas de transición por estado.
-
-**Error común.** Enum gigante con demasiada lógica. Corrección: extraer comportamiento si crece.
-
-**Verificación (2026-05-22).** Salida: `true`, `E`.
-
-#### `valueOf`, `values` y ordinal
-
-**Definición formal.** `valueOf` convierte nombre a constante, `values` lista constantes, `ordinal` devuelve posición de declaración.
-
-**Para qué sirve.** Parsing e iteración.
-
-**Cuándo usarlo.** `valueOf` con validación; evita persistir `ordinal`.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j22-t2
-cat > DemoValueOf.java << 'JAVA'
-enum E { A, B }
-public class DemoValueOf { public static void main(String[] args){ try { E.valueOf("X"); } catch(Exception e){ System.out.println("bad"); } System.out.println(E.values().length); } }
-JAVA
-javac DemoValueOf.java && java DemoValueOf
+javac DemoEnum.java
+java DemoEnum
 ```
 
-**Caso de uso real.** Parsear estado desde input.
+**Error común.** Usar strings sueltos para estados cerrados. Corrección: enum con comportamiento/invariantes.
 
-**Error común.** Persistir `ordinal`. Síntoma: dato corrupto si cambia el orden. Corrección: persistir nombre/código estable.
-
-**Verificación (2026-05-22).** Salida: `bad`, `2`.
+**Verificación (JDK 27, 2026-05-22).** `true`, `false`.
 
 ### Tema 3: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min
 
-Una inner class captura outer y puede retener memoria.
+Caso guía: una inner class no estática captura referencia a la instancia externa, lo que puede impedir GC.
 
-#### Clases anidadas estáticas vs inner class
+#### Clases anidadas
 
-**Definición formal.** Una static nested class no captura instancia outer; una inner class no estática sí la captura (`this$0`).
+**Definición formal.** Java tiene static nested classes, inner classes, local classes y anonymous classes. Las inner no estáticas capturan `this` de la clase externa (`this$0`).
 
-**Para qué sirve.** Elegir estructura sin retención accidental.
-
-**Cuándo usarlo.** Preferir static nested cuando no necesitas outer.
+```mermaid
+flowchart LR
+  O[Outer instancia] <-->|this$0 implícito| I[Inner no estática]
+  O -.sin captura.-> S[Static nested]
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j22-t3 && cd /tmp/j22-t3
-cat > DemoNested.java << 'JAVA'
+mkdir -p java-m22-nested
+cd java-m22-nested
+```
+
+Crea el archivo `DemoNested.java`:
+
+```java
 class Outer {
-  private final byte[] big = new byte[1024*1024];
-  class Inner { int size(){ return big.length; } }
-  static class Nested { int uno(){ return 1; } }
+  private String v = "ok";
+  class Inner { String read(){ return v; } }
+  static class StaticNested { String hi(){ return "static"; } }
 }
-public class DemoNested { public static void main(String[] args){ Outer o=new Outer(); System.out.println(o.new Inner().size()); System.out.println(new Outer.Nested().uno()); } }
-JAVA
-javac DemoNested.java && java DemoNested
+public class DemoNested {
+  public static void main(String[] args) {
+    System.out.println(new Outer().new Inner().read());
+    System.out.println(new Outer.StaticNested().hi());
+  }
+}
 ```
-
-**Caso de uso real.** Builder static nested, listener inner (con cuidado).
-
-**Error común.** Inner class en callback de larga vida. Síntoma: fuga de memoria por `this$0`. Corrección: static nested + referencia débil o limpiar listener.
-
-**Verificación (2026-05-22).** Salida: `1048576`, `1`.
-
-#### Clases locales y anónimas
-
-**Definición formal.** Clases definidas dentro de un método (local) o como expresión sin nombre (anónima); capturan variables efectivamente finales.
-
-**Para qué sirve.** Implementaciones pequeñas y locales.
-
-**Cuándo usarlo.** Cuando la clase es pequeña y no merece archivo propio. Prefiere lambda si es una interfaz funcional.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j22-t3
-cat > DemoAnon.java << 'JAVA'
-public class DemoAnon { public static void main(String[] args){ Runnable r = new Runnable(){ public void run(){ System.out.println("hi"); } }; r.run(); } }
-JAVA
-javac DemoAnon.java && java DemoAnon
+javac DemoNested.java
+java DemoNested
 ```
 
-**Caso de uso real.** Callback puntual en API legacy.
+**Error común.** Usar inner class en listeners/callbacks de larga vida que retienen la actividad/objeto externo. Corrección: static nested + referencia explícita débil o contexto mínimo.
 
-**Error común.** Anidar demasiado. Corrección: extraer clase o usar lambda.
+**Verificación (JDK 27, 2026-05-22).** `ok`, `static`.
 
-**Verificación (2026-05-22).** Salida: `hi`.
+## Cierre
 
-## Cierre del módulo
+La corrección de objetos no termina en “usar clases”: mutabilidad, copia, enums y anidamiento determinan seguridad y mantenibilidad.
 
-Los bugs de objetos suelen ser semánticos: copias que comparten estado, enums mal modelados y clases internas que retienen más de lo esperado. Con estas bases cierras el track Java con criterio de diseño y compatibilidad.
+## Checklist
+
+- Protejo invariantes con copia defensiva/inmutabilidad.
+- Distingo shallow vs deep copy; evito `clone` por defecto.
+- Uso enums para estados cerrados.
+- Prefiero static nested cuando no necesito capturar `this$0`.
