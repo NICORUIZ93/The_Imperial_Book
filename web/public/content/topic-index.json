@@ -4560,12 +4560,12 @@
         "fragment": "tema-4-condiciones-de-carrera-y-sincronizacion"
       },
       {
-        "title": "Structured Concurrency (StructuredTaskScope, Java 25)",
-        "fragment": "tema-5-structured-concurrency-structuredtaskscope-java-25"
+        "title": "Structured Concurrency (Java 25/preview)",
+        "fragment": "tema-5-structured-concurrency-java-25-preview"
       },
       {
-        "title": "Scoped Values frente a ThreadLocal (Java 25)",
-        "fragment": "tema-6-scoped-values-frente-a-threadlocal-java-25"
+        "title": "Scoped Values frente a ThreadLocal",
+        "fragment": "tema-6-scoped-values-frente-a-threadlocal"
       },
       {
         "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
