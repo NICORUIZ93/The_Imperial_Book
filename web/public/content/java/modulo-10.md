@@ -1,260 +1,177 @@
-# Módulo 10: Módulos (JPMS) y proyectos grandes
+# Módulo 10: Java Platform Module System (JPMS)
 
-Cuando un proyecto crece, el classpath plano permite que cualquier clase acceda a casi cualquier otra. El Java Platform Module System (JPMS), introducido en Java 9, añade límites explícitos: qué paquetes exporta un módulo y qué módulos requiere. Este módulo muestra cuándo JPMS aporta valor y cómo migrar de forma incremental.
+Cuando un proyecto crece, la visibilidad por paquetes y classpath deja de ser suficiente: todo queda “abierto” a todo, y las dependencias internas se vuelven accidentales. JPMS (Java 9+) introduce módulos para declarar dependencias y encapsulación fuerte. No todo proyecto lo necesita; su valor aparece en bases grandes, librerías y runtimes controlados.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: module-info.java y encapsulación fuerte · Intermedio · 40 min
 
-`app` debe usar la API pública de `core`, no sus clases internas. Quieres fronteras verificadas por compilador/JVM.
+Caso guía: una librería `com.academia.core` expone API pública pero oculta implementación interna.
 
-#### `module-info.java`
+#### `module-info.java`, `exports`, `requires`
 
-**Definición formal.** Descriptor de módulo JPMS que declara nombre del módulo y directivas como `requires`, `exports`, `opens`, `provides`, `uses`.
+**Definición formal.** Un módulo es una unidad nombrada de código con `module-info.java` que declara dependencias (`requires`) y paquetes exportados (`exports`).
 
-**Para qué sirve.** Hace explícitas dependencias y superficie pública.
+**Cómo funciona por dentro.** El compilador y la JVM aplican accesibilidad fuerte de módulo: un paquete no exportado no es accesible desde otros módulos, aunque sea `public`. Esto es más fuerte que package-private/classpath.
 
-**Cuándo usarlo.** Proyectos/librerías donde la encapsulación fuerte aporta valor.
+```mermaid
+flowchart LR
+  A[app module] -->|requires| C[core module]
+  C -->|exports com.academia.core.api| P[paquete público]
+  C -.no exporta.-> I[com.academia.core.internal]
+  A x-- acceso bloqueado --x I
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m10-t1/src/com.academia.core /tmp/java-m10-t1/src/com.academia.app
-cd /tmp/java-m10-t1
+mkdir -p java-m10/src/com.academia.core/com/academia/core/api
+mkdir -p java-m10/src/com.academia.core/com/academia/core/internal
+mkdir -p java-m10/src/com.academia.app/com/academia/app
+cd java-m10
 ```
 
-`src/com.academia.core/module-info.java`:
+Crea el archivo `src/com.academia.core/module-info.java`:
 
 ```java
-module com.academia.core { exports com.academia.core.api; }
-```
-
-`src/com.academia.core/com/academia/core/api/Api.java`:
-
-```java
-package com.academia.core.api;
-public class Api { public static String hola(){ return "ok"; } }
-```
-
-`src/com.academia.app/module-info.java`:
-
-```java
-module com.academia.app { requires com.academia.core; }
-```
-
-`src/com.academia.app/com/academia/app/Main.java`:
-
-```java
-package com.academia.app;
-import com.academia.core.api.Api;
-public class Main { public static void main(String[] args){ System.out.println(Api.hola()); } }
-```
-
-**Caso de uso real.** Librería interna con API pública y paquetes internos.
-
-**Error común.** Olvidar `exports`. Síntoma: `package is not visible`. Corrección: exportar solo el paquete público.
-
-**Verificación (JDK 27, 2026-05-22).**
-
-```bash
-javac -d out/core src/com.academia.core/module-info.java src/com.academia.core/com/academia/core/api/Api.java
-javac --module-path out/core -d out/app src/com.academia.app/module-info.java src/com.academia.app/com/academia/app/Main.java
-java --module-path out/core:out/app -m com.academia.app/com.academia.app.Main
-```
-
-```text
-ok
-```
-
-#### Encapsulación fuerte
-
-**Definición formal.** En JPMS, la accesibilidad depende de visibilidad Java (`public/protected/etc.`) y legibilidad/exportación del módulo.
-
-**Para qué sirve.** Impide acceso a internos no exportados, incluso si son `public`.
-
-**Cuándo usarlo.** Cuando necesitas fronteras arquitectónicas reales.
-
-**Ejemplo mínimo enfocado (ejecutable como verificación negativa).** Si `Api` estuviera en paquete no exportado, la compilación de `app` fallaría con “package is not visible”.
-
-**Caso de uso real.** Evitar que consumidores dependan de `impl`.
-
-**Error común.** Creer que `public` siempre es accesible. Corrección: entender exportación de paquete.
-
-**Verificación.** Cambiar paquete a no exportado y observar error de compilación.
-
-#### `requires` y `exports`
-
-**Definición formal.** `requires` declara dependencia de otro módulo; `exports` expone un paquete para acceso normal.
-
-**Para qué sirve.** Modelar dependencias y API pública.
-
-**Cuándo usarlo.** `requires` para consumir; `exports` para exponer contrato. Usa `requires transitive` con cuidado.
-
-**Ejemplo mínimo enfocado (ejecutable).** Ver ejemplo integrado: `app requires core`; `core exports api`.
-
-**Caso de uso real.** `app` depende de `domain-api`.
-
-**Error común.** `module not found`. Corrección: revisar `--module-path` y nombres de módulo.
-
-**Verificación.** Compilación/ejecución exitosa del ejemplo integrado.
-
-### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 35 min
-
-Migrar todo un monolito a JPMS de golpe es riesgoso. Necesitas criterio y plan incremental.
-
-#### Migración incremental
-
-**Definición formal.** Adopción gradual de módulos, empezando por bordes/librerías estables, sin big-bang.
-
-**Para qué sirve.** Reduce riesgo y permite aprender el impacto real.
-
-**Cuándo usarlo.** Bases grandes/legacy con dependencias mixtas.
-
-**Ejemplo mínimo enfocado (ejecutable como checklist).**
-
-```text
-1. Inventariar dependencias y split packages.
-2. Modularizar componentes con fronteras claras.
-3. Usar automatic modules temporalmente.
-4. Eliminar classpath mixto gradualmente.
-```
-
-**Caso de uso real.** Plataforma interna con varios JARs propios.
-
-**Error común.** Big-bang. Síntoma: bloqueo por dependencias no modularizadas. Corrección: incremental.
-
-**Verificación.** Plan con orden y riesgo por componente.
-
-#### Módulo automático y unnamed module
-
-**Definición formal.** Un automatic module es un JAR no modular en module-path; exporta paquetes. El unnamed module es el contenido del classpath.
-
-**Para qué sirve.** Puente de compatibilidad en migración.
-
-**Cuándo usarlo.** Solo como transición. No confíes en fronteras fuertes.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-java --module-path mods --class-path libs/* -m app/com.academia.app.Main
-```
-
-**Caso de uso real.** Dependencia de terceros aún no modularizada.
-
-**Error común.** Esperar `requires` hacia unnamed module. Corrección: mover dependencia a module-path o modularizar.
-
-**Verificación.** Documentar qué dependencias quedan en classpath y plan para sacarlas.
-
-#### Cuándo JPMS aporta valor
-
-**Definición formal.** Decisión costo/beneficio basada en tamaño, fronteras, dependencias y necesidad de encapsulación fuerte.
-
-**Para qué sirve.** Evitar adoptar por moda.
-
-**Cuándo usarlo.** Plataformas grandes, librerías internas, límites arquitectónicos fuertes.
-
-**Ejemplo mínimo enfocado (ejecutable como evaluación).**
-
-```text
-¿Encapsulación fuerte necesaria? si/no
-¿Dependencias controlables? si/no
-¿Beneficio > costo? si/no
-```
-
-**Caso de uso real.** Librería base usada por muchos equipos.
-
-**Error común.** Adoptar JPMS sin soporte de dependencias clave. Corrección: evaluar grafo primero.
-
-**Verificación.** Decisión documentada con razones.
-
-### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 35 min
-
-Jackson/Hibernate usan reflexión. En JPMS, reflexión profunda sobre paquetes no abiertos falla.
-
-#### `opens`
-
-**Definición formal.** Directiva JPMS que permite reflexión profunda en runtime sobre un paquete, opcionalmente a módulos específicos.
-
-**Para qué sirve.** Permitir que frameworks accedan a campos/constructores no públicos cuando es necesario.
-
-**Cuándo usarlo.** DTOs/entidades usados por frameworks reflexivos.
-
-**Ejemplo mínimo enfocado (ejecutable compilación).**
-
-```bash
-mkdir -p /tmp/java-m10-t3/src/com.academia.infra/com/academia/infra/dto
-cd /tmp/java-m10-t3
-```
-
-`src/com.academia.infra/module-info.java`:
-
-```java
-module com.academia.infra {
-    exports com.academia.infra.dto;
-    opens com.academia.infra.dto to com.fasterxml.jackson.databind;
+module com.academia.core {
+  exports com.academia.core.api;
 }
 ```
 
-`src/com.academia.infra/com/academia/infra/dto/GuiaDto.java`:
+Crea el archivo `src/com.academia.core/com/academia/core/api/Saludo.java`:
 
 ```java
-package com.academia.infra.dto;
-public class GuiaDto { public String id; public GuiaDto() {} public GuiaDto(String id){ this.id=id; } }
+package com.academia.core.api;
+public class Saludo { public static String hola() { return "hola"; } }
 ```
 
-**Caso de uso real.** Entidades JPA o DTOs Jackson.
+Crea el archivo `src/com.academia.core/com/academia/core/internal/Oculto.java`:
 
-**Error común.** `open module` completo. Corrección: `opens paquete to modulo`.
+```java
+package com.academia.core.internal;
+public class Oculto { public static String secreto() { return "x"; } }
+```
 
-**Verificación (JDK 27, 2026-05-22).**
+Crea el archivo `src/com.academia.app/module-info.java`:
+
+```java
+module com.academia.app {
+  requires com.academia.core;
+}
+```
+
+Crea el archivo `src/com.academia.app/com/academia/app/Main.java`:
+
+```java
+package com.academia.app;
+import com.academia.core.api.Saludo;
+public class Main { public static void main(String[] args){ System.out.println(Saludo.hola()); } }
+```
 
 ```bash
-javac -d out $(find src -name "*.java")
-ls out/com/academia/infra/dto
+javac -d out --module-source-path src $(find src -name "*.java")
+java --module-path out -m com.academia.app/com.academia.app.Main
 ```
 
-```text
-GuiaDto.class
+**Error común.** Asumir que `public` basta. En JPMS, `public` no exportado es inaccesible para otros módulos. Síntoma: error de compilación “package is not visible”.
+
+**Verificación (JDK 27, 2026-05-22).** `hola`.
+
+### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 35 min
+
+Caso guía: un monolito en classpath quiere modularizarse gradualmente.
+
+#### Classpath, module path y módulos automáticos
+
+**Definición formal.** El classpath es el modelo clásico sin encapsulación fuerte. El module path habilita módulos. Un jar no modular en module path puede convertirse en módulo automático (nombre derivado).
+
+**Cuándo usar JPMS.** Aporta en librerías/plataformas grandes, JDK/runtime custom (jlink), y encapsulación interna fuerte. No es obligatorio para toda app; el costo de migración puede superar el beneficio en apps pequeñas.
+
+```mermaid
+flowchart TD
+  CP[Classpath\nsin fronteras fuertes] --> AM[Automatic modules\nmigración puente]
+  AM --> FM[Named modules\nmodule-info.java]
 ```
 
-#### `exports` vs `opens`
+**Ejemplo mínimo enfocado.** El ejemplo del Tema 1 ya usa module path. Un jar sin `module-info` en `--module-path` se trata como automático.
 
-**Definición formal.** `exports` permite acceso normal compile/runtime; `opens` permite reflexión profunda runtime.
+**Error común.** Modularizar todo de golpe. Corrección: bottom-up, empezar por librerías estables, usar `jar --describe-module`.
 
-**Para qué sirve.** Separar API pública de acceso reflexivo.
+**Verificación.** `jar --describe-module --file=algún.jar` o `java --describe-module java.sql` muestra descriptor.
 
-**Cuándo usarlo.** Exporta lo que es API; abre solo lo que un framework necesita reflejar.
+### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 35 min
 
-**Ejemplo mínimo enfocado (ejecutable).** El descriptor anterior exporta y abre el mismo paquete a Jackson; si solo exportas, reflexión profunda puede fallar.
+Caso guía: un framework como Jackson/Hibernate necesita reflexión sobre campos privados. JPMS lo bloquea salvo que se abra.
 
-**Caso de uso real.** DTO exportado para código y abierto a Jackson.
+#### `opens` y `opens ... to`
 
-**Error común.** Creer que `exports` basta para reflexión profunda. Corrección: agregar `opens` específico.
-
-**Verificación.** Compilación del descriptor OK; en runtime con framework reflexivo, la ausencia de `opens` produce `InaccessibleObjectException`.
-
-#### `--add-opens`
-
-**Definición formal.** Flag JVM para abrir un paquete en runtime a otro módulo.
-
-**Para qué sirve.** Parche temporal en migración/diagnóstico.
-
-**Cuándo usarlo.** Solo transitorio. No como solución permanente.
+**Definición formal.** `exports` permite acceso en compilación/runtime a tipos públicos. `opens` permite acceso reflexivo profundo (incluyendo no públicos) en runtime; `opens ... to` lo limita a módulos específicos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-java --add-opens com.academia.infra/com.academia.infra.dto=com.fasterxml.jackson.databind -jar app.jar
+mkdir -p java-m10-ref/src/com.academia.model/com/academia/model
+mkdir -p java-m10-ref/src/com.academia.app/com/academia/app
+cd java-m10-ref
 ```
 
-**Caso de uso real.** Desbloquear ejecución mientras se corrige `module-info`.
+Crea el archivo `src/com.academia.model/module-info.java`:
 
-**Error común.** Dejar flags en scripts productivos para siempre. Corrección: corregir descriptor.
+```java
+module com.academia.model {
+  exports com.academia.model;
+  opens com.academia.model to com.academia.app;
+}
+```
 
-**Verificación.** El comando arranca con la apertura solicitada; documentar eliminación futura.
+Crea el archivo `src/com.academia.model/com/academia/model/User.java`:
 
-## Cierre del módulo
+```java
+package com.academia.model;
+public class User { private String name = "Ada"; }
+```
 
-JPMS da encapsulación fuerte y dependencias explícitas. Úsalo cuando el beneficio arquitectónico supere el costo de migración, migra incrementalmente y abre reflexión solo donde sea necesario.
+Crea el archivo `src/com.academia.app/module-info.java`:
+
+```java
+module com.academia.app {
+  requires com.academia.model;
+}
+```
+
+Crea el archivo `src/com.academia.app/com/academia/app/Main.java`:
+
+```java
+package com.academia.app;
+import com.academia.model.User;
+import java.lang.reflect.Field;
+public class Main {
+  public static void main(String[] args) throws Exception {
+    Field f = User.class.getDeclaredField("name");
+    f.setAccessible(true);
+    System.out.println(f.get(new User()));
+  }
+}
+```
+
+```bash
+javac -d out --module-source-path src $(find src -name "*.java")
+java --module-path out -m com.academia.app/com.academia.app.Main
+```
+
+**Error común.** Usar `open module` sin necesidad. Abre todo el módulo a reflexión. Corrección: `opens paquete to modulo` puntual.
+
+**Verificación (JDK 27, 2026-05-22).** `Ada`.
+
+## Cierre
+
+JPMS aporta encapsulación fuerte y dependencias explícitas. Úsalo donde el beneficio supere el costo de migración.
+
+## Checklist
+
+- Entiendo `module-info.java`, `requires`, `exports`.
+- Distingo `exports` (acceso API) de `opens` (reflexión).
+- Sé cuándo JPMS vale la pena y cuándo no.
