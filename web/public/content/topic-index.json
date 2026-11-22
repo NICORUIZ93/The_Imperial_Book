@@ -5531,23 +5531,23 @@
     "14": [
       {
         "title": "Micrometer + Prometheus",
-        "fragment": "micrometer-prometheus"
+        "fragment": "tema-1-micrometer-prometheus"
       },
       {
         "title": "OpenTelemetry + Zipkin/Jaeger",
-        "fragment": "opentelemetry-zipkin-jaeger"
+        "fragment": "tema-2-opentelemetry-zipkin-jaeger"
       },
       {
         "title": "Logging estructurado",
-        "fragment": "logging-estructurado"
+        "fragment": "tema-3-logging-estructurado"
       },
       {
         "title": "Grafana: dashboards",
-        "fragment": "grafana-dashboards"
+        "fragment": "tema-4-grafana-dashboards"
       },
       {
         "title": "Alerting basado en p99",
-        "fragment": "alerting-basado-en-p99"
+        "fragment": "tema-5-alerting-basado-en-p99"
       }
     ],
     "15": [
