@@ -1,307 +1,272 @@
-# Módulo 2: REST APIs con Spring Web
+# Módulo 2: API REST con Spring MVC
 
-Este módulo construye APIs HTTP con Spring MVC: contratos DTO, validación, manejo de errores, mapeo, documentación, paginación, JSON y versionado. Cada concepto se explica con contrato y verificación; los ejemplos Spring Boot completos se marcan como verificables en proyecto Boot, y los conceptos puros se verifican con Java cuando aplica.
+Una API REST no es solo “poner @RestController”. Es un contrato: recursos, métodos HTTP, códigos de estado, validación, errores consistentes, DTOs, paginación y documentación. Este módulo construye ese contrato con disciplina, para que la API sea predecible y segura.
 
-**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0. Ejemplos Boot verificados en `/tmp` con Spring Boot 3.5.x/Java 21 cuando se indica; APIs Spring Web/Validation/Jackson modernas.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0 para smokes web locales. Algunas APIs mencionadas (versionado nativo Spring Framework 7/Boot 4, Jackson 3 defaults) dependen de versión; se marcan explícitamente.
 
 ## Aprende construyendo
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 35 min
 
-Caso guía: exponer una entidad JPA directamente filtra campos internos o acopla API a persistencia.
+Caso guía: la entidad `User` tiene `passwordHash`. Si la devuelves por el endpoint, filtras un secreto.
 
 #### DTO (Data Transfer Object)
 
-**Definición formal.** DTO es un objeto de transporte que representa datos de entrada/salida de un contrato, separado del modelo de persistencia/dominio interno.
+**Definición formal.** DTO es un objeto diseñado para transportar datos entre capas/procesos, moldeado al contrato de entrada/salida, no al modelo interno de persistencia.
 
-**Para qué sirve.** Controla el contrato HTTP, evita sobreexposición y desacopla API de BD.
+**Cómo funciona por dentro.** El controlador recibe DTO request, el servicio mapea a dominio/comando, la persistencia usa entidad, y el controlador responde DTO response. Esto desacopla API de DB.
 
-**Cuándo usarlo.** En entradas/salidas HTTP. No expongas entidades JPA directamente en APIs públicas.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/sb2-dto && cd /tmp/sb2-dto
-cat > DemoDto.java << 'JAVA'
-class UserEntity { long id; String email; String passwordHash; UserEntity(long i,String e,String p){id=i;email=e;passwordHash=p;} }
-record UserResponse(long id, String email) { static UserResponse from(UserEntity e){ return new UserResponse(e.id,e.email); } }
-public class DemoDto { public static void main(String[] args){ System.out.println(UserResponse.from(new UserEntity(1,"a@b.com","hash")).email()); } }
-JAVA
-javac DemoDto.java && java DemoDto
+```mermaid
+flowchart LR
+  C[Cliente] --> R[Request DTO]
+  R --> S[Service/Domain]
+  S --> E[Entidad/JPA]
+  E --> S
+  S --> RS[Response DTO]
+  RS --> C
 ```
-
-**Caso de uso real.** Ocultar `passwordHash`, campos internos o relaciones lazy.
-
-**Error común.** Retornar entidad JPA y disparar lazy loading/filtrar datos sensibles. Corrección: mapear a DTO explícito.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `a@b.com`.
-
-#### Mapeo entidad-DTO
-
-**Definición formal.** Transformación explícita entre modelo interno y contrato externo.
-
-**Para qué sirve.** Centraliza conversión y evita fugas.
-
-**Cuándo usarlo.** En capa de servicio/controlador/mapper dedicado.
-
-**Ejemplo mínimo enfocado (ejecutable).** Ver `UserResponse.from(...)` anterior.
-
-**Caso de uso real.** MapStruct o mappers manuales.
-
-**Error común.** Mapeo duplicado inconsistente. Corrección: mapper único y tests.
-
-**Verificación (JDK 27, 2026-05-22).** Observada por ejecución anterior.
-
-### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 35 min
-
-Caso guía: rechazar input inválido antes de tocar la lógica de negocio.
-
-#### Bean Validation
-
-**Definición formal.** Estándar Jakarta Bean Validation (anotaciones como `@NotBlank`, `@Email`, `@Min`) para declarar restricciones sobre campos/params.
-
-**Para qué sirve.** Validar entrada de forma declarativa y consistente.
-
-**Cuándo usarlo.** En DTOs de entrada con `@Valid`/`@Validated`.
-
-**Ejemplo mínimo enfocado (ejecutable con Jakarta Validation en proyecto; concepto Java puro).**
-
-```java
-record CrearEnvioRequest(@NotBlank String codigo, @Min(1) int kg) {}
-```
-
-**Caso de uso real.** Rechazar request sin `codigo`.
-
-**Error común.** Validar solo en frontend. Corrección: validar en servidor siempre.
-
-**Verificación.** **Nota:** requiere dependencia `spring-boot-starter-validation`/provider Hibernate Validator; evidencia: 400 con detalles.
-
-#### `ResponseEntity`
-
-**Definición formal.** Tipo Spring que representa respuesta HTTP completa: status, headers y body.
-
-**Para qué sirve.** Control explícito de códigos HTTP.
-
-**Cuándo usarlo.** Cuando necesitas status/headers específicos. Para casos simples, retornar body o `@ResponseStatus`.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```java
-@PostMapping("/envios")
-ResponseEntity<Void> crear(@Valid @RequestBody CrearEnvioRequest req){
-  return ResponseEntity.status(201).build();
-}
-```
-
-**Caso de uso real.** 201 Created con Location.
-
-**Error común.** Retornar 200 para creación. Corrección: usar semántica HTTP correcta.
-
-**Verificación.** **Nota:** requiere app Boot; evidencia con `curl -i`.
-
-### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 40 min
-
-Caso guía: errores consistentes para todos los endpoints.
-
-#### `@ControllerAdvice` / `@ExceptionHandler`
-
-**Definición formal.** Mecanismo Spring MVC para manejar excepciones transversalmente en controllers y producir respuestas consistentes.
-
-**Para qué sirve.** Centralizar manejo de errores y formato de respuesta.
-
-**Cuándo usarlo.** Cuando múltiples endpoints comparten política de error.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```java
-@RestControllerAdvice
-class ApiErrors {
-  @ExceptionHandler(IllegalArgumentException.class)
-  ResponseEntity<Map<String,String>> bad(IllegalArgumentException e){
-    return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-  }
-}
-```
-
-**Caso de uso real.** 404 para recurso no encontrado, 400 para validación.
-
-**Error común.** Exponer stack traces/mensajes internos. Corrección: mensajes seguros y log interno.
-
-**Verificación.** **Nota:** requiere app Boot; `curl` debe mostrar JSON de error y status esperado.
-
-#### Problem Details / contrato de error
-
-**Definición formal.** Formato estructurado de error (por ejemplo RFC 9457/ProblemDetail en Spring) con campos estables.
-
-**Para qué sirve.** Clientes pueden manejar errores programáticamente.
-
-**Cuándo usarlo.** APIs públicas o entre servicios.
 
 **Ejemplo mínimo enfocado (ejecutable, Java puro).**
 
 ```bash
-mkdir -p /tmp/sb2-err && cd /tmp/sb2-err
-cat > DemoErr.java << 'JAVA'
-public class DemoErr { public static void main(String[] args){ System.out.println("{\"type\":\"bad\",\"status\":400}"); } }
-JAVA
-javac DemoErr.java && java DemoErr
+mkdir -p java-sb2-dto
+cd java-sb2-dto
 ```
 
-**Caso de uso real.** `ProblemDetail` con `type`, `title`, `status`, `detail`.
+Crea el archivo `DemoDto.java`:
 
-**Error común.** Cada endpoint devuelve formato distinto. Corrección: contrato central.
+```java
+class UserEntity { String email; String passwordHash; UserEntity(String e,String p){email=e;passwordHash=p;} }
+record UserResponse(String email) {}
+public class DemoDto {
+  static UserResponse toResponse(UserEntity e){ return new UserResponse(e.email); }
+  public static void main(String[] args){ System.out.println(toResponse(new UserEntity("a@b.com","hash")).email()); }
+}
+```
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `{"type":"bad","status":400}`.
+```bash
+javac DemoDto.java
+java DemoDto
+```
+
+**Error común.** Exponer entidad JPA directa. Síntoma: filtrado de campos sensibles, acoplamiento a esquema, problemas de lazy loading. Corrección: DTOs y mapeo explícito.
+
+**Verificación (JDK 27, 2026-05-22).** `a@b.com`.
+
+### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 35 min
+
+Caso guía: crear una guía sin `destino`. La API debe rechazarla con 400, no guardar basura.
+
+#### Bean Validation
+
+**Definición formal.** Bean Validation (Jakarta Validation) usa anotaciones (`@NotBlank`, `@Email`, `@Size`, etc.) para declarar restricciones sobre campos/params.
+
+**Contrato.** `@Valid`/`@Validated` activa la validación en el borde. Fallos generan `MethodArgumentNotValidException` o `ConstraintViolationException`.
+
+**Ejemplo mínimo (ejecutable, Spring Boot web smoke).**
+
+```bash
+mkdir -p sb2-val/src/main/java/com/academia
+cd sb2-val
+```
+
+Crea el archivo `pom.xml`:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.5.0</version><relativePath/></parent>
+  <groupId>com.academia</groupId><artifactId>sb2-val</artifactId><version>0.0.1</version>
+  <properties><java.version>21</java.version></properties>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-validation</artifactId></dependency>
+  </dependencies>
+  <build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>
+</project>
+```
+
+Crea el archivo `src/main/java/com/academia/Demo.java`:
+
+```java
+package com.academia;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+record GuiaReq(@NotBlank String destino) {}
+@SpringBootApplication
+@RestController
+class Demo {
+  @PostMapping("/guias")
+  ResponseEntity<?> crear(@Valid @RequestBody GuiaReq req){ return ResponseEntity.ok(req); }
+  public static void main(String[] args){ SpringApplication.run(Demo.class, args); }
+}
+```
+
+```bash
+mvn -q -DskipTests package
+java -jar target/sb2-val-0.0.1.jar
+# en otra terminal:
+curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"destino":""}' http://localhost:8080/guias
+```
+
+**Error común.** Validar manualmente en cada controller con `if`. Corrección: Bean Validation + handler centralizado.
+
+**Verificación (Spring Boot 3.5.0, JDK 27, 2026-05-22).** Request inválido devuelve 400.
+
+### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 40 min
+
+Caso guía: todos los errores de validación deben responder con el mismo formato.
+
+#### `@ControllerAdvice` / `@RestControllerAdvice`
+
+**Definición formal.** Componente que intercepta excepciones de controllers y las traduce en respuestas consistentes.
+
+```mermaid
+flowchart LR
+  C[Controller] -->|lanza excepción| A[@RestControllerAdvice]
+  A --> R[ResponseEntity con body de error estándar]
+```
+
+**Ejemplo mínimo (Java, ejecutable como concepto de mapeo).**
+
+```bash
+mkdir -p java-sb2-err
+cd java-sb2-err
+```
+
+Crea el archivo `DemoErr.java`:
+
+```java
+record ErrorBody(String code, String message) {}
+public class DemoErr {
+  static ErrorBody map(Exception e){ return new ErrorBody("VALIDATION", e.getMessage()); }
+  public static void main(String[] args){ System.out.println(map(new IllegalArgumentException("destino requerido")).code()); }
+}
+```
+
+```bash
+javac DemoErr.java
+java DemoErr
+```
+
+**Error común.** Devolver stack traces o mensajes internos al cliente. Corrección: body de error controlado, log interno detallado.
+
+**Verificación (JDK 27, 2026-05-22).** `VALIDATION`.
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 35 min
 
-Caso guía: reducir boilerplate sin perder claridad del contrato.
+Caso guía: reducir boilerplate sin esconder el contrato.
 
 #### Lombok
 
-**Definición formal.** Librería que genera código en compilación mediante anotaciones (`@Getter`, `@Builder`, `@RequiredArgsConstructor`, etc.).
+**Definición formal.** Librería que genera código en compilación (getters, builders, etc.) mediante anotaciones.
 
-**Para qué sirve.** Reducir boilerplate.
-
-**Cuándo usarlo.** Con criterio, en DTOs/clases simples. Evita `@Data` ciego en entidades JPA.
-
-**Ejemplo mínimo enfocado (conceptual).**
-
-```java
-@Value // inmutable
-public class UserResponse { Long id; String email; }
-```
-
-**Caso de uso real.** DTO inmutable.
-
-**Error común.** `@Data` en entidad JPA genera `equals/hashCode/toString` peligrosos. Corrección: usar anotaciones específicas y cuidado con relaciones.
-
-**Verificación.** **Nota:** requiere procesador de anotaciones configurado; evidencia en bytecode generado.
+**Regla.** Úsalo para reducir ruido, no para ocultar diseño. Evita `@Data` ciegamente en entidades JPA; prefiere `@Getter/@Setter/@Builder` con intención.
 
 #### MapStruct
 
-**Definición formal.** Generador de mappers en compilación que crea implementaciones de mapeo tipo-safe.
+**Definición formal.** Generador de mapeadores en compilación entre DTOs y entidades/modelos.
 
-**Para qué sirve.** Mapeos rápidos, explícitos y verificables en compilación.
-
-**Cuándo usarlo.** Mapeos DTO-entidad repetitivos.
-
-**Ejemplo mínimo enfocado (conceptual).**
+**Ejemplo mínimo (conceptual).**
 
 ```java
 @Mapper(componentModel = "spring")
 interface UserMapper { UserResponse toResponse(UserEntity e); }
 ```
 
-**Caso de uso real.** Mapeo de listas de DTOs.
+**Error común.** Mapeo manual repetido y propenso a olvidar campos sensibles. Corrección: mapper explícito revisado, tests de mapeo.
 
-**Error común.** Confiar en mapeo mágico sin revisar campos sensibles. Corrección: tests de mapper y revisiones.
-
-**Verificación.** **Nota:** requiere annotation processor; evidencia: clase `UserMapperImpl` generada.
+**Nota de verificación.** Requiere configuración annotation processor Maven/Gradle; verificar con `mvn -q test` en proyecto con MapStruct.
 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba · Avanzado · 40 min
 
-Caso guía: documentar y validar contrato HTTP.
+Caso guía: el frontend necesita contrato actualizado sin leer código.
 
 #### OpenAPI/springdoc
 
-**Definición formal.** OpenAPI es especificación de contrato HTTP; springdoc genera documentación OpenAPI desde controladores Spring.
+**Definición formal.** OpenAPI describe la API HTTP; springdoc genera documentación/OpenAPI desde controladores Spring.
 
-**Para qué sirve.** Contrato visible, clientes generados, pruebas de contrato.
+**Ejemplo mínimo.** Dependencia `springdoc-openapi-starter-webmvc-ui`, luego `/v3/api-docs`.
 
-**Cuándo usarlo.** APIs públicas o entre equipos.
+**Error común.** Documentación separada del código que se desactualiza. Corrección: generar desde código y validar contrato en CI.
 
-**Ejemplo mínimo enfocado (configuración).**
-
-```xml
-<dependency><groupId>org.springdoc</groupId><artifactId>springdoc-openapi-starter-webmvc-ui</artifactId><version>...</version></dependency>
-```
-
-**Caso de uso real.** Exponer `/v3/api-docs` y Swagger UI.
-
-**Error común.** Documentación desactualizada por manual. Corrección: generar desde código y validar en CI.
-
-**Verificación.** **Nota:** requiere app Boot con dependencia; evidencia: endpoint OpenAPI responde JSON.
+**Nota de verificación.** Requiere app web con springdoc; smoke local en `/tmp` es factible, pero pesado para cada corrida; documentar endpoint esperado.
 
 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Avanzado · 40 min
 
-Caso guía: listar recursos sin devolver millones de filas.
+Caso guía: `GET /guias` no puede devolver 1 millón de filas.
 
 #### Paginación
 
-**Definición formal.** Técnica de dividir resultados en páginas con parámetros como `page`, `size`, `sort`.
+**Definición formal.** Técnica de dividir resultados en páginas (`page`, `size`, `sort`) con límites máximos.
 
-**Para qué sirve.** Limitar carga y latencia.
-
-**Cuándo usarlo.** Endpoints de listado. Siempre impón límite máximo.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo (Java puro, ejecutable).**
 
 ```bash
-mkdir -p /tmp/sb2-page && cd /tmp/sb2-page
-cat > DemoPage.java << 'JAVA'
-import java.util.*; import java.util.stream.*;
-public class DemoPage { public static void main(String[] args){ var data=IntStream.range(0,10).boxed().toList(); int page=1,size=3; int from=page*size; System.out.println(data.subList(from, Math.min(from+size,data.size()))); } }
-JAVA
-javac DemoPage.java && java DemoPage
+mkdir -p java-sb2-page
+cd java-sb2-page
 ```
 
-**Caso de uso real.** `GET /envios?page=0&size=20`.
+Crea el archivo `DemoPage.java`:
 
-**Error común.** Permitir `size=100000`. Corrección: max size y validación.
+```java
+import java.util.*; import java.util.stream.*;
+public class DemoPage {
+  static List<Integer> page(List<Integer> all, int page, int size) {
+    int safeSize = Math.min(Math.max(size,1), 100);
+    int from = Math.max(page,0) * safeSize;
+    return all.stream().skip(from).limit(safeSize).toList();
+  }
+  public static void main(String[] args){ System.out.println(page(IntStream.range(0,10).boxed().toList(), 1, 3)); }
+}
+```
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `[3, 4, 5]`.
+```bash
+javac DemoPage.java
+java DemoPage
+```
+
+**Error común.** Permitir `size=100000`. Corrección: max size server-side.
+
+**Verificación (JDK 27, 2026-05-22).** `[3, 4, 5]`.
 
 ### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Avanzado · 35 min
 
-Caso guía: serializar fechas y controlar JSON.
+Caso guía: serializar fechas con consistencia y conocer defaults.
 
-#### Jackson `JsonMapper`/`ObjectMapper`
+#### Jackson 3 / JSON mapping
 
-**Definición formal.** Componentes de Jackson para serializar/deserializar JSON a objetos Java.
+**Definición formal.** Jackson serializa/deserializa JSON. Jackson 3 (usado en Boot 4 ecosistema) introduce cambios de defaults/paquetes; Jackson 2 es el default histórico de Boot 3.x.
 
-**Para qué sirve.** Contrato JSON estable.
+**Regla.** Verifica la versión real del proyecto antes de asumir defaults. Configura `ObjectMapper/JsonMapper` explícitamente para fechas y unknown properties según contrato.
 
-**Cuándo usarlo.** Configurar formatos de fecha, nulls, naming, módulos.
-
-**Ejemplo mínimo enfocado (ejecutable con Java puro JSON simple por dependencia ausente; se muestra contrato).**
-
-```java
-record Evento(String id, Instant at) {}
-// configurar ObjectMapper con JavaTimeModule y formato ISO-8601
-```
-
-**Caso de uso real.** Fechas ISO-8601 en APIs.
-
-**Error común.** Fechas como timestamps ambiguos. Corrección: ISO-8601 explícito.
-
-**Verificación.** **Nota:** requiere Jackson en classpath; evidencia con test de serialización.
+**Nota de verificación.** La versión depende de Boot. En Boot 3.5.x se usa Jackson 2.x por defecto; no afirmar comportamiento de Jackson 3 sin confirmar dependencia.
 
 ### Tema 8: Versionado de API nativo de Spring Framework 7 · Avanzado · 40 min
 
-Caso guía: evolucionar contrato sin romper clientes.
+Caso guía: evolucionar endpoint sin romper clientes.
 
 #### Versionado de API
 
-**Definición formal.** Estrategia para exponer versiones de contrato (path, header, query, media type) manteniendo compatibilidad.
+**Definición formal.** Estrategia para exponer versiones de contrato (path `/v1`, header, media type, query param) y política de deprecación.
 
-**Para qué sirve.** Evolución controlada.
+**Regla.** Spring Framework 7/Spring Boot 4 introducen capacidades nativas de versionado; en Boot 3.x se suele implementar por convención/routing. Verifica versión antes de usar API nativa.
 
-**Cuándo usarlo.** Cuando cambia contrato público incompatiblemente.
+**Nota de verificación.** No ejecutar como API nativa en Boot 3.5.0; documentar estrategia por path/header y marcar dependencia de versión para feature nativa.
 
-**Ejemplo mínimo enfocado (conceptual).**
+## Cierre
 
-```java
-@GetMapping(value="/envios/{id}", version="1.0")
-EnvioV1 getV1(...) { ... }
-```
+Una API REST profesional es contrato + validación + errores + seguridad + documentación. El controller es el borde; no el lugar para toda la lógica.
 
-**Caso de uso real.** v1 y v2 conviviendo durante migración.
+## Checklist
 
-**Error común.** Romper v1 sin periodo de deprecación. Corrección: versionar, deprecar, medir uso, retirar.
-
-**Verificación.** **Nota:** depende de soporte de versionado en versión de Spring usada; validar con docs/version de framework del proyecto.
-
-## Cierre del módulo
-
-Una API REST robusta no es solo un controller: es contrato DTO, validación, errores consistentes, documentación, paginación segura y evolución versionada.
+- Uso DTOs, no entidades expuestas.
+- Valido entrada con Bean Validation.
+- Centralizo errores con `@RestControllerAdvice`.
+- Pagino con límite máximo.
+- Documento contrato y verifico versión de Jackson/Spring antes de asumir features.
