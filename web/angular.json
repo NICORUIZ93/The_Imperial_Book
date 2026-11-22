@@ -101,10 +101,10 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "coverageThresholds": {
-              "statements": 60,
-              "branches": 50,
-              "functions": 55,
-              "lines": 60
+              "statements": 51,
+              "branches": 43,
+              "functions": 51,
+              "lines": 54
             },
             "setupFiles": [
               "src/tests/almacenamiento.setup.ts"

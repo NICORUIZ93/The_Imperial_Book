@@ -145,17 +145,25 @@ Cambia `precioBase` a `200.0`, recompila y ejecuta. La salida debe mostrar `Prec
 
 ### Tema 2: JDK, JRE, JVM y bytecode (WORA) · Básico · 30 min
 
-**Contexto y para qué sirve**
+**Caso guía / Contexto**
 
-Muchos errores de principiantes no son de lógica, sino de entorno: confunden JDK con JRE, o ejecutan el `.class` como si fuera el `.java`. Entender el flujo de compilación y ejecución te permite ubicar dónde está el problema antes de tocar el código a ciegas.
+Compilas `HolaJVM.java`, obtienes `HolaJVM.class` y lo ejecutas en tu máquina. La pregunta clave: ¿por qué no ejecutas el `.java` directamente, y por qué ese `.class` puede funcionar en otro sistema con una JVM compatible? Entender JDK, JRE, JVM, bytecode y WORA te permite ubicar si un fallo es de código, compilación o entorno.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** *Bytecode Java* es el conjunto de instrucciones de la máquina virtual Java, almacenado en archivos `.class`, definido por la Java Virtual Machine Specification. La *JVM* es la implementación que carga, verifica y ejecuta bytecode. El *JDK* es el kit de desarrollo que incluye compilador, herramientas y un runtime; el término *JRE* se usaba históricamente para el runtime orientado a ejecución.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `javac` traduce fuente `.java` a bytecode `.class`. `java` recibe el nombre de clase (no la ruta del archivo `.class`) y busca `main(String[])`. El bytecode es independiente de CPU/SO, pero la ejecución depende de una JVM compatible y del entorno (sistema de archivos, red, encoding, librerías nativas). “WORA” se cumple en la medida en que el programa se mantenga dentro de APIs portables y supuestos compatibles.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo / tenerlo en cuenta | Error/riesgo común |
+|---|---|---|---|---|
+| **JDK** (Java Development Kit) | Kit de desarrollo: incluye compilador (`javac`), herramientas (`jar`, `javadoc`, `javap`, `jshell`, etc.) y un runtime/JVM para ejecutar. | Desarrollar, compilar, depurar y empaquetar aplicaciones Java. | Siempre que escribas/compiles código Java. | Instalar solo un runtime y luego no tener `javac`. |
+| **JRE** (Java Runtime Environment) | Runtime histórico orientado a ejecutar aplicaciones Java: JVM + bibliotecas estándar de ejecución, sin herramientas de desarrollo completas. | Ejecutar programas Java ya compilados. | En despliegues antiguos; hoy muchos JDKs incluyen runtime y se distribuyen runtimes custom con `jlink`. | Confundir JRE con JDK y esperar poder compilar. |
+| **JVM** (Java Virtual Machine) | Máquina virtual que carga, verifica e interpreta/compila (JIT) bytecode según la Java Virtual Machine Specification. | Ejecutar `.class`/JAR de forma portable sobre el sistema anfitrión. | Cada vez que corres `java ...`; también al entender rendimiento/memoria. | Creer que “la JVM es Java” y olvidar versión, flags, GC y entorno. |
+| **Bytecode** | Formato intermedio de instrucciones (`.class`) generado por el compilador Java desde `.java`. | Separar compilación de ejecución; permitir verificación y portabilidad. | Al depurar comportamiento, inspeccionar con `javap`, o entender errores de carga/versionado. | Editar `.class` a mano o confundir bytecode con código fuente. |
+| **WORA** (Write Once, Run Anywhere) | Propiedad objetivo de portabilidad: el mismo bytecode puede ejecutarse en cualquier plataforma con una JVM compatible. | Reducir acoplamiento a CPU/SO en aplicaciones portables. | Cuando el código usa APIs estándar y evita supuestos de plataforma. | Asumir portabilidad total: archivos, rutas, encoding, librerías nativas, versión de JVM pueden romperla. |
 
-**Modelo mental.** El `.java` es el guion, el `.class` es el guion traducido a un idioma intermedio, y la JVM es el actor/intérprete que lo representa en cada escenario (Windows, Linux, macOS).
+**Contrato / invariantes / reglas.** `javac` traduce `.java` a `.class` (bytecode). `java` recibe el **nombre de clase** con `main(String[])`, no la ruta del archivo `.class`. El bytecode es independiente de CPU/SO, pero la ejecución depende de una JVM compatible y del entorno (sistema de archivos, encoding, red, librerías nativas). Un `.class` compilado con una versión mayor puede fallar en una JVM más vieja (`UnsupportedClassFileError`).
+
+**Modelo mental.** El `.java` es el guion; `javac` (JDK) lo traduce a bytecode, un idioma intermedio; la JVM es el actor que lo ejecuta en cada escenario (Windows/Linux/macOS). WORA funciona si el guion no depende de trucos específicos del escenario.
 
 **Implementación desde cero**
 
@@ -171,58 +179,59 @@ Crea `HolaJVM.java`:
 public class HolaJVM {
     public static void main(String[] args) {
         System.out.println("Hola desde la JVM");
-        System.out.println("Versión Java: " + System.getProperty("java.version"));
+        System.out.println("Java version: " + System.getProperty("java.version"));
+        System.out.println("Java vendor: " + System.getProperty("java.vendor"));
+        System.out.println("OS: " + System.getProperty("os.name"));
     }
 }
 ```
 
-Compila, lista archivos y ejecuta:
+Compila, inspecciona artefactos y ejecuta:
 
 ```bash
 javac HolaJVM.java
 ls
 java HolaJVM
-```
-
-Para inspeccionar el bytecode:
-
-```bash
-javap -c HolaJVM
+javap -c HolaJVM | head -20
 ```
 
 **Desglose del código**
 
-- `javac HolaJVM.java` genera `HolaJVM.class`. Ese archivo contiene bytecode.
-- `java HolaJVM` recibe el **nombre de la clase**, no el nombre del archivo `.class`.
-- `System.getProperty("java.version")` consulta una propiedad del runtime. Sirve para observar qué JVM está ejecutando.
-- `javap -c` desensambla el bytecode. No hace falta dominarlo ahora; basta con reconocer que existe una representación intermedia.
+- `javac HolaJVM.java` (herramienta del **JDK**) genera `HolaJVM.class` (**bytecode**).
+- `java HolaJVM` inicia la **JVM**, carga la clase y busca `main(String[])`.
+- `System.getProperty(...)` muestra que el mismo bytecode observa el runtime/OS real donde corre; esto ilustra el límite práctico de **WORA**: el código es portable, pero el entorno puede variar.
+- `javap -c` desensambla bytecode para inspección; confirma que existe una representación intermedia.
 
 **Ejecución y salida real**
 
+Ejemplo real (la versión/vendor/OS variarán en tu máquina):
+
 ```text
 Hola desde la JVM
-Versión Java: 27.0.1.0.2
+Java version: 27.0.1.0.2
+Java vendor: Homebrew
+OS: Mac OS X
 ```
 
-La versión puede variar en tu máquina. El punto importante es que el programa se compila a `.class` y luego lo ejecuta la JVM.
+Lo importante: se generó `.class`, la JVM lo ejecutó y `javap` mostró bytecode.
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| `Error: Could not find or load main class HolaJVM.class` | Pasaste el nombre del archivo en lugar del nombre de la clase | Ejecuta `java HolaJVM` |
-| Cambiaste el código pero la salida es igual | No recompilaste | Ejecuta `javac HolaJVM.java` y luego `java HolaJVM` |
-| `javac: command not found` / no reconocido | JDK no instalado o PATH mal configurado | Revisa la instalación del JDK y la variable PATH |
+| `Error: Could not find or load main class HolaJVM.class` | Pasaste nombre de archivo en vez de clase | Ejecuta `java HolaJVM` |
+| `javac: command not found` / no reconocido | JDK no instalado o PATH mal configurado | Instala JDK y verifica `javac -version` |
+| `UnsupportedClassFileError` | Compilaste con JDK más nuevo que la JVM que ejecuta | Alinea versiones o compila con `--release` adecuado |
+| Funciona en mi máquina, falla en otra | Supuesto no portable (ruta, encoding, versión, SO) | Revisa WORA: usa APIs portables y declara versión de runtime |
 
 **Verificación rápida**
 
 ```bash
-javac HolaJVM.java
-java HolaJVM
+javac HolaJVM.java && java HolaJVM
 javap -c HolaJVM | head
 ```
 
-Debes ver el archivo `.class`, la salida del programa y un encabezado de bytecode generado por `javap`.
+Verifica: existe `HolaJVM.class`, el programa imprime propiedades del runtime y `javap` muestra instrucciones bytecode.
 
 ### Tema 3: Instalar JDK y verificar entorno · Básico · 30 min
 
