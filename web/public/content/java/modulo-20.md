@@ -1,731 +1,462 @@
-# Módulo 20: Java funcional — interfaces que componen comportamiento
+# Módulo 20: Programación funcional y streams
 
-Java permite programar en estilo funcional con lambdas, interfaces funcionales, `Optional`, streams y la Flow API. El objetivo no es “escribir todo con streams”, sino componer comportamiento con claridad, pureza donde convenga y evidencia cuando se use concurrencia o paralelismo.
+Este módulo profundiza el estilo funcional en Java: interfaces funcionales core, composición, referencias a métodos, Optional, streams intermedios/terminales, collectors, paralelismo, pureza y Flow API. La meta es escribir transformaciones claras y seguras, no forzar “todo stream”.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
 
-Filtrar guías, convertirlas a etiquetas, imprimirlas y generar IDs con contratos claros.
+Caso guía: filtrar guías válidas, transformarlas, imprimirlas y generar IDs.
 
-#### `Predicate<T>`
+#### Interfaces funcionales core
 
-**Definición formal.** `Predicate<T>` representa una función `T -> boolean` que evalúa una condición.
+**Definición formal.** `Predicate<T>` (T->boolean), `Function<T,R>` (T->R), `Consumer<T>` (T->void), `Supplier<T>` (()->T). Son contratos para pasar comportamiento.
 
-**Para qué sirve.** Filtros y reglas composables.
-
-**Cuándo usarlo y cuándo no.** Úsalo para condiciones puras. Evita efectos secundarios ocultos.
+```mermaid
+flowchart LR
+  P[Predicate\ntest] --> F[Function\napply]
+  F --> C[Consumer\naccept]
+  S[Supplier\nget] --> F
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t1 && cd /tmp/j20-t1
-cat > DemoPred.java << 'JAVA'
-import java.util.function.*;
-public class DemoPred { public static void main(String[] args){ Predicate<Integer> esPar = n -> n%2==0; System.out.println(esPar.test(4)); } }
-JAVA
-javac DemoPred.java && java DemoPred
+mkdir -p java-m20-core
+cd java-m20-core
 ```
 
-**Caso de uso real.** Filtrar guías activas.
+Crea el archivo `DemoCore.java`:
 
-**Error común.** Predicado con side effects. Corrección: mantenerlo puro.
-
-**Verificación (2026-05-22).** Salida: `true`.
-
-#### `Function<T,R>`
-
-**Definición formal.** `Function<T,R>` representa una transformación `T -> R`.
-
-**Para qué sirve.** Mapear/convertir valores.
-
-**Cuándo usarlo.** Transformaciones puras y claras.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.function.*;
+public class DemoCore {
+  public static void main(String[] args) {
+    Predicate<Integer> positivo = x -> x > 0;
+    Function<Integer,String> tag = x -> "N" + x;
+    Consumer<String> out = System.out::println;
+    Supplier<Integer> uno = () -> 1;
+    if (positivo.test(uno.get())) out.accept(tag.apply(uno.get()));
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t1
-cat > DemoFn.java << 'JAVA'
-import java.util.function.*;
-public class DemoFn { public static void main(String[] args){ Function<String,Integer> largo=String::length; System.out.println(largo.apply("G-123")); } }
-JAVA
-javac DemoFn.java && java DemoFn
+javac DemoCore.java
+java DemoCore
 ```
 
-**Caso de uso real.** Convertir entidad a DTO.
-
-**Error común.** Mutar input inesperadamente. Corrección: devolver nuevo valor.
-
-**Verificación (2026-05-22).** Salida: `5`.
-
-#### `Consumer<T>`
-
-**Definición formal.** `Consumer<T>` representa una operación `T -> void` que consume un valor.
-
-**Para qué sirve.** Efectos como logging o impresión.
-
-**Cuándo usarlo.** En bordes de efectos. No metas lógica de negocio crítica oculta.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-cd /tmp/j20-t1
-cat > DemoCons.java << 'JAVA'
-import java.util.function.*;
-public class DemoCons { public static void main(String[] args){ Consumer<String> c=System.out::println; c.accept("hola"); } }
-JAVA
-javac DemoCons.java && java DemoCons
-```
-
-**Caso de uso real.** Enviar evento/auditar.
-
-**Error común.** Ocultar fallos de negocio en consumer. Corrección: hacer explícito el contrato.
-
-**Verificación (2026-05-22).** Salida: `hola`.
-
-#### `Supplier<T>`
-
-**Definición formal.** `Supplier<T>` representa `() -> T`, una fábrica/lazy provider sin entrada.
-
-**Para qué sirve.** Generar valores bajo demanda.
-
-**Cuándo usarlo.** IDs, defaults, lazy init.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-cd /tmp/j20-t1
-cat > DemoSup.java << 'JAVA'
-import java.util.function.*;
-public class DemoSup { public static void main(String[] args){ Supplier<String> s=() -> "G-1"; System.out.println(s.get()); } }
-JAVA
-javac DemoSup.java && java DemoSup
-```
-
-**Caso de uso real.** Crear ID solo si se necesita.
-
-**Error común.** Supplier costoso llamado repetidamente sin control. Corrección: cachear si corresponde.
-
-**Verificación (2026-05-22).** Salida: `G-1`.
+**Verificación (JDK 27, 2026-05-22).** `N1`.
 
 ### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
 
-Calcular etiqueta desde guía, o costo desde peso y distancia.
+Caso guía: calcular precio con impuesto (dos entradas) o transformar un valor (una entrada).
 
-#### `Function<T,R>` y `apply`
-
-**Definición formal.** `Function<T,R>` transforma una entrada en salida; `apply` ejecuta la función.
-
-**Para qué sirve.** Modelar transformaciones reutilizables.
-
-**Cuándo usarlo.** Cuando la conversión tiene nombre y contrato claro.
+#### `Function` y `BiFunction`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t2 && cd /tmp/j20-t2
-cat > DemoApply.java << 'JAVA'
-import java.util.function.*;
-public class DemoApply { public static void main(String[] args){ Function<String,Integer> largo=String::length; System.out.println(largo.apply("G-123")); } }
-JAVA
-javac DemoApply.java && java DemoApply
+mkdir -p java-m20-fn
+cd java-m20-fn
 ```
 
-**Caso de uso real.** Normalizar texto.
+Crea el archivo `DemoFn.java`:
 
-**Error común.** Lambda larga opaca. Corrección: extraer método nombrado.
-
-**Verificación (2026-05-22).** Salida: `5`.
-
-#### `BiFunction<T,U,R>`
-
-**Definición formal.** `BiFunction<T,U,R>` transforma dos entradas `(T,U)` en `R`.
-
-**Para qué sirve.** Combinar dos valores sin crear clase auxiliar inmediata.
-
-**Cuándo usarlo y cuándo no.** Úsalo para dos parámetros claros. Si hay más, crea un objeto de entrada.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.function.*;
+public class DemoFn {
+  public static void main(String[] args) {
+    Function<Integer,Integer> doble = x -> x * 2;
+    BiFunction<Integer,Integer,Integer> suma = Integer::sum;
+    System.out.println(doble.apply(5));
+    System.out.println(suma.apply(2,3));
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t2
-cat > DemoBi.java << 'JAVA'
-import java.util.function.*;
-public class DemoBi { public static void main(String[] args){ BiFunction<Double,Double,Double> costo=(peso,km)->10+peso*2+km*0.1; System.out.println(costo.apply(2.0,50.0)); } }
-JAVA
-javac DemoBi.java && java DemoBi
+javac DemoFn.java
+java DemoFn
 ```
 
-**Caso de uso real.** Calcular tarifa por peso y distancia.
-
-**Error común.** Demasiados parámetros en BiFunction encadenadas. Corrección: modelar request object.
-
-**Verificación (2026-05-22).** Salida: `19.0`.
+**Verificación (JDK 27, 2026-05-22).** `10`, `5`.
 
 ### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
 
-Combinar validaciones y transformaciones sin ifs anidados.
+Caso guía: validar con varias reglas y componer transformaciones.
 
-#### `andThen` y `compose`
+#### Composición
 
-**Definición formal.** `andThen` aplica la función actual y luego la siguiente; `compose` aplica primero la función pasada y luego la actual.
-
-**Para qué sirve.** Pipelines legibles.
-
-**Cuándo usarlo.** Transformaciones pequeñas y puras.
+**Definición formal.** `andThen/compose` encadenan funciones; `and/or/negate` combinan predicados.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t3 && cd /tmp/j20-t3
-cat > DemoComp.java << 'JAVA'
-import java.util.function.*;
-public class DemoComp { public static void main(String[] args){ Function<Integer,Integer> doble=x->x*2, masUno=x->x+1; System.out.println(doble.andThen(masUno).apply(3)); System.out.println(doble.compose(masUno).apply(3)); } }
-JAVA
-javac DemoComp.java && java DemoComp
+mkdir -p java-m20-comp
+cd java-m20-comp
 ```
 
-**Caso de uso real.** Normalizar y luego validar.
+Crea el archivo `DemoComp.java`:
 
-**Error común.** Confundir orden de `compose`. Corrección: probar con ejemplo pequeño.
-
-**Verificación (2026-05-22).** Salida: `7`, `8`.
-
-#### `Predicate.and/or/negate`
-
-**Definición formal.** Combinadores lógicos que crean nuevos predicados a partir de otros.
-
-**Para qué sirve.** Reglas declarativas.
-
-**Cuándo usarlo.** Validaciones compuestas.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.function.*;
+public class DemoComp {
+  public static void main(String[] args) {
+    Predicate<Integer> pos = x -> x > 0;
+    Predicate<Integer> par = x -> x % 2 == 0;
+    Function<Integer,Integer> doble = x -> x * 2;
+    Function<Integer,Integer> masUno = x -> x + 1;
+    System.out.println(pos.and(par).test(4));
+    System.out.println(doble.andThen(masUno).apply(3));
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t3
-cat > DemoPredComp.java << 'JAVA'
-import java.util.function.*;
-public class DemoPredComp { public static void main(String[] args){ Predicate<String> noVacio=s->!s.isBlank(); Predicate<String> empiezaG=s->s.startsWith("G"); System.out.println(noVacio.and(empiezaG).test("G-1")); System.out.println(noVacio.and(empiezaG).negate().test("X-1")); } }
-JAVA
-javac DemoPredComp.java && java DemoPredComp
+javac DemoComp.java
+java DemoComp
 ```
 
-**Caso de uso real.** Filtros de búsqueda.
-
-**Error común.** Lambdas inline complejas. Corrección: nombrar predicados.
-
-**Verificación (2026-05-22).** Salida: `true`, `true`.
+**Verificación (JDK 27, 2026-05-22).** `true`, `7`.
 
 ### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
 
-Entender cuándo se ejecuta un pipeline.
+Caso guía: un pipeline parece ejecutar todo, pero intermedias son lazy.
 
-#### Stream y pereza
+#### Laziness y orden
 
-**Definición formal.** Un `Stream` es un pipeline de operaciones sobre datos; las intermedias son lazy y se ejecutan al invocar una terminal.
-
-**Para qué sirve.** Procesamiento declarativo y posible fusión de operaciones.
-
-**Cuándo usarlo.** Transformaciones/filtros/colecciones. No reutilices un stream consumido.
+**Definición formal.** Operaciones intermedias se evalúan al ejecutar una terminal. El orden importa (`filter` antes de `map` puede reducir trabajo).
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t4 && cd /tmp/j20-t4
-cat > DemoLazy.java << 'JAVA'
-import java.util.*;
-public class DemoLazy { public static void main(String[] args){ var s=List.of(1,2,3).stream().map(x->{ System.out.println("map"+x); return x*2; }); System.out.println("antes"); s.forEach(x->{}); } }
-JAVA
-javac DemoLazy.java && java DemoLazy
+mkdir -p java-m20-lazy
+cd java-m20-lazy
 ```
 
-**Caso de uso real.** Evitar trabajo innecesario con `findFirst`.
+Crea el archivo `DemoLazy.java`:
 
-**Error común.** Esperar ejecución sin terminal. Corrección: agregar operación terminal.
-
-**Verificación (2026-05-22).** Imprime `antes` antes de los `map...`.
-
-#### Orden y efectos secundarios
-
-**Definición formal.** El orden de evaluación depende del pipeline/fuente; efectos secundarios son mutaciones de estado externo durante operaciones.
-
-**Para qué sirve.** Razonar sobre corrección.
-
-**Cuándo evitar efectos.** En `map/filter` preferir pureza.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.stream.*;
+public class DemoLazy {
+  public static void main(String[] args) {
+    long c = Stream.of(1,2,3,4).filter(x -> x > 2).peek(x -> {}).count();
+    System.out.println(c);
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t4
-cat > DemoSide.java << 'JAVA'
-import java.util.*; import java.util.stream.*;
-public class DemoSide { public static void main(String[] args){ List<Integer> out = List.of(1,2,3).stream().map(x->x*2).collect(Collectors.toList()); System.out.println(out); } }
-JAVA
-javac DemoSide.java && java DemoSide
+javac DemoLazy.java
+java DemoLazy
 ```
 
-**Caso de uso real.** Acumular resultado con collector, no con `map` mutante.
+**Error común.** Usar `peek` para efectos de negocio. Corrección: `forEach` terminal u operación explícita; mantener pipeline puro.
 
-**Error común.** `map(x -> {lista.add(x); return x;})`. Corrección: usar `collect`.
-
-**Verificación (2026-05-22).** Salida: `[2, 4, 6]`.
+**Verificación (JDK 27, 2026-05-22).** `2`.
 
 ### Tema 5: UnaryOperator y BinaryOperator · Intermedio · 35 min
 
-La salida conserva el tipo.
+Caso guía: transformaciones donde tipo de entrada y salida son iguales.
 
-#### `UnaryOperator<T>`
-
-**Definición formal.** Especialización de `Function<T,T>` donde entrada y salida son del mismo tipo.
-
-**Para qué sirve.** Transformaciones del mismo tipo: normalizar, incrementar, limpiar.
-
-**Cuándo usarlo.** Cuando el tipo no cambia.
+#### Operadores
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t5 && cd /tmp/j20-t5
-cat > DemoUnary.java << 'JAVA'
+mkdir -p java-m20-op
+cd java-m20-op
+```
+
+Crea el archivo `DemoOp.java`:
+
+```java
 import java.util.function.*;
-public class DemoUnary { public static void main(String[] args){ UnaryOperator<String> trim=String::trim; System.out.println(trim.apply(" a ")); } }
-JAVA
-javac DemoUnary.java && java DemoUnary
+public class DemoOp {
+  public static void main(String[] args) {
+    UnaryOperator<Integer> inc = x -> x + 1;
+    BinaryOperator<Integer> max = Integer::max;
+    System.out.println(inc.apply(4));
+    System.out.println(max.apply(3,9));
+  }
+}
 ```
-
-**Caso de uso real.** Normalizar strings.
-
-**Error común.** Usar `Function<String,String>` cuando `UnaryOperator` comunica mejor intención. Corrección: usar la especialización.
-
-**Verificación (2026-05-22).** Salida: `a`.
-
-#### `BinaryOperator<T>`
-
-**Definición formal.** Especialización de `BiFunction<T,T,T>`: combina dos valores del mismo tipo en uno del mismo tipo.
-
-**Para qué sirve.** Reducciones/merge.
-
-**Cuándo usarlo.** `reduce`, acumulación.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j20-t5
-cat > DemoBinary.java << 'JAVA'
-import java.util.function.*; import java.util.*;
-public class DemoBinary { public static void main(String[] args){ BinaryOperator<Integer> suma=Integer::sum; System.out.println(List.of(1,2,3).stream().reduce(0,suma)); } }
-JAVA
-javac DemoBinary.java && java DemoBinary
+javac DemoOp.java
+java DemoOp
 ```
 
-**Caso de uso real.** Sumar totales.
-
-**Error común.** Reducir sin identidad apropiada. Corrección: elegir identidad neutra correcta.
-
-**Verificación (2026-05-22).** Salida: `6`.
-
+**Verificación (JDK 27, 2026-05-22).** `5`, `9`.
 
 ### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
 
-Usar referencias a métodos cuando mejoran claridad.
+Caso guía: `x -> System.out.println(x)` vs `System.out::println`.
 
-#### Referencias a métodos
-
-**Definición formal.** Sintaxis `Clase::metodo`, `obj::metodo`, `Clase::new` para referir un método/constructor existente compatible con una interfaz funcional.
-
-**Para qué sirve.** Código más legible que lambdas triviales.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando el nombre comunica intención. Si la lambda es más clara, usa lambda.
+#### Method references
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t6 && cd /tmp/j20-t6
-cat > DemoRef.java << 'JAVA'
+mkdir -p java-m20-ref
+cd java-m20-ref
+```
+
+Crea el archivo `DemoRef.java`:
+
+```java
 import java.util.*;
-public class DemoRef { public static void main(String[] args){ List.of("a","b").forEach(System.out::println); } }
-JAVA
-javac DemoRef.java && java DemoRef
+public class DemoRef {
+  public static void main(String[] args) {
+    List.of("a","b").forEach(System.out::println);
+  }
+}
 ```
-
-**Caso de uso real.** `String::trim`, `Guia::getId`.
-
-**Error común.** Forzar method reference ilegible. Corrección: priorizar legibilidad.
-
-**Verificación (2026-05-22).** Salida: `a`, `b`.
-
-#### Referencia a constructor
-
-**Definición formal.** `Tipo::new` crea una instancia usando un constructor compatible con la interfaz funcional.
-
-**Para qué sirve.** Fábricas simples.
-
-**Cuándo usarlo.** Creación directa sin lógica adicional.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j20-t6
-cat > DemoCtor.java << 'JAVA'
-import java.util.function.*;
-class G { String id; G(String id){ this.id=id; } }
-public class DemoCtor { public static void main(String[] args){ Function<String,G> f=G::new; System.out.println(f.apply("G1").id); } }
-JAVA
-javac DemoCtor.java && java DemoCtor
+javac DemoRef.java
+java DemoRef
 ```
 
-**Caso de uso real.** Mapear IDs a objetos.
-
-**Error común.** Usar constructor ref cuando se necesita validación compleja. Corrección: lambda/fábrica explícita.
-
-**Verificación (2026-05-22).** Salida: `G1`.
+**Verificación (JDK 27, 2026-05-22).** `a`, `b`.
 
 ### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
 
-Modelar ausencia sin `null`.
+Caso guía: repo devuelve vacío si no existe.
 
-#### `Optional`
-
-**Definición formal.** `Optional<T>` es un contenedor que puede contener un valor o estar vacío.
-
-**Para qué sirve.** Hacer explícita la ausencia en retornos.
-
-**Cuándo usarlo y cuándo no.** Úsalo en retornos de búsqueda. No lo uses para campos de entidad/JPA o parámetros por todos lados.
+#### Optional
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t7 && cd /tmp/j20-t7
-cat > DemoOpt.java << 'JAVA'
+mkdir -p java-m20-opt
+cd java-m20-opt
+```
+
+Crea el archivo `DemoOpt.java`:
+
+```java
 import java.util.*;
-public class DemoOpt { static Optional<String> buscar(boolean ok){ return ok?Optional.of("G1"):Optional.empty(); }
-  public static void main(String[] args){ System.out.println(buscar(true).orElse("NA")); System.out.println(buscar(false).orElse("NA")); }
+public class DemoOpt {
+  static Optional<String> find(String id){ return "A1".equals(id)?Optional.of("ok"):Optional.empty(); }
+  public static void main(String[] args){ System.out.println(find("A1").orElse("no")); System.out.println(find("X").orElse("no")); }
 }
-JAVA
-javac DemoOpt.java && java DemoOpt
 ```
-
-**Caso de uso real.** Buscar por ID.
-
-**Error común.** `optional.get()` sin comprobar. Corrección: `orElse`, `orElseThrow`, `ifPresent`, `map`.
-
-**Verificación (2026-05-22).** Salida: `G1`, `NA`.
-
-#### `map/flatMap/orElseThrow`
-
-**Definición formal.** `map` transforma valor si existe; `flatMap` evita `Optional<Optional<T>>`; `orElseThrow` falla explícitamente si está vacío.
-
-**Para qué sirve.** Componer flujos con ausencia.
-
-**Cuándo usarlo.** Encadenar transformaciones seguras.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/j20-t7
-cat > DemoOpt2.java << 'JAVA'
-import java.util.*;
-public class DemoOpt2 { public static void main(String[] args){ Optional<String> o=Optional.of("g1"); System.out.println(o.map(String::toUpperCase).orElse("NA")); } }
-JAVA
-javac DemoOpt2.java && java DemoOpt2
+javac DemoOpt.java
+java DemoOpt
 ```
 
-**Caso de uso real.** Mapear entidad opcional a DTO.
-
-**Error común.** `orElse` con cómputo costoso siempre evaluado. Corrección: `orElseGet`.
-
-**Verificación (2026-05-22).** Salida: `G1`.
+**Verificación (JDK 27, 2026-05-22).** `ok`, `no`.
 
 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
 
-Construir pipelines de datos.
+Caso guía: normalizar y aplanar listas de tags.
 
-#### `filter` y `map`
-
-**Definición formal.** `filter` conserva elementos que cumplen un predicado; `map` transforma cada elemento.
-
-**Para qué sirve.** Seleccionar y convertir datos.
-
-**Cuándo usarlo.** Pipelines declarativos.
+#### `filter`, `map`, `flatMap`, `sorted`, `distinct`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t8 && cd /tmp/j20-t8
-cat > DemoFM.java << 'JAVA'
-import java.util.*;
-public class DemoFM { public static void main(String[] args){ System.out.println(List.of(1,2,3,4).stream().filter(x->x%2==0).map(x->x*10).toList()); } }
-JAVA
-javac DemoFM.java && java DemoFM
+mkdir -p java-m20-mid
+cd java-m20-mid
 ```
 
-**Caso de uso real.** Filtrar activos y mapear IDs.
+Crea el archivo `DemoMid.java`:
 
-**Error común.** Orden confuso de operaciones. Corrección: leer pipeline paso a paso.
-
-**Verificación (2026-05-22).** Salida: `[20, 40]`.
-
-#### `flatMap` y `sorted`
-
-**Definición formal.** `flatMap` aplana streams anidados; `sorted` ordena elementos (natural o por comparator).
-
-**Para qué sirve.** Normalizar estructuras y ordenar salida.
-
-**Cuándo usarlo.** Listas de listas, etiquetas, relaciones 1:N.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.*; import java.util.stream.*;
+public class DemoMid {
+  public static void main(String[] args) {
+    var r = Stream.of(List.of("b","a"), List.of("a","c"))
+      .flatMap(List::stream).distinct().sorted().toList();
+    System.out.println(r);
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t8
-cat > DemoFlat.java << 'JAVA'
-import java.util.*;
-public class DemoFlat { public static void main(String[] args){ System.out.println(List.of(List.of(1,2),List.of(3)).stream().flatMap(List::stream).sorted((a,b)->b-a).toList()); } }
-JAVA
-javac DemoFlat.java && java DemoFlat
+javac DemoMid.java
+java DemoMid
 ```
 
-**Caso de uso real.** Aplanar ítems de pedidos.
-
-**Error común.** Usar `map` cuando se necesita `flatMap`. Corrección: si cada elemento produce múltiples valores, `flatMap`.
-
-**Verificación (2026-05-22).** Salida: `[3, 2, 1]`.
+**Verificación (JDK 27, 2026-05-22).** `[a, b, c]`.
 
 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
 
-Cerrar el pipeline con una operación terminal.
+Caso guía: contar, encontrar y reducir.
 
-#### Terminales básicas (`forEach`, `count`, `findFirst`)
-
-**Definición formal.** Operaciones terminales consumen el stream y producen resultado o efecto final.
-
-**Para qué sirve.** Obtener resultado final.
-
-**Cuándo usarlo.** Al final del pipeline.
+#### Terminales
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t9 && cd /tmp/j20-t9
-cat > DemoTerm.java << 'JAVA'
-import java.util.*;
-public class DemoTerm { public static void main(String[] args){ var s=List.of(1,2,3); System.out.println(s.stream().count()); System.out.println(s.stream().findFirst().orElse(-1)); } }
-JAVA
-javac DemoTerm.java && java DemoTerm
+mkdir -p java-m20-term
+cd java-m20-term
 ```
 
-**Caso de uso real.** Contar registros filtrados.
+Crea el archivo `DemoTerm.java`:
 
-**Error común.** Reutilizar stream tras terminal. Corrección: crear nuevo stream.
-
-**Verificación (2026-05-22).** Salida: `3`, `1`.
-
-#### `reduce`
-
-**Definición formal.** `reduce` combina elementos en un solo resultado usando una función asociativa acumuladora.
-
-**Para qué sirve.** Sumas, máximos, agregaciones custom.
-
-**Cuándo usarlo.** Cuando no basta con collector simple.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.*;
+public class DemoTerm {
+  public static void main(String[] args) {
+    var xs = List.of(1,2,3,4);
+    System.out.println(xs.stream().filter(x->x>2).count());
+    System.out.println(xs.stream().findFirst().orElse(-1));
+    System.out.println(xs.stream().reduce(0, Integer::sum));
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t9
-cat > DemoReduce.java << 'JAVA'
-import java.util.*;
-public class DemoReduce { public static void main(String[] args){ System.out.println(List.of(1,2,3).stream().reduce(0,Integer::sum)); } }
-JAVA
-javac DemoReduce.java && java DemoReduce
+javac DemoTerm.java
+java DemoTerm
 ```
 
-**Caso de uso real.** Totalizar importe.
-
-**Error común.** Reducir con operación no asociativa en paralelo. Corrección: asegurar asociatividad.
-
-**Verificación (2026-05-22).** Salida: `6`.
+**Verificación (JDK 27, 2026-05-22).** `2`, `1`, `10`.
 
 ### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
 
-Materializar resultados.
+Caso guía: agrupar guías por estado.
 
-#### `Collectors.toList/toMap`
-
-**Definición formal.** Collectors acumulan elementos de un stream en estructuras finales.
-
-**Para qué sirve.** Construir listas, mapas, sets.
-
-**Cuándo usarlo.** Al final del pipeline.
+#### Collectors
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t10 && cd /tmp/j20-t10
-cat > DemoColl.java << 'JAVA'
-import java.util.*; import java.util.stream.*;
-public class DemoColl { public static void main(String[] args){ System.out.println(List.of("a","b").stream().collect(Collectors.joining(","))); } }
-JAVA
-javac DemoColl.java && java DemoColl
+mkdir -p java-m20-col
+cd java-m20-col
 ```
 
-**Caso de uso real.** CSV simple, mapa por ID.
+Crea el archivo `DemoCol.java`:
 
-**Error común.** `toMap` con claves duplicadas sin merge. Corrección: proveer función de merge.
-
-**Verificación (2026-05-22).** Salida: `a,b`.
-
-#### `groupingBy` y `joining`
-
-**Definición formal.** `groupingBy` agrupa por clave; `joining` concatena strings.
-
-**Para qué sirve.** Reportes y agregaciones.
-
-**Cuándo usarlo.** Agrupar resultados por categoría.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.*; import java.util.stream.*;
+public class DemoCol {
+  public static void main(String[] args) {
+    var m = Stream.of("A","B","A").collect(Collectors.groupingBy(x->x, Collectors.counting()));
+    System.out.println(m.get("A"));
+    System.out.println(m.get("B"));
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t10
-cat > DemoGroup.java << 'JAVA'
-import java.util.*; import java.util.stream.*;
-public class DemoGroup { public static void main(String[] args){ Map<Integer,List<String>> m = Stream.of("a","bb","cc").collect(Collectors.groupingBy(String::length)); System.out.println(m.get(2)); } }
-JAVA
-javac DemoGroup.java && java DemoGroup
+javac DemoCol.java
+java DemoCol
 ```
 
-**Caso de uso real.** Agrupar guías por estado.
-
-**Error común.** Asumir orden en grupos sin especificarlo. Corrección: usar collectors/estructuras con orden si se requiere.
-
-**Verificación (2026-05-22).** Salida: `[bb, cc]`.
+**Verificación (JDK 27, 2026-05-22).** `2`, `1`.
 
 ### Tema 11: Streams paralelos · Intermedio · 40 min
 
-Comparar antes de acelerar.
+Caso guía: operación CPU-bound grande e independiente.
 
-#### `parallelStream`
-
-**Definición formal.** Ejecuta pipeline sobre el ForkJoinPool común para procesar en paralelo.
-
-**Para qué sirve.** Potencial speedup en cargas CPU-bound grandes.
-
-**Cuándo usarlo y cuándo no.** Úsalo solo con datos grandes, operaciones puras, y tras medir. No en I/O bloqueante o colecciones pequeñas.
+#### Parallel streams
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t11 && cd /tmp/j20-t11
-cat > DemoPar.java << 'JAVA'
-import java.util.stream.*;
-public class DemoPar { public static void main(String[] args){ System.out.println(IntStream.range(0,1000).parallel().sum()); } }
-JAVA
-javac DemoPar.java && java DemoPar
+mkdir -p java-m20-par
+cd java-m20-par
 ```
 
-**Caso de uso real.** Agregación CPU-bound sobre dataset grande.
-
-**Error común.** Usar parallel por defecto. Corrección: medir.
-
-**Verificación (2026-05-22).** Salida: `499500`.
-
-#### Medición y seguridad
-
-**Definición formal.** Evaluar rendimiento y corrección (race conditions, orden, overhead) antes de adoptar paralelismo.
-
-**Para qué sirve.** Evitar regresiones.
-
-**Cuándo usarlo.** Siempre antes de dejar parallel.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+Crea el archivo `DemoPar.java`:
 
 ```java
-long t1=System.nanoTime(); /* secuencial */ long t2=System.nanoTime(); /* paralelo */ // comparar con dataset realista
+import java.util.stream.*;
+public class DemoPar { public static void main(String[] args){ System.out.println(IntStream.rangeClosed(1,1000).parallel().sum()); } }
 ```
 
-**Caso de uso real.** Benchmark con JMH.
+```bash
+javac DemoPar.java
+java DemoPar
+```
 
-**Error común.** Estado compartido mutable dentro de parallel stream. Corrección: collectors thread-safe/pureza.
+**Error común.** Paralelizar I/O bloqueante o mutar estado compartido. Corrección: medir y usar `collect`.
 
-**Verificación.** **Nota:** microbenchmark casero no concluyente; usar JMH para decisiones.
+**Verificación (JDK 27, 2026-05-22).** `500500`.
 
 ### Tema 12: Pureza y efectos · Intermedio · 40 min
 
-Calcular separado de guardar o imprimir.
+Caso guía: una lambda que modifica una lista externa hace el pipeline impredecible.
 
-#### Funciones puras
+#### Pureza y efectos secundarios
 
-**Definición formal.** Una función pura devuelve el mismo resultado para mismos inputs y no tiene efectos secundarios observables.
-
-**Para qué sirve.** Testabilidad y razonamiento.
-
-**Cuándo usarlo.** Núcleo de cálculo.
+**Definición formal.** Función pura: mismo input, mismo output, sin efectos secundarios observables. En streams, favorece predictibilidad y paralelismo seguro.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t12 && cd /tmp/j20-t12
-cat > DemoPure.java << 'JAVA'
-public class DemoPure { static int doble(int x){ return x*2; } public static void main(String[] args){ System.out.println(doble(2)); System.out.println(doble(2)); } }
-JAVA
-javac DemoPure.java && java DemoPure
+mkdir -p java-m20-pure
+cd java-m20-pure
 ```
 
-**Caso de uso real.** Cálculo de impuesto.
+Crea el archivo `DemoPure.java`:
 
-**Error común.** Esconder I/O en función “de cálculo”. Corrección: separar bordes.
-
-**Verificación (2026-05-22).** Salida: `4`, `4`.
-
-#### Efectos en el borde
-
-**Definición formal.** Efectos (I/O, BD, logs) se ejecutan en capas de borde, no en el núcleo puro.
-
-**Para qué sirve.** Arquitectura testeable.
-
-**Cuándo usarlo.** Siempre que mezcles cálculo y persistencia.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+```java
+import java.util.*; import java.util.stream.*;
+public class DemoPure {
+  static int impuro = 0;
+  public static void main(String[] args) {
+    var xs = List.of(1,2,3).stream().map(x -> x * 2).toList(); // puro
+    List.of(1,2,3).forEach(x -> impuro += x); // efecto lateral
+    System.out.println(xs);
+    System.out.println(impuro);
+  }
+}
+```
 
 ```bash
-cd /tmp/j20-t12
-cat > DemoBorde.java << 'JAVA'
-public class DemoBorde { static int calc(int x){ return x+1; } static void guardar(int x){ System.out.println("save:"+x); } public static void main(String[] args){ int r=calc(1); guardar(r); } }
-JAVA
-javac DemoBorde.java && java DemoBorde
+javac DemoPure.java
+java DemoPure
 ```
 
-**Caso de uso real.** Service calcula, repository guarda.
+**Error común.** Mutar estado externo desde `map/filter`. Corrección: mantener transformaciones puras.
 
-**Error común.** Mezclar cálculo y JDBC en el mismo método. Corrección: separar responsabilidades.
-
-**Verificación (2026-05-22).** Salida: `save:2`.
+**Verificación (JDK 27, 2026-05-22).** `[2, 4, 6]`, `6`.
 
 ### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
 
-Publicar datos con backpressure básico.
+Caso guía: productor emite eventos; consumidor controla demanda.
 
-#### Flow API
+#### `Flow.Publisher/Subscriber/Subscription`
 
-**Definición formal.** `java.util.concurrent.Flow` define interfaces `Publisher`, `Subscriber`, `Subscription`, `Processor` para reactive streams con backpressure.
+**Definición formal.** Flow API (Java 9) implementa Reactive Streams con backpressure: el suscriptor solicita `n` elementos.
 
-**Para qué sirve.** Procesar flujos asíncronos con control de demanda.
-
-**Cuándo usarlo.** Streams de eventos/datos con productor más rápido que consumidor. Para casos simples, usa APIs de más alto nivel.
+```mermaid
+sequenceDiagram
+  participant P as Publisher
+  participant S as Subscriber
+  P->>S: onSubscribe(subscription)
+  S->>P: request(n)
+  P->>S: onNext(item) * n
+  P->>S: onComplete()
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/j20-t13 && cd /tmp/j20-t13
-cat > DemoFlow.java << 'JAVA'
+mkdir -p java-m20-flow
+cd java-m20-flow
+```
+
+Crea el archivo `DemoFlow.java`:
+
+```java
 import java.util.concurrent.*;
 public class DemoFlow {
   public static void main(String[] args) throws Exception {
     SubmissionPublisher<String> pub = new SubmissionPublisher<>();
     pub.subscribe(new Flow.Subscriber<>() {
-      Flow.Subscription sub;
-      public void onSubscribe(Flow.Subscription s){ sub=s; s.request(1); }
-      public void onNext(String item){ System.out.println(item); sub.request(1); }
+      private Flow.Subscription sub;
+      public void onSubscribe(Flow.Subscription s){ sub=s; s.request(2); }
+      public void onNext(String i){ System.out.println(i); }
       public void onError(Throwable t){ t.printStackTrace(); }
       public void onComplete(){ System.out.println("done"); }
     });
@@ -733,32 +464,24 @@ public class DemoFlow {
     Thread.sleep(200);
   }
 }
-JAVA
-javac DemoFlow.java && java DemoFlow
 ```
 
-**Caso de uso real.** Flujo de eventos con control de demanda.
+```bash
+javac DemoFlow.java
+java DemoFlow
+```
 
-**Error común.** No llamar `request(n)`. Síntoma: no consume. Corrección: solicitar demanda.
+**Error común.** No respetar backpressure o bloquear en callbacks. Corrección: solicitar demanda, manejar errores y no bloquear el publisher.
 
-**Verificación (2026-05-22).** Salida: `A`, `B`, `done`.
+**Verificación (JDK 27, 2026-05-22).** `A`, `B`, `done` (orden A,B estable; cierre después).
 
-#### Backpressure
+## Cierre
 
-**Definición formal.** Mecanismo donde el consumidor señala cuántos elementos puede procesar (`request(n)`), evitando sobrecarga.
+La programación funcional en Java es una herramienta de claridad. Combínala con OOP y sentido común: pureza donde aporte, efectos controlados en bordes.
 
-**Para qué sirve.** Estabilidad ante productores rápidos.
+## Checklist
 
-**Cuándo usarlo.** Pipelines asíncronos.
-
-**Ejemplo mínimo enfocado (ejecutable).** En `DemoFlow`, `request(1)` controla la demanda.
-
-**Caso de uso real.** Ingesta de telemetría.
-
-**Error común.** `request(Long.MAX_VALUE)` sin control. Corrección: demanda acotada.
-
-**Verificación (2026-05-22).** Observada por ejecución de `DemoFlow`.
-
-## Cierre del módulo
-
-La programación funcional en Java es una caja de herramientas: interfaces funcionales, composición, streams, Optional y Flow. Úsala para claridad y corrección; evita convertirla en dogma cuando un bucle simple sea más legible.
+- Uso interfaces funcionales core y composición.
+- Mantengo streams legibles y sin efectos laterales ocultos.
+- Uso Optional para ausencia, no como campo.
+- Entiendo backpressure básico en Flow API.
