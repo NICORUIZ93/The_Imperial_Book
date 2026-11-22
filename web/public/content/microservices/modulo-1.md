@@ -1,335 +1,241 @@
 # Módulo 0.2 · Lógica de programación y pensamiento computacional
 
-**Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (2 temas de 3 h). **Dificultad:** 1 de 5.
-**Dependencias:** Módulo 0.1 (ejecutar un programa con `node` y correr un test con `node --test`).
-**Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas..
+**Entorno de referencia (2026-05-22):** Node.js v24.18.0. Ejemplos ejecutables con Node estándar (`node`, módulos ES `.mjs`).
 
-Aquí aprendes los cuatro ladrillos con los que se escribe cualquier programa (variables, decisiones,
-repeticiones y funciones) y la forma de pensar que te permite convertir un problema del mundo real en pasos que
-una computadora pueda seguir. Todo microservicio que escribas después, por sofisticado que sea, está hecho de
-estos ladrillos.
+Este módulo cubre los ladrillos básicos de cualquier programa: variables, decisiones, operadores lógicos, repeticiones y funciones; y la forma de descomponer problemas en pasos verificables.
 
-```mermaid
-flowchart LR
-    PR["Problema real<br/>(cobrar una fila, dar cambio)"] --> PC["Pensamiento computacional<br/>descomponer · patrones · abstraer · algoritmo"]
-    PC --> LO["Lógica de programación<br/>variables · decisiones · repeticiones · funciones"]
-    LO --> T["Código + tests<br/>que lo demuestran"]
+## Aprende construyendo
+
+### Tema 1: Lógica de programación · Básico · 180 min
+
+Caso guía: calcular el cobro de una fila de cine aplicando reglas por edad y validando entradas.
+
+#### Variable y estado
+
+**Definición formal.** Una variable es un nombre ligado a un valor en un ámbito; el estado es el conjunto de valores relevantes en un momento de ejecución.
+
+**Para qué sirve.** Guardar datos y resultados intermedios.
+
+**Cuándo usarlo y cuándo no.** Usa variables con nombres claros y ámbito mínimo. Evita mutación innecesaria cuando un valor derivado basta.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms1-var && cd /tmp/ms1-var
+cat > var.mjs << 'JS'
+let total = 0;
+total += 8000;
+total += 12000;
+console.log(total);
+JS
+node var.mjs
 ```
 
-**Texto alternativo:** cuatro cajas en línea. Un problema real pasa por el pensamiento computacional (cuatro
-herramientas), se expresa con la lógica de programación (cuatro ladrillos) y termina en código con tests.
+**Caso de uso real.** Acumulador de total de pedido.
 
----
+**Error común.** Reutilizar una variable para significados distintos. Síntoma: bugs difíciles de leer. Corrección: nombres específicos e inmutabilidad cuando sea posible.
 
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `20000`.
 
-### Lógica de programación
+#### Decisión (`if/else`) y guard clauses
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Definición formal.** Una decisión selecciona un camino de ejecución según una condición booleana.
 
-#### ► DE QUÉ TRATA
-Aplicar variables, decisiones (if/else), operadores lógicos (&&, ||), repeticiones (for) y funciones para resolver las reglas de una taquilla de cine, y detectar con un test un error de borde (> en lugar de >=); lo compruebas cuando logica/cine.test.js pasa 5 de 5 y sabes explica…
+**Para qué sirve.** Modelar reglas de negocio.
 
-#### ► LA IDEA EN UNA FRASE
-**Aplicar variables, decisiones (if/else), operadores lógicos (&&, ||), repeticiones (for) y funciones para resolver las reglas de una taquilla de cine, y detectar con un test un error de borde (> en lugar de >=); lo compruebas cuando logica/cine.test.js pasa 5 de 5 y sabes explicar por qué fallaba la versión rota.**
+**Cuándo usarlo.** Cuando el comportamiento depende de condiciones. Usa guard clauses para validar entradas inválidas temprano.
 
-#### ► POR QUÉ EXISTE ESTO
-Programar es dar instrucciones exactas. Para eso usas cuatro ladrillos:
+**Ejemplo mínimo enfocado (ejecutable).**
 
-#### ► LA ANALOGÍA
-Piensa en lógica de programación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    I([Inicio: total = 0]) --> Q{"¿Queda alguien<br/>en la fila?"}
-    Q -- No --> F([Mostrar total])
-    Q -- Sí --> E{"edad < 0?"}
-    E -- Sí --> X([Error: edad negativa])
-    E -- No --> A{"edad < 12?"}
-    A -- Sí --> P1["precio = 8000"]
-    A -- No --> B{"edad >= 60?"}
-    B -- Sí --> P2["precio = 7000"]
-    B -- No --> P3["precio = 12000"]
-    P1 & P2 & P3 --> S["total = total + precio"] --> Q
-```
-
-1. Programar es dar instrucciones exactas.
-2. Para eso usas cuatro ladrillos:
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Lógica de programación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Lógica de programación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-La «pirámide» de if anidados (*arrow code*):
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: lógica de programación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Programar es dar instrucciones exactas.
-- Para eso usas cuatro ladrillos:
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve lógica de programación en tu contexto?
-2. ¿Cómo sabrías que lógica de programación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar lógica de programación?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TD
-    I([Inicio: total = 0]) --> Q{"¿Queda alguien<br/>en la fila?"}
-    Q -- No --> F([Mostrar total])
-    Q -- Sí --> E{"edad < 0?"}
-    E -- Sí --> X([Error: edad negativa])
-    E -- No --> A{"edad < 12?"}
-    A -- Sí --> P1["precio = 8000"]
-    A -- No --> B{"edad >= 60?"}
-    B -- Sí --> P2["precio = 7000"]
-    B -- No --> P3["precio = 12000"]
-    P1 & P2 & P3 --> S["total = total + precio"] --> Q
-```
-
-```json
-{
-  "name": "modulo-0-2-logica-y-pensamiento",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "engines": { "node": ">=26.13.1" },
-  "scripts": { "test": "node --test" }
+```bash
+mkdir -p /tmp/ms1-if && cd /tmp/ms1-if
+cat > edad.mjs << 'JS'
+function precioBoleto(edad) {
+  if (edad < 0) throw new Error('edad negativa');
+  if (edad < 12) return 8000;
+  if (edad >= 60) return 7000;
+  return 12000;
 }
+console.log(precioBoleto(8));
+console.log(precioBoleto(60));
+JS
+node edad.mjs
 ```
 
-```javascript
-// Módulo 0.2 · Lógica de programación
-// Los 4 ladrillos de cualquier programa: variables, decisiones, repeticiones y funciones.
-// Ejemplo: la taquilla de un cine decide quién entra y cuánto paga.
-// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
-// Ejecuta: node logica/cine.js
+**Caso de uso real.** Tarifas por segmento.
 
-// FUNCIÓN + DECISIÓN: ¿puede entrar a una película para mayores de 18?
-// Regla: entra si tiene boleto Y (es mayor de edad O va con un adulto).
-export function puedeEntrar(edad, tieneBoleto, vaConAdulto) {
+**Error común.** Error de borde: usar `>` en vez de `>=`. Síntoma: edad límite mal clasificada. Corrección: testear límites.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `8000`, `7000`.
+
+#### Operadores lógicos
+
+**Definición formal.** `&&`, `||`, `!` combinan o niegan expresiones booleanas; `&&` y `||` evalúan con cortocircuito.
+
+**Para qué sirve.** Expresar reglas compuestas.
+
+**Cuándo usarlo.** Cuando una decisión depende de múltiples condiciones. Evita expresiones densas sin paréntesis claros.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms1-bool && cd /tmp/ms1-bool
+cat > bool.mjs << 'JS'
+function puedeEntrar(edad, tieneBoleto, vaConAdulto) {
   return tieneBoleto && (edad >= 18 || vaConAdulto);
 }
+console.log(puedeEntrar(15, true, false));
+console.log(puedeEntrar(15, true, true));
+JS
+node bool.mjs
+```
 
-// DECISIÓN CON VARIAS RAMAS: el precio depende de la edad.
-export function precioBoleto(edad) {
-  if (edad < 0) {
-    throw new Error('La edad no puede ser negativa');
-  } else if (edad < 12) {
-    return 8000; // niños
-  } else if (edad >= 60) {
-    return 7000; // adultos mayores
-  } else {
-    return 12000; // general
-  }
-}
+**Caso de uso real.** Autorización por edad y acompañante.
 
-// REPETICIÓN: recorre la fila y suma lo que paga cada persona.
-export function cobrarFila(edades) {
-  let total = 0; // VARIABLE: una caja con nombre cuyo contenido cambia
-  for (const edad of edades) {
-    total += precioBoleto(edad);
-  }
+**Error común.** Precedencia mal asumida. Corrección: paréntesis explícitos.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `false`, `true`.
+
+#### Repetición (`for`)
+
+**Definición formal.** Un bucle repite un bloque mientras recorre una colección o condición.
+
+**Para qué sirve.** Procesar colecciones sin duplicar código.
+
+**Cuándo usarlo.** Cuando la misma operación aplica a muchos elementos. Evita bucles con efectos ocultos complejos.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms1-loop && cd /tmp/ms1-loop
+cat > loop.mjs << 'JS'
+function cobrarFila(edades) {
+  let total = 0;
+  for (const edad of edades) total += edad < 12 ? 8000 : 12000;
   return total;
 }
-
-if (import.meta.main) {
-  const fila = [8, 25, 67, 15];
-  console.log(`Fila: ${fila.join(', ')} años`);
-  for (const edad of fila) {
-    console.log(`  ${edad} años -> paga ${precioBoleto(edad)}`);
-  }
-  console.log(`Total de la fila: ${cobrarFila(fila)}`);
-  console.log(`¿Entra un chico de 15 con boleto y sin adulto? ${puedeEntrar(15, true, false)}`);
-  console.log(`¿Entra un chico de 15 con boleto y con adulto? ${puedeEntrar(15, true, true)}`);
-}
+console.log(cobrarFila([8, 25, 15]));
+JS
+node loop.mjs
 ```
+
+**Caso de uso real.** Cobrar carrito, procesar lote.
+
+**Error común.** Off-by-one o mutar colección mientras iteras. Corrección: iterar claramente y testear casos vacíos/borde.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `32000`.
+
+#### Función y contrato pequeño
+
+**Definición formal.** Una función es una unidad reutilizable con entradas, comportamiento y salida/efecto definido.
+
+**Para qué sirve.** Nombrar, reutilizar y probar lógica.
+
+**Cuándo usarlo.** Cuando un bloque tiene propósito claro. No crees funciones con múltiples responsabilidades ocultas.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-   node logica/cine.js
-   ```
+mkdir -p /tmp/ms1-fn && cd /tmp/ms1-fn
+cat > fn.mjs << 'JS'
+export function precioBoleto(edad) { if (edad < 0) throw new Error('edad negativa'); return edad < 12 ? 8000 : edad >= 60 ? 7000 : 12000; }
+console.log(precioBoleto(30));
+JS
+node fn.mjs
+```
+
+**Caso de uso real.** Reglas de pricing.
+
+**Error común.** Función sin validar input. Síntoma: estados imposibles. Corrección: validación/guard clause.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `12000`.
+
+### Tema 2: Pensamiento computacional · Básico · 180 min
+
+Caso guía: convertir un problema de cambio de moneda en pasos algorítmicos verificables.
+
+#### Descomposición
+
+**Definición formal.** Dividir un problema en subproblemas más pequeños y manejables.
+
+**Para qué sirve.** Reduce complejidad y permite probar por partes.
+
+**Cuándo usarlo.** Cuando el problema tiene múltiples reglas o pasos.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-   node -e "import('./logica/cine.js').then(m => console.log(m.precioBoleto(60)))"
-   ```
+mkdir -p /tmp/ms1-decomp && cd /tmp/ms1-decomp
+cat > decomp.mjs << 'JS'
+function validar(monto){ return Number.isInteger(monto) && monto >= 0; }
+function calcular(monto){ return {billetes: Math.floor(monto/10000), resto: monto%10000}; }
+console.log(JSON.stringify(validar(25000) ? calcular(25000) : null));
+JS
+node decomp.mjs
+```
+
+**Caso de uso real.** Separar validación, cálculo y presentación.
+
+**Error común.** Poner todo en una función gigante. Corrección: separar responsabilidades.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `{"billetes":2,"resto":5000}`.
+
+#### Patrones y abstracción
+
+**Definición formal.** Reconocer patrones es identificar similitudes reutilizables; abstracción es exponer lo esencial y ocultar detalles irrelevantes.
+
+**Para qué sirve.** Evita duplicación y hace el código generalizable.
+
+**Cuándo usarlo.** Cuando ves reglas repetidas. No abstraigas prematuramente.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-   node --test --test-reporter=spec logica/cine.test.js
-   ```
-
-</details>
-
-### Pensamiento computacional
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Descomponer un problema real (dar el vuelto en una caja registradora) en subproblemas, reconocer el patrón que se repite, abstraerlo en una función reutilizable y evaluar en qué caso ese algoritmo no da la mejor respuesta; lo compruebas cuando pensamiento/cambio.test.js pasa 6 de…
-
-#### ► LA IDEA EN UNA FRASE
-**Descomponer un problema real (dar el vuelto en una caja registradora) en subproblemas, reconocer el patrón que se repite, abstraerlo en una función reutilizable y evaluar en qué caso ese algoritmo no da la mejor respuesta; lo compruebas cuando pensamiento/cambio.test.js pasa 6 de 6, incluido el caso donde el algoritmo voraz no es óptimo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Pensamiento computacional es una forma de pensar los problemas para que una computadora pueda resolverlos. No requiere computadora: lo usas cuando organizas una mudanza o sigues una receta. Tiene cuatro herramientas:
-
-#### ► LA ANALOGÍA
-Piensa en pensamiento computacional como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    P["Problema: dar el vuelto con pocas piezas"] --> D1["Descomponer"]
-    D1 --> S1["calcularVuelto(precio, pagado)"]
-    D1 --> S2["darCambio(monto, piezas)"]
-    D1 --> S3["contarPiezas(cambio)"]
-    S2 --> PA["Patrón: por cada pieza de mayor a menor,<br/>cuántas = floor(restante / pieza)"]
-    PA --> AB["Abstracción: piezas es un parámetro<br/>(pesos, centavos de dólar…)"]
-    AB --> AL["Algoritmo voraz verificado con tests<br/>+ caso límite donde no es óptimo"]
+mkdir -p /tmp/ms1-abstr && cd /tmp/ms1-abstr
+cat > abstr.mjs << 'JS'
+function contarPor(cond, lista) { return lista.filter(cond).length; }
+const edades = [8, 15, 30, 67];
+console.log(contarPor(e => e < 12, edades));
+console.log(contarPor(e => e >= 60, edades));
+JS
+node abstr.mjs
 ```
 
-1. Pensamiento computacional es una forma de pensar los problemas para que una computadora pueda resolverlos.
-2. No requiere computadora: lo usas cuando organizas una mudanza o sigues una receta.
-3. Tiene cuatro herramientas:
+**Caso de uso real.** Filtros reutilizables.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pensamiento computacional se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Error común.** Abstracción críptica. Corrección: nombres claros y tests.
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pensamiento computacional | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `1`, `1`.
 
-#### ► CUÁNDO NO USAR ESTO
-La «función Dios» (*God function*): una sola función que valida, calcula, elige piezas, formatea el texto y lo imprime.
+#### Algoritmo y caso borde
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pensamiento computacional funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+**Definición formal.** Un algoritmo es una secuencia finita y precisa de pasos; un caso borde es una entrada en límite que suele exponer defectos.
 
-#### ► LO QUE DEBES RECORDAR
-- Pensamiento computacional es una forma de pensar los problemas para que una computadora pueda resolverlos.
-- No requiere computadora: lo usas cuando organizas una mudanza o sigues una receta.
-- Tiene cuatro herramientas:
+**Para qué sirve.** Garantiza comportamiento correcto y reproducible.
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pensamiento computacional en tu contexto?
-2. ¿Cómo sabrías que pensamiento computacional no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pensamiento computacional?
+**Cuándo usarlo.** Siempre que definas reglas. Prueba límites (0, máximo, vacío, inválido).
 
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TD
-    P["Problema: dar el vuelto con pocas piezas"] --> D1["Descomponer"]
-    D1 --> S1["calcularVuelto(precio, pagado)"]
-    D1 --> S2["darCambio(monto, piezas)"]
-    D1 --> S3["contarPiezas(cambio)"]
-    S2 --> PA["Patrón: por cada pieza de mayor a menor,<br/>cuántas = floor(restante / pieza)"]
-    PA --> AB["Abstracción: piezas es un parámetro<br/>(pesos, centavos de dólar…)"]
-    AB --> AL["Algoritmo voraz verificado con tests<br/>+ caso límite donde no es óptimo"]
-```
-
-```javascript
-// Módulo 0.2 · Pensamiento computacional
-// Problema: una caja registradora debe devolver el cambio con la menor cantidad de billetes/monedas.
-// Las 4 herramientas del pensamiento computacional aplicadas:
-//   1. Descomposición: "dar cambio" = calcular el vuelto + elegir piezas + contar piezas.
-//   2. Patrones: siempre se repite lo mismo: "toma la pieza más grande que quepa".
-//   3. Abstracción: no importa si son pesos o dólares; solo importan los valores de las piezas.
-//   4. Algoritmo: los pasos exactos, en orden, que escribimos abajo.
-// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
-// Ejecuta: node pensamiento/cambio.js
-
-// Paso de la descomposición 1: calcular el vuelto.
-export function calcularVuelto(precio, pagado) {
-  if (pagado < precio) throw new Error(`Faltan ${precio - pagado} para pagar`);
-  return pagado - precio;
-}
-
-// Pasos 2 y 3: elegir piezas (patrón repetido) usando valores abstractos.
-export function darCambio(monto, piezas = [50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100]) {
-  const ordenadas = [...piezas].sort((a, b) => b - a); // de la más grande a la más pequeña
-  const resultado = {};
-  let restante = monto;
-  for (const pieza of ordenadas) {
-    const cuantas = Math.floor(restante / pieza); // ¿cuántas veces cabe esta pieza?
-    if (cuantas > 0) {
-      resultado[pieza] = cuantas;
-      restante -= cuantas * pieza;
-    }
-  }
-  if (restante !== 0) throw new Error(`No se puede dar exacto: sobran ${restante}`);
-  return resultado;
-}
-
-export function contarPiezas(cambio) {
-  return Object.values(cambio).reduce((suma, n) => suma + n, 0);
-}
-
-if (import.meta.main) {
-  const vuelto = calcularVuelto(13700, 50000);
-  const cambio = darCambio(vuelto);
-  console.log(`Precio 13700, pagan con 50000 -> vuelto ${vuelto}`);
-  for (const [pieza, cuantas] of Object.entries(cambio).sort((a, b) => b[0] - a[0])) {
-    console.log(`  ${cuantas} x ${pieza}`);
-  }
-  console.log(`Piezas entregadas: ${contarPiezas(cambio)}`);
-}
-```
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-   node pensamiento/cambio.js
-   ```
-
-```bash
-   node -e "import('./pensamiento/cambio.js').then(m => { console.log(m.darCambio(68, [25, 10, 5, 1])); console.log(m.darCambio(6, [1, 3, 4])); })"
-   ```
-
-```text
-Precio 13700, pagan con 50000 -> vuelto 36300
-  1 x 20000
-  1 x 10000
-  1 x 5000
-  1 x 1000
-  1 x 200
-  1 x 100
-Piezas entregadas: 6
+mkdir -p /tmp/ms1-edge && cd /tmp/ms1-edge
+cat > edge.mjs << 'JS'
+function cambio(monto) {
+  if (!Number.isInteger(monto) || monto < 0) throw new Error('monto inválido');
+  return monto;
+}
+try { cambio(-1); } catch(e) { console.log('error'); }
+console.log(cambio(0));
+JS
+node edge.mjs
 ```
 
-```text
-{ '1': 3, '5': 1, '10': 1, '25': 2 }
-{ '1': 2, '4': 1 }
-```
+**Caso de uso real.** Validar monto 0, negativo, decimal.
 
-</details>
+**Error común.** Probar solo el “camino feliz”. Corrección: incluir bordes y errores en tests.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `error`, `0`.
+
+## Cierre del módulo
+
+La lógica de programación da los ladrillos; el pensamiento computacional da el método. Con ambos puedes convertir reglas de negocio en código pequeño, testeable y verificable.
