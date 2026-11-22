@@ -30,5 +30,5 @@
     "pg 8.23.1",
     "PostgreSQL 18.7"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-34 con ./verificar.sh --compose en verde (npm ci, 18 tests de node --test con servidores HTTP reales y PostgreSQL, demos y errores comunes de las fichas F173–F176, y la fitness function que termina con código 1 sobre ejemplo-roto)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

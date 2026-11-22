@@ -768,7 +768,7 @@ Un <script> inyectado sin nonce aparece en consola como «Refused to execute inl
 1. **Reproducción:** recarga la página dos veces y compara el nonce de la cabecera.
 2. **Variación:** cambia la cabecera a `Content-Security-Policy-Report-Only` y observa que las violaciones se reportan sin bloquear.
 3. **Diagnóstico:** reproduce el fallo deliberado de Trusted Types y corrígelo con `[innerHTML]`.
-4. **Integración:** agrega `report-to` con un endpoint propio que registre las violaciones en el servidor.
+4. **Integración:** agrega `report-to` con un **endpoint** propio (URL de tu servidor que recibe datos) que registre las violaciones en el servidor.
 5. **Diseño:** revisa las dependencias del panel de RutaFlow y lista cuáles usan `innerHTML` o `eval`.
 
 **Pista:** despliega primero en modo `Report-Only` una semana y corrige lo que aparezca antes de bloquear.

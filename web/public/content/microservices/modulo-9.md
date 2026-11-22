@@ -5,7 +5,7 @@
 perfiles, Spring MVC, JDBC/JPA, PostgreSQL, testing con JUnit y MockMvc). **Herramientas:** **JDK 25 LTS (25.0.5)**,
 **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.3**, PostgreSQL 18.7 en
 Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`. **Laboratorio:** `modulo-9` (un
-subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los tests).
+subproyecto Gradle por tema; los comandos de verificación indicados ejecuta todos los tests).
 
 Hasta aquí construiste **una** aplicación Spring Boot. Este módulo responde la pregunta que viene después: ¿cuándo
 conviene partirla en varios servicios, por dónde se corta y cómo se migra sin apagar el negocio? Vas a aprender a
@@ -3138,7 +3138,7 @@ class BdPorServicioTest {
 **Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. El mensaje que comprueba el
 segundo test es el del driver JDBC (salida real con el driver 42.7.2 sobre PostgreSQL 16.15):
 `FATAL: permission denied for database "envios_db"` seguido de `Detail: User does not have CONNECT privilege.` (código
-SQLState `42501`). `./verificar.sh` además ejecuta los tres guiones y exige que los dos primeros fallen y el tercero
+SQLState `42501`). los comandos de verificación indicados además ejecuta los tres guiones y exige que los dos primeros fallen y el tercero
 devuelva `(2 rows)`. **Pregunta de comprobación:** Facturación necesita el nombre del cliente que está en el servicio
 de Clientes. Da dos formas de obtenerlo sin leer su base. *(Llamar a la API de Clientes al facturar, con caché y
 timeout, o mantener una copia local actualizada con eventos ClienteActualizado.)*

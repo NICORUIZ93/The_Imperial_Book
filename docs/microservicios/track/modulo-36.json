@@ -37,5 +37,5 @@
     "JDK 25, Spring Boot 4.1.3, Spring Cloud Gateway 5.0.4 (2025.1.4), Temporal Java SDK 1.41.1, Gatling 3.16.1 con gatling-maven-plugin 4.21.12",
     "Redis 8.10.2 (Docker Compose) y Temporal Server 1.32.1 (temporal server start-dev)"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-36 con ./verificar.sh en verde (26 tests de node --test, los scripts de las fichas F181–F187, Redis real, Gatling a 60 reservas/s con y sin la restricción y las demos JDK; --compose añade Redis con Docker y los tests Maven de spring/), los ADR validados y la evaluación del Comité con 2.8 o más y ningún criterio en 1."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

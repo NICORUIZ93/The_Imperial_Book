@@ -41,5 +41,5 @@
     "NATS 2.15.3",
     "jnats 2.26.4"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-15 con ./verificar.sh en verde: los cuatro brokers healthy, los tests de las 6 fichas y las comprobaciones con kafka-consumer-groups, Schema Registry, rabbitmqctl y el monitoreo de NATS."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

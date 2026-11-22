@@ -6,8 +6,8 @@ Token Exchange, mTLS con Istio y Vault KV) o Módulo 20 (JWT, secretos y OWASP e
 **Herramientas:**Node.js 26.13.1 LTS** (módulos `node:tls`, `node:https` y `node:crypto`, sin librerías de
 seguridad para que veas cada comprobación), **pg 8.23.1**, **OpenSSL 3** o el LibreSSL de macOS, **HashiCorp Vault
 2.2.0** y **PostgreSQL 18.7** (solo con `--compose`), y para la malla real **Istio 1.32** o **Linkerd edge-26.11.2**
-sobre **Kubernetes 1.37** en kind. **Laboratorio:** `modulo-31` (`./verificar.sh` ejecuta 18
-tests y los cuatro ataques sin infraestructura; `./verificar.sh --compose` añade Vault y PostgreSQL reales).
+sobre **Kubernetes 1.37** en kind. 
+tests y los cuatro ataques sin infraestructura; los comandos de verificación indicados añade Vault y PostgreSQL reales).
 
 En el Módulo 9 pusiste candados: un token firmado, un canje de token, mTLS con Istio, un secreto en Vault. En este
 módulo cambias la pregunta. Ya no es «¿cómo cierro la puerta?», sino **«¿qué pasa cuando el atacante ya está
@@ -43,8 +43,8 @@ en kind. Sus salidas se describen, no se pegan.
 
 ```bash
 npm ci
-./verificar.sh              # PKI + 18 tests + 4 ataques ANTES/DESPUÉS (sin Docker) → «RESULTADO: OK»
-./verificar.sh --compose    # además Vault 2.2.0 y PostgreSQL 18.7 reales
+  # PKI + 18 tests + 4 ataques ANTES/DESPUÉS (sin Docker) → «RESULTADO: OK»
+los comandos de verificación indicados    # además Vault 2.2.0 y PostgreSQL 18.7 reales
 ```
 
 `./pki/generar.sh`. Los archivos `antes.js` son vulnerables **a propósito**: no copies nada de ellos. El

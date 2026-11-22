@@ -4,8 +4,7 @@
 de 5. **Dependencias:** Módulos 0.1 a 0.4 (servidor, API, Java y Node lado a lado, terminal, HTTP, variables de
 entorno). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Node.js 26.13.1 LTS**, **Docker Engine 29.10.0** con
 **Docker Compose v5.6.1** o posterior (en macOS y Windows, Docker Desktop los trae). **Laboratorio:**
-`modulo-4` (se verifica con `./verificar.sh` y, con conexión a Docker Hub,
-`./verificar.sh --compose`).
+`modulo-4`.
 
 Este módulo cierra la Fase 0: instalas las herramientas, escribes el «Hola Mundo» clásico en Java y en Node.js,
 los conviertes en pequeños servidores HTTP y los empaquetas en **contenedores Docker**, la forma en que se
@@ -504,7 +503,7 @@ npm test
 ℹ fail 0
 ```
 
-Para el módulo completo (Java, Node y Docker básico): `./verificar.sh` desde `modulo-4`. **Pregunta de
+Para el módulo completo (Java, Node y Docker básico): los comandos de verificación indicados en tu carpeta de trabajo. **Pregunta de
 comprobación:** ¿qué pasaría en el paso 3 si quitaras la línea `process.on('SIGTERM', ...)`? *(Node terminaría
 igual, pero de golpe, sin cerrar conexiones abiertas; dentro de un contenedor como PID 1 ignoraría la señal y
 Docker lo mataría a los 10 segundos.)*
@@ -573,7 +572,7 @@ Módulo 0.5, Lección 3 de 3 · Fase 0
 
 **Construir** una imagen con un `Dockerfile`, **ejecutar** contenedores (en primer plano, en segundo plano, con
 variables de entorno), **inspeccionarlos** con `docker ps` y `docker logs`, y **arrancar** los dos «Hola Mundo»
-juntos con Docker Compose; lo compruebas cuando `./verificar.sh` muestra las tres comprobaciones de Docker en `✔`
+juntos con Docker Compose; lo compruebas cuando los comandos de verificación indicados muestra las tres comprobaciones de Docker en `✔`
 (y, con `--compose`, las dos de Compose).
 
 #### 4. ANALOGÍA VISUAL
@@ -755,7 +754,7 @@ services:
    docker ps -a --filter name=contador --format '{{.Names}} {{.Status}}'
    docker rm contador
    ```
-3. Los dos «Hola Mundo» juntos (desde `modulo-4`; descarga `eclipse-temurin:25-jdk` y
+3. Los dos «Hola Mundo» juntos en tu carpeta de trabajo (descarga `eclipse-temurin:25-jdk` y
    `node:26-alpine` la primera vez):
    ```bash
    docker compose up --build -d --wait
@@ -804,11 +803,11 @@ fíjate en `Exited (137)`: el `sh` del contador no maneja `SIGTERM`, así que `d
 #### 11. VERIFICACIÓN
 
 ```bash
-./verificar.sh            # Java, Node.js y Docker básico
-./verificar.sh --compose  # además construye y prueba docker-compose.yml
+  # Java, Node.js y Docker básico
+los comandos de verificación indicados  # además construye y prueba docker-compose.yml
 ```
 
-Salida real de `./verificar.sh`:
+Salida real de los comandos de verificación indicados:
 
 ```text
 == Java (openjdk version "25.0.5.0.3" 2026-10-24)

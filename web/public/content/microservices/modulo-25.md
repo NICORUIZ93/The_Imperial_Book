@@ -8,8 +8,8 @@ shutdown), Módulo 14 (servidores HTTP y middleware), Módulo 18 (REST y mensaje
 **@opentelemetry/exporter-trace-otlp-http 0.301.2**, **import-in-the-middle 3.6.0**, **amqplib 2.4.0**, **kafkajs
 2.2.4**, **pino 10.4.0**, **winston 3.19.0**, **@prometheus-io/client 0.16.1** (el sucesor oficial de `prom-client`),
 **Jaeger 2.22.0**, **RabbitMQ 4.4.1**, **Kafka 4.4.0**, **Grafana Loki 3.7.9**, **Prometheus 3.15.1** y **Grafana
-13.2.4**. **Laboratorio:** `modulo-25` (`./verificar.sh` ejecuta 19 tests, las demos y los
-errores comunes sin infraestructura; `./verificar.sh --compose` levanta Jaeger, RabbitMQ, Kafka, Loki, Prometheus y
+13.2.4**. 
+errores comunes sin infraestructura; los comandos de verificación indicados levanta Jaeger, RabbitMQ, Kafka, Loki, Prometheus y
 Grafana y comprueba que cada señal llega a su destino).
 
 Un monolito que falla se investiga con un solo log. Diez microservicios que fallan juntos, no: una petición del
@@ -40,9 +40,9 @@ terminan en Grafana.
 
 ```bash
 npm ci
-./verificar.sh                   # 19 tests + demos + errores comunes, sin Docker → «RESULTADO: OK»
+  # 19 tests + demos + errores comunes, sin Docker → «RESULTADO: OK»
 docker compose up -d --wait      # Jaeger :16686, RabbitMQ :5672, Kafka :9092, Loki :3100, Prometheus :9090, Grafana :3000
-./verificar.sh --compose         # además: trazas en Jaeger, traceparent por RabbitMQ y Kafka, logs en Loki, PromQL
+los comandos de verificación indicados         # además: trazas en Jaeger, traceparent por RabbitMQ y Kafka, logs en Loki, PromQL
 docker compose down -v
 ```
 

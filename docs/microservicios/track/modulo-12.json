@@ -33,5 +33,5 @@
     "Maven Wrapper",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-12 con ./verificar.sh en verde: 4 demostraciones JDK con fallos inyectados, Toxiproxy con simular-fallo.sh y 4 proyectos Maven (F057–F060, 13 tests)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

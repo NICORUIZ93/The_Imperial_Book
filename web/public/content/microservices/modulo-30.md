@@ -6,8 +6,8 @@ Schema Registry, RabbitMQ y NATS en Java), Módulo 18 (KafkaJS, amqplib y NATS e
 DLQ) y Módulo 25 (outbox, idempotencia y exactly-once). **Herramientas:**Node.js 26.13.1 LTS**, **kafkajs 2.2.4** con
 **Apache Kafka 4.4.0**, **@kafkajs/confluent-schema-registry 4.1.0** y **avsc 5.7.9** con **Confluent Schema Registry
 8.4.1**, **amqplib 2.4.0** con **RabbitMQ 4.4.1**, **@nats-io/transport-node, jetstream y kv 3.5.0** con **NATS Server
-2.15.3**. **Laboratorio:** `modulo-30` (`./verificar.sh` ejecuta lo que no necesita
-infraestructura y lo de RabbitMQ y NATS si responden; `./verificar.sh --compose` levanta los cuatro servicios y lo exige
+2.15.3**. 
+infraestructura y lo de RabbitMQ y NATS si responden; los comandos de verificación indicados levanta los cuatro servicios y lo exige
 todo).
 
 En los Módulos 11 y 18 aprendiste a usar Kafka, RabbitMQ y NATS. Aquí decides **cómo se comportan cuando algo sale
@@ -32,7 +32,7 @@ Notification frente a Event-Carried State Transfer), que es una decisión de dis
 ```bash
 npm ci
 docker compose up -d --wait         # Kafka :9092 · Schema Registry :8081 · RabbitMQ :5672/15672 · NATS :4222/8222
-./verificar.sh --compose            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
+  # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
@@ -514,7 +514,7 @@ test('ida y vuelta con resolución: escrito con v1, leído con v2', () => {
 Y contra Schema Registry (`f157-kafka-schema/registry.infra.js`):
 
 ```javascript
-// Módulo 26 · F157 · Tests contra Confluent Schema Registry 8.4.1 (solo con ./verificar.sh --compose).
+// Módulo 26 · F157 · Tests contra Confluent Schema Registry 8.4.1 (solo con los comandos de verificación indicados).
 // Ejecuta: node --test f157-kafka-schema/registry.infra.js
 import assert from 'node:assert/strict';
 import { test } from 'node:test';

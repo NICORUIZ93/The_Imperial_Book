@@ -26,8 +26,8 @@ tema 3 (Service Discovery con Consul). Los temas 2 y 3 llevan al tema 4 (configu
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-./verificar.sh            # npm ci + tsc + 21 tests + demos → «RESULTADO: OK»
-./verificar.sh --compose  # además levanta Consul 2.1.0 con Docker y repite los temas 3 y 4 contra él
+  # npm ci + tsc + 21 tests + demos → «RESULTADO: OK»
+los comandos de verificación indicados  # además levanta Consul 2.1.0 con Docker y repite los temas 3 y 4 contra él
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `modulo-21`** después de `npm ci`.
@@ -124,7 +124,7 @@ export async function consulParaTests() {
 
 Los tests de los temas 3 y 4 corren por defecto contra `comun/consul-de-prueba.js`, un **doble en memoria** de la parte
 de la API HTTP de Consul que usa el módulo (registro con check TTL, salud y KV con consultas bloqueantes): así
-`./verificar.sh` funciona sin Docker. Con `CONSUL_REAL=1` los mismos tests hablan con el Consul de `docker-compose.yml`.
+los comandos de verificación indicados funciona sin Docker. Con `CONSUL_REAL=1` los mismos tests hablan con el Consul de `docker-compose.yml`.
 Si no tienes Docker, `node comun/consul-de-prueba.js` deja el doble escuchando en `127.0.0.1:8500` para hacer los
 laboratorios (no es Consul: no tiene UI, DNS ni clúster).
 

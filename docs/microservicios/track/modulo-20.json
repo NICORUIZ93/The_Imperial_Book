@@ -37,5 +37,5 @@
     "PostgreSQL 18.7",
     "Docker"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-20 con ./verificar.sh --compose en verde (npm ci, tsc en modo strict, 24 tests unitarios con cobertura, contrato Pact de consumidor y proveedor publicado en el Pact Broker, 6 tests con Testcontainers y los errores comunes de las fichas F105–F108)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

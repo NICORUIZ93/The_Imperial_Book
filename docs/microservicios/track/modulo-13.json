@@ -53,5 +53,5 @@
     "OpenSSL 3",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-13 con ./verificar.sh en verde: 7 demostraciones con JDK puro, Keycloak y Vault con Docker Compose, Trivy sobre el antes y el después, tests de 7 proyectos Maven y, con --mtls, la malla Istio en kind."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

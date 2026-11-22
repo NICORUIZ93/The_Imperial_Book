@@ -6,7 +6,7 @@ allí viste la idea; aquí la llevas a un monolito con años de historia), Módu
 (outbox y CDC: la forma correcta de sacar los datos del monolito) y Módulo 30 (anti-patrones y cuándo NO usar
 microservicios). **Herramientas:**Node.js 26.13.1 LTS** sin dependencias de npm (SQLite 3.54.1 viene dentro de
 Node como `node:sqlite`) y **Git** (el de tu sistema, 2.x). **Laboratorio:** `modulo-35`
-(`./verificar.sh` ejecuta 17 tests y los scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no
+(los comandos de verificación indicados ejecuta 17 tests y los scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no
 levanta contenedores).
 
 Casi nadie empieza un sistema de microservicios desde cero: lo normal es heredar un **monolito que factura** y que
@@ -40,7 +40,7 @@ Fase 3.
 
 ```bash
 npm ci                      # no instala nada: el lockfile está vacío a propósito
-./verificar.sh              # 17 tests + scripts de las 4 fichas → «RESULTADO: OK»
+  # 17 tests + scripts de las 4 fichas → «RESULTADO: OK»
 ```
 
 `README.md` tiene el mapa de carpetas.

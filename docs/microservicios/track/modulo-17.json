@@ -40,5 +40,5 @@
     "clinic 13.0.0",
     "Docker (opcional)"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-17 con ./verificar.sh en verde (npm ci, tsc en modo strict, 24 tests de node --test y los programas de las fichas F089–F095)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

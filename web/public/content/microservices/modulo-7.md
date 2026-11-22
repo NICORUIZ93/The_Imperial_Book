@@ -5,7 +5,7 @@
 PostgreSQL) y, de la Fase 0, Docker básico (Módulo 0.5). **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3**
 (que gestiona JUnit Jupiter 6.0.3, Mockito 5.23.0, AssertJ 3.27.7 y Testcontainers 2.0.5), Pact JVM 4.7.7,
 Pact Broker 2.124.0, ArchUnit 1.5.1, JaCoCo 0.8.15, SonarQube Community Build 26.11 y Docker con Compose v2.
-**Laboratorio:** `modulo-7` (un subproyecto Gradle por tema; `./verificar.sh`
+
 ejecuta los tests, el ciclo completo del Pact Broker y el análisis de SonarQube).
 
 Un microservicio que no tiene tests no se puede cambiar sin miedo, y un sistema de microservicios cambia todos los
@@ -1825,7 +1825,7 @@ python3 -m json.tool f034-pact-consumidor/build/pacts/tienda-web-catalogo.json |
    **Output esperado** (reportero de consola de Pact y final de Gradle). El ciclo con broker **sí se ejecutó** en el Mac
    del dueño el 2026-11-21 y dejó estas líneas literales: `Publishing 'tienda-web-catalogo.json'... OK`,
    `All required verification results are published and successful` y, en `canIDeploy`, `Computer says yes \o/`.
-   El bloque por interacción que sigue no se capturó (el `verificar.sh` corre Gradle en modo silencioso), así que trátalo
+   El bloque por interacción que sigue no se capturó (la verificación automatizada corre Gradle en modo silencioso), así que trátalo
    como formato esperado, no como copia de una terminal:
 
 ```text

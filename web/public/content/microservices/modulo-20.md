@@ -7,7 +7,7 @@ Módulo 15 (PostgreSQL con `pg`, database-per-service); de la Fase 0, Docker bá
 **supertest 7.3.2**, **express 5.3.0**, **@pact-foundation/pact 17.1.4** y **@pact-foundation/pact-cli 18.10.9**,
 **testcontainers** y **@testcontainers/postgresql 12.2.2**, **pg 8.23.1**; **Pact Broker 2.124.0** y
 **PostgreSQL 18.7** con Docker. **Laboratorio:** `modulo-20` (una carpeta por tema;
-`./verificar.sh --compose` ejecuta todos los tests, los errores que deben fallar y el flujo con el Pact Broker, y
+los comandos de verificación indicados ejecuta todos los tests, los errores que deben fallar y el flujo con el Pact Broker, y
 guarda los logs en `logs/`).
 
 Un test es un programa que ejecuta tu programa y comprueba el resultado por ti, las veces que haga falta. En
@@ -33,7 +33,7 @@ Testcontainers para Node (integración con PostgreSQL real, segundos). Una flech
 Docker Desktop encendido:
 
 ```bash
-./verificar.sh --compose     # npm ci + tsc + Jest + errores esperados + Pact Broker + Testcontainers → «RESULTADO: OK»
+los comandos de verificación indicados     # npm ci + tsc + Jest + errores esperados + Pact Broker + Testcontainers → «RESULTADO: OK»
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `modulo-20`** después de `npm ci`. El

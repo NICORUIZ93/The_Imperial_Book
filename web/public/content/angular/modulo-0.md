@@ -129,7 +129,7 @@ cd demo-standalone-cli
 npx -y @angular/cli@22 new . --standalone --style=css --routing=false --skip-git --defaults
 ```
 
-`npx` es el comando que ejecuta un paquete (aquí, una versión específica del CLI de Angular) sin instalarlo globalmente. `--standalone` es la bandera que genera componentes standalone por defecto; `--style` fija el lenguaje de estilos (`css`); `--routing` activa o desactiva el enrutamiento inicial; `--skip-git` evita que el CLI inicialice un repositorio Git; y `--defaults` es la bandera que acepta el resto de las opciones sin preguntar interactivamente.
+`npx` es el comando que ejecuta un paquete (aquí, una versión específica del CLI de Angular) sin instalarlo globalmente. `--standalone` es la bandera que genera componentes standalone por defecto; `--style` fija el lenguaje de estilos (`css`); `--routing` activa o desactiva el enrutamiento inicial; `--skip-git` evita que el CLI inicialice un repositorio **Git** (sistema de control de versiones); y `--defaults` es la bandera que acepta el resto de las opciones sin preguntar interactivamente.
 
 Crea `src/app/tarjeta-legacy.component.ts`, deliberadamente con `standalone: false` (simulando un componente de una era anterior de Angular):
 
@@ -349,7 +349,7 @@ npx ng test --watch=false
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
-1. Agrega un `[src]` real a una imagen y confirma con un test que `img.src` (propiedad DOM, URL absoluta resuelta) difiere del valor crudo pasado como expresión (que puede ser una URL relativa).
+1. Agrega un `[src]` real a una imagen y confirma con un test que `img.src` (propiedad DOM, **URL** absoluta resuelta, es decir, dirección web completa) difiere del valor crudo pasado como expresión (que puede ser una URL relativa).
 2. Documenta, en un comentario, un caso real donde `getAttribute('value')` y la propiedad `.value` de un input DIVERGEN tras la interacción del usuario (sin usar Angular, directamente en el DOM).
 3. Escribe un test que confirme que interpolar `{{ bloqueado() }}` dentro del contenido de texto de un `<p>` SÍ es apropiado (a diferencia del caso de `disabled`), porque ahí se desea mostrar el valor como texto, no controlar una propiedad.
 4. Escribe de memoria (sin mirar) un componente con interpolación y property binding, y un test que confirme la diferencia real sobre el objeto DOM. Compara después contra el patrón del Paso 4.
@@ -539,7 +539,7 @@ Al finalizar podrás confirmar, ejecutando `ng build` real sobre un componente c
 
 **Conceptos clave:** Ahead-of-Time frente a Just-in-Time, compilación de plantillas.
 
-Angular compila las plantillas HTML de los componentes (con su sintaxis específica de interpolación, bindings y control de flujo) hacia código JavaScript ejecutable, y este proceso de compilación puede ocurrir en dos momentos distintos. AOT (Ahead-of-Time) compila las plantillas durante el proceso de build, antes de que la aplicación se despliegue, produciendo un bundle que ya contiene JavaScript puro listo para ejecutarse directamente en el navegador sin ningún paso adicional de compilación en tiempo de ejecución. JIT (Just-in-Time), el modo histórico y ahora prácticamente en desuso para producción, compilaba las plantillas directamente en el navegador del usuario, en el momento en que la aplicación arrancaba, añadiendo el compilador completo de Angular al bundle final y un coste de tiempo de arranque adicional en cada carga de la aplicación.
+Angular compila las plantillas HTML de los componentes (con su sintaxis específica de interpolación, bindings y control de flujo) hacia código JavaScript ejecutable, y este **proceso** (secuencia de pasos) de compilación puede ocurrir en dos momentos distintos. AOT (Ahead-of-Time) compila las plantillas durante el proceso de build, antes de que la aplicación se despliegue, produciendo un bundle que ya contiene JavaScript puro listo para ejecutarse directamente en el navegador sin ningún paso adicional de compilación en tiempo de ejecución. JIT (Just-in-Time), el modo histórico y ahora prácticamente en desuso para producción, compilaba las plantillas directamente en el navegador del usuario, en el momento en que la aplicación arrancaba, añadiendo el compilador completo de Angular al bundle final y un coste de tiempo de arranque adicional en cada carga de la aplicación.
 
 AOT es el modo por defecto y recomendado para producción desde hace ya varias versiones mayores de Angular, y ofrece ventajas concretas y medibles: bundles más pequeños (el compilador de plantillas no necesita incluirse en el bundle de producción, solo el resultado ya compilado), arranque más rápido (no hay ningún trabajo de compilación de plantillas que realizar en el navegador del usuario), y detección más temprana de errores de plantilla (errores de sintaxis o de tipos en un binding se detectan durante el build, no en tiempo de ejecución tras haberse desplegado ya a usuarios reales).
 

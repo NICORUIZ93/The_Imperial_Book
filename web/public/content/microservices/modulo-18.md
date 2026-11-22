@@ -27,7 +27,7 @@ o class-validator); el tema 2 también lleva al 3. El tema 3 lleva al tema 4 (DT
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-./verificar.sh        # npm ci + tsc + 26 tests + cada API con curl → «RESULTADO: OK»
+  # npm ci + tsc + 26 tests + cada API con curl → «RESULTADO: OK»
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `modulo-18`** después de `npm ci`. Los

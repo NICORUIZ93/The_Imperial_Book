@@ -35,5 +35,5 @@
     "yaml 2.9.1",
     "JDK 25 LTS"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-3 con ./verificar.sh en verde (Git, terminal, 20 tests de Node y 3 de Java)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

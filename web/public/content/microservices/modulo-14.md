@@ -6,7 +6,7 @@ Módulo 1 (configuración y perfiles); el tema de alertas usa los percentiles qu
 latencia). **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Actuator, Micrometer 1.17.3, Micrometer
 Tracing 1.7.3, OpenTelemetry 1.62.0, logging estructurado), **Prometheus v3.15.1**, **Grafana 13.2.4**, **Jaeger
 2.22.0**, **Zipkin 3.6.1**, Python 3 y `curl`. **Laboratorio:** `modulo-14`
-(`./verificar.sh --solo-jdk` corre las demostraciones con solo el JDK y Python; `./verificar.sh` levanta toda la pila).
+(los comandos de verificación indicados corre las demostraciones con solo el JDK y Python; los comandos de verificación indicados levanta toda la pila).
 
 Un sistema de microservicios falla de formas que no se ven desde un solo servicio: una petición lenta puede deberse a
 la tercera dependencia de la segunda llamada. Observar es poder responder **preguntas nuevas** sobre producción sin
@@ -210,7 +210,7 @@ tasks.withType<Test> {
 
 ```kotlin
 // Módulo 10 (modulo-14) · Build multi-proyecto: "./gradlew test" ejecuta los tests de F070, F071 (con OpenTelemetry) y F072.
-// F073 (Grafana) y F074 (reglas de Prometheus) no tienen build de Gradle: ver README y verificar.sh.
+// F073 (Grafana) y F074 (reglas de Prometheus) no tienen build de Gradle: sigue los pasos de la lección.
 // Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
 // (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
 pluginManagement {
@@ -962,7 +962,7 @@ la ruta `/v1/traces`; el 4317 es gRPC); (2) Jaeger no está levantado o su puert
 **Arreglo:** `management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4318/v1/traces`,
 `management.tracing.sampling.probability=1.0` en desarrollo, espera unos segundos (los spans se exportan por lotes) y comprueba con
 `curl -s localhost:16686/api/v3/services` (la API de consulta estable de Jaeger 2; `/api/services` es la interna de la UI).
-`./verificar.sh` guarda los logs de las dos apps y de Jaeger en `logs/` cuando esta comprobación falla.
+los comandos de verificación indicados guarda los logs de las dos apps y de Jaeger en `logs/` cuando esta comprobación falla.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -1678,7 +1678,7 @@ OK
 #### 11. VERIFICACIÓN
 
 El test es doble: `validar_dashboard.py` en CI (código de salida 0 para el bueno y 1 para el «antes», paso 1) y la
-comprobación por API tras desplegar, que `verificar.sh` automatiza:
+comprobación por API tras desplegar, que puedes automatizar con este script:
 
 ```bash
 curl -fsS -u admin:admin-solo-dev localhost:3000/api/dashboards/uid/tienda-pedidos-red | grep -q '"uid":"tienda-pedidos-red"' \

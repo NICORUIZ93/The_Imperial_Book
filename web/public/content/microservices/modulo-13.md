@@ -6,8 +6,8 @@ Gateway, configuración centralizada); para el tema de mTLS conviene haber visto
 **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Security 7.1.3, Spring Framework 7.0.11),
 **Spring Cloud 2025.1.4** (Spring Cloud Vault 5.0), **Keycloak 26.8.2**, **HashiCorp Vault 2.2.0**, **Trivy 0.76.1**,
 **Snyk CLI 1.1309.0**, **Istio 1.32** sobre **kind**, OpenSSL 3 y `curl`. **Laboratorio:** `modulo-13`
-(`./verificar.sh --solo-jdk` corre las demostraciones con solo el JDK; `./verificar.sh` añade Keycloak, Vault, Trivy y
-los tests de Spring; `./verificar.sh --mtls` monta la malla de servicios).
+(los comandos de verificación indicados corre las demostraciones con solo el JDK; los comandos de verificación indicados añade Keycloak, Vault, Trivy y
+los tests de Spring; los comandos de verificación indicados monta la malla de servicios).
 
 Hasta ahora tus servicios confiaban en cualquiera que les hablara. Este módulo construye la seguridad por capas, de
 afuera hacia adentro: quién eres (autenticación), qué puedes hacer (autorización), cómo viaja tu identidad entre
@@ -247,7 +247,7 @@ tasks.withType<Test> {
 
 ```kotlin
 // Módulo 9 (modulo-13) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todas las fichas con Spring.
-// F068 necesita Vault encendido y VAULT_TOKEN (lo prepara verificar.sh). F067 (mTLS) no tiene build, y F069 conserva
+// F068 necesita Vault encendido y VAULT_TOKEN (prepáralos antes de ejecutar el ejemplo). F067 (mTLS) no tiene build, y F069 conserva
 // sus pom.xml porque son el material que leen Trivy, Snyk y MiniEscaner: ver README.
 // Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
 // (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
@@ -1995,7 +1995,7 @@ class ResourceServerKeycloakTest {
 ```
 
 **Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El paso 3 del laboratorio
-es la verificación de extremo a extremo contra el Keycloak real; `./verificar.sh` la repite y exige `200-403-401`.
+es la verificación de extremo a extremo contra el Keycloak real; los comandos de verificación indicados la repite y exige `200-403-401`.
 
 **Pregunta de comprobación:** quitas el client scope `roles` de los *default client scopes* de `tienda-cli`. ¿Qué cambia
 en el token y qué responde `GET /pedidos` con el token de ana?
@@ -3178,8 +3178,8 @@ El test es el propio `MtlsDemo.java` (termina con código 0 solo si se cumplen l
 `mtls-kind/verificar-mtls.sh`, que termina en `RESULTADO: OK` o con código 1:
 
 ```bash
-./verificar.sh --solo-jdk        # incluye generar-certs.sh y MtlsDemo.java
-./verificar.sh --mtls            # además, kind + Istio
+  # incluye generar-certs.sh y MtlsDemo.java
+  # además, kind + Istio
 ```
 
 ```java
@@ -3562,7 +3562,7 @@ sleep 15 && curl -s localhost:8085/config/pagos; echo
 #### 11. VERIFICACIÓN
 
 `f068-vault/src/test/java/academia/seguridad/vault/SecretoDesdeVaultTest.java` (necesita el Vault del laboratorio
-sembrado y `VAULT_TOKEN` exportado; `./verificar.sh` lo prepara):
+sembrado y `VAULT_TOKEN` exportado; los comandos de verificación indicados lo prepara):
 
 ```java
 package academia.seguridad.vault;
@@ -3965,7 +3965,7 @@ cd antes && npx snyk@1.1309.0 test --severity-threshold=high; echo "código de s
 
 #### 11. VERIFICACIÓN
 
-El test es el código de salida, igual que en CI. `verificar.sh` lo comprueba así:
+El test es el código de salida, igual que en CI. Puedes comprobarlo así:
 
 ```bash
 java jdk/MiniEscaner.java f069-escaneo/antes/pom.xml > /dev/null 2>&1; [ $? -eq 1 ] || falla "MiniEscaner antes"
@@ -3984,7 +3984,7 @@ Y en un pipeline de GitHub Actions (Módulo 23) el paso equivalente es:
   run: docker run --rm -v "$PWD":/src aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 /src
 ```
 
-**Output esperado:** con `./verificar.sh`, ninguna línea `FALLA:` en el bloque de Trivy (el «antes» sale con 1 y el
+**Output esperado:** con los comandos de verificación indicados, ninguna línea `FALLA:` en el bloque de Trivy (el «antes» sale con 1 y el
 «después» con 0).
 
 **Pregunta de comprobación:** Trivy marca CRITICAL en `jackson-databind` y tú nunca declaraste esa librería. ¿De dónde

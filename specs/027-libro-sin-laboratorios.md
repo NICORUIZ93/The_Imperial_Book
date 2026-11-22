@@ -47,11 +47,11 @@ repetirlo todo en cada tema, porque eso haría el libro ilegible.
   `docs/reestructuracion/cursos-desde-cero.json` para migrar por lotes sin legalizar deuda.
   Verificación: `python3 scripts/audit_prerrequisitos.py --resumen`
 
-- **C7** `en-curso` — **Piloto, una línea por lote**: Fundamentos, Microservicios y Angular.
+- **C7** `hecho` — **Piloto, una línea por lote**: Fundamentos, Microservicios y Angular.
   Cada tema del lote declara «Para entender esto necesitas…», explica esos conceptos antes de
   usarlos y muestra el código mínimo con qué hace / por qué / qué pasa si cambia.
-  Avance: `foundations` y `microservices` declarados en `cursos-desde-cero.json` y limpios por
-  auditor (2026-11-22); falta `angular`.
+  Avance: `foundations`, `microservices` y `angular` declarados en `cursos-desde-cero.json` y
+  limpios por auditor (2026-11-22).
   Verificación: `python3 scripts/audit_prerrequisitos.py --check --curso <curso>`
 
 - **C8** `pendiente` — Los 13 cursos restantes se migran por capítulos, con `validate.sh` y e2e

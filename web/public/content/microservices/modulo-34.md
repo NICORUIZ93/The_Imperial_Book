@@ -4,9 +4,8 @@
 75 min y 1 h de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 24 (gobernanza: ADRs y
 fitness functions en producción) y Módulo 25 (sagas, compensaciones e idempotencia); ayudan el Módulo 29 (Ley de
 Conway y carga cognitiva) y el Módulo 5 (monolito frente a microservicios, bounded contexts). **Herramientas:**
-**Node.js 26.13.1 LTS**, **pg 8.23.1** y **PostgreSQL 18.7** (solo la ficha 3). **Laboratorio:**
-`modulo-34` (`./verificar.sh` ejecuta 18 tests y los scripts de las cuatro fichas, la 3 si
-PostgreSQL responde; `./verificar.sh --compose` levanta PostgreSQL y lo exige todo).
+**Node.js 26.13.1 LTS**, **pg 8.23.1** y **PostgreSQL 18.7** (solo la ficha 3). 
+PostgreSQL responde; los comandos de verificación indicados levanta PostgreSQL y lo exige todo).
 
 Has pasado treinta módulos aprendiendo a construir microservicios. Este módulo trata de **no construirlos cuando no
 toca** y de reconocer cuándo lo que tienes ya no es una arquitectura de microservicios, sino sus costes sin sus
@@ -34,7 +33,7 @@ frontera mal puesta entre servicios, es decir, sobre-descomposición.
 ```bash
 npm ci
 docker compose up -d --wait         # PostgreSQL 18.7 :5432 (academia/academia) para la ficha 3
-./verificar.sh --compose            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
+  # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
@@ -155,7 +154,7 @@ export const PG_URL = process.env.PG_URL ?? 'postgres://academia:academia@localh
 ```
 
 **Lo que se ejecutó al escribir este módulo** (Node 26.13.1, PostgreSQL 16.15 local): las cuatro fichas completas con
-`./verificar.sh`. **Lo que no se pudo ejecutar aquí** (sin acceso a Docker Hub): `./verificar.sh --compose` con la
+los comandos de verificación indicados. **Lo que no se pudo ejecutar aquí** (sin acceso a Docker Hub): los comandos de verificación indicados con la
 imagen `postgres:18.7`; el `docker-compose.yml` se validó con `docker compose config -q` y el comando para el Mac está
 en `verificacion/microservicios/pendiente.md`.
 

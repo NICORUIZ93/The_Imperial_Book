@@ -5,7 +5,7 @@ de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 12
 HPA), Módulo 10 o 21 (observabilidad: logs, métricas y trazas) y Módulo 27 (la malla, que también cuesta). Viene bien
 haber leído `docs/microservicios/09-costos.md`. **Herramientas:**Node.js 26.13.1 LTS** sin dependencias y los
 precios oficiales de **AWS** (Fargate, Lambda, NAT gateway, CloudWatch, X-Ray, EKS) y **GKE Autopilot**, consultados el
-2026-11-19 y el 2026-11-20. **Laboratorio:** `modulo-32` (`./verificar.sh` ejecuta 18 tests
+2026-11-19 y el 2026-11-20. 
 y los scripts de las cuatro fichas; no necesita Docker ni cuenta en ninguna nube).
 
 Una arquitectura no está terminada cuando funciona: está terminada cuando sabes **cuánto cuesta** y **por qué**. En
@@ -41,7 +41,7 @@ NAT gateway: la página lo da en un ejemplo de US East (Ohio), no en la tabla de
 
 ```bash
 npm ci
-./verificar.sh              # 18 tests + scripts de las 4 fichas → «RESULTADO: OK»
+  # 18 tests + scripts de las 4 fichas → «RESULTADO: OK»
 ```
 
 `README.md` tiene el mapa de carpetas.

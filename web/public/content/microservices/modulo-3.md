@@ -3,7 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semanas 2 y 3 de 4). **Duración:** 12 h (6 temas de 2 h). **Dificultad:** 2 de
 5. **Dependencias:** Módulos 0.1 a 0.3 (servidor, API, ejecutar Java y Node, leer tests). **Herramientas:** Git
 2.4x o posterior (la que traiga tu sistema), bash o zsh, `curl`, **Node.js 26.13.1 LTS**, **JDK 25 LTS** y la
-librería npm `yaml` 2.9.1. **Laboratorio:** `modulo-3` (se verifica con `./verificar.sh`).
+librería npm `yaml` 2.9.1. **Laboratorio:** `modulo-3`.
 
 Estas seis herramientas aparecen en **cada** microservicio que construyas: Git guarda la historia del código, la
 terminal es tu panel de control, HTTP es el idioma con el que hablan los servicios, JSON es el formato de los
@@ -420,7 +420,7 @@ y el mensaje sale por stderr: si ejecutas `./contar-errores.sh no-existe.log 2> 
 ./terminal/test-terminal.sh
 ```
 
-(desde `modulo-3`). Salida real:
+(desde tu carpeta de trabajo). Salida real:
 
 ```text
 ✔ cuenta 2 errores
@@ -643,7 +643,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `modulo-3`): `node http/servidor-http.js`
+1. **Terminal 1** (en tu carpeta de trabajo): `node http/servidor-http.js`
 2. **Terminal 2**, mira la respuesta completa con `-i`:
    ```bash
    curl -i http://localhost:3002/saludo
@@ -889,7 +889,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Desde `modulo-3`:
+1. En tu carpeta de trabajo:
    ```bash
    node json/json.js
    ```
@@ -1119,7 +1119,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Instala la dependencia y lee la configuración (desde `modulo-3`):
+1. Instala la dependencia y lee la configuración en tu carpeta de trabajo:
    ```bash
    npm install
    cd yaml
@@ -1165,7 +1165,7 @@ paso 2, el `^` apunta al inicio de la línea 2, donde está la tabulación invis
 node --test --test-reporter=spec yaml/leer-config.test.js
 ```
 
-(desde `modulo-3`, después de `npm install`). Salida real:
+(desde tu carpeta de trabajo, después de `npm install`). Salida real:
 
 ```text
 ✔ la sangría crea objetos anidados (0.997086ms)
@@ -1439,7 +1439,7 @@ node --test --test-reporter=spec env/config.test.js
 (cd env && java ConfigTest.java)
 ```
 
-(desde `modulo-3`). Salida real:
+(desde tu carpeta de trabajo). Salida real:
 
 ```text
 ✔ sin variables usa los valores por defecto (30.106975ms)
@@ -1456,7 +1456,7 @@ node --test --test-reporter=spec env/config.test.js
 Java: todos los tests pasaron
 ```
 
-Para el módulo completo: `./verificar.sh` (Git 4, terminal 4, Node 20 tests, Java 3 y `RESULTADO: OK · Módulo 0.4
+Para el módulo completo: los comandos de verificación indicados (Git 4, terminal 4, Node 20 tests, Java 3 y `RESULTADO: OK · Módulo 0.4
 (Git, terminal, HTTP, JSON, YAML, entorno) verificado`). **Pregunta de comprobación:** si defines `PUERTO=9000`
 con `export` y además el archivo `.env.example` dice `PUERTO=8081`, ¿cuál usa `node --env-file=.env.example
 config.js`? *(9000: las variables que ya existen en el entorno tienen prioridad sobre las del archivo.)*

@@ -36,5 +36,5 @@
     "Docker Compose",
     "Maven Wrapper"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-9 con ./verificar.sh en verde (tests de F041–F046 y los tres guiones SQL de database-per-service)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

@@ -41,5 +41,5 @@
     "Azul Zulu CRaC 25",
     "GraalVM CE 25"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-5 con ./verificar.sh en verde (8 proyectos Maven, 29 tests) y ./verificar.sh --docker para CRaC y el binario nativo."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

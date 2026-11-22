@@ -29,5 +29,5 @@
     "node:test",
     "curl"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-0 con ./verificar.sh en verde (8 tests)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

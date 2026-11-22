@@ -29,5 +29,5 @@
     "Docker Engine 29",
     "Docker Compose v5"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-4 con ./verificar.sh --compose en verde."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

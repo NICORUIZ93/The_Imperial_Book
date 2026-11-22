@@ -26,5 +26,5 @@
     "Node.js 26 LTS",
     "node:test"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-1 con ./verificar.sh en verde (11 tests)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

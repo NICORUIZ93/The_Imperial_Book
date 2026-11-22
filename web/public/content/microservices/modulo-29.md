@@ -5,9 +5,8 @@
 sagas coreografiadas y compensaciones), Módulo 18 (KafkaJS) y Módulo 15 (PostgreSQL). **Herramientas:**Node.js
 26.13.1 LTS**, **pg 8.23.1** con **PostgreSQL 18.7**, **kafkajs 2.2.4** con **Apache Kafka 4.4.0**, **Debezium 3.7**
 (Kafka Connect, imagen `quay.io/debezium/connect:3.7`; la estable es 3.7.1.Final) y **@temporalio/client, worker,
-workflow, activity y testing 1.26.0** (Temporal Server 1.32.1 o el servidor de desarrollo del CLI). **Laboratorio:**
-`modulo-29` (`./verificar.sh` ejecuta lo que no necesita infraestructura y lo de PostgreSQL si
-responde; `./verificar.sh --compose` levanta PostgreSQL, Kafka y Debezium, arranca Temporal y lo exige todo).
+workflow, activity y testing 1.26.0** (Temporal Server 1.32.1 o el servidor de desarrollo del CLI). 
+responde; los comandos de verificación indicados levanta PostgreSQL, Kafka y Debezium, arranca Temporal y lo exige todo).
 
 En el Módulo 22 aprendiste a no perder mensajes y a deshacer pasos con compensaciones. Este módulo responde la
 pregunta de fondo: **¿cómo mantienes coherentes los datos de varios servicios sin una transacción que los abarque a
@@ -33,7 +32,7 @@ Temporal) lleva al tema 5 (Two-Phase Commit: por qué no usar), al que también 
 ```bash
 npm ci
 docker compose up -d --wait         # PostgreSQL :5432 · Kafka :9092 · Kafka Connect + Debezium :8083
-./verificar.sh --compose            # tests + demos + errores comunes de las 5 fichas → «RESULTADO: OK»
+  # tests + demos + errores comunes de las 5 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 

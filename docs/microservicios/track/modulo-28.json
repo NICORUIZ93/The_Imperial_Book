@@ -31,5 +31,5 @@
     "Mermaid",
     "Structurizr DSL"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-28 con ./verificar.sh en verde (npm ci, 21 tests de node --test y los scripts de las fichas F148–F151) y ./verificar.sh --compose con las fitness functions evaluadas en Prometheus."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

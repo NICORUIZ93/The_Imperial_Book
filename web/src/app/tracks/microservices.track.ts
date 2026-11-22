@@ -14,7 +14,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Ejecuta un programa y lee su código de salida", "Enciende un servidor y atiende pedidos con curl", "Provoca EADDRINUSE y encuentra el proceso que ocupa el puerto", "Consume GET y POST de una API y distingue 200, 201, 400 y 404", "Rompe el contrato de la API y observa qué test falla"],
     ["¿Qué diferencia hay entre un programa y un proceso?", "¿Por qué un servidor no termina al llegar al final de su código?", "¿Qué diferencia hay entre un 400 y un 404?"],
     ["Node.js 26 LTS", "node:http", "node:test", "curl"],
-    "Laboratorio examples/microservicios/modulo-0 con ./verificar.sh en verde (8 tests)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     1,
     "Módulo 0.2 · Lógica de programación y pensamiento computacional",
@@ -27,7 +27,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Escribe las reglas de una taquilla con if/else, && y ||", "Rompe un borde (> por >=) y deja que el test lo atrape", "Descompón el problema de dar el vuelto en funciones", "Reutiliza el algoritmo con otras monedas gracias a la abstracción", "Encuentra el caso donde el algoritmo voraz no es óptimo"],
     ["¿Qué es la evaluación en cortocircuito?", "¿Qué es un algoritmo voraz y cuándo basta?", "¿Por qué los errores aparecen en los bordes?"],
     ["Node.js 26 LTS", "node:test"],
-    "Laboratorio examples/microservicios/modulo-1 con ./verificar.sh en verde (11 tests)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     2,
     "Módulo 0.3 · Introducción a Java y Node.js lado a lado (comparativa visual)",
@@ -40,7 +40,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Ejecuta el mismo programa con java y con node y compara la salida", "Compila con javac y observa el bytecode", "Provoca un error de tipos que Java detecta al compilar", "Bloquea el event loop a propósito y mide el efecto", "Ejecuta tres esperas en paralelo con hilos virtuales y con async/await"],
     ["¿Qué hace la JVM?", "¿Node.js es de un solo hilo?", "¿Cuándo no usar hilos virtuales?"],
     ["JDK 25 LTS", "Node.js 26 LTS", "node:test"],
-    "Laboratorio examples/microservicios/modulo-2 con ./verificar.sh en verde (Java 9 comprobaciones y Node 10 tests)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     3,
     "Módulo 0.4 · Git, terminal, HTTP, JSON, YAML, variables de entorno",
@@ -53,7 +53,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Crea un repositorio, una rama y un merge", "Analiza un log con tuberías y códigos de salida", "Provoca 200, 201, 400, 404, 405 y 415 con curl", "Detecta errores de sintaxis JSON y la pérdida de precisión de números grandes", "Rompe un YAML con una tabulación y descubre el problema de Noruega", "Configura el mismo programa con variables de entorno y --env-file"],
     ["¿Qué haces si subiste un secreto a Git?", "¿Qué significa que un método HTTP sea idempotente?", "¿Dónde viven la configuración y los secretos de un microservicio?"],
     ["Git", "bash", "curl", "Node.js 26 LTS", "yaml 2.9.1", "JDK 25 LTS"],
-    "Laboratorio examples/microservicios/modulo-3 con ./verificar.sh en verde (Git, terminal, 20 tests de Node y 3 de Java)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     4,
     "Módulo 0.5 · Primer «Hola Mundo» en ambos stacks + Docker básico",
@@ -66,7 +66,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Ejecuta el Hola Mundo clásico y el compacto de JDK 25", "Convierte el Hola Mundo en un servidor HTTP en Java y en Node", "Apaga el servidor Node con SIGTERM de forma ordenada", "Construye una imagen y ejecuta contenedores con variables de entorno", "Arranca los dos servicios con docker compose up"],
     ["¿Qué diferencia hay entre JDK y JRE?", "¿Qué es un graceful shutdown?", "¿Qué diferencia hay entre una imagen y un contenedor?"],
     ["JDK 25 LTS", "Node.js 26 LTS", "Docker Engine 29", "Docker Compose v5"],
-    "Laboratorio examples/microservicios/modulo-4 con ./verificar.sh --compose en verde."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     5,
     "Módulo 1 · Java moderno y Spring Boot esencial",
@@ -79,7 +79,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Calcula totales, agrupa y busca en un pedido con streams, records y Optional", "Mide 1 000 esperas con un pool fijo frente a hilos virtuales y limita la concurrencia con Semaphore", "Ordena las 8 fases del ciclo de vida de un bean con un test", "Escribe una auto-configuración con condiciones y pruébala con ApplicationContextRunner", "Separa dominio y API en módulos Maven y provoca un ciclo de dependencias", "Configura dev y prod con perfiles, variables de entorno y validación al arrancar", "Crea y restaura un checkpoint CRaC en Docker", "Compila un binario nativo con GraalVM 25 y declara la reflexión con RuntimeHints"],
     ["¿Qué ventaja tiene una sealed interface frente a instanceof?", "¿Por qué los hilos virtuales pueden agotar el pool de conexiones?", "¿Por qué inyección por constructor?", "¿Cómo cede una auto-configuración ante el bean del usuario?", "¿Qué gana CRaC frente a Native Image y qué pierde?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Maven Wrapper", "Docker Compose", "Azul Zulu CRaC 25", "GraalVM CE 25"],
-    "Laboratorio examples/microservicios/modulo-5 con ./verificar.sh en verde (8 proyectos Maven, 29 tests) y ./verificar.sh --docker para CRaC y el binario nativo."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     6,
     "Módulo 2 · APIs REST y persistencia",
@@ -92,7 +92,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Responde 201, 400, 404 y 415 desde un controlador validado", "Separa DTOs de entrada y salida y comprueba que la clave nunca sale", "Centraliza errores en ProblemDetail sin filtrar detalles internos", "Demuestra rollback, dirty checking y LazyInitializationException en PostgreSQL", "Combina filtros opcionales con Specifications y agrega con Criteria API", "Versiona el esquema con Flyway y Liquibase y provoca un error de checksum", "Ejecuta la misma app contra PostgreSQL y MySQL y compara upsert y collation"],
     ["¿Qué hace el DispatcherServlet?", "¿Por qué no devolver entidades JPA desde un controlador?", "¿Qué es el problema N+1 y cómo se resuelve?", "¿Cómo renombras una columna sin tiempo de inactividad?", "¿Por qué PostgreSQL es más seguro para migraciones que MySQL?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Hibernate ORM 7.4", "Flyway 12.4", "Liquibase 5.0", "PostgreSQL 18.7", "MySQL 9.7.4", "Docker Compose", "curl", "jq"],
-    "Laboratorio examples/microservicios/modulo-6 con ./verificar.sh en verde: PostgreSQL y MySQL con Docker Compose y 29 tests en 8 proyectos Maven."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     7,
     "Módulo 3 · Testing y calidad",
@@ -105,7 +105,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Prueba una regla de precios con tests parametrizados y mocks, y rómpela para ver fallar solo su caso", "Prueba un controller con @WebMvcTest, MockMvc y @MockitoBean (200, 404 y 400)", "Arranca PostgreSQL 18.7 con Testcontainers y @ServiceConnection y prueba ON CONFLICT e ILIKE", "Genera un contrato Pact, publícalo en el broker, verifícalo en el proveedor y pregunta can-i-deploy", "Rompe una capa y descubre la violación con ArchUnit", "Analiza un proyecto con JaCoCo y SonarQube y comprueba el Quality Gate por API"],
     ["¿Cuándo usas @WebMvcTest y cuándo @SpringBootTest?", "¿Por qué no probar el repositorio con H2 si producción usa PostgreSQL?", "¿Qué garantiza un contract test dirigido por el consumidor y qué no?", "¿Por qué exigir cobertura sobre el código nuevo y no sobre todo el código?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "JUnit Jupiter 6.0.3", "Mockito 5.23.0", "Testcontainers 2.0.5", "Pact JVM 4.7.7", "Pact Broker 2.124.0", "ArchUnit 1.5.1", "JaCoCo 0.8.15", "SonarQube Community Build 26.11"],
-    "Laboratorio examples/microservicios/modulo-7 con ./verificar.sh en verde: tests de las 5 fichas, ciclo publish-verify-can-i-deploy en el Pact Broker y Quality Gate OK en SonarQube."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     8,
     "Módulo 4 · Caching y rendimiento",
@@ -118,7 +118,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Mide la primera y la segunda lectura de un producto y mira su clave y su TTL en Redis", "Agrupa 100 cambios de precio en una sola escritura con write-behind sobre un Redis Stream", "Pierde un cambio a propósito reiniciando un Redis sin persistencia", "Toma un candado Redlock en 3 nodos, apaga 2 y comprueba que ya no hay mayoría", "Demuestra con un cliente pausado que solo el fencing token evita la escritura tardía", "Reproduce una estampida de 50 peticiones y redúcela a 1 consulta con un candado por clave"],
     ["¿Cómo eliges el TTL de una caché y cómo invalidas cuando el dato cambia?", "¿Cuándo usarías write-through y cuándo write-behind?", "¿Es seguro Redlock? ¿Qué añades si un duplicado es inaceptable?", "¿Qué es una estampida de caché y qué técnicas la evitan?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring Data Redis 4.1.3", "Lettuce 7.5.2", "Redis 8.10.2", "PostgreSQL 18.7", "Python 3.10+"],
-    "Laboratorio examples/microservicios/modulo-8 con ./verificar.sh en verde: 9 tests de los simuladores en Python y los tests Spring Boot de F037–F040."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     9,
     "Módulo 5 · Introducción a microservicios y DDD",
@@ -131,7 +131,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Evalúa tres organizaciones y resuelve el ejercicio cuya respuesta correcta es no usar microservicios", "Modela el agregado Pedido con sus invariantes y traduce PedidoConfirmado al contexto de Envíos", "Verifica la estructura de módulos con Spring Modulith y provoca una violación de tipo interno", "Arranca el mismo JAR con dos configuraciones y detecta secretos escritos en application.properties", "Migra /cotizaciones al servicio nuevo con una fachada y una capa anticorrupción, y revierte cambiando una regla", "Comprueba que Facturación no puede conectarse a la base de Envíos ni hacer JOIN entre bases"],
     ["¿En qué se diferencian SOA y microservicios?", "¿Cómo usarías DDD para decidir las fronteras de tus microservicios?", "¿Cómo migrarías un monolito de 10 años sin detener el negocio?", "Si cada servicio tiene su base de datos, ¿cómo haces un reporte con datos de cinco servicios?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring Modulith 2.1.3", "PostgreSQL 18.7", "Docker Compose", "Maven Wrapper"],
-    "Laboratorio examples/microservicios/modulo-9 con ./verificar.sh en verde (tests de F041–F046 y los tres guiones SQL de database-per-service)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     10,
     "Módulo 6 · Comunicación entre servicios",
@@ -144,7 +144,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Consulta el mismo inventario con cuatro clientes HTTP y corta una respuesta lenta con timeouts", "Define un contrato .proto con llamadas unarias y de streaming y mira sus 8 bytes en el cable", "Resuelve un esquema GraphQL y elimina el problema N+1 con @BatchMapping", "Publica y consume el mismo evento con RabbitMQ y con Kafka en Docker Compose", "Calcula la disponibilidad de una cadena síncrona y mide 201 frente a 202 Accepted"],
     ["¿Qué cliente HTTP usarías en un microservicio Spring Boot nuevo y por qué?", "¿Cuándo elegirías gRPC en lugar de REST?", "¿Qué es el problema N+1 en GraphQL y cómo lo resuelves?", "¿Cuándo usarías RabbitMQ y cuándo Kafka?", "En un checkout, ¿qué haces síncrono y qué asíncrono?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring Cloud 2025.1.4", "RabbitMQ 4.4.1", "Apache Kafka 4.4.0", "protoc"],
-    "Laboratorio examples/microservicios/modulo-10 con ./verificar.sh en verde (tests de F047–F051 con los brokers del Docker Compose y el contrato Protocol Buffers)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     11,
     "Módulo 7 · Spring Cloud e infraestructura",
@@ -157,7 +157,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Construye un registro con latidos que expulsa la instancia que deja de latir y registra dos catálogos en Eureka y en Consul", "Enruta /api/catalogo/** con StripPrefix y un filtro global de X-Request-Id, y distingue el 404 del gateway del 404 del servicio", "Sirve application, catalogo y catalogo-prod desde un Config Server y refresca un valor en caliente con /actuator/refresh", "Reparte 6 llamadas 2-2-2 con @LoadBalanced RestClient y mide el efecto de una instancia caída sin health check", "Separa un BFF móvil y uno web sobre los mismos servicios y compara bytes y latencia en paralelo frente a secuencia"],
     ["¿Usarías Eureka dentro de Kubernetes?", "¿Qué pondrías en un API Gateway y qué nunca?", "¿Qué fuente gana: inventario.yml o application-prod.yml?", "¿Por qué un Service de Kubernetes reparte mal el tráfico gRPC?", "¿Qué diferencia hay entre un API Gateway y un BFF?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring Cloud 2025.1.4", "Consul 2.1.0", "Testcontainers 2.0.5", "Maven Wrapper", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-11 con ./verificar.sh en verde: 5 demostraciones JDK (jdk/), Consul con Docker Compose y 6 proyectos Maven (F052–F056, 9 tests)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     12,
     "Módulo 8 · Resiliencia",
@@ -170,7 +170,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Recorre CLOSED → OPEN → HALF_OPEN → CLOSED con el inventario caído y verifica Retry, RateLimiter, Bulkhead y TimeLimiter bajo fallos inyectados", "Propaga X-Deadline entre tres saltos y responde degradado dentro de 1000 ms con el inventario 1,5 s lento", "Aplica valor por defecto, último valor bueno, réplica y fallar rápido, y detecta el fallback mentiroso", "Ejecuta un experimento de caos completo con Toxiproxy y conviértelo en un test con Testcontainers"],
     ["¿Dónde pones el fallback si combinas @Retry y @CircuitBreaker?", "¿Cómo eliges el timeout de una llamada entre microservicios?", "¿Qué respondes si no puedes comprobar un permiso?", "¿Por qué un experimento de caos necesita una hipótesis y un control?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Resilience4j 2.4.0", "Toxiproxy 2.13.0", "Testcontainers 2.0.5", "Maven Wrapper", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-12 con ./verificar.sh en verde: 4 demostraciones JDK con fallos inyectados, Toxiproxy con simular-fallo.sh y 4 proyectos Maven (F057–F060, 13 tests)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     13,
     "Módulo 9 · Seguridad",
@@ -183,7 +183,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Distingue 401 de 403 e inserta un filtro propio en la posición correcta de la cadena", "Explota alg=none y la confusión RS256→HS256 y ciérralos con un JwtDecoder de algoritmo fijo", "Demuestra que sin PKCE un code robado da tokens y con PKCE no", "Importa un realm de Keycloak como código y convierte realm_access.roles en autoridades", "Verifica una matriz de 12 decisiones con permiso del rol ∩ scope del token", "Canjea el token de un usuario por uno con aud=pagos y vida corta (RFC 8693)", "Pasa una malla Istio de PERMISSIVE a STRICT y ve rechazado al cliente sin sidecar", "Saca un secreto del repositorio a Vault con una política de solo lectura", "Rompe el build con Trivy ante Log4Shell y un Dockerfile que corre como root"],
     ["¿Por qué ves a veces 401 y a veces 403?", "¿HS256 o RS256 para 30 microservicios?", "¿Qué diferencia hay entre OAuth2 y OIDC y por qué PKCE también con secreto?", "¿Qué pasa si Keycloak se cae?", "¿Qué diferencia hay entre un rol y un scope?", "¿Por qué no reenviar el token del usuario entre servicios?", "¿Qué aporta mTLS y qué no resuelve?", "¿Cómo gestionas credenciales de base de datos de 40 servicios?", "¿Cómo integras el escaneo de vulnerabilidades sin frenar al equipo?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring Security 7.1", "Spring Cloud Vault 5.0", "Keycloak 26.8.2", "HashiCorp Vault 2.2.0", "Istio 1.32", "kind", "Trivy 0.76.1", "Snyk CLI 1.1309.0", "OpenSSL 3", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-13 con ./verificar.sh en verde: 7 demostraciones con JDK puro, Keycloak y Vault con Docker Compose, Trivy sobre el antes y el después, tests de 7 proyectos Maven y, con --mtls, la malla Istio en kind."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     14,
     "Módulo 10 · Observabilidad",
@@ -196,7 +196,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Publica /actuator/prometheus con histogramas y una métrica de negocio de etiquetas acotadas", "Propaga traceparent entre pedidos e inventario y ve una sola traza en Jaeger y en Zipkin", "Escribe logs JSON con MDC y pares clave-valor, sin datos personales", "Aprovisiona un dashboard RED y valídalo antes de desplegarlo", "Prueba una alerta de p99 con promtool y provócala con carga real"],
     ["¿Qué cuidas al definir métricas para Prometheus?", "¿Cómo implementas trazas distribuidas y decides el muestreo?", "¿Qué es el logging estructurado y cómo lo implementas en 20 servicios?", "¿Cómo organizas los dashboards para que sirvan en un incidente?", "¿Por qué alertas sobre el p99 y no sobre el promedio?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Micrometer 1.17", "OpenTelemetry 1.62", "Prometheus v3.15.1", "Grafana 13.2.4", "Jaeger 2.22.0", "Zipkin 3.6.1", "Python 3", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-14 con ./verificar.sh en verde: 4 demostraciones con JDK puro, validador de dashboards, promtool test rules, Prometheus, Grafana, Jaeger y Zipkin con Docker Compose y tests de 3 proyectos Maven."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     15,
     "Módulo 11 · Mensajería avanzada",
@@ -209,7 +209,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Predice con murmur2 la partición de cada clave y compruébalo contra el broker", "Reparte 3 particiones entre 3 consumidores y observa el consumidor ocioso con 4", "Provoca una caída tras escribir y verifica que read_committed ve 1 registro y read_uncommitted 2", "Evalúa en Schema Registry un campo nuevo con y sin default", "Envía al DLT un cobro inválido y recupera uno transitorio al tercer intento", "Detecta un mensaje sin ruta con returns y agota el delivery-limit de una quorum queue", "Reparte peticiones con queue groups en NATS y relee pagos con JetStream"],
     ["¿Qué rompe el orden por clave en Kafka?", "¿Qué cubre y qué no cubre exactly-once en Kafka?", "¿Por qué con BACKWARD se despliegan primero los consumidores?", "¿Por qué un ack de RabbitMQ no garantiza que el mensaje esté en una cola?", "¿Cuándo elegirías NATS frente a Kafka o RabbitMQ?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Spring for Apache Kafka 4.1.3", "Apache Kafka 4.4.0", "Confluent Schema Registry 8.4.1", "Avro 1.12.2", "RabbitMQ 4.4.1", "NATS 2.15.3", "jnats 2.26.4"],
-    "Laboratorio examples/microservicios/modulo-15 con ./verificar.sh en verde: los cuatro brokers healthy, los tests de las 6 fichas y las comprobaciones con kafka-consumer-groups, Schema Registry, rabbitmqctl y el monitoreo de NATS."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     16,
     "Módulo 12 · Docker, Kubernetes y despliegue",
@@ -222,7 +222,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Construye una imagen distroless sin root ni shell que se apaga con SIGTERM", "Levanta el servicio detrás de nginx con healthcheck en Java y un secreto como archivo", "Despliega 2 réplicas en kind con ConfigMap y Secret y aplica un cambio con rollout restart", "Saca un pod del Service con la readiness y reinícialo con la liveness", "Escala de 2 a 5 réplicas con carga y metrics-server", "Instala, actualiza, prueba y revierte el chart con Helm 4", "Cambia de azul a verde con un selector y envía un 25 % al canario", "Comprueba que Argo CD revierte un cambio manual con selfHeal"],
     ["¿Por qué el ENTRYPOINT debe ir en forma exec?", "¿Qué hace Kubernetes cuando falla la liveness y cuando falla la readiness?", "¿Por qué el HPA muestra <unknown>?", "¿Helm o Kustomize?", "¿Qué problema resuelve GitOps frente a kubectl apply desde CI?"],
     ["JDK 25 LTS", "Spring Boot 4.1.3", "Docker Engine 29 + Compose v5", "distroless java25-debian13", "kind v0.33.0", "Kubernetes 1.37.0", "metrics-server v0.9.0", "Helm 4.3.1", "Argo CD v3.5.6"],
-    "Laboratorio examples/microservicios/modulo-16 con ./verificar.sh en verde: imágenes 1.0.0 y 1.1.0, Compose healthy y las pruebas de Kubernetes, HPA, Helm, Blue-Green/Canary y Argo CD en un clúster kind."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     17,
     "Módulo 13 · JavaScript/TypeScript moderno y Node.js esencial",
@@ -235,7 +235,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Compara llamadas en serie, Promise.all y Promise.allSettled y provoca un rechazo sin capturar", "Ejecuta TypeScript directamente con Node 26 y corrige los errores del modo strict con tsc 6.0.3", "Predice el orden de nextTick, promesas, setImmediate y setTimeout y tumba un health check bloqueando el loop", "Mide el lag del Event Loop con perf_hooks y perfila un servidor con node --cpu-prof y clinic doctor", "Saca un cálculo de CPU a un Worker Thread y a un proceso hijo sin congelar el loop", "Llena la memoria ignorando write() y arréglalo con \'drain\' y pipeline()", "Apaga un servidor con SIGTERM sin cortar peticiones y explica el código 137 de docker stop"],
     ["¿Cómo lanzas tres llamadas independientes y qué haces si una falla?", "¿Qué diferencia hay entre los tipos de TypeScript y la validación de datos?", "Si Node tiene un solo hilo, ¿cómo atiende 10 000 conexiones y cuándo deja de hacerlo?", "¿Cómo investigas un servicio Node que se pone lento en hora pico?", "¿Cuándo usarías Worker Threads, child_process o cluster?", "¿Cómo exportas millones de filas por HTTP sin quedarte sin memoria?", "¿Cómo implementas un graceful shutdown en Kubernetes?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "@types/node 26.6.6", "clinic 13.0.0", "Docker (opcional)"],
-    "Laboratorio examples/microservicios/modulo-17 con ./verificar.sh en verde (npm ci, tsc en modo strict, 24 tests de node --test y los programas de las fichas F089–F095)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     18,
     "Módulo 14 · APIs REST con Express y NestJS",
@@ -248,7 +248,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Encadena middleware global y por ruta y responde todos los errores como problem+json", "Organiza una API NestJS con módulo, controller, provider, guard de roles e interceptor de tiempos", "Valida el mismo cliente con Zod y con class-validator y compara sus respuestas 400", "Bloquea la asignación masiva y oculta passwordHash con DTOs de entrada y salida", "Publica Swagger UI, exporta openapi.json y detecta la deriva entre código y contrato con un test"],
     ["¿Cómo manejas los errores en una API Express de forma consistente?", "¿En qué orden se ejecutan middleware, guards, interceptores y pipes en NestJS?", "¿Zod o class-validator, y dónde validas en un microservicio?", "¿Por qué no devolver la entidad de base de datos en un endpoint?", "¿Cómo mantienes sincronizado el contrato OpenAPI con el código?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "Express 5.3.0", "NestJS 12.5.1", "Zod 4.6.7", "class-validator 0.15.1", "@nestjs/swagger 12.1.2"],
-    "Laboratorio examples/microservicios/modulo-18 con ./verificar.sh en verde (npm ci, tsc, 26 tests de node --test y cada API comprobada con curl, fichas F096–F100)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     19,
     "Módulo 15 · Persistencia",
@@ -261,7 +261,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Modela un producto con un esquema de Mongoose, descuenta stock de forma atómica y provoca los errores de validación, de clave duplicada y de buffering", "Implementa el mismo repositorio con Sequelize y con Prisma sobre las mismas tablas y detecta un N+1 contando consultas", "Levanta pedidos e inventario con una base y un usuario cada uno y comprueba que PostgreSQL rechaza el acceso cruzado y el JOIN entre bases", "Mide 20 consultas simultáneas con pools de 1, 5 y 20 conexiones, provoca una fuga y deshaz una transferencia a medias con ROLLBACK"],
     ["En MongoDB, ¿cuándo embebes un documento y cuándo guardas una referencia?", "¿Qué es el problema N+1 en un ORM, cómo lo detectas y cómo lo resuelves?", "Con una base por servicio, ¿cómo muestras una pantalla que necesita datos de dos servicios?", "Tu servicio corre con 12 réplicas y PostgreSQL responde too many connections: ¿qué revisas y qué cambias?"],
     ["Node.js 26.13.1 LTS", "mongoose 9.12.2", "prisma 7.10.1", "@prisma/adapter-pg 7.10.1", "sequelize 6.37.8", "pg 8.23.1", "express 5.3.0", "tsx 4.23.15", "MongoDB 9.0.8", "PostgreSQL 18.7", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-19 con ./verificar.sh --compose en verde (MongoDB y PostgreSQL con Docker Compose, npm ci, prisma generate, 23 tests de node --test y los programas de las fichas F101–F104)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     20,
     "Módulo 16 · Testing",
@@ -274,7 +274,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Escribe tests con tablas de casos, dobles con jest.fn y jest.mock y un reloj falso, mide la cobertura y provoca un test sin await y un falso verde", "Prueba estados, cabeceras y cuerpos de una API de Express con Supertest y reproduce el EADDRINUSE de una app que abre su puerto", "Genera el contrato pedidos → inventario desde el consumidor, verifícalo contra el proveedor, rómpelo renombrando un campo y publícalo en el Pact Broker", "Arranca PostgreSQL desde el test con Testcontainers y comprueba ON CONFLICT, jsonb y una restricción CHECK contra el motor real"],
     ["¿Qué diferencia hay entre un stub, un mock y un spy, y cuándo es mala idea usar mocks?", "¿Por qué separar la creación de la app de Express de la llamada a listen?", "¿Qué problema resuelve el contract testing guiado por el consumidor frente a un test de extremo a extremo?", "¿Por qué probar el acceso a datos contra una base real en contenedor y cómo evitas que sea lento?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "jest 30.5.2", "ts-jest 29.4.15", "supertest 7.3.2", "@pact-foundation/pact 17.1.4", "@pact-foundation/pact-cli 18.10.9", "testcontainers 12.2.2", "Pact Broker 2.124.0", "PostgreSQL 18.7", "Docker"],
-    "Laboratorio examples/microservicios/modulo-20 con ./verificar.sh --compose en verde (npm ci, tsc en modo strict, 24 tests unitarios con cobertura, contrato Pact de consumidor y proveedor publicado en el Pact Broker, 6 tests con Testcontainers y los errores comunes de las fichas F105–F108)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     21,
     "Módulo 17 · Introducción a microservicios en Node",
@@ -287,7 +287,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Organiza un servicio en config, shared y módulos con dominio, aplicación, infraestructura y http, y detecta una dependencia prohibida con revisar-capas", "Carga un .env con dotenv, convierte y valida cada variable y comprueba que el entorno real le gana al archivo", "Registra dos instancias en Consul con check TTL, repártelas por turnos desde un cliente y mata una con kill -9", "Cambia un timeout en el KV de Consul y míralo aplicarse sin reiniciar; envía un valor inválido y comprueba que se rechaza"],
     ["¿Cómo organizas el código de un microservicio Node para que siga siendo mantenible cuando crece?", "¿Cómo gestionas la configuración de un servicio Node entre tu máquina, pruebas y producción?", "¿Qué es Service Discovery y qué pasa cuando una instancia muere sin avisar?", "¿Cuándo usarías configuración centralizada con recarga en caliente y qué riesgos tiene?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "dotenv 18.0.10", "consul 2.0.1 (npm)", "HashiCorp Consul 2.1.0", "Docker Compose"],
-    "Laboratorio examples/microservicios/modulo-21 con ./verificar.sh en verde (npm ci, tsc, 21 tests de node --test y demos; con --compose, Consul 2.1.0 real para las fichas F111 y F112)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     22,
     "Módulo 18 · Comunicación",
@@ -300,7 +300,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Escribe el mismo cliente REST con fetch y con Axios: timeout, id de correlación y errores traducidos", "Define un contrato .proto y llama a un servidor gRPC con una llamada unaria, un stream y un deadline", "Compón pedidos y clientes en un esquema GraphQL y elimina el problema N+1 con DataLoader", "Publica y consume eventos con KafkaJS (clave y grupos) y con amqplib (exchange topic, confirms y ack manual)", "Usa NATS para pub/sub con comodines, grupos de cola y petición/respuesta", "Compara el mismo flujo síncrono y asíncrono tumbando una dependencia y decide con la tabla de criterios"],
     ["¿Qué diferencias hay entre fetch y Axios y qué no puede faltar en un cliente entre servicios?", "¿Cuándo elegirías gRPC en lugar de REST entre microservicios?", "¿Qué es el problema N+1 en GraphQL y cómo lo resuelves?", "¿En qué se diferencian Kafka y RabbitMQ y cómo evitas procesar un mensaje dos veces?", "¿Qué garantías de entrega ofrece NATS?", "¿Cómo decides si una comunicación debe ser síncrona o asíncrona?"],
     ["Node.js 26.13.1 LTS", "axios 1.21.1", "@grpc/grpc-js 1.14.7", "@apollo/server 5.5.2", "kafkajs 2.2.4", "amqplib 2.4.0", "@nats-io/transport-node 3.5.0", "Kafka 4.4.0", "RabbitMQ 4.4.1", "NATS Server 2.15.3"],
-    "Laboratorio examples/microservicios/modulo-22 con ./verificar.sh en verde (npm ci, 32 tests de node --test y demos; con --compose, Kafka, RabbitMQ y NATS reales para las fichas F116 y F117)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     23,
     "Módulo 19 · Resiliencia",
@@ -313,7 +313,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Abre, rechaza en 0 ms y vuelve a cerrar un circuito opossum mientras Toxiproxy tumba el inventario", "Absorbe un corte de 350 ms con reintentos y mide cómo el jitter baja el pico de 200 a 38 peticiones simultáneas", "Comparte un límite de 5 peticiones entre dos instancias con Redis y decide qué pasa cuando Redis cae", "Cancela una llamada colgada con AbortSignal.timeout y propaga el presupuesto bff → pedidos → inventario", "Sirve el último valor bueno o un «no sé» honesto en lecturas y responde 503 en escrituras con el inventario caído"],
     ["¿Qué problema resuelve un circuit breaker y en qué se diferencia de un retry?", "¿Qué es el jitter y por qué no basta con el backoff exponencial?", "¿Cómo limitas peticiones en 10 instancias y qué haces si Redis se cae?", "¿Cómo eliges los timeouts en una cadena de tres microservicios?", "¿Qué responde tu servicio cuando una dependencia está caída?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "opossum 10.0.0", "cockatiel 4.0.0", "redis 6.3.1", "rate-limiter-flexible 11.5.0", "Express 5.3.0", "Redis 8.10.2", "Toxiproxy 2.13.0"],
-    "Laboratorio examples/microservicios/modulo-23 con ./verificar.sh --compose en verde (npm ci, tsc, 25 tests de node --test, simulación del fallo con Toxiproxy de cada ficha y el servicio de F119 probado con curl, fichas F119–F123)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     24,
     "Módulo 20 · Seguridad",
@@ -326,7 +326,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Falsifica un token alg none contra jwt.decode y compruébalo rechazado por jwt.verify con ES256, iss, aud y exp", "Cierra la enumeración de usuarios y la suplantación por cabecera con Passport local + JWT y un guard de roles", "Mide qué orígenes acepta un CORS mal validado y deja una lista blanca exacta con Helmet", "Entra como root con {\"$ne\": null} y bloquéalo con un esquema Zod y $eq explícito", "Corrige IDOR, SSRF, errores con detalle, fallos que conceden y ataques sin rastro del OWASP Top 10:2025", "Lee el mismo secreto de Secrets Manager, Vault y Key Vault y sobrevive a una rotación sin reiniciar"],
     ["¿Qué compruebas al validar un JWT y qué ataque evitas con cada comprobación?", "¿Cómo usarías Passport.js en una API sin estado?", "¿Qué evita CORS y qué no?", "¿Puede haber inyección en MongoDB y cómo la previenes?", "¿Qué cambió en el OWASP Top 10:2025 respecto a 2021?", "¿Cómo gestionas la contraseña de la base de datos de un microservicio en la nube?"],
     ["Node.js 26.13.1 LTS", "Express 5.3.0", "jsonwebtoken 9.0.3", "passport 0.7.0", "helmet 8.3.0", "cors 2.8.6", "zod 4.6.7", "MongoDB 9.0.8", "HashiCorp Vault 2.2.0", "Floci 2.2.0 / Floci-Az 0.14.0"],
-    "Laboratorio examples/microservicios/modulo-24 con ./verificar.sh --compose en verde (npm ci, 34 tests de node --test, el ataque contra antes y después de cada ficha, inyección NoSQL contra MongoDB y los tres gestores de secretos, fichas F124–F129)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     25,
     "Módulo 21 · Observabilidad",
@@ -339,7 +339,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Instrumenta pedidos e inventario con --import y comprueba que el span SERVER de inventario cuelga del CLIENT de pedidos", "Lleva traceparent en las cabeceras de RabbitMQ y Kafka y repara la traza que kafkajs corta al entregar Buffers", "Escribe el mismo log con Pino y con Winston, con trace_id, nivel en texto y la tarjeta oculta por redact", "Envía logs a Loki por la API de push y mide cómo un id como etiqueta convierte 1 stream en 1000", "Expón un contador, un histograma y un gauge en /metrics y consulta la suma y el p95 con PromQL"],
     ["¿Cómo sabe el servicio B que una petición pertenece a la traza que empezó en A?", "Tus trazas se cortan en cada cola: ¿cómo lo arreglas y cómo modelas un consumidor por lotes?", "¿Qué es un log estructurado y cómo lo relacionas con las trazas?", "¿ELK o Loki para 40 microservicios? ¿Qué etiquetas pondrías?", "¿Qué métricas expones en un servicio HTTP y cómo calculas su p95?"],
     ["Node.js 26.13.1 LTS", "@opentelemetry/sdk-node 0.301.2", "@opentelemetry/sdk-trace 3.1.1", "@opentelemetry/auto-instrumentations-node 0.83.1", "amqplib 2.4.0", "kafkajs 2.2.4", "pino 10.4.0", "winston 3.19.0", "@prometheus-io/client 0.16.1", "Jaeger 2.22.0", "RabbitMQ 4.4.1", "Kafka 4.4.0", "Grafana Loki 3.7.9", "Prometheus 3.15.1", "Grafana 13.2.4"],
-    "Laboratorio examples/microservicios/modulo-25 con ./verificar.sh --compose en verde (npm ci, 19 tests de node --test, demos y errores comunes de cada ficha, trazas en Jaeger, traceparent por RabbitMQ y Kafka, logs en Loki y PromQL contra Prometheus; fichas F130–F134)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     26,
     "Módulo 22 · Mensajería y patrones de datos",
@@ -352,7 +352,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Publica con confirms y mandatory, detecta el 312 NO_ROUTE y manda a la DLQ lo que el consumidor rechaza", "Deja pasar exactamente 1 de 10 copias simultáneas de un mensaje con SET NX EX y mira cómo GET + SET cobra 5 veces", "Recorre una saga de pedidos con @Saga() por sus tres caminos y descubre cómo una excepción la apaga para siempre", "Reembolsa tres veces con respuestas perdidas y devuelve el dinero una sola vez; rechaza el cobro que llega tarde", "Guarda un pedido como eventos en MongoDB y frena con versión esperada la línea agregada después de confirmar", "Proyecta los eventos a SQLite, sobrevive a una caída a mitad de lote y reconstruye la vista desde cero", "Separa comandos y consultas en NestJS y lee lo que acabas de escribir con una versión mínima"],
     ["¿Cómo garantizas que un mensaje no se pierde entre productor, RabbitMQ y consumidor?", "Tu consumidor recibe duplicados: ¿cómo evitas procesarlos dos veces?", "¿Qué es una saga y cuándo usarías coreografía en lugar de orquestación?", "¿Qué hace que una compensación sea segura de reintentar?", "¿Qué es event sourcing y cómo manejas la concurrencia en el almacén de eventos?", "¿Cómo garantizas que una proyección no aplica un evento dos veces ni se salta ninguno?", "¿Qué es CQRS, qué problema resuelve y qué te cuesta?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "amqplib 2.4.0", "RabbitMQ 4.4.1", "redis 6.3.1", "Redis 8.10.2", "@nestjs/core 12.5.1", "@nestjs/cqrs 12.1.3", "rxjs 7.8.2", "mongodb 7.9.1", "MongoDB 9.0.8", "node:sqlite (SQLite 3.54.1)"],
-    "Laboratorio examples/microservicios/modulo-26 con ./verificar.sh --compose en verde (npm ci, tsc, 39 tests de node --test contra RabbitMQ, Redis y MongoDB reales y en memoria, demos y errores comunes de cada ficha; fichas F135–F141)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     27,
     "Módulo 23 · Docker, Kubernetes y CI/CD",
@@ -365,7 +365,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Construye una imagen de tres etapas que corre como node, sin TypeScript, y mide los 26,6 MB de devDependencies que se quedan fuera", "Valida manifiestos sin clúster y comprueba que SIGTERM pasa la readiness a 503, termina la petición en curso y sale con 0", "Simula el algoritmo del HPA con el mismo YAML: subida limitada a 4 pods cada 15 s y bajada tras la ventana de 300 s", "Ejecuta en local los pasos del workflow y detecta con un validador seis fallos de seguridad de un workflow de tutorial", "Aborta un canary roto con 20 peticiones mientras el blue-green entrega la misma versión rota al 100 %", "Reconcilia un repositorio Git real con un clúster simulado: selfHeal, prune, git revert y la pelea entre HPA y replicas"],
     ["¿Cómo escribirías el Dockerfile de producción de un servicio Node.js con TypeScript y por qué?", "¿Qué diferencia hay entre readiness y liveness y qué pasa con las peticiones en curso al apagar un pod?", "¿Qué miras si un HPA por CPU no evita errores en el primer minuto de cada pico?", "¿Qué medidas de seguridad pones en un pipeline de GitHub Actions que publica imágenes?", "¿Cuándo usarías Blue-Green y cuándo Canary?", "¿Qué ganas con GitOps frente a un pipeline que hace kubectl apply?"],
     ["Node.js 26.13.1 LTS", "TypeScript 6.0.3", "Express 5.3.0", "yaml 2.9.1", "node:26.13.1-alpine", "Docker Engine 29.10.0", "Kubernetes 1.37 (kind v0.33.0)", "metrics-server v0.9.1", "GitHub Actions (checkout v7.0.1, setup-node v7.1.0)", "Argo Rollouts v1.10.1", "Argo CD v3.5.6"],
-    "Laboratorio examples/microservicios/modulo-27 con ./verificar.sh en verde (npm ci, tsc, 29 tests de node --test y los scripts de las fichas F142–F147) y ./verificar.sh --compose con la imagen construida con Docker y, si hay kind y kubectl, el despliegue en un clúster local con el HPA escalando."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     28,
     "Módulo 24 · Gobernanza arquitectónica",
@@ -378,7 +378,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Crea, acepta y reemplaza ADRs con una herramienta de línea de órdenes y deja que el lint rechace un registro de una línea", "Genera las vistas C4 de contexto y contenedores desde un único modelo JSON y detecta un diagrama que mezcla niveles", "Prioriza los escenarios de calidad de una tienda y convierte sus riesgos en temas ligados a objetivos de negocio", "Marca como NO APTA una versión con p99 de 367 ms, 1,3 % de errores y una llamada síncrona que prohíbe un ADR"],
     ["¿Cómo documentas las decisiones de arquitectura y cómo evitas que se queden desactualizadas?", "¿Qué diagramas harías para explicar 15 microservicios a un equipo nuevo?", "¿Cómo evaluarías una arquitectura de microservicios antes de construirla?", "¿Qué es una fitness function y cómo la usas para que una decisión no se degrade?"],
     ["Node.js 26.13.1 LTS", "prom-client 15.1.3", "Prometheus v3.15.1", "Mermaid", "Structurizr DSL"],
-    "Laboratorio examples/microservicios/modulo-28 con ./verificar.sh en verde (npm ci, 21 tests de node --test y los scripts de las fichas F148–F151) y ./verificar.sh --compose con las fitness functions evaluadas en Prometheus."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     29,
     "Módulo 25 · Consistencia distribuida",
@@ -391,7 +391,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Guarda pedido y evento en una transacción, publícalos con un relay SKIP LOCKED y míralos juntos en el WAL decodificado", "Orquesta reservar → cobrar → enviar como workflow de Temporal y comprueba que el empaquetador rechaza la E/S en el workflow", "Haz que cinco copias simultáneas del mismo evento sumen una sola vez con la marca y el efecto en la misma transacción", "Mata el consumidor en el offset 2 y comprueba que, con el offset en la base de datos, el saldo queda exacto", "Deja una transacción preparada en duda y mira cómo bloquea otro cobro hasta COMMIT PREPARED"],
     ["¿Cómo garantizas que un evento se publica si y solo si se guardó el cambio?", "¿Cuándo orquestarías una saga con Temporal en vez de coreografiarla?", "Kafka entrega al menos una vez: ¿cómo aplicas cada evento una sola vez?", "«Usamos exactly-once, así que no hay duplicados»: ¿qué respondes?", "¿Por qué no usar 2PC/XA entre microservicios y qué propones?"],
     ["Node.js 26.13.1 LTS", "pg 8.23.1", "PostgreSQL 18.7", "kafkajs 2.2.4", "Kafka 4.4.0", "Debezium 3.7", "@temporalio/worker 1.26.0", "@temporalio/client 1.26.0", "Temporal Server 1.32.1"],
-    "Laboratorio examples/microservicios/modulo-29 con ./verificar.sh --compose en verde (npm ci, 20 tests de node --test con PostgreSQL y la saga, demos y errores comunes de cada ficha, Debezium → Kafka, consumidor idempotente y transacciones de Kafka, y la saga contra un servidor Temporal; fichas F152–F156)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     30,
     "Módulo 26 · Mensajería avanzada y event-driven",
@@ -404,7 +404,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Comprueba qué cambios de esquema admite BACKWARD, FORWARD y FULL y lee byte a byte un mensaje en el formato de Confluent", "Monta una cola quorum con x-delivery-limit, colas de espera de 200 y 600 ms y DLQ, y lee la historia en x-death", "Deduplica reintentos con msgID, limita las entregas de una cola de trabajo y evita una sobreventa con el KV", "Apaga el catálogo y compara qué consumidor sigue funcionando: el de notificación o el de ECST"],
     ["¿Cómo evolucionas el esquema de un evento que consumen cinco equipos sin romper a ninguno?", "¿Cómo diseñas reintentos y mensajes venenosos en RabbitMQ?", "¿Qué aporta JetStream sobre NATS core y cómo evitas duplicados y pérdidas?", "¿Event Notification o Event-Carried State Transfer? ¿Cuándo cada uno?"],
     ["Node.js 26.13.1 LTS", "kafkajs 2.2.4", "@kafkajs/confluent-schema-registry 4.1.0", "avsc 5.7.9", "amqplib 2.4.0", "@nats-io/jetstream 3.5.0", "Kafka 4.4.0", "Confluent Schema Registry 8.4.1", "RabbitMQ 4.4.1", "NATS Server 2.15.3"],
-    "Laboratorio examples/microservicios/modulo-30 con ./verificar.sh --compose en verde (npm ci, 18 tests de node --test, demos y errores comunes de cada ficha, Schema Registry real y transacciones de Kafka con fencing; fichas F157–F160)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     31,
     "Módulo 27 · Seguridad Zero-Trust",
@@ -417,7 +417,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Demuestra que un pod con certificado válido de la malla recibe 403 cuando la política autoriza por identidad SPIFFE y no por cabecera", "Canjea el token de un usuario por uno de 60 s para un solo destino, ligado al certificado de quien lo pidió, y comprueba que robado no sirve", "Sustituye una contraseña estática por credenciales dinámicas de Vault y verifica en PostgreSQL que caducan y se revocan", "Salta un gateway de perímetro llamando directamente a un servicio y ciérralo con un sidecar que deniega por defecto"],
     ["Tenemos Istio con mTLS STRICT en todo el clúster. ¿Estamos en Zero-Trust?", "¿Cómo evitas que un token robado en un microservicio sirva para atacar a otro?", "¿Qué ganas con secretos dinámicos frente a guardar la contraseña de la base de datos en Vault KV?", "¿Cuándo introducirías un service mesh y cuándo no?"],
     ["Node.js 26.13.1 LTS", "OpenSSL 3", "pg 8.23.1", "HashiCorp Vault 2.2.0", "PostgreSQL 18.7", "Istio 1.32", "Linkerd edge-26.11.2"],
-    "Laboratorio examples/microservicios/modulo-31 con ./verificar.sh en verde (npm ci, PKI con openssl, 18 tests de node --test y los ataques ANTES/DESPUÉS de las fichas F161–F164) y ./verificar.sh --compose con una credencial dinámica real de Vault 2.2.0 sobre PostgreSQL 18.7."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     32,
     "Módulo 28 · FinOps y costo de arquitectura",
@@ -430,7 +430,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Costea un monolito modular y seis microservicios con el mismo tráfico y compara su costo por cada 1000 pedidos", "Recomienda requests con el p95 de CPU y el máximo de memoria y descubre un servicio que hay que subir, no bajar", "Encuentra el volumen en el que Lambda y Fargate cuestan lo mismo y cómo lo mueve una dependencia lenta", "Baja la factura de observabilidad con niveles de log, muestreo de trazas y etiquetas acotadas"],
     ["Te piden migrar un monolito a microservicios. ¿Cómo estimas el impacto en la factura cloud?", "¿Cómo harías right-sizing de 40 microservicios en Kubernetes sin provocar incidentes?", "¿Cuándo elegirías serverless y cuándo contenedores para un microservicio, desde el punto de vista del costo?", "La factura de observabilidad ya es la mitad de la de infraestructura. ¿Qué haces?"],
     ["Node.js 26.13.1 LTS", "Precios oficiales de AWS (Fargate, Lambda, NAT gateway, CloudWatch, X-Ray)", "Precios de GKE Autopilot"],
-    "Laboratorio examples/microservicios/modulo-32 con ./verificar.sh en verde (npm ci sin dependencias, 18 tests de node --test y los scripts de las fichas F165–F168 con precios consultados el 2026-11-19 y 2026-11-20)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     33,
     "Módulo 29 · Team Topologies y organización",
@@ -443,7 +443,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Compara en un repositorio Git la organización por capas (12 traspasos) con la organización por flujo (ninguno)", "Encuentra los cinco problemas de una topología de equipos y mide la espera de una «plataforma» por tickets frente a una de autoservicio", "Evalúa la carga cognitiva de un equipo con dos dominios difíciles y propón cómo dividirlo", "Calcula los canales de un grupo de 24 personas y compáralos con tres equipos de 8 y sus interfaces"],
     ["¿Qué dice la Ley de Conway y cómo la usarías al diseñar microservicios?", "¿Qué tipos de equipo y modos de interacción propone Team Topologies?", "¿Qué es la carga cognitiva de un equipo y cómo influye en la granularidad de los servicios?", "¿Qué tamaño deben tener los equipos y cómo divides un grupo grande?"],
     ["Node.js 26.13.1 LTS", "Git 2.x"],
-    "Laboratorio examples/microservicios/modulo-33 con ./verificar.sh en verde (17 tests de node --test, uno de ellos sobre un historial de Git real, y las demos y errores comunes de las fichas F169–F172; sin infraestructura)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     34,
     "Módulo 30 · Anti-patrones y cuándo NO usar microservicios",
@@ -456,7 +456,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Tumba un servicio a dos saltos y mira caer la petición; despliega solo precios v2 y mira el total en null", "Mide el mismo cálculo en proceso y con cuatro nanoservicios HTTP y encuentra los servicios que conviene fusionar", "Decide la arquitectura de una tienda con 4 desarrolladores (respuesta correcta: no usar microservicios)", "Compara en PostgreSQL una transacción local con una saga que deja stock perdido al fallar la compensación", "Haz que el build falle por un import a internos de otro servicio, un ciclo y un p95 fuera de presupuesto"],
     ["¿Qué es un monolito distribuido y cómo lo detectas y lo arreglas?", "¿Cómo sabes si un sistema tiene demasiados microservicios?", "¿Cuándo NO usarías una saga?", "¿Qué es una fitness function y cómo evita que la arquitectura se degrade?"],
     ["Node.js 26.13.1 LTS", "pg 8.23.1", "PostgreSQL 18.7"],
-    "Laboratorio examples/microservicios/modulo-34 con ./verificar.sh --compose en verde (npm ci, 18 tests de node --test con servidores HTTP reales y PostgreSQL, demos y errores comunes de las fichas F173–F176, y la fitness function que termina con código 1 sobre ejemplo-roto)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     35,
     "Módulo 31 · Migración desde monolito real",
@@ -469,7 +469,7 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Pon una fachada delante del monolito que mande /api/pedidos al servicio nuevo para el 10 % de los clientes y lo demás al monolito", "Sincroniza el monolito con el servicio nuevo con triggers de captura, una ACL y un relevo idempotente, y detecta divergencias con una conciliación", "Calcula las cinco métricas DORA antes y después y deja que una puerta de avance decida si subes el porcentaje", "Encuentra los hotspots de un repositorio con git log y decide, con datos, no extraer facturación a un microservicio"],
     ["Te piden migrar un monolito de diez años a microservicios. ¿Por dónde empiezas y cómo evitas un «big bang»?", "Durante la migración, el monolito y el nuevo servicio necesitan los mismos datos. ¿Cómo los mantienes coherentes?", "¿Cómo demuestras a dirección que una migración a microservicios está funcionando?", "Tienes mucha deuda técnica y presión para pasar a microservicios. ¿Cómo decides qué pagar y qué extraer?"],
     ["Node.js 26.13.1 LTS (node:http, node:sqlite con SQLite 3.54.1)", "Git 2.x", "Métricas DORA (dora.dev)"],
-    "Laboratorio examples/microservicios/modulo-35 con ./verificar.sh en verde (npm ci sin dependencias, 17 tests de node --test y los scripts de las fichas F177–F180, incluido el ejercicio de decisión cuya respuesta correcta es no usar microservicios)."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
   m(
     36,
     "Módulo 32 · Proyecto Final y Comité de Arquitectura",
@@ -482,5 +482,5 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ["Construye la API de reservas con 202 Accepted e Idempotency-Key y comprueba que un POST repetido no cobra dos veces", "Escribe la saga en Temporal (TypeScript y Java) con compensaciones en orden inverso y una cola propia para el cobro", "Limita por API key con un cubo de fichas en Redis y demuestra que un limitador en memoria con 3 réplicas deja pasar el triple", "Carga el sistema con Gatling a 60 reservas/s con aserciones de p99 y errores, y descubre que la API en verde esconde ventas perdidas", "Mide el límite de 20 peticiones/s del proveedor, rediseña con una cola a 18/s y valida el ADR y su fitness function en CI", "Prepara la defensa con la lista de entregables, el costo mensual y la hoja de puntuación del Comité"],
     ["Diseña la API de reservas de una ticketera que cobra con un proveedor externo. ¿Qué devuelve el POST y cómo evitas cobros duplicados?", "¿Por qué orquestar la reserva con Temporal y no con eventos o con una transacción distribuida?", "¿Cómo implementarías rate limiting por cliente en un gateway con varias réplicas?", "¿Cómo diseñas un test de carga que sirva para decidir si un sistema está listo para un pico?", "El proveedor de pagos anuncia un límite de 20 peticiones/s y tus picos son de 60 reservas/s. ¿Qué haces?", "¿Qué debe tener un ADR para que sirva de algo dentro de un año?", "¿Qué parte de tu sistema no debería ser un microservicio?"],
     ["Node.js 26.13.1 LTS, Express 5.3.0, Temporal TypeScript SDK 1.26.0, ioredis 6.0.0, Gatling JS 3.16.101", "JDK 25, Spring Boot 4.1.3, Spring Cloud Gateway 5.0.4 (2025.1.4), Temporal Java SDK 1.41.1, Gatling 3.16.1 con gatling-maven-plugin 4.21.12", "Redis 8.10.2 (Docker Compose) y Temporal Server 1.32.1 (temporal server start-dev)"],
-    "Laboratorio examples/microservicios/modulo-36 con ./verificar.sh en verde (26 tests de node --test, los scripts de las fichas F181–F187, Redis real, Gatling a 60 reservas/s con y sin la restricción y las demos JDK; --compose añade Redis con Docker y los tests Maven de spring/), los ADR validados y la evaluación del Comité con 2.8 o más y ningún criterio en 1."),
+    "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."),
 ];

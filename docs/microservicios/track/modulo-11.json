@@ -36,5 +36,5 @@
     "Maven Wrapper",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-11 con ./verificar.sh en verde: 5 demostraciones JDK (jdk/), Consul con Docker Compose y 6 proyectos Maven (F052–F056, 9 tests)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

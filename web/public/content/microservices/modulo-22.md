@@ -7,7 +7,7 @@ asíncrono. **Dependencias:** Módulo 17 (estructura, configuración, descubrimi
 1.14.7** + **@grpc/proto-loader 0.8.1**, **@apollo/server 5.5.2** + **graphql 16.15.0** + **dataloader 2.2.3**,
 **kafkajs 2.2.4**, **amqplib 2.4.0**, **@nats-io/transport-node 3.5.0**; brokers **Apache Kafka 4.4.0**, **RabbitMQ
 4.4.1** y **NATS Server 2.15.3** (Docker Compose). **Laboratorio:** `modulo-22`
-(`./verificar.sh` ejecuta 32 tests sin infraestructura y las demos; `./verificar.sh --compose` levanta los tres
+(los comandos de verificación indicados ejecuta 32 tests sin infraestructura y las demos; los comandos de verificación indicados levanta los tres
 brokers y ejecuta además los tests y demos de Kafka, RabbitMQ y NATS).
 
 Un microservicio aislado no sirve de mucho: el valor aparece cuando **conversan**. Hay dos grandes formas de
@@ -34,8 +34,8 @@ llevan al tema 6 (Sync vs async).
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-./verificar.sh            # npm ci + 32 tests + demos de REST, gRPC, GraphQL y sync/async → «RESULTADO: OK»
-./verificar.sh --compose  # además: Kafka, RabbitMQ y NATS con Docker Compose y sus tests
+  # npm ci + 32 tests + demos de REST, gRPC, GraphQL y sync/async → «RESULTADO: OK»
+los comandos de verificación indicados  # además: Kafka, RabbitMQ y NATS con Docker Compose y sus tests
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `modulo-22`** después de `npm ci`. Todo el

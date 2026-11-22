@@ -135,7 +135,7 @@ npx ng update @angular/core@22 @angular/cli@22 --dry-run
 
 #### Paso 5 · Práctica guiada
 
-Guarda la salida de `ng update --dry-run` en `docs/migracion-angular-22.txt`. **Pista:** en PowerShell usa `| Tee-Object`; en macOS/Linux usa `| tee`.
+Guarda la salida de `ng update --dry-run` en `docs/migracion-angular-22.txt`. **Pista:** en PowerShell usa `| Tee-Object`; en macOS/**Linux** (sistema operativo tipo Unix) usa `| tee`.
 
 #### Paso 6 · Práctica independiente
 

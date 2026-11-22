@@ -43,5 +43,5 @@
     "curl",
     "jq"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-6 con ./verificar.sh en verde: PostgreSQL y MySQL con Docker Compose y 29 tests en 8 proyectos Maven."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

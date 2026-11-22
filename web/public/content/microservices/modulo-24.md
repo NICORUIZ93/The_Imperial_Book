@@ -7,8 +7,8 @@ LTS**, **express 5.3.0**, **jsonwebtoken 9.0.3**, **passport 0.7.0** con **passp
 4.0.1**, **helmet 8.3.0**, **cors 2.8.6**, **zod 4.6.7**, **mongodb 7.9.1** (driver) con **MongoDB 9.0.8**,
 **@aws-sdk/client-secrets-manager 3.1173.0**, **node-vault 0.13.0** con **Vault 2.2.0**, **@azure/keyvault-secrets
 4.12.0** y **@azure/identity 4.14.1**; emuladores **Floci 2.2.0** (AWS) y **Floci-Az 0.14.0** (Azure).
-**Laboratorio:** `modulo-24` (`./verificar.sh` ejecuta 34 tests y cada ataque contra las dos
-versiones; `./verificar.sh --compose` añade MongoDB y los tres gestores de secretos).
+
+versiones; los comandos de verificación indicados añade MongoDB y los tres gestores de secretos).
 
 La seguridad de un microservicio no es una capa que se pone al final: es **cada decisión** sobre quién entra, qué ve,
 qué acepta y dónde guarda sus llaves. En este módulo atacas a propósito seis APIs vulnerables y las arreglas: tokens
@@ -38,8 +38,8 @@ común. El tema 5 lleva al tema 6 (secretos con AWS Secrets Manager, Vault y Azu
 
 ```bash
 npm ci
-./verificar.sh              # 34 tests + ataques de las 6 fichas (sin Docker) → «RESULTADO: OK»
-./verificar.sh --compose    # además MongoDB 9.0.8, Floci, Floci-Az y Vault 2.2.0 con Docker Compose
+  # 34 tests + ataques de las 6 fichas (sin Docker) → «RESULTADO: OK»
+los comandos de verificación indicados    # además MongoDB 9.0.8, Floci, Floci-Az y Vault 2.2.0 con Docker Compose
 ```
 
 archivos `antes.js` son vulnerables **a propósito**: no copies nada de ellos.
@@ -1776,7 +1776,7 @@ docker compose up -d --wait mongo
 node f127-nosql/ataque.js
 ```
 
-   **Output esperado** (las líneas que comprueba `verificar.sh --compose`; este paso no se pudo ejecutar en el entorno
+   **Output esperado** (las líneas que comprobarías con la verificación del entorno; este paso no se pudo ejecutar en el entorno
    de redacción, sin acceso a Docker Hub, y está anotado en `verificacion/microservicios/pendiente.md`):
 
 ```text
@@ -2965,7 +2965,7 @@ curl -s localhost:3229/salud/secretos; echo
    sección 11 y el paso 1.
 
    Los pasos 2 a 4 no se pudieron ejecutar en el entorno de redacción (sin acceso a Docker Hub ni a las descargas de
-   los emuladores) y están anotados en `verificacion/microservicios/pendiente.md`; `./verificar.sh --compose` los
+   los emuladores) y están anotados en `verificacion/microservicios/pendiente.md`; los comandos de verificación indicados los
    comprueba en el Mac.
 
 #### 11. VERIFICACIÓN

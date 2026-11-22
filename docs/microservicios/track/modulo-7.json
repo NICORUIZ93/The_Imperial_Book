@@ -39,5 +39,5 @@
     "JaCoCo 0.8.15",
     "SonarQube Community Build 26.11"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-7 con ./verificar.sh en verde: tests de las 5 fichas, ciclo publish-verify-can-i-deploy en el Pact Broker y Quality Gate OK en SonarQube."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

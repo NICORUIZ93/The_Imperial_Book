@@ -4,8 +4,7 @@
 2–3 h). **Dificultad:** 3 de 5 en los temas 1 y 2 y 4 de 5 en los temas 3 y 4. **Dependencias:** Módulo 2 (APIs
 REST, JDBC y PostgreSQL) y Módulo 3 (tests con JUnit y `@SpringBootTest`). **Herramientas:**JDK 25 LTS**,
 **Spring Boot 4.1.3** (Spring Data Redis 4.1.3 con el cliente Lettuce 7.5.2), **Redis 8.10.2** y **PostgreSQL 18.7**
-en Docker Compose, y **Python 3.10+** (solo la biblioteca estándar) para los simuladores. **Laboratorio:**
-`modulo-8` (`./verificar.sh` levanta los contenedores, ejecuta los simuladores y los tests
+en Docker Compose, y **Python 3.10+** (solo la biblioteca estándar) para los simuladores. 
 de Gradle y los apaga).
 
 Un microservicio rápido no es el que tiene el código más ingenioso, sino el que **no repite trabajo caro**. La caché

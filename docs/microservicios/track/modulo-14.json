@@ -39,5 +39,5 @@
     "Python 3",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-14 con ./verificar.sh en verde: 4 demostraciones con JDK puro, validador de dashboards, promtool test rules, Prometheus, Grafana, Jaeger y Zipkin con Docker Compose y tests de 3 proyectos Maven."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

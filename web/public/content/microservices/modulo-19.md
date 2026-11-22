@@ -7,7 +7,7 @@ de bases de datos se explica aquí desde cero. **Herramientas:** **Node.js 26.13
 `mongodb` 7.x), **prisma** y **@prisma/client 7.10.1** con **@prisma/adapter-pg 7.10.1**, **sequelize 6.37.8**,
 **pg 8.23.1**, **express 5.3.0**, **tsx 4.23.15**, **TypeScript 6.0.3**; **MongoDB 9.0.8** y **PostgreSQL 18.7** con
 Docker Compose. **Laboratorio:** `modulo-19` (una carpeta por tema;
-`./verificar.sh --compose` levanta las bases, ejecuta los tests y cada programa, y guarda los logs en `logs/`).
+los comandos de verificación indicados levanta las bases, ejecuta los tests y cada programa, y guarda los logs en `logs/`).
 
 Hasta ahora tus servicios guardaban los datos en variables: al reiniciar, se perdían. **Persistir** es escribir los
 datos en un sistema que los conserva cuando el proceso muere. En este módulo aprendes las dos familias que más vas a
@@ -38,7 +38,7 @@ pooling y transacciones). Una flecha recorre los cuatro temas del 1 al 4.
 **Cómo usar el laboratorio.** Necesitas Node 26 (`nvm install 26 && nvm use 26`) y Docker Desktop encendido:
 
 ```bash
-./verificar.sh --compose     # docker compose up + npm ci + prisma generate + tests + programas → «RESULTADO: OK»
+los comandos de verificación indicados     # docker compose up + npm ci + prisma generate + tests + programas → «RESULTADO: OK»
 ```
 
 Para trabajar ficha por ficha, deja las bases arriba y ejecuta las órdenes **desde
@@ -530,7 +530,7 @@ Salida real con las bases arriba (MongoDB 9.0.8; los milisegundos cambian):
 ```javascript
 // Verificación F101 (parte 2, CON MongoDB): node --test f101-mongoose/repositorio.test.js
 // Necesita `docker compose up -d --wait`. Si MongoDB no responde, los tests se marcan como omitidos (skip);
-// con EXIGIR_INFRA=1 (lo pone ./verificar.sh --compose) la falta de MongoDB es un fallo.
+// con EXIGIR_INFRA=1 (lo pone los comandos de verificación indicados) la falta de MongoDB es un fallo.
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import mongoose from 'mongoose';

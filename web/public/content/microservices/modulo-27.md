@@ -7,8 +7,8 @@ shutdown) y el Módulo 19 (timeouts). **Herramientas:**Node.js 26.13.1 LTS**, **
 5.3.0**, **yaml 2.9.1**, imagen **`node:26.13.1-alpine`**, **Docker Engine 29.10.0** con **Compose v5.6.1** o
 posterior, **Kubernetes 1.37** en **kind v0.33.0**, **metrics-server v0.9.1**, **GitHub Actions** (`actions/checkout`
 v7.0.1 y `actions/setup-node` v7.1.0 fijadas por SHA), **Argo Rollouts v1.10.1** y **Argo CD v3.5.6**.
-**Laboratorio:** `modulo-27` (`./verificar.sh` ejecuta 29 tests y los scripts de las seis
-fichas sin Docker; `./verificar.sh --compose` construye la imagen y, si tienes kind y kubectl, despliega en un clúster
+
+fichas sin Docker; los comandos de verificación indicados construye la imagen y, si tienes kind y kubectl, despliega en un clúster
 local y comprueba el HPA).
 
 Hasta aquí tu servicio corría con `node servidor.js` en tu portátil. En producción nadie hace eso: el código se
@@ -45,8 +45,8 @@ números.
 
 ```bash
 npm ci && npm run build
-./verificar.sh              # 29 tests + scripts de las 6 fichas → «RESULTADO: OK»
-./verificar.sh --compose    # además imagen con Docker/Compose y, con kind y kubectl, el clúster «curso»
+  # 29 tests + scripts de las 6 fichas → «RESULTADO: OK»
+los comandos de verificación indicados    # además imagen con Docker/Compose y, con kind y kubectl, el clúster «curso»
 ```
 
 run build`. Lee el `README.md` para el mapa de
@@ -1503,7 +1503,7 @@ kubectl -n tienda run carga --image=pedidos:1.0.0 --image-pull-policy=IfNotPrese
    porcentaje real cuando metrics-server publica datos; durante la carga sube por encima del 60 % y `REPLICAS` crece de
    3 hacia 10 en saltos de hasta 4; unos 5 minutos después de terminar la carga, `REPLICAS` baja de 2 en 2.
    `kubectl -n tienda describe hpa pedidos` muestra en `Events` eventos `SuccessfulRescale` con el tamaño nuevo y el
-   motivo (la utilización de CPU por encima del objetivo). `./verificar.sh --compose` hace lo mismo y comprueba
+   motivo (la utilización de CPU por encima del objetivo). los comandos de verificación indicados hace lo mismo y comprueba
    que las réplicas pasan de 3.
 
 #### 11. VERIFICACIÓN
@@ -1947,7 +1947,7 @@ job pruebas: OK
    Con Docker, `node f145-github-actions/simular-ci.js imagen` ejecuta también el job `imagen` (construir y prueba de
    humo; el paso de publicar se salta porque la rama simulada no es `main`). Aquí solo llegó a calcular el nombre:
    `GITHUB_ENV: IMAGEN=ghcr.io/estudiante/tienda/pedidos:a1b2c3d4e5f6` (el build necesita Docker Hub; pendiente de
-   verificar en el Mac con `./verificar.sh --compose`).
+   verificar en el Mac con los comandos de verificación indicados).
 
 3. **En GitHub** (pendiente de verificar con tu cuenta): crea un repositorio con el contenido de
    `modulo-27`, copia `ci.yml` a `.github/workflows/ci.yml`, sube a una rama y abre un PR.

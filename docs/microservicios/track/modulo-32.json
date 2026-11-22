@@ -29,5 +29,5 @@
     "Precios oficiales de AWS (Fargate, Lambda, NAT gateway, CloudWatch, X-Ray)",
     "Precios de GKE Autopilot"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-32 con ./verificar.sh en verde (npm ci sin dependencias, 18 tests de node --test y los scripts de las fichas F165–F168 con precios consultados el 2026-11-19 y 2026-11-20)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

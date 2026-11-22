@@ -4,7 +4,7 @@
 75 min y 1 h de laboratorio integrador). **Dificultad:** 3 de 5. **Dependencias:** Módulo 24 (ADRs y modelo C4: aquí
 decides quién es dueño de cada caja del diagrama) y Módulo 5 (bounded contexts: la frontera natural de un equipo).
 **Herramientas:**Node.js 26.13.1 LTS** y **Git** (el de tu sistema, 2.x); sin dependencias de npm ni
-infraestructura. **Laboratorio:** `modulo-33` (`./verificar.sh` ejecuta 17 tests y los
+infraestructura. 
 scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no levanta contenedores).
 
 Hasta aquí todo el curso ha tratado de **software**. Este módulo trata de **personas**, porque en un sistema de
@@ -33,7 +33,7 @@ equipos para obtener la arquitectura deseada.
 
 ```bash
 npm ci                    # no instala nada: el laboratorio no tiene dependencias, pero así se comprueba el lockfile
-./verificar.sh            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
+  # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 ```
 
 `package.json` del laboratorio:

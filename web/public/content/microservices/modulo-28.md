@@ -6,7 +6,7 @@ construido y desplegado servicios para tener decisiones que gobernar); ayudan el
 métricas de la ficha 4) y el Módulo 23 (canary y GitOps, donde las fitness functions hacen de puerta).
 **Herramientas:**Node.js 26.13.1 LTS**, **prom-client 15.1.3**, **Prometheus v3.15.1** (solo para la ficha 4 con
 `--compose`) y, como alternativa para C4, **Structurizr DSL**. **Laboratorio:** `modulo-28`
-(`./verificar.sh` ejecuta 21 tests y los scripts de las cuatro fichas sin infraestructura; `./verificar.sh --compose`
+(los comandos de verificación indicados ejecuta 21 tests y los scripts de las cuatro fichas sin infraestructura; los comandos de verificación indicados
 añade Prometheus).
 
 En la Fase 1 y la Fase 2 aprendiste a **construir** microservicios. En la Fase 3 aprendes a **decidir** y a que las
@@ -41,8 +41,8 @@ Structurizr de la ficha 2.
 
 ```bash
 npm ci
-./verificar.sh              # 21 tests + scripts de las 4 fichas → «RESULTADO: OK»
-./verificar.sh --compose    # además Prometheus v3.15.1 y las fitness functions con PromQL
+  # 21 tests + scripts de las 4 fichas → «RESULTADO: OK»
+los comandos de verificación indicados    # además Prometheus v3.15.1 y las fitness functions con PromQL
 ```
 
 `README.md` tiene el mapa de carpetas.

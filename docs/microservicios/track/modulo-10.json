@@ -35,5 +35,5 @@
     "Apache Kafka 4.4.0",
     "protoc"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-10 con ./verificar.sh en verde (tests de F047–F051 con los brokers del Docker Compose y el contrato Protocol Buffers)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

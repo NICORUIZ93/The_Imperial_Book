@@ -6,7 +6,7 @@ y apagado. **Dependencias:** Fase 0 (Módulo 0.3: ejecutar Node y leer un test; 
 variables de entorno; Módulo 0.5: Docker básico). Esta fase **no** necesita la Fase 1: todo lo de Node se explica
 aquí desde cero. **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, `@types/node` 26.6.6 y, solo para
 el tema de perfiles, **clinic 13.0.0** por `npx`. **Laboratorio:** `modulo-17` (una carpeta
-por tema; `./verificar.sh` instala con `npm ci`, comprueba tipos, ejecuta los 24 tests y cada programa).
+por tema; los comandos de verificación indicados instala con `npm ci`, comprueba tipos, ejecuta los 24 tests y cada programa).
 
 Un microservicio en Node.js es **un solo hilo de JavaScript** que atiende a miles de clientes a la vez sin
 bloquearse. Este módulo te da el lenguaje (JavaScript moderno y TypeScript), te muestra la máquina por dentro (el
@@ -41,8 +41,8 @@ y el tema 2 (TypeScript). «El motor» contiene el tema 3 (Event Loop), el tema 
 ejecuta:
 
 ```bash
-./verificar.sh              # npm ci + tsc + 24 tests + programas de cada ficha → «RESULTADO: OK»
-./verificar.sh --clinic     # además, clinic doctor (descarga clinic 13.0.0 con npx la primera vez)
+  # npm ci + tsc + 24 tests + programas de cada ficha → «RESULTADO: OK»
+los comandos de verificación indicados     # además, clinic doctor (descarga clinic 13.0.0 con npx la primera vez)
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `modulo-17`** después de `npm ci`.

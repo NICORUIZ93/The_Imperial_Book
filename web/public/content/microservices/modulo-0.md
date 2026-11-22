@@ -3,8 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (3 temas de 2 h). **Dificultad:** 1 de 5,
 para quien nunca ha programado. **Dependencias:** ninguna; solo necesitas un computador con terminal y
 **Node.js 26.13.1 LTS** instalado (el Módulo 0.4 profundiza en la terminal y el 0.5 instala todo paso a paso; si aún
-no tienes Node, ejecuta los comandos de este módulo cuando lo instales). **Laboratorio:**
-`modulo-0` (se verifica con `./verificar.sh`).
+no tienes Node, ejecuta los comandos de este módulo cuando lo instales).
 
 Al terminar este módulo podrás explicar con tus palabras, y demostrar en tu terminal, la diferencia entre un
 programa que termina, un servidor que se queda esperando y una API que define qué se le puede pedir a ese
@@ -26,8 +25,7 @@ flowchart LR
 
 #### 1. UBICACIÓN
 
-Módulo 0.1, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md` · Laboratorio
-`programa`.
+Módulo 0.1, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md`.
 
 #### 2. PRERREQUISITOS
 
@@ -40,7 +38,7 @@ Módulo 0.1, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modu
 
 **Ejecutar** un programa de 20 líneas, **identificar** en él sus tres partes (datos, instrucciones y resultado) y
 **modificar** un dato para predecir el nuevo resultado antes de ejecutarlo; lo compruebas cuando el test
-`programa/receta.test.js` pasa con 3 de 3.
+`receta.test.js` pasa con 3 de 3.
 
 #### 4. ANALOGÍA VISUAL
 
@@ -149,7 +147,7 @@ Archivo `receta.js`:
 // Módulo 0.1 · Qué es un programa
 // Un programa es una lista de instrucciones que la computadora sigue en orden.
 // Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
-// Ejecuta: node programa/receta.js
+// Ejecuta: node receta.js
 
 // 1. DATOS: lo que el programa recibe (los ingredientes de la receta).
 const listaDeCompras = [
@@ -193,16 +191,18 @@ Total a pagar: 20000
 
 #### 10. MINI-LABORATORIO
 
-1. Entra a la carpeta del laboratorio:
+1. Crea una carpeta de trabajo y guarda el código del punto 9 como `receta.js` (puedes copiarlo tal cual):
    ```bash
+   mkdir -p mi-programa
+   cd mi-programa
    ```
-2. Ejecuta el programa y mira cómo termina:
+2. Ejecuta el programa y observa que termina:
    ```bash
-   node programa/receta.js
+   node receta.js
    echo "Código de salida: $?"
    ```
-3. **Predice antes de ejecutar:** abre `programa/receta.js`, cambia el precio de los huevos de `12000` a `13000`,
-   guarda y escribe en un papel qué crees que dirá. Luego ejecuta de nuevo `node programa/receta.js`.
+3. **Predice antes de ejecutar:** abre `receta.js`, cambia el precio de los huevos de `12000` a `13000`,
+   guarda y escribe en un papel qué crees que dirá. Luego ejecuta de nuevo `node receta.js`.
 4. Devuelve el precio a `12000`.
 
 **Output esperado** (paso 2):
@@ -225,7 +225,7 @@ imprime la terminal, no el programa.
 Ejecuta el test (comprueba la suma, la lista vacía y el borde «total igual al dinero»):
 
 ```bash
-node --test --test-reporter=spec programa/receta.test.js
+node --test --test-reporter=spec receta.test.js
 ```
 
 Salida real:
@@ -255,7 +255,7 @@ Error: Cannot find module '/…/modulo-0/receta.js'
 **Cómo se ve:** un bloque rojo de varias líneas que termina en `MODULE_NOT_FOUND`, sin ninguna línea de tu
 programa. **Diagnóstico:** Node buscó el archivo en la carpeta actual y no lo encontró; el programa ni siquiera
 empezó. Ejecuta `pwd` (dónde estás) y `ls` (qué hay aquí). **Arreglo:** usa la ruta correcta
-(`node programa/receta.js` desde `modulo-0`) o entra antes a la carpeta con `cd`.
+(`node receta.js` desde la carpeta donde guardaste el archivo) o entra antes a la carpeta con `cd`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -284,7 +284,7 @@ código. Haz lo contrario: datos con nombre, lógica en funciones que reciben es
 
 #### 1. UBICACIÓN
 
-Módulo 0.1, Lección 2 de 3 · Fase 0.
+Módulo 0.1, Lección 2 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md`.
 
 #### 2. PRERREQUISITOS
 
@@ -387,7 +387,7 @@ Usa el mismo `package.json` del tema anterior (`"type": "module"`). Archivo
 // Un servidor es un programa que NO termina: se queda esperando pedidos
 // en un "puerto" (como una ventanilla numerada) y responde a cada uno.
 // Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Usa solo el módulo 'node:http'.
-// Ejecuta: node servidor/servidor.js   y en otra terminal: curl http://localhost:3000/
+// Ejecuta: node servidor.js   y en otra terminal: curl http://localhost:3000/
 
 import http from 'node:http';
 
@@ -415,9 +415,9 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `modulo-0`): enciende el servidor.
+1. **Terminal 1** (en tu carpeta de trabajo): enciende el servidor.
    ```bash
-   node servidor/servidor.js
+   node servidor.js
    ```
 2. **Terminal 2**: haz dos pedidos.
    ```bash
@@ -426,7 +426,7 @@ if (import.meta.main) {
    ```
 3. **Terminal 2**: intenta encender un segundo servidor en el mismo puerto.
    ```bash
-   node servidor/servidor.js
+   node servidor.js
    ```
 4. **Terminal 1**: pulsa `Ctrl+C`. Después, en la terminal 2: `curl http://localhost:3000/`.
 
@@ -465,7 +465,7 @@ El test enciende el servidor en un puerto libre, le hace dos pedidos y comprueba
 mismo proceso (contador en 2):
 
 ```bash
-node --test --test-reporter=spec servidor/servidor.test.js
+node --test --test-reporter=spec servidor.test.js
 ```
 
 Salida real:
@@ -494,7 +494,7 @@ lsof -i :3000
 ```
 
 La columna `PID` te da el número del proceso. **Arreglo:** apágalo (`Ctrl+C` en su terminal o `kill <PID>`) o usa
-otro puerto: `PORT=3005 node servidor/servidor.js`.
+otro puerto: `PORT=3005 node servidor.js`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -527,7 +527,7 @@ datos (Módulos 2 y 15).
 
 #### 1. UBICACIÓN
 
-Módulo 0.1, Lección 3 de 3 · Fase 0.
+Módulo 0.1, Lección 3 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md`.
 
 #### 2. PRERREQUISITOS
 
@@ -637,7 +637,7 @@ Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22); solo `node:http`
 // Una API es el "menú" de un servidor: una lista fija de pedidos que acepta
 // (rutas + métodos), con la forma exacta de lo que devuelve (JSON).
 // Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Usa solo 'node:http'.
-// Ejecuta: node api/api.js  y prueba:
+// Ejecuta: node api.js  y prueba:
 //   curl http://localhost:3001/api/menu
 //   curl http://localhost:3001/api/menu/2
 //   curl -X POST http://localhost:3001/api/pedidos -H 'Content-Type: application/json' -d '{"platoId":2,"cantidad":3}'
@@ -709,9 +709,9 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `modulo-0`):
+1. **Terminal 1** (en tu carpeta de trabajo):
    ```bash
-   node api/api.js
+   node api.js
    ```
 2. **Terminal 2**, recorre el menú de la API:
    ```bash
@@ -756,7 +756,7 @@ sentido repetir el mismo pedido. La ruta `/api/Menu` falla porque las rutas dist
 El test es el contrato ejecutable de la API (forma de la lista, 404, 201 con total y 400):
 
 ```bash
-node --test --test-reporter=spec api/api.test.js
+node --test --test-reporter=spec api.test.js
 ```
 
 Salida real:
@@ -771,7 +771,7 @@ Salida real:
 ℹ fail 0
 ```
 
-Para comprobar el módulo completo: `./verificar.sh` (8 tests y la línea `RESULTADO: OK · Módulo 0.1 (programa,
+Para comprobar el módulo completo, ejecuta los tests de los tres temas desde tu carpeta de trabajo (la línea `RESULTADO: OK · Módulo 0.1 (programa,
 servidor y API) verificado`). **Pregunta de comprobación:** cambia en `api.js` la clave `nombre` por `titulo` y
 ejecuta el test: ¿qué test falla y qué le pasaría a una app que usara la API? *(Falla «GET /api/menu devuelve 3
 platos en JSON» porque las claves ya no son `id, nombre, precio`; la app mostraría platos sin nombre: rompiste

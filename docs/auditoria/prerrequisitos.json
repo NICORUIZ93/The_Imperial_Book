@@ -1,6 +1,6 @@
 {
   "topics": 1608,
-  "findings": 355,
+  "findings": 346,
   "courses": [
     {
       "course": "android",
@@ -98,80 +98,7 @@
     {
       "course": "angular",
       "topics": 78,
-      "findings": [
-        {
-          "file": "web/public/content/angular/modulo-0.md",
-          "title": "Tema 1: El CLI ya no genera NgModules · Básico · 30 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "git"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-0.md",
-          "title": "Tema 2: Interpolación y property binding · Básico · 30 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "url"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-0.md",
-          "title": "Tema 4: Compilador AOT frente a JIT · Básico · 30 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "proceso"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-1.md",
-          "title": "Tema 1: input()/output() basados en signals · Básico · 20 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "api"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-2.md",
-          "title": "Tema 4: Hacia zoneless change detection · Básico · 35 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "http"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-4.md",
-          "title": "Tema 2: Guards funcionales · Intermedio · 25 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "node"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-8.md",
-          "title": "Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Avanzado · 25 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "puerto"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-12.md",
-          "title": "Tema 2: Leer la guía de actualización antes de modificar archivos · Avanzado · 40 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "linux"
-          ]
-        },
-        {
-          "file": "web/public/content/angular/modulo-14.md",
-          "title": "Tema 6: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "endpoint"
-          ]
-        }
-      ]
+      "findings": []
     },
     {
       "course": "cloud",

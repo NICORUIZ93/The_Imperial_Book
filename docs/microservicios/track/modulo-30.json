@@ -36,5 +36,5 @@
     "RabbitMQ 4.4.1",
     "NATS Server 2.15.3"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-30 con ./verificar.sh --compose en verde (npm ci, 18 tests de node --test, demos y errores comunes de cada ficha, Schema Registry real y transacciones de Kafka con fencing; fichas F157–F160)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

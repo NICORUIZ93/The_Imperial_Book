@@ -38,5 +38,5 @@
     "Redis 8.10.2",
     "Toxiproxy 2.13.0"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-23 con ./verificar.sh --compose en verde (npm ci, tsc, 25 tests de node --test, simulación del fallo con Toxiproxy de cada ficha y el servicio de F119 probado con curl, fichas F119–F123)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

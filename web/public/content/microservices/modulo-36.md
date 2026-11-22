@@ -8,7 +8,7 @@ LTS**, Express **5.3.0**, Temporal TypeScript SDK **1.26.0**, ioredis **6.0.0** 
 Spring Boot con **JDK 25**, Spring Boot **4.1.3**, Spring Cloud Gateway **5.0.4** (tren 2025.1.4), Temporal Java SDK
 **1.41.1** y Gatling **3.16.1** con el plugin `io.gatling.gradle` **3.16.0**; la pista Spring se construye con **Gradle 9.9.2**; infraestructura: Redis **8.10.2** (Docker
 Compose) y Temporal Server **1.32.1** (`temporal server start-dev`). **Laboratorio:** `modulo-36`
-(`./verificar.sh` ejecuta 26 tests, los scripts de las siete fichas, Redis real, Gatling a 60 reservas/s y las demos
+(los comandos de verificación indicados ejecuta 26 tests, los scripts de las siete fichas, Redis real, Gatling a 60 reservas/s y las demos
 JDK de la pista Spring; `--compose` añade Redis con Docker y los tests de `spring/` con Gradle).
 
 Este es el examen final del curso, y no es un examen de memoria: es **un sistema que funciona, que se rompe a
@@ -17,7 +17,7 @@ orquestada por Temporal**, detrás de un **API Gateway con rate limiting**; lo s
 Gatling**; recibes una **restricción sobrevenida** (el proveedor de pagos limita a 20 peticiones/s) que rompe tu
 diseño; lo **rediseñas y lo documentas en un ADR** con su fitness function ejecutable; y lo **defiendes ante el
 Architecture Review Board** con la rúbrica del curso. Como pide el prompt del curso, el sistema existe **dos veces, por
-separado**: una pista **Node.js** completa (la que se ejecuta entera en `./verificar.sh`) y una pista **Spring Boot**
+separado**: una pista **Node.js** completa (la que se ejecuta entera en los comandos de verificación indicados) y una pista **Spring Boot**
 con el mismo contrato, la misma saga y el mismo límite.
 
 ```mermaid
@@ -50,8 +50,8 @@ lo indica en cada ficha.
 
 ```bash
 npm ci
-./verificar.sh              # pista Node + Redis local (si hay) + Gatling (si hay Java) + jdk/ → «RESULTADO: OK»
-./verificar.sh --compose    # además Redis con Docker Compose y (cd spring && ./gradlew test)
+  # pista Node + Redis local (si hay) + Gatling (si hay Java) + jdk/ → «RESULTADO: OK»
+los comandos de verificación indicados    # además Redis con Docker Compose y (cd spring && ./gradlew test)
 ```
 
 `README.md` tiene el enunciado, el diagrama C4 y el
@@ -2735,7 +2735,7 @@ DESPUÉS · cola de cobros a 18/s:
    se pierde alrededor del 60 % de las ventas y el proveedor recibe más del doble de peticiones que reservas. Después,
    cada reserva se cobra una sola vez, nunca más de 18 en un segundo, y la última del pico tarda unos 11,6 s en cobrarse.
 
-3. La restricción **vista desde Gatling** (lo hace `./verificar.sh`): el mismo test de F184 con `LIMITE_RPS=20`:
+3. La restricción **vista desde Gatling** (lo hace los comandos de verificación indicados): el mismo test de F184 con `LIMITE_RPS=20`:
 
 ```bash
 LIMITE_RPS=20 node f184-carga-gatling/arrancar-sistema.js &

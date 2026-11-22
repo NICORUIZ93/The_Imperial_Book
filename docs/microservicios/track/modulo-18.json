@@ -36,5 +36,5 @@
     "class-validator 0.15.1",
     "@nestjs/swagger 12.1.2"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-18 con ./verificar.sh en verde (npm ci, tsc, 26 tests de node --test y cada API comprobada con curl, fichas F096–F100)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

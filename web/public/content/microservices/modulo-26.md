@@ -6,8 +6,8 @@ async), Módulo 19 (retry, timeouts), Módulo 21 (traceparent en colas) y Módul
 Módulo 14 (NestJS). **Herramientas:**Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **amqplib 2.4.0** con
 **RabbitMQ 4.4.1**, **redis (node-redis) 6.3.1** con **Redis 8.10.2**, **@nestjs/core 12.5.1** y **@nestjs/cqrs
 12.1.3** con **rxjs 7.8.2**, **mongodb 7.9.1** (driver) con **MongoDB 9.0.8** y **`node:sqlite`** (integrado en Node
-26). **Laboratorio:** `modulo-26` (`./verificar.sh` compila y ejecuta los tests, demos y
-errores comunes; F135, F136 y F139-MongoDB se ejecutan si su servicio responde; `./verificar.sh --compose` levanta
+26). 
+errores comunes; F135, F136 y F139-MongoDB se ejecutan si su servicio responde; los comandos de verificación indicados levanta
 RabbitMQ, Redis y MongoDB y lo exige todo).
 
 En el Módulo 18 enviaste mensajes; en este aprendes a **no perderlos, no procesarlos dos veces y no dejar datos a
@@ -36,7 +36,7 @@ el tema 3.
 ```bash
 npm ci && npm run build             # tsc compila las fichas NestJS (F137 y F141) a dist/
 docker compose up -d --wait         # RabbitMQ :5672 (consola :15672), Redis :6379, MongoDB :27017
-./verificar.sh --compose            # tests + demos + errores comunes de las 7 fichas → «RESULTADO: OK»
+  # tests + demos + errores comunes de las 7 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
@@ -130,7 +130,7 @@ export const MONGO_URL = process.env.MONGO_URL ?? 'mongodb://localhost:27017';
 
 ```javascript
 // Módulo 22 · ¿Responde la infraestructura? Los tests que la necesitan se OMITEN si no responde
-// (o FALLAN si EXIGIR_INFRA=1, como hace ./verificar.sh --compose).
+// (o FALLAN si EXIGIR_INFRA=1, como hace los comandos de verificación indicados).
 import net from 'node:net';
 
 export function responde(url, puertoPorDefecto) {

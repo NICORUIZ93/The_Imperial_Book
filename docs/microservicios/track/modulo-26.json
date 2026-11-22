@@ -47,5 +47,5 @@
     "MongoDB 9.0.8",
     "node:sqlite (SQLite 3.54.1)"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-26 con ./verificar.sh --compose en verde (npm ci, tsc, 39 tests de node --test contra RabbitMQ, Redis y MongoDB reales y en memoria, demos y errores comunes de cada ficha; fichas F135–F141)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

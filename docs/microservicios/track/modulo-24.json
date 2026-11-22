@@ -42,5 +42,5 @@
     "HashiCorp Vault 2.2.0",
     "Floci 2.2.0 / Floci-Az 0.14.0"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-24 con ./verificar.sh --compose en verde (npm ci, 34 tests de node --test, el ataque contra antes y después de cada ficha, inyección NoSQL contra MongoDB y los tres gestores de secretos, fichas F124–F129)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

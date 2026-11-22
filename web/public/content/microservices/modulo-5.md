@@ -4,8 +4,7 @@
 **Dificultad:** 2 de 5 en los temas 1–6 y 4 de 5 en CRaC y GraalVM. **Dependencias:** Fase 0 completa (Módulos
 0.1–0.5: terminal, Git, HTTP, JSON, YAML, variables de entorno, primer «Hola Mundo» en Java y Docker básico).
 **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6), Gradle
-9.9.2 (Kotlin DSL) mediante el wrapper `./gradlew` y Docker con Compose v5 para CRaC y Native Image. **Laboratorio:**
-`modulo-5` (un subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los
+9.9.2 (Kotlin DSL) mediante el wrapper `./gradlew` y Docker con Compose v5 para CRaC y Native Image. 
 tests).
 
 Antes de construir microservicios necesitas dominar las dos herramientas con las que se escriben en esta fase: el
@@ -3082,7 +3081,7 @@ cd f023-crac && ../gradlew test
 ```
 
 **Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada el 2026-11-21; la demo con `--docker` de este paso sigue pendiente en el Mac, ver `verificacion/microservicios/pendiente.md`)*. Verificación completa en
-Docker: `./verificar.sh --docker` desde `modulo-5` debe terminar con `RESULTADO: OK`.
+Docker: ejecuta los tests/comandos indicados en tu entorno y confirma que pasan.
 
 **Pregunta de comprobación:** ¿por qué en el modo automático (`onRefresh`) la respuesta dice `"aperturas": 1` y no 2?
 
@@ -3469,7 +3468,7 @@ cd f024-graalvm-native && ../gradlew test
 ```
 
 **Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada el 2026-11-21; la demo con `--docker` de este paso sigue pendiente en el Mac, ver `verificacion/microservicios/pendiente.md`)*. Verificación completa con el
-binario: `./verificar.sh --docker` desde `modulo-5`.
+binario: los comandos de verificación indicados en tu carpeta de trabajo.
 
 **Pregunta de comprobación:** ¿por qué el primer test pasa aunque borres `ImpuestosHints`, y qué test añadiste para que
 eso no te engañe?

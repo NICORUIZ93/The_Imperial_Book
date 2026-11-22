@@ -42,5 +42,5 @@
     "RabbitMQ 4.4.1",
     "NATS Server 2.15.3"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-22 con ./verificar.sh en verde (npm ci, 32 tests de node --test y demos; con --compose, Kafka, RabbitMQ y NATS reales para las fichas F116 y F117)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

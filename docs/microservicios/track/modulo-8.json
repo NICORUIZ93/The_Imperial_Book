@@ -35,5 +35,5 @@
     "PostgreSQL 18.7",
     "Python 3.10+"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-8 con ./verificar.sh en verde: 9 tests de los simuladores en Python y los tests Spring Boot de F037–F040."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

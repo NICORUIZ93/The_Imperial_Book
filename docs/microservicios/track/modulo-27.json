@@ -43,5 +43,5 @@
     "Argo Rollouts v1.10.1",
     "Argo CD v3.5.6"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-27 con ./verificar.sh en verde (npm ci, tsc, 29 tests de node --test y los scripts de las fichas F142–F147) y ./verificar.sh --compose con la imagen construida con Docker y, si hay kind y kubectl, el despliegue en un clúster local con el HPA escalando."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

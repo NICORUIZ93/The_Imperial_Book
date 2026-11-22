@@ -4,7 +4,7 @@
 **Dependencias:** Módulos 0.1 y 0.2 (programa, servidor, variables, decisiones, bucles, funciones, tests).
 **Herramientas:** **JDK 25 LTS (25.0.5)** y **Node.js 26.13.1 LTS**, sin dependencias externas (la instalación
 paso a paso está en el Módulo 0.5; si aún no tienes Java, instálalo primero con esa guía). **Laboratorio:**
-`modulo-2` (se verifica con `./verificar.sh`).
+`modulo-2`.
 
 El curso tiene dos caminos completos y separados: la **Fase 1** con Java y Spring Boot y la **Fase 2** con
 JavaScript/TypeScript y Node.js. Este módulo te presenta los dos lenguajes **escribiendo el mismo programa dos
@@ -304,7 +304,7 @@ antes de ejecutar.
 
 #### 11. VERIFICACIÓN
 
-Los dos lenguajes tienen el mismo test con los mismos 5 casos. Desde `modulo-2`:
+Los dos lenguajes tienen el mismo test con los mismos 5 casos. En tu carpeta de trabajo:
 
 ```bash
 (cd java && java TiendaTest.java)
@@ -609,7 +609,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Ejecuta los dos programas (desde `modulo-2`):
+1. Ejecuta los dos programas en tu carpeta de trabajo:
    ```bash
    (cd java && java Diferencias.java)
    (cd node && node diferencias.js)
@@ -683,7 +683,7 @@ Java: todos los tests pasaron
 ℹ fail 0
 ```
 
-Para el módulo completo: `./verificar.sh` (Java 9 comprobaciones, Node 10 tests y `RESULTADO: OK · Módulo 0.3
+Para el módulo completo: los comandos de verificación indicados (Java 9 comprobaciones, Node 10 tests y `RESULTADO: OK · Módulo 0.3
 (Java y Node.js lado a lado) verificado`). **Pregunta de comprobación:** con el bucle `while` del paso 3, ¿por
 qué los hilos virtuales de Java seguirían tardando ~1 s si hicieras lo mismo en cada tarea? *(Porque cada tarea
 tiene su propio hilo y la JVM los reparte entre varios núcleos; en Node las tres comparten un único hilo.)*

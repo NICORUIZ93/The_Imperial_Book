@@ -37,5 +37,5 @@
     "PostgreSQL 18.7",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-19 con ./verificar.sh --compose en verde (MongoDB y PostgreSQL con Docker Compose, npm ci, prisma generate, 23 tests de node --test y los programas de las fichas F101–F104)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

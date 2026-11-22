@@ -32,5 +32,5 @@
     "HashiCorp Consul 2.1.0",
     "Docker Compose"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-21 con ./verificar.sh en verde (npm ci, tsc, 21 tests de node --test y demos; con --compose, Consul 2.1.0 real para las fichas F111 y F112)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

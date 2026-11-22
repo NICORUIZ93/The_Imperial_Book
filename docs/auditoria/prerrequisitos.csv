@@ -10,15 +10,6 @@ android,web/public/content/android/modulo-6.md,Tema 3: Estrategia offline-first 
 android,web/public/content/android/modulo-7.md,Tema 1: Configuración básica de Hilt · Avanzado · 40 min,0,url
 android,web/public/content/android/modulo-11.md,Tema 1: Firma de la app · Avanzado · 40 min,0,git
 android,web/public/content/android/modulo-14.md,Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible · Avanzado · 45 min,1,
-angular,web/public/content/angular/modulo-0.md,Tema 1: El CLI ya no genera NgModules · Básico · 30 min,0,git
-angular,web/public/content/angular/modulo-0.md,Tema 2: Interpolación y property binding · Básico · 30 min,0,url
-angular,web/public/content/angular/modulo-0.md,Tema 4: Compilador AOT frente a JIT · Básico · 30 min,0,proceso
-angular,web/public/content/angular/modulo-1.md,Tema 1: input()/output() basados en signals · Básico · 20 min,0,api
-angular,web/public/content/angular/modulo-2.md,Tema 4: Hacia zoneless change detection · Básico · 35 min,0,http
-angular,web/public/content/angular/modulo-4.md,Tema 2: Guards funcionales · Intermedio · 25 min,0,node
-angular,web/public/content/angular/modulo-8.md,Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Avanzado · 25 min,0,puerto
-angular,web/public/content/angular/modulo-12.md,Tema 2: Leer la guía de actualización antes de modificar archivos · Avanzado · 40 min,0,linux
-angular,web/public/content/angular/modulo-14.md,Tema 6: CSP con nonce y Trusted Types en Angular · Experto · 45 min,0,endpoint
 cloud,web/public/content/cloud/modulo-0.md,"Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo · Básico · 20 min",0,cli
 cloud,web/public/content/cloud/modulo-0.md,Tema 3: Qué vas a aprender y cómo está estructurado el curso · Básico · 20 min,1,
 cloud,web/public/content/cloud/modulo-0.md,"Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack · Básico · 20 min",1,

@@ -33,5 +33,5 @@
     "Istio 1.32",
     "Linkerd edge-26.11.2"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-31 con ./verificar.sh en verde (npm ci, PKI con openssl, 18 tests de node --test y los ataques ANTES/DESPUÉS de las fichas F161–F164) y ./verificar.sh --compose con una credencial dinámica real de Vault 2.2.0 sobre PostgreSQL 18.7."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

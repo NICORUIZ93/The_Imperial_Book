@@ -642,7 +642,7 @@ ng serve panel         # terminal 2
 **Resultado esperado:**
 
 ```text
-Al abrir http://localhost:4200/facturas, la pestaña Network muestra la descarga de remoteEntry.json desde el puerto 4201 y luego la página de facturas.
+Al abrir http://localhost:4200/facturas, la pestaña Network muestra la descarga de remoteEntry.json desde el **puerto** 4201 (número que identifica un servicio en la máquina) y luego la página de facturas.
 Si cambias el texto de la página en el remoto y recargas, el panel muestra el cambio sin recompilar el panel.
 ```
 

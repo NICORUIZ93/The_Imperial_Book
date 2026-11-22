@@ -38,5 +38,5 @@
     "@temporalio/client 1.26.0",
     "Temporal Server 1.32.1"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-29 con ./verificar.sh --compose en verde (npm ci, 20 tests de node --test con PostgreSQL y la saga, demos y errores comunes de cada ficha, Debezium → Kafka, consumidor idempotente y transacciones de Kafka, y la saga contra un servidor Temporal; fichas F152–F156)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

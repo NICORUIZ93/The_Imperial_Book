@@ -3,7 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (2 temas de 3 h). **Dificultad:** 1 de 5.
 **Dependencias:** Módulo 0.1 (ejecutar un programa con `node` y correr un test con `node --test`).
 **Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas. **Laboratorio:**
-`modulo-1` (se verifica con `./verificar.sh`).
+`modulo-1`.
 
 Aquí aprendes los cuatro ladrillos con los que se escribe cualquier programa (variables, decisiones,
 repeticiones y funciones) y la forma de pensar que te permite convertir un problema del mundo real en pasos que
@@ -192,7 +192,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Desde `modulo-1`, ejecuta el programa:
+1. En tu carpeta de trabajo, ejecuta el programa:
    ```bash
    node logica/cine.js
    ```
@@ -466,7 +466,7 @@ if (import.meta.main) {
 
 1. **Primero sin computadora:** en papel, descompón «dar el vuelto de 50000 para una compra de 13700» y escribe
    cuántas piezas de cada valor entregarías.
-2. Desde `modulo-1`, compara tu papel con el programa:
+2. En tu carpeta de trabajo, compara tu papel con el programa:
    ```bash
    node pensamiento/cambio.js
    ```
@@ -519,7 +519,7 @@ Salida real:
 ℹ fail 0
 ```
 
-Para el módulo completo: `./verificar.sh` (11 tests y `RESULTADO: OK · Módulo 0.2 (lógica y pensamiento
+Para el módulo completo: los comandos de verificación indicados (11 tests y `RESULTADO: OK · Módulo 0.2 (lógica y pensamiento
 computacional) verificado`). **Pregunta de comprobación:** ¿cuál de las cuatro herramientas te permitió reusar
 `darCambio` con centavos de dólar sin cambiar su código? *(La abstracción: las piezas son un parámetro.)*
 

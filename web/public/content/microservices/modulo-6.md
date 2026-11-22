@@ -6,7 +6,7 @@ Módulo 1 completo (records, DI, perfiles) y Módulo 0.4 (HTTP, JSON, `curl`). *
 (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3, Hibernate ORM 7.4, Spring Data JPA 4.1), Flyway 12.4,
 Liquibase 5.0, **PostgreSQL 18.7** y **MySQL 9.7.4 LTS** con Docker Compose, `curl` y `jq` (incluido en macOS 15 o
 superior; en Linux, `sudo apt install jq`). **Laboratorio:** `modulo-6` (un subproyecto Gradle
-por tema; `./verificar.sh` levanta las bases, ejecuta todos los tests y las apaga).
+por tema; los comandos de verificación indicados levanta las bases, ejecuta todos los tests y las apaga).
 
 Aquí tu servicio aprende a hablar HTTP y a recordar: recibe peticiones, valida, responde con contratos estables,
 traduce errores a un formato estándar y guarda datos en una base relacional cuyo esquema evoluciona con migraciones
@@ -2438,7 +2438,7 @@ public class ConsultasApp {
 
 #### 10. MINI-LABORATORIO
 
-1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), ejecuta la demostración:
+1. Con las bases arriba (`docker compose up -d --wait` en tu carpeta de trabajo), ejecuta la demostración:
 
 ```bash
 ../gradlew -q bootRun | grep -E "^Encontrado|^Reporte|where"
@@ -2961,7 +2961,7 @@ public class LiquibaseApp {
 
 #### 10. MINI-LABORATORIO
 
-1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), aplica las migraciones de Flyway:
+1. Con las bases arriba (`docker compose up -d --wait` en tu carpeta de trabajo), aplica las migraciones de Flyway:
 
 ```bash
 ../gradlew -q bootRun | grep -E "^Migración|^Producto|Successfully applied|Schema"
@@ -3517,7 +3517,7 @@ public class MotoresApp {
 
 #### 10. MINI-LABORATORIO
 
-1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), ejecuta la app con cada perfil:
+1. Con las bases arriba (`docker compose up -d --wait` en tu carpeta de trabajo), ejecuta la app con cada perfil:
 
 ```bash
 ../gradlew -q bootJar

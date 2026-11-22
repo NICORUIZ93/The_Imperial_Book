@@ -44,5 +44,5 @@
     "Prometheus 3.15.1",
     "Grafana 13.2.4"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-25 con ./verificar.sh --compose en verde (npm ci, 19 tests de node --test, demos y errores comunes de cada ficha, trazas en Jaeger, traceparent por RabbitMQ y Kafka, logs en Loki y PromQL contra Prometheus; fichas F130–F134)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }

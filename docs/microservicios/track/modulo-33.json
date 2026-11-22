@@ -28,5 +28,5 @@
     "Node.js 26.13.1 LTS",
     "Git 2.x"
   ],
-  "deliverable": "Laboratorio examples/microservicios/modulo-33 con ./verificar.sh en verde (17 tests de node --test, uno de ellos sobre un historial de Git real, y las demos y errores comunes de las fichas F169–F172; sin infraestructura)."
+  "deliverable": "Contenido autocontenido: ejecuta los ejemplos desde tu propio directorio de trabajo."
 }
