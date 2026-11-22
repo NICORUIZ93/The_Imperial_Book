@@ -6203,27 +6203,27 @@
     "9": [
       {
         "title": "Monolito vs Microservicios vs SOA",
-        "fragment": "monolito-vs-microservicios-vs-soa"
+        "fragment": "tema-1-monolito-vs-microservicios-vs-soa"
       },
       {
         "title": "DDD: Bounded Contexts, Agregados, Eventos de Dominio",
-        "fragment": "ddd-bounded-contexts-agregados-eventos-de-dominio"
+        "fragment": "tema-2-ddd-bounded-contexts-agregados-eventos-de-dominio"
       },
       {
         "title": "Spring Modulith",
-        "fragment": "spring-modulith"
+        "fragment": "tema-3-spring-modulith"
       },
       {
         "title": "12-Factor App",
-        "fragment": "12-factor-app"
+        "fragment": "tema-4-12-factor-app"
       },
       {
         "title": "Strangler Fig Pattern",
-        "fragment": "strangler-fig-pattern"
+        "fragment": "tema-5-strangler-fig-pattern"
       },
       {
         "title": "Database-per-service",
-        "fragment": "database-per-service"
+        "fragment": "tema-6-database-per-service"
       }
     ]
   },
