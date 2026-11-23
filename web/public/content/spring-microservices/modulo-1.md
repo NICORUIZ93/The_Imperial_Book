@@ -125,7 +125,7 @@ server:
 `DispatcherServlet` es como el recepcionista de un hotel: recibe toda petición, la clasifica, la envía al departamento correcto y entrega la respuesta. El controller es el departamento: orquesta, pero no hace el trabajo de negocio. La validación es el filtro de entrada: si el dato no cumple el contrato, no entra al hotel.
 
 ```java
-public class MvcValidationSmoke {
+public class MvcValidationExample {
     record OrderReq(String sku, Integer qty) {}
 
     static int handle(OrderReq r) {
@@ -143,8 +143,8 @@ public class MvcValidationSmoke {
 ```
 
 ```bash
-javac MvcValidationSmoke.java
-java MvcValidationSmoke
+javac MvcValidationExample.java
+java MvcValidationExample
 ```
 
 Salida esperada:
@@ -184,7 +184,7 @@ El equipo expone la entidad JPA `Order` directamente en la API. Al agregar una c
 Un DTO es como el menú de un restaurante: muestra lo que el cliente puede pedir, no la cocina completa. La entidad JPA es la cocina. Jackson es el mesero que traduce entre menú y cocina. Si dejas que el cliente entre a la cocina, se rompe todo.
 
 ```java
-public class DtoSmoke {
+public class DtoExample {
     record OrderRequest(String sku, int qty) {}
     record OrderResponse(String orderId, String sku, int qty) {}
 
@@ -202,8 +202,8 @@ public class DtoSmoke {
 ```
 
 ```bash
-javac DtoSmoke.java
-java DtoSmoke
+javac DtoExample.java
+java DtoExample
 ```
 
 Salida esperada:
@@ -226,7 +226,7 @@ Un manejador global de excepciones es como la recepción de emergencias de un ho
 ```java
 import java.util.*;
 
-public class ProblemDetailSmoke {
+public class ProblemDetailExample {
     static Map<String, Object> problem(int status, String title, String detail) {
         return Map.of("status", status, "title", title, "detail", detail);
     }
@@ -245,8 +245,8 @@ public class ProblemDetailSmoke {
 ```
 
 ```bash
-javac ProblemDetailSmoke.java
-java ProblemDetailSmoke
+javac ProblemDetailExample.java
+java ProblemDetailExample
 ```
 
 Salida esperada:
@@ -269,7 +269,7 @@ Una transacción es como una operación de cirugía: o se completa entera o se r
 ```java
 import java.util.*;
 
-public class TransactionSmoke {
+public class TransactionExample {
     static class Db {
         final List<String> orders = new ArrayList<>();
         final List<String> lines = new ArrayList<>();
@@ -296,8 +296,8 @@ public class TransactionSmoke {
 ```
 
 ```bash
-javac TransactionSmoke.java
-java TransactionSmoke
+javac TransactionExample.java
+java TransactionExample
 ```
 
 Salida esperada:
@@ -321,7 +321,7 @@ Criteria API es como armar una query con bloques de Lego tipados: cada predicado
 import java.util.*;
 import java.util.function.*;
 
-public class CriteriaSmoke {
+public class CriteriaExample {
     record Order(String status, String customer) {}
 
     public static void main(String[] args) {
@@ -336,8 +336,8 @@ public class CriteriaSmoke {
 ```
 
 ```bash
-javac CriteriaSmoke.java
-java CriteriaSmoke
+javac CriteriaExample.java
+java CriteriaExample
 ```
 
 Salida esperada:
@@ -360,7 +360,7 @@ Las migraciones son como el libro de bitácora de un barco: cada entrada se escr
 ```java
 import java.util.*;
 
-public class MigrationSmoke {
+public class MigrationExample {
     record Migration(String version, String checksum) {}
 
     static boolean apply(List<Migration> applied, Migration next) {
@@ -385,8 +385,8 @@ public class MigrationSmoke {
 ```
 
 ```bash
-javac MigrationSmoke.java
-java MigrationSmoke
+javac MigrationExample.java
+java MigrationExample
 ```
 
 Salida esperada:
@@ -410,7 +410,7 @@ El equipo elige MySQL "porque todos lo conocen". Luego necesita JSONB, extension
 Elegir una base de datos es como elegir vehículo: un sedán sirve para la mayoría, pero si necesitas transportar carga pesada, no compras un sedán y luego le agregas un remolque.
 
 ```java
-public class DbChoiceSmoke {
+public class DbChoiceExample {
     static String pick(boolean needsJsonb, boolean needsExtensions, boolean teamMysqlExpertise) {
         if (needsJsonb || needsExtensions) return "postgres";
         if (teamMysqlExpertise && !needsJsonb) return "mysql-or-postgres";
@@ -425,8 +425,8 @@ public class DbChoiceSmoke {
 ```
 
 ```bash
-javac DbChoiceSmoke.java
-java DbChoiceSmoke
+javac DbChoiceExample.java
+java DbChoiceExample
 ```
 
 Salida esperada:

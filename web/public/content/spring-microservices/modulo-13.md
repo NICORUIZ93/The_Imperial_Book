@@ -2,7 +2,7 @@
 
 Los microservicios no fallan solo por código; fallan por decisiones no registradas, costos invisibles y equipos mal alineados. Este módulo cubre ADRs, C4, fitness functions, FinOps y Team Topologies con un enfoque práctico y verificable, usando Tienda Aurora como proyecto integrador.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de ADR, fitness functions, presupuesto y alineación de equipos ejecutados con Java puro. Herramientas FinOps/observabilidad reales quedan con nota de verificación.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Examples de ADR, fitness functions, presupuesto y alineación de equipos ejecutados con Java puro. Herramientas FinOps/observabilidad reales quedan con nota de verificación.
 
 ## Proyecto desde cero: tienda-aurora-governance
 
@@ -35,7 +35,7 @@ tienda-aurora-governance/
 │   │       └── application.yml
 │   └── test/
 │       └── java/com/aurora/governance/
-│           └── GovernanceSmokeTest.java
+│           └── GovernanceExampleTest.java
 └── .github/
     └── workflows/
         └── ci.yml

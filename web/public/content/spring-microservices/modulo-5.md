@@ -84,7 +84,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public class RestTimeoutSmoke {
+public class RestTimeoutExample {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/slow", exchange -> {
@@ -117,8 +117,8 @@ public class RestTimeoutSmoke {
 ```
 
 ```bash
-javac RestTimeoutSmoke.java
-java RestTimeoutSmoke
+javac RestTimeoutExample.java
+java RestTimeoutExample
 ```
 
 Salida esperada:
@@ -162,7 +162,7 @@ Dos servicios internos de Tienda Aurora intercambian miles de mensajes por segun
 gRPC con Protobuf es como usar formularios impresos con casillas numeradas en vez de cartas escritas a mano. El formulario es compacto, tipado y tiene reglas claras. El costo es que ambos lados deben compartir el esquema. En Protobuf, el número de campo es parte del contrato binario. Reusar el tag 1 para otro significado rompe compatibilidad silenciosamente.
 
 ```java
-public class GrpcCompatibilitySmoke {
+public class GrpcCompatibilityExample {
     static byte[] encodeVarintField(int fieldNumber, int value) {
         int tag = (fieldNumber << 3) | 0;
         return new byte[] { (byte) tag, (byte) value };
@@ -194,8 +194,8 @@ public class GrpcCompatibilitySmoke {
 ```
 
 ```bash
-javac GrpcCompatibilitySmoke.java
-java GrpcCompatibilitySmoke
+javac GrpcCompatibilityExample.java
+java GrpcCompatibilityExample
 ```
 
 Salida esperada:
@@ -221,7 +221,7 @@ La mensajería asíncrona es como dejar un mensaje en un buzón. El remitente no
 import java.util.*;
 import java.util.concurrent.*;
 
-public class MessagingIdempotencySmoke {
+public class MessagingIdempotencyExample {
     record OrderCreated(String eventId, String orderId, String email) {}
 
     static class IdempotentConsumer {
@@ -248,8 +248,8 @@ public class MessagingIdempotencySmoke {
 ```
 
 ```bash
-javac MessagingIdempotencySmoke.java
-java MessagingIdempotencySmoke
+javac MessagingIdempotencyExample.java
+java MessagingIdempotencyExample
 ```
 
 Salida esperada:
@@ -273,7 +273,7 @@ Elegir sync vs async es elegir si esperas en la ventanilla o si tomas un ticket.
 import java.util.*;
 import java.util.concurrent.*;
 
-public class SyncAsyncIdempotencySmoke {
+public class SyncAsyncIdempotencyExample {
     record PaymentRequest(String idempotencyKey, String orderId, int amount) {}
 
     static class PaymentService {
@@ -301,8 +301,8 @@ public class SyncAsyncIdempotencySmoke {
 ```
 
 ```bash
-javac SyncAsyncIdempotencySmoke.java
-java SyncAsyncIdempotencySmoke
+javac SyncAsyncIdempotencyExample.java
+java SyncAsyncIdempotencyExample
 ```
 
 Salida esperada:
@@ -333,7 +333,7 @@ import java.util.*;
 @HttpExchange("/orders")
 interface OrdersApi { @GetExchange("/{id}") String byId(String id); }
 
-public class DeclarativeClientSmoke {
+public class DeclarativeClientExample {
     static <T> T create(Class<T> type, Map<String, String> routes) {
         InvocationHandler h = (proxy, method, args) -> {
             GetExchange get = method.getAnnotation(GetExchange.class);
@@ -353,8 +353,8 @@ public class DeclarativeClientSmoke {
 ```
 
 ```bash
-javac DeclarativeClientSmoke.java
-java DeclarativeClientSmoke
+javac DeclarativeClientExample.java
+java DeclarativeClientExample
 ```
 
 Salida esperada:

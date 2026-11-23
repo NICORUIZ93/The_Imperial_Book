@@ -31,7 +31,7 @@ tienda-aurora-security/
 │   │       └── application.yml
 │   └── test/
 │       └── java/com/aurora/security/
-│           └── SecuritySmokeTest.java
+│           └── SecurityExampleTest.java
 └── docker-compose.yml
 ```
 

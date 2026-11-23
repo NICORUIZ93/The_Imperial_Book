@@ -2,7 +2,7 @@
 
 Tienda Aurora procesa miles de pedidos por hora. Cuando un pedido se confirma, `orders-service` debe notificar a email, analytics, inventario y facturación. Si cada uno es una llamada síncrona, un servicio caído tumba el checkout. La solución es publicar un evento `OrderCreated` y dejar que cada consumidor procese a su ritmo. EDA desacopla productores y consumidores mediante eventos. El beneficio es escalabilidad y autonomía; el costo es consistencia eventual, duplicados, orden parcial y evolución de esquemas.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de particionado, DLQ, compatibilidad de esquema e idempotencia ejecutados con Java puro. Kafka/RabbitMQ/Schema Registry/Spring Cloud Stream requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Examples de particionado, DLQ, compatibilidad de esquema e idempotencia ejecutados con Java puro. Kafka/RabbitMQ/Schema Registry/Spring Cloud Stream requieren infraestructura; se incluyen notas de verificación honestas.
 
 ## Proyecto desde cero: tienda-aurora-messaging
 

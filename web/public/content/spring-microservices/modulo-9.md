@@ -31,7 +31,7 @@ tienda-aurora-observability/
 │   │       └── application.yml
 │   └── test/
 │       └── java/com/aurora/observability/
-│           └── ObservabilitySmokeTest.java
+│           └── ObservabilityExampleTest.java
 └── docker-compose.yml
 ```
 

@@ -162,7 +162,7 @@ El equipo agrega una dependencia y "mágicamente" aparece un bean. Nadie sabe po
 La auto-configuración es como un electricista inteligente: si detecta que hay cable de red, instala el router; si no, no. Las condiciones (`@ConditionalOnClass`, `@ConditionalOnProperty`, `@ConditionalOnMissingBean`) son los sensores. Starters son los kits que traen todas las piezas compatibles.
 
 ```java
-public class ConditionalConfigSmoke {
+public class ConditionalConfigExample {
     static boolean enabled(String propertyValue, boolean classPresent, boolean beanMissing) {
         return "true".equalsIgnoreCase(propertyValue) && classPresent && beanMissing;
     }
@@ -176,8 +176,8 @@ public class ConditionalConfigSmoke {
 ```
 
 ```bash
-javac ConditionalConfigSmoke.java
-java ConditionalConfigSmoke
+javac ConditionalConfigExample.java
+java ConditionalConfigExample
 ```
 
 Salida esperada:
@@ -224,7 +224,7 @@ subprojects {
 ```java
 import java.util.*;
 
-public class ModuleGraphSmoke {
+public class ModuleGraphExample {
     static boolean hasCycle(Map<String, List<String>> g) {
         return g.getOrDefault("domain", List.of()).contains("api")
             || g.getOrDefault("domain", List.of()).contains("web");
@@ -244,8 +244,8 @@ public class ModuleGraphSmoke {
 ```
 
 ```bash
-javac ModuleGraphSmoke.java
-java ModuleGraphSmoke
+javac ModuleGraphExample.java
+java ModuleGraphExample
 ```
 
 Salida esperada:
@@ -266,7 +266,7 @@ El equipo commitea `application-prod.yml` con password de DB. Un fork accidental
 Los perfiles son como los trajes de un actor: el mismo actor (app) se viste distinto según la obra (entorno). Pero el actor no cambia de personalidad: la lógica de negocio es la misma. La configuración externalizada es como el guion fuera del escenario: los valores viven fuera del código.
 
 ```java
-public class ProfileSmoke {
+public class ProfileExample {
     static String db(String profile) { return "prod".equals(profile) ? "postgres" : "h2"; }
     static String secretSource(boolean prod) { return prod ? "vault" : "local-dev"; }
 
@@ -279,8 +279,8 @@ public class ProfileSmoke {
 ```
 
 ```bash
-javac ProfileSmoke.java
-java ProfileSmoke
+javac ProfileExample.java
+java ProfileExample
 ```
 
 Salida esperada:
@@ -302,7 +302,7 @@ Un servicio serverless de Tienda Aurora tarda 4 segundos en arrancar. En scale-t
 CRaC es como congelar un plato de comida y recalentarlo: el plato (JVM) se guarda con todo su estado, y al recalentar (restore) vuelve a estar listo rápido. Pero si el plato tenía hielo (conexiones abiertas) que se derritió al congelar, al recalentar está podrido. Por eso hay que coordinar: cerrar recursos antes del checkpoint y reabrirlos después del restore.
 
 ```java
-public class CracSmoke {
+public class CracExample {
     static String lifecycle(boolean checkpointed, boolean resourcesValid) {
         if (!checkpointed) return "cold-start";
         return resourcesValid ? "restore-ok" : "restore-failed";
@@ -317,8 +317,8 @@ public class CracSmoke {
 ```
 
 ```bash
-javac CracSmoke.java
-java CracSmoke
+javac CracExample.java
+java CracExample
 ```
 
 Salida esperada:
@@ -342,7 +342,7 @@ El equipo compila a native para "ser más rápido". El binario arranca en 50ms, 
 Native Image es como traducir un libro a otro idioma de forma anticipada: el resultado es rápido de leer (arranque), pero si el libro tiene páginas que se escriben en tiempo real (reflexión dinámica), la traducción no las incluye.
 
 ```java
-public class NativeDecisionSmoke {
+public class NativeDecisionExample {
     static String choose(boolean fastStartupCritical, boolean heavyReflection, boolean measured) {
         if (!measured) return "stay-jvm-measure-first";
         if (fastStartupCritical && !heavyReflection) return "consider-native";
@@ -358,8 +358,8 @@ public class NativeDecisionSmoke {
 ```
 
 ```bash
-javac NativeDecisionSmoke.java
-java NativeDecisionSmoke
+javac NativeDecisionExample.java
+java NativeDecisionExample
 ```
 
 Salida esperada:

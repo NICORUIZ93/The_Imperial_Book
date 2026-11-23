@@ -2,7 +2,7 @@
 
 Migrar a microservicios es fácil de empezar y difícil de sostener. Este módulo cubre anti-patrones, monolito distribuido, sobre-descomposición, sagas innecesarias, Strangler Fig y métricas DORA, usando Tienda Aurora como caso de estudio.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de detección de smells, decisión local-vs-saga, routing de migración y DORA ejecutados con Java puro.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Examples de detección de smells, decisión local-vs-saga, routing de migración y DORA ejecutados con Java puro.
 
 ## Proyecto desde cero: tienda-aurora-evolution
 
@@ -30,7 +30,7 @@ tienda-aurora-evolution/
 │   │       └── application.yml
 │   └── test/
 │       └── java/com/aurora/evolution/
-│           └── EvolutionSmokeTest.java
+│           └── EvolutionExampleTest.java
 └── docs/
     └── adr/
         └── 0010-migration-strategy.md

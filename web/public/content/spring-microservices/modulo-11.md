@@ -2,7 +2,7 @@
 
 Cuando un proceso de negocio cruza servicios y bases de datos, no hay transacción ACID global simple. Tienda Aurora necesita crear un pedido que reserve stock, cobre el pago y notifique al cliente. Si el pago falla después de reservar, hay que compensar. Este módulo cubre outbox, CDC, sagas, idempotencia real y por qué 2PC suele ser una mala elección en microservicios.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de outbox, saga, idempotencia y decisión 2PC ejecutados con Java puro. Debezium/Kafka Connect/Temporal requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Examples de outbox, saga, idempotencia y decisión 2PC ejecutados con Java puro. Debezium/Kafka Connect/Temporal requieren infraestructura; se incluyen notas de verificación honestas.
 
 ## Proyecto desde cero: tienda-aurora-consistency
 

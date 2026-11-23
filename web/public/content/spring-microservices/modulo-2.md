@@ -101,7 +101,7 @@ El equipo tiene "90% de cobertura" y aun así un deploy rompe producción. Los t
 Un unit test es como revisar el motor del auto en el taller: rápido, aislado y útil. Un integration test es como sacar el auto a la calle. Si solo revisas en el taller, no sabes si las ruedas tocan bien el pavimento. Mockear todo convierte el taller en un simulador sin contacto con la realidad.
 
 ```java
-public class TaxAndPriceSmoke {
+public class TaxAndPriceExample {
     interface TaxProvider { double rate(); }
 
     static class PriceService {
@@ -120,8 +120,8 @@ public class TaxAndPriceSmoke {
 ```
 
 ```bash
-javac TaxAndPriceSmoke.java
-java TaxAndPriceSmoke
+javac TaxAndPriceExample.java
+java TaxAndPriceExample
 ```
 
 Salida esperada:
@@ -142,7 +142,7 @@ El equipo usa H2 para tests porque "es rápido". En producción PostgreSQL falla
 Testcontainers es como pedir el plato real en vez de una foto. El contenedor efímero levanta PostgreSQL real, se destruye al final y cada test empieza limpio. Es más lento que H2, pero prueba el contrato real de la base.
 
 ```java
-public class TestcontainersDecisionSmoke {
+public class TestcontainersDecisionExample {
     static String strategy(String dependency) {
         return switch (dependency) {
             case "unit-pure-logic" -> "NO_CONTAINER";
@@ -161,8 +161,8 @@ public class TestcontainersDecisionSmoke {
 ```
 
 ```bash
-javac TestcontainersDecisionSmoke.java
-java TestcontainersDecisionSmoke
+javac TestcontainersDecisionExample.java
+java TestcontainersDecisionExample
 ```
 
 Salida esperada:
@@ -185,7 +185,7 @@ Un contract test es como un acuerdo firmado entre dos equipos: el consumidor dic
 ```java
 import java.util.*;
 
-public class ContractShapeSmoke {
+public class ContractShapeExample {
     static boolean providerSatisfiesConsumer(Map<String, Object> providerResponse) {
         return providerResponse.containsKey("id")
             && providerResponse.containsKey("price")
@@ -210,8 +210,8 @@ public class ContractShapeSmoke {
 ```
 
 ```bash
-javac ContractShapeSmoke.java
-java ContractShapeSmoke
+javac ContractShapeExample.java
+java ContractShapeExample
 ```
 
 Salida esperada:
@@ -233,7 +233,7 @@ El equipo define "domain no depende de web" en una wiki. Con el tiempo, alguien 
 ArchUnit convierte una regla arquitectónica en un test que falla el build. Es como poner una alarma en la puerta: si alguien intenta entrar por la puerta prohibida, la alarma suena en CI, no en producción.
 
 ```java
-public class ArchRuleSmoke {
+public class ArchRuleExample {
     static boolean allowed(String fromPackage, String toPackage) {
         if (fromPackage.contains("domain") && toPackage.startsWith("spring")) return false;
         if (fromPackage.contains("domain") && toPackage.contains("web")) return false;
@@ -248,8 +248,8 @@ public class ArchRuleSmoke {
 ```
 
 ```bash
-javac ArchRuleSmoke.java
-java ArchRuleSmoke
+javac ArchRuleExample.java
+java ArchRuleExample
 ```
 
 Salida esperada:
@@ -270,7 +270,7 @@ El equipo acumula deuda técnica: métodos de 300 líneas, complejidad ciclomát
 SonarQube es como el inspector de calidad de una fábrica. No construye el producto, pero detecta defectos antes de que salgan. El quality gate es la línea de rechazo: si el producto no cumple estándares, no sale.
 
 ```java
-public class QualityGateSmoke {
+public class QualityGateExample {
     static boolean gate(boolean testsPass, int criticalBugs, double newCoverage) {
         return testsPass && criticalBugs == 0 && newCoverage >= 80.0;
     }
@@ -283,8 +283,8 @@ public class QualityGateSmoke {
 ```
 
 ```bash
-javac QualityGateSmoke.java
-java QualityGateSmoke
+javac QualityGateExample.java
+java QualityGateExample
 ```
 
 Salida esperada:
@@ -305,7 +305,7 @@ Un microservicio de Tienda Aurora usa S3 y SQS de AWS. En CI no hay cuenta cloud
 Floci es como un decorado de estudio: parece AWS para las llamadas que importan en tests, pero no es AWS real. Sirve para validar integración local sin costo ni credenciales reales. El error es confundir el decorado con el set real.
 
 ```java
-public class FlociConfigSmoke {
+public class FlociConfigExample {
     record ClientCfg(String endpoint, String creds, String region) {}
 
     static ClientCfg cfg(boolean emulator) {
@@ -321,8 +321,8 @@ public class FlociConfigSmoke {
 ```
 
 ```bash
-javac FlociConfigSmoke.java
-java FlociConfigSmoke
+javac FlociConfigExample.java
+java FlociConfigExample
 ```
 
 Salida esperada:

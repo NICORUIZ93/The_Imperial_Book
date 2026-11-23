@@ -30,7 +30,7 @@ tienda-aurora-resilience/
 │   │       └── application.yml
 │   └── test/
 │       └── java/com/aurora/resilience/
-│           └── ResilienceSmokeTest.java
+│           └── ResilienceExampleTest.java
 └── docker-compose.yml
 ```
 
