@@ -11,6 +11,7 @@ java -version
 gradle --version
 mkdir -p tienda-aurora-java-m19/src/main/java/com/aurora/stdlib
 mkdir -p tienda-aurora-java-m19/src/main/resources/META-INF/services
+mkdir -p tienda-aurora-java-m19/src/plugin/java/com/aurora/plugin
 mkdir -p tienda-aurora-java-m19/src/test/java/com/aurora/stdlib
 cd tienda-aurora-java-m19
 gradle wrapper --gradle-version 9.9.1
@@ -30,6 +31,7 @@ tienda-aurora-java-m19/
     │   │   ├── Auditor.java
     │   │   ├── CalculadoraPrecio.java
     │   │   ├── ClassLoaderDemo.java
+    │   │   ├── Complemento.java
     │   │   ├── Contratos.java
     │   │   ├── EmailNotificador.java
     │   │   ├── FormateadorRegional.java
@@ -39,13 +41,19 @@ tienda-aurora-java-m19/
     │   │   ├── OperacionReal.java
     │   │   ├── Pedido.java
     │   │   ├── ProxyDemo.java
+    │   │   ├── ServicioRegistro.java
+    │   │   ├── ServicioRegistroImpl.java
     │   │   ├── SmsNotificador.java
     │   │   └── ValidadorCodigo.java
     │   └── resources/META-INF/services/
     │       └── com.aurora.stdlib.Notificador
+    ├── plugin/java/com/aurora/plugin/
+    │   └── ComplementoPlugin.java
     └── test/java/com/aurora/stdlib/
         └── StdlibTest.java
 ```
+
+El plugin se compila en un JAR aparte (`build/plugin/complemento-plugin.jar`) con una tarea de Gradle y se carga con `URLClassLoader`; el JAR no se versiona en el proyecto, se genera durante el build.
 
 ## Build desde cero
 
@@ -79,7 +87,33 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-parameters", "-Werror"))
 }
+
+// Plugin real en un JAR aparte: se compila contra el API del núcleo y se carga con URLClassLoader.
+val pluginClases = layout.buildDirectory.dir("plugin/classes")
+val pluginDirectorio = layout.buildDirectory.dir("plugin")
+val pluginJarArchivo = pluginDirectorio.map { it.file("complemento-plugin.jar") }
+val compilarPlugin by tasks.registering(JavaCompile::class) {
+    source = fileTree("src/plugin/java")
+    classpath = sourceSets["main"].output
+    destinationDirectory.set(pluginClases)
+    options.encoding = "UTF-8"
+    options.release.set(25)
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-Werror"))
+}
+val pluginJar by tasks.registering(Jar::class) {
+    dependsOn(compilarPlugin)
+    from(pluginClases)
+    archiveFileName.set("complemento-plugin.jar")
+    destinationDirectory.set(pluginDirectorio)
+}
+tasks.named("run") { dependsOn(pluginJar) }
+tasks.named<Test>("test") {
+    dependsOn(pluginJar)
+    systemProperty("plugin.jar", pluginJarArchivo.get().asFile.absolutePath)
+}
 ```
+
+`options.release.set(25)` en la tarea del plugin evita que se compile contra la API del JDK 27 de la máquina y luego falle al cargarse en una JVM con toolchain Java 25: el error observado sin esta opción fue `UnsupportedClassVersionError: class file version 71.0 ... up to 69.0`.
 
 ## Visual del módulo
 
@@ -185,7 +219,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ValidadorCodigo {
-    private static final Pattern CODIGO = Pattern.compile("^[A-Z]{3}-\\d{4}$");
+    private static final Pattern CODIGO = Pattern.compile("^(?<letras>[A-Z]{3})-(?<numero>\\d{4})$");
+    private static final Pattern EN_TEXTO = Pattern.compile("(?<guia>[A-Z]{3}-)(?<digitos>\\d{4})");
+
     private ValidadorCodigo() {}
 
     public static boolean esValido(String codigo) {
@@ -194,15 +230,27 @@ public final class ValidadorCodigo {
     }
 
     public static String extraerPrimerCodigo(String texto) {
-        Matcher m = Pattern.compile("[A-Z]{3}-\\d{4}").matcher(texto == null ? "" : texto);
-        return m.find() ? m.group() : null;
+        Matcher m = EN_TEXTO.matcher(texto == null ? "" : texto);
+        return m.find() ? m.group("guia") + m.group("digitos") : null;
+    }
+
+    /** Grupos con nombre: el número se enmascara sin reconstruir la regex a mano. */
+    public static String grupoNumero(String codigo) {
+        Matcher m = CODIGO.matcher(codigo == null ? "" : codigo);
+        return m.matches() ? m.group("numero") : null;
+    }
+
+    public static String enmascararGuias(String texto) {
+        Matcher m = EN_TEXTO.matcher(texto == null ? "" : texto);
+        return m.replaceAll(resultado ->
+                resultado.group("guia") + "*".repeat(resultado.group("digitos").length()));
     }
 }
 ```
 
-`^` y `$` anclan el patrón completo: `ABC-1234` es válido, `abc-1234` no. `find()` busca una ocurrencia dentro de un texto mayor. Salida verificada: `CODIGO=true`, `EXTRA=ABC-1234`.
+`^` y `$` anclan el patrón completo: `ABC-1234` es válido, `abc-1234` no. `find()` busca una ocurrencia dentro de un texto mayor. Los grupos con nombre `(?<nombre>...)` permiten leer `m.group("numero")` o usar un `MatchResult` en `replaceAll` sin depender de índices posicionales: cambiar el orden de los grupos no cambia el código que los consume. Salidas verificadas: `CODIGO=true`, `EXTRA=ABC-1234`, `GRUPO=1234`, `ENMASC=ABC-**** y XYZ-****`.
 
-Error común: usar `matches()` cuando querías `find()`, o al revés. `matches()` exige que toda la cadena cumpla el patrón; `find()` busca una subcadena que cumpla.
+Error común: usar `matches()` cuando querías `find()`, o al revés. `matches()` exige que toda la cadena cumpla el patrón; `find()` busca una subcadena que cumpla. Otro error es seguir usando `m.group(1)` en una regex que otra persona reordena: los grupos con nombre hacen explícito el contrato.
 
 ### Tema 3: Dinero exacto con BigDecimal · Básico · 40 min
 
@@ -382,6 +430,34 @@ public class OperacionReal implements Operacion {
 }
 ```
 
+#### `ServicioRegistro.java`
+
+```java
+package com.aurora.stdlib;
+
+/** Interfaz proxyeada para demostrar el límite de la auto-invocación. */
+public interface ServicioRegistro {
+    String procesar();
+    String etiqueta();
+}
+```
+
+#### `ServicioRegistroImpl.java`
+
+```java
+package com.aurora.stdlib;
+
+public final class ServicioRegistroImpl implements ServicioRegistro {
+    @Override
+    public String procesar() {
+        return etiqueta() + ":OK"; // this.etiqueta(): no pasa por el proxy
+    }
+
+    @Override
+    public String etiqueta() { return "REG"; }
+}
+```
+
 #### `ProxyDemo.java`
 
 ```java
@@ -417,10 +493,29 @@ public final class ProxyDemo {
         int valor = proxy.aplicar(2, 3);
         return new Resultado(valor, log);
     }
+
+    /** Una auto-invocación this.etiqueta() dentro del real NO vuelve a entrar al proxy. */
+    public static String autoInvocacion() {
+        List<String> log = new ArrayList<>();
+        ServicioRegistro proxy = (ServicioRegistro) Proxy.newProxyInstance(
+                ServicioRegistro.class.getClassLoader(),
+                new Class<?>[]{ServicioRegistro.class},
+                (Object p, Method m, Object[] args) -> {
+                    log.add(m.getName());
+                    return m.invoke(new ServicioRegistroImpl(), args);
+                });
+        proxy.procesar();
+        String interna = String.join(",", log);
+        log.clear();
+        proxy.etiqueta();
+        return "INTERNA=" + interna + ",EXTERNA=" + String.join(",", log);
+    }
 }
 ```
 
 Salida verificada: `PROXY=5:2` y log `[before:aplicar, after:aplicar]`. El proxy no cambia el resultado; agrega comportamiento alrededor.
+
+La auto-invocación es el límite que explica por qué `@Transactional` no aplica cuando un método llama a otro método de la misma instancia: el `this` del objeto real no es el proxy. `ServicioRegistroImpl.procesar()` llama a `etiqueta()` directamente, así que el handler registra solo `procesar`. En cambio, una llamada externa `proxy.etiqueta()` sí entra al handler. Salida verificada: `AUTO=INTERNA=procesar,EXTERNA=etiqueta`. Para que la auto-invocación pase por el interceptor hace falta reestructurar el código (otro bean, `AspectJ` con weaving, o exponer el propio proxy), no “añadir una anotación”.
 
 ### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 50 min
 
@@ -428,12 +523,42 @@ Un `ClassLoader` carga bytes de clase y los define como `Class<?>` en la JVM. La
 
 El modelo clásico usa delegación padre-hijo. Cuando un loader recibe una petición, normalmente delega primero a su padre antes de intentar cargar él mismo. Esto evita que código de aplicación reemplace clases fundamentales como `java.lang.String`. En JDKs modernos el bootstrap loader está representado de forma particular y `getParent()` puede devolver `null`; el platform class loader y el application/system class loader son visibles.
 
-`URLClassLoader` permite cargar clases desde JARs o directorios en rutas indicadas. Es la base histórica de muchos sistemas de plugins. En producción, los plugins traen retos: aislamiento, versiones, cierre de recursos, y seguridad. Aquí verificamos la identidad y jerarquía visible; cargar un JAR externo dinámicamente requiere un artefacto externo, por eso se deja como extensión con nota honesta.
+`URLClassLoader` permite cargar clases desde JARs o directorios en rutas indicadas. Es la base histórica de muchos sistemas de plugins. En producción, los plugins traen retos: aislamiento, versiones, cierre de recursos, y seguridad. Aquí se genera un JAR aparte durante el build con la tarea `pluginJar`, se carga con `URLClassLoader.newInstance(...)` y se comprueba que la clase del plugin fue definida por un loader distinto al de la aplicación.
+
+#### `Complemento.java`
+
+```java
+package com.aurora.stdlib;
+
+/** Contrato mínimo que el plugin implementa y el núcleo conoce. */
+public interface Complemento {
+    String etiqueta();
+}
+```
+
+#### `src/plugin/java/com/aurora/plugin/ComplementoPlugin.java`
+
+```java
+package com.aurora.plugin;
+
+import com.aurora.stdlib.Complemento;
+
+/** Implementación que vive en un JAR aparte, descubierto con URLClassLoader. */
+public final class ComplementoPlugin implements Complemento {
+    @Override
+    public String etiqueta() { return "COMPLEMENTO:v2"; }
+}
+```
 
 #### `ClassLoaderDemo.java`
 
 ```java
 package com.aurora.stdlib;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class ClassLoaderDemo {
     private ClassLoaderDemo() {}
@@ -441,17 +566,31 @@ public final class ClassLoaderDemo {
     public static String identidad() {
         ClassLoader app = ClassLoaderDemo.class.getClassLoader();
         ClassLoader platform = ClassLoader.getPlatformClassLoader();
-        ClassLoader boot = platform.getParent(); // puede ser null en algunas JVMs
+        ClassLoader boot = platform.getParent(); // null en la JVM verificada
         return "app=" + (app != null) +
                 ",platform=" + (platform != null) +
                 ",bootNull=" + (boot == null);
     }
+
+    /** Carga el plugin desde un JAR real con URLClassLoader y comprueba su loader. */
+    public static String cargarPlugin(Path jar) throws Exception {
+        if (jar == null || !Files.exists(jar)) return "PLUGIN=JAR_NO_ENCONTRADO";
+        try (URLClassLoader loader = URLClassLoader.newInstance(
+                new URL[]{jar.toUri().toURL()}, ClassLoaderDemo.class.getClassLoader())) {
+            Class<?> tipo = Class.forName("com.aurora.plugin.ComplementoPlugin", true, loader);
+            Complemento instancia = (Complemento) tipo.getDeclaredConstructor().newInstance();
+            ClassLoader definidor = tipo.getClassLoader();
+            return "PLUGIN=" + instancia.etiqueta()
+                    + ":urlLoader=" + (definidor instanceof URLClassLoader)
+                    + ":distinto=" + (definidor != ClassLoaderDemo.class.getClassLoader());
+        }
+    }
 }
 ```
 
-Salida verificada en JDK 27: `CL=app=true,platform=true,bootNull=true`. El valor `bootNull` puede variar según implementación; la prueba solo afirma las partes estables.
+Salida verificada en JDK 27: `CL=app=true,platform=true,bootNull=true` y `PLUGIN=COMPLEMENTO:v2:urlLoader=true:distinto=true`. El valor `bootNull` puede variar según implementación; la prueba del plugin afirma la identidad del loader definidor, no solo la jerarquía.
 
-**Nota de verificación honesta:** no se creó un JAR plugin externo cargado con `URLClassLoader` en esta corrida para mantener el módulo autocontenido. El concepto clave verificado es la jerarquía/identidad de loaders; la carga dinámica desde URL se puede extender creando un JAR aparte y cargándolo con `URLClassLoader.newInstance(...)`.
+El `URLClassLoader` se usa en `try-with-resources` porque implementa `Closeable`: cerrarlo libera los JARs abiertos. El contrato `Complemento` vive en el núcleo para que ambos loaders puedan ver el mismo tipo; si el contrato también estuviera dentro del JAR del plugin, el cast fallaría con `ClassCastException` pese a tener el mismo nombre. El contenido real del JAR generado se inspecciona en la sección de verificación.
 
 ### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Avanzado · 45 min
 
@@ -501,6 +640,7 @@ Salida verificada: `MH=4`, `VH=52` (10 + 42). `invoke` puede lanzar `Throwable`;
 package com.aurora.stdlib;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -512,6 +652,8 @@ public final class App {
         System.out.println("AUDIT=" + Auditor.auditar(p));
         System.out.println("CODIGO=" + ValidadorCodigo.esValido("ABC-1234"));
         System.out.println("EXTRA=" + ValidadorCodigo.extraerPrimerCodigo("id ABC-1234 ok"));
+        System.out.println("GRUPO=" + ValidadorCodigo.grupoNumero("ABC-1234"));
+        System.out.println("ENMASC=" + ValidadorCodigo.enmascararGuias("ABC-1234 y XYZ-9876"));
         System.out.println("TOTAL=" + CalculadoraPrecio.total(new BigDecimal("10.00"), 2, new BigDecimal("0.19")));
         System.out.println("PCT=" + Contratos.porcentaje(1, 4));
 
@@ -527,17 +669,19 @@ public final class App {
 
         ProxyDemo.Resultado r = ProxyDemo.conLog(new OperacionReal());
         System.out.println("PROXY=" + r.valor + ":" + r.log.size());
+        System.out.println("AUTO=" + ProxyDemo.autoInvocacion());
 
         System.out.println("MH=" + HandlesDemo.invocarLength("hola"));
         System.out.println("VH=" + HandlesDemo.leerYEscribir());
         System.out.println("CL=" + ClassLoaderDemo.identidad());
+        System.out.println(ClassLoaderDemo.cargarPlugin(Path.of("build/plugin/complemento-plugin.jar")));
     }
 }
 ```
 
 #### `StdlibTest.java`
 
-El test cubre los 9 temas con aserciones concretas. `-ea` está activo por configuración de Gradle.
+El test cubre los 9 temas con aserciones concretas. `-ea` está activo por configuración de Gradle y el JAR del plugin se genera antes de ejecutar la suite.
 
 ```java
 package com.aurora.stdlib;
@@ -545,6 +689,7 @@ package com.aurora.stdlib;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -572,6 +717,8 @@ class StdlibTest {
         assertFalse(ValidadorCodigo.esValido("abc-1234"));
         assertEquals("ABC-1234", ValidadorCodigo.extraerPrimerCodigo("xx ABC-1234 yy"));
         assertNull(ValidadorCodigo.extraerPrimerCodigo("sin codigo"));
+        assertEquals("1234", ValidadorCodigo.grupoNumero("ABC-1234"));
+        assertEquals("ABC-**** y XYZ-****", ValidadorCodigo.enmascararGuias("ABC-1234 y XYZ-9876"));
     }
 
     @Test
@@ -612,6 +759,7 @@ class StdlibTest {
         ProxyDemo.Resultado r = ProxyDemo.conLog(new OperacionReal());
         assertEquals(5, r.valor);
         assertEquals(List.of("before:aplicar", "after:aplicar"), r.log);
+        assertEquals("INTERNA=procesar,EXTERNA=etiqueta", ProxyDemo.autoInvocacion());
     }
 
     @Test
@@ -626,19 +774,26 @@ class StdlibTest {
         assertTrue(id.contains("app=true"));
         assertTrue(id.contains("platform=true"));
     }
+
+    @Test
+    void urlClassLoaderCargaPluginDesdeJar() throws Exception {
+        String salida = ClassLoaderDemo.cargarPlugin(Path.of(System.getProperty("plugin.jar")));
+        assertEquals("PLUGIN=COMPLEMENTO:v2:urlLoader=true:distinto=true", salida);
+    }
 }
 ```
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m19` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m19` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
 
 ```bash
 ./gradlew -q test
 ./gradlew -q run
+unzip -l build/plugin/complemento-plugin.jar
 ```
 
-`./gradlew -q test`: **9 tests, 0 fallas**.
+`./gradlew -q test`: **10 tests, 0 fallas** (`build/test-results/test/TEST-com.aurora.stdlib.StdlibTest.xml`).
 
 Salida real de `./gradlew -q run`:
 
@@ -646,16 +801,38 @@ Salida real de `./gradlew -q run`:
 AUDIT={id=P1, total=10.00}
 CODIGO=true
 EXTRA=ABC-1234
+GRUPO=1234
+ENMASC=ABC-**** y XYZ-****
 TOTAL=23.80
 PCT=25
 CANALES=email,sms
 FECHA_US=May 23, 2026
 ORD=[n, ñ, o]
 PROXY=5:2
+AUTO=INTERNA=procesar,EXTERNA=etiqueta
 MH=4
 VH=52
 CL=app=true,platform=true,bootNull=true
+PLUGIN=COMPLEMENTO:v2:urlLoader=true:distinto=true
 ```
+
+Salida real de `unzip -l build/plugin/complemento-plugin.jar`:
+
+```text
+Archive:  /tmp/opencode/aurora-m19/build/plugin/complemento-plugin.jar
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  02-01-1980 00:00   META-INF/
+       25  02-01-1980 00:00   META-INF/MANIFEST.MF
+        0  02-01-1980 00:00   com/
+        0  02-01-1980 00:00   com/aurora/
+        0  02-01-1980 00:00   com/aurora/plugin/
+      462  02-01-1980 00:00   com/aurora/plugin/ComplementoPlugin.class
+---------                     -------
+      487                     6 files
+```
+
+El JAR contiene solo la clase del plugin; el contrato `Complemento` se resuelve desde el classloader de la aplicación, que es padre del `URLClassLoader`.
 
 ## Errores comunes y diagnóstico
 
@@ -665,15 +842,21 @@ CL=app=true,platform=true,bootNull=true
 | Error de centavos | `double` para dinero | Comparar cálculos con decimales | `BigDecimal` desde String, escala y `RoundingMode` explícitos |
 | Assertion no salta | JVM sin `-ea` | Revisar flags de ejecución | Habilitar `-ea` en tests/dev; no usar assert para input externo |
 | Regex valida de más/menos | Falta ancla o patrón ambiguo | Probar casos límite | Usar `^$` para match completo, tests de casos inválidos |
-| `ClassCastException` entre clases “iguales” | Cargadas por ClassLoaders distintos | Inspeccionar `getClassLoader()` | Entender jerarquía/delegación; aislar plugins con cuidado |
+| `m.group(1)` apunta a otro dato | Se reordenaron grupos posicionales | Imprimir los grupos de la regex | Usar grupos con nombre `(?<numero>...)` y `group("numero")` |
+| `@Transactional` no se aplica | Auto-invocación `this.metodo()` dentro del bean | Registrar qué métodos entra el handler | Llamar desde otro bean o usar weaving; no basta con anotar |
+| `UnsupportedClassVersionError` al cargar plugin | Plugin compilado con JDK distinto al runtime | `javap -verbose` / versión de class file | Compilar plugin con `options.release.set(25)` |
+| `ClassCastException` entre clases “iguales” | Cargadas por ClassLoaders distintos, o contrato duplicado en el JAR | Inspeccionar `getClassLoader()` | Mantener la interfaz en el núcleo; aislar solo la implementación |
+| `ServiceLoader` no encuentra el plugin de URLClassLoader | Confundir los dos mecanismos | Revisar `META-INF/services` frente a `Class.forName` | `ServiceLoader` usa el descriptor; `URLClassLoader` carga una clase concreta por nombre |
 | Proxy no intercepta clase concreta | `Proxy` JDK solo soporta interfaces | Revisar tipo proxyeado | Usar interfaz o herramienta de bytecode si realmente hace falta |
 
 ## Checklist de cierre
 
 - [ ] Sé cuándo usar reflexión y cuál es su costo.
-- [ ] Compilo/uso regex con intención (`matches` vs `find`) y casos límite.
+- [ ] Compilo/uso regex con intención (`matches` vs `find`) y casos límite, con grupos con nombre cuando el dato importa.
 - [ ] Uso `BigDecimal` correctamente para dinero.
 - [ ] Distingo validación externa de invariante interna con assertions.
+- [ ] Diferencio `ServiceLoader` de `URLClassLoader` y mantengo el contrato fuera del JAR del plugin.
+- [ ] Sé que la auto-invocación limita la interceptación de proxies y cómo verificarlo.
 - [ ] Puedo explicar ServiceLoader, proxies, class loaders y MethodHandles/VarHandles a nivel de contrato.
 
-Siguiente paso natural: **Módulo 20** ya quedó canónico; después de cerrar la deuda restante, **M21 — APIs públicas, compatibilidad y evolución** profundiza en compatibilidad binaria/fuente y bridge methods en la superficie pública.
+Siguiente paso natural: **Módulo 20 — Java funcional: interfaces que componen comportamiento**, donde la composición de funciones y la demanda en `Flow API` pasan a ser el eje del proyecto.

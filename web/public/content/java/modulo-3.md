@@ -63,6 +63,8 @@ tienda-aurora-excepciones/
 
 ## Código completo, archivo por archivo
 
+La versión verificada añade `src/test/java/com/aurora/excepciones/ExcepcionesTest.java`; se documenta completo en `#### Test`.
+
 ##### `build.gradle.kts`
 
 Configura Java 25 por toolchain, la aplicación CLI y compilación estricta. `-Werror` evita que warnings se acumulen como deuda silenciosa.
@@ -94,6 +96,14 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
 }
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test { useJUnitPlatform() }
 ```
 
 ##### `settings.gradle.kts`
@@ -268,9 +278,9 @@ public final class Dinero implements Comparable<Dinero> {
 }
 ```
 
-##### `ProductoNoEncontradoException.java` y `StockInsuficienteException.java`
+##### `ProductoNoEncontradoException.java`
 
-Excepciones de dominio con contexto de negocio. `ProductoNoEncontradoException` lleva el `Sku`; `StockInsuficienteException` lleva SKU, disponible y solicitado. Eso permite a la CLI o a una API responder con precisión sin parsear strings.
+Excepción de dominio para una búsqueda fallida. Lleva el `Sku` solicitado, de modo que la CLI o una API puedan responder con precisión sin parsear el mensaje.
 
 ```java
 package com.aurora.excepciones.dominio;
@@ -290,6 +300,10 @@ public final class ProductoNoEncontradoException extends RuntimeException {
     }
 }
 ```
+
+##### `StockInsuficienteException.java`
+
+Excepción de dominio para una reserva imposible. Lleva SKU, disponible y solicitado; el mensaje y los accesadores dan el contexto sin depender de texto libre.
 
 ```java
 package com.aurora.excepciones.dominio;
@@ -956,7 +970,7 @@ Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no
 <testsuite name="com.aurora.excepciones.ExcepcionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:38.945Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.032">
 ```
 
-Los siete casos se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+El XML mostrado corresponde a la última corrida limpia.
 
 ### Tema 1: Checked vs unchecked exceptions · Básico · 35 min
 
@@ -1006,7 +1020,7 @@ Desde la raíz de `tienda-aurora-excepciones`:
 ./gradlew -q run --args="importar --archivo productos.csv"
 ./gradlew -q run --args="reservar --archivo productos-buenos.csv --sku CAF-0001 --cantidad 2"
 ./gradlew -q run --args="auditoria"
-./gradlew -q test
+./gradlew -q clean test
 ```
 
 ## Verificación real
@@ -1017,7 +1031,7 @@ Desde la raíz del proyecto:
 
 ```bash
 cd /tmp/opencode/aurora-m3
-./gradlew -q test
+./gradlew -q clean test
 ./gradlew -q run --args="importar --archivo productos.csv"
 ./gradlew -q run --args="auditoria"
 ```
@@ -1055,7 +1069,13 @@ causa: NumberFormatException
 propagada: ImportacionException
 ```
 
-`./gradlew -q test` terminó sin fallos. La salida confirma que la traducción de la checked exception conserva la causa, que el recurso se cierra con try-with-resources, que la excepción suprimida aparece con `suprimidas: 1` y que un `catch` que decide propagar no pierde el tipo original.
+`./gradlew -q clean test` terminó con código 0 y sin salida; el resumen real de la última corrida limpia es:
+
+```text
+<testsuite name="com.aurora.excepciones.ExcepcionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:38.945Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.032">
+```
+
+Los siete casos cubren importación con filas válidas y rechazadas, causa de una checked exception, reserva que descuenta stock, errores de negocio con contexto, traducción de errores de importe, excepción suprimida y validación de SKU. La salida de la CLI confirma que la traducción de la checked exception conserva la causa, que el recurso se cierra con try-with-resources, que la excepción suprimida aparece con `suprimidas: 1` y que un `catch` que decide propagar no pierde el tipo original.
 
 ## Errores comunes y diagnóstico
 
@@ -1069,7 +1089,7 @@ propagada: ImportacionException
 
 ## Cierre
 
-Manejar excepciones bien no es “poner try/catch”. Es diseñar contratos de fallo: qué puede fallar, quién puede recuperarse, qué contexto se conserva y qué recursos se liberan. En el siguiente módulo ese mismo criterio se aplica a colecciones y streams, donde muchos errores aparecen por mutar datos compartidos o asumir formas que no se cumplen.
+Manejar excepciones bien no es “poner try/catch”. Es diseñar contratos de fallo: qué puede fallar, quién puede recuperarse, qué contexto se conserva y qué recursos se liberan. En el siguiente módulo el foco pasa a streams: muchos errores aparecen al reutilizar un pipeline consumido, mutar estado compartido desde una lambda o asumir que un `Optional` siempre trae valor.
 
 ## Checklist
 
@@ -1078,3 +1098,4 @@ Manejar excepciones bien no es “poner try/catch”. Es diseñar contratos de f
 - [ ] Preservo la causa al traducir excepciones.
 - [ ] No trago excepciones; manejo, traduzco o propago.
 - [ ] Mis excepciones personalizadas llevan contexto útil y no datos sensibles.
+- [ ] Ejecuté `./gradlew -q clean test` y comprobé las siete pruebas en el XML de Gradle.

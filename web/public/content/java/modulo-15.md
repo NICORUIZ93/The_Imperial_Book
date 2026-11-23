@@ -756,7 +756,7 @@ Una prueba de integración verifica colaboración real entre componentes: persis
 
 **Implicación práctica:** `ReservaIntegracionTest` crea una H2 con nombre UUID, aplica `Schema` en código, usa `CatalogoJdbc` real, ejecuta el caso de uso y captura el JSON de Logback. No depende de servicios compartidos ni de orden entre tests. Para integraciones de BD/cola externas, el mismo principio aplica: declarar dependencias, aislar datos, limpiar estado y evitar servicios externos compartidos; el módulo siguiente muestra ese patrón con PostgreSQL efímero.
 
-**Confusión común:** llamar “integración” a un test que levanta todo el sistema innecesariamente, o al revés, mockear la frontera que justamente querías validar. H2 es útil, pero no sustituyePostgreSQL cuando importan dialecto o comportamiento del motor.
+**Confusión común:** llamar “integración” a un test que levanta todo el sistema innecesariamente, o al revés, mockear la frontera que justamente querías validar. H2 es útil, pero no sustituye PostgreSQL cuando importan dialecto o comportamiento del motor.
 
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado · Intermedio · 30 min
 
@@ -780,41 +780,45 @@ cd /tmp/opencode/aurora-m15/maven-demo
 mvn -B verify
 ```
 
-Salida observada de `./gradlew test --rerun-tasks --console=plain` ( líneas de resultados ):
+Salida observada de `./gradlew test --rerun-tasks --console=plain` (líneas de resultados):
 
 ```text
 CatalogoEnMemoriaTest > encuentraProductoSemilla() PASSED
 ReservaIntegracionTest > reservaConH2YLogsJson() PASSED
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
 ServicioReservasMockitoTest > verificaInteraccionConElPuerto() PASSED
 ServicioReservasMockitoTest > noConsultaCatalogoConCantidadInvalida() PASSED
 ServicioReservasTest > calculaTotalDeReserva() PASSED
 ServicioReservasTest > fallaCuandoProductoNoExiste() PASSED
-BUILD SUCCESSFUL in 1s
+BUILD SUCCESSFUL in 2s
 ```
+
+El aviso de la JVM sobre `Sharing` aparece durante los tests de Mockito y no afecta el resultado: los seis tests pasan.
 
 Salida observada de `./gradlew -q :app:run --args="PED-100 CAF-001 2"`:
 
 ```text
-{"@timestamp":"2026-11-23T03:20:55.726415-05:00","@version":"1","message":"Iniciando reserva","logger_name":"com.aurora.build.app.TiendaAuroraBuildApp","thread_name":"main","level":"INFO","level_value":20000,"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"}
-{"@timestamp":"2026-11-23T03:20:55.729604-05:00","@version":"1","message":"Reserva confirmada total=25.00 cantidad=2","logger_name":"com.aurora.build.app.TiendaAuroraBuildApp","thread_name":"main","level":"INFO","level_value":20000,"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"}
+{"@timestamp":"2026-11-23T03:29:18.66899-05:00","@version":"1","message":"Iniciando reserva","logger_name":"com.aurora.build.app.TiendaAuroraBuildApp","thread_name":"main","level":"INFO","level_value":20000,"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"}
+{"@timestamp":"2026-11-23T03:29:18.676967-05:00","@version":"1","message":"Reserva confirmada total=25.00 cantidad=2","logger_name":"com.aurora.build.app.TiendaAuroraBuildApp","thread_name":"main","level":"INFO","level_value":20000,"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"}
 RESERVA_OK PED-100 25.00
 ```
 
-Salida observada de `mvn -B verify`:
+Salida observada de `mvn -B verify` en esta corrida (los `target/` ya existían de una ejecución previa, por eso `Nothing to compile`):
 
 ```text
 [INFO] --- enforcer:3.6.2:enforce (exige-jdk-25) @ aurora-maven-demo ---
 [INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
 [INFO] --- compiler:3.14.1:compile (default-compile) @ aurora-maven-demo ---
-[INFO] Compiling 1 source file with javac [debug release 25] to target/classes
+[INFO] Nothing to compile - all classes are up to date.
 [INFO] --- surefire:3.5.4:test (default-test) @ aurora-maven-demo ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
 [INFO] Running com.aurora.maven.ImporteTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.aurora.maven.ImporteTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in com.aurora.maven.ImporteTest
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 [INFO] --- jar:3.5.1:jar (default-jar) @ aurora-maven-demo ---
-[INFO] Building jar: /private/tmp/opencode/aurora-m15/maven-demo/target/aurora-maven-demo-1.0.0.jar
 [INFO] BUILD SUCCESS
+[INFO] Total time:  1.919 s
+[INFO] Finished at: 2026-11-23T03:29:21-05:00
 ```
 
 ## Errores comunes y diagnóstico

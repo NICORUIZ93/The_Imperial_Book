@@ -4150,10 +4150,6 @@
       {
         "title": "Java 25 para programas pequeños: `IO`, archivos compactos e `import module`",
         "fragment": "tema-9-java-25-para-programas-pequenos-io-archivos-compactos-e-import-module"
-      },
-      {
-        "title": "Ejercicio del track: `IO.readln` y el error de `--release 21`",
-        "fragment": "ejercicio-del-track-io-readln-y-el-error-de-release-21"
       }
     ],
     "1": [
@@ -4498,16 +4494,16 @@
     ],
     "22": [
       {
-        "title": "Copia defensiva para proteger invariantes",
-        "fragment": "tema-1-copia-defensiva-para-proteger-invariantes"
+        "title": "Copia defensiva, igualdad y claves de hash",
+        "fragment": "tema-1-copia-defensiva-igualdad-y-claves-de-hash"
       },
       {
-        "title": "Copia superficial vs profunda y los problemas de clone()",
-        "fragment": "tema-2-copia-superficial-vs-profunda-y-los-problemas-de-clone"
+        "title": "Copia superficial, profunda, enums y switch exhaustivo",
+        "fragment": "tema-2-copia-superficial-profunda-enums-y-switch-exhaustivo"
       },
       {
-        "title": "Enums, clases anidadas e inner: identidad, estado y captura",
-        "fragment": "tema-3-enums-clases-anidadas-e-inner-identidad-estado-y-captura"
+        "title": "Clases anidadas, `this$0` y retención",
+        "fragment": "tema-3-clases-anidadas-this-0-y-retencion"
       }
     ],
     "3": [
@@ -6660,11 +6656,11 @@
         "fragment": "tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
       },
       {
-        "title": "Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor`",
+        "title": "Proxies y AOP: @Aspect, @Around y BeanPostProcessor",
         "fragment": "tema-5-proxies-y-aop-aspect-around-y-beanpostprocessor"
       },
       {
-        "title": "Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL",
+        "title": "Varias implementaciones (@Primary, @Qualifier) y expresiones SpEL",
         "fragment": "tema-6-varias-implementaciones-primary-qualifier-y-expresiones-spel"
       },
       {

@@ -93,6 +93,8 @@ tienda-aurora-colecciones/
                     └── Comparadores.java
 ```
 
+La versión verificada añade `auditoria/BenchmarkInsercion.java` y `src/test/java/com/aurora/colecciones/ColeccionesTest.java`; ambos se documentan completos más adelante.
+
 ## build.gradle.kts
 
 ```kotlin
@@ -122,9 +124,17 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
 }
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test { useJUnitPlatform() }
 ```
 
-El build es deliberadamente pequeño: no hay dependencias externas porque el objetivo del módulo es entender las colecciones del JDK. El toolchain fija Java 25 y `-Werror` evita que advertencias de tipos crudos o APIs obsoletas pasen desapercibidas.
+El build es deliberadamente pequeño: la única dependencia externa es JUnit 5, y solo para `src/test`. El código de producción usa únicamente colecciones del JDK. El toolchain fija Java 25 y `-Werror` evita que advertencias de tipos crudos o APIs obsoletas pasen desapercibidas.
 
 ## settings.gradle.kts
 
@@ -1153,7 +1163,7 @@ gradle wrapper --gradle-version 9.9.1
 ./gradlew -q build
 ```
 
-`BUILD SUCCESSFUL` confirma que los 20 archivos Java compilan con `-Xlint:all -Werror`.
+La versión verificada tiene **17 archivos Java en `src/main/java`** (16 originales más `BenchmarkInsercion.java`) y 1 archivo de test en `src/test/java`. `./gradlew -q build` termina con código 0 y sin salida: con `-q` Gradle no imprime `BUILD SUCCESSFUL`, pero `-Xlint:all -Werror` sigue aplicando a la compilación de producción y de test.
 
 El catálogo muestra el orden de alta y después un orden por precio. Son la misma colección de productos vista con dos criterios distintos:
 
@@ -1215,17 +1225,17 @@ Espera ordenada por prioridad:
   AUR-1001  ECONOMICA Marta    $29.75
 
 Atención:
-  atendido AUR-1002  EXPRESS   $34.90
-  atendido AUR-1004  EXPRESS   $49.00
-  atendido AUR-1003  ESTANDAR  $32.00
-  atendido AUR-1005  ESTANDAR  $37.50
-  atendido AUR-1001  ECONOMICA $29.75
+  atendido AUR-1002  EXPRESS    $34.90
+  atendido AUR-1004  EXPRESS    $49.00
+  atendido AUR-1003  ESTANDAR   $32.00
+  atendido AUR-1005  ESTANDAR   $37.50
+  atendido AUR-1001  ECONOMICA  $29.75
 
 Deshacer la última atención:
   reabierto AUR-1001 -> en espera 1
 
 Avisos al mostrador:
-  Recibido AUR-1001 (ECONOMICA)
+  Reabierto AUR-1001
   quedan 10 avisos en cola
 ```
 
@@ -1296,6 +1306,22 @@ La auditoría concentra las comprobaciones de contrato:
   vuelve a la cabeza -> AUR-1002
   LinkedHashSet -> [cafe, equipo, digital]
 ```
+
+El benchmark del ejercicio se ejecuta con su propio comando:
+
+```bash
+./gradlew -q run --args="benchmark"
+```
+
+Salida observada en la corrida limpia del 2026-11-23:
+
+```text
+Inserciones al inicio de 100000 elementos (System.nanoTime)
+  ArrayList      291 ms (291642292 ns) tamano=100000
+  LinkedList       1 ms (1996709 ns) tamano=100000
+```
+
+Los tiempos son ilustrativos de **esa** ejecución: correr dos veces seguidas dio 291/292 ms para `ArrayList` y 1/2 ms para `LinkedList`. Lo estable es la complejidad —desplazar 100.000 elementos en un arreglo es O(n²) acumulado, mientras que enlazar por delante es O(1) por inserción—, no el número exacto de milisegundos.
 
 #### Test
 
@@ -1454,7 +1480,7 @@ Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no
 <testsuite name="com.aurora.colecciones.ColeccionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:24.100Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.025">
 ```
 
-Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+El XML mostrado corresponde a la última corrida limpia.
 
 ## Conceptos cubiertos
 
@@ -1624,15 +1650,15 @@ Espera ordenada por prioridad:
 
 El deshacer usa una pila. Cuando se atiende un pedido, se saca de la `PriorityQueue` y se hace `push` al historial. Cuando se deshace, se hace `poll` del historial y se vuelve a insertar en la cola de prioridad. La salida lo confirma: se atiende hasta vaciar, se deshace `AUR-1001` y vuelve a quedar en espera.
 
-Los avisos usan la misma clase `ArrayDeque`, pero con disciplina FIFO. `addLast` encola un aviso nuevo; `pollFirst` entrega el más antiguo. En la salida, el primer aviso consumido es `Recibido AUR-1001 (ECONOMICA)` y quedan 10 avisos pendientes. Esta es una lección útil: la estructura de datos ofrece capacidades; el nombre del método que eliges documenta el contrato que estás aplicando.
+Los avisos usan la misma clase `ArrayDeque`, pero con disciplina FIFO. `addLast` encola un aviso nuevo; `pollFirst` entrega el más antiguo. En la salida, `deshacer` antepone `Reabierto AUR-1001`, así que ese es el primer aviso consumido; después quedan 10 avisos pendientes. Esta es una lección útil: la estructura de datos ofrece capacidades; el nombre del método que eliges documenta el contrato que estás aplicando.
 
 ## Verificación real
 
 Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
-./gradlew -q classes
-./gradlew -q test
+./gradlew -q clean test
+./gradlew -q run --args="benchmark"
 ./gradlew -q run --args="catalogo"
 ./gradlew -q run --args="etiquetas"
 ./gradlew -q run --args="pedidos"
@@ -1640,9 +1666,14 @@ Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.
 ./gradlew -q run --args="auditoria"
 ```
 
-Resultados observados (resumen):
+Resultados observados: `./gradlew -q clean test` termina con código 0 y sin salida; el resumen real de la última corrida limpia es:
 
-- `classes` y `test`: compilación y suite exitosas (0 fallas).
+```text
+<testsuite name="com.aurora.colecciones.ColeccionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:24.100Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.025">
+```
+
+Los siete casos cubren claves inmutables, índices del catálogo, comparadores y wildcards, paginación genérica, cola de prioridad con deshacer, clave mutable legada e igualdad de records. `benchmark` produjo la salida transcrita en `## Ejecutar`.
+
 - `catalogo`: muestra productos en orden de alta y por precio ascendente.
 - `catalogo`, `etiquetas`, `pedidos`, `paginas` y `auditoria`: todas ejecutadas el 2026-11-23; confirman contrato `equals/hashCode`, problema de clave mutable en `HashMap`, borrado de tipos, orden con `Comparable/Comparator`, paginación y comportamiento de `Queue/Deque/PriorityQueue/LinkedHashSet`.
 
@@ -1671,3 +1702,5 @@ El criterio de diseño que conviene llevarse de este módulo es concreto: antes 
 - Distinguí `Comparable` (orden natural) de `Comparator` (orden contextual).
 - Usé `ArrayDeque` para pila/cola en memoria y `PriorityQueue` cuando la prioridad importa más que el orden de llegada.
 - Pude explicar el efecto del borrado de tipos y por qué no se pueden sobrecargar métodos que solo difieren en genéricos.
+- Medí 100.000 inserciones al inicio con `System.nanoTime()` y leí el resultado como una corrida ilustrativa, no como una verdad universal.
+- Ejecuté `./gradlew -q clean test` y verifiqué las siete pruebas en el XML de Gradle.

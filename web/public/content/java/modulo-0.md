@@ -1208,7 +1208,7 @@ Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no
 <testsuite name="com.aurora.fundamentos.FundamentosTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:29.814Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.021">
 ```
 
-Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+El XML mostrado corresponde a la última corrida limpia.
 
 ## Ejecutar
 
@@ -1795,7 +1795,7 @@ SKU (fin para terminar): Cantidad:   Debe ser mayor que cero
 Cantidad:   Agregado: Filtros x100 x2
 SKU (fin para terminar): ==========================================
  TIENDA AURORA - RECIBO AUR-2026-0001
- Fecha: 23/11/2026 03:35
+ Fecha: 23/11/2026 09:23
 ==========================================
  CAF-0001 Café Aurora        3 x   $12.50 =    $37.50
  FIL-0004 Filtros x100       2 x    $4.75 =     $9.50
@@ -1810,7 +1810,7 @@ SKU (fin para terminar): ==========================================
 ==========================================
 ```
 
-La fecha del recibo sale del reloj de la máquina porque el modo interactivo no recibe `--fecha`. Para las pruebas se usa la variante con fecha fija, que sí es determinista.
+La fecha del recibo sale del reloj de la máquina porque el modo interactivo no recibe `--fecha`. La transcripción anterior corresponde a la corrida de las 09:23 del 2026-11-23; en tu máquina aparecerá otra hora. Para las pruebas automatizadas se usa la variante con fecha fija, que sí es determinista.
 
 `java.time` separa tres conceptos que `Date` mezclaba: `LocalDate` es una fecha sin hora ni zona; `LocalDateTime` es fecha y hora locales; `Instant` es un punto absoluto en UTC. Tienda Aurora guarda la hora local de la tienda en `Pedido` y expone el instante UTC para integraciones:
 
@@ -1913,24 +1913,80 @@ Esta forma es ideal para utilidades pequeñas y para enseñar, pero no reemplaza
 
 El error más común es ejecutar un archivo compacto con un JDK anterior a 25. La característica no existe y el lanzador no reconoce el archivo como código Java. La corrección es verificar `java -version` y, si el entorno es antiguo, convertir el archivo a la forma clásica con `public class` y `public static void main`. Otra confusión frecuente es creer que `import module` importa dependencias de Maven: solo importa módulos del propio JDK.
 
+#### Ejercicio del track: `IO.readln` y el error de `--release 21`
+
+`IO` también lee. Este segundo archivo compacto usa `IO.readln` con mensaje y pertenece al proyecto verificable; cada bloque siguiente es el contenido completo del archivo.
+
+**Archivo:** `scripts/LeerNombre.java` en `/tmp/opencode/aurora-m0`.
+
+```java
+import module java.base;
+
+void main(String[] args) {
+    String nombre = IO.readln("Tu nombre: ");
+    IO.println("Hola, " + nombre);
+}
+```
+
+Compilación y ejecución con Java 25:
+
+```bash
+mkdir -p /tmp/m0-readln-out
+javac --release 25 -encoding UTF-8 -d /tmp/m0-readln-out scripts/LeerNombre.java
+printf 'Aurora\n' | java -cp /tmp/m0-readln-out LeerNombre
+```
+
+```text
+Tu nombre: Hola, Aurora
+```
+
+Ahora el ejercicio pide provocar el fallo con `--release 21`:
+
+```bash
+javac --release 21 -encoding UTF-8 -d /tmp/m0-readln-out scripts/LeerNombre.java
+```
+
+Salida literal, con código de salida 1:
+
+```text
+scripts/LeerNombre.java:1: error: module imports are not supported in -source 21
+import module java.base;
+       ^
+  (use -source 25 or higher to enable module imports)
+scripts/LeerNombre.java:3: error: implicitly declared classes are not supported in -source 21
+void main(String[] args) {
+^
+  (use -source 25 or higher to enable implicitly declared classes)
+2 errors
+```
+
+El compilador no llega a quejarse de `IO.readln`: se detiene antes, en las dos construcciones de Java 25 (`import module` y la clase implícita). `--release 21` no solo cambia la API visible: también fija `-source 21`, por eso rechaza la sintaxis compacta. Para un script que deba correr en Java 21 hay que escribir `public class LeerNombre` con `public static void main` y reemplazar `IO` por `Scanner` o `System.console()`.
+
 ## Verificación real
 
 Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
-./gradlew -q classes
-./gradlew -q test
+./gradlew -q clean test
 ./gradlew -q run --args="catalogo"
 ./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --fecha 2026-11-22T10:30"
 ./gradlew -q run --args="diagnostico"
+javac --release 25 -encoding UTF-8 -d /tmp/m0-readln-out scripts/LeerNombre.java
+javac --release 21 -encoding UTF-8 -d /tmp/m0-readln-out scripts/LeerNombre.java
 ```
 
-Resultados observados (resumen):
+`./gradlew -q clean test` termina con código 0 y sin salida. El resumen real de la última corrida limpia es:
 
-- `classes` y `test`: compilación y suite sin fallas.
+```text
+<testsuite name="com.aurora.fundamentos.FundamentosTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:29.814Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.021">
+```
+
+Los siete casos cubren dinero exacto, normalización de SKU, copia defensiva, tramos e IVA del carrito, días laborables, recibo con fecha fija y validación de líneas. El resto de comandos se ejecutó el 2026-11-23:
+
 - `catalogo`: lista 4 productos con SKU, nombre, precio y stock.
 - `cotizar`: genera recibo `AUR-2026-0001`, total `$45.38`, entrega `25/11/2026`, `timestampUtc=1795343400000`.
 - `diagnostico`: confirma diferencias `double` vs `Dinero`, desbordamiento `int`/`long`/`Math.multiplyExact`, `==` vs `equals`, caché `Integer`, copia defensiva de arreglos y comportamiento heredado de `Date/Calendar`.
+- `javac --release 25` sobre `LeerNombre.java`: código 0. `javac --release 21`: los dos errores literales transcritos en el Tema 9, código 1.
 
 ## Errores comunes y diagnóstico
 
@@ -1966,3 +2022,5 @@ El siguiente módulo convierte estas piezas sueltas en un modelo orientado a obj
 - Leí entrada con `Scanner` validando el caso inválido.
 - Calculé fechas con `java.time` y días laborables.
 - Ejecuté un archivo compacto con `java Archivo.java` en JDK 25+.
+- Usé `IO.readln` y confirmé con `javac --release 21` que `import module` y las clases implícitas no existen en Java 21.
+- Ejecuté `./gradlew -q clean test` y leí el resumen de `build/test-results/test/`.

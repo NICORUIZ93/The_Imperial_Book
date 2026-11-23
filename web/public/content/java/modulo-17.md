@@ -725,7 +725,7 @@ JdbcTest > transaccionHaceCommit() PASSED
 JdbcTest > preparedStatementInsertaYConsulta() PASSED
 JdbcTest > transaccionHaceRollback() PASSED
 JdbcTest > aislamientoReadCommittedNoVeDirtyRead() PASSED
-BUILD SUCCESSFUL in 1s
+BUILD SUCCESSFUL in 8s
 ```
 
 Salida observada de `./gradlew -q run`:

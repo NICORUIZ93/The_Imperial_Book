@@ -1,6 +1,6 @@
 # Módulo 20: Java funcional — interfaces que componen comportamiento
 
-Cuando un flujo de envíos crece, el código imperativo suele mezclar tres cosas distintas: decidir si un envío es válido, transformar datos para un reporte, y ejecutar efectos como imprimir, guardar o publicar eventos. El resultado funciona, pero es frágil: probar una regla exige levantar todo el flujo, cambiar un formato rompe una validación, y un `for` con banderas oculta la intención de negocio.
+Cuando un flujo de envíos crece, el código imperativo suele mezclar tres cosas distintas: decidir si un envío es válido, transformar datos para un reporte y ejecutar efectos como imprimir, guardar o publicar eventos. El resultado funciona, pero es frágil: probar una regla exige levantar todo el flujo, cambiar un formato rompe una validación, y un `for` con banderas oculta la intención de negocio.
 
 Java no te obliga a elegir entre objetos y funciones. La opción útil es combinar ambos: objetos para modelar el dominio y funciones para pasar comportamiento pequeño y comprobable. En este módulo vas a construir `tienda-aurora-java-m20`, un mini-módulo de envíos donde las reglas se componen, los cálculos se prueban sin I/O, y los efectos quedan en el borde.
 
@@ -48,13 +48,15 @@ tienda-aurora-java-m20/
         └── FuncionalTest.java
 ```
 
-#### Build: `settings.gradle.kts`
+## Build desde cero
+
+#### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m20"
 ```
 
-#### Build: `build.gradle.kts`
+#### `build.gradle.kts`
 
 Java 25 por toolchain, JUnit 5 para pruebas y `-Werror` para no ignorar warnings.
 
@@ -101,9 +103,9 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-## Modelo de dominio base
+## Código completo del proyecto
 
-Antes de hablar de lambdas, el dominio debe ser estable. Si el dato es mutable o inválido, la composición funcional solo hará más elegante el desastre.
+Todos los archivos Java que se compilan y ejecutan están publicados aquí completos, con `package`, imports y cuerpo. Los temas posteriores se refieren a estos archivos; no hay fragmentos que debas pegar a mano.
 
 #### `EstadoEnvio.java`
 
@@ -114,8 +116,6 @@ public enum EstadoEnvio {
     PENDIENTE, EN_RUTA, ENTREGADO, FALLIDO
 }
 ```
-
-El `enum` evita estados mágicos. Un `switch` o un filtro sobre `EstadoEnvio.FALLIDO` es más seguro que comparar strings.
 
 #### `Envio.java`
 
@@ -150,26 +150,36 @@ public record Envio(
 }
 ```
 
-`List.copyOf` es una copia defensiva: quien construya el envío no puede mutar después la lista interna. Esta inmutabilidad hace que pasar `Envio` por streams y funciones sea predecible.
+`List.copyOf` es una copia defensiva: quien construya el envío no puede mutar después la lista interna. Esa inmutabilidad hace que pasar `Envio` por streams y funciones sea predecible.
 
-## Los 13 conceptos del módulo, aplicados al proyecto
+#### `EnvioRepository.java`
 
-### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
+```java
+package com.aurora.funcional;
 
-El JDK agrupa el comportamiento más común en cuatro formas. La diferencia no es sintáctica; es el contrato:
+import java.util.Map;
+import java.util.Optional;
 
-| Forma | Entrada | Salida | Pregunta que responde |
-|---|---|---|---|
-| `Predicate<T>` | `T` | `boolean` | ¿Cumple la condición? |
-| `Function<T,R>` | `T` | `R` | ¿Cómo se transforma? |
-| `Consumer<T>` | `T` | `void` | ¿Qué efecto aplico? |
-| `Supplier<T>` | ninguna | `T` | ¿Cómo obtengo/creo un valor? |
+/** Puerto simple para demostrar Optional en borde de consulta. */
+public class EnvioRepository {
+    private final Map<String, Envio> porId;
 
-El error típico es usar la forma equivocada por comodidad. Si una función “calcula y además imprime”, ya no es solo `Function`: mezcló cálculo con efecto.
+    public EnvioRepository(Map<String, Envio> porId) {
+        this.porId = Map.copyOf(porId);
+    }
 
-#### Código: `ReglaEnvio.java`
+    public Optional<Envio> buscarPorId(String id) {
+        return Optional.ofNullable(porId.get(id));
+    }
 
-Usamos `Predicate<Envio>` para la condición, pero lo envolvemos en un tipo de dominio porque una regla de negocio también necesita motivo. Nota: no es `@FunctionalInterface` porque tiene dos métodos abstractos; la factory `de(...)` sí acepta una lambda/predicate.
+    public Envio obtenerObligatorio(String id) {
+        return buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("envío obligatorio no encontrado: " + id));
+    }
+}
+```
+
+#### `ReglaEnvio.java`
 
 ```java
 package com.aurora.funcional;
@@ -216,7 +226,7 @@ public interface ReglaEnvio {
 }
 ```
 
-#### Código: `ReglasEnvio.java` (parte de las cuatro formas)
+#### `ReglasEnvio.java`
 
 ```java
 package com.aurora.funcional;
@@ -284,312 +294,129 @@ public final class ReglasEnvio {
 }
 ```
 
-En `App`, estas formas se ven con intención clara:
-
-```java
-ReglaEnvio regla = ReglasEnvio.pesoMaximo(new BigDecimal("10")).and(ReglasEnvio.noFallido());
-Predicate<Envio> valido = regla.asPredicate();
-Function<Envio, String> etiqueta = ReglasEnvio.etiqueta();
-Consumer<String> auditor = ReglasEnvio.auditor(System.out::println);
-Supplier<String> idNuevo = ReglasEnvio.generadorId("TMP", 99);
-System.out.println("ID=" + idNuevo.get());
-ReporteEnvios.etiquetasValidas(envios, valido, etiqueta).forEach(auditor);
-System.out.println("REGLA=" + regla.motivo());
-```
-
-Salida verificada de ese bloque:
-
-```text
-ID=TMP-99
-A1@BOG
-A4@CALI
-REGLA=peso <= 10 Y no fallido
-```
-
-`A2` se excluye por peso y `A3` por estado fallido. La regla dice *por qué* es válida la composición.
-
-### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
-
-`Function<T,R>` recibe un valor y produce otro. `BiFunction<T,U,R>` recibe dos. El criterio es simple: si necesitas dos entradas independientes para calcular un resultado, `BiFunction` es natural; si esos dos valores empiezan a tener reglas propias, crea un objeto.
-
-En el proyecto, `tarifaConImpuesto()` calcula total con base e impuesto. `etiqueta()` transforma `Envio` a `String`.
-
-```java
-BiFunction<BigDecimal, BigDecimal, BigDecimal> tarifa = ReglasEnvio.tarifaConImpuesto();
-BigDecimal total = tarifa.apply(new BigDecimal("100"), new BigDecimal("0.19"));
-```
-
-Resultado: `119.00` después de normalizar con `normalizarYRedondear()`. Si mañana el impuesto depende de país, zona o tipo de producto, el paso correcto no es agregar más parámetros a la `BiFunction`; es introducir un tipo de dominio.
-
-### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
-
-La composición evita anidar llamadas como `f(g(h(x)))`. `andThen` lee en orden natural: primero esto, luego aquello. `compose` invierte el orden. En predicados, `and/or/negate` expresan lógica booleana.
-
-`ReglaEnvio.and` compone condición y motivo. `normalizarYRedondear()` compone dos operadores:
-
-```java
-UnaryOperator<BigDecimal> noNegativo = v -> v.signum() < 0 ? BigDecimal.ZERO : v;
-UnaryOperator<BigDecimal> dosDecimales = v -> v.setScale(2, java.math.RoundingMode.HALF_UP);
-return noNegativo.andThen(dosDecimales);
-```
-
-Caso de borde: componer demasiado puede ocultar la intención. Si la cadena necesita un comentario para entenderse, extrae métodos con nombres de negocio o usa pasos explícitos.
-
-### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
-
-Un stream no ejecuta sus pasos intermedios cuando los declaras. Solo ejecuta cuando llega una operación terminal. Eso permite pipelines eficientes, pero también confunde si esperas efectos inmediatos.
-
-#### Código: `ReporteEnvios.java` (pereza y orden)
-
-```java
-public static long contarConTraza(Stream<Integer> valores, List<String> traza) {
-    return valores
-            .filter(v -> {
-                traza.add("filter:" + v);
-                return v % 2 == 0;
-            })
-            .map(v -> {
-                traza.add("map:" + v);
-                return v * 10;
-            })
-            .count();
-}
-```
-
-En `App`:
-
-```java
-List<String> traza = new ArrayList<>();
-long cuenta = ReporteEnvios.contarConTraza(List.of(1, 2, 3, 4, 5).stream(), traza);
-System.out.println("CUENTA=" + cuenta);
-System.out.println("TRAZA=" + traza.size());
-```
-
-Salida verificada: `CUENTA=2`, `TRAZA=7`. La traza muestra que solo los valores pares pasan por `map`, y nada ocurre antes de `count()`.
-
-Otro borde crítico: un stream se consume una vez. El test `streamEsPerezosoYSeConsumeUnaVez` espera `IllegalStateException` al contar dos veces el mismo stream.
-
-### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
-
-`UnaryOperator<T>` es `Function<T,T>`; `BinaryOperator<T>` es `BiFunction<T,T,T>`. Úsalos cuando el tipo se conserva. Comunican mejor la intención que una función genérica.
-
-```java
-UnaryOperator<BigDecimal> descuento = ReglasEnvio.aplicarDescuento(new BigDecimal("0.10"));
-BinaryOperator<BigDecimal> mayor = ReglasEnvio.mayorCosto();
-```
-
-Salida verificada:
-
-```text
-TOTAL=107.10
-MAYOR=25
-```
-
-`TOTAL` viene de aplicar impuesto, descuento y normalización. Los operadores mantienen el dominio en `BigDecimal`, evitando conversiones accidentales.
-
-### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
-
-Una referencia a método es una forma compacta de una lambda existente. No agrega magia; solo nombra un comportamiento ya disponible.
-
-Formas útiles en este módulo:
-
-- `Envio::destino` — método de instancia sobre cada elemento.
-- `Envio::id` — extracción clara para collectors.
-- `System.out::println` — efecto en el borde, inyectado como `Consumer`.
-- `BigDecimal::add` — reducción/operación conocida.
-
-```java
-List<String> destinos = envios.stream().map(Envio::destino).distinct().sorted().toList();
-```
-
-Usa referencia a método cuando se lee mejor que la lambda. Si necesitas validar, transformar varias cosas o capturar contexto complejo, una lambda o un método nombrado puede ser más claro.
-
-### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 40 min
-
-`Optional<T>` modela ausencia en el retorno. Es ideal en consultas: buscar por id puede no encontrar nada. No es buena idea usarlo como campo de entidad o parámetro obligatorio.
-
-#### Código: `EnvioRepository.java`
+#### `ReporteEnvios.java`
 
 ```java
 package com.aurora.funcional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/** Puerto simple para demostrar Optional en borde de consulta. */
-public class EnvioRepository {
-    private final Map<String, Envio> porId;
+/** Cálculos puros sobre envíos. No imprime ni guarda: devuelve datos. */
+public final class ReporteEnvios {
+    private ReporteEnvios() {}
 
-    public EnvioRepository(Map<String, Envio> porId) {
-        this.porId = Map.copyOf(porId);
+    public static List<String> etiquetasValidas(List<Envio> envios, Predicate<Envio> regla, Function<Envio, String> etiqueta) {
+        return envios.stream()
+                .filter(regla)
+                .map(etiqueta)
+                .toList();
     }
 
-    public Optional<Envio> buscarPorId(String id) {
-        return Optional.ofNullable(porId.get(id));
+    public static List<String> paradasNormalizadas(List<Envio> envios) {
+        return envios.stream()
+                .flatMap(e -> e.paradas().stream())
+                .map(String::trim)
+                .filter(p -> !p.isBlank())
+                .map(String::toUpperCase)
+                .distinct()
+                .sorted()
+                .toList();
     }
 
-    public Envio obtenerObligatorio(String id) {
-        return buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("envío obligatorio no encontrado: " + id));
+    public static Optional<Envio> masCaro(List<Envio> envios) {
+        return envios.stream().max(Comparator.comparing(Envio::costo));
+    }
+
+    public static long totalEntregados(List<Envio> envios) {
+        return envios.stream().filter(e -> e.estado() == EstadoEnvio.ENTREGADO).count();
+    }
+
+    public static BigDecimal sumaCostos(List<Envio> envios) {
+        return envios.stream()
+                .map(Envio::costo)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public static Map<EstadoEnvio, List<Envio>> porEstado(List<Envio> envios) {
+        return envios.stream().collect(Collectors.groupingBy(Envio::estado));
+    }
+
+    public static Map<String, BigDecimal> costoPorDestino(List<Envio> envios) {
+        return envios.stream().collect(Collectors.groupingBy(
+                Envio::destino,
+                LinkedHashMap::new,
+                Collectors.reducing(BigDecimal.ZERO, Envio::costo, BigDecimal::add)
+        ));
+    }
+
+    public static String resumenIds(List<Envio> envios) {
+        return envios.stream().map(Envio::id).collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    public static Set<String> destinosOrdenados(List<Envio> envios) {
+        return envios.stream()
+                .map(Envio::destino)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    // Demuestra orden: normalizar antes de validar evita rechazos falsos
+    public static List<String> destinosValidosNormalizados(List<String> destinosCrudos) {
+        Predicate<String> permitido = d -> Set.of("BOG", "MED", "CALI").contains(d);
+        return destinosCrudos.stream()
+                .map(String::trim)
+                .map(String::toUpperCase)
+                .filter(permitido)
+                .toList();
+    }
+
+    // Pipeline perezoso: no ejecuta hasta terminal
+    public static long contarConTraza(Stream<Integer> valores, List<String> traza) {
+        return valores
+                .filter(v -> {
+                    traza.add("filter:" + v);
+                    return v % 2 == 0;
+                })
+                .map(v -> {
+                    traza.add("map:" + v);
+                    return v * 10;
+                })
+                .count();
+    }
+
+    // Paralelo seguro: sin estado compartido mutable
+    public static BigDecimal sumaParalelaSegura(List<BigDecimal> costos) {
+        return costos.parallelStream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // Demuestra problema: suma con estado compartido (solo para test educativo)
+    public static long sumaParalelaInsegura(List<Integer> valores) {
+        final int[] caja = {0}; // mutable compartido: race condition
+        valores.parallelStream().forEach(v -> caja[0] += v);
+        return caja[0];
     }
 }
 ```
 
-Uso verificado:
+`sumaParalelaInsegura` se conserva como contraejemplo: nunca debe usarse para calcular dinero. `sumaParalelaSegura` usa `reduce` con identidad y operación asociativa, sin estado compartido.
 
-```text
-OPT=A1
-MISS=NA
-```
-
-Y el caso obligatorio falla con error claro: `IllegalArgumentException: envío obligatorio no encontrado: ZZ`. El mensaje importa: un `NoSuchElementException` genérico no ayuda en producción.
-
-### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 45 min
-
-Las operaciones intermedias devuelven otro stream. Las más comunes:
-
-- `filter`: conserva elementos que cumplen una condición.
-- `map`: transforma uno a uno.
-- `flatMap`: transforma uno a muchos y aplana.
-- `distinct`: elimina duplicados por `equals/hashCode`.
-- `sorted`: ordena; cuidado con el costo en colecciones grandes.
-
-#### Código: `ReporteEnvios.java` (paradas normalizadas)
-
-```java
-public static List<String> paradasNormalizadas(List<Envio> envios) {
-    return envios.stream()
-            .flatMap(e -> e.paradas().stream())
-            .map(String::trim)
-            .filter(p -> !p.isBlank())
-            .map(String::toUpperCase)
-            .distinct()
-            .sorted()
-            .toList();
-}
-```
-
-Salida verificada: `PARADAS=[BODEGA, BOG, CALI, MED]`. Aquí `flatMap` es clave: cada envío tiene una lista de paradas; sin aplanar, terminarías con `Stream<List<String>>`.
-
-### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 45 min
-
-La terminal cierra el pipeline. `count`, `max`, `min`, `findFirst`, `anyMatch`, `reduce`, `collect` y `forEach` son terminales. Después de una terminal, el stream ya no sirve.
-
-```java
-public static Optional<Envio> masCaro(List<Envio> envios) {
-    return envios.stream().max(Comparator.comparing(Envio::costo));
-}
-
-public static long totalEntregados(List<Envio> envios) {
-    return envios.stream().filter(e -> e.estado() == EstadoEnvio.ENTREGADO).count();
-}
-
-public static BigDecimal sumaCostos(List<Envio> envios) {
-    return envios.stream()
-            .map(Envio::costo)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-}
-```
-
-Salida verificada:
-
-```text
-MAS_CARO=A2
-ENTREGADOS=1
-SUMA=55000
-```
-
-`reduce` necesita identidad y operación asociativa. Para sumas es claro; para objetos mutables, prefiere collectors o un acumulador explícito.
-
-### Tema 10: Collectors: formar listas, mapas, grupos y texto · Avanzado · 50 min
-
-`collect` materializa el resultado. La elección del collector define el contrato de salida.
-
-```java
-public static Map<EstadoEnvio, List<Envio>> porEstado(List<Envio> envios) {
-    return envios.stream().collect(Collectors.groupingBy(Envio::estado));
-}
-
-public static Map<String, BigDecimal> costoPorDestino(List<Envio> envios) {
-    return envios.stream().collect(Collectors.groupingBy(
-            Envio::destino,
-            LinkedHashMap::new,
-            Collectors.reducing(BigDecimal.ZERO, Envio::costo, BigDecimal::add)
-    ));
-}
-
-public static String resumenIds(List<Envio> envios) {
-    return envios.stream().map(Envio::id).collect(Collectors.joining(", ", "[", "]"));
-}
-
-public static Set<String> destinosOrdenados(List<Envio> envios) {
-    return envios.stream()
-            .map(Envio::destino)
-            .collect(Collectors.toCollection(TreeSet::new));
-}
-```
-
-Salida verificada:
-
-```text
-POR_ESTADO=[ENTREGADO, EN_RUTA, PENDIENTE, FALLIDO]
-COSTO_DESTINO={BOG=18000, MED=25000, CALI=12000}
-IDS=[A1, A2, A3, A4]
-DEST_SET=[BOG, CALI, MED]
-```
-
-El `LinkedHashMap` preserva orden de aparición; `TreeSet` ordena. No son detalles cosméticos: el contrato de tu API depende de esto.
-
-### Tema 11: Streams paralelos: comparar antes de acelerarlos · Avanzado · 50 min
-
-`parallelStream()` divide el trabajo en tareas y las ejecuta en el ForkJoinPool común. Puede ayudar cuando hay muchos datos, operaciones costosas y CPU disponible. Puede empeorar cuando el dataset es pequeño, la operación es barata, hay I/O, o hay estado compartido.
-
-Seguro:
-
-```java
-public static BigDecimal sumaParalelaSegura(List<BigDecimal> costos) {
-    return costos.parallelStream().reduce(BigDecimal.ZERO, BigDecimal::add);
-}
-```
-
-Inseguro (solo educativo):
-
-```java
-public static long sumaParalelaInsegura(List<Integer> valores) {
-    final int[] caja = {0}; // mutable compartido: race condition
-    valores.parallelStream().forEach(v -> caja[0] += v);
-    return caja[0];
-}
-```
-
-**Nota de verificación honesta:** no ejecuté JMH en esta corrida. La regla es medir con datos y hardware reales antes de dejar `parallelStream()` en producción. La corrección, en cambio, sí es verificable: no compartas estado mutable.
-
-### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Avanzado · 45 min
-
-Una función pura depende solo de su entrada y no causa efectos observables. Eso la hace fácil de probar y componer. `ReporteEnvios` es puro: recibe listas, devuelve valores.
-
-El efecto se hace en el borde:
-
-```java
-String reporte = "REPORTE:" + ReporteEnvios.resumenIds(envios);
-auditor.accept(reporte); // efecto en el borde
-```
-
-Salida: `REPORTE:[A1, A2, A3, A4]`. Si mañana el reporte va a un logger, a Kafka o a HTTP, el cálculo no cambia.
-
-### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
-
-`java.util.concurrent.Flow` implementa Reactive Streams: `Publisher`, `Subscriber`, `Subscription`, `Processor`. El punto clave es backpressure: el consumidor pide datos con `request(n)`.
-
-**Visual (animdiagram, animado con fallback estático; fuente `visuals/temas/java/modulo-20-flow.html`; regeneración: editar el HTML/SVG en esa ruta):** [Flow API: backpressure por demanda](/visuals/temas/java/modulo-20-flow.html)
-
-Lectura: el Subscriber controla la demanda con `request(n)`. El Publisher no debe inundarlo; con reduced motion el diagrama queda estático.
-
-#### Código: `EventosEnvio.java`
+#### `EventosEnvio.java`
 
 ```java
 package com.aurora.funcional;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
@@ -610,12 +437,14 @@ public final class EventosEnvio {
     public static class SuscriptorAuditor implements Flow.Subscriber<Evento> {
         private final int lote;
         private final StringBuilder log;
+        private final CompletableFuture<Void> terminado;
         private Flow.Subscription subscription;
         private int recibidos;
 
-        public SuscriptorAuditor(int lote, StringBuilder log) {
+        public SuscriptorAuditor(int lote, StringBuilder log, CompletableFuture<Void> terminado) {
             this.lote = lote;
             this.log = log;
+            this.terminado = terminado;
         }
 
         @Override
@@ -636,42 +465,34 @@ public final class EventosEnvio {
         @Override
         public void onError(Throwable throwable) {
             log.append("ERROR:").append(throwable.getMessage()).append('\n');
+            terminado.completeExceptionally(throwable);
         }
 
         @Override
         public void onComplete() {
             log.append("DONE").append('\n');
+            terminado.complete(null); // señala entrega completa: sin Thread.sleep
         }
     }
 
-    public static String demo() throws InterruptedException {
+    public static String demo() throws Exception {
         StringBuilder log = new StringBuilder();
-        SubmissionPublisher<Evento> publisher = new SubmissionPublisher<>();
-        try (publisher) {
-            publisher.subscribe(new SuscriptorAuditor(2, log));
+        CompletableFuture<Void> terminado = new CompletableFuture<>();
+        try (SubmissionPublisher<Evento> publisher = new SubmissionPublisher<>()) {
+            publisher.subscribe(new SuscriptorAuditor(2, log, terminado));
             publisher.submit(new Evento("E1", "creado"));
             publisher.submit(new Evento("E2", "validado"));
             publisher.submit(new Evento("E3", "enviado"));
         }
-        // close() es llamado por try-with-resources; esperamos entrega
-        Thread.sleep(200);
+        terminado.get(2, TimeUnit.SECONDS); // espera al evento real, no a un temporizador
         return log.toString();
     }
 }
 ```
 
-Salida verificada:
+La espera usa `terminado.get(2, TimeUnit.SECONDS)`, liberada por `onComplete()` o `onError()`. No hay `Thread.sleep(200)`: un temporizador podía devolver la log antes de que el suscriptor terminara y hacía la prueba no determinista. El test llama a `demo()` dos veces y espera exactamente la misma salida.
 
-```text
-NEXT:E1:creado
-NEXT:E2:validado
-NEXT:E3:enviado
-DONE
-```
-
-**Límite:** Flow es la base estándar. Para pipelines reactivos reales con operadores ricos, timeouts, retries y schedulers, normalmente se usa Reactor/Mutiny/RxJava. Flow te enseña el contrato.
-
-## El borde de la aplicación: `App.java`
+#### `App.java`
 
 ```java
 package com.aurora.funcional;
@@ -758,7 +579,7 @@ public final class App {
 }
 ```
 
-## Tests: el comportamiento se fija sin I/O
+#### `FuncionalTest.java`
 
 ```java
 package com.aurora.funcional;
@@ -769,8 +590,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -790,8 +613,8 @@ class FuncionalTest {
         ReglaEnvio regla = ReglasEnvio.pesoMaximo(new BigDecimal("10")).and(ReglasEnvio.noFallido());
         Function<Envio, String> etiqueta = ReglasEnvio.etiqueta();
         List<String> out = ReporteEnvios.etiquetasValidas(datos(), regla.asPredicate(), etiqueta);
-        assertEquals(List.of("A1@BOG"), out);
         assertEquals("peso <= 10 Y no fallido", regla.motivo());
+        assertEquals(List.of("A1@BOG"), out);
     }
 
     @Test
@@ -836,24 +659,94 @@ class FuncionalTest {
 
     @Test
     void flowEntregaEventos() throws Exception {
-        String log = EventosEnvio.demo();
-        assertTrue(log.contains("NEXT:E1:creado"));
-        assertTrue(log.contains("NEXT:E3:enviado"));
-        assertTrue(log.contains("DONE"));
+        String esperado = "NEXT:E1:creado\nNEXT:E2:validado\nNEXT:E3:enviado\nDONE\n";
+        assertEquals(esperado, EventosEnvio.demo());
+        assertEquals(esperado, EventosEnvio.demo()); // determinista: sin sleeps
     }
 }
 ```
 
+## Los 13 temas aplicados al proyecto
+
+### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
+
+El JDK agrupa el comportamiento más común en cuatro formas. La diferencia no es sintáctica; es el contrato: `Predicate<T>` devuelve booleano, `Function<T,R>` transforma, `Consumer<T>` recibe un valor y no devuelve nada, y `Supplier<T>` produce un valor sin entrada. En el proyecto, `ReglaEnvio` envuelve un `Predicate<Envio>` con un motivo legible, `ReglasEnvio.etiqueta()` es la `Function`, `ReglasEnvio.auditor(...)` devuelve el `Consumer` inyectado y `ReglasEnvio.generadorId(...)` es el `Supplier`. Salida verificada: `ID=TMP-99`, `A1@BOG`, `A4@CALI`, `REGLA=peso <= 10 Y no fallido`. `A2` se excluye por peso y `A3` por estado fallido.
+
+### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
+
+`Function<T,R>` recibe un valor y produce otro. `BiFunction<T,U,R>` recibe dos. El criterio es simple: si necesitas dos entradas independientes para calcular un resultado, `BiFunction` es natural; si esos dos valores empiezan a tener reglas propias, crea un objeto de dominio. `ReglasEnvio.tarifaConImpuesto()` devuelve la `BiFunction` que calcula base más impuesto.
+
+La salida de `tarifa.apply(100, 0.19)` es **`119.00`** tras normalizar; el test `biFunctionYOperadores` lo fija. En `App`, ese mismo valor se pasa por `ReglasEnvio.aplicarDescuento(0.10)` y por `normalizarYRedondear()`, por eso la salida final del programa es **`TOTAL=107.10`**. No son dos resultados contradictorios: son dos puntos distintos del pipeline. Si mañana el impuesto depende de país, zona o tipo de producto, el paso correcto no es agregar más parámetros a la `BiFunction`; es introducir un tipo de dominio.
+
+### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
+
+La composición evita anidar llamadas como `f(g(h(x)))`. `andThen` lee en orden natural: primero esto, luego aquello. `compose` invierte el orden. En predicados, `and/or/negate` expresan lógica booleana. `ReglaEnvio.and` compone condición y motivo; `normalizarYRedondear()` compone dos `UnaryOperator` con `andThen`. Caso de borde: componer demasiado puede ocultar la intención. Si la cadena necesita un comentario para entenderse, extrae métodos con nombres de negocio o usa pasos explícitos.
+
+### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
+
+Un stream no ejecuta sus pasos intermedios cuando los declaras. Solo ejecuta cuando llega una operación terminal. `ReporteEnvios.contarConTraza(Stream<Integer>, List<String>)` añade trazas dentro de `filter` y `map`; con `List.of(1, 2, 3, 4, 5)` la salida es `CUENTA=2` y `TRAZA=7`: solo los pares llegan a `map` y nada ocurre antes de `count()`. Otro borde crítico: un stream se consume una vez. El test `streamEsPerezosoYSeConsumeUnaVez` espera `IllegalStateException` al contar dos veces el mismo stream.
+
+### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
+
+`UnaryOperator<T>` es `Function<T,T>`; `BinaryOperator<T>` es `BiFunction<T,T,T>`. Úsalos cuando el tipo se conserva: comunican mejor la intención que una función genérica. `aplicarDescuento` y `mayorCosto` trabajan con `BigDecimal` de principio a fin. La salida verificada en `App` es `TOTAL=107.10` y `MAYOR=25`; en el test, `aplicarDescuento(0.10).apply(100)` es `90.00`.
+
+### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
+
+Una referencia a método es una forma compacta de una lambda existente. No agrega magia; solo nombra un comportamiento ya disponible. En el proyecto aparecen `Envio::destino`, `Envio::id`, `Envio::costo`, `Envio::estado`, `System.out::println` y `BigDecimal::add`. Salida verificada: `DESTINOS=[BOG, CALI, MED]`. La referencia a método no cambia el resultado de la lambda equivalente: cambia claridad.
+
+### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 40 min
+
+`Optional` obliga a decidir qué hacer cuando un dato no está. `EnvioRepository.buscarPorId` devuelve `Optional<Envio>`; `obtenerObligatorio` convierte la ausencia en `IllegalArgumentException` con mensaje útil. Salidas verificadas: `OPT=A1`, `MISS=NA`. El caso obligatorio falla con `envío obligatorio no encontrado: ZZ`: un `NoSuchElementException` genérico no ayuda en producción.
+
+### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 45 min
+
+Las operaciones intermedias devuelven otro stream: `filter`, `map`, `flatMap`, `distinct`, `sorted`. `ReporteEnvios.paradasNormalizadas` usa `flatMap` porque cada envío tiene una lista de paradas; sin aplanar terminarías con `Stream<List<String>>`. Salida verificada: `PARADAS=[BODEGA, BOG, CALI, MED]`. `destinosValidosNormalizados` muestra el orden correcto: recortar, pasar a mayúsculas y solo entonces filtrar; salida `NORMALIZADOS=[BOG, MED]`.
+
+### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 45 min
+
+La terminal cierra el pipeline: `count`, `max`, `reduce`, `collect`, `forEach`. Después de una terminal, el stream ya no sirve. `masCaro`, `totalEntregados` y `sumaCostos` devuelven `MAS_CARO=A2`, `ENTREGADOS=1` y `SUMA=55000`. `reduce` necesita identidad y operación asociativa; para objetos mutables, prefiere collectors o un acumulador explícito.
+
+### Tema 10: Collectors: formar listas, mapas, grupos y texto · Avanzado · 50 min
+
+`collect` materializa el resultado y la elección del collector define el contrato de salida. `porEstado` agrupa por enum, `costoPorDestino` usa `LinkedHashMap` para conservar orden de inserción, `resumenIds` usa `joining` y `destinosOrdenados` usa `TreeSet`. Salidas verificadas: `POR_ESTADO=[ENTREGADO, EN_RUTA, PENDIENTE, FALLIDO]`, `COSTO_DESTINO={BOG=18000, MED=25000, CALI=12000}`, `IDS=[A1, A2, A3, A4]`, `DEST_SET=[BOG, CALI, MED]`.
+
+### Tema 11: Streams paralelos: comparar antes de acelerarlos · Avanzado · 50 min
+
+`parallelStream()` reparte trabajo, pero no hace segura una operación con estado compartido. `ReporteEnvios.sumaParalelaInsegura` muestra el error con un `int[]` mutable; `sumaParalelaSegura` usa `reduce` sin estado compartido. Salida verificada de la versión segura: `PARALELA=55000`. No se ejecutó JMH: mide con datos y hardware reales antes de dejar `parallelStream()` en producción; la corrección de la carrera sí está verificada por el código y el test.
+
+### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Avanzado · 45 min
+
+Una función pura depende solo de su entrada y no causa efectos observables. `ReporteEnvios` es puro: recibe listas, devuelve valores. El efecto se hace en el borde: `App` calcula `REPORTE:[A1, A2, A3, A4]` y se lo pasa al `Consumer` inyectado. Si mañana el reporte va a un logger, a Kafka o a HTTP, el cálculo no cambia.
+
+### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
+
+`java.util.concurrent.Flow` implementa Reactive Streams: `Publisher`, `Subscriber`, `Subscription`, `Processor`. El punto clave es backpressure: el consumidor pide datos con `request(n)`.
+
+**Visual (animdiagram, animado con fallback estático; fuente `visuals/temas/java/modulo-20-flow.html`; regeneración: editar el HTML/SVG en esa ruta):** [Flow API: backpressure por demanda](/visuals/temas/java/modulo-20-flow.html)
+
+Lectura: el Subscriber controla la demanda con `request(n)`. El Publisher no debe inundarlo; con reduced motion el diagrama queda estático.
+
+`SuscriptorAuditor` pide dos eventos, vuelve a pedir dos cuando lleva dos, y completa un `CompletableFuture<Void>` en `onComplete()`/`onError()`. Salida verificada y repetible:
+
+```text
+NEXT:E1:creado
+NEXT:E2:validado
+NEXT:E3:enviado
+DONE
+```
+
+Flow es la base estándar. Para pipelines reactivos reales con operadores ricos, timeouts, retries y schedulers, normalmente se usa Reactor/Mutiny/RxJava. Flow te enseña el contrato.
+
 ## Verificación real
 
-Comandos ejecutados desde `/tmp/opencode/aurora-m20` el 2026-05-23 (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m20` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
 
 ```bash
 ./gradlew -q test
 ./gradlew -q run
 ```
 
-Resultado de tests: **7 tests, 0 fallas**.
+`./gradlew -q test`: **7 tests, 0 fallas** (`build/test-results/test/TEST-com.aurora.funcional.FuncionalTest.xml`). El test de Flow llama dos veces a `EventosEnvio.demo()` y exige la misma salida exacta, sin temporizadores.
 
 Salida real de `./gradlew -q run`:
 
@@ -890,18 +783,23 @@ DONE
 
 | Síntoma | Causa probable | Diagnóstico | Corrección |
 |---|---|---|---|
-| `IllegalStateException: stream has already been operated upon or closed` | Reusar un stream | Buscar variables `Stream<T>` reutilizadas | Crear stream nuevo desde la fuente |
-| Resultado distinto en paralelo | Estado mutable compartido o operación no asociativa | Ejecutar secuencial/paralelo y comparar; revisar lambdas con side effects | `reduce`/collector seguro; no mutar colecciones externas |
-| `NoSuchElementException` | `Optional.get()` | Revisar uso de `get()` | `orElseThrow` con mensaje, `orElse`, `map` |
-| Pipeline ilegible | Demasiada composición o nombres opacos | Si no se puede leer como frase, está mal | Extraer método nombrado o usar `for` claro |
-| `NullPointerException` en `groupingBy` | Clave null o collector mal asumido | Revisar datos de entrada y contrato | Filtrar/normalizar nulos o usar collector con manejo explícito |
+| `ClassCastException` al usar una lambda | No hay tipo objetivo (target type) | Revisar el parámetro esperado | Asignar la lambda a la interfaz funcional concreta |
+| Captura no efectivamente final | Variable local mutada en la lambda | Compilador lo señala | Usar variable final/efectivamente final o acumulador explícito |
+| `119.00` contra `107.10` | Comparar dos puntos del pipeline | Revisar si se aplicó descuento | `119.00` es tarifa con impuesto; `107.10` es tras descuento del 10 % |
+| Efectos antes de la terminal | Confundir declaración con ejecución del stream | Añadir traza y ver cuándo aparece | Recordar que las operaciones intermedias son perezosas |
+| `IllegalStateException: stream has already been operated upon` | Reutilizar un stream consumido | Contar cuántas terminales se aplican | Crear un stream nuevo desde la colección |
+| Salida de Flow a medias o distinta entre corridas | Esperar con `Thread.sleep` | Repetir el test varias veces | Esperar a `onComplete()` con `CompletableFuture.get(timeout)` |
+| Resultado paralelo inconsistente | Estado mutable compartido | Revisar arrays/cajas en `forEach` | Usar `reduce`/collectors sin estado compartido |
+| Pérdida de centavos | Mezclar `double` con `BigDecimal` | Imprimir escala y valor | Construir `BigDecimal` desde `String` y fijar `RoundingMode` |
 
 ## Checklist de cierre
 
-- [ ] Sabes elegir entre Predicate, Function, Consumer y Supplier por contrato, no por costumbre.
-- [ ] Puedes explicar por qué un stream es perezoso y cuándo se consume.
-- [ ] Usas Optional en retornos de consulta, no como parche general.
-- [ ] Sabes cuándo `parallelStream()` es riesgo, no optimización automática.
-- [ ] Separaste cálculo puro de efectos en el borde.
+- [ ] Cada interfaz funcional se eligió por su forma de entrada/salida, no por moda.
+- [ ] Las reglas de negocio llevan motivo y se componen sin anidar lambdas.
+- [ ] Los cálculos son puros; imprimir o publicar queda en el borde.
+- [ ] Los streams se tratan como recursos de un solo uso y se verifica la pereza.
+- [ ] `Optional` comunica ausencia sin mensajes genéricos.
+- [ ] El paralelismo no comparte estado mutable y se mide antes de adoptarse.
+- [ ] Flow usa demanda explícita y espera al evento de cierre, no a un temporizador.
 
-Siguiente paso natural: **Módulo 21 — APIs públicas, compatibilidad y evolución**. Allí las funciones y tipos que diseñaste se vuelven contrato para otros equipos; un cambio pequeño puede romper binario o fuente.
+Siguiente paso natural: **Módulo 21 — APIs públicas, compatibilidad y evolución**. Allí las funciones y tipos que diseñaste se vuelven contrato para otros equipos; un cambio pequeño puede romper compatibilidad binaria o de fuente.

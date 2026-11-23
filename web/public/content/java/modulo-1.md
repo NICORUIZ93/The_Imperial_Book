@@ -101,6 +101,8 @@ tienda-aurora-poo/
                     └── Pedido.java
 ```
 
+La versión verificada añade `src/test/java/com/aurora/poo/PooDomainTest.java`; está documentado completo en `#### Test`.
+
 ## build.gradle.kts
 
 ```kotlin
@@ -130,6 +132,14 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
 }
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test { useJUnitPlatform() }
 ```
 
 El toolchain fija Java 25. Ese detalle no es decorativo en este módulo: los constructores flexibles son una característica de Java 25 y el build debe compilar con esa versión aunque la terminal ejecute un JDK más nuevo. `-Xlint:all -Werror` obliga a resolver advertencias como métodos que sobrescriben sin `@Override` o accesos que reducen visibilidad.
@@ -1575,7 +1585,7 @@ Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no
 <testsuite name="com.aurora.poo.PooDomainTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:34.272Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.024">
 ```
 
-Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+El XML mostrado corresponde a la última corrida limpia.
 
 ## Ejecutar
 
@@ -1688,10 +1698,11 @@ Hay una tercera distinción que suele morder al principio: identidad e igualdad 
 
 Los métodos `static` pertenecen a la clase, no al objeto. `Producto.normalizarNombre` es `protected static` por dos razones: no necesita leer estado de la instancia y las subclases lo necesitan antes de llamar a `super(...)`. Un método `static` no puede usar `this` ni acceder a campos de instancia, y no participa del polimorfismo: si lo llamas a través de una referencia, el compilador decide con el tipo declarado, no con el objeto real. Esa diferencia se retoma en el tema de sobrecarga y sobreescritura.
 
-El compilador confirma que la encapsulación es real. `javap -p` muestra las firmas privadas y públicas:
+El compilador confirma que la encapsulación es real. En este proyecto no existe un directorio `out`: las clases las genera Gradle en `build/classes/java/main`. Primero se compila y luego se inspecciona esa ruta real:
 
 ```bash
-javap -p out/com/aurora/poo/dominio/Producto.class
+./gradlew -q classes
+javap -p build/classes/java/main/com/aurora/poo/dominio/Producto.class
 ```
 
 ```text
@@ -2403,8 +2414,9 @@ El error más común es usar un método de instancia (no estático) para prepara
 Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
+./gradlew -q clean test
 ./gradlew -q classes
-./gradlew -q test
+javap -p build/classes/java/main/com/aurora/poo/dominio/Producto.class
 ./gradlew -q run --args="catalogo"
 ./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA --pago TARJETA"
 ./gradlew -q run --args="comparar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA"
@@ -2412,9 +2424,14 @@ Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.
 ./gradlew -q run --args="diagnostico"
 ```
 
-Resultados observados (resumen):
+Resultados observados: `./gradlew -q clean test` termina con código 0 y sin salida; el resumen real de la última corrida limpia es:
 
-- `classes` y `test`: compilación y suite sin fallas.
+```text
+<testsuite name="com.aurora.poo.PooDomainTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:34.272Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.024">
+```
+
+Los siete casos cubren polimorfismo y envío, validación de constructores flexibles, descuentos, medios de pago, records, cálculo completo y copia defensiva del pedido. `javap -p` sobre `build/classes/java/main/.../Producto.class` devuelve la lista de campos y métodos transcrita en el Tema 1.
+
 - `catalogo`: 4 productos (físicos/digital) con precio y envío.
 - `cotizar`: total `$39.47` con descuento Bienvenida, envío y recargo de tarjeta; `comparar` muestra `$38.70` con efectivo/transferencia y `$41.36` con contra reembolso.
 - `reglas` y `diagnostico`: ejecutan sin error; diagnostico confirma invariantes de construcción, normalización e igualdad de records.
@@ -2451,3 +2468,5 @@ El siguiente módulo entra en las colecciones y los genéricos. El catálogo dej
 - Entendí la inmutabilidad superficial de un record.
 - Escribí constructores flexibles de Java 25 que validan antes de `super(...)`.
 - Comprobé el rechazo del código con `--release 21`.
+- Ejecuté `./gradlew -q clean test` y contrasté las siete pruebas con el XML de Gradle.
+- Inspeccioné el bytecode desde `build/classes/java/main`, no desde un `out` inexistente.
