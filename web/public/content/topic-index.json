@@ -7148,6 +7148,26 @@
     ],
     "10": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml (Kafka + Schema Registry)",
+        "fragment": "docker-compose-yml-kafka-schema-registry"
+      },
+      {
         "title": "Kafka, particiones y consumer groups",
         "fragment": "tema-1-kafka-particiones-y-consumer-groups"
       },

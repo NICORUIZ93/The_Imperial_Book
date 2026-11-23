@@ -2,7 +2,99 @@
 
 Tienda Aurora procesa miles de pedidos por hora. Cuando un pedido se confirma, `orders-service` debe notificar a email, analytics, inventario y facturación. Si cada uno es una llamada síncrona, un servicio caído tumba el checkout. La solución es publicar un evento `OrderCreated` y dejar que cada consumidor procese a su ritmo. EDA desacopla productores y consumidores mediante eventos. El beneficio es escalabilidad y autonomía; el costo es consistencia eventual, duplicados, orden parcial y evolución de esquemas.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Smokes de particionado, DLQ, compatibilidad de esquema e idempotencia ejecutados con Java puro. Kafka/RabbitMQ/Schema Registry/Spring Cloud Stream requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de particionado, DLQ, compatibilidad de esquema e idempotencia ejecutados con Java puro. Kafka/RabbitMQ/Schema Registry/Spring Cloud Stream requieren infraestructura; se incluyen notas de verificación honestas.
+
+## Proyecto desde cero: tienda-aurora-messaging
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para Kafka/RabbitMQ)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-messaging/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── docker-compose.yml
+├── shared/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/shared/event/
+│       └── OrderCreated.java
+├── orders-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/orders/
+│       ├── OrdersApplication.java
+│       └── event/OrderEventPublisher.java
+└── billing-service/
+    ├── build.gradle.kts
+    └── src/main/java/com/aurora/billing/
+        ├── BillingApplication.java
+        └── event/OrderCreatedConsumer.java
+```
+
+### build.gradle.kts (raíz)
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+}
+
+subprojects {
+    apply(plugin = "java")
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+    repositories { mavenCentral() }
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-messaging"
+include("shared", "orders-service", "billing-service")
+```
+
+### docker-compose.yml (Kafka + Schema Registry)
+
+```yaml
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.6.0
+    depends_on: [kafka]
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
+```
 
 ### Tema 1: Kafka, particiones y consumer groups · Avanzado · 150 min
 
@@ -10,10 +102,10 @@ Tienda Aurora procesa miles de pedidos por hora. Cuando un pedido se confirma, `
 
 `orders-service` publica `OrderCreated`. Múltiples instancias de `billing-service` deben procesar eventos en paralelo, pero los eventos del mismo pedido deben conservar orden. El equipo asume que los eventos se procesan en orden global. En producción, `OrderCancelled` se procesa antes de `OrderCreated` y billing falla con "orden no encontrada".
 
-Apache Kafka es un log distribuido, particionado y replicado. Un topic contiene particiones; un producer escribe registros; un consumer group coordina consumidores para repartir particiones. Cada partición es una secuencia ordenada; el offset identifica la posición. El orden solo existe dentro de una partición. Para preservar orden por agregado, se usa una key que enruta todos sus eventos a la misma partición.
+Apache Kafka es un log distribuido, particionado y replicado. Un topic contiene particiones; un producer escribe registros; un consumer group coordina consumidores para repartir particiones. Cada partición es una secuencia ordenada. El orden solo existe dentro de una partición. Para preservar orden por agregado, se usa una key que enruta todos sus eventos a la misma partición.
 
 ```java
-public class KafkaPartitionSmoke {
+public class KafkaPartitionExample {
     static int partition(String key, int partitions) {
         return Math.floorMod(key.hashCode(), partitions);
     }
@@ -28,8 +120,8 @@ public class KafkaPartitionSmoke {
 ```
 
 ```bash
-javac KafkaPartitionSmoke.java
-java KafkaPartitionSmoke
+javac KafkaPartitionExample.java
+java KafkaPartitionExample
 ```
 
 Salida esperada:
@@ -40,25 +132,6 @@ deterministic=true
 ```
 
 El error más común es asumir orden global. El síntoma es `OrderCancelled` procesado antes de `OrderCreated`. La causa es key aleatoria o ausente. La corrección es usar key por agregado y consumidor idempotente.
-
-En Spring Cloud Stream, la configuración de particionado:
-
-```kotlin
-// orders-service build.gradle.kts
-implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
-```
-
-```yaml
-spring:
-  cloud:
-    stream:
-      bindings:
-        orderCreated-out-0:
-          destination: orders.created
-          producer:
-            partitionKeyExpression: payload.orderId
-            partitionCount: 3
-```
 
 ### Tema 2: RabbitMQ, acks y DLQ · Intermedio · 120 min
 
@@ -71,7 +144,7 @@ RabbitMQ es un message broker que enruta mensajes desde exchanges hacia queues m
 ```java
 import java.util.*;
 
-public class RabbitDlqSmoke {
+public class RabbitDlqExample {
     static List<String> q = new ArrayList<>(List.of("m1", "m2"));
     static List<String> dlq = new ArrayList<>();
     static int maxRetries = 3;
@@ -93,8 +166,8 @@ public class RabbitDlqSmoke {
 ```
 
 ```bash
-javac RabbitDlqSmoke.java
-java RabbitDlqSmoke
+javac RabbitDlqExample.java
+java RabbitDlqExample
 ```
 
 Salida esperada:
@@ -118,7 +191,7 @@ Un Schema Registry almacena versiones de esquemas (Avro, Protobuf, JSON Schema) 
 ```java
 import java.util.*;
 
-public class SchemaCompatSmoke {
+public class SchemaCompatExample {
     static boolean backwardCompatible(Set<String> oldFields, Set<String> newFields) {
         return newFields.containsAll(oldFields);
     }
@@ -138,8 +211,8 @@ public class SchemaCompatSmoke {
 ```
 
 ```bash
-javac SchemaCompatSmoke.java
-java SchemaCompatSmoke
+javac SchemaCompatExample.java
+java SchemaCompatExample
 ```
 
 Salida esperada:
@@ -163,7 +236,7 @@ La idempotencia es como un sello de "ya procesado" en el buzón. Si la misma car
 ```java
 import java.util.*;
 
-public class ConsumerIdempotencySmoke {
+public class ConsumerIdempotencyExample {
     record InboxEvent(String eventId, String orderId) {}
 
     static class IdempotentConsumer {
@@ -190,8 +263,8 @@ public class ConsumerIdempotencySmoke {
 ```
 
 ```bash
-javac ConsumerIdempotencySmoke.java
-java ConsumerIdempotencySmoke
+javac ConsumerIdempotencyExample.java
+java ConsumerIdempotencyExample
 ```
 
 Salida esperada:
@@ -206,7 +279,7 @@ El error más común es consumidor no idempotente ante redelivery. El síntoma e
 
 ## Cierre
 
-EDA requiere disciplina de contratos: claves de partición, DLQ, esquemas compatibles e idempotencia. Sin eso, el desacoplamiento se vuelve caos operativo. Para Tienda Aurora, esto significa que cuando un pedido se confirma, los eventos fluyen a email, analytics, inventario y billing sin acoplamiento temporal, y cada consumidor tolera redeliveries sin duplicar efectos.
+EDA requiere disciplina de contratos: claves de partición, DLQ, esquemas compatibles e idempotencia. Sin eso, el desacoplamiento se vuelve caos operativo. Para Tienda Aurora, esto significa que cuando un pedido se confirma, los eventos fluyen a email, analytics, inventario y billing sin acoplamiento temporal, y cada consumidor tolera redeliveries sin duplicar efectos. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 
