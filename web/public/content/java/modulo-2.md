@@ -1459,6 +1459,22 @@ El deshacer usa una pila. Cuando se atiende un pedido, se saca de la `PriorityQu
 
 Los avisos usan la misma clase `ArrayDeque`, pero con disciplina FIFO. `addLast` encola un aviso nuevo; `pollFirst` entrega el más antiguo. En la salida, el primer aviso consumido es `Recibido AUR-1001 (ECONOMICA)` y quedan 10 avisos pendientes. Esta es una lección útil: la estructura de datos ofrece capacidades; el nombre del método que eliges documenta el contrato que estás aplicando.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q classes
+./gradlew -q run --args="catalogo"
+./gradlew -q run --args="auditoria"
+```
+
+Resultados observados (resumen):
+
+- `classes`: compilación exitosa.
+- `catalogo`: muestra productos en orden de alta y por precio ascendente.
+- `auditoria`: confirma contrato `equals/hashCode`, problema de clave mutable en `HashMap`, borrado de tipos, orden con `Comparable/Comparator`, y comportamiento de `Queue/Deque/PriorityQueue/LinkedHashSet`.
+
 ## Cierre
 
 Las colecciones no son contenedores intercambiables. Una `List` expresa secuencia, un `Set` expresa unicidad, un `Map` expresa acceso por clave, una `PriorityQueue` expresa urgencia y un `Deque` puede expresar fila o pila según cómo lo uses. Los genéricos hacen que esos contratos sean comprobables por el compilador, y `equals`/`hashCode` hacen que las colecciones hash sean confiables.
