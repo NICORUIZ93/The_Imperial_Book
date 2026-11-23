@@ -2215,6 +2215,24 @@ La misma libertad existe en el encadenamiento con `this(...)`. Un constructor pu
 
 El error más común es usar un método de instancia (no estático) para preparar los argumentos antes de `super`. Ese método necesitaría `this`, y `this` todavía no es utilizable. La corrección es mover la lógica a un método `static` o a una clase auxiliar. El segundo error es olvidar que la validación debe cubrir también los parámetros que no se pasan a `super` (el peso, la licencia): si no se validan antes, el objeto puede construirse con datos incoherentes aunque la base sea válida.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q classes
+./gradlew -q run --args="catalogo"
+./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA --pago efectivo"
+./gradlew -q run --args="diagnostico"
+```
+
+Resultados observados (resumen):
+
+- `classes`: compilación exitosa.
+- `catalogo`: 4 productos (físicos/digital) con precio y envío.
+- `cotizar`: total `$38.70` con descuento Bienvenida, envío y efectivo sin recargo.
+- `diagnostico`: ejecuta sin error (salida de diagnóstico de tipos/modelo POO).
+
 ## Cierre
 
 Tienda Aurora pasó de un montón de datos y condicionales a un modelo donde cada tipo protege sus reglas. `Producto` encapsula y valida; `ProductoFisico` y `ServicioDigital` especializan sin duplicar; `Descuento` y `MedioPago` representan dos formas de variación con la herramienta adecuada; los records eliminan el boilerplate de los valores; y los constructores flexibles permiten que la validación ocurra antes de construir la base.
