@@ -388,6 +388,10 @@ Resultados observados:
 | Log sin contexto | MDC no seteado/limpiado | Revisar JSON/log | `MDC.put` + `finally remove` |
 | Integración inestable | Depende de entorno compartido | Flakiness, datos sucios | Aislar datos, Testcontainers/fixtures controlados |
 
+## Cierre
+
+El build, los tests y la observabilidad son parte del producto. Un módulo bien separado, un wrapper reproducible y tests rápidos hacen que cambiar código sea seguro. La calidad no se añade al final: se diseña desde la estructura.
+
 ## Checklist de cierre
 
 - [ ] Puedo explicar wrapper, toolchain y build reproducible.
