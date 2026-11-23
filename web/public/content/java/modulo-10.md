@@ -1,20 +1,20 @@
-# Módulo 10: Módulos (JPMS) y proyectos grandes
+# Módulo 10: Módulos, JPMS y empaquetado
 
+A medida que un proyecto Java crece, el classpath plano deja de ser suficiente para expresar límites. Cualquier paquete público queda accesible para cualquiera, y las dependencias reales entre componentes quedan implícitas. Java Platform Module System (JPMS), introducido en Java 9, agrega una capa de encapsulación fuerte: un módulo declara qué requiere y qué exporta.
+
+Este módulo construye `tienda-aurora-jpms`, un proyecto multi-módulo Gradle con `core` y `app`. `core` exporta su API, mantiene un paquete interno no exportado y abre un paquete para reflexión controlada. `app` consume el módulo y demuestra reflexión permitida por `opens`.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 10 — mapa visual](/visuals/temas/java/modulo-10-io-nio.html)
-
-Lectura: I/O mueve bytes/caracteres con buffering, charset y cierre explícito de recursos.
-
-
-Cuando un proyecto Java crece, `public` deja de ser suficiente como límite. Un paquete interno puede ser `public` porque otra clase del mismo JAR lo necesita, pero eso no significa que deba ser API para todo el mundo. JPMS, el Java Platform Module System, agrega una frontera más: el módulo. Un módulo declara qué paquetes exporta, de qué módulos depende y qué paquetes abre a reflexión.
-
-En Tienda Aurora, esto sirve para separar el dominio reusable (`core`) de la aplicación (`app`). `app` puede usar `com.aurora.jpms.core`, pero no debería tocar `com.aurora.jpms.internal`. Este módulo construye ese ejemplo con dos módulos JPMS y verifica tanto el caso feliz como el límite de encapsulación.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, macOS arm64. `./gradlew -q :app:run` ejecutó correctamente. La prueba de acceso a paquete no exportado se verificó con `javac --module-path ...` y falló como se esperaba.
-
-## Proyecto desde cero: tienda-aurora-jpms
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-10-jpms.html"
+    alt="JPMS con exports, opens y paquete interno no exportado"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>exports publica API, opens habilita reflexión controlada, y lo no exportado queda encapsulado.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -26,50 +26,24 @@ gradle --version
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m10/src/main/java/com/aurora/modulos/{app,dominio,infra}
-mkdir -p tienda-aurora-java-m10/src/test/java/com/aurora/modulos
-cd tienda-aurora-java-m10
+mkdir -p tienda-aurora-jpms/core/src/main/java/com/aurora/jpms/{core,internal}
+mkdir -p tienda-aurora-jpms/app/src/main/java/com/aurora/jpms/app
+cd tienda-aurora-jpms
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
 
-```text
-tienda-aurora-jpms/
-├── build.gradle.kts
-├── settings.gradle.kts
-├── core/
-│   ├── build.gradle.kts
-│   └── src/main/java/
-│       ├── module-info.java
-│       └── com/aurora/jpms/
-│           ├── core/
-│           │   ├── Catalogo.java
-│           │   └── Producto.java
-│           └── internal/
-│               └── TokenInterno.java
-└── app/
-    ├── build.gradle.kts
-    └── src/main/java/
-        ├── module-info.java
-        └── com/aurora/jpms/app/
-            └── TiendaAuroraJpmsApp.java
-```
+## Código completo, archivo por archivo
 
-## Código completo
-
-Declara el build multi-módulo con `core` y `app`.
-
-**Archivo:** `settings.gradle.kts`
+#### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-jpms"
 include("core", "app")
 ```
 
-Configura Java 25, repositorios y compilación estricta para todos los subproyectos.
-
-**Archivo:** `build.gradle.kts`
+#### `build.gradle.kts` (raíz)
 
 ```kotlin
 plugins { base }
@@ -90,17 +64,13 @@ subprojects {
 }
 ```
 
-`core` no tiene dependencias externas en este ejemplo; expone el dominio.
-
-**Archivo:** `core/build.gradle.kts`
+#### `core/build.gradle.kts`
 
 ```kotlin
-
+// El módulo core no necesita dependencias externas en esta demo.
 ```
 
-`app` aplica `application` y depende de `project(":core")`.
-
-**Archivo:** `app/build.gradle.kts`
+#### `app/build.gradle.kts`
 
 ```kotlin
 plugins { application }
@@ -108,9 +78,11 @@ dependencies { implementation(project(":core")) }
 application { mainClass = "com.aurora.jpms.app.TiendaAuroraJpmsApp" }
 ```
 
-Descriptor del módulo `core`. `exports` publica `com.aurora.jpms.core`. `opens` permite acceso reflexivo profundo al paquete indicado; aquí se usa para demostrar reflexión controlada. En proyectos reales, `opens ... to` limita el acceso a módulos específicos cuando esos módulos están presentes en la resolución.
+## Módulo core
 
-**Archivo:** `core/src/main/java/module-info.java`
+#### `core/src/main/java/module-info.java`
+
+`exports` publica `com.aurora.jpms.core`. `opens` permite acceso reflexivo profundo al paquete core (útil para frameworks que inspeccionan miembros privados). El paquete `com.aurora.jpms.internal` no se exporta ni se abre: queda encapsulado.
 
 ```java
 module com.aurora.jpms.core {
@@ -119,9 +91,7 @@ module com.aurora.jpms.core {
 }
 ```
 
-Record exportado. Tiene un método privado `etiquetaInterna()` que usaremos para mostrar la diferencia entre acceso normal y reflexión con `opens`.
-
-**Archivo:** `core/src/main/java/com/aurora/jpms/core/Producto.java`
+#### `Producto.java`
 
 ```java
 package com.aurora.jpms.core;
@@ -135,9 +105,7 @@ public record Producto(String sku, String nombre, BigDecimal precio) {
 }
 ```
 
-API pública del módulo. Devuelve productos del dominio.
-
-**Archivo:** `core/src/main/java/com/aurora/jpms/core/Catalogo.java`
+#### `Catalogo.java`
 
 ```java
 package com.aurora.jpms.core;
@@ -158,9 +126,9 @@ public final class Catalogo {
 }
 ```
 
-Clase en paquete no exportado. Existe dentro del módulo, pero no forma parte de su API pública.
+#### `TokenInterno.java`
 
-**Archivo:** `core/src/main/java/com/aurora/jpms/internal/TokenInterno.java`
+Clase en paquete no exportado. Existe para mostrar la intención de encapsulación: no forma parte de la API del módulo.
 
 ```java
 package com.aurora.jpms.internal;
@@ -172,9 +140,9 @@ public final class TokenInterno {
 }
 ```
 
-`app` requiere `core`. Sin `requires`, no podría compilar contra los tipos exportados por `core`.
+## Módulo app
 
-**Archivo:** `app/src/main/java/module-info.java`
+#### `app/src/main/java/module-info.java`
 
 ```java
 module com.aurora.jpms.app {
@@ -182,9 +150,9 @@ module com.aurora.jpms.app {
 }
 ```
 
-App que consume la API exportada y demuestra reflexión sobre un miembro privado en un paquete abierto.
+#### `TiendaAuroraJpmsApp.java`
 
-**Archivo:** `app/src/main/java/com/aurora/jpms/app/TiendaAuroraJpmsApp.java`
+Usa la API exportada normalmente y también accede por reflexión a un método privado de `Producto`. Esto funciona porque `core` tiene `opens com.aurora.jpms.core`. Si quitas `opens`, la reflexión profunda falla con `InaccessibleObjectException`.
 
 ```java
 package com.aurora.jpms.app;
@@ -195,9 +163,6 @@ import com.aurora.jpms.core.Producto;
 import java.lang.reflect.Method;
 
 public final class TiendaAuroraJpmsApp {
-
-    public TiendaAuroraJpmsApp() {
-    }
 
     public static void main(String[] args) throws Exception {
         Catalogo catalogo = new Catalogo();
@@ -212,89 +177,45 @@ public final class TiendaAuroraJpmsApp {
 }
 ```
 
-## Ejecutar
-
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q :app:run
-```
-
-```text
-productos=2
-primero=CAF-100
-reflexion=CAF-100:Cafe Aurora
-```
-
-## Encapsulación verificada
-
-El paquete `com.aurora.jpms.internal` no está exportado por `core`. Al intentar compilar un módulo cliente que lo importa, el compilador falla:
-
-```text
-
-```
-
-Ese error es la diferencia clave: el tipo puede ser `public` en Java, pero si su paquete no está exportado por el módulo, no es accesible fuera del módulo.
-
-## Conceptos cubiertos
-
 ### Tema 1: module-info.java y encapsulación fuerte · Intermedio · 40 min
 
-`module-info.java` es el descriptor de módulo. Vive en la raíz de fuentes del módulo y declara su nombre, dependencias y paquetes expuestos. En `core`:
+`module-info.java` declara el nombre del módulo, sus dependencias (`requires`) y los paquetes que expone (`exports`). A diferencia del classpath, donde todo `public` es accesible si está en el path, JPMS permite que un paquete sea público dentro del módulo pero invisible fuera si no se exporta.
 
-```java
-module com.aurora.jpms.core {
-    exports com.aurora.jpms.core;
-    opens com.aurora.jpms.core;
-}
-```
+`exports` expone tipos públicos para uso normal en compilación y runtime. `requires` declara dependencia. `requires transitive` reexporta una dependencia para consumidores del módulo. `provides ... with ...` y `uses` soportan ServiceLoader.
 
-`exports com.aurora.jpms.core` significa que otros módulos pueden usar los tipos públicos de ese paquete. `com.aurora.jpms.internal` no se exporta, por lo que queda encapsulado a nivel de módulo. Esto es encapsulación fuerte: no depende solo de `private`/`public`, sino de la frontera declarada del módulo.
-
-En `app`, el descriptor es:
-
-```java
-module com.aurora.jpms.app {
-    requires com.aurora.jpms.core;
-}
-```
-
-`requires` declara dependencia de lectura del módulo. Sin esto, `app` no puede compilar contra `Catalogo` aunque el JAR esté en el classpath/module path de forma ambigua. JPMS hace la dependencia explícita.
+La encapsulación fuerte previene dependencias accidentales a internals. Es especialmente útil en librerías y plataformas grandes. El costo es la fricción de modularizar dependencias que no son módulos limpios.
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 35 min
 
-Migrar un sistema grande a JPMS no suele ser “agrega module-info a todo”. La estrategia práctica es incremental. Primero, identifica límites reales: qué paquetes son API y cuáles son internos. Luego coloca JARs legados en el module path como automatic modules o, durante la transición, usa el classpath/unnamed module donde haga falta. Después introduce `module-info.java` en módulos con fronteras claras, empezando por los más estables.
+No todo proyecto necesita JPMS completo. Muchos proyectos Java funcionan bien con classpath y buena disciplina de paquetes. JPMS aporta valor cuando quieres límites explícitos entre componentes, empaquetado con `jlink`/runtime reducido, o protección contra uso de internals.
 
-JPMS aporta valor cuando el proyecto es grande, tiene varios equipos, librerías internas reutilizadas, o necesitas proteger APIs internas de uso accidental. También ayuda a razonar sobre dependencias. Aporta menos en aplicaciones pequeñas, scripts, o proyectos donde el costo de modularizar librerías no modularizadas supera el beneficio. No lo adoptes por moda: adóptalo cuando el límite de módulo resuelva un problema real de arquitectura.
+La migración puede ser incremental: empezar por el classpath, usar automatic modules, o modularizar solo bordes. El “unnamed module” permite que código no modular use el classpath. Los automatic modules permiten que jars no modularizados se usen como módulos por nombre derivado del jar, pero son un puente, no el estado final ideal.
+
+**Criterio práctico:** adopta JPMS si el beneficio de encapsulación/packaging supera el costo de mantenimiento. Para apps Spring Boot típicas, el costo suele ser alto; para librerías o plataformas Java, puede valer.
 
 ### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 35 min
 
-La reflexión profunda permite acceder a miembros no públicos en runtime. JPMS la restringe. `exports` permite acceso a tipos públicos y miembros públicos; no permite `setAccessible` sobre privados. Para eso existe `opens`.
+La reflexión profunda (`setAccessible` sobre miembros no públicos) está restringida por JPMS. `exports` no alcanza para eso; se necesita `opens`. `opens com.aurora.jpms.core` permite reflexión en runtime a ese paquete. `opens ... to ...` lo limita a módulos específicos.
 
-En el ejemplo, `Producto.etiquetaInterna()` es privado. La app lo invoca por reflexión:
+Esto importa para frameworks como Jackson, Hibernate o Spring, que inspeccionan campos, constructores o métodos privados. Abrir todo un módulo es fácil pero debilita encapsulación. Abrir solo paquetes necesarios, o preferir APIs públicas/records/constructores, es mejor.
 
-```java
-Method m = Producto.class.getDeclaredMethod("etiquetaInterna");
-m.setAccessible(true);
-System.out.println("reflexion=" + m.invoke(primero));
-```
-
-Esto funciona porque `core` abre `com.aurora.jpms.core`. Si no lo abriera, obtendrías un error de acceso reflexivo en runtime. La forma más precisa es `opens paquete to modulo.framework`, que limita quién puede reflejar. En este build verificado se usó `opens com.aurora.jpms.core;` para mantener el ejemplo simple y evitar acoplar el descriptor de `core` al nombre del módulo app durante compilaciones aisladas con `-Werror`; en producción, prefiere la forma calificada.
-
-Frameworks como Jackson, Hibernate o Spring históricamente usan reflexión. Con JPMS, debes abrir solo los paquetes que necesitan, idealmente a módulos específicos. Abrir todo el módulo por comodidad debilita la encapsulación que JPMS te da.
+**Confusión común:** `exports` y `opens` son lo mismo. No. `exports` es para acceso compilado/API; `opens` es para reflexión runtime. Puedes necesitar uno, otro o ambos.
 
 ## Verificación real
 
 Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m10` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
-./gradlew -q test
-./gradlew -q run
+./gradlew -q :app:run
 ```
 
-Resultados observados:
+Resultado observado:
 
-- `test`: 0 fallas.
-- `run`: `productos=2`, `primero=CAF-100`, `reflexion=CAF-100:Cafe Aurora`.
+- `productos=2`
+- `primero=CAF-100`
+- `reflexion=CAF-100:Cafe Aurora`
+
+**Nota honesta:** la reflexión profunda funcionó porque `core` declara `opens com.aurora.jpms.core`. Sin `opens`, el mismo código debe fallar con `InaccessibleObjectException`.
 
 ## Errores comunes y diagnóstico
 
@@ -308,12 +229,12 @@ Resultados observados:
 
 ## Cierre
 
-JPMS no reemplaza el diseño de paquetes ni los modificadores de acceso; agrega una frontera arquitectónica. `exports` define API pública, `requires` define dependencias y `opens` controla reflexión. Úsalo donde los límites importan, y migra de forma incremental.
+JPMS no es obligatorio para todo proyecto Java, pero sí es el modelo nativo de encapsulación del lenguaje/plataforma. Entender `module-info`, `exports`, `requires` y `opens` te permite diagnosticar problemas reales de modularidad y tomar una decisión informada sobre cuándo adoptar el sistema.
 
 ## Checklist
 
-- Sé qué hace `module-info.java`: exports, requires y opens.
-- Distingo “public en Java” de “exportado por el módulo”.
-- Puedo explicar una migración incremental a JPMS.
-- Uso `opens` solo para paquetes que realmente necesitan reflexión.
-- Prefiero `opens ... to ...` cuando conozco el módulo consumidor.
+- [ ] Sé declarar `module-info.java` con `requires` y `exports`.
+- [ ] Distingo `exports` de `opens`.
+- [ ] Sé cuándo JPMS aporta valor y cuándo es sobrecosto.
+- [ ] Entiendo el rol del unnamed/automatic module en migraciones.
+- [ ] Evito abrir paquetes de más por comodidad.
