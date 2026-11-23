@@ -2225,21 +2225,24 @@ El error más común es usar un método de instancia (no estático) para prepara
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q classes
+./gradlew -q test
 ./gradlew -q run --args="catalogo"
-./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA --pago efectivo"
+./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA --pago TARJETA"
+./gradlew -q run --args="comparar --sku CAF-0001 --cantidad 3 --descuento BIENVENIDA"
+./gradlew -q run --args="reglas"
 ./gradlew -q run --args="diagnostico"
 ```
 
 Resultados observados (resumen):
 
-- `classes`: compilación exitosa.
+- `classes` y `test`: compilación y suite sin fallas.
 - `catalogo`: 4 productos (físicos/digital) con precio y envío.
-- `cotizar`: total `$38.70` con descuento Bienvenida, envío y efectivo sin recargo.
-- `diagnostico`: ejecuta sin error (salida de diagnóstico de tipos/modelo POO).
+- `cotizar`: total `$39.47` con descuento Bienvenida, envío y recargo de tarjeta; `comparar` muestra `$38.70` con efectivo/transferencia y `$41.36` con contra reembolso.
+- `reglas` y `diagnostico`: ejecutan sin error; diagnostico confirma invariantes de construcción, normalización e igualdad de records.
 
 ## Errores comunes y diagnóstico
 

@@ -3,9 +3,15 @@
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 0 — mapa visual](/visuals/temas/java/modulo-0-jvm-pipeline.html)
-
-Lectura: El .java se compila a bytecode y la JVM lo carga, verifica y ejecuta; el bytecode es el puente portable.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-0-jvm-pipeline.html"
+    alt="De .java a ejecución en JVM: compilación a bytecode, carga, verificación y ejecución"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>El bytecode es el puente portable entre el código fuente y la JVM.</figcaption>
+</figure>
 
 
 Tienda Aurora arranca como una aplicación de consola que cotiza pedidos. No hay Spring todavía, no hay base de datos, no hay HTTP: solo Java. Esa restricción es deliberada. Antes de repartir responsabilidades entre frameworks conviene entender qué hace el lenguaje por sí mismo, porque los errores más caros de un sistema grande —un total que no cuadra por un céntimo, una fecha que se guarda un día antes, un `==` que compara direcciones en lugar de valores— nacen en estas primeras decisiones y se propagan sin ruido hasta producción.
@@ -52,6 +58,17 @@ Gradle 9.9.1
 ```
 
 Si `javac` no existe pero `java` sí, tienes un runtime sin compilador: instala un JDK, no un JRE.
+
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-fundamentos/src/main/java/com/aurora/fundamentos/{catalogo,diagnostico,dominio,tiempo,venta}
+mkdir -p tienda-aurora-fundamentos/scripts
+cd tienda-aurora-fundamentos
+gradle wrapper --gradle-version 9.9.1
+```
+
+El proyecto canónico usa Gradle wrapper. Más adelante, `scripts/Inventario.java` se ejecuta directamente con el lanzador de Java para mostrar compilación sin build tool.
 
 ## Estructura del proyecto
 
@@ -1750,10 +1767,11 @@ El error más común es ejecutar un archivo compacto con un JDK anterior a 25. L
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q classes
+./gradlew -q test
 ./gradlew -q run --args="catalogo"
 ./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --fecha 2026-11-22T10:30"
 ./gradlew -q run --args="diagnostico"
@@ -1761,7 +1779,7 @@ Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.
 
 Resultados observados (resumen):
 
-- `classes`: compilación exitosa, sin salida.
+- `classes` y `test`: compilación y suite sin fallas.
 - `catalogo`: lista 4 productos con SKU, nombre, precio y stock.
 - `cotizar`: genera recibo `AUR-2026-0001`, total `$45.38`, entrega `25/11/2026`, `timestampUtc=1795343400000`.
 - `diagnostico`: confirma diferencias `double` vs `Dinero`, desbordamiento `int`/`long`/`Math.multiplyExact`, `==` vs `equals`, caché `Integer`, copia defensiva de arreglos y comportamiento heredado de `Date/Calendar`.

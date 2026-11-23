@@ -1469,19 +1469,23 @@ Los avisos usan la misma clase `ArrayDeque`, pero con disciplina FIFO. `addLast`
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q classes
+./gradlew -q test
 ./gradlew -q run --args="catalogo"
+./gradlew -q run --args="etiquetas"
+./gradlew -q run --args="pedidos"
+./gradlew -q run --args="paginas"
 ./gradlew -q run --args="auditoria"
 ```
 
 Resultados observados (resumen):
 
-- `classes`: compilación exitosa.
+- `classes` y `test`: compilación y suite exitosas (0 fallas).
 - `catalogo`: muestra productos en orden de alta y por precio ascendente.
-- `auditoria`: confirma contrato `equals/hashCode`, problema de clave mutable en `HashMap`, borrado de tipos, orden con `Comparable/Comparator`, y comportamiento de `Queue/Deque/PriorityQueue/LinkedHashSet`.
+- `catalogo`, `etiquetas`, `pedidos`, `paginas` y `auditoria`: todas ejecutadas el 2026-11-23; confirman contrato `equals/hashCode`, problema de clave mutable en `HashMap`, borrado de tipos, orden con `Comparable/Comparator`, paginación y comportamiento de `Queue/Deque/PriorityQueue/LinkedHashSet`.
 
 ## Errores comunes y diagnóstico
 
