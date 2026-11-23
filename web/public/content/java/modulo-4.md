@@ -641,11 +641,65 @@ Unidades por SKU:
 
 ### Tema 2: Optional — evitar null explícitamente · Básico · 30 min
 
-`Optional<T>` representa un valor que puede estar presente o ausente. Su objetivo es hacer visible esa ausencia en el tipo. `buscarPorSku` devuelve `Optional<Producto>`: el llamador debe decidir qué hacer si no existe. Eso es mejor que devolver `null` y esperar que todos recuerden comprobarlo.
+`Optional<T>` es un contenedor de cero o un valor. No es una colección de muchos elementos ni una caja mágica que elimina la ausencia: hace que la ausencia aparezca en la firma del método. El mecanismo es simple. `Optional.of(valor)` exige un valor no nulo; `Optional.ofNullable(valor)` produce `empty` si recibe `null`; `Optional.empty()` representa ausencia explícita. Sobre esa caja se aplican transformaciones (`map`, `flatMap`, `filter`) y se cierra con una operación que decide qué hacer si no hay valor (`orElse`, `orElseGet`, `orElseThrow`, `ifPresentOrElse`).
 
-Usa `map`, `flatMap`, `filter`, `orElse`, `orElseGet`, `orElseThrow`, `ifPresentOrElse`. Evita `Optional.get()` sin comprobar; si el valor no está, lanza `NoSuchElementException`. `orElse` evalúa el valor por defecto siempre; `orElseGet` lo evalúa solo si está vacío, útil cuando el default es costoso.
+**Por qué existe:** con `null`, la ausencia es invisible. El compilador no obliga a comprobarla y el fallo aparece como `NullPointerException` en un punto lejano al origen. Con `Optional<Producto>` como retorno, el contrato dice: “puede no haber producto; decide qué hacer”. La decisión se traslada al llamador, donde está el contexto de negocio.
 
-**Confusión común:** poner `Optional` en campos, parámetros o serialización por defecto. No es su propósito principal. Úsalo sobre todo como retorno donde la ausencia es esperable. Para parámetros obligatorios, usa tipos normales y valida.
+**Implicación práctica:** `map` transforma el valor solo si está presente. `buscarPorSku("MOL-200").map(Producto::nombre)` produce `Optional<String>`; si el SKU no existe, sigue siendo `empty` sin lanzar. `flatMap` se usa cuando la función de mapeo ya devuelve `Optional`: evita terminar con `Optional<Optional<X>>`. `filter` conserva el valor solo si cumple una condición. Todas estas operaciones son perezosas en el sentido de que no producen efectos fuera de la cadena; el valor final se obtiene al cerrar con una terminal.
+
+En `CatalogoProductos` la ausencia es parte del contrato:
+
+```java
+public Optional<Producto> buscarPorSku(String sku) {
+    String buscado = sku == null ? "" : sku.trim().toUpperCase();
+    return productos.stream()
+            .filter(p -> p.sku().equals(buscado))
+            .findFirst();
+}
+```
+
+`findFirst()` devuelve `Optional<Producto>` porque un stream puede estar vacío. El método no devuelve `null` ni lanza una excepción de negocio: entrega la ausencia al llamador. En el `main`, `ifPresentOrElse` hace explícitas las dos ramas:
+
+```java
+catalogo.buscarPorSku("MOL-200")
+        .ifPresentOrElse(
+                p -> System.out.println("SKU MOL-200: " + p.nombre()),
+                () -> System.out.println("SKU MOL-200: no encontrado")
+        );
+```
+
+Salida real del proyecto verificado:
+
+```text
+SKU MOL-200: Molino Manual
+SKU XXX-999: no encontrado
+```
+
+La auditoría muestra el cierre con `map` y `orElse`:
+
+```java
+Optional<String> presente = Optional.of("CAF-100");
+Optional<String> ausente = Optional.empty();
+System.out.println("Optional presente: " + presente.map(String::toLowerCase).orElse("NA"));
+System.out.println("Optional ausente: " + ausente.map(String::toLowerCase).orElse("NA"));
+```
+
+Resultado observado:
+
+```text
+Optional presente: caf-100
+Optional ausente: NA
+```
+
+**`orElse` frente a `orElseGet`:** `orElse(valor)` recibe un valor ya calculado, por lo que la expresión se evalúa siempre, incluso cuando el `Optional` está presente. `orElseGet(() -> calcular())` recibe un `Supplier` y solo lo ejecuta si falta el valor. Usa `orElse` para defaults baratos —como una cadena literal— y `orElseGet` para costosos —consultar BD, leer archivo, construir objeto grande—. Para ausencias que son error, `orElseThrow(...)` convierte la falta en una excepción con mensaje de dominio.
+
+**Por qué no `get()`:** `get()` lanza `NoSuchElementException` si el contenedor está vacío. Es equivalente a decir “sé que aquí hay valor” sin demostrarlo. Si esa certeza es real, `orElseThrow` la documenta mejor; si no lo es, `map`/`ifPresentOrElse` obligan a manejar el caso vacío.
+
+**Confusión común 1:** usar `Optional` en campos, parámetros o DTOs por defecto. Su propósito principal es ser valor de retorno. En campos agrega una capa que hay que desempaquetar; en parámetros obligatorios, un `Optional` puede recibir `null` y empeorar el contrato. Para serialización JSON, un `Optional` suele ruidar el esquema; modela la ausencia con el campo ausente o con un valor de dominio explícito.
+
+**Confusión común 2:** crear `Optional` solo para evitar un `if`. Si la ausencia es imposible o el flujo debe fallar, usa un tipo normal y valida. `Optional` no sustituye a los invariantes ni a las excepciones de dominio.
+
+**Confusión común 3:** `Optional.of(null)`. Lanza `NullPointerException` inmediatamente; para valores que pueden ser nulos usa `ofNullable`. La idea no es esconder `null`, sino hacerlo imposible de propagar accidentalmente dentro del contenedor.
 
 ### Tema 3: Stream Gatherers (Java 24) · Avanzado · 35 min
 
