@@ -7122,8 +7122,8 @@
         "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-y-validacion"
       },
       {
-        "title": "DTOs, @JsonProperty y Jackson",
-        "fragment": "tema-2-dtos-jsonproperty-y-jackson"
+        "title": "DTOs, Jackson y validación",
+        "fragment": "tema-2-dtos-jackson-y-validacion"
       },
       {
         "title": "Manejo global de excepciones (@ControllerAdvice)",
