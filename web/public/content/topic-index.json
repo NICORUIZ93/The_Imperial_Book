@@ -4244,26 +4244,6 @@
     ],
     "14": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "1. Crear base",
-        "fragment": "1-crear-base"
-      },
-      {
-        "title": "2. Estructura",
-        "fragment": "2-estructura"
-      },
-      {
-        "title": "3. Código desde cero",
-        "fragment": "3-codigo-desde-cero"
-      },
-      {
-        "title": "4. Ejecutar",
-        "fragment": "4-ejecutar"
-      },
-      {
         "title": "Compartir memoria requiere orden y visibilidad",
         "fragment": "tema-1-compartir-memoria-requiere-orden-y-visibilidad"
       },
@@ -4282,10 +4262,6 @@
       {
         "title": "Arranque más rápido: archivos CDS y la caché AOT",
         "fragment": "tema-5-arranque-mas-rapido-archivos-cds-y-la-cache-aot"
-      },
-      {
-        "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
-        "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
       }
     ],
     "15": [

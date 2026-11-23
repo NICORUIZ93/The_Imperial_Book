@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JVM runtime: visibilidad, JIT, serialización y ciclo de vida</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--ok:#0f766e;--bad:#9a3412}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>La JVM como runtime: lo que el código fuente no muestra</h1>
+<p class="lead">Visibilidad de memoria, optimizaciones JIT, deserialización y ciclo de vida son comportamientos de runtime. Hay que diseñarlos y verificarlos, no asumirlos.</p>
+<section class="card">
+<svg viewBox="0 0 980 320" role="img" aria-label="Runtime JVM">
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="30" y="50" width="200" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="130" y="80" text-anchor="middle" font-weight="700">Memoria compartida</text><text x="130" y="104" text-anchor="middle" font-size="12" fill="#6b7280">volatile / happens-before</text><text x="130" y="124" text-anchor="middle" font-size="12" fill="#b45309">visibilidad</text>
+<rect x="260" y="50" width="200" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="360" y="80" text-anchor="middle" font-weight="700">JIT / warmup</text><text x="360" y="104" text-anchor="middle" font-size="12" fill="#6b7280">optimiza código caliente</text><text x="360" y="124" text-anchor="middle" font-size="12" fill="#b45309">cronómetro ingenuo miente</text>
+<rect x="490" y="50" width="200" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="590" y="80" text-anchor="middle" font-weight="700">Deserialización</text><text x="590" y="104" text-anchor="middle" font-size="12" fill="#6b7280">filtro de tipos</text><text x="590" y="124" text-anchor="middle" font-size="12" fill="#b45309">frontera de seguridad</text>
+<rect x="720" y="50" width="220" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="830" y="80" text-anchor="middle" font-weight="700">Ciclo de vida</text><text x="830" y="104" text-anchor="middle" font-size="12" fill="#6b7280">shutdown hook / recursos</text><text x="830" y="124" text-anchor="middle" font-size="12" fill="#b45309">arranque y apagado</text>
+<rect x="180" y="200" width="620" height="80" rx="14" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="232" text-anchor="middle" font-weight="700">Regla</text>
+<text x="490" y="256" text-anchor="middle" font-size="13" fill="#0f766e">Medir, limitar fronteras y probar comportamiento observable</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> el runtime puede cambiar timing, visibilidad y seguridad. Las decisiones se verifican con pruebas y evidencia, no con intuición.</p>
+</main></body></html>

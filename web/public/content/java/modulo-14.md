@@ -1,39 +1,40 @@
-# Módulo 14: Mecánica JVM y evolución de plataforma
+# Módulo 14: JVM, rendimiento y seguridad
 
+El runtime de Java no es un detalle invisible: decide cómo se ve la memoria entre hilos, cuándo se optimiza un método, qué objetos pueden crearse al deserializar y cómo se apaga una aplicación. Muchos bugs “imposibles” aparecen porque el código se probó como si la JVM fuera un intérprete simple y determinista. Este módulo trabaja esos bordes con ejemplos pequeños y verificables.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 14 — mapa visual](/visuals/temas/java/modulo-14-concurrencia-moderna.html)
-
-Lectura: Los hilos virtuales escalan espera I/O; la seguridad sigue dependiendo de datos compartidos, timeouts y cancelación.
-
-
-La JVM no es solo "donde corre Java". Es un runtime que decide visibilidad de memoria, optimiza código caliente, carga clases, gestiona objetos, y define herramientas de diagnóstico y empaquetado. Este módulo baja del “escribe código” al “entiende qué hace la plataforma con tu código”.
-
-**Verificación real (2026-11-23, macOS arm64, JDK 27.0.1.0.2 Temurin, Gradle 9.9.1, JUnit 5.13.4):** `./gradlew -q test` pasó con 4 tests, 0 fallas. `./gradlew -q run` produjo la salida mostrada. `jdeps -s` y `jdeprscan` se ejecutaron sobre el JAR generado con el JDK Temurin 27. **Nota honesta:** no ejecuté JMH, jcstress, jlink image completa, JFR profiling de producción, ni mediciones CDS/AOT comparativas; donde corresponda indico comandos y límites.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-14-jvm-runtime.html"
+    alt="Mapa de runtime JVM: visibilidad, JIT, deserialización y ciclo de vida"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Visibilidad, JIT, deserialización y ciclo de vida son comportamientos de runtime que se diseñan y verifican.</figcaption>
+</figure>
 
 ## Proyecto desde cero: `tienda-aurora-java-m14`
 
-### Prerrequisitos
+#### Prerrequisitos
 
 ```bash
 java -version
-javac -version
 gradle --version
 ```
 
-Para las herramientas `jdeps`/`jdeprscan`, usa un JDK completo (no solo JRE). En esta verificación se usó Temurin 27 en `~/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin`.
-
-### 1. Crear base
+#### Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m14
+mkdir -p tienda-aurora-java-m14/src/main/java/com/aurora/jvm
+mkdir -p tienda-aurora-java-m14/src/test/java/com/aurora/jvm
 cd tienda-aurora-java-m14
 gradle wrapper --gradle-version 9.9.1
-mkdir -p src/main/java/com/aurora/jvm src/test/java/com/aurora/jvm
 ```
 
-### 2. Estructura
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
+
+#### Estructura final
 
 ```text
 tienda-aurora-java-m14/
@@ -49,19 +50,15 @@ tienda-aurora-java-m14/
     └── test/java/com/aurora/jvm/JvmModuloTest.java
 ```
 
-### 3. Código desde cero
+## Código completo, archivo por archivo
 
 #### `settings.gradle.kts`
-
-Nombre del build.
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m14"
 ```
 
 #### `build.gradle.kts`
-
-Java 25, JUnit 5, compilación estricta. Sin dependencias externas para mantener el foco en JVM/runtime.
 
 ```kotlin
 plugins { java; application }
@@ -82,18 +79,16 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-#### `src/main/java/com/aurora/jvm/VisibilidadDemo.java`
+#### `VisibilidadDemo.java`
 
-Demuestra publicación segura con `volatile`: el hilo lector espera la señal y ve el valor escrito antes.
+Demuestra visibilidad entre hilos. `listo` es `volatile`: la escritura en el hilo principal establece una relación happens-before con la lectura en el hilo lector. Sin esa garantía, el lector podría no ver el cambio o ver `valor` desactualizado. El patrón es didáctico; en producción se usan primitivas de concurrencia de más alto nivel cuando son adecuadas.
 
 ```java
 package com.aurora.jvm;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-/** Demuestra visibilidad: con volatile el hilo lector ve la señal. */
 public final class VisibilidadDemo {
     private volatile boolean listo = false;
     private int valor = 0;
@@ -108,7 +103,7 @@ public final class VisibilidadDemo {
         }, "lector");
         lector.start();
         valor = 42;
-        listo = true; // write volatile: publica valor=42 antes de listo=true
+        listo = true;
         boolean ok = visto.await(2, TimeUnit.SECONDS);
         lector.join(1000);
         return ok && valor == 42 ? "visible=42" : "timeout";
@@ -116,14 +111,13 @@ public final class VisibilidadDemo {
 }
 ```
 
-#### `src/main/java/com/aurora/jvm/CronometroIngenuo.java`
+#### `CronometroIngenuo.java`
 
-Cronómetro ingenuo con `nanoTime`: sirve para mostrar por qué no es un benchmark válido.
+Microbenchmark ingenuo: mide una sola ejecución con `nanoTime`. Sirve para mostrar por qué no es confiable. El JIT puede no haber optimizado, el GC puede interferir, el scheduler puede pausar el hilo, y el costo medido puede incluir warmup o ruido. La corrección no es “hacer más `nanoTime` casero”, sino usar JMH para warmup/forks/medición o JFR para observar el runtime.
 
 ```java
 package com.aurora.jvm;
 
-/** Microbenchmark ingenuo: útil para mostrar por qué NO es confiable. */
 public final class CronometroIngenuo {
     static int suma(int n) {
         int s = 0;
@@ -135,15 +129,15 @@ public final class CronometroIngenuo {
         long t0 = System.nanoTime();
         int r = suma(10_000);
         long t1 = System.nanoTime();
-        if (r == Integer.MIN_VALUE) System.out.println("nunca"); // evita dead-code obvio
+        if (r == Integer.MIN_VALUE) System.out.println("nunca");
         return t1 - t0;
     }
 }
 ```
 
-#### `src/main/java/com/aurora/jvm/DeserializacionSegura.java`
+#### `DeserializacionSegura.java`
 
-Serializa y deserializa con `ObjectInputFilter` allow-list; rechaza tipos no autorizados.
+Deserializar datos Java nativos es una frontera de seguridad: puede instanciar tipos y disparar comportamiento durante la reconstrucción. La defensa base es no deserializar datos no confiables; cuando no hay alternativa, usar `ObjectInputFilter` para permitir tipos concretos y rechazar el resto.
 
 ```java
 package com.aurora.jvm;
@@ -179,9 +173,9 @@ public final class DeserializacionSegura {
 }
 ```
 
-#### `src/main/java/com/aurora/jvm/CicloVidaApp.java`
+#### `CicloVidaApp.java`
 
-Registra y remueve un shutdown hook de forma segura para la demo; en producción el hook haría cierre limpio.
+Una aplicación real tiene ciclo de vida: arranca, acepta trabajo, se apaga. El shutdown hook permite registrar limpieza al recibir señal de terminación, pero no es garantía mágica: el proceso puede morir por `kill -9`, crash o corte de energía. Aun así, es útil para cerrar pools, hacer flush de métricas o liberar recursos en apagados normales.
 
 ```java
 package com.aurora.jvm;
@@ -194,7 +188,6 @@ public final class CicloVidaApp {
         Thread hook = new Thread(() -> cerrado.set(true), "shutdown-demo");
         Runtime.getRuntime().addShutdownHook(hook);
         try {
-            // En app real: cerrar pools, flush métricas, liberar recursos.
             return "hookRegistrado=" + true;
         } finally {
             Runtime.getRuntime().removeShutdownHook(hook);
@@ -203,9 +196,7 @@ public final class CicloVidaApp {
 }
 ```
 
-#### `src/main/java/com/aurora/jvm/App.java`
-
-Ejecuta las demos verificables.
+#### `App.java`
 
 ```java
 package com.aurora.jvm;
@@ -222,9 +213,7 @@ public final class App {
 }
 ```
 
-#### `src/test/java/com/aurora/jvm/JvmModuloTest.java`
-
-Pruebas JUnit 5: visibilidad, cronómetro no negativo, filtro acepta/rechaza.
+#### `JvmModuloTest.java`
 
 ```java
 package com.aurora.jvm;
@@ -261,252 +250,64 @@ class JvmModuloTest {
 }
 ```
 
-### 4. Ejecutar
-
-```bash
-./gradlew -q test
-./gradlew -q run
-./gradlew -q jar
-jdeps -s build/libs/tienda-aurora-java-m14-1.0.0.jar
-jdeprscan build/libs/tienda-aurora-java-m14-1.0.0.jar
-```
-
-Salida real de tests:
-
-```text
-BUILD SUCCESSFUL
-4 tests, 0 failures
-```
-
-Salida real de `run`:
-
-```text
-visible=42
-ns=true
-Mensaje[texto=hola]
-hookRegistrado=true
-```
-
-Salida real de `jdeps -s`:
-
-```text
-tienda-aurora-java-m14-1.0.0.jar -> java.base
-```
-
-Salida real de `jdeprscan` (sin APIs deprecadas/removidas detectadas en este JAR):
-
-```text
-Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
-```
-
-## Conceptos cubiertos
-
 ### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
-#### Problema
+Dos hilos pueden compartir heap, pero eso no significa que vean los mismos valores en el mismo orden sin coordinación. La JVM y el CPU pueden reordenar instrucciones y cachear valores. El Java Memory Model define garantías de visibilidad y orden a través de relaciones *happens-before*. `volatile`, `synchronized`, locks, atomics y utilidades concurrentes establecen esas garantías.
 
-Dos hilos pueden ver memoria distinta si no hay una relación happens-before. El caso clásico: un hilo escribe `valor=42` y luego `listo=true`; otro hilo lee `listo==true` y espera ver `42`. Sin sincronización, el compilador/JVM/CPU pueden reordenar u omitir visibilidad.
-
-#### Qué hace `volatile`
-
-En `VisibilidadDemo`:
-
-```java
-private volatile boolean listo = false;
-private int valor = 0;
-```
-
-La escritura a `listo` (volatile) ocurre después de `valor=42` en el hilo escritor. La lectura volatile en el lector establece happens-before: si ve `listo=true`, también ve `valor=42`.
-
-#### Qué no hace
-
-`volatile` no hace atómico `count++`. Para contadores usa `AtomicInteger/LongAdder`; para invariantes compuestos usa locks o estructuras concurrentes. Para explicar este flujo visualmente, usa herramientas aprobadas (diagram-design para secuencia/estado estático, animdiagram/dashmotion para recorrido animado con fallback, manim_skill solo para procesos de alto valor), pero la evidencia técnica debe seguir siendo el código y la prueba.
-
-#### Error común
-
-Confundir visibilidad con atomicidad. Síntoma: “puse volatile y aún pierdo incrementos”. Corrección: identificar si el problema es publicación/flag (volatile) o actualización compuesta (atomic/lock).
+En `VisibilidadDemo`, `listo` es `volatile`. Escribirlo después de `valor = 42` hace visible esa escritura para el hilo que observa `listo == true`. El error común es usar un booleano plano entre hilos y asumir que “eventualmente se verá”. Puede funcionar en pruebas y fallar bajo carga. La corrección es usar la primitiva de concurrencia adecuada al contrato: `volatile` para flags simples, atomics para actualizaciones atómicas, locks/colas/barreras para coordinación más rica.
 
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
 
-#### Problema
+El JIT observa código caliente y lo compila a nativo con optimizaciones: inlining, eliminación de dead code, loop optimizations, entre otras. Esto mejora rendimiento real, pero rompe cronómetros ingenuos. Si mides una sola iteración sin warmup, puedes medir carga de clases, interpretación o ruido del sistema. Si el resultado no se usa, el JIT puede incluso eliminar trabajo.
 
-`System.nanoTime()` alrededor de un bucle parece un benchmark. No lo es. La JVM puede calentar el código (C1/C2 JIT), hacer inlining, eliminar dead code, o cambiar el resultado entre iteraciones.
-
-#### Lo que muestra el ejemplo
-
-`CronometroIngenuo` devuelve un tiempo no negativo y usa el resultado para evitar eliminación obvia. Eso es didáctico, no suficiente para medir performance.
-
-#### Forma correcta
-
-Usa JMH (Java Microbenchmark Harness). Define `@Benchmark`, `@Warmup`, `@Measurement`, `@Fork`, y consume resultados con `Blackhole`.
-
-```java
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@State(Scope.Thread)
-public class SumaBenchmark {
-    @Param({"10000"})
-    int n;
-    @Benchmark
-    public int suma(Blackhole bh) {
-        int s = 0; for (int i = 0; i < n; i++) s += i;
-        bh.consume(s); return s;
-    }
-}
-```
-
-**Nota de verificación honesta:** el snippet JMH es de referencia; no ejecuté JMH en este módulo. Para ejecutarlo de verdad, crea un proyecto JMH (arquetipo o plugin) y corre `mvn clean verify`/`java -jar target/benchmarks.jar`.
-
-#### Error común
-
-Publicar “X es 30% más rápido” con un `nanoTime` en main. Corrección: JMH con warmup/forks, o al menos declarar la medición como no confiable.
+`CronometroIngenuo` ilustra el anti-patrón: `nanoTime` alrededor de una llamada. Su salida no debe interpretarse como rendimiento estable. Para medir, usa JMH, que maneja warmup, forks, blackholes y modos de medición. Para diagnosticar, usa JFR y GC logs. El error común es comparar dos implementaciones con un microbenchmark casero y tomar decisiones de arquitectura basadas en ese número.
 
 ### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
 
-#### Problema
+La deserialización Java nativa reconstruye grafos de objetos. Eso implica crear instancias y, en ciertos casos, ejecutar caminos de código durante la lectura. Si la entrada viene de una fuente no confiable, es una superficie de ataque. El problema no es solo “leer datos malos”; es permitir que tipos inesperados entren al proceso.
 
-`ObjectInputStream.readObject()` puede instanciar tipos arbitrarios si no hay filtro. En historiales de vulnerabilidades Java, gadgets de deserialización fueron un vector serio.
+La defensa en capas es: evitar deserialización nativa de datos no confiables, preferir formatos de datos como JSON con mapeo explícito, y si hay que usar Java serialization, aplicar `ObjectInputFilter` con allow-list. En `DeserializacionSegura`, el filtro permite `Mensaje` y `String` y rechaza todo lo demás. El test confirma que `Integer` serializado es rechazado.
 
-#### Defensa en el ejemplo
+### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Intermedio · 40 min
 
-```java
-ObjectInputFilter filtro = ObjectInputFilter.Config.createFilter(
-        "com.aurora.jvm.DeserializacionSegura$Mensaje;java.lang.String;!*" );
-in.setObjectInputFilter(filtro);
-```
+Una aplicación no solo “corre”; tiene arranque, estado, dependencias, señales de apagado y limpieza. Ignorar el ciclo de vida genera fugas de recursos, pérdida de métricas o cortes abruptos. Un shutdown hook puede cerrar pools, hacer flush de buffers y liberar recursos cuando la JVM recibe una señal normal.
 
-Allow-list: solo `Mensaje` y `String`. El test verifica que `Integer` es rechazado.
+Pero el hook no cubre todos los casos: `kill -9`, crash de JVM, fallo de hardware o apagado forzado no ejecutan hooks. Por eso el diseño robusto combina hooks con timeouts, idempotencia, persistencia segura y observabilidad. El error común es poner lógica crítica o larga en el hook; debe ser breve y tolerante a fallos.
 
-#### Criterio de producción
+### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Intermedio · 35 min
 
-- Prefiere formatos de datos como JSON/Protobuf en fronteras externas.
-- Si debes usar serialización Java, usa filtros allow-list, no block-list.
-- Considera registros y validación post-deserialización.
-- No deserialices datos no confiables sin control.
+El arranque de la JVM incluye carga de clases, verificación, linking y warmup. Class Data Sharing (CDS) y la caché AOT (dependiendo de la versión/JDK) permiten reutilizar metadatos precalculados para reducir tiempo de arranque. Es útil en CLIs, funciones serverless, contenedores y procesos de vida corta.
 
-#### Error común
+La ganancia no es universal: depende de classpath, flags, versión de JDK y configuración. Hay que medir el arranque real. En este entorno, al intentar generar un archivo CDS con `-XX:ArchiveClassesAtExit` sin base CDS cargada, la JVM emitió warning y no generó el archive; por eso el arranque con `-XX:SharedArchiveFile` falló. **Nota de verificación honesta:** no se obtuvo una medición CDS/AOT reproducible en esta corrida específica; el comportamiento depende de la configuración de CDS base del JDK. El concepto válido es: CDS/AOT puede mejorar arranque, pero debe validarse con los flags y artefactos soportados por el runtime objetivo.
 
-Creer que `Serializable` es solo “guardar objeto”. En realidad concede capacidad de construcción. Trátalo como superficie de ataque.
+## Verificación real
 
-### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
-
-#### Problema
-
-Una app Java no termina cuando “ya no hay requests”. Hay pools, conexiones, buffers, métricas, hilos daemon/no daemon, y shutdown hooks.
-
-#### Qué mostrar
-
-`CicloVidaApp` registra y remueve un hook. En producción, el hook o el ciclo de vida del framework debe: dejar de aceptar trabajo, drenar en curso, cerrar pools, flush logs/métricas, y salir con código claro.
-
-#### Herramientas reales
-
-- `jcmd <pid> VM.flags`, `Thread.print`, `GC.heap_info`
-- JFR: `jcmd <pid> JFR.start`, `JFR.dump`
-- `jlink` para runtime image personalizada
-- contenedores: señal SIGTERM, `preStop`, grace period
-
-**Nota de verificación honesta:** no generé imagen `jlink` ni grabación JFR en este módulo. Comandos de referencia:
-
-```bash
-jcmd <pid> JFR.start name=demo settings=profile duration=60s filename=demo.jfr
-jlink --add-modules java.base --output runtime-min
-```
-
-#### Error común
-
-Matar procesos con SIGKILL como operación normal. Corrige el ciclo de vida: shutdown ordenado, timeouts y observabilidad.
-
-### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
-
-#### Problema
-
-La JVM carga y verifica clases en arranque. En CLI/serverless, eso cuesta. CDS (Class Data Sharing) y la caché AOT de Java moderna reducen trabajo de arranque precargando/metadatos.
-
-#### Comandos de referencia
-
-```bash
-# AppCDS clásico / dinámico (varía por versión y modo)
-java -Xshare:off -version
-java -XX:ArchiveClassesAtExit=app.jsa -cp app.jar com.aurora.jvm.App
-java -XX:SharedArchiveFile=app.jsa -cp app.jar com.aurora.jvm.App
-```
-
-Para AOT cache (Java reciente, flujo evolucionando):
-
-```bash
-java -XX:AOTCacheOutput=app.aot -cp app.jar com.aurora.jvm.App
-java -XX:AOTCache=app.aot -cp app.jar com.aurora.jvm.App
-```
-
-**Nota de verificación honesta:** no ejecuté mediciones comparativas de arranque ni generé artefactos CDS/AOT en este entorno. Las opciones y soporte exacto dependen de la versión/distribución de JDK; verifica con `java -X` y la documentación de tu JDK antes de automatizar en CI.
-
-#### Error común
-
-Copiar flags de otra versión de Java sin validar. Corrección: documentar versión exacta y medir con el mismo artefacto y entorno.
-
-### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
-
-#### Problema
-
-Migrar no es solo cambiar `sourceCompatibility`. APIs removidas, dependencias internas, módulos, y comportamiento runtime pueden romper.
-
-#### Herramientas verificadas
-
-Generé el JAR y ejecuté:
-
-```bash
-./gradlew -q jar
-jdeps -s build/libs/tienda-aurora-java-m14-1.0.0.jar
-jdeprscan build/libs/tienda-aurora-java-m14-1.0.0.jar
-```
-
-Salida real:
-
-```text
-tienda-aurora-java-m14-1.0.0.jar -> java.base
-Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
-```
-
-`jdeps` muestra dependencia solo de `java.base`: buena señal de modularidad simple. `jdeprscan` sin hallazgos indica que no detectó APIs deprecated/for removal en este JAR.
-
-#### Flujo de migración prudente
-
-1. Compilar y testear en JDK actual.
-2. Ejecutar `jdeprscan` sobre JARs propios y dependencias.
-3. Ejecutar `jdeps` para detectar usos internos/no soportados.
-4. Actualizar dependencias antes de subir runtime.
-5. Correr tests de integración y observabilidad en staging.
-6. Subir LTS por pasos cuando el salto es grande.
-
-#### Error común
-
-Migrar solo el JDK del CI pero no el runtime de producción, o ignorar dependencias transitivas. Corrección: inventario de artefactos, escaneo, staging, rollback plan.
-
-## Verificación real (actualización 2026-05-23)
-
-Reejecutado el 2026-05-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q test
 ./gradlew -q run
 ```
 
-- `test`: 0 fallas.
-- `run`: salida observada:
-  - `visible=42`
-  - `ns=true`
-  - `Mensaje[texto=hola]`
-  - `hookRegistrado=true`
+Resultados observados:
 
-## Cierre
+- `test`: 4 pruebas, 0 fallas.
+- `run`: `visible=42`, `ns=true`, `Mensaje[texto=hola]`, `hookRegistrado=true`.
 
-La JVM es parte de tu diseño. Visibilidad, optimización, serialización, ciclo de vida, arranque y migración no son “detalles de plataforma”: son riesgos y capacidades que afectan producción. La regla es medir, verificar herramientas, y ser honesto cuando una afirmación no fue ejecutada.
+## Errores comunes y diagnóstico
 
-## Checklist
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| Hilo no ve cambio | Falta happens-before | Revisar sincronización | `volatile`, lock, atomic, estructura concurrente |
+| Benchmark “demuestra” mejora irreal | Warmup/JIT/GC no controlados | Repetir con JMH | Usar JMH/JFR, no cronómetro casero |
+| Vulnerabilidad por deserialización | `ObjectInputStream` sobre datos no confiables | Revisar fuentes y filtros | Evitar Java serialization; allow-list con `ObjectInputFilter` |
+| Recursos no se liberan al apagar | No hay hook/close ordenado | Simular SIGTERM, revisar logs | Shutdown hook corto, try-with-resources, timeouts |
+| CDS/AOT no mejora arranque | Flags/JDK/base archive incompatibles | `-Xlog:cds`, medir arranque real | Validar soporte del JDK objetivo y medir antes/después |
 
-- [ ] Puedo explicar happens-before y por qué `volatile` no reemplaza a un lock/atomic en todo caso.
-- [ ] Puedo decir por qué un `nanoTime` ingenuo no es un benchmark válido y qué usar en su lugar.
-- [ ] Puedo aplicar un filtro de deserialización y justificar allow-list.
-- [ ] Puedo describir un shutdown ordenado.
-- [ ] Puedo ejecutar `jdeps`/`jdeprscan` y leer su salida.
-- [ ] Sé declarar una nota honesta cuando no ejecuté JMH/jcstress/jlink/JFR/CDS.
+## Checklist de cierre
+
+- [ ] Puedo explicar por qué compartir memoria requiere happens-before.
+- [ ] Sé por qué un cronómetro ingenuo no es un benchmark confiable.
+- [ ] Sé aplicar `ObjectInputFilter` y cuándo evitar Java serialization.
+- [ ] Entiendo límites de shutdown hooks.
+- [ ] Sé que CDS/AOT requiere verificación por JDK/flags, no supuestos.
