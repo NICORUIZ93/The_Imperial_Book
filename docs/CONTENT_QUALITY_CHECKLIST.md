@@ -44,7 +44,7 @@ No se permite explicar solo un concepto y mencionar los demás superficialmente.
 
 ## 3) Ejecutabilidad y contexto completo (crítico)
 
-Nunca asumir proyecto existente, secuencia previa no explicada, datos, conexión, credenciales o infraestructura.
+Nunca asumir proyecto existente, secuencia previa no explicada, datos, conexión, credenciales o infraestructura. **El código siempre se explica desde cero**: el estudiante debe poder crear el proyecto, archivo por archivo, sin adivinar.
 
 Cuando aplique, incluir:
 - **Prerequisitos**: runtime/SDK/JDK, versiones, herramientas, Docker, etc.
@@ -52,6 +52,7 @@ Cuando aplique, incluir:
 - **Dependencias**: `pom.xml`, `build.gradle`, `package.json`, `pubspec.yaml`, Podfile, jars; versiones o nota de versión.
 - **Configuración**: `application.properties/yml`, `.env`, `persistence.xml`, puertos, variables.
 - **Datos/BD**: de dónde salen los datos; al menos opción local rápida (H2/SQLite/dev) y opción Docker/externa cuando sea relevante; credenciales/env; esquema/migraciones/seed.
+- **Código desde cero, archivo por archivo**: indicar ruta/nombre de archivo, mostrar el código completo, y explicar qué hace cada bloque relevante justo en el punto donde aparece. No volcar código “mágico” sin recorrido.
 - **Comandos**: desde qué ruta se ejecutan, en orden.
 - **Salida real esperada**: y cómo interpretarla.
 - **Nota de verificación**: si no se pudo ejecutar por dependencia externa, decirlo explícitamente y dar setup completo.
