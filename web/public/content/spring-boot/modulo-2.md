@@ -1,267 +1,290 @@
 # Módulo 2: API REST con Spring MVC
 
-Una API REST no es solo “poner @RestController”. Es un contrato: recursos, métodos HTTP, códigos de estado, validación, errores consistentes, DTOs, paginación y documentación. Este módulo construye ese contrato con disciplina, para que la API sea predecible y segura.
+Una API REST no es solo “poner @RestController”. Es un contrato: recursos, métodos HTTP, códigos de estado, validación, errores consistentes, DTOs, paginación y documentación.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0 para smokes web locales. Algunas APIs mencionadas (versionado nativo Spring Framework 7/Boot 4, Jackson 3 defaults) dependen de versión; se marcan explícitamente.
+## Visual del módulo
+
+No hay visual aprobado para M2 todavía. El único visual existente del track está en `web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html`; no se creó uno nuevo para M2.
+
+## Proyecto verificado
+
+Directorio: `/tmp/opencode/aurora-sb2`.
+
+```text
+/tmp/opencode/aurora-sb2/
+├── pom.xml
+├── mvnw
+├── src/main/java/com/aurora/aurora_sb2/
+│   ├── ApiExceptionHandler.java
+│   ├── AuroraSb2Application.java
+│   ├── DemoApiController.java
+│   ├── GuiaRequest.java
+│   └── GuiaResponse.java
+└── src/test/java/com/aurora/aurora_sb2/
+    ├── AuroraSb2ApplicationTests.java
+    └── DemoApiTest.java
+```
+
+## Prerrequisitos y entorno observado
+
+```bash
+java -version
+./mvnw -version
+```
+
+```text
+openjdk version "27.0.1.0.2" 2026-10-21
+OpenJDK Runtime Environment Temurin-27.0.1.0.2+1 (build 27.0.1.0.2+1)
+OpenJDK 64-Bit Server VM Temurin-27.0.1.0.2+1 (build 27.0.1.0.2+1, mixed mode, sharing)
+```
+
+```text
+Apache Maven 3.10.1 (3afd8084b5629f80b97750906a719879ed4cd283)
+Maven home: /Users/nicolasruiz/.m2/wrapper/dists/apache-maven-3.10.1/987df3ef
+Java version: 27.0.1.0.2, vendor: Eclipse Adoptium, runtime: /Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home
+Default locale: es_CO, platform encoding: UTF-8, time zone: America/Bogota
+OS name: "mac os x", version: "27.2", arch: "aarch64", family: "mac"
+```
+
+El proyecto declara `java.version=25`, usa Spring Boot 4.2.0 y `spring-boot-starter-webmvc` + `spring-boot-starter-validation`.
+
+## Bootstrap verificado desde start.spring.io
+
+```bash
+curl -fsSL -o /tmp/aurora-sb2.zip -G 'https://start.spring.io/starter.zip' \
+  -d type=maven-project -d language=java -d javaVersion=25 -d bootVersion=4.2.0 \
+  -d groupId=com.aurora -d artifactId=aurora-sb2 -d dependencies=web,validation
+unzip -q /tmp/aurora-sb2.zip -d /tmp/opencode/aurora-sb2
+cd /tmp/opencode/aurora-sb2
+./mvnw test
+```
 
 ## Aprende construyendo
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 35 min
 
-Caso guía: la entidad `User` tiene `passwordHash`. Si la devuelves por el endpoint, filtras un secreto.
+**Mecanismo.** Un DTO es un objeto de transporte. El controlador recibe DTO de entrada, el servicio transforma a modelo o comando, la persistencia usa entidad, y el controlador responde DTO de salida.
 
-#### DTO (Data Transfer Object)
+**Por qué existe.** Exponer la entidad mezcla contrato de API con diseño de persistencia.
 
-**Definición formal.** DTO es un objeto diseñado para transportar datos entre capas/procesos, moldeado al contrato de entrada/salida, no al modelo interno de persistencia.
+**Implicaciones.** Hay que mantener mapeos explícitos o usar un mapper.
 
-**Cómo funciona por dentro.** El controlador recibe DTO request, el servicio mapea a dominio/comando, la persistencia usa entidad, y el controlador responde DTO response. Esto desacopla API de DB.
+**Confusión común.** Pensar que un DTO elimina toda lógica de transformación.
 
-```mermaid
-flowchart LR
-  C[Cliente] --> R[Request DTO]
-  R --> S[Service/Domain]
-  S --> E[Entidad/JPA]
-  E --> S
-  S --> RS[Response DTO]
-  RS --> C
-```
-
-**Ejemplo mínimo enfocado (ejecutable, Java puro).**
-
-```bash
-mkdir -p java-sb2-dto
-cd java-sb2-dto
-```
-
-Crea el archivo `DemoDto.java`:
+#### `src/main/java/com/aurora/aurora_sb2/GuiaResponse.java`
 
 ```java
-class UserEntity { String email; String passwordHash; UserEntity(String e,String p){email=e;passwordHash=p;} }
-record UserResponse(String email) {}
-public class DemoDto {
-  static UserResponse toResponse(UserEntity e){ return new UserResponse(e.email); }
-  public static void main(String[] args){ System.out.println(toResponse(new UserEntity("a@b.com","hash")).email()); }
+package com.aurora.aurora_sb2;
+
+public record GuiaResponse(Long id, String destino) {
 }
 ```
 
-```bash
-javac DemoDto.java
-java DemoDto
+#### `src/main/java/com/aurora/aurora_sb2/GuiaRequest.java`
+
+```java
+package com.aurora.aurora_sb2;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record GuiaRequest(
+        @NotBlank(message = "destino es obligatorio")
+        @Size(max = 100, message = "destino no puede exceder 100 caracteres")
+        String destino
+) {
+}
 ```
 
-**Error común.** Exponer entidad JPA directa. Síntoma: filtrado de campos sensibles, acoplamiento a esquema, problemas de lazy loading. Corrección: DTOs y mapeo explícito.
+#### Salida del endpoint
 
-**Verificación (JDK 27, 2026-05-22).** `a@b.com`.
+```bash
+curl -s -i -H 'Content-Type: application/json' -d '{"destino":""}' http://localhost:8080/guias
+```
+
+```text
+HTTP/1.1 400
+{"code":"VALIDATION","message":" destino es obligatorio"}
+```
 
 ### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 35 min
 
-Caso guía: crear una guía sin `destino`. La API debe rechazarla con 400, no guardar basura.
+**Mecanismo.** Bean Validation declara restricciones con anotaciones. Spring MVC activa validación con `@Valid`; las fallas se convierten en `MethodArgumentNotValidException`.
 
-#### Bean Validation
+**Por qué existe.** Centralizar reglas evita validaciones dispersas.
 
-**Definición formal.** Bean Validation (Jakarta Validation) usa anotaciones (`@NotBlank`, `@Email`, `@Size`, etc.) para declarar restricciones sobre campos/params.
+**Implicaciones.** El validador necesita `spring-boot-starter-validation`.
 
-**Contrato.** `@Valid`/`@Validated` activa la validación en el borde. Fallos generan `MethodArgumentNotValidException` o `ConstraintViolationException`.
+**Confusión común.** Pensar que `@Valid` no se aplica a records; los records admiten anotaciones.
 
-**Ejemplo mínimo (ejecutable, Spring Boot web smoke).**
-
-```bash
-mkdir -p sb2-val/src/main/java/com/academia
-cd sb2-val
-```
-
-Crea el archivo `pom.xml`:
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.5.0</version><relativePath/></parent>
-  <groupId>com.academia</groupId><artifactId>sb2-val</artifactId><version>0.0.1</version>
-  <properties><java.version>21</java.version></properties>
-  <dependencies>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-validation</artifactId></dependency>
-  </dependencies>
-  <build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>
-</project>
-```
-
-Crea el archivo `src/main/java/com/academia/Demo.java`:
+#### `src/main/java/com/aurora/aurora_sb2/DemoApiController.java`
 
 ```java
-package com.academia;
+package com.aurora.aurora_sb2;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-record GuiaReq(@NotBlank String destino) {}
-@SpringBootApplication
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@EnableSpringDataWebSupport
 @RestController
-class Demo {
-  @PostMapping("/guias")
-  ResponseEntity<?> crear(@Valid @RequestBody GuiaReq req){ return ResponseEntity.ok(req); }
-  public static void main(String[] args){ SpringApplication.run(Demo.class, args); }
+public class DemoApiController {
+
+    private final List<GuiaResponse> guias = new ArrayList<>();
+    private final AtomicLong secuencial = new AtomicLong(1);
+
+    @PostMapping("/guias")
+    public ResponseEntity<GuiaResponse> crear(@Valid @RequestBody GuiaRequest request) {
+        GuiaResponse response = new GuiaResponse(secuencial.getAndIncrement(), request.destino());
+        guias.add(response);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/guias")
+    public ResponseEntity<List<GuiaResponse>> listar(Pageable pageable) {
+        int size = Math.min(Math.max(pageable.getPageSize(), 1), 100);
+        int from = Math.max(pageable.getPageNumber(), 0) * size;
+        return ResponseEntity.ok(guias.subList(from, Math.min(from + size, guias.size())));
+    }
 }
 ```
-
-```bash
-mvn -q -DskipTests package
-java -jar target/sb2-val-0.0.1.jar
-# en otra terminal:
-curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"destino":""}' http://localhost:8080/guias
-```
-
-**Error común.** Validar manualmente en cada controller con `if`. Corrección: Bean Validation + handler centralizado.
-
-**Verificación (Spring Boot 3.5.0, JDK 27, 2026-05-22).** Request inválido devuelve 400.
 
 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 40 min
 
-Caso guía: todos los errores de validación deben responder con el mismo formato.
+**Mecanismo.** `@RestControllerAdvice` agrupa handlers para excepciones de controllers.
 
-#### `@ControllerAdvice` / `@RestControllerAdvice`
+**Por qué existe.** Respuestas consistentes independientemente del controlador.
 
-**Definición formal.** Componente que intercepta excepciones de controllers y las traduce en respuestas consistentes.
+**Implicaciones.** El advice debe traducir a status y cuerpo controlados.
 
-```mermaid
-flowchart LR
-  C[Controller] -->|lanza excepción| A[@RestControllerAdvice]
-  A --> R[ResponseEntity con body de error estándar]
-```
-
-**Ejemplo mínimo (Java, ejecutable como concepto de mapeo).**
-
-```bash
-mkdir -p java-sb2-err
-cd java-sb2-err
-```
-
-Crea el archivo `DemoErr.java`:
+#### `src/main/java/com/aurora/aurora_sb2/ApiExceptionHandler.java`
 
 ```java
-record ErrorBody(String code, String message) {}
-public class DemoErr {
-  static ErrorBody map(Exception e){ return new ErrorBody("VALIDATION", e.getMessage()); }
-  public static void main(String[] args){ System.out.println(map(new IllegalArgumentException("destino requerido")).code()); }
+package com.aurora.aurora_sb2;
+
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class ApiExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorBody> manejo(MethodArgumentNotValidException ex) {
+        String destino = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .findFirst()
+                .orElse("entrada invalida");
+        return ResponseEntity.badRequest().body(new ErrorBody("VALIDATION", destino));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorBody> manejo(ConstraintViolationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorBody("VALIDATION", String.join(",", ex.getConstraintViolations().stream().map(v -> v.getPropertyPath() + ": " + v.getMessage()).toList())));
+    }
+
+    public record ErrorBody(String code, String message) {
+    }
 }
 ```
-
-```bash
-javac DemoErr.java
-java DemoErr
-```
-
-**Error común.** Devolver stack traces o mensajes internos al cliente. Corrección: body de error controlado, log interno detallado.
-
-**Verificación (JDK 27, 2026-05-22).** `VALIDATION`.
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 35 min
 
-Caso guía: reducir boilerplate sin esconder el contrato.
+**Mecanismo.** Lombok reduce boilerplate; MapStruct genera mappers.
 
-#### Lombok
+**Por qué existe.** Reducir ruido sin ocultar contrato.
 
-**Definición formal.** Librería que genera código en compilación (getters, builders, etc.) mediante anotaciones.
+**Implicaciones.** En JPA se evita `@Data` ciego.
 
-**Regla.** Úsalo para reducir ruido, no para ocultar diseño. Evita `@Data` ciegamente en entidades JPA; prefiere `@Getter/@Setter/@Builder` con intención.
+**Confusión común.** `@Data` en entidad expone setters y mutable state.
 
-#### MapStruct
-
-**Definición formal.** Generador de mapeadores en compilación entre DTOs y entidades/modelos.
-
-**Ejemplo mínimo (conceptual).**
+**Ejemplos.**
 
 ```java
-@Mapper(componentModel = "spring")
-interface UserMapper { UserResponse toResponse(UserEntity e); }
-```
-
-**Error común.** Mapeo manual repetido y propenso a olvidar campos sensibles. Corrección: mapper explícito revisado, tests de mapeo.
-
-**Nota de verificación.** Requiere configuración annotation processor Maven/Gradle; verificar con `mvn -q test` en proyecto con MapStruct.
-
-### Tema 5: OpenAPI con springdoc: el contrato como prueba · Avanzado · 40 min
-
-Caso guía: el frontend necesita contrato actualizado sin leer código.
-
-#### OpenAPI/springdoc
-
-**Definición formal.** OpenAPI describe la API HTTP; springdoc genera documentación/OpenAPI desde controladores Spring.
-
-**Ejemplo mínimo.** Dependencia `springdoc-openapi-starter-webmvc-ui`, luego `/v3/api-docs`.
-
-**Error común.** Documentación separada del código que se desactualiza. Corrección: generar desde código y validar contrato en CI.
-
-**Nota de verificación.** Requiere app web con springdoc; smoke local en `/tmp` es factible, pero pesado para cada corrida; documentar endpoint esperado.
-
-### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Avanzado · 40 min
-
-Caso guía: `GET /guias` no puede devolver 1 millón de filas.
-
-#### Paginación
-
-**Definición formal.** Técnica de dividir resultados en páginas (`page`, `size`, `sort`) con límites máximos.
-
-**Ejemplo mínimo (Java puro, ejecutable).**
-
-```bash
-mkdir -p java-sb2-page
-cd java-sb2-page
-```
-
-Crea el archivo `DemoPage.java`:
-
-```java
-import java.util.*; import java.util.stream.*;
-public class DemoPage {
-  static List<Integer> page(List<Integer> all, int page, int size) {
-    int safeSize = Math.min(Math.max(size,1), 100);
-    int from = Math.max(page,0) * safeSize;
-    return all.stream().skip(from).limit(safeSize).toList();
-  }
-  public static void main(String[] args){ System.out.println(page(IntStream.range(0,10).boxed().toList(), 1, 3)); }
+@Getter @Setter @Builder
+public class GuiaEntity {
+    private Long id;
+    private String destino;
 }
 ```
 
-```bash
-javac DemoPage.java
-java DemoPage
+```java
+@Mapper(componentModel = "spring")
+interface GuiaMapper {
+    GuiaResponse toResponse(GuiaEntity entity);
+}
 ```
 
-**Error común.** Permitir `size=100000`. Corrección: max size server-side.
+Estos snippets son de intención y no se ejecutaron como parte del proyecto M2.
 
-**Verificación (JDK 27, 2026-05-22).** `[3, 4, 5]`.
+### Tema 5: OpenAPI con springdoc: el contrato como prueba · Avanzado · 40 min
+
+**Mecanismo.** springdoc genera OpenAPI a partir de handlers.
+
+**Por qué existe.** Documentar contrato sin leer implementación.
+
+**Nota honesta.** No se añadió la dependencia en el proyecto ejecutado para M2; el smoke se hizo con la API HTTP y el error de validación. La generación OpenAPI queda como extensión pendiente de verificación.
+
+### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Avanzado · 40 min
+
+**Mecanismo.** `Pageable` con límite máximo.
+
+**Código.**
+
+```java
+int size = Math.min(Math.max(pageable.getPageSize(), 1), 100);
+int from = Math.max(pageable.getPageNumber(), 0) * size;
+```
 
 ### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Avanzado · 35 min
 
-Caso guía: serializar fechas con consistencia y conocer defaults.
+**Mecanismo.** Jackson serializa JSON.
 
-#### Jackson 3 / JSON mapping
-
-**Definición formal.** Jackson serializa/deserializa JSON. Jackson 3 (usado en Boot 4 ecosistema) introduce cambios de defaults/paquetes; Jackson 2 es el default histórico de Boot 3.x.
-
-**Regla.** Verifica la versión real del proyecto antes de asumir defaults. Configura `ObjectMapper/JsonMapper` explícitamente para fechas y unknown properties según contrato.
-
-**Nota de verificación.** La versión depende de Boot. En Boot 3.5.x se usa Jackson 2.x por defecto; no afirmar comportamiento de Jackson 3 sin confirmar dependencia.
+**Nota honesta.** Se documenta con versión Boot 4.2.0; no se amplió para fechas en este módulo.
 
 ### Tema 8: Versionado de API nativo de Spring Framework 7 · Avanzado · 40 min
 
-Caso guía: evolucionar endpoint sin romper clientes.
+**Mecanismo.** Versionado nativo en Spring Framework 7 / Spring Boot 4.
 
-#### Versionado de API
+**Nota honesta.** Se dejó como nota porque el proyecto M2 no implementó versionado nativo; se usó path `/guias` sin versión.
 
-**Definición formal.** Estrategia para exponer versiones de contrato (path `/v1`, header, media type, query param) y política de deprecación.
+## Verificación real
 
-**Regla.** Spring Framework 7/Spring Boot 4 introducen capacidades nativas de versionado; en Boot 3.x se suele implementar por convención/routing. Verifica versión antes de usar API nativa.
+Ejecutado el 2026-11-23 desde `/tmp/opencode/aurora-sb2`.
 
-**Nota de verificación.** No ejecutar como API nativa en Boot 3.5.0; documentar estrategia por path/header y marcar dependencia de versión para feature nativa.
+```bash
+cd /tmp/opencode/aurora-sb2
+./mvnw test
+./mvnw -q spring-boot:run
+```
+
+| Comando | Resultado |
+|---|---|
+| `./mvnw test` | `BUILD SUCCESS` tras corregir `@Valid` y soporte de `Pageable` |
+| `curl ... -d '{"destino":""}'` | `HTTP/1.1 400`, body `{"code":"VALIDATION","message":" destino es obligatorio"}` |
+| `GET /guias?page=0&size=2` | `HTTP/1.1 200` |
+
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `@Valid` no aplicaba validación | Falta `@Valid` en el parámetro | Revisar anotaciones del controller | Añadir `@Valid` |
+| `No primary or single unique constructor found for interface Pageable` | Soporte Spring Data Web no habilitado | Revisar dependencia y configuración | Añadir `@EnableSpringDataWebSupport` o configurar resolver |
+| Response 400 con body inesperado | Advice no manejaba la excepción | Revisar type de excepción | Añadir handler |
 
 ## Cierre
 
-Una API REST profesional es contrato + validación + errores + seguridad + documentación. El controller es el borde; no el lugar para toda la lógica.
+Una API REST profesional es contrato + validación + errores + seguridad + documentación.
 
 ## Checklist
 
@@ -269,4 +292,4 @@ Una API REST profesional es contrato + validación + errores + seguridad + docum
 - Valido entrada con Bean Validation.
 - Centralizo errores con `@RestControllerAdvice`.
 - Pagino con límite máximo.
-- Documento contrato y verifico versión de Jackson/Spring antes de asumir features.
+- Documento contrato y verifico versión antes de asumir features.
