@@ -1,6 +1,6 @@
 # Módulo 3: Excepciones y manejo de recursos
 
-Un sistema que solo funciona en el “camino feliz” no es confiable. Los archivos pueden faltar, una entrada puede ser inválida, una conexión puede caer o una regla de negocio puede impedir una operación. Java modela estas fallas con excepciones y recursos gestionados. La habilidad profesional no es “atrapar todo”, sino distinguir tipos de fallo, decidir dónde manejarlos, preservar contexto y liberar recursos determinísticamente.
+En Tienda Aurora, las excepciones de dominio (ProductoNoEncontrado, StockInsuficiente) se traducen a ProblemDetail en el borde HTTP. Un sistema que solo funciona en el “camino feliz” no es confiable. Los archivos pueden faltar, una entrada puede ser inválida, una conexión puede caer o una regla de negocio puede impedir una operación. Java modela estas fallas con excepciones y recursos gestionados. La habilidad profesional no es “atrapar todo”, sino distinguir tipos de fallo, decidir dónde manejarlos, preservar contexto y liberar recursos determinísticamente.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`.
 
@@ -8,14 +8,14 @@ Un sistema que solo funciona en el “camino feliz” no es confiable. Los archi
 
 ## Proyecto desde cero: tienda-aurora-exceptions
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-exceptions/
@@ -32,7 +32,7 @@ tienda-aurora-exceptions/
                 └── ProductService.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -58,13 +58,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-exceptions"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
@@ -462,8 +462,6 @@ java DemoSwallow
 **Error común.** `catch(Exception e){ return null; }`. Corrección: contrato explícito: Optional, valor default documentado, o excepción con contexto.
 
 **Verificación (JDK 27, 2026-05-22).** `Numero invalido: x`, `NumberFormatException`.
-
-### Tema 4: Incremento del proyecto: leer guías y respetar capacidad · Intermedio · 25 min
 
 **Caso guía.** importar guías desde archivo CSV simple. Líneas inválidas no deben tumbar toda la importación; capacidad excedida sí debe detener o reportarse claramente.
 
