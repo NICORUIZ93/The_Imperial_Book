@@ -8,11 +8,7 @@ Cuando un sistema distribuido falla, los logs locales no bastan. Necesitas respo
 
 ### Tema 1: Micrometer y Prometheus · Intermedio · 150 min
 
-## El problema
-
 `catalog-service` empieza a responder lento después de un despliegue. El equipo revisa CPU y memoria: parecen normales. Los usuarios se quejan, pero nadie puede decir cuántas requests fallan, cuál endpoint es lento ni si el problema empezó antes o después del despliegue. Sin métricas, la discusión se vuelve opinión.
-
-## La idea clave
 
 Las métricas son el tablero de instrumentos de un avión. No te dicen la causa raíz de todo, pero te dicen si estás perdiendo altitud, velocidad o combustible. **RED** (Rate, Errors, Duration) mide la experiencia del servicio; **USE** (Utilization, Saturation, Errors) mide recursos. Micrometer es la fachada que expone métricas; Prometheus las recolecta; Grafana las visualiza.
 
@@ -22,8 +18,6 @@ flowchart LR
   P --> G[Grafana]
   G --> A[Alerta por síntoma]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `Metrics.java` → contador mínimo por status.
 
@@ -72,8 +66,6 @@ class CatalogController {
 
 **Lectura:** usa `counter` para acumulados, `timer` para latencia, `gauge` para estado actual. Los tags deben tener baja cardinalidad: `status=200` sí, `userId=...` no.
 
-## Verificando con un experimento
-
 1. Incrementa dos `200` y un `500`. Esperas `2` y `1`.
 2. Agrega un tag con `userId`. En Prometheus, la cardinalidad crece por usuario y degrada el TSDB. Evítalo.
 3. Mide p95/p99 con histogramas, no solo promedio. Un promedio de 100ms puede esconder 1% de requests a 5s.
@@ -84,8 +76,6 @@ Salida esperada:
 2
 1
 ```
-
-## Cierre del módulo y trade-offs
 
 Las métricas dieron visibilidad inmediata. No explican por sí solas la causa raíz, pero permiten detectar síntomas, acotar impacto y alertar con criterio.
 
@@ -146,11 +136,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `1`.
 
 ### Tema 2: OpenTelemetry por defecto: métricas, trazas y logs correlacionados · Avanzado · 150 min
 
-## El problema
-
 Una compra falla con 500. El log de `gateway` dice timeout, el de `orders` dice error al llamar inventory, y el de `inventory` dice consulta lenta a DB. Están en tres servicios, tres formatos y tres relojes. Reconstruir la historia lleva 40 minutos.
-
-## La idea clave
 
 Una traza distribuida es como el número de seguimiento de un paquete. Cada oficina por donde pasa el paquete sella el mismo número. Puedes ver el recorrido completo, no solo el sello local. En OTel, ese número es el `traceId`; cada sello es un `span`.
 
@@ -162,8 +148,6 @@ flowchart LR
   G -. traceId=t1 .-> O
   O -. traceId=t1 .-> I
 ```
-
-## Construyendo la solución
 
 **Archivo:** `Trace.java` → correlación por traceId.
 
@@ -197,8 +181,6 @@ otel:
 
 **Lectura:** el `traceId` se propaga por headers W3C `traceparent`. Cada servicio crea spans hijos. El collector recibe OTLP y exporta a Tempo/Jaeger.
 
-## Verificando con un experimento
-
 1. Crea root y child con el mismo `traceId`. Esperas `true`.
 2. Omite la propagación de contexto entre servicios. Esperas spans huérfanos con traceIds distintos.
 3. Agrega un atributo `db.statement` sensible. Observa el riesgo: redáctalo.
@@ -209,8 +191,6 @@ Salida esperada:
 true
 db
 ```
-
-## Cierre del módulo y trade-offs
 
 La traza conectó la falla end-to-end. Ganaste visibilidad; pagaste costo de instrumentación, sampling y backend de observabilidad.
 
@@ -271,11 +251,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `db`.
 
 ### Tema 3: Logs estructurados y propagación de contexto · Intermedio · 120 min
 
-## El problema
-
 Durante un incidente, el equipo busca “error pedido” en logs. Aparecen 12.000 líneas de cinco servicios. Nadie sabe cuáles pertenecen al usuario afectado. Los logs son texto libre, sin `traceId`, sin `service`, sin estructura.
-
-## La idea clave
 
 Un log estructurado es como un formulario con campos, no una nota en servilleta. Si todos usan el mismo formulario, puedes filtrar por `traceId=t1`. Si cada uno escribe texto libre, dependes de suerte y `grep`.
 
@@ -287,8 +263,6 @@ flowchart LR
   S2 --> L
   L --> Q[query traceId=t1]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `Log.java` → log JSON mínimo.
 
@@ -318,8 +292,6 @@ public class Log {
 
 **Lectura:** en Spring, MDC guarda `traceId/spanId` por request. El encoder JSON los emite. Nunca loguees secretos, tokens o PII sin redacción.
 
-## Verificando con un experimento
-
 1. Emite log con `traceId=t1`. Esperas `true`, `true`.
 2. Emite logs sin `traceId`. Intenta reconstruir incidente: el costo de búsqueda explota.
 3. Loguea un token por error. Observa el riesgo de seguridad; agrega redacción.
@@ -330,8 +302,6 @@ Salida esperada:
 true
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 Los logs estructurados no son más logs; son evidencia consultable. Con `traceId` y campos consistentes, el incidente se reconstruye en minutos.
 
@@ -394,11 +364,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `true`.
 
 ### Tema 4: SLO, p99 y alerting · Intermedio · 120 min
 
-## El problema
-
 El equipo tiene 200 alertas al día: CPU alta, GC, un pod reinició, latencia de un endpoint interno. Nadie las mira. El día que el checkout falla para usuarios reales, la alerta importante queda enterrada en ruido. Esto es alert fatigue.
-
-## La idea clave
 
 Un SLO es como un acuerdo de servicio con el usuario: “el 99.9% de checkouts responden en menos de 300ms”. El error budget es cuánto puedes fallar sin romper el acuerdo. Alertar por burn rate es avisar cuando estás gastando ese presupuesto demasiado rápido, no cuando una CPU sube por 30 segundos sin afectar a nadie.
 
@@ -410,8 +376,6 @@ flowchart LR
   BR -->|sí| Page[Pager]
   BR -->|no| Obs[Observar]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `Slo.java` → alerta por síntoma.
 
@@ -439,8 +403,6 @@ groups:
 
 **Lectura:** la alerta se dispara por impacto al usuario (latencia/errores), no por CPU aislada. CPU puede ser una señal secundaria de diagnóstico.
 
-## Verificando con un experimento
-
 1. p99 200ms, error 0.1%. Esperas `false`.
 2. p99 500ms. Esperas `true`.
 3. CPU 95% pero p99 y errores normales. Esperas no paginar; solo observar.
@@ -451,8 +413,6 @@ Salida esperada:
 false
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 SLOs y alertas por síntoma reducen ruido y enfocan la respuesta en el usuario. El costo es definir SLIs correctos y mantenerlos.
 
@@ -510,8 +470,6 @@ SLO: 99.9% de `GET /products/{id}` < 300ms. Se alerta por burn rate alto; CPU al
 Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `false`, `true`.
 
 **Nota de verificación:** no se ejecutó Prometheus/Alertmanager/Grafana real. Verificación propuesta: definir reglas de burn rate y simular fallos con load test.
-
-## Cierre del módulo
 
 Observabilidad no es “tener dashboards”: es poder explicar el comportamiento del sistema con evidencia. Métricas para síntomas, trazas para recorrido, logs para detalle, SLOs para decidir cuándo actuar.
 

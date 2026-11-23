@@ -8,11 +8,7 @@ Los microservicios fallan en las fronteras: contratos, datos, red, configuració
 
 ### Tema 1: JUnit 5, Mockito y MockMvc · Intermedio · 180 min
 
-## El problema
-
 El equipo tiene “90% de cobertura” y aun así un deploy rompe producción. Los tests mockean el repositorio, el cliente HTTP y el servicio de pagos; verifican que los mocks se llamen con ciertos argumentos, pero nunca verifican una regla de negocio real ni un contrato de datos. La cobertura es alta, la confianza es cero.
-
-## La idea clave
 
 Un unit test es como revisar el motor del auto en el taller: rápido, aislado y útil. Un integration test es como sacar el auto a la calle. Si solo revisas en el taller, no sabes si las ruedas tocan bien el pavimento. Mockear todo convierte el taller en un simulador sin contacto con la realidad.
 
@@ -22,8 +18,6 @@ flowchart LR
   S --> I[Integration test: DB/HTTP real]
   I --> E[E2E: flujo completo]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `TaxAndPriceSmoke.java` → doble controlado en frontera.
 
@@ -66,8 +60,6 @@ class OrderControllerTest {
 
 **Lectura:** el smoke muestra el principio: el doble se usa en una frontera (impuestos), no para inventar todo el sistema. MockMvc prueba la capa web sin levantar HTTP real, pero sigue validando serialización y routing.
 
-## Verificando con un experimento
-
 1. Inyecta `TaxProvider` stub a 21%. Esperas `121.0`.
 2. Cambia el stub a 0% (exención). Esperas `100.0`.
 3. Intenta mockear `PriceService` dentro de sí mismo. Observa que pierdes la regla de negocio; el test se vuelve tautológico.
@@ -78,8 +70,6 @@ Salida esperada:
 121.0
 0.21
 ```
-
-## Cierre del módulo y trade-offs
 
 Los tests unit/slice son rápidos y útiles, pero solo si no se convierten en ficción. El doble debe representar una frontera real, no reemplazar el sistema entero.
 
@@ -139,11 +129,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `121.0`, `0.21`.
 
 ### Tema 2: Testcontainers · Intermedio · 180 min
 
-## El problema
-
 El equipo usa H2 para tests porque “es rápido”. En producción PostgreSQL falla por un tipo JSON, un índice o un lock. El test pasó, el deploy falló. La causa fue confiar en una base distinta a la de producción.
-
-## La idea clave
 
 Testcontainers es como pedir el plato real en vez de una foto. El contenedor efímero levanta PostgreSQL real, se destruye al final y cada test empieza limpio. Es más lento que H2, pero prueba el contrato real de la base.
 
@@ -154,8 +140,6 @@ flowchart LR
   D --> T
   T --> A[Assertions reales]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `TestcontainersDecisionSmoke.java` → cuándo usar contenedor real.
 
@@ -193,8 +177,6 @@ class OrderRepositoryIT {
 
 **Lectura:** Testcontainers no es para todo. Úsalo donde el comportamiento del motor importa: SQL, índices, JSON, locks, migraciones, brokers.
 
-## Verificando con un experimento
-
 1. Repositorio PostgreSQL. Esperas `TESTCONTAINERS_POSTGRES`.
 2. Lógica pura. Esperas `NO_CONTAINER`.
 3. Reemplaza Testcontainers por H2 para una query con JSONB. Observa que el test puede pasar y prod fallar.
@@ -205,8 +187,6 @@ Salida esperada:
 TESTCONTAINERS_POSTGRES
 NO_CONTAINER
 ```
-
-## Cierre del módulo y trade-offs
 
 Testcontainers compra realismo a costa de tiempo. La regla es usarlo donde el motor importa, no en cada test unitario.
 
@@ -268,11 +248,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `TESTCONTAINERS_PO
 
 ### Tema 3: Contract Testing con Pact · Avanzado · 180 min
 
-## El problema
-
 `orders-service` consume `catalog-service`. El equipo de catalog cambia el campo `price` a `unitPrice` y despliega. `orders` deja de mapear precios y cobra mal. Los tests de ambos servicios pasaron porque cada uno probó contra su propio mock, no contra el contrato real.
-
-## La idea clave
 
 Un contract test es como un acuerdo firmado entre dos equipos: el consumidor dice “yo espero estos campos” y el proveedor se compromete a cumplirlo. Si alguien cambia el contrato, el CI lo detecta antes del deploy, no en producción.
 
@@ -282,8 +258,6 @@ flowchart LR
   P[Provider catalog] -->|verifica pact| PB
   PB -->|compatibilidad| CI[Pipeline]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `ContractShapeSmoke.java` → contrato mínimo y evolución.
 
@@ -316,8 +290,6 @@ public class ContractShapeSmoke {
 
 **Lectura:** el smoke modela el contrato: el consumidor necesita `id` y `price`. Agregar `currency` es compatible. Renombrar `price` a `unitPrice` rompe el contrato.
 
-## Verificando con un experimento
-
 1. Respuesta con `id` y `price`. Esperas `true`.
 2. Respuesta con `unitPrice` en vez de `price`. Esperas `false`.
 3. Agrega `currency` manteniendo campos viejos. Esperas compatible `true`.
@@ -330,8 +302,6 @@ true
 false
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 Contract testing detecta quiebres de compatibilidad antes de deploy. No reemplaza unit tests ni E2E; cubre la frontera entre servicios.
 
@@ -393,11 +363,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `
 
 ### Tema 4: ArchUnit · Intermedio · 120 min
 
-## El problema
-
 El equipo define “domain no depende de web” en una wiki. Con el tiempo, alguien importa `spring-web` en un aggregate. Nadie se da cuenta hasta que un refactor rompe la arquitectura. La regla era humana, no ejecutable.
-
-## La idea clave
 
 ArchUnit convierte una regla arquitectónica en un test que falla el build. Es como poner una alarma en la puerta: si alguien intenta entrar por la puerta prohibida, la alarma suena en CI, no en producción.
 
@@ -407,8 +373,6 @@ flowchart LR
   AU -->|regla violada| Fail[Build falla]
   AU -->|ok| Pass[CI continúa]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `ArchRuleSmoke.java` → regla de dependencia.
 
@@ -443,8 +407,6 @@ class ArchitectureTest {
 
 **Lectura:** el smoke modela la regla. En producción, ArchUnit inspecciona bytecode real y falla si la regla se viola.
 
-## Verificando con un experimento
-
 1. `domain` → `java.util`. Esperas `true`.
 2. `domain` → `spring.web`. Esperas `false`.
 3. Agrega una regla para prohibir ciclos entre paquetes. Observa que detecta erosión temprana.
@@ -455,8 +417,6 @@ Salida esperada:
 true
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 ArchUnit hace la arquitectura ejecutable. La regla deja de ser un deseo y se convierte en gate de CI.
 
@@ -516,11 +476,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
 
 ### Tema 5: SonarQube · Intermedio · 120 min
 
-## El problema
-
 El equipo acumula deuda técnica: métodos de 300 líneas, complejidad ciclomática alta, duplicación y vulnerabilidades conocidas. Nadie las arregla porque “funciona”. Cuando un bug crítico aparece, la causa es código que nadie quería tocar.
-
-## La idea clave
 
 SonarQube es como el inspector de calidad de una fábrica. No construye el producto, pero detecta defectos antes de que salgan. El quality gate es la línea de rechazo: si el producto no cumple estándares, no sale. El objetivo no es “cero warnings”; es no aceptar deuda nueva.
 
@@ -531,8 +487,6 @@ flowchart LR
   QG -->|pass| Merge[Merge permitido]
   QG -->|fail| Block[Bloqueado]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `QualityGateSmoke.java` → gate razonable.
 
@@ -557,8 +511,6 @@ public class QualityGateSmoke {
 
 **Lectura:** el gate debe ser útil, no persecutorio. Empieza con 0 bugs críticos y cobertura razonable sobre código nuevo; ajusta gradualmente.
 
-## Verificando con un experimento
-
 1. Tests pasan, 0 bugs críticos, cobertura 85%. Esperas `true`.
 2. 1 bug crítico. Esperas `false`, aunque la cobertura sea alta.
 3. Baja cobertura a 60%. Esperas `false`; el gate bloquea deuda nueva.
@@ -569,8 +521,6 @@ Salida esperada:
 true
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 SonarQube no arregla código; hace visible la deuda y bloquea la nueva. El valor está en la tendencia y en el gate, no en el número absoluto.
 
@@ -631,11 +581,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
 
 ### Tema 6: Floci para emular dependencias cloud en tests/CI · Avanzado · 120 min
 
-## El problema
-
 Un microservicio usa S3 y SQS de AWS. En CI no hay cuenta cloud ni credenciales seguras. El equipo usa mocks de SDK, pero nunca valida serialización, permisos básicos ni wiring real. En producción, una diferencia de API o configuración causa fallos.
-
-## La idea clave
 
 Floci es como un decorado de estudio: parece AWS para las llamadas que importan en tests, pero no es AWS real. Sirve para validar integración local sin costo ni credenciales reales. El error es confundir el decorado con el set real.
 
@@ -646,8 +592,6 @@ flowchart LR
   Floci -->|emulado<|end|> S3[S3-like API]
   Floci -->|emulado| SQS[SQS-like API]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `FlociConfigSmoke.java` → configuración correcta por entorno.
 
@@ -690,8 +634,6 @@ class S3IntegrationTest {
 
 **Lectura:** el smoke muestra la regla: endpoint y credenciales cambian según emulador o cloud real. En producción, no uses credenciales dummy ni endpoint local.
 
-## Verificando con un experimento
-
 1. Config emulador. Esperas endpoint `http://localhost:4566` y creds `test/test`.
 2. Config cloud real. Esperas creds `iam-role`.
 3. Asume paridad total del emulador. Observa fallos en AWS real por IAM, cuotas o features no emuladas.
@@ -702,8 +644,6 @@ Salida esperada:
 ClientCfg[endpoint=http://localhost:4566, creds=test/test, region=us-east-1]
 iam-role
 ```
-
-## Cierre del módulo y trade-offs
 
 Floci da feedback rápido y determinista en CI, pero no reemplaza la validación en cloud real para riesgos críticos de IAM, cuotas y latencia.
 
@@ -761,8 +701,6 @@ Test JUnit levanta FlociContainer, configura S3Client con endpointOverride y val
 Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `ClientCfg[endpoint=http://localhost:4566, creds=test/test, region=us-east-1]`, `iam-role`.
 
 **Nota de verificación:** no se ejecutó Floci/Testcontainers. Verificación propuesta: `./mvnw -Dtest=*FlociIT test` con dependencia `io.floci:testcontainers-floci`.
-
-## Cierre del módulo
 
 Testing en microservicios es economía de confianza: rápido en unit/slice, realista en integración, contractual en fronteras, arquitectónico en CI y con quality gates que bloquean deuda nueva.
 

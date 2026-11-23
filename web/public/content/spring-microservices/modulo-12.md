@@ -8,11 +8,7 @@ Un microservicio no termina cuando compila: termina cuando se despliega, escala,
 
 ### Tema 1: Dockerfile multi-stage y runtime Java · Intermedio · 120 min
 
-## El problema
-
 El equipo empaqueta `catalog-service` con una imagen que contiene JDK, Maven, código fuente, cache y la app. La imagen pesa 1.2 GB, tarda minutos en subir y además corre como root. Un scanner de seguridad reporta vulnerabilidades que no tienen nada que ver con la app, sino con herramientas de build que nunca debieron llegar a producción.
-
-## La idea clave
 
 El multi-stage build es como cocinar en la cocina y servir en el comedor. En la cocina necesitas ollas, cuchillos y harina por todos lados; en el comedor solo llega el plato. El JDK y Maven son la cocina; el JRE y el JAR son el plato.
 
@@ -23,8 +19,6 @@ flowchart LR
   J --> R[Stage runtime JRE]
   R --> I[Imagen final pequeña]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `Dockerfile`
 
@@ -54,8 +48,6 @@ target/
 
 **Lectura:** el stage `build` compila; el stage runtime solo copia el artefacto. `USER 1000` evita root. `.dockerignore` reduce contexto y evita filtrar archivos.
 
-## Verificando con un experimento
-
 1. Incluye `AS build` y `jre` en el Dockerfile. Esperas `true`, `true`.
 2. Quita `USER 1000`. El contenedor corre como root: el scanner lo marca.
 3. Usa JDK en runtime. La imagen crece y la superficie de ataque aumenta.
@@ -72,8 +64,6 @@ Salida esperada:
 true
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 La imagen final quedó pequeña, reproducible y con menos superficie de ataque. El costo es mantener el build correcto y no esconder dependencias del runtime.
 
@@ -133,11 +123,7 @@ Smoke Node ejecutado localmente (2026-05-22, Node 24.18.0): `true`, `true`.
 
 ### Tema 2: Kubernetes Deployments, Services, ConfigMaps, Secrets, probes · Avanzado · 150 min
 
-## El problema
-
 `orders-service` se despliega en Kubernetes. Arranca, pero tarda 30 segundos en cargar caches y conexiones. Kubernetes manda tráfico a los 5 segundos porque no hay readiness probe. Los primeros usuarios reciben 500. Otro día, la base de datos se cae y la liveness probe depende de DB: Kubernetes reinicia todos los pods, empeorando la caída.
-
-## La idea clave
 
 Kubernetes es el gerente de turno: necesita saber si el empleado llegó (started), si puede atender clientes (ready) y si está colapsado y necesita reinicio (live). Si confundes estas señales, le das instrucciones equivocadas al gerente.
 
@@ -150,8 +136,6 @@ flowchart LR
   P1 -->|readiness ok| S
   P1 -->|liveness fail| R[Restart]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `deploy.yaml`
 
@@ -191,8 +175,6 @@ spec:
 
 **Lectura:** Deployment controla réplicas y rollout. Service da identidad de red estable. Readiness controla tráfico; liveness controla reinicio. Requests/limits evitan noisy neighbors.
 
-## Verificando con un experimento
-
 1. Verifica probes en el manifiesto. Esperas `true`, `true`.
 2. Haz que liveness dependa de DB. Si DB cae, K8s reinicia pods sanos: cascada.
 3. Quita requests/limits. Un pod puede consumir memoria excesiva y generar OOMKilled.
@@ -209,8 +191,6 @@ Salida esperada:
 true
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 Los probes correctos evitaron tráfico prematuro y reinicios en cascada. Kubernetes ahora tiene señales confiables para operar el servicio.
 
@@ -270,11 +250,7 @@ Smoke Node ejecutado localmente (2026-05-22, Node 24.18.0): `true`, `true`.
 
 ### Tema 3: HPA, Helm y despliegues progresivos · Avanzado · 120 min
 
-## El problema
-
 En Black Friday, `catalog-service` recibe 10x tráfico. Tiene 2 réplicas fijas y se satura. Otro día, un deploy nuevo tiene un bug y el rollout 100% tumba el catálogo. Escalar manualmente y desplegar “big bang” es operar a ciegas.
-
-## La idea clave
 
 HPA es el termostato: mide temperatura/carga y ajusta. Helm es el paquete de instalación parametrizable. Canary es abrir la puerta nueva solo al 10% de la gente antes de dejar pasar a todos.
 
@@ -287,8 +263,6 @@ flowchart LR
   V2 -->|SLO ok| V2A[v2 100%]
   V2 -->|SLO mal| RB[Rollback]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `hpa.yaml`
 
@@ -321,8 +295,6 @@ replicaCount: 2
 
 **Lectura:** HPA escala por métrica. Helm parametriza manifests. Canary/blue-green requieren métricas de gate y rollback automático o runbook claro.
 
-## Verificando con un experimento
-
 1. Verifica HPA con min/max. Esperas `true`, `true`.
 2. Sube tráfico sin HPA: saturación. Con HPA: escala hasta max.
 3. Canary con 5xx alto sin gate: la versión mala avanza. Con gate SLO: rollback.
@@ -339,8 +311,6 @@ Salida esperada:
 true
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 Escalado y rollout progresivo convierten picos y despliegues en eventos controlados. El costo es observabilidad, tuning y disciplina operativa.
 
@@ -399,11 +369,7 @@ Smoke Node ejecutado localmente (2026-05-22, Node 24.18.0): `true`, `true`.
 
 ### Tema 4: GitOps con ArgoCD · Avanzado · 120 min
 
-## El problema
-
 Alguien arregla un incidente con `kubectl edit` en producción. Funciona. Dos semanas después, otro deploy pisa el cambio y el incidente vuelve. Nadie sabe qué estaba diferente en el cluster porque Git no refleja la realidad.
-
-## La idea clave
 
 GitOps es tratar la infraestructura como código con reconciliación continua. Git es la fuente de verdad; el cluster es una copia que debe converger. Si alguien cambia el cluster a mano, el reconciliador lo marca como drift. Es como el plano eléctrico de un edificio: si un técnico cambia cables sin actualizar el plano, el próximo mantenimiento falla.
 
@@ -414,8 +380,6 @@ flowchart LR
   C -->|drift| A
   A -->|reconcile| C
 ```
-
-## Construyendo la solución
 
 **Archivo:** `desired.json`
 
@@ -434,8 +398,6 @@ console.log(desired.image === actual.image);
 
 **Lectura:** el estado deseado dice `1.0.0`; el actual está en `0.9.0`. Hay drift. ArgoCD detectaría `OutOfSync` y reconciliaría según política.
 
-## Verificando con un experimento
-
 1. Compara desired vs actual. Esperas `false` (drift).
 2. Cambia actual a `1.0.0`. Esperas `true`.
 3. Haz un hotfix manual en cluster sin PR. Esperas drift; la corrección correcta es PR + reconciliación.
@@ -451,8 +413,6 @@ Salida esperada:
 ```text
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 GitOps hace visible el drift y auditable el cambio. El costo es disciplina: nada de cambios manuales sin pasar por Git.
 
@@ -511,11 +471,7 @@ Smoke Node ejecutado localmente (2026-05-22, Node 24.18.0): `false`.
 
 ### Tema 5: GraalVM Native Image, CRaC y JVM tuning para contenedores · Avanzado · 120 min
 
-## El problema
-
 `catalog-service` escala a 30 réplicas en picos. Cada pod tarda 8 segundos en estar listo, y el autoscaler llega tarde. El equipo lee “usa Native Image” y lo aplica sin medir: el arranque mejora, pero un endpoint falla por reflexión no registrada y el throughput baja en carga sostenida.
-
-## La idea clave
 
 Elegir runtime es elegir vehículo. Un auto deportivo arranca rápido (native), pero no lleva la misma carga ni se repara igual que un camión. La JVM caliente puede rendir mejor en viajes largos. CRaC es como dejar el motor precalentado y guardado para arrancar más rápido, pero solo si el taller controla el procedimiento.
 
@@ -528,8 +484,6 @@ flowchart TD
   J --> M
   C --> M
 ```
-
-## Construyendo la solución
 
 **Archivo:** `RuntimeChoice.java`
 
@@ -564,8 +518,6 @@ public class HeapBudget {
 
 **Lectura:** el smoke no decide por ti; muestra la lógica de decisión. En producción, mides arranque, RSS, p95/p99, throughput, costo de build y compatibilidad.
 
-## Verificando con un experimento
-
 1. Cold start 200ms ya aceptable. Esperas `JVM_TUNED`.
 2. Cold start 8s, sin reflexión dinámica. Esperas `NATIVE_IMAGE`.
 3. Cold start 8s, reflexión dinámica, checkpoint posible. Esperas `CRAC`.
@@ -579,8 +531,6 @@ NATIVE_IMAGE
 CRAC
 384
 ```
-
-## Cierre del módulo y trade-offs
 
 La decisión de runtime quedó basada en objetivos medibles. Native, CRaC y JVM no son religiones; son trade-offs.
 
@@ -643,8 +593,6 @@ El equipo primero ajusta JVM (`MaxRAMPercentage`, GC, warmup) y baja cold start 
 Smokes Java ejecutados localmente (2026-05-22, JDK 27.0.1.0.2): `JVM_TUNED`, `NATIVE_IMAGE`, `CRAC`, `384`.
 
 **Nota de verificación:** no se ejecutó build native, CRaC ni Kubernetes real. Verificación propuesta: `./mvnw -Pnative -DskipTests native:compile`, benchmark de arranque/RSS/p99 y prueba de restore CRaC.
-
-## Cierre del módulo
 
 Entregar software en microservicios es ingeniería de producción: imágenes pequeñas, despliegues declarativos, probes correctos, escalado con métricas, reconciliación GitOps y runtime elegido por evidencia. Una buena entrega hace que el cambio sea aburrido.
 

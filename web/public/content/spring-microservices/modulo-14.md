@@ -8,11 +8,7 @@ Migrar a microservicios es fácil de empezar y difícil de sostener. Este módul
 
 ### Tema 1: Monolito distribuido y sobre-descomposición · Avanzado · 120 min
 
-## El problema
-
 El sistema tiene 20 “microservicios”, pero un cambio de esquema obliga a desplegar 8 servicios juntos y la base de datos es compartida. Los PRs coordinados son la norma. La latencia de un checkout cruza 7 hops. El equipo tiene más repos que antes y menos autonomía.
-
-## La idea clave
 
 Un monolito distribuido es como una casa con paredes de papel: parece que hay habitaciones separadas, pero todo se oye y se siente. La sobre-descomposición es como dividir una pizza en 100 porciones: más piezas, más bordes, más desorden. El microservicio no es el objetivo; la autonomía con costo aceptable lo es.
 
@@ -26,8 +22,6 @@ flowchart LR
     C --> DB
   end
 ```
-
-## Construyendo la solución
 
 **Archivo:** `DistributedMonolithSmoke.java` → detección de smells.
 
@@ -50,8 +44,6 @@ public class DistributedMonolithSmoke {
 
 **Lectura:** el smoke cuantifica smells. 3+ smells indica monolito distribuido probable.
 
-## Verificando con un experimento
-
 1. Shared DB + lockstep + cadena sync de 5 + ownership difuso. Esperas `4`.
 2. Sin smells. Esperas `0`.
 3. Agrega un servicio sin frontera clara. Observa que el número de smells no baja.
@@ -62,8 +54,6 @@ Salida esperada:
 4
 0
 ```
-
-## Cierre del módulo y trade-offs
 
 Detectar el monolito distribuido es el primer paso para recomponer. La solución no es más servicios; es mejores límites.
 
@@ -123,11 +113,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `4`, `0`.
 
 ### Tema 2: Sagas innecesarias y acoplamiento temporal · Avanzado · 120 min
 
-## El problema
-
 Un equipo usa saga con compensaciones para actualizar dos tablas dentro del mismo servicio y misma base de datos. La complejidad se triplicó: estados intermedios, compensaciones, idempotencia, observabilidad. Todo para un problema que una transacción local resolvía.
-
-## La idea clave
 
 Una saga innecesaria es como usar un convoy de camiones para mover una caja dentro de la misma habitación. La transacción local es recoger la caja y ponerla en el estante. La saga solo tiene sentido cuando el objeto debe cruzar fronteras (otro servicio, otra DB). El acoplamiento temporal es como una cadena de favores: si uno no está disponible, todos se bloquean.
 
@@ -136,8 +122,6 @@ flowchart LR
   A[Transacción local] -->|mismo servicio/DB| OK[ACID simple]
   B[Saga] -->|cruza servicios/DB| Comp[Compensaciones + complejidad]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `SagaNecessitySmoke.java` → decisión local vs saga.
 
@@ -159,8 +143,6 @@ public class SagaNecessitySmoke {
 
 **Lectura:** el smoke modela la decisión: mismo servicio/DB → transacción local. Cruza frontera → evaluar saga. Cadena sync > 3 → acoplamiento temporal.
 
-## Verificando con un experimento
-
 1. Mismo servicio, misma DB. Esperas `local-transaction`.
 2. Cruza frontera de servicio. Esperas `evaluate-saga`.
 3. Cadena sync de 5 hops. Esperas `true` (acoplamiento temporal).
@@ -172,8 +154,6 @@ local-transaction
 evaluate-saga
 true
 ```
-
-## Cierre del módulo y trade-offs
 
 Las sagas son poderosas pero costosas. Usarlas donde no se necesitan es sobre-ingeniería distribuida.
 
@@ -234,11 +214,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `local-transaction
 
 ### Tema 3: Strangler Fig y coexistencia de datos · Avanzado · 120 min
 
-## El problema
-
 El monolito legacy de billing tiene 8 años. Reescribirlo desde cero en 6 meses suena tentador. A los 4 meses, el nuevo sistema no cubre casos borde, el viejo sigue recibiendo cambios y nadie sabe cuál es la fuente de verdad. El big bang falla.
-
-## La idea clave
 
 Strangler Fig es como renovar un edificio por pisos mientras la gente sigue viviendo ahí. No demueles todo; rediriges una capacidad a la parte nueva, verificas que funciona y recién después cierras la vieja. El router es la puerta temporal que decide a dónde va cada persona.
 
@@ -248,8 +224,6 @@ flowchart LR
   R -->|/catalog| N[Servicio nuevo]
   R -->|/billing| L[Monolito legado]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `StranglerSmoke.java` → routing por capacidad migrada.
 
@@ -275,8 +249,6 @@ public class StranglerSmoke {
 
 **Lectura:** el smoke modela routing por capacidad y condiciones de cutover seguro.
 
-## Verificando con un experimento
-
 1. `catalog` migrado, `billing` no. Esperas `new`, `legacy`.
 2. Cutover con backfill + checksums + rollback. Esperas `true`.
 3. Cutover sin checksums. Esperas `false`.
@@ -290,8 +262,6 @@ legacy
 true
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 Strangler Fig reduce riesgo al hacer la migración incremental y reversible. La disciplina está en el cutover, backfill y verificación.
 
@@ -355,11 +325,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `new`, `legacy`, `
 
 ### Tema 4: Métricas DORA y deuda técnica · Intermedio · 90 min
 
-## El problema
-
 Tras migrar a microservicios, el equipo despliega más (DF sube), pero también rompe más (CFR sube). El MTTR empeora porque hay más servicios que diagnosticar. Nadie mide si la migración mejoró realmente la entrega. La deuda técnica se acumula porque “funciona” y nadie la prioriza.
-
-## La idea clave
 
 DORA metrics son como el tablero de un hospital: deployment frequency es cuántas operaciones se hacen, lead time es cuánto tarda una desde que se agenda, change failure rate es cuántas salen mal, MTTR es cuánto tarda en recuperarse. Si solo miras “cuántas operaciones”, puedes celebrar mientras la mortalidad sube. La deuda técnica es como no cambiar el aceite: el auto funciona hasta que no.
 
@@ -372,8 +338,6 @@ flowchart LR
   Eval -->|DF↑ CFR↑ MTTR↑| Bad[Migración empeoró delivery]
   Eval -->|DF↑ CFR↓ MTTR↓| Good[Migración mejoró delivery]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `DoraSmoke.java` → evaluación de salud de delivery.
 
@@ -407,8 +371,6 @@ public class DoraSmoke {
 
 **Lectura:** el smoke evalúa salud individual y comparación antes/después de migración.
 
-## Verificando con un experimento
-
 1. CFR 10%, MTTR 2h. Esperas `true`.
 2. CFR 30%, MTTR 30h. Esperas `false`.
 3. Antes: CFR 20%, MTTR 12h, DF 2/sem. Después: CFR 8%, MTTR 4h, DF 8/sem. Esperas `improved`.
@@ -420,8 +382,6 @@ true
 false
 improved
 ```
-
-## Cierre del módulo y trade-offs
 
 DORA metrics miden si la evolución mejoró la entrega. La deuda técnica necesita dueño y plan. Sin medición, la migración es un acto de fe.
 
@@ -481,8 +441,6 @@ Después de introducir outbox y CI con contract tests, DF sube, CFR baja y MTTR 
 Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `improved`.
 
 **Nota de verificación:** DORA real se calcula con datos de CI/CD/incidentes. Este smoke solo valida la regla de evaluación.
-
-## Cierre del módulo
 
 Evolucionar a microservicios requiere podar complejidad. El éxito se mide en autonomía, estabilidad y delivery, no en cantidad de servicios.
 

@@ -8,11 +8,7 @@ Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesit
 
 ### Tema 1: Java 21+: streams, lambdas, Optional, records y pattern matching · Intermedio · 360 min
 
-## El problema
-
 El equipo procesa pedidos entrantes con bucles anidados, mutación de listas compartidas y null checks dispersos. Un pedido inválido (qty ≤ 0) pasa el filtro y corrompe downstream. El código “funciona”, pero es difícil de leer, probar y paralelizar. La intención está enterrada en detalles imperativos.
-
-## La idea clave
 
 Un stream es como una cinta transportadora: cada estación (filter, map) transforma lo que pasa, y nada se ejecuta hasta que alguien recoge el resultado al final (terminal). Optional es una caja que puede estar vacía: te obliga a decidir qué hacer si no hay valor. Un record es una ficha de datos: inmutable, con todos los campos visibles. Pattern matching es como un clasificador automático: examina la forma y actúa.
 
@@ -22,8 +18,6 @@ flowchart LR
   F --> M[map to DTO]
   M --> T[to List terminal]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `StreamSmoke.java` → pipeline lazy y puro.
 
@@ -84,8 +78,6 @@ public class RecordPatternSmoke {
 
 **Lectura:** los streams son lazy: `filter` y `map` no ejecutan hasta `toList()`. Optional obliga a manejar ausencia. Records generan constructor, accesores, equals/hashCode/toString. Pattern matching de switch desestructura y aplica guardas.
 
-## Verificando con un experimento
-
 1. Ejecuta el stream. Esperas `[A1:2, C3:5]`.
 2. Agrega un filtro que mute una lista externa dentro de `map`. Observa resultados no deterministas si paralelizas.
 3. Llama `Optional.get()` sin comprobar. Observa `NoSuchElementException`.
@@ -101,8 +93,6 @@ Ana:adult
 Ben:minor
 other
 ```
-
-## Cierre del módulo y trade-offs
 
 Java moderno reduce boilerplate y hace contratos más explícitos. El costo es aprender las reglas: streams no reutilizables, Optional no para campos/params, records no para entidades mutables.
 
@@ -171,11 +161,7 @@ Smokes Java ejecutados localmente (2026-05-22, JDK 27.0.1.0.2): `[A1:2, C3:5]`, 
 
 ### Tema 2: Virtual Threads (Project Loom) · Avanzado · 240 min
 
-## El problema
-
 `catalog-service` atiende 200 requests concurrentes. Cada request espera 200ms de DB. Con platform threads (pool de 50), las requests se encolan y la latencia sube a 1s. Agregar más threads consume memoria (1MB/stack). El sistema no escala en I/O.
-
-## La idea clave
 
 Un virtual thread es como un ticket de atención: en vez de tener 50 cajeros (platform threads) ocupados esperando, tienes miles de tickets que se atienden cuando el recurso está listo. La JVM monta/desmonta el virtual thread del carrier thread cuando bloquea en I/O. El código sigue siendo bloqueante y simple, pero la concurrencia es masiva.
 
@@ -187,8 +173,6 @@ flowchart LR
   VT1 -.I/O: se desmonta.-> C
   VT2 -.I/O: se desmonta.-> C
 ```
-
-## Construyendo la solución
 
 **Archivo:** `VirtualThreadSmoke.java` → concurrencia masiva.
 
@@ -219,8 +203,6 @@ spring:
 
 **Lectura:** el smoke crea virtual threads que bloquean con `sleep` (simula I/O). La JVM desmonta del carrier. `Thread.currentThread().isVirtual()` en el main thread es `false` (main es platform thread).
 
-## Verificando con un experimento
-
 1. Crea 2 virtual threads que duermen 50ms. Esperas `vt-1`, `vt-2`.
 2. Verifica que el main thread no es virtual. Esperas `false`.
 3. Usa `synchronized` largo en virtual thread. Observa pinning: el carrier thread queda bloqueado. Mide con profiling.
@@ -232,8 +214,6 @@ vt-1
 vt-2
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 Virtual threads escalan I/O-bound con código simple, pero no aceleran CPU-bound ni eliminan contención. El pinning en `synchronized` largo es el riesgo principal.
 
@@ -296,11 +276,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `vt-1`, `vt-2`, `f
 
 ### Tema 3: Spring IoC, DI, bean lifecycle y ApplicationContext · Intermedio · 360 min
 
-## El problema
-
 `OrderService` crea `new OrderRepository()` internamente. Para testearlo, hay que modificar código o usar reflection. Las dependencias están ocultas, el grafo es invisible y el ciclo de vida (inicialización, cierre) nadie lo gestiona.
-
-## La idea clave
 
 IoC es como contratar un gerente de oficina: tú dices “necesito un servicio de pedidos con repositorio y cliente de pago”, y el gerente (contenedor) contrata, conecta y gestiona el ciclo de vida de cada empleado. DI es cómo el gerente entrega las herramientas a cada empleado. Constructor injection es el empleado diciendo “estas son mis herramientas obligatorias; sin ellas no trabajo”.
 
@@ -312,8 +288,6 @@ flowchart LR
   S --> R
   S --> P
 ```
-
-## Construyendo la solución
 
 **Archivo:** `DiSmoke.java` → inyección por constructor.
 
@@ -358,8 +332,6 @@ public class OrderService {
 
 **Lectura:** el smoke muestra el principio: dependencias por constructor, inmutables (final). Spring gestiona el grafo y lifecycle hooks.
 
-## Verificando con un experimento
-
 1. Inyecta `RepoImpl`. Esperas `order-1`.
 2. Intenta crear `Service` sin repo. El compilador lo impide (constructor obligatorio).
 3. Usa field injection (`@Autowired` en campo). Observa que el test necesita reflection o Spring context.
@@ -369,8 +341,6 @@ Salida esperada:
 ```text
 order-1
 ```
-
-## Cierre del módulo y trade-offs
 
 IoC/DI hacen las dependencias explícitas y testeables. Constructor injection es la opción más segura para dependencias obligatorias.
 
@@ -429,11 +399,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `order-1`.
 
 ### Tema 4: Auto-configuración condicional, @Conditional y starters · Intermedio · 240 min
 
-## El problema
-
 El equipo agrega una dependencia y “mágicamente” aparece un bean. Nadie sabe por qué. Cuando falta, nadie sabe cómo activarlo. La auto-configuración parece magia hasta que falla.
-
-## La idea clave
 
 La auto-configuración es como un electricista inteligente: si detecta que hay cable de red, instala el router; si no, no. Las condiciones (`@ConditionalOnClass`, `@ConditionalOnProperty`, `@ConditionalOnMissingBean`) son los sensores. Starters son los kits que traen todas las piezas compatibles.
 
@@ -446,8 +412,6 @@ flowchart LR
   P2 -->|sí| Auto
   B2 -->|sí| Auto
 ```
-
-## Construyendo la solución
 
 **Archivo:** `ConditionalSmoke.java` → evaluación de condición.
 
@@ -481,8 +445,6 @@ public class RedisCacheAutoConfiguration {
 
 **Lectura:** el smoke modela la lógica: propiedad true + clase presente + bean ausente → activar. En Spring, `--debug` y Actuator `/conditions` muestran qué se activó y por qué.
 
-## Verificando con un experimento
-
 1. Propiedad true, clase presente, bean ausente. Esperas `true`.
 2. Propiedad false. Esperas `false`.
 3. Clase ausente (sin dependencia). Esperas `false`.
@@ -495,8 +457,6 @@ true
 false
 false
 ```
-
-## Cierre del módulo y trade-offs
 
 La auto-configuración es poderosa pero no mágica. Entender las condiciones te permite diagnosticar y sobrescribir defaults con control.
 
@@ -558,11 +518,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `
 
 ### Tema 5: Multi-module Spring Boot projects · Intermedio · 180 min
 
-## El problema
-
 El proyecto tiene un solo módulo con 500 clases. Cualquier cambio recompila todo. El dominio depende de Spring Web, la infraestructura importa controllers. No hay límites reales, solo paquetes.
-
-## La idea clave
 
 Un proyecto multi-módulo es como un edificio con pisos separados: cada piso tiene su función y solo se comunica por las escaleras (dependencias declaradas). Si el piso de dominio puede importar el de web, la separación es ilusoria.
 
@@ -573,8 +529,6 @@ flowchart TD
   INF[infrastructure] --> DOM
   APP --> INF
 ```
-
-## Construyendo la solución
 
 **Archivo:** `ModuleGraphSmoke.java` → grafo de dependencias.
 
@@ -617,8 +571,6 @@ pom.xml (parent)
 
 **Lectura:** el smoke verifica que `domain` no dependa de `api` ni `web`. En Maven/Gradle, el grafo de módulos se declara en el POM/build y se valida en CI.
 
-## Verificando con un experimento
-
 1. Grafo acíclico (domain no apunta arriba). Esperas `true`.
 2. Agrega `domain → api`. Esperas `false` (ciclo detectado).
 3. En proyecto real, ejecuta `mvn dependency:analyze` o ArchUnit para validar.
@@ -629,8 +581,6 @@ Salida esperada:
 true
 [application]
 ```
-
-## Cierre del módulo y trade-offs
 
 Multi-módulo fuerza límites visibles en el build. El costo es configuración inicial, pero el beneficio es independencia y builds incrementales.
 
@@ -690,11 +640,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `[applicat
 
 ### Tema 6: Perfiles y configuración externalizada · Intermedio · 180 min
 
-## El problema
-
 El equipo commitea `application-prod.yml` con password de DB. Un fork accidental expone la credencial. Además, `dev` y `prod` tienen comportamientos distintos no documentados porque los perfiles esconden lógica de negocio.
-
-## La idea clave
 
 Los perfiles son como los trajes de un actor: el mismo actor (app) se viste distinto según la obra (entorno). Pero el actor no cambia de personalidad: la lógica de negocio es la misma. La configuración externalizada es como el guion fuera del escenario: los valores viven fuera del código, en variables de entorno o secret managers.
 
@@ -705,8 +651,6 @@ flowchart LR
   E --> A[args CLI]
   A --> App[Spring Boot]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `ProfileSmoke.java` → selección por entorno.
 
@@ -740,8 +684,6 @@ spring:
 
 **Lectura:** el smoke muestra que `dev` usa h2 y `prod` usa postgres. Los secretos se inyectan por env var o Vault, nunca en el repo.
 
-## Verificando con un experimento
-
 1. Perfil dev. Esperas `h2`.
 2. Perfil prod. Esperas `postgres`.
 3. Secreto en prod. Esperas `vault`.
@@ -754,8 +696,6 @@ h2
 postgres
 vault
 ```
-
-## Cierre del módulo y trade-offs
 
 Perfiles y configuración externalizada separan entorno de código. El secreto debe vivir fuera del repo siempre.
 
@@ -816,11 +756,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `h2`, `postgres`, 
 
 ### Tema 7: CRaC (Coordinated Restore at Checkpoint) · Avanzado · 180 min
 
-## El problema
-
 Un servicio serverless tarda 4 segundos en arrancar. En scale-to-zero, cada invocación paga ese costo. El equipo oye “usa CRaC” y lo activa sin validar sockets, conexiones DB y secretos. El restore falla porque el estado no fue coordinado.
-
-## La idea clave
 
 CRaC es como congelar un plato de comida y recalentarlo: el plato (JVM) se guarda con todo su estado, y al recalentar (restore) vuelve a estar listo rápido. Pero si el plato tenía hielo (conexiones abiertas, sockets) que se derritió al congelar, al recalentar está podrido. Por eso hay que coordinar: cerrar recursos antes del checkpoint y reabrirlos después del restore.
 
@@ -830,8 +766,6 @@ flowchart LR
   CP -->|restore| R2[Restored]
   R2 --> V[Validate resources]
 ```
-
-## Construyendo la solución
 
 **Archivo:** `CracSmoke.java` → lifecycle model.
 
@@ -865,8 +799,6 @@ public class DbResource implements Resource {
 
 **Lectura:** el smoke modela los tres estados: cold-start, restore-ok, restore-failed. En CRaC real, los hooks coordinan recursos.
 
-## Verificando con un experimento
-
 1. Sin checkpoint. Esperas `cold-start`.
 2. Checkpoint + recursos válidos. Esperas `restore-ok`.
 3. Checkpoint + recursos inválidos. Esperas `restore-failed`.
@@ -879,8 +811,6 @@ cold-start
 restore-ok
 restore-failed
 ```
-
-## Cierre del módulo y trade-offs
 
 CRaC reduce arranque cuando se coordina correctamente. El costo es implementar y testear hooks de recurso, validar entorno post-restore.
 
@@ -943,11 +873,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `cold-start`, `res
 
 ### Tema 8: GraalVM Native Image · Avanzado · 240 min
 
-## El problema
-
 El equipo compila a native para “ser más rápido”. El binario arranca en 50ms, pero un endpoint falla en producción por reflexión no registrada. El throughput en carga sostenida es peor que JVM. El build tarda 8 minutos y el debugging es difícil. Native no fue una mejora; fue una apuesta sin medición.
-
-## La idea clave
 
 Native Image es como traducir un libro a otro idioma de forma anticipada: el resultado es rápido de leer (arranque), pero si el libro tiene páginas que se escriben en tiempo real (reflexión dinámica), la traducción no las incluye. La JVM es como leer el original con un intérprete: más lento de arrancar, pero puede manejar páginas nuevas en tiempo real.
 
@@ -958,8 +884,6 @@ flowchart TD
   N --> M[Medir compatibilidad y p99]
   J --> M
 ```
-
-## Construyendo la solución
 
 **Archivo:** `NativeDecisionSmoke.java` → decisión por trade-off.
 
@@ -987,8 +911,6 @@ public class NativeDecisionSmoke {
 
 **Lectura:** el smoke muestra que sin medición, la respuesta es “medir primero”. Native es una opción, no un upgrade automático.
 
-## Verificando con un experimento
-
 1. Arranque crítico, sin reflexión pesada, medido. Esperas `consider-native`.
 2. Arranque crítico, reflexión pesada. Esperas `stay-jvm`.
 3. Sin medición. Esperas `stay-jvm-measure-first`.
@@ -1000,8 +922,6 @@ consider-native
 stay-jvm
 stay-jvm-measure-first
 ```
-
-## Cierre del módulo y trade-offs
 
 Native Image es una opción con trade-offs claros. La decisión debe basarse en medición real, no en moda.
 
@@ -1062,8 +982,6 @@ El equipo evalúa native para un servicio serverless. Primero mide JVM con tunin
 Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `consider-native`, `stay-jvm`, `stay-jvm-measure-first`.
 
 **Nota de verificación:** build native real requiere GraalVM/toolchain. Verificación propuesta: `./mvnw -Pnative -DskipTests native:compile` y benchmark comparativo.
-
-## Cierre del módulo
 
 La base Java/Spring no es “tema preliminar”: define cómo el microservicio modela datos, maneja concurrencia, se configura y arranca. Virtual threads, CRaC y Native Image son opciones con trade-offs medibles, no upgrades automáticos.
 
