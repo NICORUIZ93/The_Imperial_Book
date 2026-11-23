@@ -4116,36 +4116,40 @@
   "java": {
     "0": [
       {
-        "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
-        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
+        "title": "Del código fuente a la JVM",
+        "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },
       {
-        "title": "Virtual Threads (Project Loom)",
-        "fragment": "tema-2-virtual-threads-project-loom"
+        "title": "JDK, JRE y JVM",
+        "fragment": "tema-2-jdk-jre-y-jvm"
       },
       {
-        "title": "Spring IoC, DI, bean lifecycle y ApplicationContext",
-        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-y-applicationcontext"
+        "title": "public static void main — qué significa cada palabra",
+        "fragment": "tema-3-public-static-void-main-que-significa-cada-palabra"
       },
       {
-        "title": "Auto-configuración condicional, @Conditional y starters",
-        "fragment": "tema-4-auto-configuracion-condicional-conditional-y-starters"
+        "title": "Tipos primitivos vs referencias",
+        "fragment": "tema-4-tipos-primitivos-vs-referencias"
       },
       {
-        "title": "Multi-module Spring Boot projects",
-        "fragment": "tema-5-multi-module-spring-boot-projects"
+        "title": "Variables, conversiones y `String`",
+        "fragment": "tema-5-variables-conversiones-y-string"
       },
       {
-        "title": "Perfiles y configuración externalizada",
-        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
+        "title": "Operadores, precedencia y control de flujo",
+        "fragment": "tema-6-operadores-precedencia-y-control-de-flujo"
       },
       {
-        "title": "CRaC (Coordinated Restore at Checkpoint)",
-        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
+        "title": "Arreglos, wrappers y paso de argumentos",
+        "fragment": "tema-7-arreglos-wrappers-y-paso-de-argumentos"
       },
       {
-        "title": "GraalVM Native Image",
-        "fragment": "tema-8-graalvm-native-image"
+        "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+        "fragment": "tema-8-entrada-java-time-y-por-que-evitar-las-apis-obsoletas-date-calendar"
+      },
+      {
+        "title": "Java 25 para programas pequeños: `IO`, archivos compactos e `import module`",
+        "fragment": "tema-9-java-25-para-programas-pequenos-io-archivos-compactos-e-import-module"
       }
     ],
     "1": [
