@@ -4676,19 +4676,39 @@
     ],
     "7": [
       {
-        "title": "### Tema 1: sealed — jerarquías cerradas y exhaustividad",
+        "title": "sealed — jerarquías cerradas y exhaustividad",
         "fragment": "tema-1-sealed-jerarquias-cerradas-y-exhaustividad"
       },
       {
-        "title": "### Tema 2: Pattern matching exhaustivo y para instanceof",
+        "title": "Pattern matching exhaustivo y para instanceof",
         "fragment": "tema-2-pattern-matching-exhaustivo-y-para-instanceof"
       },
       {
-        "title": "### Tema 3: Unnamed variables y patterns (_, Java 22)",
+        "title": "Unnamed variables y patterns (_, Java 22)",
         "fragment": "tema-3-unnamed-variables-y-patterns-java-22"
       }
     ],
     "8": [
+      {
+        "title": "Código compartido",
+        "fragment": "codigo-compartido"
+      },
+      {
+        "title": "Build Gradle (Kotlin DSL)",
+        "fragment": "build-gradle-kotlin-dsl"
+      },
+      {
+        "title": "Build Maven (POM XML)",
+        "fragment": "build-maven-pom-xml"
+      },
+      {
+        "title": "Gradle",
+        "fragment": "gradle"
+      },
+      {
+        "title": "Maven",
+        "fragment": "maven"
+      },
       {
         "title": "pom.xml vs build.gradle.kts",
         "fragment": "tema-1-pom-xml-vs-build-gradle-kts"

@@ -1,274 +1,414 @@
 # Módulo 8: Build tools — Maven y Gradle
 
-Compilar con `javac` enseña el ciclo básico, pero un proyecto real necesita dependencias, tests, empaquetado, versiones, plugins, CI y reproducibilidad. Maven y Gradle resuelven ese problema. No son solo “comandos”: son modelos de build. Entenderlos evita builds frágiles y dependencias incontroladas.
+Tienda Aurora ya tiene código, pero el código no vive solo en un IDE. Necesita compilarse en CI, declarar dependencias, ejecutar tests, empaquetar artefactos y hacerlo igual en la máquina de cualquier persona del equipo. Eso es el trabajo de un build tool. Maven y Gradle resuelven el mismo problema con filosofías distintas: Maven favorece convención y configuración declarativa en XML; Gradle favorece un modelo programable con DSL Kotlin/Groovy y mejor incrementalidad.
 
-**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+En este módulo vas a ver el mismo proyecto en ambas herramientas: un multi-módulo pequeño con `core` y `api`. `core` contiene el dominio y serializa JSON con Jackson; `api` depende de `core` y expone un `main`. La meta no es memorizar XML o Kotlin, sino entender qué problema resuelve cada archivo del build.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, Maven 3.10.0, macOS arm64. Ambos builds se ejecutaron en `/tmp/aurora-m8-gradle` y `/tmp/aurora-m8-maven`. Las salidas mostradas son reales.
 
-## Aprende construyendo
+## Proyecto desde cero: tienda-aurora-build-tools
 
-### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
+La estructura lógica es la misma en Maven y Gradle:
 
-**Caso guía.** empaquetar una app Java simple con estructura estándar y salida reproducible.
-
-Maven y el POM
-
-**Definición.** Maven es una herramienta de build basada en convención sobre configuración. El `pom.xml` declara coordenadas, dependencias, plugins y propiedades.
-
- Maven resuelve dependencias desde repositorios, construye un modelo efectivo (POM + herencia + perfiles) y ejecuta fases del lifecycle. Las coordenadas `groupId:artifactId:version` identifican el artefacto.
-
-```mermaid
-flowchart LR
-  P[pom.xml] --> M[Maven]
-  M --> D[Dependencias]
-  M --> L[Lifecycle\ncompile/test/package]
-  L --> A[target/*.jar]
+```text
+tienda-aurora-build-tools/
+├── core/   # dominio, Jackson, tests
+└── api/    # aplicación, depende de core
 ```
 
-**Cuándo usar / cuándo no.** Úsalo cuando valoras convención, ecosistema y builds declarativos. No metas lógica compleja en XML si la convención ya no alcanza.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+## Prerrequisitos
 
 ```bash
-mkdir -p java-m8-maven/src/main/java/com/academia
-cd java-m8-maven
+java -version
+gradle --version
+mvn -v
 ```
 
-Crea el archivo `pom.xml`:
+## Estructura Gradle
+
+```text
+tienda-aurora-build-tools/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── core/
+│   ├── build.gradle.kts
+│   └── src/
+└── api/
+    ├── build.gradle.kts
+    └── src/
+```
+
+## Estructura Maven
+
+```text
+tienda-aurora-build-tools/
+├── pom.xml
+├── core/
+│   ├── pom.xml
+│   └── src/
+└── api/
+    ├── pom.xml
+    └── src/
+```
+
+## Código completo
+
+### Código compartido
+
+El código Java es el mismo en ambos builds. La diferencia está en cómo se declara y ejecuta.
+
+`Producto` es un record de dominio. Es el dato que el catálogo expone y serializa.
+
+**Archivo:** `core/src/main/java/com/aurora/build/core/Producto.java`
+
+```java
+package com.aurora.build.core;
+import java.math.BigDecimal;
+public record Producto(String sku, String nombre, BigDecimal precio) {}
+```
+
+`Catalogo` crea productos y los serializa con Jackson. Convierte `JsonProcessingException` en `IllegalStateException` para que la API pública del módulo no obligue a la app a conocer el detalle checked de Jackson.
+
+**Archivo:** `core/src/main/java/com/aurora/build/core/Catalogo.java`
+
+```java
+package com.aurora.build.core;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
+public final class Catalogo {
+    private final ObjectMapper mapper = new ObjectMapper();
+    public List<Producto> productos() {
+        return List.of(
+                new Producto("CAF-100", "Cafe Aurora", new BigDecimal("14.90")),
+                new Producto("MOL-200", "Molino Manual", new BigDecimal("79.90"))
+        );
+    }
+    public String comoJson() {
+        try {
+            return mapper.writeValueAsString(productos());
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("No se pudo serializar catálogo", e);
+        }
+    }
+}
+```
+
+Test JUnit Jupiter del módulo `core`. Verifica el comportamiento de dominio sin pasar por la app.
+
+**Archivo:** `core/src/test/java/com/aurora/build/core/CatalogoTest.java`
+
+```java
+package com.aurora.build.core;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class CatalogoTest {
+    @Test void contieneProductos() {
+        assertEquals(2, new Catalogo().productos().size());
+    }
+}
+```
+
+La app consume `core`. Este es el punto donde se ve la dependencia entre módulos: `api` compila porque depende de `core`.
+
+**Archivo:** `api/src/main/java/com/aurora/build/api/TiendaAuroraApiApp.java`
+
+```java
+package com.aurora.build.api;
+import com.aurora.build.core.Catalogo;
+public final class TiendaAuroraApiApp {
+    public static void main(String[] args) {
+        Catalogo catalogo = new Catalogo();
+        System.out.println("productos=" + catalogo.productos().size());
+        System.out.println(catalogo.comoJson());
+    }
+}
+```
+
+### Build Gradle (Kotlin DSL)
+
+Declara el nombre del build y los módulos incluidos. Gradle necesita saber qué subproyectos forman el build.
+
+**Archivo:** `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-build-tools"
+include("core", "api")
+```
+
+Configura propiedades comunes: grupo, versión, repositorios, toolchain Java 25, compilación estricta y JUnit Platform. `subprojects` evita repetir la configuración en cada módulo.
+
+**Archivo:** `build.gradle.kts`
+
+```kotlin
+plugins {
+    base
+}
+
+allprojects {
+    group = "com.aurora"
+    version = "1.0.0"
+    repositories { mavenCentral() }
+}
+
+subprojects {
+    apply(plugin = "java-library")
+    extensions.configure<JavaPluginExtension> {
+        toolchain { languageVersion = JavaLanguageVersion.of(25) }
+    }
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
+    }
+    tasks.withType<Test>().configureEach { useJUnitPlatform() }
+}
+```
+
+`core` usa Jackson como dependencia de implementación y JUnit como dependencia de test. El scope de Gradle `implementation` significa que es necesaria para compilar y ejecutar el módulo; `testImplementation` solo existe en el classpath de pruebas.
+
+**Archivo:** `core/build.gradle.kts`
+
+```kotlin
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+```
+
+`api` aplica el plugin `application`, depende de `project(":core")` y declara la clase main. La dependencia entre módulos es explícita.
+
+**Archivo:** `api/build.gradle.kts`
+
+```kotlin
+plugins { application }
+dependencies { implementation(project(":core")) }
+application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
+```
+
+### Build Maven (POM XML)
+
+POM padre. Declara packaging `pom`, módulos, propiedades comunes, `dependencyManagement` para el BOM de JUnit y configuración de plugins. En Maven, el padre es el lugar natural para centralizar versiones.
+
+**Archivo:** `pom.xml`
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.academia</groupId>
-  <artifactId>demo</artifactId>
+  <groupId>com.aurora</groupId>
+  <artifactId>tienda-aurora-build-tools</artifactId>
   <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>core</module>
+    <module>api</module>
+  </modules>
   <properties>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit.version>5.13.4</junit.version>
+    <jackson.version>2.19.0</jackson.version>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.5.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
 ```
 
-Crea el archivo `src/main/java/com/academia/App.java`:
+POM de `core`. Hereda del padre, declara Jackson y JUnit. JUnit tiene `<scope>test</scope>`: participa en compilación/ejecución de tests, pero no debe ser dependencia runtime del artefacto principal.
 
-```java
-package com.academia;
+**Archivo:** `core/pom.xml`
 
-public class App {
-  public static void main(String[] args) {
-    System.out.println("Maven OK");
-  }
-}
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.aurora</groupId>
+    <artifactId>tienda-aurora-build-tools</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>core</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
 ```
+
+POM de `api`. Depende de `core` usando `${project.version}`. Maven resuelve el módulo dentro del reactor multi-módulo.
+
+**Archivo:** `api/pom.xml`
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.aurora</groupId>
+    <artifactId>tienda-aurora-build-tools</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>api</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.aurora</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+## Ejecutar
+
+### Gradle
 
 ```bash
-mvn -q -DskipTests package
-java -cp target/demo-1.0.0.jar com.academia.App
+gradle wrapper --gradle-version 9.9.1
+./gradlew -q test
+./gradlew -q :api:run
 ```
 
-**Error común.** No fijar versión de Java/compiler. Síntoma: build diferente entre máquinas. Corrección: `maven.compiler.release` y JDK compatible.
+```text
+productos=2
+[{"sku":"CAF-100","nombre":"Cafe Aurora","precio":14.90},{"sku":"MOL-200","nombre":"Molino Manual","precio":79.90}]
+```
 
-**Verificación (Maven 3.10.0, JDK 27, 2026-05-22).** `Maven OK`.
-
-Gradle y `build.gradle.kts`
-
-**Definición.** Gradle es una herramienta de build basada en tareas y un DAG de ejecución, con DSL Groovy/Kotlin.
-
- Gradle evalúa scripts, construye un grafo de tareas y ejecuta solo lo necesario usando incrementalidad/caché. El wrapper fija la versión del build.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+### Maven
 
 ```bash
-mkdir -p java-m8-gradle/src/main/java/com/academia
-cd java-m8-gradle
+mvn -q test
+mvn -q -pl api -am -DskipTests package
+mvn -q -pl api -am dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=target/deps package
+java -cp "api/target/classes:api/target/deps/*" com.aurora.build.api.TiendaAuroraApiApp
 ```
 
-Crea el archivo `build.gradle.kts`:
+```text
+productos=2
+[{"sku":"CAF-100","nombre":"Cafe Aurora","precio":14.90},{"sku":"MOL-200","nombre":"Molino Manual","precio":79.90}]
+```
+
+**Nota de verificación:** la ejecución Maven se hizo compilando y usando el classpath de runtime con dependencias copiadas. `exec:java` puede funcionar, pero depende de la configuración del plugin; el classpath explícito muestra de forma directa qué artefactos necesita la app.
+
+## Conceptos cubiertos
+
+### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
+
+Maven usa `pom.xml`. POM significa Project Object Model: un modelo declarativo del proyecto. Defines coordenadas (`groupId`, `artifactId`, `version`), dependencias, plugins y módulos. Su fortaleza es la convención: si sigues la estructura estándar, Maven sabe dónde está el código, los tests y los recursos.
+
+Gradle usa scripts, en este caso `build.gradle.kts` con Kotlin DSL. También es declarativo en la práctica, pero el modelo es programable. Puedes escribir lógica de build cuando la necesitas. Su fortaleza es la flexibilidad y el rendimiento incremental; su riesgo es que un build demasiado “creativo” se vuelva difícil de entender.
+
+Compara la misma dependencia. En Maven:
+
+```xml
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>${jackson.version}</version>
+</dependency>
+```
+
+En Gradle:
 
 ```kotlin
-plugins {
-    application
-    java
-}
-repositories { mavenCentral() }
-application { mainClass.set("com.academia.App") }
-```
-
-> Nota: en proyectos reales fija toolchain (`java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }`). En este mínimo usamos el JDK actual para evitar depender de un JDK 21 instalado localmente.
-
-Crea el archivo `settings.gradle.kts`:
-
-```kotlin
-rootProject.name = "demo-gradle"
-```
-
-Crea el archivo `src/main/java/com/academia/App.java`:
-
-```java
-package com.academia;
-
-public class App {
-  public static void main(String[] args) {
-    System.out.println("Gradle OK");
-  }
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
 }
 ```
 
-```bash
-gradle -q run
-```
-
-**Error común.** Lógica excesiva en build script. Corrección: mantener scripts declarativos; extraer plugins/buildSrc cuando crezca.
-
-**Verificación (Gradle 9.8.2, JDK 27, 2026-05-22).** `Gradle OK`.
+Maven es más verboso pero muy explícito. Gradle es compacto. Ninguno es mágicamente mejor; lo importante es que las dependencias estén declaradas, versionadas y entendidas.
 
 ### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
-**Caso guía.** necesitas compilar, testear y empaquetar; las dependencias de test no deben ir a runtime.
+Maven tiene ciclos de vida con fases. Las más comunes del ciclo default son `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Cuando ejecutas `mvn package`, Maven ejecuta las fases anteriores necesarias. Eso da predictibilidad: todos los proyectos Maven entienden el mismo vocabulario.
 
-Lifecycle Maven y scopes
+Gradle tiene tareas. Algunas vienen por plugins (`compileJava`, `test`, `jar`, `build`, `run`) y puedes crear otras. El modelo es más flexible, pero requiere conocer qué tareas aporta cada plugin.
 
-**Definición.** Maven tiene lifecycles (default, clean, site). En default: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Los scopes (`compile`, `provided`, `runtime`, `test`, `system` obsoleto) controlan el classpath.
+Los scopes/configuraciones de dependencia controlan dónde vive una librería. En Maven, `test` significa que JUnit está disponible para compilar y ejecutar tests, pero no es dependencia de runtime del artefacto final. En Gradle, `testImplementation` y `testRuntimeOnly` expresan la misma idea. Esto importa por tamaño, seguridad y claridad: no quieres empaquetar JUnit en tu servicio de producción.
 
-```mermaid
-flowchart LR
-  V[validate] --> C[compile] --> T[test] --> P[package] --> Ve[verify] --> I[install]
+En el proyecto, `core/build.gradle.kts` declara:
+
+```kotlin
+testImplementation(platform("org.junit:junit-bom:5.13.4"))
+testImplementation("org.junit.jupiter:junit-jupiter")
+testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 ```
 
-**Ejemplo mínimo enfocado (ejecutable).**
+Y en Maven:
 
-```bash
-mvn -q -DskipTests package
+```xml
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <scope>test</scope>
+</dependency>
 ```
 
-**Error común.** Usar `compile` para dependencias solo de test. Corrección: `test` scope. Usar `provided` para APIs provistas por el contenedor.
-
-**Verificación.** `mvn -q test` compila y ejecuta tests; `package` genera artefacto.
-
-Gradle tasks y configurations
-
-**Definición.** Gradle modela trabajo como tareas con dependencias. Las configurations (`implementation`, `testImplementation`, `runtimeOnly`, etc.) definen dependencias y classpaths.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-gradle -q tasks --all | head
-```
-
-**Error común.** Confundir `implementation` con `api`. Corrección: `api` expone transitivamente a consumidores; `implementation` encapsula.
-
-**Verificación (Gradle 9.8.2, 2026-05-22).** Lista tareas disponibles.
+La herramienta cambia; la intención es la misma.
 
 ### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
-**Caso guía.** separar `domain` y `app` evita acoplamiento y permite builds por módulo.
+Un multi-módulo divide el build en unidades con responsabilidades claras. En este caso, `core` no sabe nada de la app; `api` depende de `core`. Esa dirección es importante: si `core` dependiera de `api`, tendrías un ciclo.
 
-Multi-módulo Maven/Gradle
+En Gradle, `settings.gradle.kts` incluye los módulos y `api/build.gradle.kts` declara `implementation(project(":core"))`. En Maven, el POM padre lista `<modules>` y `api/pom.xml` declara la dependencia a `com.aurora:core`.
 
-**Definición.** Un build multi-módulo agrupa varios subproyectos con un build raíz. Maven usa `<modules>` y POM padre; Gradle usa `settings.gradle.kts` e `include`.
-
- El reactor (Maven) o el grafo (Gradle) determina orden por dependencias inter-módulo. Permite reutilizar código y acotar compilación/tests.
-
-```mermaid
-flowchart TD
-  R[Root build] --> D[domain]
-  R --> A[app]
-  A --> D
-```
-
-**Ejemplo mínimo enfocado (ejecutable Maven).**
-
-```bash
-mkdir -p java-m8-mm/domain/src/main/java/com/academia/domain
-mkdir -p java-m8-mm/app/src/main/java/com/academia/app
-cd java-m8-mm
-```
-
-Crea el archivo `pom.xml`:
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.academia</groupId><artifactId>root</artifactId><version>1.0.0</version><packaging>pom</packaging>
-  <modules><module>domain</module><module>app</module></modules>
-</project>
-```
-
-Crea el archivo `domain/pom.xml`:
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent><groupId>com.academia</groupId><artifactId>root</artifactId><version>1.0.0</version></parent>
-  <artifactId>domain</artifactId>
-  <properties><maven.compiler.release>21</maven.compiler.release></properties>
-</project>
-```
-
-Crea el archivo `domain/src/main/java/com/academia/domain/Saludo.java`:
-
-```java
-package com.academia.domain;
-public class Saludo { public static String msg(){ return "DOM"; } }
-```
-
-Crea el archivo `app/pom.xml`:
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent><groupId>com.academia</groupId><artifactId>root</artifactId><version>1.0.0</version></parent>
-  <artifactId>app</artifactId>
-  <properties><maven.compiler.release>21</maven.compiler.release></properties>
-  <dependencies><dependency><groupId>com.academia</groupId><artifactId>domain</artifactId><version>1.0.0</version></dependency></dependencies>
-</project>
-```
-
-Crea el archivo `app/src/main/java/com/academia/app/Main.java`:
-
-```java
-package com.academia.app;
-import com.academia.domain.Saludo;
-public class Main { public static void main(String[] args){ System.out.println(Saludo.msg()); } }
-```
-
-```bash
-mvn -q -DskipTests package
-java -cp domain/target/domain-1.0.0.jar:app/target/app-1.0.0.jar com.academia.app.Main
-```
-
-**Error común.** Dependencias cíclicas entre módulos. Síntoma: build falla o diseño rígido. Corrección: extraer contrato común/módulo core.
-
-**Verificación (Maven 3.10.0, JDK 27, 2026-05-22).** `DOM`.
+El beneficio práctico es que puedes compilar, testear y reutilizar `core` sin arrastrar la aplicación. También obliga a pensar en contratos entre módulos. Si `Catalogo.comoJson()` expusiera `JsonProcessingException` de Jackson, la app tendría que conocer un detalle de la librería usada por `core`; por eso el código lo traduce a `IllegalStateException`.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
-**Caso guía.** comparar la misma app empaquetada con Maven y con Gradle.
+Ver la misma app en ambos builds quita el misterio. El código Java es idéntico. Lo que cambia es el archivo que declara la estructura. Gradle lo expresa con menos texto y con un modelo de tareas; Maven lo expresa con XML y un ciclo de vida estándar.
 
-Equivalencia conceptual
+La salida verificada de ambos builds fue la misma:
 
-**Definición.** Ambos resuelven dependencias, compilan, prueban y empaquetan. Maven se orienta a lifecycle/fases; Gradle a tareas/DAG.
+```text
+productos=2
+[{"sku":"CAF-100","nombre":"Cafe Aurora","precio":14.90},{"sku":"MOL-200","nombre":"Molino Manual","precio":79.90}]
+```
 
-**Cuándo elegir.** Maven: convención y previsibilidad. Gradle: flexibilidad, incrementalidad, DSL potente. En equipos, la consistencia y mantenibilidad pesan más que la moda.
-
-**Ejemplo mínimo enfocado.** Usa los proyectos de Tema 1: ambos imprimen `Maven OK` / `Gradle OK`.
-
-**Error común.** Migrar build por moda sin medir costo. Corrección: evaluar ecosistema, CI, caché, conocimiento del equipo.
-
-**Verificación (2026-05-22).** Ambos builds ejecutados en el entorno: Maven 3.10.0, Gradle 9.8.2.
+Eso es lo que debería pasar. El build tool no debe cambiar el comportamiento de negocio; debe hacerlo reproducible. Cuando elijas entre Maven y Gradle, la pregunta no es cuál es “más pro”. La pregunta es qué necesita tu equipo: convención estricta y ecosistema XML predecible, o flexibilidad y rendimiento con una DSL programable. En muchos equipos existentes, la mejor herramienta es la que ya entienden y pueden mantener con disciplina.
 
 ## Cierre
 
-Un build es parte del producto. La reproducibilidad, el control de dependencias y el ciclo de vida claro son requisitos técnicos, no burocracia.
+Maven y Gradle son dos interfaces para el mismo contrato: construir software de forma repetible. Aprende a leer sus archivos como mapas de dependencias, scopes, módulos y tareas/fases. Cuando entiendas ese mapa, cambiar de herramienta deja de ser una migración mística y pasa a ser una traducción.
 
 ## Checklist
 
-- Puedo explicar coordenadas Maven y configurations Gradle.
-- Distingo fases/tareas y scopes/configurations.
-- Sé armar un multi-módulo simple sin ciclos.
-- Uso wrappers/versiones para reproducibilidad.
+- Puedo identificar coordenadas, dependencias, plugins y módulos en Maven y Gradle.
+- Distingo dependencias de compilación/runtime/test y sé por qué el scope importa.
+- Entiendo el ciclo de vida Maven y el modelo de tareas Gradle.
+- Puedo estructurar un multi-módulo sin ciclos.
+- Sé ejecutar y verificar el mismo proyecto en ambas herramientas.
