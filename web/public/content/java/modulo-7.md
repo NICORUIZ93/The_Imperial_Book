@@ -65,7 +65,12 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
+}
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -90,9 +95,9 @@ public sealed interface Pago permits PagoTarjeta, PagoTransferencia, PagoEfectiv
 }
 ```
 
-#### `PagoTarjeta.java`, `PagoTransferencia.java`, `PagoEfectivo.java`
+#### `PagoTarjeta.java`
 
-Records inmutables. Cada variante lleva solo los datos que necesita. `PagoEfectivo` valida que el recibido cubra el monto y expone `vuelto()`.
+Record inmutable: lleva `titular` y `ultimos4`, y valida ambos en el constructor compacto.
 
 ```java
 package com.aurora.patterns.dominio;
@@ -112,6 +117,10 @@ public record PagoTarjeta(String pedidoId, BigDecimal monto, String titular, Str
 }
 ```
 
+#### `PagoTransferencia.java`
+
+Record inmutable: lleva `banco` y `referencia`. La referencia no interesa en el procesamiento, por eso más adelante se ignora con `_`.
+
 ```java
 package com.aurora.patterns.dominio;
 
@@ -128,6 +137,10 @@ public record PagoTransferencia(String pedidoId, BigDecimal monto, String banco,
     }
 }
 ```
+
+#### `PagoEfectivo.java`
+
+Record inmutable: valida que el recibido cubra el monto y expone `vuelto()`.
 
 ```java
 package com.aurora.patterns.dominio;
@@ -220,6 +233,28 @@ public final class ProcesadorPagos {
 }
 ```
 
+#### `ReciboTexto.java`
+
+Comprobante con text block y `formatted()`: la indentación se elimina respecto de la comilla de cierre.
+
+```java
+package com.aurora.patterns.servicio;
+
+public final class ReciboTexto {
+
+    private ReciboTexto() {
+    }
+
+    public static String recibo(String pedidoId, String mensaje) {
+        return """
+                Aurora - comprobante
+                Pedido: %s
+                Resultado: %s
+                """.formatted(pedidoId, mensaje);
+    }
+}
+```
+
 #### `TiendaAuroraPatternsApp.java`
 
 ```java
@@ -230,6 +265,7 @@ import com.aurora.patterns.dominio.PagoEfectivo;
 import com.aurora.patterns.dominio.PagoTarjeta;
 import com.aurora.patterns.dominio.PagoTransferencia;
 import com.aurora.patterns.servicio.ProcesadorPagos;
+import com.aurora.patterns.servicio.ReciboTexto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -260,6 +296,7 @@ public final class TiendaAuroraPatternsApp {
                 System.out.println("equals=" + a.equals(b));
                 System.out.println("toString=" + a);
             }
+            case "recibo" -> System.out.print(ReciboTexto.recibo("PED-100", "Aprobado por tarjeta"));
             case "demo" -> {
                 System.out.println("== procesar ==");
                 pagos.stream().map(procesador::procesar).map(procesador::resumen).forEach(System.out::println);
@@ -283,6 +320,16 @@ La ventaja principal es la exhaustividad. En un `switch` sobre un sealed, el com
 
 Usa `sealed` cuando el dominio tiene un conjunto cerrado de variantes conocidas. No lo uses cuando la extensión abierta es parte del diseño, como un plugin de terceros. `non-sealed` existe para abrir un punto específico de la jerarquía, pero debe ser una decisión consciente.
 
+Snippet ejecutable (de `ProcesadorPagosTest.java`):
+
+```java
+assertEquals(3, Pago.class.getPermittedSubclasses().length);
+assertEquals("OK PED-1 - aprobado",
+        procesador.resumen(new ResultadoPago.Aprobado("PED-1", "aprobado")));
+```
+
+Comprobación concreta: los tests `sealedPagoDeclaraTresVariantes` y `resumenEsExhaustivoSobreResultadoPago` pasan. El primero confirma los três tipos de `permits`; el segundo cubre los tres subtipos de `ResultadoPago`. `resumen` no tiene `default`: si agregas una cuarta variante permitida, el `switch` deja de compilar hasta que la manejes.
+
 ### Tema 2: Pattern matching exhaustivo y para instanceof · Intermedio · 40 min
 
 Pattern matching permite probar una forma y extraer datos en el mismo paso. `instanceof` con patrón (`if (valor instanceof PagoTarjeta(var pedidoId, _, _, var ultimos4))`) evita el casteo manual. El record pattern desestructura componentes por posición.
@@ -291,30 +338,110 @@ En `switch`, el pattern matching se vuelve aún más potente: cada `case` puede 
 
 **Confusión común:** poner `default` en todo. En jerarquías sealed, `default` puede ocultar un caso nuevo que deberías manejar. Prefiere exhaustividad real cuando el modelo está cerrado.
 
+Snippet ejecutable (de `ProcesadorPagos.java`):
+
+```java
+case PagoEfectivo efectivo when efectivo.vuelto().signum() > 0 ->
+        new ResultadoPago.Aprobado(efectivo.pedidoId(),
+                "Efectivo recibido, vuelto " + efectivo.vuelto());
+case PagoEfectivo(var pedidoId, _, _) ->
+        new ResultadoPago.Aprobado(pedidoId, "Efectivo exacto");
+```
+
+Comprobación concreta: el test `guardWhenDistingueVueltoDeEfectivoExacto` pasa. Con `./gradlew -q run`, las dos ramas se distinguen en la salida:
+
+```text
+OK PED-102 - Efectivo recibido, vuelto 30.00
+OK PED-103 - Efectivo exacto
+```
+
 ### Tema 3: Unnamed variables y patterns (_, Java 22) · Intermedio · 30 min
 
 `_` se usa como variable o patrón sin nombre cuando el valor es deliberadamente ignorado. En un record pattern, `PagoTransferencia(var pedidoId, var monto, var banco, _)` comunica que la referencia no importa en esa rama. Es mejor que llamar la variable `ignored` o `ref` y no usarla, porque el compilador y el lector entienden la intención.
 
 También sirve en lambdas, catch y asignaciones en contextos soportados. No lo uses para ocultar datos que sí deberían validarse. Ignorar es una decisión de diseño; si el componente es relevante para la regla, debe nombrarse y usarse.
 
-## Verificación real
+Snippet ejecutable (de `ProcesadorPagos.java` y `ProcesadorPagosTest.java`):
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+```java
+case PagoTransferencia(var pedidoId, _, var banco, _) ->
+        new ResultadoPago.Pendiente(pedidoId, "Transferencia en " + banco + " en verificación");
 
-```bash
-./gradlew -q test
-./gradlew -q run
+assertEquals("transferencia pedido=PED-2 banco=Banco Aurora", procesador.etiquetaAuditoria(
+        new PagoTransferencia("PED-2", new BigDecimal("20.00"), "Banco Aurora", "TR-1")));
 ```
 
-Desde la raíz del proyecto:
+Comprobación concreta: el test `unnamedPatternIgnoraComponentesEnAuditoria` pasa; con `./gradlew -q run`, la auditoria imprime `transferencia pedido=PED-101 banco=Banco Aurora`. La referencia `TR-1` se ignora con `_` en ambas ramas.
+
+#### Texto del comprobante: text block y `formatted()`
+
+Snippet ejecutable (de `ReciboTexto.java`):
+
+```java
+return """
+        Aurora - comprobante
+        Pedido: %s
+        Resultado: %s
+        """.formatted(pedidoId, mensaje);
+```
+
+Comprobación concreta: `./gradlew -q run --args="recibo"` imprime:
+
+```text
+Aurora - comprobante
+Pedido: PED-100
+Resultado: Aprobado por tarjeta
+```
+
+El test `textBlockFormateaComprobante` compara la cadena completa, incluido el salto de línea final.
+
+## Verificación real
+
+Verificado el 2026-11-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4).
 
 ```bash
 cd /tmp/opencode/aurora-m7
-./gradlew -q test
+./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
+./gradlew -q run --args="recibo"
 ```
 
-Resultados observados (`./gradlew -q test` terminó sin fallos):
+Salida observada de `./gradlew test --rerun-tasks --console=plain` (5 tests, 0 fallas):
+
+```text
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+
+> Task :test
+
+ProcesadorPagosTest > unnamedPatternIgnoraComponentesEnAuditoria() PASSED
+
+ProcesadorPagosTest > guardWhenDistingueVueltoDeEfectivoExacto() PASSED
+
+ProcesadorPagosTest > sealedPagoDeclaraTresVariantes() PASSED
+
+ProcesadorPagosTest > textBlockFormateaComprobante() PASSED
+
+ProcesadorPagosTest > resumenEsExhaustivoSobreResultadoPago() PASSED
+
+[Incubating] Problems report is available at: file:///private/tmp/opencode/aurora-m7/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1s
+3 actionable tasks: 3 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html
+```
+
+Salida observada de `./gradlew -q run`:
 
 ```text
 == procesar ==
@@ -329,7 +456,85 @@ efectivo pedido=PED-102
 efectivo pedido=PED-103
 ```
 
-Cada rama del `sealed Pago` aparece una vez en `procesar`, y el patrón `_` de `auditoria` absorbe los componentes que no aportan a ese reporte.
+Salida observada de `./gradlew -q run --args="recibo"`:
+
+```text
+Aurora - comprobante
+Pedido: PED-100
+Resultado: Aprobado por tarjeta
+```
+
+Archivo de test completo: `/tmp/opencode/aurora-m7/src/test/java/com/aurora/patterns/ProcesadorPagosTest.java`
+
+```java
+package com.aurora.patterns;
+
+import com.aurora.patterns.dominio.Pago;
+import com.aurora.patterns.dominio.PagoEfectivo;
+import com.aurora.patterns.dominio.PagoTarjeta;
+import com.aurora.patterns.dominio.PagoTransferencia;
+import com.aurora.patterns.dominio.ResultadoPago;
+import com.aurora.patterns.servicio.ProcesadorPagos;
+import com.aurora.patterns.servicio.ReciboTexto;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ProcesadorPagosTest {
+
+    private final ProcesadorPagos procesador = new ProcesadorPagos();
+
+    @Test
+    void sealedPagoDeclaraTresVariantes() {
+        assertEquals(3, Pago.class.getPermittedSubclasses().length);
+        assertEquals(Arrays.toString(new Class<?>[]{
+                        PagoTarjeta.class, PagoTransferencia.class, PagoEfectivo.class}),
+                Arrays.toString(Pago.class.getPermittedSubclasses()));
+    }
+
+    @Test
+    void resumenEsExhaustivoSobreResultadoPago() {
+        assertEquals("OK PED-1 - aprobado",
+                procesador.resumen(new ResultadoPago.Aprobado("PED-1", "aprobado")));
+        assertEquals("RECHAZADO PED-2 - sin fondos",
+                procesador.resumen(new ResultadoPago.Rechazado("PED-2", "sin fondos")));
+        assertEquals("PENDIENTE PED-3 - TR-1",
+                procesador.resumen(new ResultadoPago.Pendiente("PED-3", "TR-1")));
+    }
+
+    @Test
+    void guardWhenDistingueVueltoDeEfectivoExacto() {
+        String conVuelto = procesador.resumen(procesador.procesar(
+                new PagoEfectivo("PED-1", new BigDecimal("20.00"), new BigDecimal("50.00"))));
+        String exacto = procesador.resumen(procesador.procesar(
+                new PagoEfectivo("PED-2", new BigDecimal("15.00"), new BigDecimal("15.00"))));
+
+        assertEquals("OK PED-1 - Efectivo recibido, vuelto 30.00", conVuelto);
+        assertEquals("OK PED-2 - Efectivo exacto", exacto);
+    }
+
+    @Test
+    void unnamedPatternIgnoraComponentesEnAuditoria() {
+        assertEquals("tarjeta pedido=PED-1 ****4242", procesador.etiquetaAuditoria(
+                new PagoTarjeta("PED-1", new BigDecimal("10.00"), "Ana", "4242")));
+        assertEquals("transferencia pedido=PED-2 banco=Banco Aurora", procesador.etiquetaAuditoria(
+                new PagoTransferencia("PED-2", new BigDecimal("20.00"), "Banco Aurora", "TR-1")));
+        assertEquals("efectivo pedido=PED-3", procesador.etiquetaAuditoria(
+                new PagoEfectivo("PED-3", new BigDecimal("5.00"), new BigDecimal("5.00"))));
+    }
+
+    @Test
+    void textBlockFormateaComprobante() {
+        assertEquals("Aurora - comprobante\nPedido: PED-100\nResultado: Aprobado por tarjeta\n",
+                ReciboTexto.recibo("PED-100", "Aprobado por tarjeta"));
+    }
+}
+```
+
+Cada rama del `sealed Pago` aparece una vez en `procesar`, y el patrón `_` de `auditoria` absorbe los componentes que no aportan a ese reporte. La exhaustividad compilada se comprueba con los tests `sealedPagoDeclaraTresVariantes` y `resumenEsExhaustivoSobreResultadoPago`.
 
 ## Errores comunes y diagnóstico
 

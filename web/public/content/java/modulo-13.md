@@ -1,6 +1,6 @@
 # Módulo 13: Proyecto integrador
 
-Este módulo junta piezas que antes se trabajaron por separado: dominio, casos de uso, infraestructura, concurrencia, pruebas y build. El objetivo no es hacer un CRUD grande, sino construir una pieza pequeña, completa y verificable que se pueda clonar, ejecutar y entender. En Tienda Aurora, el caso es procesar pedidos pendientes en paralelo sin perder claridad de diseño.
+Este módulo junta piezas trabajadas por separado: dominio, casos de uso, infraestructura, concurrencia, pruebas y build. El objetivo no es un CRUD grande, sino una pieza pequeña, completa y verificable. En Tienda Aurora, el caso es procesar pedidos pendientes con virtual threads sin perder claridad de diseño.
 
 ## Visual del módulo
 
@@ -19,14 +19,19 @@ gradle --version
 
 #### Bootstrap
 
+Ejecuta estos comandos desde el directorio donde quieras crear el proyecto. Las rutas son completas y relativas a ese directorio; no hay rutas abreviadas.
+
 ```bash
-mkdir -p tienda-aurora-java-m13/src/main/java/com/aurora/integrador/{dominio,aplicacion,infraestructura,app}
+mkdir -p tienda-aurora-java-m13/src/main/java/com/aurora/integrador/dominio
+mkdir -p tienda-aurora-java-m13/src/main/java/com/aurora/integrador/aplicacion
+mkdir -p tienda-aurora-java-m13/src/main/java/com/aurora/integrador/infraestructura
+mkdir -p tienda-aurora-java-m13/src/main/java/com/aurora/integrador/app
 mkdir -p tienda-aurora-java-m13/src/test/java/com/aurora/integrador/aplicacion
 cd tienda-aurora-java-m13
 gradle wrapper --gradle-version 9.9.1
 ```
 
-**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4, Mockito 5.18.0, toolchain Java 25.
+**Entorno de referencia verificado (2026-11-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4, Mockito 5.18.0, toolchain Java 25.
 
 #### Estructura final
 
@@ -34,15 +39,15 @@ gradle wrapper --gradle-version 9.9.1
 tienda-aurora-java-m13/
 ├── build.gradle.kts
 ├── settings.gradle.kts
+├── gradlew
 └── src/
     ├── main/java/com/aurora/integrador/
     │   ├── app/App.java
     │   ├── aplicacion/ProcesarPedidosUseCase.java
-    │   ├── dominio/
-    │   │   ├── EstadoPedido.java
-    │   │   ├── Pedido.java
-    │   │   ├── PedidoRepositorio.java
-    │   │   └── ResultadoProcesamiento.java
+    │   ├── dominio/EstadoPedido.java
+    │   ├── dominio/Pedido.java
+    │   ├── dominio/PedidoRepositorio.java
+    │   ├── dominio/ResultadoProcesamiento.java
     │   └── infraestructura/RepositorioPedidosEnMemoria.java
     └── test/java/com/aurora/integrador/aplicacion/ProcesarPedidosUseCaseTest.java
 ```
@@ -56,8 +61,6 @@ rootProject.name = "tienda-aurora-java-m13"
 ```
 
 #### `build.gradle.kts`
-
-Fija toolchain Java 25 y dependencias de prueba. El wrapper fija Gradle; con eso el proyecto se construye con los mismos comandos en otra máquina con JDK compatible.
 
 ```kotlin
 plugins {
@@ -101,18 +104,14 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-#### `dominio/EstadoPedido.java`
-
-Enum del dominio: estados explícitos, sin strings mágicos.
+#### `src/main/java/com/aurora/integrador/dominio/EstadoPedido.java`
 
 ```java
 package com.aurora.integrador.dominio;
 public enum EstadoPedido { PENDIENTE, PROCESADO, FALLIDO }
 ```
 
-#### `dominio/Pedido.java`
-
-Record de dominio con invariantes en el constructor compacto. `procesar()/fallar()` devuelven nuevas instancias; no mutan estado. Esto hace más fácil razonar sobre concurrencia y pruebas.
+#### `src/main/java/com/aurora/integrador/dominio/Pedido.java`
 
 ```java
 package com.aurora.integrador.dominio;
@@ -120,6 +119,7 @@ package com.aurora.integrador.dominio;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/** Entidad de dominio: valida invariantes al construirse. */
 public record Pedido(String id, String cliente, BigDecimal total, EstadoPedido estado) {
     public Pedido {
         Objects.requireNonNull(id, "id");
@@ -131,18 +131,21 @@ public record Pedido(String id, String cliente, BigDecimal total, EstadoPedido e
         if (total.signum() < 0) throw new IllegalArgumentException("total negativo");
     }
 
-    public Pedido procesar() { return new Pedido(id, cliente, total, EstadoPedido.PROCESADO); }
-    public Pedido fallar()   { return new Pedido(id, cliente, total, EstadoPedido.FALLIDO); }
+    public Pedido procesar() {
+        return new Pedido(id, cliente, total, EstadoPedido.PROCESADO);
+    }
+
+    public Pedido fallar() {
+        return new Pedido(id, cliente, total, EstadoPedido.FALLIDO);
+    }
 }
 ```
 
-#### `dominio/ResultadoProcesamiento.java`
-
-`sealed interface` con variantes `Ok` y `Error`. El `switch` exhaustivo obliga a manejar ambos casos; si se agrega una variante, el compilador señala dónde falta tratarla.
+#### `src/main/java/com/aurora/integrador/dominio/ResultadoProcesamiento.java`
 
 ```java
 package com.aurora.integrador.dominio;
-
+/** Sealed: el compilador obliga a manejar todos los casos. */
 public sealed interface ResultadoProcesamiento permits ResultadoProcesamiento.Ok, ResultadoProcesamiento.Error {
     String pedidoId();
     record Ok(String pedidoId, String detalle) implements ResultadoProcesamiento {}
@@ -150,9 +153,7 @@ public sealed interface ResultadoProcesamiento permits ResultadoProcesamiento.Ok
 }
 ```
 
-#### `dominio/PedidoRepositorio.java`
-
-Puerto de salida: la aplicación depende de esta interfaz, no de una BD concreta. Eso permite probar el caso de uso con Mockito y cambiar la infraestructura sin tocar reglas.
+#### `src/main/java/com/aurora/integrador/dominio/PedidoRepositorio.java`
 
 ```java
 package com.aurora.integrador.dominio;
@@ -167,9 +168,7 @@ public interface PedidoRepositorio {
 }
 ```
 
-#### `infraestructura/RepositorioPedidosEnMemoria.java`
-
-Adaptador de infraestructura. Usa `ConcurrentHashMap` porque los virtual threads pueden guardar resultados concurrentemente.
+#### `src/main/java/com/aurora/integrador/infraestructura/RepositorioPedidosEnMemoria.java`
 
 ```java
 package com.aurora.integrador.infraestructura;
@@ -186,20 +185,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class RepositorioPedidosEnMemoria implements PedidoRepositorio {
     private final Map<String, Pedido> datos = new ConcurrentHashMap<>();
 
-    @Override public Optional<Pedido> porId(String id) { return Optional.ofNullable(datos.get(id)); }
+    @Override
+    public Optional<Pedido> porId(String id) {
+        return Optional.ofNullable(datos.get(id));
+    }
 
     @Override
     public List<Pedido> pendientes() {
-        return datos.values().stream().filter(p -> p.estado() == EstadoPedido.PENDIENTE).toList();
+        return datos.values().stream()
+                .filter(p -> p.estado() == EstadoPedido.PENDIENTE)
+                .toList();
     }
 
-    @Override public void guardar(Pedido pedido) { datos.put(pedido.id(), pedido); }
+    @Override
+    public void guardar(Pedido pedido) {
+        datos.put(pedido.id(), pedido);
+    }
 }
 ```
 
-#### `aplicacion/ProcesarPedidosUseCase.java`
-
-Caso de uso: carga pendientes, procesa con virtual threads, guarda resultados y devuelve `ResultadoProcesamiento`. Maneja interrupción y fallos por pedido. El dominio decide qué es válido; la aplicación orquesta.
+#### `src/main/java/com/aurora/integrador/aplicacion/ProcesarPedidosUseCase.java`
 
 ```java
 package com.aurora.integrador.aplicacion;
@@ -239,7 +244,9 @@ public final class ProcesarPedidosUseCase {
 
     private ResultadoProcesamiento procesarUno(Pedido pedido) {
         try {
-            if (pedido.total().signum() == 0) throw new IllegalArgumentException("total cero no permitido");
+            if (pedido.total().signum() == 0) {
+                throw new IllegalArgumentException("total cero no permitido");
+            }
             Pedido procesado = pedido.procesar();
             repositorio.guardar(procesado);
             return new ResultadoProcesamiento.Ok(pedido.id(), "procesado");
@@ -262,9 +269,7 @@ public final class ProcesarPedidosUseCase {
 }
 ```
 
-#### `app/App.java`
-
-Composition root: crea repositorio, inyecta caso de uso, ejecuta y renderiza resultados con `switch` exhaustivo sobre sealed type.
+#### `src/main/java/com/aurora/integrador/app/App.java`
 
 ```java
 package com.aurora.integrador.app;
@@ -299,9 +304,7 @@ public final class App {
 }
 ```
 
-#### `test/.../ProcesarPedidosUseCaseTest.java`
-
-Pruebas con JUnit 5 + Mockito. Verifican orquestación del caso de uso e invariantes del dominio. El dominio se prueba sin mocks; el caso de uso mockea el puerto.
+#### `src/test/java/com/aurora/integrador/aplicacion/ProcesarPedidosUseCaseTest.java`
 
 ```java
 package com.aurora.integrador.aplicacion;
@@ -317,6 +320,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -353,50 +357,94 @@ class ProcesarPedidosUseCaseTest {
 
 ### Tema 1: Arquitectura por capas del proyecto integrador · Intermedio · 40 min
 
-Si pones lógica de negocio, SQL/IO y `System.out.println` en la misma clase, el código funciona hasta que cambia algo. Entonces un cambio de BD rompe reglas, o un test necesita levantar toda la app. La arquitectura por capas busca separar responsabilidades y controlar la dirección de dependencias.
+**Mecanismo.** Cuatro paquetes con una regla de dependencia: `app` compone; `aplicacion` orquesta el caso de uso; `dominio` define reglas y puertos; `infraestructura` implementa puertos. `ProcesarPedidosUseCase` recibe `PedidoRepositorio` (interfaz), nunca `RepositorioPedidosEnMemoria`.
 
-En este proyecto, la regla es: `app` compone; `aplicacion` orquesta casos de uso; `dominio` define reglas y puertos; `infraestructura` implementa puertos. Las dependencias apuntan hacia el dominio, no al revés. Esta es la aplicación práctica de Dependency Inversion: `ProcesarPedidosUseCase` depende de `PedidoRepositorio` (interfaz), no de `RepositorioPedidosEnMemoria`.
+**Por qué existe.** Si negocio, IO y salida están en la misma clase, un cambio de almacenamiento rompe reglas y un test necesita levantar toda la aplicación. La separación permite cambiar el adaptador sin tocar la regla.
 
-`Pedido` es un record con invariantes: rechaza id vacío, total negativo o nulos. `ResultadoProcesamiento` es sealed: el compilador obliga a cubrir `Ok` y `Error`. Estos detalles no son “azúcar sintáctico”; hacen que el modelo exprese reglas y que el compilador ayude a no olvidar casos.
+**Implicaciones.** Hay más archivos y una composición explícita en `App`. El beneficio se verifica con un mock del puerto: la prueba `procesaPedidosPendientesYReportaErrores` no necesita una base de datos. El criterio para aceptar la arquitectura es: ¿puedo sustituir `RepositorioPedidosEnMemoria` sin editar `ProcesarPedidosUseCase`?
 
-El error común es tener carpetas por capas pero sin regla de dependencia. Si infraestructura importa aplicación concreta y aplicación importa infraestructura concreta, solo tienes carpetas. El criterio es: ¿puedo cambiar el adaptador sin tocar la regla de negocio?
+**Confusión común.** Tener carpetas por capas sin regla de dependencia. Si `infraestructura` importa `aplicacion` concreta y `aplicacion` importa `infraestructura` concreta, solo hay carpetas. Aquí la dirección es siempre hacia `dominio`.
 
-### Tema 2: Build reproducible y cierre del track · Intermedio · 40 min
+### Tema 2: Build reproducible e integrando concurrencia, modelado y testing · Intermedio · 40 min
 
-Un proyecto reproducible no depende de “funciona en mi máquina”. El wrapper fija Gradle; `build.gradle.kts` fija toolchain y dependencias; los comandos son explícitos. Cualquier persona con JDK compatible puede clonar y ejecutar.
+**Mecanismo (concurrencia).** `ProcesarPedidosUseCase.ejecutar()` crea un `ExecutorService` con `Executors.newVirtualThreadPerTaskExecutor()`, convierte cada pedido en un `Callable`, usa `invokeAll` y recoge resultados con `future.get()`. El `try-with-resources` cierra el executor. `InterruptedException` restaura el flag de interrupción y se propaga como `IllegalStateException`.
 
-En el cierre del track Java, la concurrencia, el modelado y el testing se integran en el mismo flujo: virtual threads procesan pedidos, `ConcurrentHashMap` soporta escrituras concurrentes, el dominio mantiene invariantes, y las pruebas cubren dominio puro y orquestación con mocks. No se usan virtual threads para CPU-bound puro; aquí el modelo es útil porque simula tareas que en producción serían I/O o llamadas remotas.
+**Por qué existe (concurrencia).** Los pedidos pueden procesarse en paralelo sin compartir un pool limitado de platform threads. `RepositorioPedidosEnMemoria` usa `ConcurrentHashMap` porque varios virtual threads guardan resultados a la vez.
 
-La verificación del cierre debe incluir: build con wrapper, tests verdes, ejecución real, salida observada y límites conocidos. Si un resultado depende del orden concurrente, se documenta: en `run` el orden de líneas puede variar, pero el contenido esperado (`P-2` falla, `P-1/P-3` OK) debe mantenerse.
+**Implicaciones (concurrencia).** El orden de las tres líneas de `run` puede variar; el contenido no: `P-2` falla por total cero y `P-1`/`P-3` terminan OK. La prueba no depende del orden: usa `anyMatch` sobre los resultados. No se usan virtual threads para CPU-bound puro; aquí simulan tareas que en producción serían IO o llamadas remotas.
+
+**Confusión común (concurrencia).** Creer que `ConcurrentHashMap` vuelve atómica una secuencia de varias operaciones. Cada operación del mapa es segura; la secuencia “leer, decidir, guardar” necesita diseño adicional si varios hilos compiten por el mismo id.
+
+**Mecanismo (modelado).** `Pedido` es un `record` con invariantes en el constructor compacto y métodos `procesar()`/`fallar()` que devuelven nuevas instancias. `ResultadoProcesamiento` es un `sealed interface` con `Ok` y `Error`; el `switch` del `App` es exhaustivo sin `default`.
+
+**Por qué existe (modelado).** El registro evita escribir getters, `equals`, `hashCode` y `toString` a mano; el constructor compacto centraliza las reglas. `sealed` convierte los casos posibles en una lista cerrada que el compilador comprueba.
+
+**Implicaciones (modelado).** `procesar()` y `fallar()` no mutan el pedido original, lo que simplifica razonar sobre hilos y pruebas. Si se añade una variante a `ResultadoProcesamiento`, el compilador obliga a cubrirla en `App`.
+
+**Confusión común (modelado).** Pensar que `record` es solo azúcar sintáctico. El valor real está en los invariantes y en la inmutabilidad; un `record` con campos mutables no aporta esa garantía.
+
+**Mecanismo (testing).** JUnit 5 comprueba el dominio sin mocks y el caso de uso con `@Mock PedidoRepositorio` más `MockitoExtension`. `when(repositorio.pendientes())` define la entrada y `verify(repositorio, atLeastOnce()).guardar(any(Pedido.class))` comprueba la interacción con el puerto.
+
+**Por qué existe (testing).** El dominio puro se prueba directamente; la orquestación se prueba con el puerto sustituido. Mockear el dominio produciría pruebas frágiles que no demuestran las reglas.
+
+**Implicaciones (testing).** Dos pruebas cubren el caso de uso y los invariantes. `Mockito` 5.18.0 y JUnit 5.13.4 están fijados en `build.gradle.kts`; el Gradle wrapper fija Gradle 9.9.1.
+
+**Confusión común (testing).** Mockear `Pedido` o `ResultadoProcesamiento`. Son tipos de dominio: se construyen y se comprueban, no se sustituyen.
+
+**Mecanismo (build reproducible).** `gradlew` fija Gradle; `build.gradle.kts` fija toolchain 25 y versiones de dependencias. El comando único local verificado es `cd /tmp/opencode/aurora-m13 && ./gradlew -q test run`.
+
+**Por qué existe (build reproducible).** “Funciona en mi máquina” desaparece cuando la versión de Gradle, el JDK y las dependencias quedan declarados.
+
+**Implicaciones (build reproducible).** No hay repositorio remoto verificable en este entorno: `/tmp/opencode/aurora-m13` no es un repositorio Git (`git remote -v` responde `fatal: not a git repository`). Por lo tanto **no se ejecutó `git clone`** y no se muestra una salida inventada de clonada. La reproducibilidad verificada parte de los archivos de este módulo y del comando único indicado.
+
+**Confusión común (build reproducible).** Confundir “wrapper” con “repositorio remoto”. El wrapper fija la herramienta; la clonada depende de un remoto que aquí no existe.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m13` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4, Mockito 5.18.0).
+Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m13` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4, Mockito 5.18.0). Salida observada:
 
-```bash
-./gradlew -q test
-./gradlew -q run
+```text
+$ ./gradlew -q test
+(salida vacía: Gradle -q solo muestra errores)
+$ grep -h "<testsuite " build/test-results/test/*.xml
+<testsuite name="com.aurora.integrador.aplicacion.ProcesarPedidosUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:17:21.036Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.423">
+$ ./gradlew -q run
+ERR P-2 total cero no permitido
+OK P-1 procesado
+OK P-3 procesado
+$ cd /tmp/opencode/aurora-m13 && ./gradlew -q test run
+ERR P-2 total cero no permitido
+OK P-1 procesado
+OK P-3 procesado
 ```
 
-Resultados observados:
+Listado de pruebas (`./gradlew test --rerun-tasks`, filtrado):
 
-- `test`: 2 pruebas, 0 fallas.
-- `run`: `ERR P-2 total cero no permitido`, `OK P-1 procesado`, `OK P-3 procesado`. El orden puede variar por concurrencia.
+```text
+ProcesarPedidosUseCaseTest > procesaPedidosPendientesYReportaErrores() PASSED
+ProcesarPedidosUseCaseTest > dominioNoAceptaInvariantesInvalidos() PASSED
+BUILD SUCCESSFUL in 3s
+```
+
+Nota honesta sobre la clonada: no hay remoto Git en el proyecto verificado, así que no se puede mostrar una salida real de `git clone`. El comando único verificado es el indicado arriba; si publicas el proyecto, la forma equivalente sería clonar, entrar al directorio resultante y ejecutar `./gradlew test run`.
 
 ## Errores comunes y diagnóstico
 
 | Síntoma | Causa probable | Diagnóstico | Corrección |
 |---|---|---|---|
-| Test necesita BD/infra real | Caso de uso acoplado a implementación | Revisar imports/dependencias | Depender de puerto/interfaz |
-| `switch` no exhaustivo tras cambio | Se agregó variante sealed sin cubrir | Error de compilación | Cubrir variante en todos los `switch` |
-| Resultado inconsistente en concurrente | Estado mutable compartido sin protección | Revisar colecciones/estado | Usar estructuras concurrentes o confinamiento |
-| “Funciona en mi máquina” | Gradle/JDK/deps no fijados | Comparar versiones | Wrapper, toolchain, versiones declaradas |
-| Mockear dominio | Test frágil y sin valor | Revisar qué se mockea | Dominio puro; mock solo en puertos |
+| Test necesita BD o infra real | Caso de uso acoplado a la implementación | Revisar imports | Depender de `PedidoRepositorio` |
+| `switch` no exhaustivo tras un cambio | Nueva variante `sealed` sin cubrir | Error de compilación | Cubrir la variante en `App` |
+| Resultado inconsistente en concurrencia | Estado mutable compartido | Revisar colecciones | `ConcurrentHashMap` o confinamiento |
+| Orden de salida distinto entre corridas | `invokeAll` + virtual threads | Comparar contenido, no orden | Pruebas con `anyMatch` |
+| “Funciona en mi máquina” | Versiones no fijadas | Comparar wrapper, toolchain y dependencias | Declarar las tres cosas |
+| Se mockea el dominio | Prueba frágil y sin valor | Revisar qué se mockea | Mock solo en puertos |
+| Se espera una clonada verificable | No hay repositorio remoto | `git remote -v` falla | Crear archivos desde el módulo y usar el comando único local |
 
 ## Checklist de cierre
 
 - [ ] Puedo explicar la dirección de dependencias entre dominio, aplicación e infraestructura.
 - [ ] Puedo justificar por qué `PedidoRepositorio` es una interfaz.
-- [ ] Puedo explicar qué aporta `record` y `sealed` aquí.
+- [ ] Puedo explicar qué aportan `record` y `sealed` aquí.
+- [ ] Sé por qué el orden de `run` puede variar y el resultado no.
 - [ ] Ejecuté `./gradlew -q test` y `./gradlew -q run` con salida real.
-- [ ] Entiendo el límite de concurrencia: el orden puede variar, el resultado no.
+- [ ] Entiendo que no hay remoto Git verificado y que la clonada no se muestra como salida inventada.

@@ -1297,6 +1297,165 @@ La auditoría concentra las comprobaciones de contrato:
   LinkedHashSet -> [cafe, equipo, digital]
 ```
 
+#### Test
+
+**Archivo:** `src/test/java/com/aurora/colecciones/ColeccionesTest.java` (ruta real en `/tmp/opencode/aurora-m2`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+
+```java
+package com.aurora.colecciones;
+
+import com.aurora.colecciones.catalogo.Catalogo;
+import com.aurora.colecciones.comun.Pagina;
+import com.aurora.colecciones.comun.Repositorio;
+import com.aurora.colecciones.comun.RepositorioEnMemoria;
+import com.aurora.colecciones.dominio.Dinero;
+import com.aurora.colecciones.dominio.Pedido;
+import com.aurora.colecciones.dominio.Producto;
+import com.aurora.colecciones.dominio.Sku;
+import com.aurora.colecciones.legado.CodigoLegado;
+import com.aurora.colecciones.pedidos.ColaPedidos;
+import com.aurora.colecciones.pedidos.Comparadores;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ColeccionesTest {
+
+    @Test
+    void skuEsClaveInmutableNormalizada() {
+        Map<Sku, String> indice = new HashMap<>();
+        indice.put(Sku.de(" caf_0001 "), "Café Aurora");
+
+        assertAll(
+                () -> assertEquals("Café Aurora", indice.get(Sku.de("CAF-0001"))),
+                () -> assertEquals(1, indice.size()),
+                () -> assertEquals(Sku.de("CAF-0001"), Sku.de("caf-0001")),
+                () -> assertThrows(IllegalArgumentException.class, () -> Sku.de("cafe"))
+        );
+    }
+
+    @Test
+    void catalogoIndexaPorSkuYEtiquetaSinDuplicados() {
+        Catalogo catalogo = Muestras.catalogo();
+        assertAll(
+                () -> assertEquals(5, catalogo.tamano()),
+                () -> assertTrue(catalogo.buscar(Sku.de("CAF-0001")).isPresent()),
+                () -> assertTrue(catalogo.buscar(Sku.de("NOE-0001")).isEmpty()),
+                () -> assertEquals(3, catalogo.conteoPorEtiqueta().get("cafe")),
+                () -> assertEquals(List.of("CAF-0001", "FIL-0004", "MOL-0003"),
+                        catalogo.conEtiqueta("CAFE").stream().map(p -> p.sku().toString()).toList()),
+                () -> assertTrue(catalogo.conEtiqueta("inexistente").isEmpty()),
+                () -> assertThrows(IllegalStateException.class,
+                        () -> catalogo.agregar(Muestras.productos().getFirst()))
+        );
+    }
+
+    @Test
+    void comparadoresYWildcardsFuncionanSobreElMismoDominio() {
+        List<Producto> productos = Muestras.productos();
+        assertAll(
+                () -> assertEquals(Sku.de("FIL-0004"),
+                        productos.stream().sorted(Comparadores.POR_PRECIO).findFirst().orElseThrow().sku()),
+                () -> assertEquals("Café Aurora",
+                        productos.stream().sorted(Comparadores.POR_NOMBRE).findFirst().orElseThrow().nombre()),
+                () -> assertEquals(Dinero.de("109.15"), Catalogo.valorDe(productos)),
+                () -> assertEquals(Dinero.de("12.50"),
+                        Catalogo.valorDe(List.of(new Producto(Sku.de("CAF-0001"), "Café Aurora",
+                                Dinero.de("12.50"), Set.of("cafe")))))
+        );
+    }
+
+    @Test
+    void paginacionYRepositorioSonGenericos() {
+        Repositorio<Producto, Sku> repositorio = new RepositorioEnMemoria<>();
+        Muestras.productos().forEach(p -> repositorio.guardar(p.sku(), p));
+        Pagina<Producto> primera = Pagina.de(repositorio.todos(), 1, 2);
+        Pagina<String> nombres = primera.map(p -> p.sku() + " " + p.nombre());
+
+        assertAll(
+                () -> assertEquals(5, repositorio.tamano()),
+                () -> assertEquals(3, primera.totalPaginas()),
+                () -> assertTrue(primera.haySiguiente()),
+                () -> assertEquals(2, primera.items().size()),
+                () -> assertEquals("CAF-0001 Café Aurora", nombres.items().getFirst()),
+                () -> assertTrue(Pagina.de(repositorio.todos(), 9, 2).items().isEmpty()),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> Pagina.de(repositorio.todos(), 0, 2))
+        );
+    }
+
+    @Test
+    void colaDePedidosAtiendePorPrioridadYDeshace() {
+        ColaPedidos cola = new ColaPedidos();
+        Muestras.pedidos().forEach(cola::recibir);
+        assertEquals(5, cola.enEspera());
+
+        Pedido primero = cola.atender().orElseThrow();
+        Pedido deshecho = cola.deshacer().orElseThrow();
+
+        assertAll(
+                () -> assertEquals(5, cola.enEspera()),
+                () -> assertEquals("AUR-1002", primero.numero()),
+                () -> assertEquals("AUR-1002", deshecho.numero()),
+                () -> assertEquals("AUR-1002", cola.pendientes().getFirst().numero()),
+                () -> assertEquals("Reabierto AUR-1002", cola.siguienteAviso().orElseThrow()),
+                () -> assertEquals(6, cola.avisosPendientes().size())
+        );
+    }
+
+    @Test
+    void claveMutableLegadaPierdeLaEntradaDelHashMap() {
+        Map<CodigoLegado, String> indice = new HashMap<>();
+        CodigoLegado clave = new CodigoLegado("PROV-001");
+        indice.put(clave, "Café Aurora");
+        clave.reasignar("PROV-999");
+
+        assertAll(
+                () -> assertNull(indice.get(new CodigoLegado("PROV-001"))),
+                () -> assertEquals(1, indice.size()),
+                () -> assertEquals(List.of("Café Aurora"), List.copyOf(indice.values()))
+        );
+    }
+
+    @Test
+    void productoYPedidoRecordCopianYC_normalizanSusColecciones() {
+        Producto a = new Producto(Sku.de("CAF-0001"), " Café Aurora ", Dinero.de("12.50"),
+                Set.of("CAFE", "bebida"));
+        Producto b = new Producto(Sku.de("caf-0001"), "Café Aurora", Dinero.de("12.50"),
+                Set.of("bebida", "cafe"));
+        Pedido pedido = Muestras.pedidos().getFirst();
+
+        assertAll(
+                () -> assertEquals(a, b),
+                () -> assertEquals(Set.of("cafe", "bebida"), a.etiquetas()),
+                () -> assertTrue(a.tieneEtiqueta(" CAFE ")),
+                () -> assertFalse(a.tieneEtiqueta("regalo")),
+                () -> assertEquals(Dinero.de("29.75"), pedido.total()),
+                () -> assertThrows(UnsupportedOperationException.class,
+                        () -> pedido.lineas().clear())
+        );
+    }
+}
+```
+
+Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no escribe nada en stdout; el resumen XML que Gradle deja en `build/test-results/test/` confirma los siete casos:
+
+```text
+<testsuite name="com.aurora.colecciones.ColeccionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:24.100Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.025">
+```
+
+Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+
 ## Conceptos cubiertos
 
 ### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 40 min

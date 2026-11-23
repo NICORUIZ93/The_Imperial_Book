@@ -1419,6 +1419,164 @@ public final class TiendaAuroraPooApp {
 }
 ```
 
+#### Test
+
+**Archivo:** `src/test/java/com/aurora/poo/PooDomainTest.java` (ruta real en `/tmp/opencode/aurora-m1`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+
+```java
+package com.aurora.poo;
+
+import com.aurora.poo.catalogo.ReglasDescuento;
+import com.aurora.poo.catalogo.ReglasPago;
+import com.aurora.poo.descuento.DescuentoFijo;
+import com.aurora.poo.descuento.DescuentoPorcentual;
+import com.aurora.poo.dominio.Dinero;
+import com.aurora.poo.dominio.Direccion;
+import com.aurora.poo.dominio.LineaPedido;
+import com.aurora.poo.dominio.Producto;
+import com.aurora.poo.dominio.ProductoFisico;
+import com.aurora.poo.dominio.ServicioDigital;
+import com.aurora.poo.pago.ContraReembolso;
+import com.aurora.poo.pago.Efectivo;
+import com.aurora.poo.pago.TarjetaCredito;
+import com.aurora.poo.pago.Transferencia;
+import com.aurora.poo.servicio.CalculadoraPrecio;
+import com.aurora.poo.servicio.Pedido;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PooDomainTest {
+
+    @Test
+    void lasSubclasesDecidenTipoYCostoDeEnvio() {
+        Producto fisico = new ProductoFisico("caf-0001", " Café Aurora ", "12.50", 340);
+        Producto digital = new ServicioDigital("cur-0100", "Curso de barismo", "49.00", 365);
+
+        assertAll(
+                () -> assertEquals("físico", fisico.tipo()),
+                () -> assertEquals("Café Aurora", fisico.nombre()),
+                () -> assertEquals("Café Aurora (físico), 340 g", fisico.descripcion()),
+                () -> assertEquals(Dinero.de("4.95"), fisico.costoEnvio()),
+                () -> assertEquals("digital", digital.tipo()),
+                () -> assertEquals(Dinero.CERO, digital.costoEnvio()),
+                () -> assertEquals(365, ((ServicioDigital) digital).diasLicencia())
+        );
+    }
+
+    @Test
+    void lasConstructorasFlexiblesValidanAntesDeSuper() {
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new ProductoFisico("caf-0001", "Café", "-1.00", 100)),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new ProductoFisico("caf-0001", "Café", "10.00", 0)),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new ServicioDigital("curso", "Curso", "10.00", 1))
+        );
+    }
+
+    @Test
+    void losDescuentosSonIntercambiablesYRespetanElPisoCero() {
+        ReglasDescuento reglas = new ReglasDescuento();
+        DescuentoPorcentual bienvenida =
+                assertInstanceOf(DescuentoPorcentual.class, reglas.buscar("bienvenida"));
+        DescuentoFijo cafe5 = assertInstanceOf(DescuentoFijo.class, reglas.buscar("CAFE5"));
+
+        assertAll(
+                () -> assertEquals(Dinero.de("90.00"), bienvenida.aplicar(Dinero.de("100.00"))),
+                () -> assertEquals("Bienvenida (-10%)", bienvenida.etiqueta()),
+                () -> assertEquals(Dinero.de("95.00"), cafe5.aplicar(Dinero.de("100.00"))),
+                () -> assertEquals(Dinero.CERO,
+                        new DescuentoFijo("Excesivo", Dinero.de("5.00")).aplicar(Dinero.de("3.00"))),
+                () -> assertEquals(Dinero.de("100.00"), reglas.buscar("NINGUNO").aplicar(Dinero.de("100.00"))),
+                () -> assertThrows(IllegalArgumentException.class, () -> reglas.buscar("NOPE"))
+        );
+    }
+
+    @Test
+    void losMediosDePagoCompartenLaPlantillaDeTotal() {
+        ReglasPago reglas = new ReglasPago();
+        assertAll(
+                () -> assertEquals(Dinero.de("2.00"), new TarjetaCredito().recargo(Dinero.de("100.00"))),
+                () -> assertEquals(Dinero.de("102.00"), new TarjetaCredito().total(Dinero.de("100.00"))),
+                () -> assertEquals(Dinero.de("4.50"), new ContraReembolso().recargo(Dinero.de("100.00"))),
+                () -> assertEquals(Dinero.CERO, new Efectivo().total(Dinero.de("100.00")).menos(Dinero.de("100.00"))),
+                () -> assertEquals("Transferencia", reglas.buscar("transferencia").nombre()),
+                () -> assertEquals(Dinero.CERO, new Transferencia().recargo(Dinero.de("100.00"))),
+                () -> assertThrows(IllegalArgumentException.class, () -> reglas.buscar("CRYPTO"))
+        );
+    }
+
+    @Test
+    void direccionEsRecordNormalizadoYValidado() {
+        Direccion sucia = new Direccion("  Calle Mayor 12 ", " Madrid ", " 28013 ");
+        Direccion limpia = new Direccion("Calle Mayor 12", "Madrid", "28013");
+        assertAll(
+                () -> assertEquals(limpia, sucia),
+                () -> assertEquals(limpia.hashCode(), sucia.hashCode()),
+                () -> assertEquals("Calle Mayor 12, Madrid 28013", sucia.formateada()),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new Direccion("Calle 1", " ", "28013")),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new Direccion("Calle 1", "Madrid", "ABC"))
+        );
+    }
+
+    @Test
+    void calculadoraAplicaSubtotalDescuentoEnvioYRecargoEnOrden() {
+        LineaPedido cafe = new LineaPedido(
+                new ProductoFisico("caf-0001", "Café Aurora", "12.50", 340), 3);
+        LineaPedido taza = new LineaPedido(
+                new ProductoFisico("taz-0002", "Taza Aurora", "8.00", 450), 1);
+        var resultado = new CalculadoraPrecio().calcular(
+                List.of(cafe, taza), new ReglasDescuento().buscar("BIENVENIDA"), new TarjetaCredito());
+
+        assertAll(
+                () -> assertEquals(Dinero.de("45.50"), resultado.subtotal()),
+                () -> assertEquals(Dinero.de("4.55"), resultado.descuento()),
+                () -> assertEquals(Dinero.de("4.95"), resultado.envio()),
+                () -> assertEquals(Dinero.de("0.92"), resultado.recargoPago()),
+                () -> assertEquals(Dinero.de("40.95"), resultado.baseConDescuento()),
+                () -> assertEquals(Dinero.de("45.90"), resultado.baseConEnvio()),
+                () -> assertEquals(Dinero.de("46.82"), resultado.total())
+        );
+    }
+
+    @Test
+    void pedidoCopiaSusLineasYRechazaPedidosVacios() {
+        LineaPedido linea = new LineaPedido(
+                new ServicioDigital("cur-0100", "Curso de barismo", "49.00", 365), 2);
+        Pedido pedido = new Pedido("AUR-2026-0001",
+                new Direccion("Calle Mayor 12", "Madrid", "28013"), List.of(linea));
+
+        assertAll(
+                () -> assertEquals(2, pedido.unidades()),
+                () -> assertEquals(Dinero.de("98.00"), pedido.subtotal()),
+                () -> assertThrows(UnsupportedOperationException.class,
+                        () -> pedido.lineas().add(linea)),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new Pedido("AUR-2", pedido.direccion(), List.of())),
+                () -> assertTrue(pedido.direccion().formateada().contains("Madrid"))
+        );
+    }
+}
+```
+
+Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no escribe nada en stdout; el resumen XML que Gradle deja en `build/test-results/test/` confirma los siete casos:
+
+```text
+<testsuite name="com.aurora.poo.PooDomainTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:34.272Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.024">
+```
+
+Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+
 ## Ejecutar
 
 Genera el wrapper una vez y ejecuta el catálogo:

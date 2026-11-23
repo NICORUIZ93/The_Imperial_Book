@@ -12,7 +12,7 @@ Tienda Aurora arranca como una aplicación de consola que cotiza pedidos. No hay
 
 La aplicación que construimos en este módulo se llama `tienda-aurora-fundamentos` y tiene cuatro comandos reales: `catalogo` lista los productos con su stock, `cotizar` arma un pedido y emite el recibo, `interactivo` atiende a un cliente por teclado y `diagnostico` ejecuta una batería de comprobaciones sobre supuestos del lenguaje que afectan al dinero y a las fechas. Cada tema de este capítulo añade una pieza a ese mismo proyecto; no hay ejemplos sueltos que se tiran después. Al terminar tendrás una aplicación que compila con Gradle, se ejecuta desde la terminal y produce exactamente la salida que verás aquí.
 
-**Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. Todo el código de este módulo se compiló con `--release 25` y se ejecutó en ese entorno; las salidas que aparecen son transcripciones reales, no ilustraciones.
+**Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64, toolchain Java 25; las compilaciones a mano usan `--release 25`. Las salidas etiquetadas como «salida real» son transcripciones literales de ejecuciones en ese entorno. Dos avisos: los comandos que lean reloj o midan tiempo muestran la hora o el resultado de esa corrida, y `./gradlew -q test` no imprime nada cuando pasa (el resumen se lee en `build/test-results/test/`).
 
 ## Proyecto desde cero: tienda-aurora-fundamentos
 
@@ -94,7 +94,7 @@ tienda-aurora-fundamentos/
                     └── Recibo.java
 ```
 
-`src/main/java` es la raíz de fuentes que Gradle reconoce por convención. Los paquetes (`com.aurora.fundamentos.dominio`, etc.) se traducen a carpetas. `scripts/Inventario.java` queda fuera de esa raíz a propósito: es el archivo compacto del último tema y se ejecuta directamente con el lanzador de Java, sin pasar por Gradle.
+`src/main/java` es la raíz de fuentes que Gradle reconoce por convención. Los paquetes (`com.aurora.fundamentos.dominio`, etc.) se traducen a carpetas. `scripts/Inventario.java` queda fuera de esa raíz a propósito: es el archivo compacto del último tema y se ejecuta directamente con el lanzador de Java, sin pasar por Gradle. La versión verificada añade `src/test/java/com/aurora/fundamentos/FundamentosTest.java`, que se documenta completo en la sección `#### Test`.
 
 ## build.gradle.kts
 
@@ -131,6 +131,14 @@ tasks.jar {
         attributes["Main-Class"] = application.mainClass.get()
     }
 }
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test { useJUnitPlatform() }
 ```
 
 El bloque `toolchain` fija Java 25 aunque tu `java` del sistema sea más nuevo. Gradle busca un JDK 25 instalado y, si no lo encuentra, lo descarga. Eso elimina la diferencia entre la máquina del estudiante y el CI. Los argumentos `-Xlint:all -Werror` convierten cualquier advertencia del compilador en un fallo del build: es incómodo al principio y evita clases de bugs enteras después. El plugin `application` genera el script de arranque y permite `gradle run`; el manifiesto del JAR permite ejecutar el artefacto con `java -jar`.
@@ -1055,6 +1063,152 @@ void main(String[] args) {
 record Producto(String sku, String nombre, long centavos, int stock) {
 }
 ```
+
+#### Test
+
+**Archivo:** `src/test/java/com/aurora/fundamentos/FundamentosTest.java` (ruta real en `/tmp/opencode/aurora-m0`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+
+```java
+package com.aurora.fundamentos;
+
+import com.aurora.fundamentos.catalogo.Catalogo;
+import com.aurora.fundamentos.catalogo.Sku;
+import com.aurora.fundamentos.dominio.Dinero;
+import com.aurora.fundamentos.dominio.LineaCarrito;
+import com.aurora.fundamentos.dominio.Producto;
+import com.aurora.fundamentos.tiempo.CalendarioComercial;
+import com.aurora.fundamentos.venta.Carrito;
+import com.aurora.fundamentos.venta.Pedido;
+import com.aurora.fundamentos.venta.Recibo;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class FundamentosTest {
+
+    @Test
+    void dineroEsExactoYSeFormateaSinDouble() {
+        Dinero total = Dinero.de("34.90").por(3);
+        assertAll(
+                () -> assertEquals(10470L, total.enCentavos()),
+                () -> assertEquals(Dinero.de("104.70"), total),
+                () -> assertEquals("104.70", total.formateado()),
+                () -> assertEquals("$104.70", total.toString()),
+                () -> assertEquals(Dinero.de("104.70"), Dinero.de("100.00").mas(Dinero.de("4.70"))),
+                () -> assertThrows(ArithmeticException.class,
+                        () -> Dinero.deCentavos(Long.MAX_VALUE).por(2))
+        );
+    }
+
+    @Test
+    void skuNormalizaYSeComparaPorValor() {
+        Sku sucio = Sku.de(" caf_0001 ");
+        Sku limpio = Sku.de("CAF-0001");
+        assertAll(
+                () -> assertEquals("CAF-0001", sucio.valor()),
+                () -> assertEquals(limpio, sucio),
+                () -> assertEquals(limpio.hashCode(), sucio.hashCode()),
+                () -> assertEquals("SKU inválido: 'cafe' (formato AAA-0000)",
+                        assertThrows(IllegalArgumentException.class, () -> Sku.de("cafe")).getMessage())
+        );
+    }
+
+    @Test
+    void catalogoNoExponeSuArregloInterno() {
+        Producto[] productos = {
+                new Producto(Sku.de("CAF-0001"), "Café Aurora", Dinero.de("12.50"), 40)
+        };
+        Catalogo catalogo = new Catalogo(productos);
+        productos[0] = null;
+        Producto[] entregados = catalogo.productos();
+        entregados[0] = null;
+
+        assertAll(
+                () -> assertEquals(1, catalogo.tamano()),
+                () -> assertEquals(Sku.de("CAF-0001"), catalogo.productos()[0].sku()),
+                () -> assertTrue(catalogo.buscar(Sku.de("CAF-0001")).isPresent()),
+                () -> assertFalse(catalogo.buscar(Sku.de("NOE-0001")).isPresent())
+        );
+    }
+
+    @Test
+    void carritoAplicaDescuentosPorTramoEIva() {
+        Producto cafe = new Producto(Sku.de("CAF-0001"), "Café Aurora", Dinero.de("12.50"), 40);
+        Carrito plata = new Carrito();
+        plata.agregar(cafe, 4);
+
+        Producto molino = new Producto(Sku.de("MOL-0003"), "Molino manual", Dinero.de("34.90"), 10);
+        Carrito oro = new Carrito();
+        oro.agregar(molino, 3);
+
+        assertAll(
+                () -> assertEquals(4, plata.unidades()),
+                () -> assertEquals(Dinero.de("50.00"), plata.subtotal()),
+                () -> assertEquals(Dinero.de("2.50"), plata.descuento()),
+                () -> assertEquals(Dinero.de("47.50"), plata.baseImponible()),
+                () -> assertEquals(Dinero.de("9.98"), plata.iva()),
+                () -> assertEquals(Dinero.de("57.48"), plata.total()),
+                () -> assertEquals(Dinero.de("10.47"), oro.descuento()),
+                () -> assertEquals(Dinero.de("114.02"), oro.total())
+        );
+    }
+
+    @Test
+    void calendarioComercialCuentaSoloDiasLaborables() {
+        LocalDate viernes = LocalDate.of(2026, 11, 20);
+        assertAll(
+                () -> assertTrue(CalendarioComercial.esLaborable(viernes)),
+                () -> assertFalse(CalendarioComercial.esLaborable(viernes.plusDays(1))),
+                () -> assertEquals(LocalDate.of(2026, 11, 25),
+                        CalendarioComercial.sumarDiasLaborables(viernes, 3)),
+                () -> assertEquals("25/11/2026",
+                        CalendarioComercial.formatear(LocalDate.of(2026, 11, 25))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> CalendarioComercial.sumarDiasLaborables(viernes, -1))
+        );
+    }
+
+    @Test
+    void pedidoYReciboUsanFechaFijaYTotalDerivado() {
+        Carrito carrito = new Carrito();
+        carrito.agregar(new Producto(Sku.de("CAF-0001"), "Café Aurora", Dinero.de("12.50"), 40), 2);
+        Pedido pedido = new Pedido("AUR-2026-0001", LocalDateTime.of(2026, 11, 22, 10, 30), carrito);
+        String recibo = new Recibo().generar(pedido);
+
+        assertAll(
+                () -> assertEquals(1795343400000L, pedido.timestampUtc()),
+                () -> assertTrue(recibo.contains("22/11/2026 10:30")),
+                () -> assertTrue(recibo.contains("$30.25")),
+                () -> assertTrue(recibo.contains("Entrega estimada: 25/11/2026"))
+        );
+    }
+
+    @Test
+    void lineaCarritoRechazaCantidadesInvalidas() {
+        Producto producto = new Producto(Sku.de("TAZ-0002"), "Taza Aurora", Dinero.de("8.00"), 25);
+        assertAll(
+                () -> assertEquals(Dinero.de("16.00"), new LineaCarrito(producto, 2).subtotal()),
+                () -> assertThrows(IllegalArgumentException.class, () -> new LineaCarrito(producto, 0)),
+                () -> assertThrows(IllegalStateException.class, () -> producto.descontar(26))
+        );
+    }
+}
+```
+
+Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no escribe nada en stdout; el resumen XML que Gradle deja en `build/test-results/test/` confirma los siete casos:
+
+```text
+<testsuite name="com.aurora.fundamentos.FundamentosTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:29.814Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.021">
+```
+
+Los siete casos fallaron primero al escribir las aserciones y se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
 
 ## Ejecutar
 

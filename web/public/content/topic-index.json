@@ -4224,8 +4224,8 @@
         "fragment": "tema-3-abstract-factory-familias-de-objetos-compatibles"
       },
       {
-        "title": "SOLID y cuándo NO aplicar un patrón",
-        "fragment": "tema-4-solid-y-cuando-no-aplicar-un-patron"
+        "title": "SOLID, patrones estructurales y cuándo NO aplicar un patrón",
+        "fragment": "tema-4-solid-patrones-estructurales-y-cuando-no-aplicar-un-patron"
       },
       {
         "title": "Prototype: copiar un objeto sin compartir sus datos",
@@ -4238,8 +4238,8 @@
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
       },
       {
-        "title": "Build reproducible y cierre del track",
-        "fragment": "tema-2-build-reproducible-y-cierre-del-track"
+        "title": "Build reproducible e integrando concurrencia, modelado y testing",
+        "fragment": "tema-2-build-reproducible-e-integrando-concurrencia-modelado-y-testing"
       }
     ],
     "14": [
@@ -4248,8 +4248,8 @@
         "fragment": "tema-1-compartir-memoria-requiere-orden-y-visibilidad"
       },
       {
-        "title": "La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "fragment": "tema-2-la-jvm-optimiza-y-puede-invalidar-un-cronometro-ingenuo"
+        "title": "La JVM optimiza y puede invalidar un cronómetro ingenua",
+        "fragment": "tema-2-la-jvm-optimiza-y-puede-invalidar-un-cronometro-ingenua"
       },
       {
         "title": "Deserializar es permitir construcción y comportamiento",
@@ -4260,8 +4260,12 @@
         "fragment": "tema-4-el-runtime-es-parte-del-artefacto-y-necesita-ciclo-de-vida"
       },
       {
-        "title": "Arranque más rápido: archivos CDS y la caché AOT",
-        "fragment": "tema-5-arranque-mas-rapido-archivos-cds-y-la-cache-aot"
+        "title": "Arranque reproducible con CDS y el límite de AOT",
+        "fragment": "tema-5-arranque-reproducible-con-cds-y-el-limite-de-aot"
+      },
+      {
+        "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
+        "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
       }
     ],
     "15": [
@@ -4284,6 +4288,10 @@
       {
         "title": "Pruebas de integración reproducibles",
         "fragment": "tema-5-pruebas-de-integracion-reproducibles"
+      },
+      {
+        "title": "SLF4J, Logback, MDC y logging estructurado",
+        "fragment": "tema-6-slf4j-logback-mdc-y-logging-estructurado"
       }
     ],
     "16": [
@@ -4314,6 +4322,10 @@
       {
         "title": "Concurrencia, transacciones y propagación",
         "fragment": "tema-7-concurrencia-transacciones-y-propagacion"
+      },
+      {
+        "title": "Migraciones y pruebas JPA con Testcontainers",
+        "fragment": "tema-8-migraciones-y-pruebas-jpa-con-testcontainers"
       }
     ],
     "17": [
@@ -4604,8 +4616,8 @@
     ],
     "9": [
       {
-        "title": "JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
-        "fragment": "tema-1-junit-6-jupiter-anotaciones-y-ciclo-de-vida"
+        "title": "JUnit Jupiter 5.13.4 — anotaciones y ciclo de vida",
+        "fragment": "tema-1-junit-jupiter-5-13-4-anotaciones-y-ciclo-de-vida"
       },
       {
         "title": "Mockito — aislar dependencias",

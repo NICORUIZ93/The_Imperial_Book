@@ -789,6 +789,175 @@ public final class TiendaAuroraExcepcionesApp {
 }
 ```
 
+#### Test
+
+**Archivo:** `src/test/java/com/aurora/excepciones/ExcepcionesTest.java` (ruta real en `/tmp/opencode/aurora-m3`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+
+```java
+package com.aurora.excepciones;
+
+import com.aurora.excepciones.dominio.DatoInvalidoException;
+import com.aurora.excepciones.dominio.Dinero;
+import com.aurora.excepciones.dominio.Producto;
+import com.aurora.excepciones.dominio.ProductoNoEncontradoException;
+import com.aurora.excepciones.dominio.Sku;
+import com.aurora.excepciones.dominio.StockInsuficienteException;
+import com.aurora.excepciones.importacion.ImportacionException;
+import com.aurora.excepciones.importacion.ImportadorProductos;
+import com.aurora.excepciones.servicio.Catalogo;
+import com.aurora.excepciones.servicio.ServicioPedidos;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ExcepcionesTest {
+
+    @TempDir
+    Path temporal;
+
+    @Test
+    void importadorAceptaFilasValidasYRechazaLasDemasSinAbortar()
+            throws IOException, ImportacionException {
+        Path csv = temporal.resolve("productos.csv");
+        Files.writeString(csv, """
+                sku;nombre;precio;stock
+                CAF-0001;Café Aurora;12.50;3
+                MAL-0001;;8.00;2
+                TAZ-0002;Taza Aurora;precio;2
+                FIL-0004;Filtros x100;4.75;10
+                FALTAN;columnas
+                """, StandardCharsets.UTF_8);
+
+        var resultado = new ImportadorProductos().importar(csv);
+
+        assertAll(
+                () -> assertEquals(2, resultado.importados()),
+                () -> assertEquals(3, resultado.rechazados()),
+                () -> assertEquals(Sku.de("CAF-0001"), resultado.productos().getFirst().sku()),
+                () -> assertEquals(3, resultado.productos().getFirst().stock()),
+                () -> assertTrue(resultado.rechazos().getFirst().contains("línea 3 inválida")),
+                () -> assertTrue(resultado.rechazos().getLast().contains("se esperaban 4 columnas"))
+        );
+    }
+
+    @Test
+    void falloDeLecturaEsCheckedYConservaLaCausa() {
+        ImportacionException error = assertThrows(ImportacionException.class,
+                () -> new ImportadorProductos().importar(temporal.resolve("no-existe.csv")));
+
+        assertAll(
+                () -> assertTrue(error.getMessage().contains("no se pudo leer el archivo")),
+                () -> assertInstanceOf(NoSuchFileException.class, error.getCause())
+        );
+    }
+
+    @Test
+    void reservarDescuentaStockYDevuelveElImporte() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.registrar(new Producto(Sku.de("CAF-0001"), "Café Aurora", Dinero.de("12.50"), 3));
+
+        Dinero total = new ServicioPedidos(catalogo).reservar("caf-0001", 2);
+
+        assertAll(
+                () -> assertEquals(Dinero.de("25.00"), total),
+                () -> assertEquals(1, catalogo.obtener(Sku.de("CAF-0001")).stock())
+        );
+    }
+
+    @Test
+    void erroresDeNegocioLlevanContextoYSonUnchecked() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.registrar(new Producto(Sku.de("CAF-0001"), "Café Aurora", Dinero.de("12.50"), 3));
+        ServicioPedidos servicio = new ServicioPedidos(catalogo);
+
+        StockInsuficienteException sinStock = assertThrows(StockInsuficienteException.class,
+                () -> servicio.reservar("CAF-0001", 99));
+        ProductoNoEncontradoException ausente = assertThrows(ProductoNoEncontradoException.class,
+                () -> servicio.reservar("TAZ-0002", 1));
+        DatoInvalidoException cantidad = assertThrows(DatoInvalidoException.class,
+                () -> servicio.reservar("CAF-0001", 0));
+
+        assertAll(
+                () -> assertEquals(Sku.de("CAF-0001"), sinStock.sku()),
+                () -> assertEquals(3, sinStock.disponible()),
+                () -> assertEquals(99, sinStock.solicitado()),
+                () -> assertEquals(Sku.de("TAZ-0002"), ausente.sku()),
+                () -> assertTrue(cantidad.getMessage().contains("mayor que cero"))
+        );
+    }
+
+    @Test
+    void importeInvalidoTraduceLaCausaDeBajoNivel() {
+        DatoInvalidoException texto = assertThrows(DatoInvalidoException.class,
+                () -> Dinero.de("abc"));
+        DatoInvalidoException escala = assertThrows(DatoInvalidoException.class,
+                () -> Dinero.de("1.234"));
+
+        assertAll(
+                () -> assertInstanceOf(NumberFormatException.class, texto.getCause()),
+                () -> assertInstanceOf(ArithmeticException.class, escala.getCause()),
+                () -> assertTrue(texto.getMessage().contains("importe inválido"))
+        );
+    }
+
+    @Test
+    void tryWithResourcesConservaLaExcepcionSuprimida() {
+        IllegalStateException principal = assertThrows(IllegalStateException.class,
+                () -> {
+                    try (RecursoRuidoso recurso = new RecursoRuidoso()) {
+                        recurso.usar();
+                        throw new IllegalStateException("falló el cuerpo");
+                    }
+                });
+
+        assertAll(
+                () -> assertEquals("falló el cuerpo", principal.getMessage()),
+                () -> assertEquals(1, principal.getSuppressed().length),
+                () -> assertEquals("falló el cierre", principal.getSuppressed()[0].getMessage())
+        );
+    }
+
+    @Test
+    void skuInvalidoSeRechazaEnLaFronteraDelDominio() {
+        assertAll(
+                () -> assertEquals(Sku.de("CAF-0001"), Sku.de(" caf_0001 ")),
+                () -> assertThrows(DatoInvalidoException.class, () -> Sku.de("cafe"))
+        );
+    }
+
+    private static final class RecursoRuidoso implements AutoCloseable {
+
+        void usar() {
+            // El cuerpo usa el recurso antes de fallar.
+        }
+
+        @Override
+        public void close() {
+            throw new IllegalStateException("falló el cierre");
+        }
+    }
+}
+```
+
+Salida observada: `./gradlew -q clean test` termina con código de salida 0 y no escribe nada en stdout; el resumen XML que Gradle deja en `build/test-results/test/` confirma los siete casos:
+
+```text
+<testsuite name="com.aurora.excepciones.ExcepcionesTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:27:38.945Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.032">
+```
+
+Los siete casos se corrigieron hasta que la suite quedó en verde; el XML mostrado corresponde a la última corrida limpia.
+
 ### Tema 1: Checked vs unchecked exceptions · Básico · 35 min
 
 Una excepción checked es aquella que el compilador obliga a declarar o manejar si puede salir de un método. En Java, esto aplica a las subclases de `Exception` que no son `RuntimeException`. Existe para hacer visible una condición externa o recuperable en el contrato del método: leer un archivo puede fallar por I/O, parsear una fuente externa puede fallar por formato, una llamada remota puede fallar por red. El llamador debería decidir si reintenta, usa un fallback, pide otro input o reporta el error.

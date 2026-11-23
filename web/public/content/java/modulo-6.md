@@ -70,7 +70,12 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
+}
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -319,6 +324,7 @@ public final class TiendaAuroraIoApp {
                 String plantilla = archivos.leerPlantilla();
                 System.out.println(plantilla.lines().findFirst().orElse(""));
             }
+            case "texto" -> TextoIoDemo.ejecutar(base);
             case "demo" -> {
                 archivos.prepararDirectorio(base);
                 Path catalogo = archivos.escribirCatalogo(base.resolve("data/catalogo.json"), productos());
@@ -362,6 +368,47 @@ public final class TiendaAuroraIoApp {
 }
 ```
 
+#### `TextoIoDemo.java`
+
+Demostración ejecutable de lectura/escritura de texto pequeño con `Files.writeString`/`Files.readString`, lectura por líneas con `BufferedReader` y captura explícita de `NoSuchFileException`. La base se pasa desde el CLI; la ruta es relativa al directorio de trabajo actual.
+
+```java
+package com.aurora.io;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+
+public final class TextoIoDemo {
+
+    private TextoIoDemo() {
+    }
+
+    public static void ejecutar(Path base) throws IOException {
+        Path archivo = base.resolve("data/nota.txt");
+        Files.createDirectories(archivo.getParent());
+        Files.writeString(archivo, "Tienda Aurora\nI/O con UTF-8\n", StandardCharsets.UTF_8);
+
+        String contenido = Files.readString(archivo, StandardCharsets.UTF_8);
+        System.out.println("readString=" + contenido.lines().map(linea -> "[" + linea + "]").toList());
+
+        try (BufferedReader reader = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+            System.out.println("bufferedReader=" + reader.readLine() + " / " + reader.readLine());
+        }
+
+        Path ausente = base.resolve("data/inexistente.txt");
+        try {
+            Files.readString(ausente, StandardCharsets.UTF_8);
+        } catch (NoSuchFileException e) {
+            System.out.println("noExiste=NoSuchFileException:" + e.getFile());
+        }
+    }
+}
+```
+
 ### Tema 1: NIO.2 — Path y Files · Básico · 40 min
 
 `Path` representa una ruta de sistema de archivos. A diferencia de `File`, es más composable (`resolve`, `relativize`, `normalize`, `toAbsolutePath`) y funciona bien con la API `Files`. `Files` ofrece operaciones estáticas: `exists`, `createDirectories`, `readString`, `writeString`, `lines`, `list`, `walk`, `copy`, `move`, `deleteIfExists`.
@@ -369,6 +416,17 @@ public final class TiendaAuroraIoApp {
 La ruta correcta depende del contexto. Un path relativo se resuelve contra el directorio de trabajo actual, que puede cambiar según cómo se ejecute la app. Para archivos de usuario o reportes, pasa la base explícitamente o resuélvela desde una configuración conocida. Para recursos empaquetados, usa classpath, no rutas del filesystem.
 
 `Files.move` con `ATOMIC_MOVE` es útil para escritura segura: escribes a un temporal y luego reemplazas el archivo final. Si el proceso muere antes del move, el archivo final anterior sigue intacto. No todos los filesystems soportan move atómico entre directorios distintos, por eso el temporal se crea junto al destino.
+
+Snippet ejecutable (de `TextoIoDemo.java`):
+
+```java
+Path archivo = base.resolve("data/nota.txt");
+Files.createDirectories(archivo.getParent());
+Files.writeString(archivo, "Tienda Aurora\nI/O con UTF-8\n", StandardCharsets.UTF_8);
+String contenido = Files.readString(archivo, StandardCharsets.UTF_8);
+```
+
+Comprobación concreta: `./gradlew -q run --args="texto"` imprime `readString=[[Tienda Aurora], [I/O con UTF-8]]`. El test `textoSeEscribeYSeLeeConUtf8` comprueba que el archivo contiene exactamente `Tienda Aurora\nI/O con UTF-8\n`.
 
 **Confusión común:** `File` está obsoleto. No, sigue funcionando. Pero para código nuevo, `Path/Files` suele ser más claro y completo.
 
@@ -390,23 +448,170 @@ NDJSON es útil para streams: un JSON por línea. Permite escribir y leer regist
 
 Los recursos del classpath son archivos empaquetados dentro del JAR o en `src/main/resources`. Se leen con `getResourceAsStream`, no con `Path.of("src/main/resources/...")`, porque esa ruta no existe dentro de un JAR. El stream debe cerrarse. Si el recurso no existe, retorna `null`; hay que manejarlo explícitamente.
 
+Snippet ejecutable (de `TextoIoDemo.java`):
+
+```java
+Path archivo = base.resolve("data/nota.txt");
+try (BufferedReader reader = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+    System.out.println("bufferedReader=" + reader.readLine() + " / " + reader.readLine());
+}
+
+Path ausente = base.resolve("data/inexistente.txt");
+try {
+    Files.readString(ausente, StandardCharsets.UTF_8);
+} catch (NoSuchFileException e) {
+    System.out.println("noExiste=NoSuchFileException:" + e.getFile());
+}
+```
+
+Comprobación concreta: `./gradlew -q run --args="texto"` imprime `bufferedReader=Tienda Aurora / I/O con UTF-8` y `noExiste=NoSuchFileException:build/aurora-io/data/inexistente.txt`. El test `archivoInexistenteLanzaNoSuchFileException` confirma el tipo de excepción y la ruta informada.
+
 **Confusión común:** usar `File` con una ruta relativa al proyecto para leer recursos. Funciona en el IDE y falla en producción cuando el recurso está dentro del JAR.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0).
+Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0, JUnit 5.13.4).
 
 ```bash
+cd /tmp/opencode/aurora-m6
+./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
-./gradlew -q test
+./gradlew -q run --args="texto"
 ```
 
-Resultados observados:
+Salida observada de `./gradlew test --rerun-tasks --console=plain` (5 tests, 0 fallas):
 
-- `run`: `catalogo=3`, `ndjsonLineas=3`, `csvLineas=4`, `plantilla=Tienda Aurora - Nota de despacho`.
-- `test`: 0 fallas (configurado con JUnit 5; suite del proyecto verificada).
+```text
+> Task :compileJava
+> Task :processResources
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
 
-**Nota:** este proyecto usa `/tmp` implícitamente a través de `build/aurora-io` en el directorio del proyecto. Los archivos generados son de demo.
+> Task :test
+
+CatalogoArchivosTest > plantillaVieneDelClasspath() PASSED
+
+CatalogoArchivosTest > reportesCuentanLineas() PASSED
+
+CatalogoArchivosTest > catalogoSeEscribeYSeLee() PASSED
+
+CatalogoArchivosTest > archivoInexistenteLanzaNoSuchFileException() PASSED
+
+CatalogoArchivosTest > textoSeEscribeYSeLeeConUtf8() PASSED
+
+[Incubating] Problems report is available at: file:///private/tmp/opencode/aurora-m6/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4s
+4 actionable tasks: 4 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html
+```
+
+Salida observada de `./gradlew -q run`:
+
+```text
+catalogo=3
+ndjsonLineas=3
+csvLineas=4
+plantilla=Tienda Aurora - Nota de despacho
+```
+
+Salida observada de `./gradlew -q run --args="texto"`:
+
+```text
+readString=[[Tienda Aurora], [I/O con UTF-8]]
+bufferedReader=Tienda Aurora / I/O con UTF-8
+noExiste=NoSuchFileException:build/aurora-io/data/inexistente.txt
+```
+
+Archivo de test completo: `/tmp/opencode/aurora-m6/src/test/java/com/aurora/io/CatalogoArchivosTest.java`
+
+```java
+package com.aurora.io;
+
+import com.aurora.io.dominio.LineaPedido;
+import com.aurora.io.dominio.Pedido;
+import com.aurora.io.dominio.Producto;
+import com.aurora.io.servicio.CatalogoArchivos;
+import com.aurora.io.servicio.ReportePedidos;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CatalogoArchivosTest {
+
+    @TempDir
+    Path temporal;
+
+    @Test
+    void catalogoSeEscribeYSeLee() throws IOException {
+        ReportePedidos reportes = new ReportePedidos();
+        CatalogoArchivos archivos = new CatalogoArchivos(reportes.mapper());
+        Path catalogo = archivos.escribirCatalogo(temporal.resolve("data/catalogo.json"),
+                List.of(new Producto("CAF-100", "Cafe Aurora", new BigDecimal("14.90"), 8)));
+
+        List<Producto> leidos = archivos.leerCatalogo(catalogo);
+        assertEquals(1, leidos.size());
+        assertEquals("CAF-100", leidos.getFirst().sku());
+        assertEquals(new BigDecimal("14.90"), leidos.getFirst().precio());
+    }
+
+    @Test
+    void reportesCuentanLineas() throws IOException {
+        ReportePedidos reportes = new ReportePedidos();
+        CatalogoArchivos archivos = new CatalogoArchivos(reportes.mapper());
+        List<Pedido> pedidos = List.of(new Pedido("PED-001", "Ana", LocalDate.of(2026, 11, 20),
+                List.of(new LineaPedido("CAF-100", 2))));
+        Path ndjson = reportes.exportarPedidosNdjson(temporal.resolve("reportes/pedidos.ndjson"), pedidos);
+        Path csv = reportes.exportarResumenCsv(temporal.resolve("reportes/resumen.csv"), pedidos);
+
+        assertEquals(1, archivos.contarLineas(ndjson));
+        assertEquals(2, archivos.contarLineas(csv));
+    }
+
+    @Test
+    void plantillaVieneDelClasspath() throws IOException {
+        CatalogoArchivos archivos = new CatalogoArchivos(new ReportePedidos().mapper());
+        assertTrue(archivos.leerPlantilla().contains("Tienda Aurora - Nota de despacho"));
+    }
+
+    @Test
+    void textoSeEscribeYSeLeeConUtf8() throws IOException {
+        TextoIoDemo.ejecutar(temporal);
+        Path nota = temporal.resolve("data/nota.txt");
+        assertEquals("Tienda Aurora\nI/O con UTF-8\n", Files.readString(nota, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void archivoInexistenteLanzaNoSuchFileException() {
+        Path ausente = temporal.resolve("data/ausente.txt");
+        NoSuchFileException error = assertThrows(NoSuchFileException.class,
+                () -> Files.readString(ausente, StandardCharsets.UTF_8));
+        assertEquals(ausente.toString(), error.getFile());
+    }
+}
+```
+
+**Nota sobre rutas:** `build/aurora-io` es una ruta **relativa al directorio de trabajo actual**, no una ruta `/tmp`. En esta verificación el proyecto estaba en `/tmp/opencode/aurora-m6`, por eso los archivos generados aparecieron allí; ejecutando desde otra raíz, los archivos se crearán bajo esa otra raíz. Para controlar la ubicación, pasa una base explícita, por ejemplo `./gradlew -q run --args="preparar /ruta/absoluta"`. Los archivos generados son de demo y no forman parte del código fuente.
 
 ## Errores comunes y diagnóstico
 

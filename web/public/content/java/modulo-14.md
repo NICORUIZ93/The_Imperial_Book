@@ -1,6 +1,6 @@
 # Módulo 14: JVM, rendimiento y seguridad
 
-El runtime de Java no es un detalle invisible: decide cómo se ve la memoria entre hilos, cuándo se optimiza un método, qué objetos pueden crearse al deserializar y cómo se apaga una aplicación. Muchos bugs “imposibles” aparecen porque el código se probó como si la JVM fuera un intérprete simple y determinista. Este módulo trabaja esos bordes con ejemplos pequeños y verificables.
+El runtime de Java no es un detalle invisible: decide cómo se ve la memoria entre hilos, cuándo se optimiza un método, qué objetos pueden crearse al deserializar y cómo se construye y apaga un artefacto. Este módulo trabaja esos bordes con ejemplos pequeños y verificables, y cierra con migración entre versiones LTS usando `jdeprscan` y `jdeps`.
 
 ## Visual del módulo
 
@@ -19,6 +19,8 @@ gradle --version
 
 #### Bootstrap
 
+Ejecuta estos comandos desde el directorio donde quieras crear el proyecto. Las rutas son completas y relativas a ese directorio.
+
 ```bash
 mkdir -p tienda-aurora-java-m14/src/main/java/com/aurora/jvm
 mkdir -p tienda-aurora-java-m14/src/test/java/com/aurora/jvm
@@ -26,7 +28,7 @@ cd tienda-aurora-java-m14
 gradle wrapper --gradle-version 9.9.1
 ```
 
-**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
+**Entorno de referencia verificado (2026-11-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4. Las herramientas `jlink`, `jdeps` y `jdeprscan` se invocan desde `$(/usr/libexec/java_home)/bin` porque no todas están en el `PATH` del shell.
 
 #### Estructura final
 
@@ -34,15 +36,21 @@ gradle wrapper --gradle-version 9.9.1
 tienda-aurora-java-m14/
 ├── build.gradle.kts
 ├── settings.gradle.kts
+├── gradlew
 └── src/
-    ├── main/java/com/aurora/jvm/
-    │   ├── App.java
-    │   ├── CicloVidaApp.java
-    │   ├── CronometroIngenuo.java
-    │   ├── DeserializacionSegura.java
-    │   └── VisibilidadDemo.java
+    ├── main/java/
+    │   ├── module-info.java
+    │   └── com/aurora/jvm/
+    │       ├── ApiObsoletaDemo.java
+    │       ├── App.java
+    │       ├── CicloVidaApp.java
+    │       ├── CronometroIngenuo.java
+    │       ├── DeserializacionSegura.java
+    │       └── VisibilidadDemo.java
     └── test/java/com/aurora/jvm/JvmModuloTest.java
 ```
+
+El build genera, además, `build/libs/tienda-aurora-java-m14-1.0.0.jar`, el archive CDS `build/aurora.jsa`, la grabación JFR `build/recording.jfr` y la imagen `build/runtime-aurora/`.
 
 ## Código completo, archivo por archivo
 
@@ -73,16 +81,28 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-#### `VisibilidadDemo.java`
+#### `src/main/java/module-info.java`
 
-Demuestra visibilidad entre hilos. `listo` es `volatile`: la escritura en el hilo principal establece una relación happens-before con la lectura en el hilo lector. Sin esa garantía, el lector podría no ver el cambio o ver `valor` desactualizado. El patrón es didáctico; en producción se usan primitivas de concurrencia de más alto nivel cuando son adecuadas.
+```java
+/** Módulo JPMS de la app Aurora: superficie explícita para jlink. */
+module com.aurora.jvm {
+    requires java.base;
+    exports com.aurora.jvm;
+}
+```
+
+`module-info.java` convierte el JAR en un módulo JPMS explícito: `exports com.aurora.jvm` define la superficie pública y `requires java.base` declara la única dependencia de runtime. Eso es lo que permite pasar el JAR a `jlink` con `--module-path`. Como el paquete está exportado y el compilador usa `-Xlint:all -Werror`, las clases con constructor implícito produjeron `[missing-explicit-ctor]` y hubo que declarar constructores explícitos. `VisibilidadDemo` tiene constructor `public` porque `App` la instancia; las utilidades estáticas tienen constructor `private`.
+
+#### `src/main/java/com/aurora/jvm/VisibilidadDemo.java`
 
 ```java
 package com.aurora.jvm;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+/** Demuestra visibilidad: con volatile el hilo lector ve la señal. */
 public final class VisibilidadDemo {
     private volatile boolean listo = false;
     private int valor = 0;
@@ -97,21 +117,22 @@ public final class VisibilidadDemo {
         }, "lector");
         lector.start();
         valor = 42;
-        listo = true;
+        listo = true; // write volatile: publica valor=42 antes de listo=true
         boolean ok = visto.await(2, TimeUnit.SECONDS);
         lector.join(1000);
         return ok && valor == 42 ? "visible=42" : "timeout";
     }
+
+    public VisibilidadDemo() {}
 }
 ```
 
-#### `CronometroIngenuo.java`
-
-Microbenchmark ingenuo: mide una sola ejecución con `nanoTime`. Sirve para mostrar por qué no es confiable. El JIT puede no haber optimizado, el GC puede interferir, el scheduler puede pausar el hilo, y el costo medido puede incluir warmup o ruido. La corrección no es “hacer más `nanoTime` casero”, sino usar JMH para warmup/forks/medición o JFR para observar el runtime.
+#### `src/main/java/com/aurora/jvm/CronometroIngenuo.java`
 
 ```java
 package com.aurora.jvm;
 
+/** Microbenchmark ingenuo: útil para mostrar por qué NO es confiable. */
 public final class CronometroIngenuo {
     static int suma(int n) {
         int s = 0;
@@ -123,15 +144,15 @@ public final class CronometroIngenuo {
         long t0 = System.nanoTime();
         int r = suma(10_000);
         long t1 = System.nanoTime();
-        if (r == Integer.MIN_VALUE) System.out.println("nunca");
+        if (r == Integer.MIN_VALUE) System.out.println("nunca"); // evita dead-code obvio
         return t1 - t0;
     }
+
+    private CronometroIngenuo() {}
 }
 ```
 
-#### `DeserializacionSegura.java`
-
-Deserializar datos Java nativos es una frontera de seguridad: puede instanciar tipos y disparar comportamiento durante la reconstrucción. La defensa base es no deserializar datos no confiables; cuando no hay alternativa, usar `ObjectInputFilter` para permitir tipos concretos y rechazar el resto.
+#### `src/main/java/com/aurora/jvm/DeserializacionSegura.java`
 
 ```java
 package com.aurora.jvm;
@@ -164,12 +185,12 @@ public final class DeserializacionSegura {
             return in.readObject();
         }
     }
+
+    private DeserializacionSegura() {}
 }
 ```
 
-#### `CicloVidaApp.java`
-
-Una aplicación real tiene ciclo de vida: arranca, acepta trabajo, se apaga. El shutdown hook permite registrar limpieza al recibir señal de terminación, pero no es garantía mágica: el proceso puede morir por `kill -9`, crash o corte de energía. Aun así, es útil para cerrar pools, hacer flush de métricas o liberar recursos en apagados normales.
+#### `src/main/java/com/aurora/jvm/CicloVidaApp.java`
 
 ```java
 package com.aurora.jvm;
@@ -177,48 +198,84 @@ package com.aurora.jvm;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CicloVidaApp {
+
+    /** Variante de prueba: registra y retira el hook para no contaminar el test worker. */
     public static String simular() {
         AtomicBoolean cerrado = new AtomicBoolean(false);
         Thread hook = new Thread(() -> cerrado.set(true), "shutdown-demo");
         Runtime.getRuntime().addShutdownHook(hook);
         try {
+            // En app real: cerrar pools, flush métricas, liberar recursos.
             return "hookRegistrado=" + true;
         } finally {
             Runtime.getRuntime().removeShutdownHook(hook);
         }
     }
+
+    /** Variante de ejecución: mantiene el hook registrado hasta el apagado real de la JVM. */
+    public static String registrarApagado() {
+        Thread hook = new Thread(
+                () -> System.out.println("shutdown-demo: limpieza ejecutada"),
+                "shutdown-demo");
+        Runtime.getRuntime().addShutdownHook(hook);
+        return "hookRegistrado=" + true;
+    }
+
+    private CicloVidaApp() {}
 }
 ```
 
-#### `App.java`
+#### `src/main/java/com/aurora/jvm/ApiObsoletaDemo.java`
+
+```java
+package com.aurora.jvm;
+
+/** Demo controlada de APIs deprecadas para analizar con jdeprscan. */
+@SuppressWarnings({"deprecation", "removal"})
+public final class ApiObsoletaDemo {
+
+    public static String explorar() {
+        Integer numero = new Integer("7");
+        SecurityManager manager = System.getSecurityManager();
+        return "numero=" + numero + " securityManager=" + manager;
+    }
+
+    private ApiObsoletaDemo() {}
+}
+```
+
+#### `src/main/java/com/aurora/jvm/App.java`
 
 ```java
 package com.aurora.jvm;
 
 public final class App {
+
     public static void main(String[] args) throws Exception {
         System.out.println(new VisibilidadDemo().ejecutar());
         System.out.println("ns=" + (CronometroIngenuo.medirUnaVez() >= 0));
         byte[] bytes = DeserializacionSegura.serializar(new DeserializacionSegura.Mensaje("hola"));
         Object obj = DeserializacionSegura.deserializarSeguro(bytes);
         System.out.println(obj);
-        System.out.println(CicloVidaApp.simular());
+        System.out.println(CicloVidaApp.registrarApagado());
+        System.out.println(ApiObsoletaDemo.explorar());
     }
+
+    private App() {}
 }
 ```
 
-#### `JvmModuloTest.java`
+#### `src/test/java/com/aurora/jvm/JvmModuloTest.java`
 
 ```java
 package com.aurora.jvm;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class JvmModuloTest {
+
     @Test
     void visibilidadConVolatile() throws Exception {
         assertEquals("visible=42", new VisibilidadDemo().ejecutar());
@@ -241,67 +298,205 @@ class JvmModuloTest {
         byte[] bytes = DeserializacionSegura.serializar(Integer.valueOf(7));
         assertThrows(Exception.class, () -> DeserializacionSegura.deserializarSeguro(bytes));
     }
+
+    @Test
+    void demoDeApisDeprecadasEjecuta() {
+        assertEquals("numero=7 securityManager=null", ApiObsoletaDemo.explorar());
+    }
 }
 ```
 
 ### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
-Dos hilos pueden compartir heap, pero eso no significa que vean los mismos valores en el mismo orden sin coordinación. La JVM y el CPU pueden reordenar instrucciones y cachear valores. El Java Memory Model define garantías de visibilidad y orden a través de relaciones *happens-before*. `volatile`, `synchronized`, locks, atomics y utilidades concurrentes establecen esas garantías.
+**Mecanismo.** `VisibilidadDemo` escribe `valor = 42` y después `listo = true`, donde `listo` es `volatile`. Esa escritura volatile establece una relación *happens-before* con la lectura del hilo lector: al observar `listo == true`, el lector ve `valor == 42`. `CountDownLatch` da la espera acotada y `Thread.onSpinWait()` evita un bucle ocupado agresivo.
 
-En `VisibilidadDemo`, `listo` es `volatile`. Escribirlo después de `valor = 42` hace visible esa escritura para el hilo que observa `listo == true`. El error común es usar un booleano plano entre hilos y asumir que “eventualmente se verá”. Puede funcionar en pruebas y fallar bajo carga. La corrección es usar la primitiva de concurrencia adecuada al contrato: `volatile` para flags simples, atomics para actualizaciones atómicas, locks/colas/barreras para coordinación más rica.
+**Por qué existe.** Dos hilos comparten heap, pero el JIT y la CPU pueden reordenar instrucciones y cachear valores. Sin una garantía de orden, un booleano plano “eventualmente se verá” puede fallar bajo carga aunque pase en pruebas.
 
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
+**Implicaciones.** `volatile` aporta visibilidad y orden, no atomicidad compuesta: `contador++` sigue siendo una secuencia no atómica. Para actualizaciones atómicas se usan `AtomicInteger`/`VarHandle`; para coordinación rica, locks, colas o barreras.
 
-El JIT observa código caliente y lo compila a nativo con optimizaciones: inlining, eliminación de dead code, loop optimizations, entre otras. Esto mejora rendimiento real, pero rompe cronómetros ingenuos. Si mides una sola iteración sin warmup, puedes medir carga de clases, interpretación o ruido del sistema. Si el resultado no se usa, el JIT puede incluso eliminar trabajo.
+**Confusión común.** Usar `volatile` como sustituto de `synchronized`. Aquí basta porque solo hay una señal y una publicación; en cuanto aparezca una operación de varios pasos, hace falta una primitiva más fuerte.
 
-`CronometroIngenuo` ilustra el anti-patrón: `nanoTime` alrededor de una llamada. Su salida no debe interpretarse como rendimiento estable. Para medir, usa JMH, que maneja warmup, forks, blackholes y modos de medición. Para diagnosticar, usa JFR y GC logs. El error común es comparar dos implementaciones con un microbenchmark casero y tomar decisiones de arquitectura basadas en ese número.
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenua · Avanzado · 45 min
+
+**Mecanismo.** `CronometroIngenuo.medirUnaVez()` rodea una sola llamada a `suma(10_000)` con `System.nanoTime()`. La comparación con `Integer.MIN_VALUE` evita que el compilador elimine el resultado por dead-code obvio.
+
+**Por qué existe.** El JIT compila código caliente con inlining y optimizaciones; el GC, el scheduler y la carga de clases añaden ruido. Una sola medición sin warmup mide el arranque, no el algoritmo.
+
+**Implicaciones.** El número obtenido (`ns=true` solo indica que es no negativo) no sirve para comparar implementaciones ni para decidir arquitectura. Para medir de verdad se usa JMH: warmup, forks, modos de medición y blackholes. Para diagnosticar se usa JFR (en este proyecto se genera `build/recording.jfr`) y logs de GC.
+
+**Confusión común.** Repetir `nanoTime()` en un bucle casero y creer que eso arregla el problema. Repetir sin controlar warmup, forks ni dead-code solo produce un número más estable, no un benchmark válido.
+
+**Nota honesta y no verificable en este entorno.** JMH y jcstress **no están instalados ni declarados** en el proyecto verificado: `./gradlew -q dependencies --configuration testRuntimeClasspath | grep -iE "jmh|jcstress"` no devuelve coincidencias y `command -v jmh` / `command -v jcstress` fallan. No se muestra una salida de benchmark JMH ni de estrés jcstress porque no se ejecutaron. Para hacerlos ejecutables habría que añadir `org.openjdk.jmh:jmh-core`, `org.openjdk.jmh:jmh-generator-annprocess` y la dependencia de jcstress al build, y ejecutarlos como tareas separadas; esa ampliación no forma parte de esta verificación.
 
 ### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
 
-La deserialización Java nativa reconstruye grafos de objetos. Eso implica crear instancias y, en ciertos casos, ejecutar caminos de código durante la lectura. Si la entrada viene de una fuente no confiable, es una superficie de ataque. El problema no es solo “leer datos malos”; es permitir que tipos inesperados entren al proceso.
+**Mecanismo.** `DeserializacionSegura.serializar()` usa `ObjectOutputStream`; `deserializarSeguro()` instala un `ObjectInputFilter` con allow-list (`Mensaje` y `String`, `!*` para el resto) antes de `readObject()`.
 
-La defensa en capas es: evitar deserialización nativa de datos no confiables, preferir formatos de datos como JSON con mapeo explícito, y si hay que usar Java serialization, aplicar `ObjectInputFilter` con allow-list. En `DeserializacionSegura`, el filtro permite `Mensaje` y `String` y rechaza todo lo demás. El test confirma que `Integer` serializado es rechazado.
+**Por qué existe.** La deserialización Java nativa reconstruye grafos y puede ejecutar código durante la lectura. Si la entrada no es confiable, el problema no es solo dato malo: es permitir tipos inesperados dentro del proceso.
+
+**Implicaciones.** El test `deserializacionPermiteTipoAutorizado` obtiene `Mensaje[texto=ok]`; `deserializacionRechazaTipoNoAutorizado` comprueba que un `Integer` serializado es rechazado. La defensa preferida es no usar Java serialization con datos no confiables; el filtro es la segunda línea.
+
+**Confusión común.** Creer que un filtro convierte serialization en un formato seguro por diseño. Sigue siendo un mecanismo que instancia tipos; JSON con mapeo explícito es una frontera más estrecha cuando es posible.
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Intermedio · 40 min
 
-Una aplicación no solo “corre”; tiene arranque, estado, dependencias, señales de apagado y limpieza. Ignorar el ciclo de vida genera fugas de recursos, pérdida de métricas o cortes abruptos. Un shutdown hook puede cerrar pools, hacer flush de buffers y liberar recursos cuando la JVM recibe una señal normal.
+**Mecanismo.** `CicloVidaApp.registrarApagado()` mantiene un shutdown hook registrado hasta que la JVM termina; al apagarse imprime `shutdown-demo: limpieza ejecutada`. `simular()` es la variante de prueba que registra y retira el hook para no contaminar el worker de JUnit. A partir del JAR modular se construye una imagen con `jlink` que contiene `com.aurora.jvm`, `java.base` y `jdk.jfr`.
 
-Pero el hook no cubre todos los casos: `kill -9`, crash de JVM, fallo de hardware o apagado forzado no ejecutan hooks. Por eso el diseño robusto combina hooks con timeouts, idempotencia, persistencia segura y observabilidad. El error común es poner lógica crítica o larga en el hook; debe ser breve y tolerante a fallos.
+**Por qué existe.** Una aplicación necesita arranque, dependencias, señales de apagado y limpieza. Además, distribuir el JDK completo para una app de consola es innecesario: `jlink` genera solo los módulos requeridos.
 
-### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Intermedio · 35 min
+**Implicaciones.** La imagen verificada ocupa 33 Mbytes y se ejecuta con `id -u -un = nicolasruiz` (usuario no root, el mismo que invoca el comando: jlink no añade privilegios). Se ejecutó con `-Xmx64m`, `-XX:MaxMetaspaceSize=64m` y `-XX:StartFlightRecording:filename=build/recording.jfr,duration=2s`; se generó `build/recording.jfr` de 343 Kbytes y el hook se ejecutó al terminar. `jlink` no actualiza vulnerabilidades: quien publica la imagen debe reconstruirla con cada JDK parcheado.
 
-El arranque de la JVM incluye carga de clases, verificación, linking y warmup. Class Data Sharing (CDS) y la caché AOT (dependiendo de la versión/JDK) permiten reutilizar metadatos precalculados para reducir tiempo de arranque. Es útil en CLIs, funciones serverless, contenedores y procesos de vida corta.
+**Confusión común.** Pensar que el shutdown hook cubre `kill -9`, un crash o un corte de energía. No los cubre. Debe ser breve e idempotente y combinarse con timeouts, persistencia segura y observabilidad.
 
-La ganancia no es universal: depende de classpath, flags, versión de JDK y configuración. Hay que medir el arranque real. En este entorno, al intentar generar un archivo CDS con `-XX:ArchiveClassesAtExit` sin base CDS cargada, la JVM emitió warning y no generó el archive; por eso el arranque con `-XX:SharedArchiveFile` falló. **Nota de verificación honesta:** no se obtuvo una medición CDS/AOT reproducible en esta corrida específica; el comportamiento depende de la configuración de CDS base del JDK. El concepto válido es: CDS/AOT puede mejorar arranque, pero debe validarse con los flags y artefactos soportados por el runtime objetivo.
+### Tema 5: Arranque reproducible con CDS y el límite de AOT · Intermedio · 35 min
+
+**Mecanismo.** Con el JAR en el classpath (no un directorio de clases), `-XX:ArchiveClassesAtExit=build/aurora.jsa` crea un archive dinámico al terminar la app; `-Xshare:on -XX:SharedArchiveFile=build/aurora.jsa` lo reutiliza en una segunda ejecución.
+
+**Por qué existe.** El arranque incluye carga, verificación y linking de clases. CDS reutiliza metadatos precalculados y puede reducir ese costo en CLIs y procesos de vida corta.
+
+**Implicaciones.** En esta corrida se generó `build/aurora.jsa` de 816 Kbytes y la segunda ejecución con `-Xshare:on` terminó con la misma salida funcional. El primer intento con `-cp build/classes/java/main` falló con este error real:
+
+```text
+[0.191s][error][cds] Error: non-empty directory 'build/classes/java/main'
+Error occurred during CDS dumping
+Cannot have non-empty directory in paths
+```
+
+La corrección fue usar el JAR como classpath. CDS depende de JDK, flags y classpath: hay que medir en el runtime objetivo, no asumir ganancia.
+
+**Confusión común.** Confundir CDS con AOT. En el JDK 27 instalado `command -v jaotc` no encuentra la herramienta AOT clásica, así que no se muestra una compilación AOT. CDS sí quedó reproducible con los comandos de la sección de verificación.
+
+### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
+
+**Mecanismo.** `jdeprscan --release 17|21|25` contrasta el JAR con el conjunto de APIs deprecadas de cada release; `jdeps -s` resume dependencias de módulo y `jdeps --jdk-internals` busca uso de APIs internas de JDK. `ApiObsoletaDemo` usa deliberadamente `new Integer("7")` y `System.getSecurityManager()` con `@SuppressWarnings` para que `-Werror` no oculte el hallazgo de `jdeprscan`.
+
+**Por qué existe.** Antes de subir de LTS hay que saber si el código usa APIs marcadas para eliminación o detalles internos del JDK. Los avisos de compilación solo cubren lo que compila tu JDK actual; estas herramientas cruzan la superficie de cada release.
+
+**Implicaciones.** Los tres escaneos encontraron las dos APIs deprecadas con `forRemoval=true` en 17 y 21; en 25 `Integer(String)` aparece como deprecada (sin el marcador `forRemoval` en ese release) y `getSecurityManager()` sigue `forRemoval=true`. `jdeps -s` dice `com.aurora.jvm -> java.base` y `--jdk-internals` no imprime nada. La migración real consiste en sustituir esas dos llamadas y volver a escanear.
+
+**Confusión común.** Creer que `jdeprscan --release 17` implica compilar con un JDK 17. Solo selecciona el conjunto de APIs contra el que se escanea. En este entorno solo hay JDK 26 y 27 (`/usr/libexec/java_home -V`), por lo que **no se compiló ni ejecutó con JDK 17, 21 o 25**; no se muestra salida de esas versiones. Para una certificación completa hace falta una matriz de CI con esos JDK.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `JH=$(/usr/libexec/java_home)` apunta al JDK 27. Salida observada:
 
-```bash
-./gradlew -q test
-./gradlew -q run
+```text
+$ ./gradlew -q test
+(salida vacía: Gradle -q solo muestra errores)
+$ grep -h "<testsuite " build/test-results/test/*.xml
+<testsuite name="com.aurora.jvm.JvmModuloTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-23T08:20:32.047Z" hostname="MacBook-Pro-de-Nicolas.local" time="0.019">
+$ ./gradlew -q run
+visible=42
+ns=true
+Mensaje[texto=hola]
+hookRegistrado=true
+numero=7 securityManager=null
+shutdown-demo: limpieza ejecutada
+$ ./gradlew -q jar
+$ JH=$(/usr/libexec/java_home)
+$ "$JH/bin/jdeps" -s build/libs/tienda-aurora-java-m14-1.0.0.jar
+com.aurora.jvm -> java.base
+$ "$JH/bin/jdeps" --jdk-internals build/libs/tienda-aurora-java-m14-1.0.0.jar
+$ "$JH/bin/jdeprscan" --release 17 build/libs/tienda-aurora-java-m14-1.0.0.jar
+Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/Integer::<init>(Ljava/lang/String;)V (forRemoval=true)
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/System::getSecurityManager()Ljava/lang/SecurityManager; (forRemoval=true)
+$ "$JH/bin/jdeprscan" --release 21 build/libs/tienda-aurora-java-m14-1.0.0.jar
+Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/Integer::<init>(Ljava/lang/String;)V (forRemoval=true)
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/System::getSecurityManager()Ljava/lang/SecurityManager; (forRemoval=true)
+$ "$JH/bin/jdeprscan" --release 25 build/libs/tienda-aurora-java-m14-1.0.0.jar
+Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/Integer::<init>(Ljava/lang/String;)V 
+class com/aurora/jvm/ApiObsoletaDemo uses deprecated method java/lang/System::getSecurityManager()Ljava/lang/SecurityManager; (forRemoval=true)
+$ "$JH/bin/jlink" --module-path build/libs/tienda-aurora-java-m14-1.0.0.jar --add-modules com.aurora.jvm,jdk.jfr --output build/runtime-aurora --strip-debug --no-header-files --no-man-pages --compress=zip-6
+$ du -sh build/runtime-aurora
+ 33M	build/runtime-aurora
+$ build/runtime-aurora/bin/java --list-modules
+com.aurora.jvm
+java.base@27.0.1.0.2
+jdk.jfr@27.0.1.0.2
+$ build/runtime-aurora/bin/java -Xmx64m -XX:MaxMetaspaceSize=64m -XX:StartFlightRecording:filename=build/recording.jfr,duration=2s --module com.aurora.jvm/com.aurora.jvm.App
+[0.194s][info][jfr,startup] Started recording 1. The result will be written to:
+[0.194s][info][jfr,startup] 
+[0.194s][info][jfr,startup] /private/tmp/opencode/aurora-m14/build/recording.jfr
+visible=42
+ns=true
+Mensaje[texto=hola]
+hookRegistrado=true
+numero=7 securityManager=null
+shutdown-demo: limpieza ejecutada
+$ ls -lh build/recording.jfr
+-rw-r--r--@ 1 nicolasruiz  wheel   343K Nov 23 03:22 build/recording.jfr
+$ id -u -un
+nicolasruiz
+$ "$JH/bin/java" -cp build/libs/tienda-aurora-java-m14-1.0.0.jar -XX:ArchiveClassesAtExit=build/aurora.jsa com.aurora.jvm.App
+visible=42
+ns=true
+Mensaje[texto=hola]
+hookRegistrado=true
+numero=7 securityManager=null
+shutdown-demo: limpieza ejecutada
+$ ls -lh build/aurora.jsa
+-rw-r--r--@ 1 nicolasruiz  wheel   816K Nov 23 03:22 build/aurora.jsa
+$ "$JH/bin/java" -cp build/libs/tienda-aurora-java-m14-1.0.0.jar -Xshare:on -XX:SharedArchiveFile=build/aurora.jsa com.aurora.jvm.App
+visible=42
+ns=true
+Mensaje[texto=hola]
+hookRegistrado=true
+numero=7 securityManager=null
+shutdown-demo: limpieza ejecutada
 ```
 
-Resultados observados:
+Listado de pruebas (`./gradlew test --rerun-tasks`, filtrado):
 
-- `test`: 4 pruebas, 0 fallas.
-- `run`: `visible=42`, `ns=true`, `Mensaje[texto=hola]`, `hookRegistrado=true`.
+```text
+JvmModuloTest > cronometroIngenuoRetornaNoNegativo() PASSED
+JvmModuloTest > demoDeApisDeprecadasEjecuta() PASSED
+JvmModuloTest > visibilidadConVolatile() PASSED
+JvmModuloTest > deserializacionPermiteTipoAutorizado() PASSED
+JvmModuloTest > deserializacionRechazaTipoNoAutorizado() PASSED
+BUILD SUCCESSFUL in 981ms
+```
+
+#### No verificable en esta corrida
+
+```text
+$ ./gradlew -q dependencies --configuration testRuntimeClasspath | grep -iE "jmh|jcstress"
+(sin coincidencias)
+$ for t in jmh jcstress; do command -v "$t" || echo "$t: no instalado"; done
+jmh: no instalado
+jcstress: no instalado
+$ cd /tmp/opencode/aurora-m13 && git remote -v
+fatal: not a git repository (or any of the parent directories): .git
+$ command -v jaotc || echo "jaotc: no disponible en el JDK 27 instalado"
+jaotc: no disponible en el JDK 27 instalado
+```
+
+Esto explica tres límites: no hay benchmark JMH ni estrés jcstress ejecutados; no hay repositorio remoto que clonar en el módulo 13; y no hay compilación con JDK 17/21/25 ni tool AOT `jaotc`. No se ha inventado salida para ninguno de ellos.
 
 ## Errores comunes y diagnóstico
 
 | Síntoma | Causa probable | Diagnóstico | Corrección |
 |---|---|---|---|
-| Hilo no ve cambio | Falta happens-before | Revisar sincronización | `volatile`, lock, atomic, estructura concurrente |
-| Benchmark “demuestra” mejora irreal | Warmup/JIT/GC no controlados | Repetir con JMH | Usar JMH/JFR, no cronómetro casero |
-| Vulnerabilidad por deserialización | `ObjectInputStream` sobre datos no confiables | Revisar fuentes y filtros | Evitar Java serialization; allow-list con `ObjectInputFilter` |
-| Recursos no se liberan al apagar | No hay hook/close ordenado | Simular SIGTERM, revisar logs | Shutdown hook corto, try-with-resources, timeouts |
-| CDS/AOT no mejora arranque | Flags/JDK/base archive incompatibles | `-Xlog:cds`, medir arranque real | Validar soporte del JDK objetivo y medir antes/después |
+| Hilo no ve un cambio | Falta *happens-before* | Revisar sincronización | `volatile`, lock, atómico o estructura concurrente |
+| `volatile` no arregla `contador++` | Falta atomicidad compuesta | Revisar la operación completa | `AtomicInteger`, `VarHandle` o lock |
+| Benchmark “demuestra” una mejora irreal | Warmup, JIT o GC no controlados | Repetir con JMH | Declarar dependencias JMH y usar sus modos; JFR para diagnosticar |
+| `jlink` falla con un JAR no modular | Falta `module-info.java` | `jar --describe-module --file build/libs/tienda-aurora-java-m14-1.0.0.jar` | Declarar módulo y pasar el JAR con `--module-path` |
+| `jlink` avisa de `--compress 2` | Valor deprecado en JDK 27 | Leer `jlink --help` | Usar `--compress=zip-6` |
+| Imagen “segura” sin actualizaciones | Runtime congelado | Revisar procedimiento de release | Reconstruir la imagen con cada JDK parcheado |
+| Hook de apagado no corre | `kill -9`, crash o hook retirado | Revisar señal y registro | Hook corto, idempotente; probar apagado normal |
+| CDSdump falla por directorio de clases | Classpath con directorio no vacío | Leer `[error][cds]` | Usar el JAR como classpath |
+| Esperar AOT con `jaotc` | Herramienta no disponible en JDK 27 | `command -v jaotc` | Documentar CDS como mecanismo reproducible |
+| API deprecada pasa desapercibida | `@SuppressWarnings` o JDK distinto | `jdeprscan --release 17/21/25` | Sustituir la API y volver a escanear |
+| Uso de API interna del JDK | Dependencia a `jdk.internal.*` | `jdeps --jdk-internals` | Sustituir por API pública soportada |
 
 ## Checklist de cierre
 
-- [ ] Puedo explicar por qué compartir memoria requiere happens-before.
-- [ ] Sé por qué un cronómetro ingenuo no es un benchmark confiable.
+- [ ] Puedo explicar por qué compartir memoria requiere *happens-before*.
+- [ ] Sé por qué un cronómetro ingenua no es un benchmark y qué aportaría JMH.
 - [ ] Sé aplicar `ObjectInputFilter` y cuándo evitar Java serialization.
-- [ ] Entiendo límites de shutdown hooks.
-- [ ] Sé que CDS/AOT requiere verificación por JDK/flags, no supuestos.
+- [ ] Generé una imagen `jlink` modular, la ejecuté con JFR y límites y vi el hook de apagado.
+- [ ] Generé y reutilicé un archive CDS con comandos reproducibles.
+- [ ] Ejecuté `jdeps` y `jdeprscan --release 17/21/25` y sé qué límites tienen.
+- [ ] Ejecuté `./gradlew -q test` y `./gradlew -q run` con salida real.

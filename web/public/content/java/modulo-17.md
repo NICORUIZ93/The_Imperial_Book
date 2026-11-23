@@ -2,7 +2,7 @@
 
 Una aplicación de envíos puede validar objetos en memoria, pero si no persiste bien sus datos, el negocio pierde trazabilidad. El problema aparece en los bordes: un `INSERT` con concatenación de strings abre la puerta a SQL injection; una transferencia que debita una cuenta y falla antes de acreditar la otra deja saldos inconsistentes; una consulta sin mapeo claro mezcla SQL, infraestructura y dominio.
 
-En este módulo vas a construir `tienda-aurora-java-m17` desde cero. La primera parte resuelve persistencia con JDBC y el patrón DAO usando H2 en memoria para que sea ejecutable localmente. La segunda parte modela transacciones con commit/rollback y verifica aislamiento `READ COMMITTED`. PostgreSQL/MySQL usan el mismo contrato JDBC; al final indico qué cambia al salir de H2.
+En este módulo se construye `tienda-aurora-java-m17` desde cero. La primera parte resuelve persistencia con JDBC y el patrón DAO usando H2 en memoria para que sea ejecutable localmente. La segunda modela transacciones con commit/rollback y verifica aislamiento `READ COMMITTED`. La comparación final ejecuta un `count`/`insert` con JDBC y con JPA sobre la misma tabla y documento cuándo conviene cada abstracción. PostgreSQL/MySQL comparten el contrato JDBC; los cambios de motor se enumeran al cierre.
 
 ## Visual del módulo
 
@@ -18,6 +18,7 @@ Necesitas JDK 25 y Gradle 9.x.
 java -version
 gradle --version
 mkdir -p tienda-aurora-java-m17/src/main/java/com/aurora/jdbc
+mkdir -p tienda-aurora-java-m17/src/main/resources/META-INF
 mkdir -p tienda-aurora-java-m17/src/test/java/com/aurora/jdbc
 cd tienda-aurora-java-m17
 gradle wrapper --gradle-version 9.9.1
@@ -35,11 +36,19 @@ tienda-aurora-java-m17/
     │   ├── DataSourceFactory.java
     │   ├── Guia.java
     │   ├── GuiaDao.java
+    │   ├── GuiaEntity.java
+    │   ├── GuiaJpaDao.java
     │   ├── Schema.java
     │   └── TransferenciaService.java
+    ├── main/resources/
+    │   ├── META-INF/persistence.xml
+    │   └── simplelogger.properties
     └── test/java/com/aurora/jdbc/
+        ├── ConteoJpaVsJdbcTest.java
         └── JdbcTest.java
 ```
+
+**Entorno de referencia verificado (2026-11-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232, Hibernate 7.0.0.Final, Jakarta Persistence 3.2.0.
 
 ## Build desde cero
 
@@ -51,7 +60,7 @@ rootProject.name = "tienda-aurora-java-m17"
 
 #### `build.gradle.kts`
 
-Usamos H2 como BD embebida para ejecución local verificable. El driver JDBC entra como dependencia normal; JUnit 5 cubre las pruebas.
+H2 es la BD embebida para ejecución local verificable. Hibernate y la API Jakarta Persistence entran solo para la comparación JDBC/JPA de la última sección. JUnit 5 cubre las pruebas.
 
 ```kotlin
 plugins {
@@ -74,6 +83,9 @@ repositories {
 
 dependencies {
     implementation("com.h2database:h2:2.3.232")
+    implementation("org.hibernate.orm:hibernate-core:7.0.0.Final")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
+    implementation("org.slf4j:slf4j-simple:2.0.17")
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -85,10 +97,14 @@ application {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("org.jboss.logging.provider", "slf4j")
     testLogging {
         events("passed", "skipped", "failed")
-        showStandardStreams = true
     }
+}
+
+tasks.withType<JavaExec>().configureEach {
+    systemProperty("org.jboss.logging.provider", "slf4j")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -97,9 +113,18 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
+#### `src/main/resources/simplelogger.properties`
+
+Mantiene la salida de `run` legible al crear el `EntityManagerFactory` de la comparación.
+
+```properties
+org.slf4j.simpleLogger.defaultLogLevel=error
+org.slf4j.simpleLogger.showDateTime=false
+```
+
 ## Modelo y esquema
 
-#### `Guia.java`
+#### `src/main/java/com/aurora/jdbc/Guia.java`
 
 El record representa el dato que viaja entre la aplicación y el DAO. Valida invariantes antes de persistir; el DAO no debería tener que defenderse de objetos inválidos.
 
@@ -121,7 +146,7 @@ public record Guia(int id, String remitente, String destino, BigDecimal pesoKg) 
 }
 ```
 
-#### `DataSourceFactory.java`
+#### `src/main/java/com/aurora/jdbc/DataSourceFactory.java`
 
 `DataSource` es el punto de entrada a conexiones. En producción suele venir de un pool (HikariCP). Aquí creamos un H2 en memoria para que el ejemplo sea reproducible sin instalar BD externa.
 
@@ -147,7 +172,7 @@ public final class DataSourceFactory {
 
 `DB_CLOSE_DELAY=-1` mantiene la BD viva mientras la JVM esté activa. Sin eso, la BD en memoria puede desaparecer al cerrar la última conexión.
 
-#### `Schema.java`
+#### `src/main/java/com/aurora/jdbc/Schema.java`
 
 El esquema es código ejecutable, no una suposición. Lo creamos al inicio para que el módulo sea autocontenido.
 
@@ -190,9 +215,9 @@ JDBC es la API estándar de Java para hablar con bases de datos relacionales. El
 
 El problema que resuelve un DAO es separar persistencia de negocio. Si el servicio arma SQL, abre conexiones, mapea `ResultSet` y además aplica reglas, termina con una clase imposible de probar. El DAO encapsula el acceso a datos: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
 
-`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados. El driver los envía separados, no como fragmentos de SQL ejecutable.
+`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados.
 
-#### `GuiaDao.java`
+#### `src/main/java/com/aurora/jdbc/GuiaDao.java`
 
 ```java
 package com.aurora.jdbc;
@@ -250,6 +275,16 @@ public class GuiaDao {
         }
     }
 
+    public long contar() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM guias";
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            return rs.getLong(1);
+        }
+    }
+
     private Guia map(ResultSet rs) throws SQLException {
         return new Guia(
                 rs.getInt("id"),
@@ -267,23 +302,189 @@ Puntos que vale leer con calma:
 - `buscarPorId` devuelve `Optional<Guia>` para hacer explícita la ausencia.
 - `map` concentra la conversión de fila a objeto. Si la tabla cambia, el cambio se localiza aquí.
 - El SQL usa `?`, nunca concatenación de input.
+- `executeUpdate()` devuelve filas afectadas; en inserts críticos conviene inspeccionarlo. Aquí el id es PK y un duplicado lanza excepción SQL.
+- Crear una `Connection` por consulta funciona en demos; en producción se usa un `DataSource` con pool (HikariCP).
 
-**Caso de borde:** `executeUpdate()` devuelve cantidad de filas afectadas. En inserts/updates críticos conviene inspeccionarlo; aquí el id es PK y un duplicado lanzará excepción SQL.
+#### JDBC frente a JPA: comparación verificada
 
-**Error común:** crear una `Connection` por consulta en un sistema real sin pool. Funciona en demos, pero es caro. En producción se usa `DataSource` respaldado por HikariCP u otro pool.
+El track propone comparar un `count`/`insert` en JDBC con su versión JPA. Para que la comparación no sea conceptual, ambos accesos apuntan a la misma tabla H2, en el mismo proceso y con datos compartidos. JPA usa `hibernate.hbm2ddl.auto=none` porque `Schema.init` ya creó la tabla.
+
+| Operación | JDBC | JPA/Hibernate |
+|---|---|---|
+| Obtener conexión/contexto | `ds.getConnection()` | `EntityManagerFactory` + `EntityManager` |
+| Count | `SELECT COUNT(*) FROM guias` con `PreparedStatement` | JPQL `select count(g) from GuiaEntity g` |
+| Insert | `INSERT ... VALUES (?, ?, ?, ?)` | `em.persist(new GuiaEntity(guia))` dentro de transacción |
+| Mapeo | `map(ResultSet)` explícito | Anotaciones `@Entity`, `@Column` |
+| Transacción | `setAutoCommit(false)`, `commit`/`rollback` | `em.getTransaction()` |
+| Cuándo conviene | SQL exacto, batch, reporting, control total de locks | Grafo de entidades, cambios unitarios, menos SQL repetitivo |
+
+La comparación no dice que una capa reemplace a la otra. JDBC sigue siendo necesario cuando el caso de uso exige SQL específico del motor, cargas masivas o control fino de transacciones; JPA reduce código cuando el modelo y las relaciones dominan. En esta corrida ambas implementaciones devolvieron `CONTEO_JDBC=3` y `CONTEO_JPA=3`, y la inserción hecha por JPA fue visible para el DAO JDBC.
+
+#### `src/main/resources/META-INF/persistence.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
+  <persistence-unit name="auroraJdbcComparePU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>com.aurora.jdbc.GuiaEntity</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:aurora-jpa;DB_CLOSE_DELAY=-1"/>
+      <property name="jakarta.persistence.jdbc.user" value="sa"/>
+      <property name="jakarta.persistence.jdbc.password" value=""/>
+      <property name="hibernate.hbm2ddl.auto" value="none"/>
+    </properties>
+  </persistence-unit>
+</persistence>
+```
+
+#### `src/main/java/com/aurora/jdbc/GuiaEntity.java`
+
+```java
+package com.aurora.jdbc;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "guias")
+public class GuiaEntity {
+
+    @Id
+    private int id;
+
+    @Column(name = "remitente", nullable = false)
+    private String remitente;
+
+    @Column(name = "destino", nullable = false)
+    private String destino;
+
+    @Column(name = "peso_kg", nullable = false)
+    private BigDecimal pesoKg;
+
+    protected GuiaEntity() {
+        // requerido por JPA
+    }
+
+    public GuiaEntity(Guia guia) {
+        this.id = guia.id();
+        this.remitente = guia.remitente();
+        this.destino = guia.destino();
+        this.pesoKg = guia.pesoKg();
+    }
+
+    public Guia toGuia() {
+        return new Guia(id, remitente, destino, pesoKg);
+    }
+}
+```
+
+#### `src/main/java/com/aurora/jdbc/GuiaJpaDao.java`
+
+```java
+package com.aurora.jdbc;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+
+import java.util.Map;
+
+/** Contraparte JPA del DAO JDBC: misma tabla, mismo motor, otra abstracción. */
+public final class GuiaJpaDao {
+
+    private final EntityManagerFactory emf;
+
+    public GuiaJpaDao(String jdbcUrl) {
+        this.emf = Persistence.createEntityManagerFactory("auroraJdbcComparePU", Map.of(
+                "jakarta.persistence.jdbc.url", jdbcUrl));
+    }
+
+    public long contar() {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery("select count(g) from GuiaEntity g", Long.class).getSingleResult();
+        }
+    }
+
+    public void insertar(Guia guia) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            try {
+                em.persist(new GuiaEntity(guia));
+                em.getTransaction().commit();
+            } catch (RuntimeException e) {
+                if (em.getTransaction().isActive()) em.getTransaction().rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void close() {
+        emf.close();
+    }
+}
+```
+
+#### `src/test/java/com/aurora/jdbc/ConteoJpaVsJdbcTest.java`
+
+```java
+package com.aurora.jdbc;
+
+import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ConteoJpaVsJdbcTest {
+
+    @Test
+    void conteoEInsercionCoincidenEntreJdbcYJpa() throws Exception {
+        String db = "jpa-" + System.nanoTime();
+        DataSource ds = DataSourceFactory.h2Mem(db);
+        Schema.init(ds);
+        GuiaDao jdbc = new GuiaDao(ds);
+        GuiaJpaDao jpa = new GuiaJpaDao("jdbc:h2:mem:" + db + ";DB_CLOSE_DELAY=-1");
+
+        try {
+            jdbc.insertar(new Guia(1, "Ana", "BOG", new BigDecimal("2.50")));
+            jdbc.insertar(new Guia(2, "Luis", "MED", new BigDecimal("1.20")));
+            assertEquals(2L, jpa.contar(), "JPA ve las filas insertadas por JDBC");
+
+            jpa.insertar(new Guia(3, "Marta", "BOG", new BigDecimal("3.00")));
+            long conteoJdbc = jdbc.contar();
+            long conteoJpa = jpa.contar();
+
+            System.out.println("CONTEO_JDBC=" + conteoJdbc);
+            System.out.println("CONTEO_JPA=" + conteoJpa);
+            assertEquals(3L, conteoJdbc);
+            assertEquals(conteoJdbc, conteoJpa);
+        } finally {
+            jpa.close();
+        }
+    }
+}
+```
 
 ### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
 
-Una transacción agrupa operaciones que deben comportarse como unidad. El caso clásico es una transferencia: debitar una cuenta y acreditar otra. Si el débito se confirma y el crédito falla, el dinero desaparece del sistema. Ese es exactamente el tipo de bug que ACID busca evitar.
+Una transacción agrupa operaciones que deben comportarse como unidad. El caso clásico es una transferencia: debitar una cuenta y acreditar otra. Si el débito se confirma y el crédito falla, el dinero desaparece del sistema. Ese es el tipo de bug que ACID busca evitar.
 
 - **Atomicidad**: todo o nada. Commit confirma; rollback revierte.
 - **Consistencia**: la BD pasa de un estado válido a otro válido según constraints/reglas.
 - **Aislamiento**: transacciones concurrentes no deben verse de formas que rompan el contrato elegido.
 - **Durabilidad**: una vez confirmado, el cambio debe sobrevivir a fallas.
 
-El aislamiento tiene niveles. Más aislamiento reduce anomalías, pero puede reducir concurrencia. `READ COMMITTED` evita leer cambios no confirmados (dirty reads); `REPEATABLE_READ` y `SERIALIZABLE` dan garantías más fuertes con mayor costo. La elección depende de la anomalía que el negocio no puede tolerar.
+`READ COMMITTED` evita leer cambios no confirmados (dirty reads); `REPEATABLE_READ` y `SERIALIZABLE` dan garantías más fuertes con mayor costo. La elección depende de la anomalía que el negocio no puede tolerar.
 
-#### `TransferenciaService.java`
+#### `src/main/java/com/aurora/jdbc/TransferenciaService.java`
 
 ```java
 package com.aurora.jdbc;
@@ -375,9 +576,9 @@ La parte crítica es `setAutoCommit(false)`. Sin eso, cada sentencia se confirma
 
 `FOR UPDATE` bloquea la fila seleccionada dentro de la transacción (según motor/aislamiento). Sirve para evitar que dos transferencias lean el mismo saldo y ambas debiten.
 
-**Nota de verificación honesta:** la prueba de aislamiento se ejecutó en H2 con `READ_COMMITTED` y confirmó que no hay dirty read. Los niveles de aislamiento y el comportamiento de bloqueos varían entre motores; antes de asumirlo en PostgreSQL/MySQL, ejecuta pruebas de integración equivalentes contra ese motor.
+La prueba de aislamiento se ejecutó en H2 con `READ_COMMITTED` y confirmó que no hay dirty read. Los niveles de aislamiento y el comportamiento de bloqueos varían entre motores; antes de asumirlo en PostgreSQL/MySQL, corresponde ejecutar pruebas de integración equivalentes contra ese motor.
 
-#### `App.java`
+#### `src/main/java/com/aurora/jdbc/App.java`
 
 ```java
 package com.aurora.jdbc;
@@ -398,6 +599,14 @@ public final class App {
         System.out.println("G1=" + dao.buscarPorId(1).map(Guia::remitente).orElse("NA"));
         System.out.println("BOG=" + dao.listarPorDestino("BOG").size());
 
+        GuiaJpaDao jpa = new GuiaJpaDao("jdbc:h2:mem:aurora-m17;DB_CLOSE_DELAY=-1");
+        try {
+            System.out.println("CONTEO_JDBC=" + dao.contar());
+            System.out.println("CONTEO_JPA=" + jpa.contar());
+        } finally {
+            jpa.close();
+        }
+
         TransferenciaService tx = new TransferenciaService(ds);
         tx.crearCuenta(10, "Ana", new BigDecimal("100.00"));
         tx.crearCuenta(20, "Luis", new BigDecimal("50.00"));
@@ -415,7 +624,7 @@ public final class App {
 }
 ```
 
-#### `JdbcTest.java`
+#### `src/test/java/com/aurora/jdbc/JdbcTest.java`
 
 ```java
 package com.aurora.jdbc;
@@ -500,20 +709,32 @@ class JdbcTest {
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m17` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232):
+Ejecutado nuevamente el 2026-11-23 en `/tmp/opencode/aurora-m17` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232).
 
 ```bash
-./gradlew -q test
+cd /tmp/opencode/aurora-m17
+./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
 ```
 
-`./gradlew -q test`: **4 tests, 0 fallas**.
+Salida observada de `./gradlew test --rerun-tasks --console=plain` (resultados de tests):
 
-Salida real de `./gradlew -q run`:
+```text
+ConteoJpaVsJdbcTest > conteoEInsercionCoincidenEntreJdbcYJpa() PASSED
+JdbcTest > transaccionHaceCommit() PASSED
+JdbcTest > preparedStatementInsertaYConsulta() PASSED
+JdbcTest > transaccionHaceRollback() PASSED
+JdbcTest > aislamientoReadCommittedNoVeDirtyRead() PASSED
+BUILD SUCCESSFUL in 1s
+```
+
+Salida observada de `./gradlew -q run`:
 
 ```text
 G1=Ana
 BOG=2
+CONTEO_JDBC=3
+CONTEO_JPA=3
 SALDO_10=70.00
 SALDO_20=80.00
 ROLLBACK=IllegalStateException
@@ -521,17 +742,19 @@ SALDO_10_POST=70.00
 SALDO_20_POST=80.00
 ```
 
-La salida confirma dos cosas: el DAO consulta por id y por destino; la transferencia fallida hace rollback y los saldos quedan intactos.
+La salida confirma tres cosas: el DAO consulta por id y por destino; JDBC y JPA ven las mismas tres filas; la transferencia fallida hace rollback y los saldos quedan intactos.
 
 ## Errores comunes y diagnóstico
 
 | Síntoma | Causa probable | Diagnóstico | Corrección |
 |---|---|---|---|
 | SQL injection o errores raros con comillas | Concatenar input en SQL | Revisar strings SQL con `+` | Usar `PreparedStatement` con `?` |
-| Saldos inconsistentes | Falta `setAutoCommit(false)` o no hay rollback | Revisar logs/transacciones; reproducir falla intermedia | Envolver en transacción, `commit/rollback` en `try/catch/finally` |
+| Saldos inconsistentes | Falta `setAutoCommit(false)` o no hay rollback | Reproducir falla intermedia | Envolver en transacción, `commit`/`rollback` en `try/catch/finally` |
 | Agotamiento de conexiones | No cerrar recursos o no usar pool | Métricas del pool, errores `too many connections` | `try-with-resources` y `DataSource` con pool |
-| Datos no visibles entre tests | BD en memoria cerrada | URL H2 sin `DB_CLOSE_DELAY=-1` o nombres distintos | Controlar ciclo de vida del `DataSource` por test |
+| Datos no visibles entre tests | BD en memoria cerrada | URL H2 sin `DB_CLOSE_DELAY=-1` | Controlar ciclo de vida del `DataSource` por test |
 | Bloqueos/deadlocks | Orden de locks inconsistente, transacciones largas | Logs del motor, `FOR UPDATE`, tiempos | Ordenar acceso a filas, acortar transacciones, elegir aislamiento adecuado |
+| `count` distinto entre JDBC y JPA | EMF apunta a otra BD | Comparar URLs H2 de ambos | Pasar la misma URL al override de `persistence.xml` |
+| `LazyInitializationException` | Acceso a entidad fuera de `EntityManager` | Stack trace | Consultar DTO/grafo dentro del contexto |
 
 ## De H2 a PostgreSQL/MySQL
 
@@ -542,7 +765,11 @@ Este módulo se ejecutó con H2 por reproducibilidad. Para llevarlo a PostgreSQL
 - usa pool (HikariCP) en vez de `JdbcDataSource` simple;
 - valida aislamiento/bloqueos con el motor real.
 
-**Nota de verificación honesta:** no ejecuté PostgreSQL/MySQL/Testcontainers en esta corrida. El contrato JDBC y la lógica de transacción son los mismos; la verificación de motor real queda pendiente cuando haya infraestructura disponible.
+En esta corrida no se ejecutó PostgreSQL/MySQL/Testcontainers desde este proyecto. El contrato JDBC y la lógica de transacción son los mismos; la verificación de motor real queda cubierta en el módulo anterior con PostgreSQL efímero y Flyway.
+
+## Cierre
+
+JDBC obliga a hacer explícitos SQL, parámetros, mapeo y límites transaccionales; JPA automatiza parte de ese trabajo sin eliminar la necesidad de entenderlo. Saber alternar entre ambos con evidencia ejecutable es la frontera entre usar una librería y diseñar acceso a datos.
 
 ## Checklist de cierre
 
@@ -550,6 +777,7 @@ Este módulo se ejecutó con H2 por reproducibilidad. Para llevarlo a PostgreSQL
 - [ ] El DAO encapsula SQL y mapeo; el servicio no arma queries.
 - [ ] Sé cuándo usar `commit` y `rollback`.
 - [ ] Puedo explicar ACID y el trade-off de aislamiento.
+- [ ] Comparé `count`/`insert` en JDBC y JPA sobre la misma tabla con salida real.
 - [ ] Probé el comportamiento con salida real, no solo leyendo código.
 
 Siguiente paso natural: **Módulo 18 — HTTP, seguridad y backend con Java**, donde el mismo criterio de bordes explícitos se aplica a clientes HTTP, timeouts, validación y criptografía.
