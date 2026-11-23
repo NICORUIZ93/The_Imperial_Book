@@ -2,7 +2,96 @@
 
 Los microservicios no fallan solo por código; fallan por decisiones no registradas, costos invisibles y equipos mal alineados. Este módulo cubre ADRs, C4, fitness functions, FinOps y Team Topologies con un enfoque práctico y verificable, usando Tienda Aurora como proyecto integrador.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Smokes de ADR, fitness functions, presupuesto y alineación de equipos ejecutados con Java puro. Herramientas FinOps/observabilidad reales quedan con nota de verificación.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de ADR, fitness functions, presupuesto y alineación de equipos ejecutados con Java puro. Herramientas FinOps/observabilidad reales quedan con nota de verificación.
+
+## Proyecto desde cero: tienda-aurora-governance
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-governance/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── docs/
+│   ├── adr/
+│   │   ├── 0001-use-kafka-for-events.md
+│   │   └── 0002-use-redis-for-cache.md
+│   └── c4/
+│       ├── context.mmd
+│       └── containers.mmd
+├── src/
+│   ├── main/
+│   │   ├── java/com/aurora/governance/
+│   │   │   ├── GovernanceApplication.java
+│   │   │   └── arch/ArchitectureTest.java
+│   │   └── resources/
+│   │       └── application.yml
+│   └── test/
+│       └── java/com/aurora/governance/
+│           └── GovernanceSmokeTest.java
+└── .github/
+    └── workflows/
+        └── ci.yml
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-governance"
+```
+
+### application.yml
+
+```yaml
+spring:
+  application:
+    name: governance-service
+
+server:
+  port: 8080
+```
 
 ### Tema 1: ADRs y C4 · Intermedio · 120 min
 
@@ -15,7 +104,7 @@ Un ADR es como el acta de una reunión importante: registra qué se decidió, po
 ```java
 import java.util.*;
 
-public class AdrSmoke {
+public class AdrExample {
     record Adr(String id, String status, String decision, List<String> consequences) {}
 
     public static void main(String[] args) {
@@ -29,8 +118,8 @@ public class AdrSmoke {
 ```
 
 ```bash
-javac AdrSmoke.java
-java AdrSmoke
+javac AdrExample.java
+java AdrExample
 ```
 
 Salida esperada:
@@ -41,7 +130,7 @@ consequences=2
 id=ADR-001 decision=Kafka for events
 ```
 
-El error más común es decisiones sin ADR. El síntoma es que se repite la misma discusión arquitectónica cada trimestre. La causa es decisión sin ADR o ADR sin consecuencias/alternativas. La corrección es ADR corto con trade-offs y estado.
+El ADR mínimo contiene: id, fecha, estado (proposed/accepted/superseded), contexto, decisión, consecuencias, alternativas. Un ADR aceptado no se reescribe; se reemplaza por otro ADR que lo marca superseded. El error más común es decisiones sin ADR: el síntoma es que se repite la misma discusión arquitectónica cada trimestre.
 
 ### Tema 2: Fitness functions y ATAM ligero · Avanzado · 120 min
 
@@ -52,7 +141,7 @@ La arquitectura de Tienda Aurora documenta que `domain` no debe depender de `web
 Una fitness function es como una alarma en la puerta: si alguien intenta entrar por la puerta prohibida, la alarma suena en CI, no en producción. ATAM ligero es una revisión pragmática de trade-offs con escenarios y riesgos, sin el peso de un proceso formal largo.
 
 ```java
-public class FitnessSmoke {
+public class FitnessExample {
     static boolean noDomainToWeb(String from, String to) {
         return !(from.equals("domain") && to.equals("web"));
     }
@@ -65,8 +154,8 @@ public class FitnessSmoke {
 ```
 
 ```bash
-javac FitnessSmoke.java
-java FitnessSmoke
+javac FitnessExample.java
+java FitnessExample
 ```
 
 Salida esperada:
@@ -76,7 +165,7 @@ domain->app=true
 domain->web=false
 ```
 
-El error más común es reglas solo en wiki. El síntoma es la arquitectura documentada no coincide con el código. La causa es sin enforcement automático. La corrección es fitness functions en CI para reglas críticas.
+En CI, ArchUnit ejecuta esta regla sobre el bytecode real. El error más común es reglas solo en wiki: la arquitectura documentada no coincide con el código. La corrección es fitness functions en CI para reglas críticas.
 
 ### Tema 3: FinOps: costo, right-sizing y observability tax · Intermedio · 120 min
 
@@ -87,7 +176,7 @@ La factura cloud de Tienda Aurora crece 40% tras agregar tracing, logs detallado
 FinOps es como el medidor de agua de un edificio: si no mides por apartamento, nadie ahorra. Right-sizing es ajustar el tamaño del apartamento al número de personas. El observability tax es el costo de medir: si mides todo con la máxima resolución, el medidor cuesta más que el agua.
 
 ```java
-public class FinOpsSmoke {
+public class FinOpsExample {
     static boolean withinBudget(double cost, double budget) { return cost <= budget; }
     static int rightSize(int actualCpu, int requestedCpu) {
         if (actualCpu < requestedCpu / 2) return requestedCpu / 2;
@@ -103,8 +192,8 @@ public class FinOpsSmoke {
 ```
 
 ```bash
-javac FinOpsSmoke.java
-java FinOpsSmoke
+javac FinOpsExample.java
+java FinOpsExample
 ```
 
 Salida esperada:
@@ -126,7 +215,7 @@ Dos equipos comparten un servicio crítico en Tienda Aurora. Los incidentes rebo
 La Ley de Conway dice que el sistema refleja la estructura de comunicación de la organización. Team Topologies propone equipos stream-aligned (dueños de un flujo de valor), platform (servicios internos), enabling (ayudan a otros) y complicated-subsystem (especialistas). La regla: you build it, you run it.
 
 ```java
-public class TeamTopologySmoke {
+public class TeamTopologyExample {
     static boolean aligned(boolean ownsCode, boolean ownsOnCall, boolean ownsSlo) {
         return ownsCode && ownsOnCall && ownsSlo;
     }
@@ -139,8 +228,8 @@ public class TeamTopologySmoke {
 ```
 
 ```bash
-javac TeamTopologySmoke.java
-java TeamTopologySmoke
+javac TeamTopologyExample.java
+java TeamTopologyExample
 ```
 
 Salida esperada:
@@ -154,7 +243,7 @@ El error más común es ownership difuso. El síntoma es incidentes rebotan, MTT
 
 ## Cierre
 
-La gobernanza ligera evita caos: decisiones registradas, reglas automatizadas, costos visibles y equipos con ownership. En microservicios, la arquitectura también es organización y economía operativa. Tienda Aurora se gobierna con ADRs en el repo, fitness functions en CI, FinOps visible por servicio y ownership end-to-end.
+La gobernanza ligera evita caos: decisiones registradas, reglas automatizadas, costos visibles y equipos con ownership. En microservicios, la arquitectura también es organización y economía operativa. Tienda Aurora se gobierna con ADRs en el repo, fitness functions en CI, FinOps visible por servicio y ownership end-to-end. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 
