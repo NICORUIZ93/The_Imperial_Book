@@ -482,6 +482,22 @@ Jar file build/libs/tienda-aurora-java-m14-1.0.0.jar:
 
 Migrar solo el JDK del CI pero no el runtime de producción, o ignorar dependencias transitivas. Corrección: inventario de artefactos, escaneo, staging, rollback plan.
 
+## Verificación real (actualización 2026-05-23)
+
+Reejecutado el 2026-05-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+- `test`: 0 fallas.
+- `run`: salida observada:
+  - `visible=42`
+  - `ns=true`
+  - `Mensaje[texto=hola]`
+  - `hookRegistrado=true`
+
 ## Cierre
 
 La JVM es parte de tu diseño. Visibilidad, optimización, serialización, ciclo de vida, arranque y migración no son “detalles de plataforma”: son riesgos y capacidades que afectan producción. La regla es medir, verificar herramientas, y ser honesto cuando una afirmación no fue ejecutada.

@@ -484,6 +484,18 @@ El test usa Mockito para el puerto `PedidoRepositorio`. Verifica dos cosas: la o
 
 Testear solo el happy path o mockear todo, incluido el dominio. Corrección: dominio con tests puros; caso de uso con mocks en los puertos; integración separada cuando hay BD real.
 
+## Verificación real (actualización 2026-05-23)
+
+Reejecutado el 2026-05-23 en `/tmp/opencode/aurora-m13` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+- `test`: 0 fallas.
+- `run`: `ERR P-2 total cero no permitido`, `OK P-1 procesado`, `OK P-3 procesado`.
+
 ## Cierre
 
 Un proyecto integrador pequeño bien hecho vale más que un framework grande mal entendido. La clave es la frontera: dominio con reglas, aplicación con orquestación, infraestructura reemplazable, build reproducible y tests que prueben comportamiento.

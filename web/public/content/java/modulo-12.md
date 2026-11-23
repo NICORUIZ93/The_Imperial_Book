@@ -921,6 +921,18 @@ Agrega logging antes/después. Podrías apilar métricas, retry o auditoría; pe
 
 Confundir Adapter con Facade. Adapter traduce una interfaz incompatible; Facade simplifica un subsistema. También confundir Decorator con herencia: herencia es estática y rígida; decorator compone en runtime.
 
+## Verificación real (actualización 2026-05-23)
+
+Reejecutado el 2026-05-23 en `/tmp/opencode/aurora-m12` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+- `test`: 0 fallas.
+- `run`: salida observada con Email, SMS, estrategia `vip=90.0000`, factory abstracta, prototype y decorator con logs.
+
 ## Cierre
 
 Los patrones son herramientas de comunicación y diseño. El valor no está en memorizar UML, sino en reconocer el problema: construcción inválida, creación variable, algoritmo intercambiable, familia compatible, copia segura, integración con legado, comportamiento añadido, superficie simplificada. Cuando el patrón no responde a un cambio real, no lo uses.

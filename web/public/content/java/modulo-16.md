@@ -1688,6 +1688,18 @@ class PedidoRepositorioIT {
 
 Pirámide práctica: unit tests rápidos, tests JPA con H2 para feedback, tests de integración con Testcontainers/PostgreSQL para contrato real, migraciones versionadas en CI/CD. No hay una sola herramienta; hay capas de confianza.
 
+## Verificación real (actualización 2026-05-23)
+
+Reejecutado el 2026-05-23 en `/tmp/opencode/aurora-m16` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+- `test`: 0 fallas.
+- `run`: Hibernate/H2 inicializa y el grafo produce `sinGraph=4`, `conGraph=1` (se observan logs INFO/WARN de Hibernate/H2 esperados en entorno de demo).
+
 ## Cierre
 
 JPA te da productividad cuando entiendes el costo que abstrae. El mapa mental experto es: **identidad** (¿qué es la misma entidad?), **estado** (¿managed o detached?), **fetch** (¿qué SQL y cuándo?), **transacción** (¿qué unidad atómica?), **concurrencia** (¿quién gana ante conflicto?) y **esquema** (¿cómo evoluciona sin romper datos?). Si puedes responder esas seis preguntas ante un bug, ya no estás usando JPA por intuición.

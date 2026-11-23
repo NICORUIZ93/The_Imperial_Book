@@ -539,6 +539,21 @@ error=IllegalStateException
 
 La JVM lanza `IllegalStateException` porque el segmento ya no es válido. Este fallo es mucho mejor que leer memoria liberada en C sin protección. Aun así, FFM sigue siendo una API restringida: requiere `--enable-native-access` para evitar advertencias/bloqueos futuros y exige entender la firma nativa que estás llamando.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m11` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+Resultados observados (resumen):
+
+- `test`: 0 fallas.
+- `run`: `refs` muestra `fuertePresente=true`, `weakAntesDeLiberar=false`, `softPresente=true`, `phantomEncolada=true`. `ffm` devolvió `strlen=6`.
+- **Nota honesta:** la FFM emitió warnings de `--enable-native-access=ALL-UNNAMED` en JDK 27; es esperado para llamadas nativas restringidas. Para silenciarlo en ejecución controlada, agregar `--enable-native-access=ALL-UNNAMED` a la JVM.
+
 ## Cierre
 
 La JVM no es magia negra: es un runtime con reglas observables. GC logs muestran pausas y recolecciones; JFR captura eventos internos; referencias especiales modelan relaciones de alcanzabilidad; heap dumps explican retenciones; FFM permite cruzar la frontera nativa con ciclo de vida explícito. El criterio profesional es medir antes de tunear y documentar el entorno donde se obtuvo la evidencia.
