@@ -20,9 +20,9 @@ javac 27.0.1.0.2
 
 ### Tema 1: Qué es programar y qué problema resuelve Java · Básico · 25 min
 
-Caso guía: necesitas calcular el precio final de un producto con IVA. La regla es pequeña, pero obliga a responder preguntas que aparecen en todo software: ¿cuál es la entrada?, ¿qué transformación aplica?, ¿qué salida es correcta?, ¿cómo lo verifico? Si no puedes responder eso, no hay programa confiable.
+**Caso guía.** necesitas calcular el precio final de un producto con IVA. La regla es pequeña, pero obliga a responder preguntas que aparecen en todo software: ¿cuál es la entrada?, ¿qué transformación aplica?, ¿qué salida es correcta?, ¿cómo lo verifico? Si no puedes responder eso, no hay programa confiable.
 
-#### Qué es un programa y qué significa programar
+## Qué es un programa y qué significa programar
 
 **Definición formal.** Un programa es una especificación finita y ejecutable de un cómputo: ante una entrada o estado inicial, produce una salida o un nuevo estado siguiendo reglas formales.
 
@@ -72,7 +72,7 @@ java Regla
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `20`.
 
-#### Por qué Java
+## Por qué Java
 
 **Definición formal.** Java es un lenguaje de propósito general, orientado a objetos, de tipado estático, compilado a bytecode y ejecutado sobre la Java Virtual Machine (JVM).
 
@@ -108,7 +108,7 @@ java Hola
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `Java OK`.
 
-#### Estructura mínima de un programa Java
+## Estructura mínima de un programa Java
 
 **Definición formal.** Una aplicación Java ejecutable mínima define una clase y un método `main` con firma estándar que la JVM usa como punto de entrada.
 
@@ -168,9 +168,9 @@ Precio final: 121.0
 
 ### Tema 2: JDK, JRE, JVM y bytecode (WORA) · Básico · 30 min
 
-Caso guía: compilas `HolaJVM.java`, obtienes `HolaJVM.class` y lo ejecutas. ¿Por qué no ejecutas el `.java` directamente? ¿Por qué el `.class` puede correr en otro sistema con JVM compatible? Esta distinción separa problemas de código, compilación y entorno.
+**Caso guía.** compilas `HolaJVM.java`, obtienes `HolaJVM.class` y lo ejecutas. ¿Por qué no ejecutas el `.java` directamente? ¿Por qué el `.class` puede correr en otro sistema con JVM compatible? Esta distinción separa problemas de código, compilación y entorno.
 
-#### JDK, JRE, JVM, bytecode y WORA
+## JDK, JRE, JVM, bytecode y WORA
 
 **Definición formal.** El **JDK** (Java Development Kit) incluye herramientas de desarrollo como `javac`, `java`, `jar`, `javadoc`. La **JVM** (Java Virtual Machine) ejecuta bytecode. El **JRE** (Java Runtime Environment) es el concepto histórico de runtime; en distribuciones modernas suele hablarse de JDK/JRE/runtime según empaquetado. **Bytecode** es la instrucción intermedia contenida en `.class`. **WORA** (Write Once, Run Anywhere) expresa que el mismo bytecode puede ejecutarse en JVM compatibles.
 
@@ -227,7 +227,7 @@ Mac OS X
 Compiled from "HolaJVM.java"
 ```
 
-#### Compilación y ejecución
+## Compilación y ejecución
 
 **Definición formal.** Compilación es la transformación de fuente a bytecode; ejecución es la carga e interpretación/JIT del bytecode por la JVM.
 
@@ -258,9 +258,9 @@ java Compila
 
 ### Tema 3: Instalar JDK y verificar entorno · Básico · 30 min
 
-Caso guía: un estudiante dice “Java no funciona”. Antes de tocar el código, hay que saber si el problema es de instalación, `PATH`, `JAVA_HOME`, versión o permisos. Un diagnóstico de entorno ahorra horas.
+**Caso guía.** un estudiante dice “Java no funciona”. Antes de tocar el código, hay que saber si el problema es de instalación, `PATH`, `JAVA_HOME`, versión o permisos. Un diagnóstico de entorno ahorra horas.
 
-#### Qué significa instalar y verificar el JDK
+## Qué significa instalar y verificar el JDK
 
 **Definición formal.** Instalar el JDK es disponer del compilador, runtime y herramientas; verificarlo es comprobar que los ejecutables correctos están en `PATH` y que `java`/`javac` apuntan a la instalación esperada.
 
@@ -288,7 +288,7 @@ javac -version
 
 **Verificación (JDK 27, 2026-05-22).** Ambos comandos reportan 27.0.1.0.2.
 
-#### Diagnóstico del entorno
+## Diagnóstico del entorno
 
 **Definición formal.** Diagnóstico de entorno es la inspección de versión, ruta y variables para confirmar qué instalación Java se está usando.
 
@@ -304,7 +304,7 @@ echo "${JAVA_HOME:-JAVA_HOME_NO_DEFINIDA}"
 
 **Verificación.** En un entorno sano, `java` y `javac` pertenecen al mismo JDK.
 
-#### Prueba mínima de compilación
+## Prueba mínima de compilación
 
 **Definición formal.** Prueba de humo del entorno: compilar y ejecutar un programa trivial para validar la cadena completa.
 
@@ -340,9 +340,9 @@ JDK OK
 
 ### Tema 4: Primer programa desde cero, sin IDE · Básico · 35 min
 
-Caso guía: necesitas una utilidad CLI que salude por nombre. El IDE puede autocompletar y ocultar pasos; sin IDE ves el ciclo real: archivo, clase, `main`, compilación, ejecución, argumentos y errores.
+**Caso guía.** necesitas una utilidad CLI que salude por nombre. El IDE puede autocompletar y ocultar pasos; sin IDE ves el ciclo real: archivo, clase, `main`, compilación, ejecución, argumentos y errores.
 
-#### El ciclo mínimo: archivo, clase, `main`, compilación y ejecución
+## El ciclo mínimo: archivo, clase, `main`, compilación y ejecución
 
 **Definición formal.** El ciclo mínimo es escribir un `.java` con una clase y `main`, compilar con `javac` para producir `.class`, y ejecutar con `java` indicando la clase.
 
@@ -384,7 +384,7 @@ java Ciclo
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `ciclo`.
 
-#### Argumentos de línea de comandos
+## Argumentos de línea de comandos
 
 **Definición formal.** `String[] args` contiene los argumentos pasados al proceso después del nombre de clase.
 
@@ -429,7 +429,7 @@ java Args Ada
 Ada
 ```
 
-#### Ejemplo integrado: saludo con argumentos
+## Ejemplo integrado: saludo con argumentos
 
 ```bash
 mkdir -p java-m0-t4
@@ -470,9 +470,9 @@ Hola, Ada
 
 ### Tema 5: Tipos primitivos, variables y conversiones · Básico · 45 min
 
-Caso guía: un sistema calcula totales y contadores. Si usas el tipo equivocado, puedes perder decimales, desbordar enteros o truncar valores sin notarlo. Los tipos primitivos son la base del modelo de datos en Java.
+**Caso guía.** un sistema calcula totales y contadores. Si usas el tipo equivocado, puedes perder decimales, desbordar enteros o truncar valores sin notarlo. Los tipos primitivos son la base del modelo de datos en Java.
 
-#### Tipos primitivos y variables
+## Tipos primitivos y variables
 
 **Definición formal.** Una variable es un nombre asociado a un valor tipado. Los primitivos en Java son `byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean`.
 
@@ -526,7 +526,7 @@ true
 A
 ```
 
-#### Conversiones, cast y overflow
+## Conversiones, cast y overflow
 
 **Definición formal.** Widening conversion es conversión implícita a un tipo con mayor capacidad compatible; narrowing conversion requiere cast explícito y puede perder información. Overflow ocurre cuando un cálculo excede el rango del tipo.
 
@@ -575,9 +575,9 @@ java Cast
 
 ### Tema 6: String, entrada/salida y formato · Básico · 40 min
 
-Caso guía: una CLI debe mostrar un reporte legible y aceptar un nombre. `String` parece simple, pero su inmutabilidad, comparación y formato son fuente constante de bugs.
+**Caso guía.** una CLI debe mostrar un reporte legible y aceptar un nombre. `String` parece simple, pero su inmutabilidad, comparación y formato son fuente constante de bugs.
 
-#### `String` como objeto inmutable
+## `String` como objeto inmutable
 
 **Definición formal.** `String` es una clase que representa secuencias de caracteres UTF-16; sus instancias son inmutables.
 
@@ -626,7 +626,7 @@ HOLA
 true
 ```
 
-#### Entrada, salida y formato
+## Entrada, salida y formato
 
 **Definición formal.** Salida estándar se escribe con `System.out.println/printf`; entrada simple puede leerse con `Scanner` sobre `System.in`. Formato permite controlar representación textual.
 
@@ -668,9 +668,9 @@ Total: 1234,50
 
 ### Tema 7: Operadores, expresiones y precedencia · Básico · 35 min
 
-Caso guía: una regla de descuento aplica si el cliente es VIP y el total supera un umbral, o si hay cupón. Un paréntesis mal puesto cambia el negocio.
+**Caso guía.** una regla de descuento aplica si el cliente es VIP y el total supera un umbral, o si hay cupón. Un paréntesis mal puesto cambia el negocio.
 
-#### Operadores aritméticos y de asignación
+## Operadores aritméticos y de asignación
 
 **Definición formal.** Operadores aritméticos (`+ - * / %`) calculan valores numéricos; asignación (`=`, `+=`, etc.) actualiza variables.
 
@@ -706,7 +706,7 @@ java Arit
 
 **Verificación (JDK 27, 2026-05-22).** `3`, `1`, `10`.
 
-#### Operadores relacionales, lógicos y precedencia
+## Operadores relacionales, lógicos y precedencia
 
 **Definición formal.** Relacionales (`== != < > <= >=`) producen booleanos; lógicos (`&& || !`) combinan condiciones. La precedencia determina el orden de evaluación.
 
@@ -753,9 +753,9 @@ java Logica
 
 ### Tema 8: Control de flujo: decisiones y repeticiones · Básico · 45 min
 
-Caso guía: un sistema clasifica pedidos y procesa lotes. Sin control de flujo, solo ejecutarías instrucciones lineales.
+**Caso guía.** un sistema clasifica pedidos y procesa lotes. Sin control de flujo, solo ejecutarías instrucciones lineales.
 
-#### Decisiones: `if/else` y `switch`
+## Decisiones: `if/else` y `switch`
 
 **Definición formal.** `if/else` ejecuta ramas según condición booleana; `switch` selecciona rama por valor/expresión según variantes soportadas.
 
@@ -795,7 +795,7 @@ java Decision
 
 **Verificación (JDK 27, 2026-05-22).** `prioritario`, `enviar`.
 
-#### Repeticiones: `for`, `while`, `do-while`
+## Repeticiones: `for`, `while`, `do-while`
 
 **Definición formal.** `for` itera con control explícito/colección; `while` repite mientras condición sea verdadera; `do-while` ejecuta al menos una vez.
 
@@ -843,9 +843,9 @@ java Loop
 
 ### Tema 9: Arreglos y métodos básicos · Básico · 50 min
 
-Caso guía: procesar una lista de precios. Necesitas agrupar datos y reutilizar lógica sin copiar/pegar.
+**Caso guía.** procesar una lista de precios. Necesitas agrupar datos y reutilizar lógica sin copiar/pegar.
 
-#### Arreglos
+## Arreglos
 
 **Definición formal.** Un arreglo es una estructura de tamaño fijo que almacena elementos del mismo tipo en posiciones indexadas desde 0.
 
@@ -881,7 +881,7 @@ java Arr
 
 **Verificación (JDK 27, 2026-05-22).** `3`, `60`.
 
-#### Métodos básicos
+## Métodos básicos
 
 **Definición formal.** Un método es una unidad nombrada de comportamiento con parámetros, cuerpo y tipo de retorno.
 
