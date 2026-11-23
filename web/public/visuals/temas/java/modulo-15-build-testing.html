@@ -1,0 +1,27 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build, módulos y testing en Java</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--ok:#0f766e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>Build reproducible y feedback rápido</h1>
+<p class="lead">El módulo separa dominio y app, el build fija toolchain/dependencias, y los tests dan feedback antes de ejecutar la aplicación.</p>
+<section class="card">
+<svg viewBox="0 0 980 320" role="img" aria-label="Build módulos tests logging">
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="40" y="60" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="130" y="90" text-anchor="middle" font-weight="700">domain</text><text x="130" y="114" text-anchor="middle" font-size="12" fill="#6b7280">reglas y tests puros</text>
+<rect x="280" y="60" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="370" y="90" text-anchor="middle" font-weight="700">app</text><text x="370" y="114" text-anchor="middle" font-size="12" fill="#6b7280">adaptador + logging</text>
+<rect x="520" y="60" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="610" y="90" text-anchor="middle" font-weight="700">Gradle wrapper</text><text x="610" y="114" text-anchor="middle" font-size="12" fill="#6b7280">toolchain/deps fijas</text>
+<rect x="760" y="60" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="850" y="90" text-anchor="middle" font-weight="700">JUnit/CI</text><text x="850" y="114" text-anchor="middle" font-size="12" fill="#6b7280">feedback rápido</text>
+<line x1="220" y1="105" x2="275" y2="105" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/><text x="248" y="95" font-size="11" fill="#6b7280">depende</text>
+<line x1="460" y1="105" x2="515" y2="105" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+<line x1="700" y1="105" x2="755" y2="105" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+<rect x="200" y="210" width="580" height="70" rx="14" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="240" text-anchor="middle" font-weight="700">Observabilidad</text>
+<text x="490" y="262" text-anchor="middle" font-size="13" fill="#0f766e">SLF4J + Logback + MDC: logs estructurados con pedidoId/sku/operacion</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> el dominio no conoce Logback ni la app; el build y los tests hacen el cambio seguro y repetible.</p>
+</main></body></html>

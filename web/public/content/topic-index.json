@@ -4284,10 +4284,6 @@
       {
         "title": "Pruebas de integración reproducibles",
         "fragment": "tema-5-pruebas-de-integracion-reproducibles"
-      },
-      {
-        "title": "SLF4J, Logback, MDC y logging estructurado",
-        "fragment": "tema-6-slf4j-logback-mdc-y-logging-estructurado"
       }
     ],
     "16": [
