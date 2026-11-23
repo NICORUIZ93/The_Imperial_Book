@@ -6,9 +6,15 @@ Java no te obliga a elegir entre objetos y funciones. La opción útil es combin
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 20 — mapa visual](/visuals/temas/java/modulo-20-interfaces-funcionales.html)
-
-Lectura: Cada interfaz funcional expresa una forma de entrada/salida; Flow agrega demanda explícita.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-20-interfaces-funcionales.html"
+    alt="Interfaces funcionales: rol de cada una y composición en Flow"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Cada interfaz funcional expresa una forma de entrada/salida; el flujo compone reglas y efectos.</figcaption>
+</figure>
 
 ## Prerrequisitos y bootstrap
 

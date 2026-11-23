@@ -6,9 +6,15 @@ En este módulo vas a construir `tienda-aurora-java-m17` desde cero. La primera 
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [JDBC, DAO y transacción — mapa visual](/visuals/temas/java/modulo-17-jdbc-transaccion.html)
-
-Lectura: el servicio llama al DAO; el DAO usa `PreparedStatement` con parámetros tipados; la transacción agrupa operaciones para que se confirmen todas o ninguna.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-17-jdbc-transaccion.html"
+    alt="Servicio, DAO con PreparedStatement y transacción con commit o rollback"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>El servicio llama al DAO; el DAO usa `PreparedStatement`; la transacción confirma todas las operaciones o ninguna.</figcaption>
+</figure>
 
 ## Prerrequisitos y bootstrap
 

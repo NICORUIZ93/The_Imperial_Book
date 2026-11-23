@@ -1,0 +1,26 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Colecciones y genéricos en Java</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--panel:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>Colecciones: elige por la pregunta que responden</h1>
+<p class="lead">List, Set, Map y Queue/Deque no son contenedores intercambiables; expresan orden, unicidad, acceso por clave o espera/prioridad.</p>
+<section class="card">
+<svg viewBox="0 0 980 330" role="img" aria-label="Mapa de colecciones y genéricos">
+<rect x="45" y="35" width="205" height="85" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="147" y="65" text-anchor="middle" font-weight="700">List</text><text x="147" y="89" text-anchor="middle" font-size="12" fill="#6b7280">secuencia, índice, duplicados</text>
+<rect x="275" y="35" width="205" height="85" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="377" y="65" text-anchor="middle" font-weight="700">Set</text><text x="377" y="89" text-anchor="middle" font-size="12" fill="#6b7280">unicidad por equals/hashCode</text>
+<rect x="505" y="35" width="205" height="85" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="607" y="65" text-anchor="middle" font-weight="700">Map</text><text x="607" y="89" text-anchor="middle" font-size="12" fill="#6b7280">clave inmutable → valor</text>
+<rect x="735" y="35" width="200" height="85" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="835" y="65" text-anchor="middle" font-weight="700">Queue / Deque</text><text x="835" y="89" text-anchor="middle" font-size="12" fill="#6b7280">FIFO, LIFO, prioridad</text>
+
+<rect x="150" y="165" width="680" height="60" rx="14" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="190" text-anchor="middle" font-size="13" fill="#374151"><tspan font-weight="700">Contratos:</tspan> equals/hashCode coherentes · claves mutables rompen el mapa · comparadores definen orden · iterador.remove para eliminar</text>
+
+<rect x="150" y="250" width="680" height="55" rx="14" fill="#fff" stroke="#b45309"/>
+<text x="490" y="274" text-anchor="middle" font-size="13" fill="#374151"><tspan font-weight="700">Genéricos:</tspan> tipos comprobables en compilación · PECS para wildcards · erasure en runtime</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> declara la intención en el tipo y la implementación; el compilador y la estructura hacen respetar el contrato.</p>
+</main></body></html>

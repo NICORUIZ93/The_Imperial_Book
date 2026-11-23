@@ -3,9 +3,15 @@
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 1 — mapa visual](/visuals/temas/java/modulo-1-tipos-primitivos-referencia.html)
-
-Lectura: Un primitivo guarda valor directo; una referencia apunta a un objeto en heap. Copiar la referencia no copia el objeto.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-1-poo.html"
+    alt="Mapa de POO: clase base, herencia, records, interfaces y clases abstractas"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Objetos para dominio, interfaces para contratos, records para valores y validación antes de construir.</figcaption>
+</figure>
 
 
 La aplicación de Tienda Aurora del módulo anterior funciona, pero su diseño es procedural. Un producto es un contenedor de datos y toda la lógica vive en métodos que preguntan de qué tipo es cada cosa. Mientras solo hay productos físicos, el `if` es manejable. Cuando la tienda empieza a vender cursos digitales, tarjetas regalo y suscripciones, cada nueva variante obliga a tocar el catálogo, el carrito, el recibo y la factura. Ese es el síntoma clásico de un modelo que no representa el dominio: el código sabe demasiado y cambia en todos lados a la vez.

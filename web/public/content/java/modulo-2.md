@@ -3,9 +3,15 @@
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 2 — mapa visual](/visuals/temas/java/modulo-2-control-flujo.html)
-
-Lectura: Las condiciones bifurcan el flujo; los bucles reevalúan; las guard clauses salen temprano ante estados inválidos.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-2-colecciones.html"
+    alt="Mapa de colecciones: List, Set, Map, Queue/Deque, contratos y genéricos"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>La estructura correcta expresa el contrato: orden, unicidad, clave o espera.</figcaption>
+</figure>
 
 
 En el módulo anterior Tienda Aurora ya tenía productos, descuentos y pagos modelados como objetos. El siguiente problema aparece en cuanto la tienda crece: hay que guardar productos en orden de alta, evitar SKUs duplicados, consultar por etiqueta, atender pedidos por prioridad, paginar resultados y deshacer la última atención. Un arreglo no expresa ninguna de esas intenciones. Una `ArrayList` usada para todo tampoco: funciona al principio y después empiezan los bugs sutiles —duplicados silenciosos, búsquedas lineales por todas partes, claves que “desaparecen” de un mapa, comparaciones que no dicen qué orden significan.
