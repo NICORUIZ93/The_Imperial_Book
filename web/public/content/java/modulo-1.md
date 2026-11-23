@@ -6,6 +6,75 @@ Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser s
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-oop
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-oop/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/oop/
+            ├── Main.java
+            ├── domain/
+            │   ├── Product.java
+            │   ├── Money.java
+            │   └── Order.java
+            └── service/
+                └── OrderService.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.oop.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-oop"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/oop/**/*.java
+java -cp out com.aurora.oop.Main
+```
+
 ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
 **Caso guía.** modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.

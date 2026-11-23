@@ -4178,6 +4178,26 @@
     ],
     "1": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Clases, objetos, constructores y encapsulación",
         "fragment": "tema-1-clases-objetos-constructores-y-encapsulacion"
       },
