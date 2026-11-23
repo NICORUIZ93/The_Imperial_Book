@@ -982,7 +982,20 @@ BUILD SUCCESSFUL
 Salida real relevante de `demoN1` (logs de Hibernate omitidos para legibilidad):
 
 ```text
-
+pedido=1 cliente=Ana
+pedido=2 cliente=Bruno
+pedido=3 cliente=Carla
+SQL_COUNT=4
+SQL: select p1_0.id,p1_0.cliente_id,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 where p1_0.fecha=? order by p1_0.id
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+---ENTITY_GRAPH---
+pedido=1 cliente=Ana
+pedido=2 cliente=Bruno
+pedido=3 cliente=Carla
+SQL_COUNT=1
+SQL: select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 join clientes c1_0 on c1_0.id=p1_0.cliente_id where p1_0.fecha=? order by p1_0.id
 ```
 
 ## Conceptos cubiertos
@@ -1257,31 +1270,22 @@ La ventaja es integrar Criteria al ecosistema Spring; la desventaja es otra capa
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
-#### 1. El modelo mental correcto
+#### 1. El problema real: el bucle inocente
 
-Una entidad JPA no es solo un POJO. Puede ser un objeto managed con proxies. Una asociación LAZY no significa "vacía"; significa "no cargada todavía". Cuando accedes a ella, Hibernate puede disparar una consulta, **si el contexto de persistencia sigue abierto**.
-
-Esto es lo que confunde: el código Java se ve igual, pero el costo depende del estado del contexto y del plan de fetch.
-
-#### 2. El caso real: listar pedidos y mostrar cliente
-
-Repositorio sin plan de fetch:
+En Tienda Aurora, la pantalla de despacho lista pedidos de una fecha y muestra el nombre del cliente. En Java, el código parece inofensivo:
 
 ```java
-TypedQuery<Pedido> q = em.createQuery(
-        "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
-```
-
-Uso inocente:
-
-```java
-List<Pedido> pedidos = repo.pedidosPorFecha(fecha); // 1 consulta
+List<Pedido> pedidos = repo.pedidosPorFecha(LocalDate.of(2026, 11, 20));
 for (Pedido p : pedidos) {
-    p.getCliente().getNombre(); // potencialmente N consultas
+    System.out.println(p.getId() + " - " + p.getCliente().getNombre());
 }
 ```
 
-`Pedido.cliente` es:
+La pregunta clave es: **¿cuántas consultas SQL ejecuta esto?** No la responde el código Java por sí solo. La responde el plan de fetch de JPA/Hibernate.
+
+#### 2. Qué significa LAZY y qué significa EAGER
+
+En `Pedido` la asociación al cliente está declarada así:
 
 ```java
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -1289,77 +1293,115 @@ for (Pedido p : pedidos) {
 private Cliente cliente;
 ```
 
-#### 3. Evidencia real con SQL capturado
+| FetchType | Cuándo carga la asociación | Qué SQL esperas | Riesgo |
+|---|---|---|---|
+| `LAZY` | Cuando accedes a la asociación (si el EntityManager sigue abierto) | 1 SQL para pedidos; SQL extra al acceder a cliente | N+1 si iteras |
+| `EAGER` | Al cargar la entidad principal | Join/select inmediato | Cargas innecesarias en todos los casos de uso, grafos grandes, rendimiento impredecible |
 
-Ejecuté `DemoN1`, que usa un `StatementInspector` de Hibernate y `SessionFactory.getStatistics()`.
+`LAZY` no significa “nunca carga”. Significa “no cargues ahora; carga cuando se necesite”. Hibernate suele implementar esto con un proxy. Si el contexto de persistencia está cerrado y accedes al proxy, obtienes `LazyInitializationException`.
 
-```text
+`EAGER` no significa “más rápido”. Significa “siempre carga”, incluso cuando la pantalla solo necesitaba `pedido.getId()` y `pedido.getFecha()`.
 
-```
+#### 3. Qué es N+1
 
-Interpretación exacta:
+N+1 es un patrón de consultas:
 
-- **1ra SQL**: trae pedidos por fecha.
-- **2da, 3ra, 4ta SQL**: una por cada cliente al tocar `getCliente().getNombre()`.
-- Total: `SQL_COUNT=4`. Con 3 pedidos, N+1 = 1+3.
+- **1** consulta para obtener N pedidos.
+- **N** consultas adicionales, una por cada pedido, cuando accedes a `getCliente()`.
 
-Esto es N+1. No es "Hibernate malo". Es un acceso por fila a una asociación LAZY.
+Con 3 pedidos: 4 consultas. Con 1.000 pedidos: 1.001 consultas. La degradación no es lineal en experiencia de usuario; la latencia de red/BD y la contención del pool la hacen mucho peor.
 
-#### 4. Por qué LAZY no es el problema
+#### 4. Evidencia real con SQL capturado
 
-LAZY es la decisión correcta por defecto en asociaciones. Evita cargar datos que el caso de uso no pidió. El problema es **usar LAZY sin definir estrategia de carga para el caso de uso**.
-
-EAGER parece arreglarlo, pero cambia el contrato globalmente: toda carga de `Pedido` arrastraría `Cliente`. Eso contamina otras consultas, puede encadenar más EAGER, y vuelve impredecible el costo. Regla práctica: **asociaciones LAZY por defecto; fetch explícito por consulta**.
-
-#### 5. Corrección A: `join fetch`
+La demo `DemoN1` usa un `StatementInspector` (`SqlCapture`) y `SessionFactory.getStatistics()`. Se ejecutó con `./gradlew -q demoN1` sobre `/tmp/opencode/aurora-m16`.
 
 ```java
-select distinct p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id
+SqlCapture.clear();
+stats.clear();
+servicio.query(em -> {
+    List<Pedido> pedidos = new PedidoRepositorio(em)
+            .pedidosPorFecha(LocalDate.of(2026, 11, 20)); // 1 query
+    for (Pedido p : pedidos) {
+        System.out.println("pedido=" + p.getId() + " cliente=" + p.getCliente().getNombre()); // N queries
+    }
+    return null;
+});
+System.out.println("SQL_COUNT=" + stats.getPrepareStatementCount());
 ```
 
-Genera un join y carga cliente en la misma consulta. Bueno cuando la relación es necesaria y controlas la cardinalidad. Cuidado al hacer fetch de múltiples colecciones (`OneToMany` + `OneToMany`): puede multiplicar filas/cartesiano. Para una sola asociación ManyToOne, es muy adecuado.
+Salida real:
 
-#### 6. Corrección B: `EntityGraph`
+```text
+pedido=1 cliente=Ana
+pedido=2 cliente=Bruno
+pedido=3 cliente=Carla
+SQL_COUNT=4
+SQL: select p1_0.id,p1_0.cliente_id,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 where p1_0.fecha=? order by p1_0.id
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
+```
+
+Lectura técnica: la primera consulta trae solo columnas de `pedidos`. Como `cliente` es LAZY, Hibernate no hizo join. Al acceder al nombre del cliente, cada proxy dispara su propio SELECT por id.
+
+#### 5. Corrección A: `join fetch` JPQL
+
+```java
+public List<Pedido> pedidosConClienteJoinFetch(LocalDate fecha) {
+    TypedQuery<Pedido> q = em.createQuery(
+            "select distinct p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id",
+            Pedido.class);
+    q.setParameter("fecha", fecha);
+    return q.getResultList();
+}
+```
+
+`join fetch` le dice a Hibernate: “resuelve esta asociación en la misma consulta”. `distinct` evita duplicados cuando el join multiplica filas. Es bueno cuando la relación es obligatoria y la consulta es específica.
+
+#### 6. Corrección B: EntityGraph
 
 ```java
 EntityGraph<Pedido> graph = em.createEntityGraph(Pedido.class);
 graph.addAttributeNodes("cliente");
+TypedQuery<Pedido> q = em.createQuery(
+        "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
 q.setHint("jakarta.persistence.fetchgraph", graph);
 ```
 
-SQL real capturado:
+Salida real de la misma demo con EntityGraph:
 
-```sql
-select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre,p1_0.creado_en,p1_0.fecha,p1_0.version
-from pedidos p1_0
-join clientes c1_0 on c1_0.id=p1_0.cliente_id
-where p1_0.fecha=? order by p1_0.id
+```text
+---ENTITY_GRAPH---
+pedido=1 cliente=Ana
+pedido=2 cliente=Bruno
+pedido=3 cliente=Carla
+SQL_COUNT=1
+SQL: select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 join clientes c1_0 on c1_0.id=p1_0.cliente_id where p1_0.fecha=? order by p1_0.id
 ```
 
-Resultado: `SQL_COUNT=1`. Mismo resultado de negocio, un solo viaje a BD.
+`SQL_COUNT=1` prueba que el plan de fetch trajo cliente en el mismo viaje.
 
 #### 7. Corrección C: DTO projection
 
-Cuando la pantalla solo necesita columnas, no cargues entidades completas:
+Si la pantalla solo necesita columnas, no cargues entidades:
 
 ```java
+public record PedidoListaDto(Long id, LocalDate fecha, String cliente) {}
+
 select new com.aurora.api.PedidoListaDto(p.id, p.fecha, c.nombre)
 from Pedido p join p.cliente c
 where p.fecha = :fecha
+order by p.id
 ```
 
-Ventajas: payload exacto, sin dirty checking, sin grafo innecesario. Desventaja: no devuelve entidad managed; es lectura, no objeto para modificar y guardar. Para endpoints de listado, suele ser la mejor opción.
+Es la opción más limpia para lecturas. No hay proxies, no hay dirty checking, no hay grafo managed innecesario.
 
-#### 8. Criterio experto
+#### 8. Qué NO hacer
 
-| Caso | Mejor opción | Por qué |
-|---|---|---|
-| Necesito entidades para modificar | `join fetch` / EntityGraph | Mantiene entidades managed |
-| Solo leo datos para pantalla/API | DTO projection | Menor costo y contrato claro |
-| No puedo tocar query pero hay muchos LAZY | `@BatchSize` / subselect | Mitiga N+1, no lo elimina |
-| Quiero "arreglar rápido" con EAGER global | Casi nunca | Costo oculto en todas las consultas |
-
-Diagnóstico profesional: activa SQL log/estadísticas en dev, reproduce el caso de uso, cuenta queries, inspecciona plan, luego optimiza. No optimices por superstición.
+- **No pongas EAGER global** para “arreglar” N+1. Mueves el problema a todas las consultas.
+- **No abras la sesión en la vista** como parche. Solo oculta el límite transaccional.
+- **No asumas**: mide con estadísticas/log SQL.
+- **No hagas fetch de múltiples colecciones** a ciegas; puedes crear producto cartesiano.
 
 #### 9. Con Spring Initializr / Spring Data JPA
 
@@ -1367,15 +1409,20 @@ En [Spring Initializr](https://start.spring.io/), agrega **Spring Data JPA** y p
 
 ```java
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
+
     @EntityGraph(attributePaths = "cliente")
     List<Pedido> findByFechaOrderById(LocalDate fecha);
 
-    @Query("select p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id")
+    @Query("select distinct p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id")
     List<Pedido> conCliente(@Param("fecha") LocalDate fecha);
 }
 ```
 
-La anotación `@EntityGraph` o `@Query` con `join fetch` resuelve el mismo N+1. Spring Data facilita la declaración; el comportamiento JPA/Hibernate es el mismo que verificamos con `EntityManager`.
+Spring Data genera la infraestructura; Hibernate sigue ejecutando el mismo mecanismo JPA. La evidencia de N+1 se diagnostica igual: SQL logs, `hibernate.generate_statistics`, o un inspector.
+
+#### 10. Criterio experto
+
+Usa `LAZY` por defecto en asociaciones. Para cada caso de uso de lectura, elige explícitamente: `join fetch`/EntityGraph si vas a modificar entidades, DTO si solo lees. Verifica con conteo de SQL antes de dar por bueno el cambio. En producción, vigila p95/p99 y consultas lentas; un N+1 que pasa en dev con 3 filas explota con 3.000.
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
