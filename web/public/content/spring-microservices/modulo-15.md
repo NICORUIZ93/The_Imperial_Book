@@ -8,11 +8,11 @@ El capstone cierra el track: diseño, implementación, operación y defensa. El 
 
 ### Tema 1: Diseño del sistema y límites · Experto · 360 min
 
-## El dolor
+## El problema
 
 El equipo empieza el capstone creando repos, pipelines y clusters antes de definir qué servicios existen y por qué. Tres semanas después, un cambio de requisito obliga a reestructurar 4 servicios porque los límites eran arbitrarios. El diseño llegó después de la infraestructura.
 
-## La intuición
+## La idea clave
 
 Diseñar límites es como dibujar el plano de una casa antes de construir. Si empiezas por los cimientos sin plano, cada habitación queda mal ubicada. Los bounded contexts son las habitaciones: cada una tiene una función clara, puertas definidas y un dueño.
 
@@ -28,7 +28,7 @@ flowchart LR
   C --> CD[(catalog_db)]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `CapstoneDesignSmoke.java` → validación de límites.
 
@@ -73,7 +73,7 @@ public class CapstoneDesignSmoke {
 
 **Lectura:** el smoke valida que no hay DB compartida y que cada servicio tiene owner. En la práctica, el diseño se documenta con C4 + ADRs.
 
-## El experimento
+## Verificando con un experimento
 
 1. 4 servicios con DB propia y owner. Esperas `4`, `true`, `true`.
 2. Comparte una DB entre dos servicios. Esperas `false` (diseño inválido).
@@ -87,7 +87,7 @@ true
 true
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 El diseño con límites claros es la base de todo lo demás. Sin él, la implementación es re-trabajo.
 
@@ -149,11 +149,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `4`, `true`, `true
 
 ### Tema 2: Contratos, idempotencia y saga/outbox · Experto · 360 min
 
-## El dolor
+## El problema
 
 El capstone tiene 4 servicios y 3 flujos críticos. En el primer test de integración, un reintento de red duplica el cobro y el email se envía dos veces. El equipo asume que “el broker entrega una vez”. No fue así.
 
-## La intuición
+## La idea clave
 
 Los contratos son como los planos eléctricos del edificio: cada servicio sabe qué cable conectar. La idempotencia es como el número de ticket: aunque te atiendan dos veces, el trámite se procesa una. El outbox es el buzón de salida del pedido. La saga es el plan de contingencia cuando un paso falla.
 
@@ -166,7 +166,7 @@ flowchart LR
   N -->|idempotent send| E[Email]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `CapstoneFlowSmoke.java` → contrato + idempotencia.
 
@@ -212,7 +212,7 @@ public Order createOrder(CreateOrderRequest req) {
 
 **Lectura:** el smoke muestra redelivery con un solo efecto. En el capstone, cada consumidor deduplica por `eventId`.
 
-## El experimento
+## Verificando con un experimento
 
 1. Procesa `evt-1` dos veces. Esperas `processed`, `duplicate-ignored`, `effects=1`.
 2. Quita dedup. Observa doble efecto.
@@ -226,7 +226,7 @@ duplicate-ignored
 effects=1
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Los contratos y la idempotencia son la base de la confianza en el sistema. Sin ellos, los retries son peligrosos.
 
@@ -289,11 +289,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `processed`, `dupl
 
 ### Tema 3: Observabilidad, seguridad y despliegue · Experto · 240 min
 
-## El dolor
+## El problema
 
 El capstone “funciona en local”. En producción, un deploy causa downtime porque no hay readiness probe. Un incidente ocurre y nadie puede reconstruir la request porque no hay traceId. Un endpoint admin está expuesto sin auth. El sistema funcional no es operable.
 
-## La intuición
+## La idea clave
 
 La operación productiva es como el sistema de soporte vital de un hospital: no es la cirugía (el código), pero sin él el paciente no sobrevive. Observabilidad es el monitor, seguridad es el control de acceso, despliegue es la anestesia que permite operar sin dolor.
 
@@ -306,7 +306,7 @@ flowchart LR
   D[Deploy canary] --> K
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `CapstoneOpsSmoke.java` → readiness y autorización.
 
@@ -329,7 +329,7 @@ public class CapstoneOpsSmoke {
 
 **Lectura:** el smoke modela readiness (todas las dependencias) y autorización (rol + acción).
 
-## El experimento
+## Verificando con un experimento
 
 1. DB + broker + cache UP. Esperas `true`.
 2. Broker DOWN. Esperas `false` (no recibir tráfico).
@@ -344,7 +344,7 @@ false
 false
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La operación productiva es tan importante como el código. Sin observabilidad, seguridad y entrega segura, el sistema no está listo.
 
@@ -405,11 +405,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `
 
 ### Tema 4: Carga, restricción sobrevenida y defensa ARB · Experto · 240 min
 
-## El dolor
+## El problema
 
 El ARB pide “reduce costo 30% sin romper p95 < 300ms ni error rate < 1%”. El equipo no tiene métricas, no tiene load test y no tiene ADR. La defensa se convierte en opinión. El ARB rechaza.
 
-## La intuición
+## La idea clave
 
 La defensa ARB es como un juicio: necesitas evidencia, no opiniones. p95 es el testigo experto, el error rate es el informe de daños, el costo es el presupuesto. Sin números, la defensa es “creo que funciona”. Con números, es “aquí está la evidencia”.
 
@@ -422,7 +422,7 @@ flowchart LR
   R -->|no| Rev[Revisar trade-offs]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `CapstoneArbSmoke.java` → evaluación de restricción.
 
@@ -451,7 +451,7 @@ public class CapstoneArbSmoke {
 
 **Lectura:** el smoke evalúa la restricción compuesta. Si falla un criterio, dice cuál.
 
-## El experimento
+## Verificando con un experimento
 
 1. p95 180, error 0.2%, costo -10%. Esperas `approved`.
 2. p95 400. Esperas `fail: p95 too high`.
@@ -466,7 +466,7 @@ fail: p95 too high
 fail: error rate too high
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La defensa ARB requiere evidencia cuantitativa y trade-offs explícitos. Sin números, no hay defensa.
 
@@ -526,7 +526,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `approved`, `fail:
 
 **Nota de verificación:** no se ejecutó Gatling/k6 ni cluster real. Verificación propuesta: prueba de carga reproducible, dashboard de SLO/costo y ADR con resultados.
 
-## Cierre
+## Cierre del módulo
 
 El capstone Spring demuestra que puedes diseñar, operar y defender un sistema distribuido con evidencia. Microservicios es un medio, no el objetivo.
 

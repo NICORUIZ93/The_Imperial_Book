@@ -8,13 +8,13 @@ Una vez que hay múltiples servicios, aparecen problemas transversales: descubri
 
 ### Tema 1: Service discovery con Eureka/Consul/Nacos · Intermedio · 150 min
 
-## El dolor
+## El problema
 
 `orders-service` necesita llamar a `inventory-service`. En desarrollo pusiste `http://localhost:8082`. En producción hay tres instancias, una se cae, otra se despliega con IP nueva y el autoscaler crea una cuarta. La URL hardcodeada deja de funcionar.
 
 El síntoma es simple y brutal: errores `Connection refused` después de cada despliegue. El problema real es tratar instancias efímeras como direcciones fijas.
 
-## La intuición
+## La idea clave
 
 Piensa en la recepción de un edificio de oficinas. No buscas a una persona por su silla; preguntas en recepción por el nombre del equipo y te indican qué oficina está disponible ahora. Service discovery es esa recepción: los servicios se registran con nombre y salud, y los consumidores preguntan por nombre lógico.
 
@@ -29,7 +29,7 @@ flowchart LR
 
 La analogía tiene límite: la recepción puede tener información desactualizada por unos segundos. Por eso discovery no reemplaza timeouts, retries ni circuit breakers.
 
-## La construcción
+## Construyendo la solución
 
 Vas a modelar un registry mínimo para entender el contrato antes de usar Eureka/Consul/Nacos.
 
@@ -68,7 +68,7 @@ spring:
 
 **Lectura del código:** el consumidor pregunta por `inventory`, no por IP. El registry devuelve instancias disponibles. En producción, el heartbeat/health check elimina instancias no sanas.
 
-## El experimento
+## Verificando con un experimento
 
 1. Registra dos instancias y consulta. Esperas `2`.
 2. Consulta un servicio inexistente. Esperas `0`, no una excepción no controlada.
@@ -81,7 +81,7 @@ Salida esperada:
 0
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 El registry eliminó la dependencia de IPs fijas. A cambio, agregaste un componente más que puede fallar, tener caché stale o requerir operación. En Kubernetes, muchas veces DNS/Service es suficiente y no necesitas Eureka/Nacos.
 
@@ -140,11 +140,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `0`.
 
 ### Tema 2: Spring Cloud Gateway · Intermedio · 150 min
 
-## El dolor
+## El problema
 
 El frontend móvil consume cinco microservicios. Cada uno tiene URL, autenticación, CORS y rate limit distintos. Cada cambio de topología obliga a cambiar el cliente. Además, no hay un punto único para observabilidad de borde.
 
-## La intuición
+## La idea clave
 
 El gateway es la recepción central del edificio: todos entran por una puerta, se verifica credencial, se registra la visita y se dirige a la oficina correcta. La recepción no hace el trabajo de cada oficina; solo enruta y aplica políticas transversales.
 
@@ -156,7 +156,7 @@ flowchart LR
   G -->|auth/rate/log| P[Políticas transversales]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Gw.java` → routing mínimo.
 
@@ -189,7 +189,7 @@ spring:
 
 **Lectura:** `lb://` usa load balancing por nombre lógico. Los filtros aplican concerns transversales: auth, rate limit, headers, correlation ID. El gateway no debe contener reglas de negocio.
 
-## El experimento
+## Verificando con un experimento
 
 1. Rutea `/orders`. Esperas `orders-svc`.
 2. Rutea `/x`. Esperas `404`.
@@ -202,7 +202,7 @@ orders-svc
 404
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 El gateway simplificó la entrada al sistema. El costo es otro componente crítico en el borde: debe ser observable, resiliente y acotado.
 
@@ -260,11 +260,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `orders-svc`, `404
 
 ### Tema 3: Spring Cloud Config y configuración centralizada · Intermedio · 120 min
 
-## El dolor
+## El problema
 
 Tienes 12 instancias de `orders-service`. Necesitas cambiar un timeout de 500ms a 800ms. Hoy eso implica editar envs en varios lugares, reinicios inconsistentes y una instancia olvidada con la configuración vieja.
 
-## La intuición
+## La idea clave
 
 La configuración centralizada es como el manual operativo en la sala de control. Todos los operadores leen el mismo manual versionado. Si cambia una instrucción, se sabe qué versión cambió, quién la cambió y cómo volver atrás. El peligro es gritar un cambio por megáfono sin coordinación: cada operador puede reaccionar distinto.
 
@@ -276,7 +276,7 @@ flowchart LR
   CS --> C[orders #3]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Cfg.java` → lookup de config.
 
@@ -302,7 +302,7 @@ spring:
 
 **Lectura:** la config vive fuera del artefacto. El versionado en Git da auditoría y rollback. Secretos sensibles deben ir a secret manager, no en texto plano.
 
-## El experimento
+## Verificando con un experimento
 
 1. Cambia `orders.timeoutMs` a `800`. Esperas que las instancias que refrescan vean el nuevo valor.
 2. Simula refresh masivo sin coordinación. Observa comportamientos inconsistentes.
@@ -314,7 +314,7 @@ Salida esperada:
 500
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La configuración centralizada mejora consistencia y auditoría. También introduce dependencia de infraestructura y riesgo en refresh dinámico.
 
@@ -372,11 +372,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `500`.
 
 ### Tema 4: Load balancing y BFF · Intermedio · 120 min
 
-## El dolor
+## El problema
 
 `inventory-service` tiene tres instancias. Sin balanceo, todas las requests caen en una sola y se satura, mientras las otras están ociosas. Además, el cliente móvil recibe payloads pesados pensados para web.
 
-## La intuición
+## La idea clave
 
 El load balancer es el organizador de filas en un banco: dirige al siguiente cliente a la ventanilla disponible. El BFF es un asesor especializado por canal: al cliente móvil le entrega solo lo que necesita, sin cambiar las reglas del banco.
 
@@ -390,7 +390,7 @@ flowchart LR
   LB --> I2[inventory #2]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Lb.java` → round-robin simple.
 
@@ -425,7 +425,7 @@ public class BffController {
 
 **Lectura:** el balanceador reparte carga; el BFF adapta forma, no reglas de negocio.
 
-## El experimento
+## Verificando con un experimento
 
 1. Envía 3 requests al balanceador. Esperas `i1`, `i2`, `i1`.
 2. Crea un BFF que aplique descuento propio. Observa inconsistencia entre web y móvil: eso es un smell.
@@ -439,7 +439,7 @@ i2
 i1
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Balancear mejora uso de capacidad; BFF mejora experiencia por canal. Ambos fallan cuando absorben responsabilidades que no les pertenecen.
 
@@ -496,7 +496,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `i1`, `i2`, `i1`.
 
 **Nota de verificación:** no se ejecutó Spring Cloud LoadBalancer/Gateway/BFF real. Verificación propuesta: dos instancias de servicio, cliente con `lb://` y BFF con endpoint móvil.
 
-## Cierre
+## Cierre del módulo
 
 La infraestructura distribuida resuelve cross-cutting concerns, pero cada pieza agrega modos de fallo. Usa discovery o DNS según plataforma, gateway para políticas transversales, config centralizada con auditoría y BFF para adaptar canales. Si el componente no elimina un dolor real, no lo agregues.
 

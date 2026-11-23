@@ -8,11 +8,11 @@ Cuando un proceso de negocio cruza servicios y bases de datos, no hay transacci�
 
 ### Tema 1: Outbox y CDC con Debezium · Avanzado · 150 min
 
-## El dolor
+## El problema
 
 Al crear un pedido, `orders-service` debe guardar el estado en PostgreSQL y publicar `OrderCreated` a Kafka. El equipo hace dual write: primero `INSERT orders`, luego `kafka.send()`. Un día Kafka está lento: el INSERT commita, el send falla. El pedido existe, pero nadie se entera. Al día siguiente, el send se reintenta y publica un evento fantasma de un pedido que ya fue cancelado. Inconsistencia en ambas direcciones.
 
-## La intuición
+## La idea clave
 
 El outbox es como dejar una nota en la misma bandeja de salida del pedido: si el pedido se guardó, la nota también se guardó, porque están en la misma transacción. Un relay (CDC/Debezium) lee esa bandeja y la envía al broker. Si el broker falla, la nota sigue en la bandeja para reintentar. El consumidor debe ser idempotente porque el relay puede reenviar.
 
@@ -25,7 +25,7 @@ flowchart LR
   K --> C[Consumer idempotente]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `OutboxSmoke.java` → atomicidad local.
 
@@ -78,7 +78,7 @@ public class OutboxSmoke {
 
 **Lectura:** el smoke muestra que negocio y outbox se guardan juntos (misma transacción). El relay vacía el outbox y publica. Si el relay falla, el outbox retiene el evento.
 
-## El experimento
+## Verificando con un experimento
 
 1. Crea pedido. Esperas `outbox-before-relay=1`.
 2. Relay ejecuta. Esperas `relay-sent=1`, `outbox-after-relay=0`.
@@ -94,7 +94,7 @@ outbox-after-relay=0
 published=[OrderCreated:o1]
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Outbox elimina el dual write al hacer atómico negocio + evento en la misma DB. CDC/Debezium automatiza la publicación. El costo es complejidad operativa y almacenamiento.
 
@@ -158,11 +158,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `outbox-before-rel
 
 ### Tema 2: Sagas orquestadas/coreografiadas · Avanzado · 180 min
 
-## El dolor
+## El problema
 
 Crear un pedido implica reservar inventario y cobrar pago. Si el pago falla después de reservar, la reserva queda tomada y el stock se pierde. No hay transacción ACID global; el equipo no sabe cómo compensar.
 
-## La intuición
+## La idea clave
 
 Una saga es como un viaje con escalas: cada escala (transacción local) se confirma por separado, y si una falla, tomas el vuelo de regreso (compensación). No es un rollback de base de datos; es una acción de negocio que deshace el efecto. La orquestación es como un director de orquesta que indica quién toca; la coreografía es como músicos que escuchan al anterior y saben cuándo entrar.
 
@@ -174,7 +174,7 @@ flowchart LR
   P -->|fail| Comp[Compensate: Release Inventory]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `SagaSmoke.java` → orquestación con compensación.
 
@@ -211,7 +211,7 @@ stateMachine.onFailure(PaymentFailed.class, () -> releaseInventory());
 
 **Lectura:** el smoke modela los tres resultados: pago falla → compensar; todo ok → confirmar; sin inventario → fallar. La compensación debe ser idempotente.
 
-## El experimento
+## Verificando con un experimento
 
 1. Pago falla, inventario reservado. Esperas `compensate: release inventory`.
 2. Todo ok. Esperas `ok: order confirmed`.
@@ -227,7 +227,7 @@ fail: no inventory
 true
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Las sagas coordinan procesos multi-servicio con compensaciones. No dan aislamiento ACID global; los estados intermedios son visibles.
 
@@ -291,11 +291,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `compensate: relea
 
 ### Tema 3: Idempotencia real y exactly-once práctico · Avanzado · 120 min
 
-## El dolor
+## El problema
 
 El equipo afirma “usamos exactly-once de Kafka, así que no hay duplicados”. En producción, un consumer se reinicia a mitad del procesamiento y el mismo evento se vuelve a entregar. El pago se aplica dos veces. La garantía del broker no cubrió el efecto en la base de datos ni en la pasarela externa.
 
-## La intuición
+## La idea clave
 
 Exactly-once end-to-end es como prometer que un paquete llega una sola vez en un sistema de correos imperfecto: el correo puede entregarlo dos veces. La solución práctica no es “un correo perfecto”, sino “el destinatario firma un recibo y no procesa el mismo paquete dos veces”. Ese recibo es el dedup store.
 
@@ -308,7 +308,7 @@ flowchart LR
   P --> OK[Efecto único]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `ExactlyOnceSmoke.java` → idempotencia end-to-end.
 
@@ -343,7 +343,7 @@ public class ExactlyOnceSmoke {
 
 **Lectura:** el smoke muestra redelivery: dos entregas, un solo efecto en el ledger. En producción, `dedup` debe ser una tabla con constraint único, no un `HashSet` en memoria.
 
-## El experimento
+## Verificando con un experimento
 
 1. Procesa `evt-1` dos veces. Esperas `applied`, `duplicate-ignored`, `ledger=1`.
 2. Usa dedup en memoria. Reinicia el servicio y redelivera: el duplicado se procesa. Observa el bug.
@@ -357,7 +357,7 @@ duplicate-ignored
 ledger=1
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Exactly-once end-to-end es un objetivo, no una garantía mágica. La práctica es at-least-once + idempotencia + dedup + transacciones locales.
 
@@ -420,11 +420,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `applied`, `duplic
 
 ### Tema 4: Por qué evitar 2PC · Avanzado · 90 min
 
-## El dolor
+## El problema
 
 El equipo propone XA/2PC para “garantizar consistencia” entre la DB de orders y Kafka. En el primer load test, la latencia se triplica y los locks duran segundos. Cuando el coordinator falla, los recursos quedan bloqueados y nadie puede procesar nuevas órdenes.
 
-## La intuición
+## La idea clave
 
 2PC es como una votación donde todos deben levantar la mano antes de que el presidente diga “aprobado”. Si alguien no responde, todos quedan con la mano levantada esperando. En microservicios, esa espera bloquea recursos, aumenta latencia y crea un punto único de falla (el coordinador). La alternativa es aceptar consistencia eventual con outbox y sagas.
 
@@ -438,7 +438,7 @@ flowchart LR
   C -->|commit/rollback| P2
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `TwoPcDecisionSmoke.java` → decisión por contexto.
 
@@ -459,7 +459,7 @@ public class TwoPcDecisionSmoke {
 
 **Lectura:** el smoke modela la decisión: misma DB → transacción local. Distinto sistema sin atomicidad global fuerte → outbox/saga. Solo evaluar 2PC si realmente se necesita atomicidad distribuida fuerte.
 
-## El experimento
+## Verificando con un experimento
 
 1. Misma DB. Esperas `local-transaction`.
 2. DB + broker, sin atomicidad global fuerte. Esperas `outbox-or-saga`.
@@ -473,7 +473,7 @@ outbox-or-saga
 evaluate-2pc-with-caution
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 2PC busca atomicidad global a costa de latencia, locks y disponibilidad. En microservicios, outbox + saga + idempotencia suelen ser el trade-off correcto.
 
@@ -535,7 +535,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `local-transaction
 
 **Nota de verificación:** no se ejecutó XA/2PC real. Verificación propuesta: comparar latencia y comportamiento ante fallo de coordinator en laboratorio XA vs outbox/saga.
 
-## Cierre
+## Cierre del módulo
 
 La consistencia distribuida se diseña: outbox para publicar confiablemente, sagas para procesos largos, idempotencia para duplicados. 2PC rara vez es el trade-off correcto en microservicios.
 

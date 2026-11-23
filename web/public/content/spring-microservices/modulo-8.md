@@ -8,13 +8,13 @@ La seguridad en sistemas distribuidos no es una feature: es una propiedad del si
 
 ### Tema 1: Spring Security filter chain · Intermedio · 150 min
 
-## El dolor
+## El problema
 
 Tienda Aurora expone `/api/orders` para clientes y `/actuator/health` para el orquestador. Un desarrollador, apurado, deshabilita seguridad para “probar rápido” y olvida reactivarla. A la semana, alguien descubre el endpoint y crea pedidos sin autenticación. El frontend tenía un botón oculto, pero la API no tenía control.
 
 El síntoma es un 200 donde debía haber 401. La causa es confundir interfaz con seguridad.
 
-## La intuición
+## La idea clave
 
 Piensa en un edificio con recepcionista, torniquete y guardias por piso. No importa que la puerta lateral “no esté en el mapa”: cada acceso pasa por controles. La **filter chain** de Spring Security es esa secuencia de controles: cada request entra por la cadena y puede ser autenticada, autorizada o rechazada antes de tocar tu lógica de negocio.
 
@@ -30,7 +30,7 @@ flowchart LR
 
 La analogía tiene límite: en APIs stateless con JWT, no usas sesión de servidor como en una app web clásica. Pero la idea de cadena de controles se mantiene.
 
-## La construcción
+## Construyendo la solución
 
 Primero modelas la decisión de acceso. Después lo conectas a `SecurityFilterChain`.
 
@@ -69,7 +69,7 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 **Lectura del código:** la cadena es explícita. `/actuator/health` es público por necesidad operativa; `/api/orders/**` exige autenticación; `anyRequest().denyAll()` cierra por defecto. Stateless evita sesión del servidor para APIs con token.
 
-## El experimento
+## Verificando con un experimento
 
 1. Llama `/orders` sin token. Esperas `401`.
 2. Llama `/health` sin token. Esperas `200`.
@@ -83,7 +83,7 @@ Salida esperada del smoke:
 200
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La filter chain convirtió la seguridad en una política explícita. Ganaste control, pero también responsabilidad: cada ruta nueva debe clasificarse conscientemente.
 
@@ -145,13 +145,13 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `200`, `401`, `200
 
 ### Tema 2: JWT y OAuth2/OIDC · Avanzado · 180 min
 
-## El dolor
+## El problema
 
 El equipo implementó login y genera un JWT. Un atacante copia el token, cambia el campo `role` a `ADMIN` en el payload base64, y la API lo acepta porque solo decodifica el JSON, no valida la firma. Otro token expirado hace días sigue funcionando porque nadie revisa `exp`.
 
 El síntoma es acceso indebido. La causa es tratar un JWT como texto confiable.
 
-## La intuición
+## La idea clave
 
 Un JWT es como un pase de backstage firmado. Mirar el pase no basta: hay que verificar la firma, quién lo emitió, para qué evento sirve y si ya venció. OAuth2 es el sistema que delega autorización; OIDC agrega identidad sobre OAuth2. El access token autoriza; el ID token identifica.
 
@@ -165,7 +165,7 @@ flowchart LR
   V -->|no| NO[401]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Jwt.java` → validación mínima de claims.
 
@@ -197,7 +197,7 @@ spring:
 
 **Lectura:** el smoke solo muestra la lógica de claims. En producción, Spring Security valida firma con JWKS del issuer, `iss`, `aud`, `exp`, `nbf` y algoritmo permitido. Nunca aceptes `alg=none`.
 
-## El experimento
+## Verificando con un experimento
 
 1. Token con `iss` correcto y `exp` futuro. Esperas `true`.
 2. Token con `iss` incorrecto. Esperas `false`.
@@ -210,7 +210,7 @@ true
 false
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 Validar claims y firma convierte el token en una prueba criptográfica, no en un JSON decorativo. El costo es operar IdP, claves, rotación y latencia de validación.
 
@@ -271,13 +271,13 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
 
 ### Tema 3: RBAC, scopes y mTLS/Zero-Trust · Avanzado · 150 min
 
-## El dolor
+## El problema
 
 Un usuario autenticado descubre que puede borrar pedidos ajenos cambiando el ID en la URL. El token era válido, pero la API solo verificó login. En otro incidente, un servicio interno falso en la red llama a un endpoint interno porque “la red es privada”.
 
 Autenticación sin autorización es media cerradura. Red privada sin identidad es confianza ciega.
 
-## La intuición
+## La idea clave
 
 RBAC es la llave que abre solo ciertas puertas según tu rol. Ownership es la regla adicional: puedes entrar a tu habitación, no a la del vecino. mTLS es pedir identificación a ambos lados de la conversación. Zero-Trust es la política: nadie entra solo por estar dentro del edificio.
 
@@ -290,7 +290,7 @@ flowchart LR
   Z -->|sí| OK[200]
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Rbac.java` → rol y ownership.
 
@@ -329,7 +329,7 @@ server:
 
 **Lectura:** RBAC cubre permisos gruesos. Ownership/ABAC cubre reglas por recurso. mTLS autentica workloads. Zero-Trust combina identidad, least privilege, cifrado y observabilidad.
 
-## El experimento
+## Verificando con un experimento
 
 1. Usuario con rol `USER` intenta borrar. Esperas `false`/403.
 2. Usuario `ADMIN` intenta borrar. Esperas `true`/200.
@@ -345,7 +345,7 @@ true
 false
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La autorización por recurso evita el “autenticado pero no autorizado”. mTLS/Zero-Trust evita confianza implícita en la red. El costo es gestión de identidades, certificados, policies y auditoría.
 
@@ -410,13 +410,13 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `false`, `true`, `
 
 ### Tema 4: Vault, gestión de secretos, SBOM y CVE scanning · Intermedio · 120 min
 
-## El dolor
+## El problema
 
 La contraseña de base de datos está en `application-prod.yml` dentro del repositorio. Alguien hace fork por error y el secreto queda expuesto. En paralelo, una dependencia con CVE crítica entra por una actualización menor y nadie lo detecta antes del release.
 
 El incidente no fue un hacker sofisticado: fue un secreto en Git y un pipeline sin gate de supply chain.
 
-## La intuición
+## La idea clave
 
 Un secreto es como la llave maestra: no se deja pegada en la pared del pasillo. Se guarda en una caja fuerte con acceso auditado y se cambia periódicamente. El SBOM es la lista de ingredientes del producto; el CVE scan es revisar si algún ingrediente tiene retiro sanitario. No garantiza que el plato sea perfecto, pero evita servir algo con alerta conocida.
 
@@ -430,7 +430,7 @@ flowchart LR
   Vault -->|credencial temporal| App
 ```
 
-## La construcción
+## Construyendo la solución
 
 **Archivo:** `Vault.java` → contrato mínimo de secreto y gate.
 
@@ -466,7 +466,7 @@ grype sbom:sbom.json --fail-on critical
 
 **Lectura:** el secreto se inyecta en runtime. El SBOM describe el artefacto. El scanner aplica una política; CVE crítica bloquea el release.
 
-## El experimento
+## Verificando con un experimento
 
 1. Pide un secreto válido. Esperas `***` (nunca imprimir el real).
 2. Pide un secreto vacío. Esperas error controlado `missing`.
@@ -480,7 +480,7 @@ missing
 true
 ```
 
-## El cierre
+## Cierre del módulo y trade-offs
 
 La gestión de secretos y SBOM/CVE no hacen el sistema invulnerable, pero eliminan dos fallas evitables: secretos expuestos y dependencias vulnerables sin control.
 
@@ -542,7 +542,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `***`, `missing`, 
 
 **Nota de verificación:** no se ejecutó Vault/Syft/Trivy/Grype real. Verificación propuesta: `syft dir:. -o cyclonedx-json > sbom.json` y `grype sbom:sbom.json --fail-on critical`; configurar Vault con credencial temporal y rotación.
 
-## Cierre
+## Cierre del módulo
 
 La seguridad distribuida se construye en capas: identidad, autorización, transporte, secretos y cadena de suministro. Ninguna capa reemplaza a otra. El objetivo no es “estar seguro”, sino reducir riesgo, detectar fallos rápido y limitar el impacto cuando algo sale mal.
 
