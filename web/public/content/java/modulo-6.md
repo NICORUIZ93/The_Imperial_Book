@@ -1,6 +1,6 @@
 # Módulo 6: Archivos y serialización
 
-Muchos sistemas fallan en los bordes: leer un archivo que no existe, cargar un JSON mal formado, procesar un CSV enorme cargándolo entero en memoria o asumir que un recurso del classpath es un `File` del sistema. Este módulo cubre NIO.2, serialización JSON con Jackson y lectura eficiente de archivos grandes/recursos.
+Muchos sistemas fallan en los bordes: leer un archivo que no existe, cargar un JSON mal formado, procesar un CSV enorme cargándolo entero en memoria o asumir que un recurso del classpath es un `File` del sistema. Este módulo cubre NIO.2, serialización JSON con Jackson y lectura eficiente de archivos grandes/recursos. En Tienda Aurora, NIO.2 se usa para importar catálogos CSV, Jackson para serializar DTOs y manejar archivos grandes de reportes.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Ejemplos NIO.2 verificados con JDK puro. Jackson verificado con jars descargados en `/tmp`.
 
