@@ -6,6 +6,71 @@ En el módulo anterior aprendiste a manejar errores y recursos. Ahora el foco ca
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-streams
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-streams/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/streams/
+            ├── Main.java
+            └── domain/
+                └── Order.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.streams.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-streams"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/streams/**/*.java
+java -cp out com.aurora.streams.Main
+```
+
 ### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 45 min
 
 **Caso guía.** tienes una lista de guías con pesos y quieres calcular el total de guías pesadas. El enfoque imperativo funciona, pero mezcla iteración, condición y acumulación; un stream expresa la intención como pipeline.
