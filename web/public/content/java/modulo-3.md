@@ -8,7 +8,7 @@ Un sistema que solo funciona en el “camino feliz” no es confiable. Los archi
 
 ### Tema 1: Checked vs unchecked exceptions · Básico · 35 min
 
-Caso guía: un importador lee una edad desde un archivo. El archivo puede no existir (fallo externo) y el contenido puede ser inválido (violación de datos/precondición). Tratar ambos igual produce código ruidoso o bugs ocultos.
+**Caso guía.** un importador lee una edad desde un archivo. El archivo puede no existir (fallo externo) y el contenido puede ser inválido (violación de datos/precondición). Tratar ambos igual produce código ruidoso o bugs ocultos.
 
 ```mermaid
 flowchart TD
@@ -21,9 +21,9 @@ flowchart TD
   RT --> NPE[NullPointerException]
 ```
 
-#### Checked exceptions
+Checked exceptions
 
-**Definición formal.** Excepción que hereda de `Exception` pero no de `RuntimeException`; el compilador exige capturarla o declararla con `throws`.
+**Definición.** Excepción que hereda de `Exception` pero no de `RuntimeException`; el compilador exige capturarla o declararla con `throws`.
 
 **Cómo funciona por dentro.** El compilador verifica el flujo: si un método llama código que puede lanzar una checked exception, debe manejarla o declararla. Esto hace visible en la firma un fallo recuperable esperado.
 
@@ -69,9 +69,9 @@ java DemoChecked
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `ok`.
 
-#### Unchecked exceptions
+Unchecked exceptions
 
-**Definición formal.** `RuntimeException` y subclases; el compilador no obliga a declararlas/capturarlas.
+**Definición.** `RuntimeException` y subclases; el compilador no obliga a declararlas/capturarlas.
 
 **Cómo funciona por dentro.** Se propagan por la pila hasta un `catch` compatible o hasta terminar el hilo. Suelen representar precondiciones violadas, estado inválido o bugs.
 
@@ -112,9 +112,9 @@ java DemoUnchecked
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `edad obligatoria`.
 
-#### `throw`, `throws`, `try-catch-finally`
+`throw`, `throws`, `try-catch-finally`
 
-**Definición formal.** `throw` lanza una excepción; `throws` declara checked exceptions; `try-catch-finally` maneja y ejecuta limpieza.
+**Definición.** `throw` lanza una excepción; `throws` declara checked exceptions; `try-catch-finally` maneja y ejecuta limpieza.
 
 **Contrato.** `finally` se ejecuta al salir del `try/catch` salvo terminación abrupta de JVM. No usar `finally` para lógica de negocio oculta.
 
@@ -154,7 +154,7 @@ java DemoThrow
 
 **Verificación (JDK 27, 2026-05-22).** Salida real: `negativo`, `fin`.
 
-#### Ejemplo integrado
+Ejemplo integrado
 
 ```bash
 mkdir -p java-m3-t1
@@ -216,11 +216,11 @@ Archivo: 30
 
 ### Tema 2: try-with-resources · Básico · 40 min
 
-Caso guía: procesas un archivo línea por línea. Si falla a mitad, el descriptor de archivo debe cerrarse. Hacerlo a mano con `finally` es verboso y fácil de romper.
+**Caso guía.** procesas un archivo línea por línea. Si falla a mitad, el descriptor de archivo debe cerrarse. Hacerlo a mano con `finally` es verboso y fácil de romper.
 
-#### `AutoCloseable` y try-with-resources
+`AutoCloseable` y try-with-resources
 
-**Definición formal.** `try-with-resources` declara recursos que implementan `AutoCloseable`/`Closeable` y los cierra automáticamente al salir del bloque.
+**Definición.** `try-with-resources` declara recursos que implementan `AutoCloseable`/`Closeable` y los cierra automáticamente al salir del bloque.
 
 **Cómo funciona por dentro.** El compilador genera la lógica de cierre. Si el cuerpo lanza excepción y `close()` también, la excepción de cierre se suprime y se adjunta como *suppressed* a la principal.
 
@@ -270,9 +270,9 @@ java DemoTwr
 
 **Verificación (JDK 27, 2026-05-22).** `usando`, `cerrado`.
 
-#### Excepciones suprimidas
+Excepciones suprimidas
 
-**Definición formal.** Cuando el cuerpo del try y `close()` lanzan excepciones, la de cierre se agrega a `Throwable.getSuppressed()` de la excepción principal.
+**Definición.** Cuando el cuerpo del try y `close()` lanzan excepciones, la de cierre se agrega a `Throwable.getSuppressed()` de la excepción principal.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -310,11 +310,11 @@ java DemoSuppressed
 
 ### Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 35 min
 
-Caso guía: un dominio de envíos necesita distinguir “capacidad excedida” de un `IllegalArgumentException` genérico. Además, una capa intermedia a veces captura y silencia, haciendo imposible diagnosticar.
+**Caso guía.** un dominio de envíos necesita distinguir “capacidad excedida” de un `IllegalArgumentException` genérico. Además, una capa intermedia a veces captura y silencia, haciendo imposible diagnosticar.
 
-#### Excepciones personalizadas
+Excepciones personalizadas
 
-**Definición formal.** Excepción definida por el dominio (`extends Exception` o `RuntimeException`) con nombre y contexto que expresan la regla violada.
+**Definición.** Excepción definida por el dominio (`extends Exception` o `RuntimeException`) con nombre y contexto que expresan la regla violada.
 
 **Cuándo usar / cuándo no.** Úsala cuando el llamador necesita distinguir el caso para decidir. No crees una excepción por cada método si el tipo estándar ya comunica bien.
 
@@ -353,9 +353,9 @@ java DemoCustom
 
 **Verificación (JDK 27, 2026-05-22).** `Capacidad excedida: max=3 actual=4`.
 
-#### No tragar excepciones
+No tragar excepciones
 
-**Definición formal.** “Tragar” una excepción es capturarla y no registrar, no traducir, no relanzar ni recuperar adecuadamente.
+**Definición.** “Tragar” una excepción es capturarla y no registrar, no traducir, no relanzar ni recuperar adecuadamente.
 
 **Por qué es grave.** Rompe la observabilidad: el sistema queda en estado inválido sin evidencia. Es una de las causas más caras de debugging.
 
@@ -397,9 +397,9 @@ java DemoSwallow
 
 ### Tema 4: Incremento del proyecto: leer guías y respetar capacidad · Intermedio · 25 min
 
-Caso guía: importar guías desde archivo CSV simple. Líneas inválidas no deben tumbar toda la importación; capacidad excedida sí debe detener o reportarse claramente.
+**Caso guía.** importar guías desde archivo CSV simple. Líneas inválidas no deben tumbar toda la importación; capacidad excedida sí debe detener o reportarse claramente.
 
-#### Ejemplo integrado
+Ejemplo integrado
 
 ```bash
 mkdir -p java-m3-t4
