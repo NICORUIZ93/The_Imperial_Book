@@ -7482,6 +7482,30 @@
     ],
     "9": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
         "title": "Micrometer y Prometheus",
         "fragment": "tema-1-micrometer-y-prometheus"
       },
@@ -7492,10 +7516,6 @@
       {
         "title": "Logs estructurados y propagación de contexto",
         "fragment": "tema-3-logs-estructurados-y-propagacion-de-contexto"
-      },
-      {
-        "title": "SLO, p99 y alerting",
-        "fragment": "tema-4-slo-p99-y-alerting"
       }
     ]
   }

@@ -2,7 +2,134 @@
 
 Tienda Aurora tiene 5 microservicios en producción. Cuando un usuario reporta que "el checkout falló", los logs locales de cada servicio no bastan para reconstruir qué pasó. Necesitas responder tres preguntas: qué está pasando (métricas), dónde está pasando (trazas) y por qué pasó (logs correlacionados). Este módulo construye observabilidad con Micrometer, OpenTelemetry, logs estructurados y SLOs.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes validan lógica de contadores, propagación de traceId, logs JSON y alertas por SLO en Java puro. Prometheus, Grafana, OTel Collector, Tempo/Loki y Spring Boot Actuator reales requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los smokes validan lógica de contadores, propagación de traceId, logs JSON y alertas por SLO en Java puro. Prometheus, Grafana, OTel Collector, Tempo/Loki y Spring Boot Actuator reales requieren infraestructura; se incluyen notas de verificación honestas.
+
+## Proyecto desde cero: tienda-aurora-observability
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para Prometheus/Grafana/OTel Collector)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-observability/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── src/
+│   ├── main/
+│   │   ├── java/com/aurora/observability/
+│   │   │   ├── ObservabilityApplication.java
+│   │   │   ├── controller/CatalogController.java
+│   │   │   ├── service/CatalogService.java
+│   │   │   └── config/ObservabilityConfig.java
+│   │   └── resources/
+│   │       └── application.yml
+│   └── test/
+│       └── java/com/aurora/observability/
+│           └── ObservabilitySmokeTest.java
+└── docker-compose.yml
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-observability"
+```
+
+### application.yml
+
+```yaml
+spring:
+  application:
+    name: observability-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  metrics:
+    tags:
+      application: observability-service
+
+otel:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4317
+
+server:
+  port: 8080
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:10.3.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.95.0
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+```
 
 ### Tema 1: Micrometer y Prometheus · Intermedio · 150 min
 
@@ -12,12 +139,10 @@ Tienda Aurora tiene 5 microservicios en producción. Cuando un usuario reporta q
 
 Las métricas son el tablero de instrumentos de un avión. No te dicen la causa raíz de todo, pero te dicen si estás perdiendo altitud, velocidad o combustible. RED (Rate, Errors, Duration) mide la experiencia del servicio; USE (Utilization, Saturation, Errors) mide recursos. Micrometer es la fachada que expone métricas; Prometheus las recolecta; Grafana las visualiza.
 
-La construcción comienza con un contador mínimo por status HTTP:
-
 ```java
 import java.util.*;
 
-public class MetricsSmoke {
+public class MetricsExample {
     static Map<String, Integer> counter = new HashMap<>();
     static void inc(String key) { counter.put(key, counter.getOrDefault(key, 0) + 1); }
 
@@ -30,8 +155,8 @@ public class MetricsSmoke {
 ```
 
 ```bash
-javac MetricsSmoke.java
-java MetricsSmoke
+javac MetricsExample.java
+java MetricsExample
 ```
 
 Salida esperada:
@@ -41,21 +166,7 @@ requests_200=2
 requests_500=1
 ```
 
-En Spring Boot, Actuator expone `/actuator/prometheus` y Micrometer instrumenta automáticamente. La configuración en `application.yml`:
-
-```yaml
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-  metrics:
-    tags:
-      application: catalog-service
-      environment: ${SPRING_PROFILES_ACTIVE:dev}
-```
-
-El error más común es usar labels de alta cardinalidad. El síntoma es que Prometheus se degrada o se vuelve costoso. La causa es que cada valor único crea una serie temporal. La corrección es labels bajos en cardinalidad: `status=200` sí, `userId=...` no. El detalle por request va a traces y logs, no a métricas.
+En Spring Boot, Actuator expone `/actuator/prometheus` y Micrometer instrumenta automáticamente. El error más común es usar labels de alta cardinalidad. El síntoma es que Prometheus se degrada o se vuelve costoso. La causa es que cada valor único crea una serie temporal. La corrección es labels bajos en cardinalidad: `status=200` sí, `userId=...` no.
 
 ### Tema 2: OpenTelemetry por defecto: métricas, trazas y logs correlacionados · Avanzado · 150 min
 
@@ -68,7 +179,7 @@ Una traza distribuida es como el número de seguimiento de un paquete. Cada ofic
 ```java
 import java.util.*;
 
-public class TraceSmoke {
+public class TraceExample {
     static Map<String, String> span(String traceId, String name) {
         return Map.of("traceId", traceId, "name", name);
     }
@@ -83,8 +194,8 @@ public class TraceSmoke {
 ```
 
 ```bash
-javac TraceSmoke.java
-java TraceSmoke
+javac TraceExample.java
+java TraceExample
 ```
 
 Salida esperada:
@@ -105,7 +216,7 @@ Durante un incidente en Tienda Aurora, el equipo busca "error pedido" en logs. A
 Un log estructurado es como un formulario con campos, no una nota en servilleta. Si todos usan el mismo formulario, puedes filtrar por `traceId=t1`. Si cada uno escribe texto libre, dependes de suerte y `grep`.
 
 ```java
-public class LogSmoke {
+public class LogExample {
     static String json(String level, String msg, String trace) {
         return "{\"level\":\"" + level + "\",\"traceId\":\"" + trace + "\",\"msg\":\"" + msg + "\"}";
     }
@@ -119,8 +230,8 @@ public class LogSmoke {
 ```
 
 ```bash
-javac LogSmoke.java
-java LogSmoke
+javac LogExample.java
+java LogExample
 ```
 
 Salida esperada:
@@ -132,16 +243,14 @@ has-t1=true
 
 En Spring, MDC guarda `traceId/spanId` por request. El encoder JSON los emite. Nunca loguees secretos, tokens o PII sin redacción. El error más común es logs de texto libre sin IDs: el síntoma es que no se puede reconstruir un incidente.
 
-### Tema 4: SLO, p99 y alerting · Intermedio · 120 min
-
-## SLO, p99 y alerting: de alert fatigue a alertas por síntoma
+## SLO, p99 y alerting
 
 El equipo de Tienda Aurora tiene 200 alertas al día: CPU alta, GC, un pod reinició, latencia de un endpoint interno. Nadie las mira. El día que el checkout falla para usuarios reales, la alerta importante queda enterrada en ruido. Esto es alert fatigue.
 
 Un SLO es como un acuerdo de servicio con el usuario: "el 99.9% de checkouts responden en menos de 300ms". El error budget es cuánto puedes fallar sin romper el acuerdo. Alertar por burn rate es avisar cuando estás gastando ese presupuesto demasiado rápido, no cuando una CPU sube por 30 segundos sin afectar a nadie.
 
 ```java
-public class SloSmoke {
+public class SloExample {
     static boolean page(int p99, double err) { return p99 > 300 || err > 0.01; }
 
     public static void main(String[] args) {
@@ -152,8 +261,8 @@ public class SloSmoke {
 ```
 
 ```bash
-javac SloSmoke.java
-java SloSmoke
+javac SloExample.java
+java SloExample
 ```
 
 Salida esperada:
@@ -167,7 +276,7 @@ SLOs y alertas por síntoma reducen ruido y enfocan la respuesta en el usuario. 
 
 ## Cierre
 
-Observabilidad no es "tener dashboards": es poder explicar el comportamiento del sistema con evidencia. Métricas para síntomas, trazas para recorrido, logs para detalle, SLOs para decidir cuándo actuar. Para Tienda Aurora, esto significa que cuando un usuario reporta "el checkout falló", el equipo puede reconstruir la request completa en minutos, no horas.
+Observabilidad no es "tener dashboards": es poder explicar el comportamiento del sistema con evidencia. Métricas para síntomas, trazas para recorrido, logs para detalle, SLOs para decidir cuándo actuar. Para Tienda Aurora, esto significa que cuando un usuario reporta "el checkout falló", el equipo puede reconstruir la request completa en minutos, no horas. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 
