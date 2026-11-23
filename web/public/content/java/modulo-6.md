@@ -8,11 +8,11 @@ Muchos sistemas fallan en los bordes: leer un archivo que no existe, cargar un J
 
 ### Tema 1: NIO.2 — Path y Files · Intermedio · 40 min
 
-Caso guía: guardar y leer un reporte de texto de forma portable. `File` antiguo funciona, pero `Path`/`Files` ofrecen una API más clara y moderna.
+**Caso guía.** guardar y leer un reporte de texto de forma portable. `File` antiguo funciona, pero `Path`/`Files` ofrecen una API más clara y moderna.
 
-#### `Path` y `Files`
+`Path` y `Files`
 
-**Definición formal.** `Path` representa una ruta del sistema de archivos; `Files` provee operaciones estáticas para crear, copiar, mover, leer, escribir y consultar metadatos.
+**Definición.** `Path` representa una ruta del sistema de archivos; `Files` provee operaciones estáticas para crear, copiar, mover, leer, escribir y consultar metadatos.
 
 **Cómo funciona por dentro.** `Path` es una abstracción; no implica que el archivo exista. `Files` opera sobre el sistema de archivos real o virtual mediante providers. Las operaciones pueden lanzar `IOException`.
 
@@ -59,11 +59,11 @@ java DemoNio
 
 ### Tema 2: Serialización con Jackson · Intermedio · 40 min
 
-Caso guía: exponer/consumir una guía como JSON. Escribir JSON a mano es frágil; Jackson mapea objetos a JSON y valida estructura.
+**Caso guía.** exponer/consumir una guía como JSON. Escribir JSON a mano es frágil; Jackson mapea objetos a JSON y valida estructura.
 
-#### ObjectMapper, `@JsonProperty`, fechas
+ObjectMapper, `@JsonProperty`, fechas
 
-**Definición formal.** Jackson es una librería de serialización/deserialización JSON. `ObjectMapper` convierte objetos Java ↔ JSON; anotaciones controlan nombres, inclusión y formato.
+**Definición.** Jackson es una librería de serialización/deserialización JSON. `ObjectMapper` convierte objetos Java ↔ JSON; anotaciones controlan nombres, inclusión y formato.
 
 **Contrato/reglas.** Para POJOs, Jackson necesita constructor/propiedades accesibles o configuración. Fechas Java Time requieren `jackson-datatype-jsr310` y `findAndAddModules()`/registro de módulo. Fallos de mapeo lanzan excepciones (`JsonProcessingException` y subtipos).
 
@@ -116,11 +116,11 @@ java -cp ".:jackson-core.jar:jackson-annotations.jar:jackson-databind.jar" DemoJ
 
 ### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
 
-Caso guía: procesar un CSV grande no debe cargar todo en memoria; además, un template empaquetado en el jar no es un `Path` del filesystem.
+**Caso guía.** procesar un CSV grande no debe cargar todo en memoria; además, un template empaquetado en el jar no es un `Path` del filesystem.
 
-#### Streaming/lectura por líneas y classpath resources
+Streaming/lectura por líneas y classpath resources
 
-**Definición formal.** Leer por streaming procesa datos incrementalmente (`BufferedReader`, `Files.lines`, `InputStream`) en vez de cargar el archivo completo. Recursos del classpath se leen con `ClassLoader.getResourceAsStream`.
+**Definición.** Leer por streaming procesa datos incrementalmente (`BufferedReader`, `Files.lines`, `InputStream`) en vez de cargar el archivo completo. Recursos del classpath se leen con `ClassLoader.getResourceAsStream`.
 
 **Cómo funciona por dentro.** `Files.lines()` devuelve un `Stream<String>` lazy que debe cerrarse. `getResourceAsStream` lee desde el classpath (directorio o jar), no como ruta de archivo garantizada.
 
