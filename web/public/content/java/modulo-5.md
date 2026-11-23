@@ -8,11 +8,11 @@ La concurrencia aparece cuando una aplicación debe hacer varias cosas a la vez:
 
 ### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
-Caso guía: procesar 4 tareas independientes. Crear un `Thread` por tarea manualmente no escala y complica el apagado.
+**Caso guía.** procesar 4 tareas independientes. Crear un `Thread` por tarea manualmente no escala y complica el apagado.
 
-#### `ExecutorService`
+`ExecutorService`
 
-**Definición formal.** `ExecutorService` es una abstracción para enviar tareas (`Runnable`/`Callable`) a un pool o estrategia de ejecución, desacoplando envío de ejecución.
+**Definición.** `ExecutorService` es una abstracción para enviar tareas (`Runnable`/`Callable`) a un pool o estrategia de ejecución, desacoplando envío de ejecución.
 
 **Cómo funciona por dentro.** El pool mantiene workers y una cola (según implementación). `submit` devuelve `Future`; `shutdown` inicia apagado ordenado; `awaitTermination` espera; `close()` (Java 19+) en implementaciones compatibles ayuda al ciclo de vida.
 
@@ -60,11 +60,11 @@ java DemoExec
 
 ### Tema 2: CompletableFuture · Intermedio · 40 min
 
-Caso guía: obtener precio y descuento en paralelo y combinar. `Future.get()` bloqueante compone mal.
+**Caso guía.** obtener precio y descuento en paralelo y combinar. `Future.get()` bloqueante compone mal.
 
-#### `CompletableFuture`
+`CompletableFuture`
 
-**Definición formal.** API para componer asincronía: encadenar, combinar, transformar y manejar errores sin bloquear manualmente en cada paso.
+**Definición.** API para componer asincronía: encadenar, combinar, transformar y manejar errores sin bloquear manualmente en cada paso.
 
 **Contrato.** `supplyAsync` ejecuta tarea; `thenApply/thenCompose` transforman; `allOf/anyOf` combinan; `exceptionally/handle` manejan errores. Por defecto usa `ForkJoinPool.commonPool()` salvo executor explícito.
 
@@ -101,11 +101,11 @@ java DemoCF
 
 ### Tema 3: Virtual threads · Intermedio · 40 min
 
-Caso guía: miles de tareas bloqueantes I/O. Hilos de plataforma son caros; virtual threads permiten un modelo por tarea más liviano.
+**Caso guía.** miles de tareas bloqueantes I/O. Hilos de plataforma son caros; virtual threads permiten un modelo por tarea más liviano.
 
-#### Virtual threads
+Virtual threads
 
-**Definición formal.** Hilos ligeros administrados por la JVM, diseñados para alta concurrencia en tareas que bloquean frecuentemente.
+**Definición.** Hilos ligeros administrados por la JVM, diseñados para alta concurrencia en tareas que bloquean frecuentemente.
 
 **Cómo funciona por dentro.** La JVM monta/desmonta virtual threads sobre carrier threads de plataforma cuando bloquean en operaciones compatibles. No hacen mágica a CPU-bound; reducen costo de bloqueo.
 
@@ -149,11 +149,11 @@ java DemoVT
 
 ### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
 
-Caso guía: dos hilos incrementan un contador compartido. Sin sincronización, se pierden actualizaciones.
+**Caso guía.** dos hilos incrementan un contador compartido. Sin sincronización, se pierden actualizaciones.
 
-#### Race condition y `synchronized`/`Atomic*`
+Race condition y `synchronized`/`Atomic*`
 
-**Definición formal.** Condición de carrera: el resultado depende del orden no controlado de acceso concurrente a estado compartido mutable. `synchronized` proporciona exclusión mutua y visibilidad; `AtomicInteger` etc. proveen operaciones atómicas.
+**Definición.** Condición de carrera: el resultado depende del orden no controlado de acceso concurrente a estado compartido mutable. `synchronized` proporciona exclusión mutua y visibilidad; `AtomicInteger` etc. proveen operaciones atómicas.
 
 **Cómo funciona por dentro.** `synchronized` adquiere monitor: solo un hilo entra a la sección crítica. El modelo de memoria Java garantiza visibilidad al adquirir/liberar el monitor. Los atómicos usan CAS/hardware primitives.
 
@@ -205,11 +205,11 @@ java DemoRace
 
 ### Tema 5: Structured Concurrency (Java 25/preview) · Avanzado · 45 min
 
-Caso guía: lanzar dos subtareas relacionadas; si una falla o hay timeout, cancelar las demás y no fugar hilos.
+**Caso guía.** lanzar dos subtareas relacionadas; si una falla o hay timeout, cancelar las demás y no fugar hilos.
 
-#### `StructuredTaskScope`
+`StructuredTaskScope`
 
-**Definición formal.** API que trata subtareas concurrentes como una unidad con alcance léxico: se abren en un bloque, se hacen fork/join y se cierran juntas.
+**Definición.** API que trata subtareas concurrentes como una unidad con alcance léxico: se abren en un bloque, se hacen fork/join y se cierran juntas.
 
 **Contrato/reglas.** Requiere `--enable-preview` en JDK 27 actual (verificar versión). El scope define política de fallo/cancelación. Evita “fire and forget” accidental.
 
@@ -250,11 +250,11 @@ java --enable-preview DemoSTS
 
 ### Tema 6: Scoped Values frente a ThreadLocal · Avanzado · 45 min
 
-Caso guía: propagar un `requestId` por llamadas. `ThreadLocal` funciona, pero con virtual threads y herencia puede filtrar contexto o volverse difícil de limpiar.
+**Caso guía.** propagar un `requestId` por llamadas. `ThreadLocal` funciona, pero con virtual threads y herencia puede filtrar contexto o volverse difícil de limpiar.
 
-#### Scoped values
+Scoped values
 
-**Definición formal.** `ScopedValue` permite enlazar un valor inmutable al alcance dinámico de una ejecución, especialmente útil con virtual threads y structured concurrency.
+**Definición.** `ScopedValue` permite enlazar un valor inmutable al alcance dinámico de una ejecución, especialmente útil con virtual threads y structured concurrency.
 
 **Cuándo usar / cuándo no.** Úsalo para contexto inmutable de request/tarea. `ThreadLocal` sigue válido para estado mutable por hilo con cuidado de limpieza, pero es más riesgoso.
 
@@ -287,11 +287,11 @@ java --enable-preview DemoSV
 
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
 
-Caso guía: una llamada externa puede colgarse. Cancelar mal deja sockets/hilos colgados.
+**Caso guía.** una llamada externa puede colgarse. Cancelar mal deja sockets/hilos colgados.
 
-#### Timeout y cancelación cooperativa
+Timeout y cancelación cooperativa
 
-**Definición formal.** Timeout limita espera; cancelación cooperativa señala que la tarea debe detenerse en puntos seguros. `Future.cancel(true)` interrumpe; la tarea debe respetar la interrupción.
+**Definición.** Timeout limita espera; cancelación cooperativa señala que la tarea debe detenerse en puntos seguros. `Future.cancel(true)` interrumpe; la tarea debe respetar la interrupción.
 
 **Contrato.** Interrupción no mata mágicamente el hilo; el código debe chequear `Thread.interrupted()` o usar APIs que respondan a interrupción. Recursos deben cerrarse en `try-with-resources/finally`.
 
