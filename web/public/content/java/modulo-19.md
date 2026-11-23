@@ -1,344 +1,673 @@
-# Módulo 19: Java avanzado
+# Módulo 19: Java del día a día — reflexión, regex, dinero, contratos, plugins e i18n
 
+El JDK incluye muchas APIs que resuelven problemas cotidianos: inspeccionar clases en runtime, validar texto con patrones, calcular dinero sin errores de centavos, expresar contratos, cargar plugins, formatear datos por región, interceptar llamadas y acceder a miembros con APIs modernas. El riesgo es usarlas por intuición. Una regex sin límites puede validar mal; `double` produce errores monetarios; una assertion deshabilitada no protege nada; un proxy dinámico parece magia hasta que necesitas depurar una excepción.
 
-## Visual del módulo
+Vas a construir `tienda-aurora-java-m19`, un proyecto pequeño y verificable donde cada concepto se ve en código real. No es un cajón de utilidades sueltas: el hilo conductor es que todas son APIs estándar del JDK que exigen conocer su contrato.
 
-**Herramienta (diagram-design, estático):** [Modulo 19 — mapa visual](/visuals/temas/java/modulo-19-build-tools.html)
-
-Lectura: El build tool hace repetible resolver dependencias, compilar, testear y empaquetar.
-
-
-Este módulo cubre capacidades avanzadas de la plataforma: reflexión, regex, dinero exacto, contratos, ServiceLoader, i18n, proxies dinámicos, class loading y MethodHandles/VarHandles. Son herramientas potentes; mal usadas crean código frágil, inseguro o difícil de mantener.
-
-**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
-
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
-
-## Aprende construyendo
-
-## Proyecto desde cero: tienda-aurora-java-m19
-
-## Prerrequisitos
+## Prerrequisitos y bootstrap
 
 ```bash
-java -version    # JDK 25+
-gradle --version # Gradle 9.x
+java -version
+gradle --version
+mkdir -p tienda-aurora-java-m19/src/main/java/com/aurora/stdlib
+mkdir -p tienda-aurora-java-m19/src/main/resources/META-INF/services
+mkdir -p tienda-aurora-java-m19/src/test/java/com/aurora/stdlib
+cd tienda-aurora-java-m19
+gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+Estructura:
 
 ```text
 tienda-aurora-java-m19/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── src/
-    └── main/
-        └── java/com/aurora/java/
-            └── Main.java
+    ├── main/
+    │   ├── java/com/aurora/stdlib/
+    │   │   ├── App.java
+    │   │   ├── AuditCampo.java
+    │   │   ├── Auditor.java
+    │   │   ├── CalculadoraPrecio.java
+    │   │   ├── ClassLoaderDemo.java
+    │   │   ├── Contratos.java
+    │   │   ├── EmailNotificador.java
+    │   │   ├── FormateadorRegional.java
+    │   │   ├── HandlesDemo.java
+    │   │   ├── Notificador.java
+    │   │   ├── Operacion.java
+    │   │   ├── OperacionReal.java
+    │   │   ├── Pedido.java
+    │   │   ├── ProxyDemo.java
+    │   │   ├── SmsNotificador.java
+    │   │   └── ValidadorCodigo.java
+    │   └── resources/META-INF/services/
+    │       └── com.aurora.stdlib.Notificador
+    └── test/java/com/aurora/stdlib/
+        └── StdlibTest.java
 ```
 
-## build.gradle.kts
+## Build desde cero
 
-```kotlin
-plugins {
-    java
-    application
-}
-
-group = "com.aurora"
-version = "1.0.0"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-application {
-    mainClass.set("com.aurora.java.Main")
-}
-
-repositories {
-    mavenCentral()
-}
-```
-
-## settings.gradle.kts
+#### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m19"
 ```
 
-## Ejecutar
+#### `build.gradle.kts`
 
-```bash
-./gradlew run
-# O directamente:
-mkdir -p out
-javac -d out src/main/java/com/aurora/java/**/*.java
-java -cp out com.aurora.java.Main
-```
+Se habilita `-ea` en tests porque el Tema 4 usa `assert` para invariantes internas. También se agrega `-parameters` por si se inspeccionan nombres de parámetros con reflexión; es buena práctica en proyectos modernos.
 
-### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min
-
-**Caso guía.** un mini-framework necesita leer anotaciones en runtime.
-
-Reflection y anotaciones runtime
-
-**Definición.** Reflexión permite inspeccionar/modificar clases, campos y métodos en runtime. Las anotaciones con `@Retention(RUNTIME)` pueden leerse por reflexión.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-ref
-cd java-m19-ref
-```
-
-Crea el archivo `DemoRef.java`:
-
-```java
-import java.lang.annotation.*;
-import java.lang.reflect.*;
-@Retention(RetentionPolicy.RUNTIME) @interface Label { String value(); }
-class User { @Label("nombre") String name = "Ada"; }
-public class DemoRef {
-  public static void main(String[] args) throws Exception {
-    Field f = User.class.getDeclaredField("name");
-    System.out.println(f.getAnnotation(Label.class).value());
-  }
+```kotlin
+plugins { java; application }
+group = "com.aurora"; version = "1.0.0"
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+repositories { mavenCentral() }
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+application { mainClass = "com.aurora.stdlib.App" }
+tasks.test {
+    useJUnitPlatform()
+    jvmArgs("-ea") // habilita assertions para Tema 4
+    testLogging { events("passed","skipped","failed") }
+}
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-parameters", "-Werror"))
 }
 ```
 
-```bash
-javac DemoRef.java
-java DemoRef
-```
+### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 45 min
 
-**Error común.** Usar reflexión para lógica normal. Rompe encapsulación, tipado y rendimiento. Corrección: usarla en bordes/frameworks.
+La reflexión es la capacidad del programa para inspeccionar su propia estructura en tiempo de ejecución: clases, campos, métodos, constructores y anotaciones. En vez de llamar `pedido.getId()` directamente, puedes pedirle a la clase `Pedido` qué campos tiene, qué anotaciones llevan y leer sus valores dinámicamente. Esto es poderoso porque permite construir herramientas genéricas —serializadores, validadores, frameworks de inyección, ORMs— que trabajan sobre tipos que no conocían al compilar.
 
-**Verificación (JDK 27, 2026-05-22).** `nombre`.
+El costo también es real. La reflexión rompe encapsulación si se usa sin cuidado (`setAccessible`), es más lenta que una llamada directa, mueve errores de compilación a runtime, y hace más difícil refactorizar: renombrar un campo privado no rompe un `getDeclaredField("nombre")` en compilación. Por eso se usa en bordes de infraestructura/framework, no como reemplazo normal de diseño orientado a objetos.
 
-### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min
+Las anotaciones completan el modelo. Una anotación por sí sola es metadata; no hace nada. Su utilidad depende de quién la lea. `@Retention(RetentionPolicy.RUNTIME)` indica que la anotación estará disponible en runtime para que la reflexión la consulte. `@Target` limita dónde puede aplicarse. En este ejemplo, `@AuditCampo` marca qué campos deben entrar en una auditoría, y el auditor los lee dinámicamente.
 
-**Caso guía.** validar formato de código de guía.
-
-Regex, `Pattern`, `Matcher`
-
-**Definición.** Regex describe patrones textuales. `Pattern` compila; `Matcher` evalúa sobre input.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-regex
-cd java-m19-regex
-```
-
-Crea el archivo `DemoRegex.java`:
+#### `AuditCampo.java`
 
 ```java
-import java.util.regex.*;
-public class DemoRegex {
-  public static void main(String[] args) {
-    Pattern p = Pattern.compile("G-\\d{3}");
-    System.out.println(p.matcher("G-123").matches());
-    System.out.println(p.matcher("X-123").matches());
-  }
+package com.aurora.stdlib;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface AuditCampo {
+    String nombre();
 }
 ```
 
-```bash
-javac DemoRegex.java
-java DemoRegex
-```
-
-**Error común.** Validar todo con regex complejas ilegibles. Corrección: regex simple + validación semántica en código.
-
-**Verificación (JDK 27, 2026-05-22).** `true`, `false`.
-
-### Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min
-
-**Caso guía.** sumar precios monetarios sin errores de punto flotante.
-
-`BigDecimal`
-
-**Definición.** `BigDecimal` representa decimales de precisión arbitraria. Para dinero, usar constructor desde `String` y `MathContext`/`scale` explícitos.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-money
-cd java-m19-money
-```
-
-Crea el archivo `DemoMoney.java`:
+#### `Pedido.java`
 
 ```java
+package com.aurora.stdlib;
+
 import java.math.BigDecimal;
-public class DemoMoney {
-  public static void main(String[] args) {
-    BigDecimal a = new BigDecimal("0.10");
-    BigDecimal b = new BigDecimal("0.20");
-    System.out.println(a.add(b));
-  }
+
+public class Pedido {
+    @AuditCampo(nombre = "id")
+    private final String id;
+    @AuditCampo(nombre = "total")
+    private final BigDecimal total;
+    private final String notaInterna;
+
+    public Pedido(String id, BigDecimal total, String notaInterna) {
+        this.id = id;
+        this.total = total;
+        this.notaInterna = notaInterna;
+    }
+    public String id() { return id; }
+    public BigDecimal total() { return total; }
+    public String notaInterna() { return notaInterna; }
 }
 ```
 
-```bash
-javac DemoMoney.java
-java DemoMoney
-```
+`notaInterna` no está anotada: el auditor no debe exponerla. Ese es el contrato explícito.
 
-**Error común.** `new BigDecimal(0.1)`. Captura la representación binaria del double. Corrección: `new BigDecimal("0.1")`.
-
-**Verificación (JDK 27, 2026-05-22).** `0.30`.
-
-### Tema 4: Assertions y diseño por contrato · Intermedio · 40 min
-
-**Caso guía.** invariantes internas que no deberían ocurrir si el código es correcto.
-
-`assert`
-
-**Definición.** `assert` verifica una condición interna; se habilita con `-ea`. No reemplaza validación de entrada externa.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-assert
-cd java-m19-assert
-```
-
-Crea el archivo `DemoAssert.java`:
+#### `Auditor.java`
 
 ```java
-public class DemoAssert {
-  static int dup(int x){ int r=x*2; assert r>=x; return r; }
-  public static void main(String[] args){ System.out.println(dup(2)); }
+package com.aurora.stdlib;
+
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public final class Auditor {
+    private Auditor() {}
+
+    public static Map<String, Object> auditar(Object obj) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        for (Field f : obj.getClass().getDeclaredFields()) {
+            AuditCampo ann = f.getAnnotation(AuditCampo.class);
+            if (ann == null) continue;
+            try {
+                f.setAccessible(true);
+                out.put(ann.nombre(), f.get(obj));
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("no se pudo leer campo " + f.getName(), e);
+            }
+        }
+        return out;
+    }
 }
 ```
 
-```bash
-javac DemoAssert.java
-java -ea DemoAssert
-```
+Resultado verificado: `AUDIT={id=P1, total=10.00}`. La nota interna no aparece. El caso de borde importante es el acceso: `setAccessible(true)` puede fallar con módulos/JPMS o security managers restrictivos. En código moderno, conviene preferir handles o exponer la información por diseño, pero hay que entender reflexión porque el ecosistema Java la usa ampliamente.
 
-**Error común.** Usar `assert` para validar input de usuario. Corrección: validar con excepciones; `assert` para invariantes internas.
+### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 40 min
 
-**Verificación (JDK 27, 2026-05-22).** `4`.
+Una expresión regular describe un patrón de texto. En Java, `Pattern` representa la regex compilada y `Matcher` aplica ese patrón a una entrada concreta. Separarlos importa: compilar una regex tiene costo; si vas a validar miles de strings con el mismo patrón, compilas una vez y reutilizas el `Pattern`.
 
-### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min
+La regex es útil para formatos bien definidos: códigos, placas, identificadores, fechas con forma conocida. No es buena herramienta para todo lo que parezca texto: no parsees HTML complejo con regex, no la uses como único validador de emails RFC-completos si el negocio no lo necesita, y no escribas patrones opacos sin tests. Otro riesgo es la complejidad catastrófica (ReDoS) en patrones ambiguos sobre input no confiable; en validaciones simples con anclas y clases acotadas, el riesgo es menor, pero conviene conocerlo.
 
-**Caso guía.** cargar implementaciones de un servicio por SPI.
-
-ServiceLoader/SPI
-
-**Definición.** `ServiceLoader` carga implementaciones de una interfaz declaradas en `META-INF/services/`.
-
-**Ejemplo mínimo (concepto).** Requiere archivo de servicio y providers en classpath/module path. Útil para plugins.
-
-**Error común.** Asumir orden estable o única implementación sin validar. Corrección: iterar, seleccionar por criterio explícito.
-
-**Nota de verificación.** Ejemplo completo requiere estructura de recursos; patrón estándar de JDK (`ServiceLoader.load`).
-
-### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min
-
-**Caso guía.** mostrar monto y fecha según locale.
-
-i18n/l10n con `Locale`, `NumberFormat`, `DateTimeFormatter`
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-i18n
-cd java-m19-i18n
-```
-
-Crea el archivo `DemoI18n.java`:
+#### `ValidadorCodigo.java`
 
 ```java
+package com.aurora.stdlib;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public final class ValidadorCodigo {
+    private static final Pattern CODIGO = Pattern.compile("^[A-Z]{3}-\\d{4}$");
+    private ValidadorCodigo() {}
+
+    public static boolean esValido(String codigo) {
+        if (codigo == null) return false;
+        return CODIGO.matcher(codigo).matches();
+    }
+
+    public static String extraerPrimerCodigo(String texto) {
+        Matcher m = Pattern.compile("[A-Z]{3}-\\d{4}").matcher(texto == null ? "" : texto);
+        return m.find() ? m.group() : null;
+    }
+}
+```
+
+`^` y `$` anclan el patrón completo: `ABC-1234` es válido, `abc-1234` no. `find()` busca una ocurrencia dentro de un texto mayor. Salida verificada: `CODIGO=true`, `EXTRA=ABC-1234`.
+
+Error común: usar `matches()` cuando querías `find()`, o al revés. `matches()` exige que toda la cadena cumpla el patrón; `find()` busca una subcadena que cumpla.
+
+### Tema 3: Dinero exacto con BigDecimal · Básico · 40 min
+
+`double` y `float` son tipos binarios de punto flotante. Representan eficientemente muchos valores, pero no pueden representar exactamente todos los decimales. `0.1 + 0.2` en binario no es exactamente `0.3`. Para gráficos o física eso puede ser aceptable; para dinero, no. Un centavo perdido o generado por redondeo binario se convierte en inconsistencia contable.
+
+`BigDecimal` representa decimales con precisión arbitraria. El punto clave es construirlo desde `String` cuando el valor viene de un literal decimal: `new BigDecimal("0.10")` preserva la intención decimal; `new BigDecimal(0.10)` captura la aproximación binaria del double. También hay que definir escala y modo de redondeo al dividir o al presentar totales. `RoundingMode.HALF_UP` es común en cálculos comerciales, pero la regla depende del dominio; lo importante es que sea explícita.
+
+#### `CalculadoraPrecio.java`
+
+```java
+package com.aurora.stdlib;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+public final class CalculadoraPrecio {
+    private CalculadoraPrecio() {}
+
+    public static BigDecimal total(BigDecimal precioUnitario, int cantidad, BigDecimal iva) {
+        if (precioUnitario == null || iva == null) throw new IllegalArgumentException("valor nulo");
+        if (cantidad <= 0) throw new IllegalArgumentException("cantidad inválida");
+        if (precioUnitario.signum() < 0 || iva.signum() < 0) throw new IllegalArgumentException("negativo");
+        BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
+        BigDecimal total = subtotal.add(subtotal.multiply(iva));
+        return total.setScale(2, RoundingMode.HALF_UP);
+    }
+}
+```
+
+Salida verificada: `TOTAL=23.80` para `10.00 * 2 + IVA 19%`. El test también confirma `0.10 * 3 + IVA 19% = 0.36` con escala 2. 
+
+Error común: comparar `BigDecimal` con `equals()` sin considerar escala (`new BigDecimal("1.0").equals(new BigDecimal("1.00"))` es `false`). Para valor numérico, usa `compareTo()`.
+
+### Tema 4: Assertions y diseño por contrato · Intermedio · 35 min
+
+Una assertion (`assert condición : mensaje`) expresa una invariante interna: algo que debería ser cierto si el código está bien. En Java, las assertions se habilitan con `-ea` (enable assertions) en la JVM. Si no las habilitas, no se ejecutan. Esa característica define su límite: **nunca uses `assert` para validar entrada externa** de usuario, red o archivo. Para eso usa excepciones explícitas como `IllegalArgumentException`.
+
+El diseño por contrato va más allá de la palabra clave `assert`. Es la disciplina de definir precondiciones (lo que el llamador debe cumplir), postcondiciones (lo que el método garantiza) e invariantes (lo que siempre debe ser cierto en el estado válido). En Java no hay sintaxis nativa completa de DbC como en Eiffel, pero puedes expresarlo con validaciones, assertions, tipos, tests y documentación.
+
+#### `Contratos.java`
+
+```java
+package com.aurora.stdlib;
+
+public final class Contratos {
+    private Contratos() {}
+
+    public static int porcentaje(int parte, int total) {
+        if (total <= 0) throw new IllegalArgumentException("total debe ser > 0"); // validación externa
+        if (parte < 0 || parte > total) throw new IllegalArgumentException("parte fuera de rango");
+        int r = (parte * 100) / total;
+        assert r >= 0 && r <= 100 : "invariante roto: porcentaje=" + r; // invariante interna
+        return r;
+    }
+}
+```
+
+La precondición se valida con excepción porque depende del llamador. La assertion cubre una invariante interna: dado el contrato de entrada, el resultado debe estar entre 0 y 100. En `build.gradle.kts` configuramos `jvmArgs("-ea")` en tests para que esta protección realmente se ejecute.
+
+### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Avanzado · 45 min
+
+`ServiceLoader` es el mecanismo estándar del JDK para descubrir implementaciones de una interfaz en tiempo de ejecución. En vez de hacer `new EmailNotificador()` dentro del núcleo, el núcleo depende de la interfaz `Notificador` y `ServiceLoader` busca implementaciones disponibles en el classpath/module path. Esto reduce acoplamiento: puedes agregar un notificador nuevo sin modificar el código que itera notificaciones.
+
+El contrato tiene dos partes. La parte Java: una interfaz o clase abstracta, y una o más implementaciones con constructor público sin argumentos (o un proveedor estático en el modelo modular moderno). La parte de recursos: un archivo en `META-INF/services/` cuyo nombre es el nombre completo de la interfaz, y cuyo contenido lista las clases implementadoras, una por línea.
+
+No es un contenedor de dependencias completo. No resuelve ciclos, scopes, inyección por constructor compleja, ni configuración avanzada. Para eso existen frameworks como Spring/CDI. `ServiceLoader` es útil cuando quieres extensibilidad simple y estándar.
+
+#### `Notificador.java`
+
+```java
+package com.aurora.stdlib;
+public interface Notificador {
+    String canal();
+    String enviar(String mensaje);
+}
+```
+
+#### `EmailNotificador.java`
+
+```java
+package com.aurora.stdlib;
+public class EmailNotificador implements Notificador {
+    @Override public String canal() { return "email"; }
+    @Override public String enviar(String mensaje) { return "EMAIL:" + mensaje; }
+}
+```
+
+#### `SmsNotificador.java`
+
+```java
+package com.aurora.stdlib;
+public class SmsNotificador implements Notificador {
+    @Override public String canal() { return "sms"; }
+    @Override public String enviar(String mensaje) { return "SMS:" + mensaje; }
+}
+```
+
+#### `src/main/resources/META-INF/services/com.aurora.stdlib.Notificador`
+
+```text
+com.aurora.stdlib.EmailNotificador
+com.aurora.stdlib.SmsNotificador
+```
+
+Salida verificada: `CANALES=email,sms`. Si olvidas el archivo de servicio, `ServiceLoader` simplemente no encuentra implementaciones; es un error silencioso frecuente, por eso el test lo cubre.
+
+### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 45 min
+
+Internacionalizar no es solo traducir strings. Un número, una moneda, una fecha o el orden alfabético cambian según la región. `1,234.50` en EE. UU. puede escribirse `1.234,50` en otros locales; una fecha `May 23, 2026` no se presenta igual en español; y ordenar texto requiere reglas de collation, no solo comparar bytes.
+
+El JDK ofrece `Locale` para representar región/idioma, `NumberFormat` para números y monedas, `DateTimeFormatter` con `FormatStyle` y locale para fechas, y `Collator` para ordenamiento sensible a idioma. `Collator` es especialmente importante: comparar strings con `compareTo()` usa orden Unicode, que no coincide con las expectativas humanas de todos los idiomas. En español, `ñ` se considera letra propia entre `n` y `o` en reglas tradicionales; el `Collator` del locale aplica reglas lingüísticas.
+
+#### `FormateadorRegional.java`
+
+```java
+package com.aurora.stdlib;
+
+import java.math.BigDecimal;
+import java.text.Collator;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-public class DemoI18n {
-  public static void main(String[] args) {
-    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.US);
-    System.out.println(nf.format(1234.5));
-  }
+
+public final class FormateadorRegional {
+    private FormateadorRegional() {}
+
+    public static String moneda(BigDecimal monto, Locale locale) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance(locale);
+        return nf.format(monto);
+    }
+
+    public static String fecha(LocalDate fecha, Locale locale) {
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(fecha);
+    }
+
+    public static List<String> ordenar(List<String> palabras, Locale locale) {
+        Collator collator = Collator.getInstance(locale);
+        collator.setStrength(Collator.PRIMARY); // ignora mayúsculas/acentos base según locale
+        List<String> copia = new ArrayList<>(palabras);
+        copia.sort(collator);
+        return copia;
+    }
 }
 ```
 
-```bash
-javac DemoI18n.java
-java DemoI18n
-```
+Salida verificada: `FECHA_US=May 23, 2026`, `ORD=[n, ñ, o]` con `Locale.forLanguageTag("es-ES")`. Nota: el símbolo y formato de moneda dependen del locale y de los datos de ICU/JDK disponibles; por eso el test de moneda se debe hacer con cuidado o con expectativas del entorno.
 
-**Error común.** Concatenar símbolos de moneda manualmente. Corrección: `NumberFormat`/`Locale`.
+Error común: construir `Locale` con el constructor `new Locale(String, String)`, que está deprecado en JDKs recientes. Usa `Locale.forLanguageTag(...)` o `Locale.of(...)` según la versión.
 
-**Verificación (JDK 27, 2026-05-22).** `$1,234.50`.
+### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 50 min
 
-### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min
+Un proxy dinámico es un objeto creado en runtime que implementa una o más interfaces y delega cada invocación a un `InvocationHandler`. No escribes la clase proxy a mano: la JVM la genera. Cuando llamas un método en el proxy, la JVM entra al handler, te da el método, los argumentos y el objeto proxy, y tú decides qué hacer: registrar, validar, abrir transacción, devolver un mock, o delegar al objeto real.
 
-**Caso guía.** interceptar llamadas a una interfaz para logging o validación.
+Este mecanismo está detrás de muchas herramientas. Spring AOP puede usar proxies JDK para interceptar métodos de beans con interfaces; los frameworks de mocking crean proxies que registran llamadas y devuelven valores configurados. Entenderlo quita la sensación de magia: `@Transactional` no “modifica” tu método, normalmente hay un proxy alrededor que abre/commitea/rollbackea la transacción.
 
-`InvocationHandler` y `Proxy`
+El límite es importante: `java.lang.reflect.Proxy` solo funciona con **interfaces**. No puede proxyear una clase concreta sin interfaz. Para eso se usan otras técnicas como CGLIB/ByteBuddy. También hay que manejar bien `toString`, `equals`, `hashCode` si el proxy los intercepta.
 
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m19-proxy
-cd java-m19-proxy
-```
-
-Crea el archivo `DemoProxy.java`:
+#### `Operacion.java`
 
 ```java
-import java.lang.reflect.*;
-interface Api { String ping(); }
-public class DemoProxy {
-  public static void main(String[] args) {
-    Api api = (Api) Proxy.newProxyInstance(Api.class.getClassLoader(), new Class[]{Api.class},
-      (p,m,a) -> m.getName().equals("ping") ? "pong" : null);
-    System.out.println(api.ping());
-  }
+package com.aurora.stdlib;
+public interface Operacion {
+    int aplicar(int a, int b);
 }
 ```
 
-```bash
-javac DemoProxy.java
-java DemoProxy
+#### `OperacionReal.java`
+
+```java
+package com.aurora.stdlib;
+public class OperacionReal implements Operacion {
+    @Override public int aplicar(int a, int b) { return a + b; }
+}
 ```
 
-**Error común.** Usar proxies para todo; dificulta debug. Corrección: usarlos en concerns transversales claros.
+#### `ProxyDemo.java`
 
-**Verificación (JDK 27, 2026-05-22).** `pong`.
+```java
+package com.aurora.stdlib;
 
-### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
-**Caso guía.** entender por qué dos clases “iguales” pueden ser incompatibles si las cargó distinto ClassLoader.
+public final class ProxyDemo {
+    private ProxyDemo() {}
 
-ClassLoader
+    public static class Resultado {
+        public final int valor;
+        public final List<String> log;
+        public Resultado(int valor, List<String> log) { this.valor = valor; this.log = log; }
+    }
 
-**Definición.** Un `ClassLoader` carga clases en la JVM. La identidad de una clase en runtime incluye su nombre y su loader.
+    public static Resultado conLog(Operacion real) {
+        List<String> log = new ArrayList<>();
+        InvocationHandler h = (Object proxy, Method method, Object[] args) -> {
+            log.add("before:" + method.getName());
+            Object r = method.invoke(real, args);
+            log.add("after:" + method.getName());
+            return r;
+        };
+        Operacion proxy = (Operacion) Proxy.newProxyInstance(
+                Operacion.class.getClassLoader(),
+                new Class<?>[]{Operacion.class},
+                h);
+        int valor = proxy.aplicar(2, 3);
+        return new Resultado(valor, log);
+    }
+}
+```
 
-**Error común.** `ClassCastException` entre la misma clase en loaders distintos. Corrección: entender jerarquía de loaders y aislamiento.
+Salida verificada: `PROXY=5:2` y log `[before:aplicar, after:aplicar]`. El proxy no cambia el resultado; agrega comportamiento alrededor.
 
-### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min
+### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 50 min
 
-**Caso guía.** acceso de bajo nivel más tipado/performante que reflexión en ciertos casos.
+Un `ClassLoader` carga bytes de clase y los define como `Class<?>` en la JVM. La identidad de una clase no es solo su nombre completamente calificado: también importa el class loader que la definió. La misma clase cargada por dos loaders distintos puede ser incompatible en runtime (`ClassCastException`).
 
-MethodHandles/VarHandles
+El modelo clásico usa delegación padre-hijo. Cuando un loader recibe una petición, normalmente delega primero a su padre antes de intentar cargar él mismo. Esto evita que código de aplicación reemplace clases fundamentales como `java.lang.String`. En JDKs modernos el bootstrap loader está representado de forma particular y `getParent()` puede devolver `null`; el platform class loader y el application/system class loader son visibles.
 
-**Definición.** MethodHandles ofrece referencias invocables a métodos/campos; VarHandles ofrece acceso con semánticas de memoria a variables/fields.
+`URLClassLoader` permite cargar clases desde JARs o directorios en rutas indicadas. Es la base histórica de muchos sistemas de plugins. En producción, los plugins traen retos: aislamiento, versiones, cierre de recursos, y seguridad. Aquí verificamos la identidad y jerarquía visible; cargar un JAR externo dinámicamente requiere un artefacto externo, por eso se deja como extensión con nota honesta.
 
-**Ejemplo mínimo (conceptual).** Requiere `Lookup`; útil en frameworks y librerías de alto rendimiento.
+#### `ClassLoaderDemo.java`
 
-**Error común.** Usarlo sin necesidad. Corrección: preferir APIs de alto nivel; usar en infraestructura cuando se justifique.
+```java
+package com.aurora.stdlib;
 
-## Cierre
+public final class ClassLoaderDemo {
+    private ClassLoaderDemo() {}
 
-Java avanzado es un set de herramientas de precisión. Úsalas con criterio, pruebas y documentación.
+    public static String identidad() {
+        ClassLoader app = ClassLoaderDemo.class.getClassLoader();
+        ClassLoader platform = ClassLoader.getPlatformClassLoader();
+        ClassLoader boot = platform.getParent(); // puede ser null en algunas JVMs
+        return "app=" + (app != null) +
+                ",platform=" + (platform != null) +
+                ",bootNull=" + (boot == null);
+    }
+}
+```
 
-## Checklist
+Salida verificada en JDK 27: `CL=app=true,platform=true,bootNull=true`. El valor `bootNull` puede variar según implementación; la prueba solo afirma las partes estables.
 
-- Uso reflexión/proxies solo en bordes.
-- Manejo dinero con `BigDecimal` string.
-- Uso i18n con Locale/formatters.
-- Entiendo riesgos de class loading y serialización/reflexión.
+**Nota de verificación honesta:** no se creó un JAR plugin externo cargado con `URLClassLoader` en esta corrida para mantener el módulo autocontenido. El concepto clave verificado es la jerarquía/identidad de loaders; la carga dinámica desde URL se puede extender creando un JAR aparte y cargándolo con `URLClassLoader.newInstance(...)`.
+
+### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Avanzado · 45 min
+
+`MethodHandles` y `VarHandles` son APIs modernas introducidas para acceso más controlado y optimizable que la reflexión tradicional. `MethodHandle` es una referencia invocable a un método, constructor o campo; se obtiene mediante `Lookup` y `MethodType`, y puede ser optimizada por la JVM. `VarHandle` da acceso a variables/campos con semánticas claras, incluyendo modos de acceso atómico/volátil cuando aplica.
+
+La diferencia práctica con reflexión es de modelo. Reflexión inspecciona y opera con objetos `Method/Field` de forma muy general; MethodHandles/VarHandles están diseñados para ser más eficientes y expresivos en semántica de bajo nivel. Aun así, siguen siendo APIs avanzadas: si puedes resolver con una llamada normal, hazlo normal.
+
+Para acceder a un miembro privado, `privateLookupIn` permite obtener un lookup con privilegios adecuados, sujeto a reglas de módulos. En este ejemplo se accede a un campo privado dentro del mismo módulo.
+
+#### `HandlesDemo.java`
+
+```java
+package com.aurora.stdlib;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
+
+public final class HandlesDemo {
+    private HandlesDemo() {}
+
+    public static class Caja { private int valor = 10; }
+
+    public static int invocarLength(String s) throws Throwable {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle mh = lookup.findVirtual(String.class, "length", MethodType.methodType(int.class));
+        return (int) mh.invoke(s);
+    }
+
+    public static int leerYEscribir() throws Throwable {
+        Caja c = new Caja();
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Caja.class, MethodHandles.lookup());
+        VarHandle vh = lookup.findVarHandle(Caja.class, "valor", int.class);
+        int antes = (int) vh.get(c);
+        vh.set(c, 42);
+        return antes + (int) vh.get(c);
+    }
+}
+```
+
+Salida verificada: `MH=4`, `VH=52` (10 + 42). `invoke` puede lanzar `Throwable`; en APIs reales hay que decidir si envolverlo o declararlo.
+
+#### `App.java`
+
+```java
+package com.aurora.stdlib;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.ServiceLoader;
+
+public final class App {
+    public static void main(String[] args) throws Throwable {
+        Pedido p = new Pedido("P1", new BigDecimal("10.00"), "interna");
+        System.out.println("AUDIT=" + Auditor.auditar(p));
+        System.out.println("CODIGO=" + ValidadorCodigo.esValido("ABC-1234"));
+        System.out.println("EXTRA=" + ValidadorCodigo.extraerPrimerCodigo("id ABC-1234 ok"));
+        System.out.println("TOTAL=" + CalculadoraPrecio.total(new BigDecimal("10.00"), 2, new BigDecimal("0.19")));
+        System.out.println("PCT=" + Contratos.porcentaje(1, 4));
+
+        StringBuilder canales = new StringBuilder();
+        for (Notificador n : ServiceLoader.load(Notificador.class)) {
+            if (canales.length() > 0) canales.append(",");
+            canales.append(n.canal());
+        }
+        System.out.println("CANALES=" + canales);
+
+        System.out.println("FECHA_US=" + FormateadorRegional.fecha(LocalDate.of(2026, 5, 23), Locale.US));
+        System.out.println("ORD=" + FormateadorRegional.ordenar(List.of("ñ", "o", "n"), Locale.forLanguageTag("es-ES")));
+
+        ProxyDemo.Resultado r = ProxyDemo.conLog(new OperacionReal());
+        System.out.println("PROXY=" + r.valor + ":" + r.log.size());
+
+        System.out.println("MH=" + HandlesDemo.invocarLength("hola"));
+        System.out.println("VH=" + HandlesDemo.leerYEscribir());
+        System.out.println("CL=" + ClassLoaderDemo.identidad());
+    }
+}
+```
+
+#### `StdlibTest.java`
+
+El test cubre los 9 temas con aserciones concretas. `-ea` está activo por configuración de Gradle.
+
+```java
+package com.aurora.stdlib;
+
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class StdlibTest {
+
+    @Test
+    void reflexionLeeSoloCamposAuditados() {
+        Pedido p = new Pedido("P1", new BigDecimal("10.00"), "secreto");
+        Map<String, Object> audit = Auditor.auditar(p);
+        assertEquals(2, audit.size());
+        assertEquals("P1", audit.get("id"));
+        assertFalse(audit.containsKey("notaInterna"));
+    }
+
+    @Test
+    void regexValidaYExtrae() {
+        assertTrue(ValidadorCodigo.esValido("ABC-1234"));
+        assertFalse(ValidadorCodigo.esValido("abc-1234"));
+        assertEquals("ABC-1234", ValidadorCodigo.extraerPrimerCodigo("xx ABC-1234 yy"));
+        assertNull(ValidadorCodigo.extraerPrimerCodigo("sin codigo"));
+    }
+
+    @Test
+    void bigDecimalNoPierdeCentavos() {
+        BigDecimal total = CalculadoraPrecio.total(new BigDecimal("0.10"), 3, new BigDecimal("0.19"));
+        assertEquals(new BigDecimal("0.36"), total);
+        assertThrows(IllegalArgumentException.class,
+                () -> CalculadoraPrecio.total(new BigDecimal("1.00"), 0, new BigDecimal("0.19")));
+    }
+
+    @Test
+    void contratoValidaEntrada() {
+        assertEquals(25, Contratos.porcentaje(1, 4));
+        assertThrows(IllegalArgumentException.class, () -> Contratos.porcentaje(1, 0));
+        assertThrows(IllegalArgumentException.class, () -> Contratos.porcentaje(5, 4));
+    }
+
+    @Test
+    void serviceLoaderDescubreImplementaciones() {
+        List<String> canales = StreamSupport.stream(ServiceLoader.load(Notificador.class).spliterator(), false)
+                .map(Notificador::canal)
+                .sorted()
+                .collect(Collectors.toList());
+        assertEquals(List.of("email", "sms"), canales);
+    }
+
+    @Test
+    void i18nFormateaYOrdena() {
+        String fecha = FormateadorRegional.fecha(LocalDate.of(2026, 5, 23), Locale.US);
+        assertTrue(fecha.contains("2026"));
+        List<String> ord = FormateadorRegional.ordenar(List.of("ñ", "o", "n"), Locale.forLanguageTag("es-ES"));
+        assertEquals("n", ord.get(0));
+        assertEquals("ñ", ord.get(1));
+    }
+
+    @Test
+    void proxyIntercepta() {
+        ProxyDemo.Resultado r = ProxyDemo.conLog(new OperacionReal());
+        assertEquals(5, r.valor);
+        assertEquals(List.of("before:aplicar", "after:aplicar"), r.log);
+    }
+
+    @Test
+    void methodHandleYVarHandle() throws Throwable {
+        assertEquals(4, HandlesDemo.invocarLength("hola"));
+        assertEquals(52, HandlesDemo.leerYEscribir()); // 10 + 42
+    }
+
+    @Test
+    void classLoadersVisibles() {
+        String id = ClassLoaderDemo.identidad();
+        assertTrue(id.contains("app=true"));
+        assertTrue(id.contains("platform=true"));
+    }
+}
+```
+
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m19` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+`./gradlew -q test`: **9 tests, 0 fallas**.
+
+Salida real de `./gradlew -q run`:
+
+```text
+AUDIT={id=P1, total=10.00}
+CODIGO=true
+EXTRA=ABC-1234
+TOTAL=23.80
+PCT=25
+CANALES=email,sms
+FECHA_US=May 23, 2026
+ORD=[n, ñ, o]
+PROXY=5:2
+MH=4
+VH=52
+CL=app=true,platform=true,bootNull=true
+```
+
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `ServiceLoader` no encuentra implementaciones | Falta `META-INF/services/<interfaz>` o nombre mal escrito | Revisar ruta y contenido exacto | Archivo con FQN de interfaz y FQNs de implementaciones |
+| Error de centavos | `double` para dinero | Comparar cálculos con decimales | `BigDecimal` desde String, escala y `RoundingMode` explícitos |
+| Assertion no salta | JVM sin `-ea` | Revisar flags de ejecución | Habilitar `-ea` en tests/dev; no usar assert para input externo |
+| Regex valida de más/menos | Falta ancla o patrón ambiguo | Probar casos límite | Usar `^$` para match completo, tests de casos inválidos |
+| `ClassCastException` entre clases “iguales” | Cargadas por ClassLoaders distintos | Inspeccionar `getClassLoader()` | Entender jerarquía/delegación; aislar plugins con cuidado |
+| Proxy no intercepta clase concreta | `Proxy` JDK solo soporta interfaces | Revisar tipo proxyeado | Usar interfaz o herramienta de bytecode si realmente hace falta |
+
+## Checklist de cierre
+
+- [ ] Sé cuándo usar reflexión y cuál es su costo.
+- [ ] Compilo/uso regex con intención (`matches` vs `find`) y casos límite.
+- [ ] Uso `BigDecimal` correctamente para dinero.
+- [ ] Distingo validación externa de invariante interna con assertions.
+- [ ] Puedo explicar ServiceLoader, proxies, class loaders y MethodHandles/VarHandles a nivel de contrato.
+
+Siguiente paso natural: **Módulo 20** ya quedó canónico; después de cerrar la deuda restante, **M21 — APIs públicas, compatibilidad y evolución** profundiza en compatibilidad binaria/fuente y bridge methods en la superficie pública.
