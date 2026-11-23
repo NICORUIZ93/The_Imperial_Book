@@ -4116,40 +4116,40 @@
   "java": {
     "0": [
       {
-        "title": "Del código fuente a la JVM",
-        "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
+        "title": "Qué es programar y qué problema resuelve Java",
+        "fragment": "tema-1-que-es-programar-y-que-problema-resuelve-java"
       },
       {
-        "title": "JDK, JRE y JVM",
-        "fragment": "tema-2-jdk-jre-y-jvm"
+        "title": "JDK, JRE, JVM y bytecode (WORA)",
+        "fragment": "tema-2-jdk-jre-jvm-y-bytecode-wora"
       },
       {
-        "title": "public static void main — qué significa cada palabra",
-        "fragment": "tema-3-public-static-void-main-que-significa-cada-palabra"
+        "title": "Instalar JDK y verificar entorno",
+        "fragment": "tema-3-instalar-jdk-y-verificar-entorno"
       },
       {
-        "title": "Tipos primitivos vs referencias",
-        "fragment": "tema-4-tipos-primitivos-vs-referencias"
+        "title": "Primer programa desde cero, sin IDE",
+        "fragment": "tema-4-primer-programa-desde-cero-sin-ide"
       },
       {
-        "title": "Variables, conversiones y `String`",
-        "fragment": "tema-5-variables-conversiones-y-string"
+        "title": "Tipos primitivos, variables y conversiones",
+        "fragment": "tema-5-tipos-primitivos-variables-y-conversiones"
       },
       {
-        "title": "Operadores, precedencia y control de flujo",
-        "fragment": "tema-6-operadores-precedencia-y-control-de-flujo"
+        "title": "String, entrada/salida y formato",
+        "fragment": "tema-6-string-entrada-salida-y-formato"
       },
       {
-        "title": "Arreglos, wrappers y paso de argumentos",
-        "fragment": "tema-7-arreglos-wrappers-y-paso-de-argumentos"
+        "title": "Operadores, expresiones y precedencia",
+        "fragment": "tema-7-operadores-expresiones-y-precedencia"
       },
       {
-        "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
-        "fragment": "tema-8-entrada-java-time-y-por-que-evitar-las-apis-obsoletas-date-calendar"
+        "title": "Control de flujo: decisiones y repeticiones",
+        "fragment": "tema-8-control-de-flujo-decisiones-y-repeticiones"
       },
       {
-        "title": "Java 25 para programas pequeños: `IO`, archivos compactos e `import module`",
-        "fragment": "tema-9-java-25-para-programas-pequenos-io-archivos-compactos-e-import-module"
+        "title": "Arreglos y métodos básicos",
+        "fragment": "tema-9-arreglos-y-metodos-basicos"
       }
     ],
     "1": [
