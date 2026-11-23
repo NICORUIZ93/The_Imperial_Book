@@ -1,21 +1,23 @@
 # Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER
 
-Tienda Aurora necesita persistir clientes, direcciones, pedidos, líneas y pagos sin convertir la base de datos en un detalle caótico. JPA define el modelo de mapeo objeto-relacional en Java; Hibernate es una implementación de JPA muy usada. El reto no es solo “guardar entidades”: es modelar relaciones correctas, entender cuándo se ejecuta SQL, evitar N+1, controlar concurrencia y tener pruebas reproducibles.
+Persistir datos parece fácil hasta que el modelo de objetos y el modelo relacional dejan de coincidir. En memoria, un `Pedido` tiene un `Cliente` como objeto. En SQL, `pedidos` tiene una columna `cliente_id`. En memoria, navegar `pedido.getCliente().getNombre()` es acceder a un campo. En SQL, eso puede significar otra consulta. JPA existe para traducir entre esos dos mundos. Hibernate es una implementación de JPA: toma tus entidades y anotaciones, genera SQL, administra identidad, caché y transacciones.
 
-Este módulo construye `tienda-aurora-jpa`, un proyecto Gradle con H2 en memoria para verificaciones locales reales. Se usa H2 porque permite ejecutar y comprobar comportamiento en este entorno; para PostgreSQL/Testcontainers/Flyway se incluyen notas de verificación honestas, porque esos labs dependen de infraestructura externa o contenedores y no deben fingirse como ejecutados aquí.
+El problema real de Tienda Aurora no es “guardar un pedido”. Es guardar un modelo correcto y leerlo sin sorpresas. Si mapeas mal una relación, la base acepta duplicados que el dominio no quería. Si cargas asociaciones con EAGER por comodidad, terminas trayendo medio grafo en cada consulta. Si usas LAZY sin plan de fetch, aparece el problema N+1: una consulta para la lista y N consultas más para cada asociación. Si dos usuarios editan el mismo pedido, necesitas una estrategia de concurrencia.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, Hibernate ORM 7.0.0.Final, H2 2.3.232, JUnit 5.13.4, macOS arm64. `./gradlew -q test` pasó con 6 tests y 0 fallas. La comparación N+1 vs EntityGraph se midió con `SessionFactory.getStatistics()`.
+Este módulo construye `tienda-aurora-jpa`, un proyecto verificado con Gradle, Hibernate ORM 7, H2 y JUnit 5. H2 se usa para poder ejecutar pruebas reales en este entorno. PostgreSQL, Flyway y Testcontainers son la dirección correcta para entornos cercanos a producción; se explican y se dejan con nota de verificación honesta porque no se ejecutaron aquí.
+
+**Verificación real (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, Hibernate ORM 7.0.0.Final, H2 2.3.232, JUnit 5.13.4, macOS arm64. `./gradlew -q test` pasó con 6 tests, 0 fallas. El N+1 se midió con estadísticas de Hibernate: `sinGraph=4`, `conGraph=1`.
 
 ## Proyecto desde cero: tienda-aurora-jpa
 
-## Prerrequisitos
+### Prerrequisitos
 
 ```bash
 java -version
 gradle --version
 ```
 
-## Estructura del proyecto
+### Estructura
 
 ```text
 tienda-aurora-jpa/
@@ -42,19 +44,21 @@ tienda-aurora-jpa/
         └── JpaAuroraTest.java
 ```
 
-## Código completo
+## Código completo, archivo por archivo
 
-Configuración Gradle del proyecto.
+Antes de mirar clases, ubica las piezas: `persistence.xml` configura la unidad JPA; las entidades describen el mapa objeto-relacional; el repositorio contiene consultas; el servicio controla transacciones y casos de prueba; el test verifica comportamiento observable.
 
-**Archivo:** `settings.gradle.kts`
+### `settings.gradle.kts`
+
+El nombre del proyecto.
 
 ```kotlin
 rootProject.name = "tienda-aurora-jpa"
 ```
 
-Build Java 25 con Hibernate ORM 7, H2, JPA API y JUnit 5. H2 se usa para ejecutar verificaciones locales reales; la estrategia de migración/Testcontainers se documenta con nota honesta.
+### `build.gradle.kts`
 
-**Archivo:** `build.gradle.kts`
+Build Gradle con Java 25, Hibernate ORM 7, H2, API JPA Jakarta y JUnit 5. H2 permite ejecutar pruebas reales en este entorno. Flyway/Testcontainers/PostgreSQL se documentan como verificación de infraestructura, no se fingen.
 
 ```kotlin
 plugins {
@@ -100,9 +104,9 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-Unidad de persistencia JPA. Registra entidades, configura H2 en memoria y `hibernate.hbm2ddl.auto=create-drop` para que el esquema se cree en pruebas locales. En producción el esquema debe gestionarse con migraciones.
+### `src/main/resources/META-INF/persistence.xml`
 
-**Archivo:** `src/main/resources/META-INF/persistence.xml`
+`persistence.xml` define la unidad de persistencia `auroraPU`. Aquí se registran entidades, el driver JDBC, la URL de H2 y propiedades de Hibernate. `hibernate.hbm2ddl.auto=create-drop` crea el esquema al iniciar y lo borra al cerrar; es útil para pruebas locales, peligroso en producción.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -129,9 +133,9 @@ Unidad de persistencia JPA. Registra entidades, configura H2 en memoria y `hiber
 </persistence>
 ```
 
-Entidad simple. Será el lado OneToOne de `Cliente`.
+### `src/main/java/com/aurora/jpa/dominio/Direccion.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/Direccion.java`
+Entidad hija de un OneToOne. Tiene identidad propia (`id`) y datos simples. JPA necesita un constructor sin argumentos; se declara `protected` para no invitar a crear entidades incompletas desde cualquier lugar.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -171,9 +175,9 @@ public class Direccion {
 }
 ```
 
-Entidad con `@OneToOne` hacia `Direccion`. `optional=false`, `@JoinColumn(unique=true, nullable=false)` expresan la restricción real en base de datos.
+### `src/main/java/com/aurora/jpa/dominio/Cliente.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/Cliente.java`
+`Cliente` posee una `Direccion` por `@OneToOne`. La clave está en `@JoinColumn(unique=true, nullable=false)`: la restricción no vive solo en Java, vive en la base. `FetchType.LAZY` evita cargar la dirección cada vez que se carga un cliente.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -223,9 +227,9 @@ public class Cliente {
 }
 ```
 
-Agregado raíz del ejemplo. Tiene `@ManyToOne` LAZY al cliente, `@OneToMany` a líneas y `@Version` para bloqueo optimista.
+### `src/main/java/com/aurora/jpa/dominio/Pedido.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/Pedido.java`
+`Pedido` es el centro del caso N+1. Tiene `@ManyToOne(fetch=LAZY)` hacia `Cliente`, `@OneToMany` hacia `LineaPedido` y `@Version` para bloqueo optimista. `LAZY` en ManyToOne significa: trae el pedido; si alguien pide el cliente, ya veremos.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -290,9 +294,9 @@ public class Pedido {
 }
 ```
 
-Entidad intermedia de líneas. Es una alternativa explícita a poner atributos en relaciones simples; aquí modela SKU y cantidad por pedido.
+### `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
+Entidad intermedia. Modela una línea del pedido con SKU y cantidad. Si la relación pedido-producto necesitara precio histórico, descuento o cantidad, ManyToMany simple no alcanza; una entidad intermedia sí.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -340,9 +344,9 @@ public class LineaPedido {
 }
 ```
 
-Base de herencia con `SINGLE_TABLE`. Todas las subclases comparten la tabla `pagos` y se distinguen por `tipo_pago`.
+### `src/main/java/com/aurora/jpa/dominio/Pago.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/Pago.java`
+Raíz de una jerarquía de herencia JPA. `SINGLE_TABLE` guarda todas las subclases en `pagos` con una columna discriminadora `tipo_pago`. Es simple y rápida para consultas polimórficas.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -385,9 +389,9 @@ public abstract class Pago {
 }
 ```
 
-Subclase concreta de pago con tarjeta.
+### `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
+Subclase de `Pago`. Solo agrega `ultimos4`. En SINGLE_TABLE, esa columna queda en la misma tabla y será null para otras subclases.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -417,9 +421,9 @@ public class PagoTarjeta extends Pago {
 }
 ```
 
-Subclase concreta de pago por transferencia.
+### `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
+Subclase de `Pago` para transferencias. El discriminador `TRANSFERENCIA` permite que Hibernate materialice la clase correcta al leer.
 
 ```java
 package com.aurora.jpa.dominio;
@@ -449,9 +453,9 @@ public class PagoTransferencia extends Pago {
 }
 ```
 
-Consultas de lectura. Incluye JPQL tipada, Criteria dinámica y consulta con `EntityGraph` para evitar N+1 al cargar cliente.
+### `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
+Repositorio de consultas. Tiene tres formas de leer pedidos: JPQL simple, JPQL con `join fetch`, Criteria dinámica y EntityGraph. La diferencia entre la consulta simple y las que hacen fetch es el corazón del N+1.
 
 ```java
 package com.aurora.jpa.repositorio;
@@ -480,6 +484,14 @@ public final class PedidoRepositorio {
     public List<Pedido> pedidosPorFecha(LocalDate fecha) {
         TypedQuery<Pedido> q = em.createQuery(
                 "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
+        q.setParameter("fecha", fecha);
+        return q.getResultList();
+    }
+
+    public List<Pedido> pedidosConClienteJoinFetch(LocalDate fecha) {
+        TypedQuery<Pedido> q = em.createQuery(
+                "select distinct p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id",
+                Pedido.class);
         q.setParameter("fecha", fecha);
         return q.getResultList();
     }
@@ -514,9 +526,9 @@ public final class PedidoRepositorio {
 }
 ```
 
-Orquesta transacciones con `EntityManager`. Contiene seed, demo de ciclo de vida y prueba de bloqueo optimista con dos EntityManagers concurrentes.
+### `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
 
-**Archivo:** `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
+Servicio transaccional mínimo con `EntityManager`. Expone helpers `tx/query`, un seed, una demo de ciclo de vida y una demo de conflicto optimista con dos EntityManagers. La intención didáctica es ver transacciones y estado de entidades sin esconderlos detrás de magia.
 
 ```java
 package com.aurora.jpa.servicio;
@@ -662,9 +674,9 @@ public final class PedidoServicio {
 }
 ```
 
-Pruebas JUnit verificadas: restricción OneToOne, herencia SINGLE_TABLE, N+1 vs EntityGraph con estadísticas de Hibernate, Criteria dinámica, bloqueo optimista y ciclo de vida.
+### `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
 
-**Archivo:** `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
+Pruebas verificadas. No solo prueban “que no explota”: miden consultas preparadas para N+1, prueban restricción única, herencia, Criteria, ciclo de vida y `OptimisticLockException`.
 
 ```java
 package com.aurora.jpa;
@@ -787,91 +799,99 @@ gradle wrapper --gradle-version 9.9.1
 Resultado real:
 
 ```text
-BUILD SUCCESSFUL (6 tests, 0 failures) — ./gradlew -q test
+BUILD SUCCESSFUL (6 tests, 0 failures)
 ```
 
 ## Conceptos cubiertos
 
 ### Tema 1: Entidades y relaciones JPA · Intermedio · 35 min
 
-Una entidad JPA es una clase cuyo estado se puede persistir en una tabla. Se marca con `@Entity` y necesita un identificador con `@Id`. `@Table` y `@Column` permiten controlar nombres y restricciones. El mapeo no es solo anotaciones: define el contrato con la base de datos.
+Una entidad JPA es una clase Java que representa una fila o concepto persistente con identidad. La identidad es importante: dos objetos Java pueden tener los mismos datos y ser distintos objetos en memoria, pero una entidad se identifica por su `@Id`. En `Cliente`, el `id` es generado por la base (`GenerationType.IDENTITY`). Eso significa que la base asigna el valor al insertar; Hibernate lo obtiene después de la inserción.
 
-En `Cliente`, la relación OneToOne con `Direccion` se declara así:
+El mapeo más simple es campo a columna: `@Column(nullable=false, unique=true)` sobre `email` no es decoración. Le dice a JPA/Hibernate que el esquema debe reflejar esa restricción y, además, comunica la intención del dominio. Si el email debe ser único, la base tiene que defender esa regla, no solo la UI.
 
-```java
-@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-@JoinColumn(name = "direccion_id", nullable = false, unique = true)
-private Direccion direccion;
-```
+La relación OneToOne entre `Cliente` y `Direccion` es un buen primer caso porque obliga a decidir dueño de la relación. En este modelo, `Cliente` tiene la clave foránea `direccion_id`. `@JoinColumn(name="direccion_id", unique=true, nullable=false)` hace que cada cliente apunte a una dirección, y que esa dirección no pueda ser reutilizada por otro cliente. La prueba `oneToOneYRestriccionUnica` intenta persistir otro cliente con la misma dirección y espera una excepción. Esa excepción es la señal correcta: la restricción del dominio quedó en la base.
 
-`@OneToOne` expresa cardinalidad uno a uno. `@JoinColumn(unique = true)` crea la restricción que impide compartir la misma dirección entre dos clientes. En la prueba `oneToOneYRestriccionUnica`, intentar persistir otro cliente con la misma dirección dispara excepción por la restricción. `FetchType.LAZY` indica que la dirección no debe cargarse hasta que se acceda a ella, salvo que la consulta la traiga explícitamente.
+También aparece `cascade = CascadeType.ALL`. Cascade significa “propaga operaciones de persistencia”. Si persistes un cliente nuevo con una dirección nueva, el cascade evita tener que persistir la dirección a mano. Es útil, pero peligroso si se usa sin pensar: un cascade mal puesto puede borrar o persistir grafos inesperados. Regla práctica: cascadear desde el agregado dueño hacia hijos que realmente le pertenecen.
 
 ### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
-No toda relación se modela igual. OneToOne sirve cuando una fila se asocia a exactamente una fila. OneToMany/ManyToOne modela colecciones e hijos. ManyToMany puro sirve cuando solo hay asociación, pero si la relación tiene atributos propios (cantidad, precio en el momento, fecha), conviene una entidad intermedia. `LineaPedido` es ese caso: pertenece a un pedido, tiene SKU y cantidad.
+Las relaciones en JPA se leen en dos direcciones: el objeto Java y la tabla SQL. OneToOne significa una fila asociada a una fila. ManyToOne significa muchas filas apuntando a una. OneToMany es la vista inversa. ManyToMany parece conveniente, pero solo cuando la relación es pura asociación sin datos propios. En Tienda Aurora, una línea de pedido tiene SKU y cantidad: eso ya no es una asociación desnuda, es un concepto. Por eso `LineaPedido` es una entidad propia.
 
-La herencia JPA tiene varias estrategias. En este módulo se usa `SINGLE_TABLE` para `Pago`:
+La decisión entre ManyToMany y entidad intermedia es una decisión de modelo, no de anotación. Si mañana necesitas precio unitario al momento de compra, descuento por línea o estado de preparación, la entidad intermedia ya tiene lugar para eso. Con ManyToMany puro, terminas rompiendo el modelo.
 
-```java
-@Entity
-@Table(name = "pagos")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo_pago")
-public abstract class Pago { ... }
-```
+La herencia es otro punto donde objeto y relacional chocan. Java tiene herencia natural; SQL no. JPA ofrece estrategias:
 
-`SINGLE_TABLE` guarda todas las subclases en una tabla con una columna discriminadora. Es rápida para consultas polimórficas porque evita joins. La contrapartida es que columnas específicas de subclases suelen ser anulables. `JOINED` normaliza en varias tablas con joins; `TABLE_PER_CLASS` duplica columnas. La prueba `herenciaSingleTable` verifica que existen dos pagos y que sus tipos son `TARJETA` y `TRANSFERENCIA`.
+- `SINGLE_TABLE`: una tabla para toda la jerarquía, con columna discriminadora. Rápida para consultas polimórficas, pero deja columnas de subclases anulables.
+- `JOINED`: una tabla base y una por subclase, unidas por join. Más normalizada, pero las consultas polimórficas hacen joins.
+- `TABLE_PER_CLASS`: tabla por clase concreta. Evita nulls de otras subclases, pero las consultas polimórficas pueden ser más costosas.
+
+En `Pago`, SINGLE_TABLE es razonable porque hay pocas subclases y queremos consultar pagos sin joins. La prueba `herenciaSingleTable` crea un `PagoTarjeta` y un `PagoTransferencia`, consulta por la base `Pago` y verifica que Hibernate materializa las subclases correctas. Eso es polimorfismo persistido.
 
 ### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
-El `EntityManager` es el API de JPA para operar con el contexto de persistencia. Una entidad puede estar transient (nueva, no conocida), managed (seguida por el contexto), detached (existió en contexto pero ya no), o removed. `persist` hace managed a una entidad transient. `flush` sincroniza cambios pendientes con la base antes del commit. `clear` desasocia todas las entidades managed.
+JPA no es “SQL con anotaciones”; es un contexto de persistencia. El `EntityManager` mantiene entidades *managed*: objetos cuya identidad y cambios conoce. El ciclo de vida típico es:
 
-En `PedidoServicio.demoCicloVida()` se persiste un cliente, se hace `flush`, se obtiene su id y luego `clear()`. Después `find` vuelve a cargarlo desde la base. La prueba verifica que el cliente sigue existiendo en BD. Esto importa porque muchas sorpresas de JPA vienen de confundir “está en memoria Java” con “está managed por el contexto”.
+- **Transient**: objeto nuevo, Java lo conoce, JPA no. No tiene fila asociada.
+- **Managed**: el EntityManager lo sigue. Si cambias un campo dentro de una transacción, JPA puede detectarlo y sincronizarlo.
+- **Detached**: fue managed, pero el contexto se cerró o se hizo `clear()`. Sigue teniendo datos, pero JPA ya no lo rastrea.
+- **Removed**: marcado para borrado al sincronizar.
 
-Las consultas JPQL tipadas evitan strings mágicos sin tipo de retorno. En `PedidoRepositorio`:
+`persist()` mueve transient a managed. `flush()` empuja cambios pendientes al SQL antes del commit; no termina la transacción. `clear()` desasocia todo el contexto. En `demoCicloVida()`, se persiste un cliente, se hace flush, se guarda el id, se hace clear y se vuelve a buscar con `find`. El resultado prueba que el dato está en BD, no solo en el mapa del EntityManager. Este detalle evita un error común: creer que `clear()` borra de la base. No borra; desasocia.
 
-```java
-TypedQuery<Pedido> q = em.createQuery(
-        "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
-q.setParameter("fecha", fecha);
-return q.getResultList();
-```
-
-JPQL consulta entidades y sus campos, no tablas físicas directamente. Usar parámetros (`:fecha`) evita inyección y problemas de escape.
+Las consultas JPQL tipadas operan sobre entidades, no sobre tablas. `select p from Pedido p where p.fecha = :fecha` habla de la entidad `Pedido` y su campo `fecha`. Hibernate traduce eso a SQL. El tipo `Pedido.class` en `createQuery` hace que el resultado sea tipado, no un `List<Object[]>` ambiguo. Y el parámetro nombrado evita concatenar strings, que sería frágil e inseguro.
 
 ### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
-Cuando los filtros llegan opcionalmente, concatenar JPQL con strings es frágil. Criteria API permite construir la consulta con objetos Java. En `buscarDinamico`, se agregan predicados solo si `fecha` o `sku` están presentes.
+Las consultas estáticas son fáciles con JPQL. El problema aparece cuando los filtros son opcionales: fecha sí/no, SKU sí/no, cliente sí/no. Concatenar JPQL a mano produce código difícil de leer y fácil de romper: espacios faltantes, `where` duplicado, parámetros mal puestos. Criteria API construye la consulta como árbol de objetos.
 
-```java
-List<Predicate> predicates = new ArrayList<>();
-if (fecha != null) predicates.add(cb.equal(root.get("fecha"), fecha));
-if (sku != null && !sku.isBlank()) predicates.add(cb.equal(root.join("lineas").get("sku"), sku));
-cq.where(predicates.toArray(Predicate[]::new));
-```
+En `buscarDinamico`, el `CriteriaBuilder` crea predicados. Si hay fecha, agrega igualdad por fecha. Si hay SKU, hace join con líneas y compara SKU. `distinct(true)` evita duplicados cuando el join a líneas multiplica filas. El resultado se verifica en `criteriaDinamica`. La ventaja es seguridad de composición; el costo es verbosidad.
 
-La prueba `criteriaDinamica` filtra por fecha y SKU y obtiene un pedido. Criteria es verbosa, pero tipada y dinámica. Querydsl genera un metamodelo fluido (`QPedido.pedido.fecha.eq(...)`) que suele ser más legible; su costo es configuración de generación de código. **Nota de verificación:** Querydsl no se ejecutó en este build para mantener el proyecto liviano; la comparación es conceptual y la implementación verificada usa Criteria API.
+Querydsl ataca el mismo problema con una API más fluida, generando clases Q (`QPedido`, `QLineaPedido`). Se ve más cerca del dominio y menos cerca del árbol Criteria. No lo ejecuté en este build para no agregar generación de código y dependencias extra no verificadas; la decisión importante es el criterio: usa JPQL para consultas fijas, Criteria/Querydsl cuando la composición dinámica sea real.
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
-`FetchType.LAZY` retrasa la carga de una asociación hasta que se accede. `EAGER` la carga junto con la entidad principal. EAGER parece cómodo, pero puede cargar grafos enormes sin que lo pidas. LAZY es más seguro por defecto, pero tiene una trampa clásica: N+1.
+Este es el problema que más confunde al entrar a JPA porque el código Java se ve inocente. Mira esta línea:
 
-N+1 ocurre cuando haces 1 consulta para traer N pedidos y luego, al acceder a `pedido.getCliente()` dentro de un loop, JPA dispara 1 consulta por pedido para cargar el cliente. Total: 1 + N. En Tienda Aurora, listar guías/pedidos y mostrar el cliente de cada uno es el patrón exacto.
+```java
+for (Pedido p : pedidos) {
+    p.getCliente().getNombre();
+}
+```
 
-La prueba `nPlusUnoYEntityGraph` usa estadísticas de Hibernate (`SessionFactory.getStatistics().getPrepareStatementCount()`). Primero carga pedidos por fecha y toca `getCliente().getNombre()`: resultado real `sinGraph=4` (1 query de pedidos + 3 de clientes). Luego ejecuta la consulta con EntityGraph: `conGraph=1`.
+En Java puro, eso es acceder a un objeto en memoria. En JPA, depende. Si el cliente ya fue cargado, solo es memoria. Si `Pedido.cliente` es LAZY y no fue inicializado, Hibernate necesita ir a la base a buscar ese cliente. Si lo haces dentro de un loop sobre 100 pedidos, puede ejecutar 100 consultas adicionales. Ese es el N+1.
 
-Salida real del demo:
+La forma de pensarlo es: **1** consulta trae la lista principal, **N** consultas traen una asociación por cada elemento. No es un bug del ORM; es una consecuencia de pedir datos tarde, uno por uno. LAZY no es malo. LAZY es honesto: “no lo traje todavía”. El error es no tener plan de fetch para el caso de uso.
+
+`FetchType.EAGER` hace lo contrario: carga la asociación al cargar la entidad principal. Suena tentador, pero es una decisión global. Si marcas `cliente` como EAGER, cada vez que cargues un pedido por cualquier motivo, vendrá el cliente. Eso puede encadenar cargas, generar joins grandes y volver lenta una pantalla que solo quería el id y la fecha. Por eso en entidades JPA se recomienda LAZY por defecto en asociaciones y fetch explícito por consulta.
+
+En el proyecto, `PedidoRepositorio.pedidosPorFecha` solo carga pedidos:
+
+```java
+select p from Pedido p where p.fecha = :fecha order by p.id
+```
+
+Si luego tocas `p.getCliente().getNombre()`, Hibernate emite una consulta por cliente. La prueba `nPlusUnoYEntityGraph` lo mide con estadísticas de Hibernate, no por intuición. Resultado real:
 
 ```text
 sinGraph=4
 conGraph=1
 ```
 
-La corrección depende del caso: `join fetch` en JPQL, `EntityGraph`, DTO projection, o consultas específicas por vista. No hay una sola respuesta correcta; la regla es medir cuántas consultas dispara tu caso de uso real.
+`sinGraph=4` significa 1 consulta para los 3 pedidos y 3 consultas más, una por cliente. `conGraph=1` significa que una sola consulta trajo pedidos y clientes necesarios. Ese número es la evidencia.
+
+Hay varias formas de corregir N+1, y elegir bien importa:
+
+- **`join fetch` JPQL**: `select distinct p from Pedido p join fetch p.cliente ...`. Simple y explícito. Bueno cuando sabes exactamente qué traer. Cuidado con colecciones múltiples en el mismo query: puede multiplicar filas.
+- **EntityGraph**: declaras atributos a cargar. Útil cuando quieres reutilizar la consulta base y cambiar el plan de carga. Es más declarativo.
+- **DTO projection**: consultas solo las columnas necesarias y las mapeas a un DTO. Es la opción más eficiente para lecturas de pantalla, porque no carga entidades completas ni contexto de persistencia innecesario.
+- **Batch fetching/subselect**: no elimina N+1, lo reduce a menos consultas. Puede ser útil cuando no puedes cambiar la consulta principal.
+
+La corrección no es “siempre usar EAGER”. La corrección es: define el caso de uso, mide las consultas, y trae exactamente lo que ese caso necesita.
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
-`EntityGraph` define qué atributos cargar para una consulta concreta. En `pedidosConClientePorFecha`:
+Un EntityGraph es un plan de carga. Le dice a JPA: “para esta consulta, incluye estos atributos”. En `pedidosConClientePorFecha` se crea un grafo y se agrega `cliente`:
 
 ```java
 EntityGraph<Pedido> graph = em.createEntityGraph(Pedido.class);
@@ -879,55 +899,60 @@ graph.addAttributeNodes("cliente");
 q.setHint("jakarta.persistence.fetchgraph", graph);
 ```
 
-Esto le dice a JPA que cargue `cliente` como parte del plan de fetch. Es mejor que cambiar la relación a EAGER globalmente, porque EAGER afecta todas las consultas. EntityGraph es por caso de uso.
+La ventaja sobre EAGER global es el alcance. EAGER cambia todas las lecturas de la entidad. EntityGraph cambia esta lectura. Eso respeta que una pantalla de listado necesita cliente, pero otra pantalla puede necesitar solo ids y fechas.
 
-JPA tiene caché L1 (first-level cache) en el `EntityManager`: dentro del mismo contexto de persistencia, cargar la misma entidad por id reutiliza la instancia. Es obligatoria y no se comparte entre contextos. La caché L2 es opcional, configurada a nivel de `EntityManagerFactory`/proveedor, y puede compartir datos entre contextos. La L2 requiere estrategia de invalidación cuidadosa; en sistemas distribuidos o con escrituras concurrentes puede servir datos obsoletos si se configura mal. **Nota de verificación:** este módulo verifica L1 implícitamente por el comportamiento del `EntityManager`; no se configuró L2 para evitar una capa extra no comprobada en el build.
+Las cachés JPA también se confunden mucho. La caché L1 es el contexto de persistencia del `EntityManager`. Si dentro del mismo EntityManager pides la misma entidad por id dos veces, la segunda normalmente vuelve desde L1. Es obligatoria y local a la unidad de trabajo. La caché L2 vive en el `EntityManagerFactory` y puede ser compartida entre contextos. Puede ahorrar lecturas, pero introduce invalidación: si otro proceso cambia la base, la L2 puede servir datos viejos si no está bien configurada. La L2 no es un “activar y listo”; requiere elegir proveedor, política, TTL, invalidación y medir hit ratio.
+
+**Nota de verificación:** L1 se observa por comportamiento normal del EntityManager; L2 no se configuró en este proyecto para no introducir infraestructura no verificada. Si habilitas L2, prueba invalidación, concurrencia y consistencia con tu carga real.
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
-La concurrencia en persistencia ocurre cuando dos transacciones tocan el mismo dato. JPA soporta bloqueo optimista con `@Version`. Cada actualización incrementa la versión; si otra transacción actualizó antes, el commit falla con `OptimisticLockException`.
+Una transacción es un límite de consistencia. En JPA, normalmente abres transacción, haces trabajo, commit. Si algo falla, rollback. El problema aparece cuando dos transacciones leen el mismo dato y luego ambas intentan escribir. Sin control, la última escritura puede pisar a la anterior (lost update).
 
-En `demoOptimista()`, dos `EntityManager` cargan el mismo pedido. El primero cambia fecha, hace flush y commit. El segundo intenta flush y recibe un conflicto de versión. La prueba verifica `OptimisticLockException`. Este patrón es bueno cuando los conflictos son raros: no bloquea lecturas, pero obliga a reintentar o reportar conflicto.
+El bloqueo optimista asume que los conflictos son poco frecuentes. Se implementa con `@Version`. Hibernate incluye la versión en el `WHERE` del update; si la versión ya cambió, no actualiza ninguna fila y lanza `OptimisticLockException`. En `demoOptimista()`, dos EntityManagers cargan el mismo pedido. El primero cambia fecha, hace flush y commit. El segundo intenta flush con la versión vieja y falla. La prueba espera `OptimisticLockException`. Eso es bueno: el sistema detectó el conflicto en vez de callar una pérdida de datos.
 
-El bloqueo pesimista (`LockModeType.PESSIMISTIC_WRITE`) bloquea filas en la base. Es útil cuando el conflicto es probable y la operación debe serializarse, pero reduce concurrencia y puede causar deadlocks. La propagación de transacciones (REQUIRED, REQUIRES_NEW, etc.) es un concepto de Spring; en JPA puro, tú controlas el límite con `begin/commit/rollback` o JTA. La regla es mantener transacciones cortas y con un límite claro.
+El bloqueo pesimista es la otra estrategia: `LockModeType.PESSIMISTIC_WRITE` pide a la base bloquear la fila. Es útil cuando el conflicto es probable o el costo de reintentar es alto. Su costo es menor concurrencia y riesgo de deadlocks. No hay una opción moralmente correcta; hay trade-offs.
+
+Propagación es un concepto más visible en Spring (`REQUIRED`, `REQUIRES_NEW`, etc.). En JPA puro, lo que ves es el límite transaccional que tú abres y cierras. Aun así, la idea es la misma: una operación de negocio debe definir si participa en una transacción existente o necesita una nueva. La regla profesional es mantener transacciones cortas, hacer trabajo externo (HTTP, colas, archivos) fuera del límite transaccional cuando sea posible, y definir claramente qué pasa ante fallo.
 
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
-`hibernate.hbm2ddl.auto=create-drop` es cómodo para pruebas locales, pero no es una estrategia de migración de producción. No versiona cambios, no controla orden, y puede destruir datos. Para producción, usa Flyway o Liquibase: migraciones SQL versionadas, aplicadas en orden, auditables.
+Generar el esquema con `hbm2ddl.auto=create-drop` es cómodo en desarrollo local, pero no es una estrategia de migración. Una migración es un cambio versionado, reproducible y auditable. Si agregas una columna no nula a una tabla con datos, necesitas una estrategia: valor por defecto, backfill, despliegue en fases. `hbm2ddl` no te da ese control.
 
-Una migración Flyway se vería así:
+Flyway y Liquibase resuelven esto con scripts versionados. Un ejemplo Flyway:
 
 ```sql
--- V1__crear_pedidos.sql
+-- V1__crear_clientes_y_pedidos.sql
 CREATE TABLE clientes (
   id BIGSERIAL PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
-  nombre VARCHAR(255) NOT NULL,
-  direccion_id BIGINT NOT NULL UNIQUE
+  nombre VARCHAR(255) NOT NULL
 );
 ```
 
-Testcontainers permite levantar PostgreSQL real en Docker para pruebas. Da evidencia más fiel que H2 en tipos, locks, JSONB, funciones o comportamiento de aislamiento. Un smoke típico sería:
+El punto no es la sintaxis SQL, sino el contrato: cada cambio de esquema viaja con el código, se aplica en orden y se prueba en CI.
+
+Testcontainers levanta una base real en contenedor para tests. La diferencia con H2 es importante: H2 es rápido y práctico, pero no es PostgreSQL. Tipos, bloqueos, índices, JSONB, CTEs, collation y detalles de aislamiento pueden comportarse distinto. Un test de integración real se ve así:
 
 ```java
 @Testcontainers
 class PedidoRepositorioIT {
   @Container
-  static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine");
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 }
 ```
 
-**Nota de verificación:** no ejecuté Flyway ni Testcontainers en este entorno. Docker 29.9.3 está disponible, pero el lab requiere dependencias `org.flywaydb:flyway-core`, `org.testcontainers:postgresql` y una prueba de integración separada; fingir la salida violaría el estándar. El comportamiento de JPA se verificó con H2 y JUnit 5. Para CI real, ejecuta el repositorio contra PostgreSQL efímero y aplica migraciones antes de los tests.
+**Nota de verificación honesta:** en este entorno no ejecuté Flyway ni Testcontainers. El proyecto verificado usa H2 + JUnit 5 y pasó. Para llevarlo a nivel producción/CI, agrega `org.flywaydb:flyway-core`, `org.testcontainers:junit-jupiter` y `org.testcontainers:postgresql`, ejecuta migraciones antes de los tests y corre la suite contra PostgreSQL efímero. No reporto salidas inventadas de ese lab.
 
 ## Cierre
 
-JPA no es solo anotaciones. Es un modelo de estado, identidad, carga y transacciones. Modela relaciones por el dominio, no por conveniencia; usa LAZY por defecto y carga explícita por caso de uso; mide N+1; maneja concurrencia con `@Version` o locks cuando corresponde; y trata el esquema como código versionado con migraciones.
+JPA es una capa de traducción con estado. Te ahorra SQL repetitivo, pero te cobra si no entiendes qué está haciendo. El profesional no memoriza anotaciones: entiende identidad, ciclo de vida, fetch plan, SQL generado, concurrencia y migraciones. Si puedes explicar por qué una consulta dispara 4 statements y cómo bajarla a 1 con evidencia, ya estás pensando en JPA a nivel de ingeniería, no de receta.
 
 ## Checklist
 
-- Sé mapear entidades y relaciones con restricciones reales.
-- Distingo SINGLE_TABLE/JOINED/TABLE_PER_CLASS y cuándo usar entidad intermedia.
-- Entiendo transient/managed/detached, `flush` y `clear`.
-- Puedo usar Criteria para filtros dinámicos y sé cuándo Querydsl mejora legibilidad.
-- Puedo detectar N+1 y corregirlo con EntityGraph/join fetch/DTO.
-- Entiendo L1/L2, bloqueo optimista/pesimista y por qué hbm2ddl no reemplaza migraciones.
+- Distingo entidad transient/managed/detached/removed y sé qué hace `flush`/`clear`.
+- Modelo relaciones por el dominio: OneToOne real, entidad intermedia cuando hay atributos, herencia con estrategia consciente.
+- Sé explicar N+1 desde cero y corregirlo con join fetch, EntityGraph o DTO projection según el caso.
+- No uso EAGER por defecto; defino fetch plan por caso de uso.
+- Sé cuándo usar bloqueo optimista (`@Version`) y cuándo pesimista.
+- Trato el esquema con migraciones versionadas y uso Testcontainers para pruebas cercanas a producción.

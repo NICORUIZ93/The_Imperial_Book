@@ -4324,6 +4324,66 @@
     ],
     "16": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura",
+        "fragment": "estructura"
+      },
+      {
+        "title": "`settings.gradle.kts`",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "`build.gradle.kts`",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "`src/main/resources/META-INF/persistence.xml`",
+        "fragment": "src-main-resources-meta-inf-persistence-xml"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/Direccion.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-direccion-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/Cliente.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-cliente-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/Pedido.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-pedido-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/LineaPedido.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-lineapedido-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/Pago.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-pago-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-pagotarjeta-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`",
+        "fragment": "src-main-java-com-aurora-jpa-dominio-pagotransferencia-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`",
+        "fragment": "src-main-java-com-aurora-jpa-repositorio-pedidorepositorio-java"
+      },
+      {
+        "title": "`src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`",
+        "fragment": "src-main-java-com-aurora-jpa-servicio-pedidoservicio-java"
+      },
+      {
+        "title": "`src/test/java/com/aurora/jpa/JpaAuroraTest.java`",
+        "fragment": "src-test-java-com-aurora-jpa-jpaauroratest-java"
+      },
+      {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
       },
