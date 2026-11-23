@@ -523,13 +523,72 @@ Esta forma también mejora el testing. `ServicioReservasTest` prueba la regla de
 
 ### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 45 min
 
-Una prueba útil verifica un comportamiento observable y falla con un mensaje que ayude a entender qué se rompió. JUnit Jupiter (la base de JUnit 5/6) aporta el modelo de pruebas con `@Test`, ciclo de vida, assertions y extensiones. En este proyecto usamos JUnit Jupiter 5.13.4, que es la línea estable verificada en el entorno; el concepto es el mismo que se espera en JUnit 6: pruebas claras, aisladas y ejecutadas por JUnit Platform.
+Una prueba útil verifica un comportamiento observable y falla con un mensaje que ayude a entender qué se rompió. JUnit Jupiter (la base de JUnit 5/6) aporta el modelo de pruebas con `@Test`, ciclo de vida, assertions y extensiones. En este proyecto usamos JUnit Jupiter 5.13.4, la línea estable verificada en el entorno; la idea central es la misma que se busca en JUnit 6: pruebas claras, aisladas y ejecutadas por JUnit Platform.
 
-El test `ServicioReservasTest` usa dos estilos de assertion. `assertEquals` comprueba el resultado esperado. `assertThrows` captura la excepción y permite inspeccionar el mensaje. Eso es mejor que un `try/catch` manual porque la intención queda visible: esperamos que falle, y esperamos que falle por esa razón.
+El test real del dominio prueba dos comportamientos: el cálculo del total y el rechazo cuando el producto no existe. El doble de `CatalogoProductos` es una lambda porque la interfaz tiene un solo método; así el test se enfoca en la regla de negocio.
 
-Mockito entra cuando el doble manual se vuelve incómodo. Si una dependencia tiene muchos métodos, muchas interacciones o necesitas verificar llamadas, un mock puede ayudar. Pero no es obligatorio para todo. Aquí `CatalogoProductos` tiene un solo método, así que una lambda es más simple que configurar Mockito. La regla práctica es: usa el doble más barato que exprese bien la intención. Un fake o stub simple suele ser más legible que un mock pesado.
+```java
+package com.aurora.build.domain;
 
-**Nota de verificación:** el proyecto ejecutado no agrega Mockito como dependencia para evitar ruido; la prueba usa un doble manual porque la interfaz lo permite. Si el puerto creciera, el siguiente paso natural sería `mock(CatalogoProductos.class)` con `when(...).thenReturn(...)` y, solo cuando importe, `verify(...)`.
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ServicioReservasTest {
+
+    @Test
+    void calculaTotalDeReserva() {
+        CatalogoProductos catalogo = sku -> Optional.ofNullable(Map.of(
+                "CAF-001", new Producto("CAF-001", "Café Aurora", Dinero.de("12.50"))
+        ).get(sku));
+        ServicioReservas servicio = new ServicioReservas(catalogo);
+
+        ResultadoReserva resultado = servicio.reservar("PED-100", "CAF-001", 2);
+
+        assertEquals("PED-100", resultado.pedidoId());
+        assertEquals("CAF-001", resultado.sku());
+        assertEquals(Dinero.de("25.00"), resultado.total());
+    }
+
+    @Test
+    void fallaCuandoProductoNoExiste() {
+        ServicioReservas servicio = new ServicioReservas(sku -> Optional.empty());
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> servicio.reservar("PED-101", "NO-EXISTE", 1));
+
+        assertEquals("producto no encontrado: NO-EXISTE", error.getMessage());
+    }
+}
+```
+
+`assertEquals` verifica el resultado observable. `assertThrows` es importante porque no solo dice “falló”; captura la excepción y permite afirmar sobre su tipo y mensaje. Eso evita el patrón frágil de `try/catch` con `fail()`.
+
+Mockito entra cuando el doble manual deja de ser cómodo: muchas interacciones, verificación de llamadas, o dependencias con varias operaciones. Si `CatalogoProductos` creciera, un test con Mockito se vería así:
+
+```java
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@Test
+void consultaCatalogoConMockito() {
+    CatalogoProductos catalogo = mock(CatalogoProductos.class);
+    when(catalogo.buscarPorSku("CAF-001"))
+            .thenReturn(Optional.of(new Producto("CAF-001", "Café Aurora", Dinero.de("12.50"))));
+
+    ServicioReservas servicio = new ServicioReservas(catalogo);
+    ResultadoReserva resultado = servicio.reservar("PED-100", "CAF-001", 2);
+
+    assertEquals(Dinero.de("25.00"), resultado.total());
+    verify(catalogo).buscarPorSku("CAF-001");
+}
+```
+
+**Nota de verificación:** la prueba ejecutada en el proyecto es la primera, con doble manual y JUnit Jupiter 5.13.4. El bloque Mockito es un ejemplo de referencia de la misma regla de negocio; no se agregó la dependencia Mockito al build verificado para mantener el módulo pequeño. Si lo incorporas, añade `testImplementation("org.mockito:mockito-junit-jupiter:<versión verificada>")` y ejecuta las pruebas.
 
 ### Tema 5: Pruebas de integración reproducibles · Avanzado · 40 min
 
