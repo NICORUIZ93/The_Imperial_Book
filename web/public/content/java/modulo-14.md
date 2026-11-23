@@ -10,14 +10,14 @@ Este módulo profundiza en aspectos donde Java sorprende a quien solo conoce la 
 
 ## Proyecto desde cero: tienda-aurora-java-m14
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-java-m14/
@@ -29,7 +29,7 @@ tienda-aurora-java-m14/
             └── Main.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -55,13 +55,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m14"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run

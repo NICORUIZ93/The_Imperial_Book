@@ -6,14 +6,14 @@ Tienda Aurora comienza como un monolito modular: catálogo y pedidos en memoria.
 
 ## Proyecto desde cero: tienda-aurora-fundamentos
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-fundamentos/
@@ -26,7 +26,7 @@ tienda-aurora-fundamentos/
                 └── Hola.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -52,13 +52,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-fundamentos"
 ```
 
-### Código de ejemplo
+## Código de ejemplo
 
 **Archivo:** `src/main/java/com/aurora/fundamentos/Hola.java`
 
@@ -72,7 +72,7 @@ public class Hola {
 }
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 # Compilar

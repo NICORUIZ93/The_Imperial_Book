@@ -8,14 +8,14 @@ Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser s
 
 ## Proyecto desde cero: tienda-aurora-oop
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-oop/
@@ -33,7 +33,7 @@ tienda-aurora-oop/
                 └── OrderService.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -59,13 +59,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-oop"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
@@ -75,7 +75,7 @@ javac -d out src/main/java/com/aurora/oop/**/*.java
 java -cp out com.aurora.oop.Main
 ```
 
-### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
+### ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
 **Caso guía.** modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
 
@@ -316,7 +316,7 @@ Ada
 Saldo insuficiente
 ```
 
-### Tema 2: Herencia y sobreescritura · Básico · 40 min
+### ### Tema 2: Herencia y sobreescritura · Básico · 40 min
 
 **Caso guía.** empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
 
@@ -446,7 +446,7 @@ Ada: 2000.0
 Grace: 1600.0
 ```
 
-### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
+### ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 45 min
 
 **Caso guía.** un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
 
@@ -622,7 +622,7 @@ java Polimorfismo
 
 **Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`, `F1:121.0`.
 
-### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
+### ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min
 
 **Caso guía.** una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
 
@@ -724,7 +724,7 @@ java DemoMod
 
 **Verificación (JDK 27, 2026-05-22).** `10`.
 
-### Tema 5: `record` — modelos inmutables sin boilerplate · Intermedio · 35 min
+### ### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 35 min
 
 **Caso guía.** necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
 
@@ -791,7 +791,7 @@ java DemoRecV
 
 **Verificación (JDK 27, 2026-05-22).** `a@b.com`, `error`.
 
-### Tema 6: Constructores flexibles (Java 25) · Avanzado · 30 min
+### ### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de super(...) · Avanzado · 30 min
 
 **Caso guía.** antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
 

@@ -8,14 +8,14 @@ Muchos sistemas fallan en los bordes: leer un archivo que no existe, cargar un J
 
 ## Proyecto desde cero: tienda-aurora-io
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-io/
@@ -29,7 +29,7 @@ tienda-aurora-io/
                 └── ReportService.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -59,13 +59,13 @@ dependencies {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-io"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run

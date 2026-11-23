@@ -10,14 +10,14 @@ Cuando un bug ocurre en producción, no hay depurador adjunto. Lo que queda es l
 
 ## Proyecto desde cero: tienda-aurora-logging
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-logging/
@@ -31,7 +31,7 @@ tienda-aurora-logging/
                 └── OrderService.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -62,13 +62,13 @@ dependencies {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-logging"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
@@ -78,7 +78,7 @@ javac -cp "lib/*" -d out src/main/java/com/aurora/logging/**/*.java
 java -cp "out:lib/*" com.aurora.logging.Main
 ```
 
-### Tema 1: SLF4J y Logback — logging estructurado · Intermedio · 40 min
+### ### Tema 1: sealed — jerarquías cerradas y exhaustividad · Intermedio · 40 min
 
 **Caso guía.** un servicio procesa guías. Necesitas saber qué pasó, cuándo, en qué nivel y con qué error, sin imprimir ruido ni secretos.
 
@@ -131,7 +131,7 @@ java -cp ".:slf4j-api.jar:logback-core.jar:logback-classic.jar" DemoLog
 
 **Verificación (JDK 27, SLF4J 2.0.17, Logback 1.5.18, 2026-05-22).** Se observan líneas INFO/WARN con `Procesando guia id=G1` y `Reintento id=G1 intento=2`.
 
-### Tema 2: MDC — contexto por request/hilo · Intermedio · 35 min
+### ### Tema 2: Pattern matching exhaustivo y para instanceof · Intermedio · 35 min
 
 **Caso guía.** en un servidor concurrente, muchos requests loguean a la vez. Sin contexto, no sabes qué línea pertenece a qué request.
 
@@ -188,7 +188,7 @@ java -cp ".:slf4j-api.jar:logback-core.jar:logback-classic.jar" DemoMdc
 
 **Verificación (JDK 27, SLF4J/Logback, 2026-05-22).** Salida incluye `r-123` (MDC) y log de procesamiento.
 
-### Tema 3: Depuración y stack traces · Básico · 30 min
+### ### Tema 3: Unnamed variables y patterns (_, Java 22) · Básico · 30 min
 
 **Caso guía.** una excepción aparece en producción. La stack trace es el mapa del fallo: qué pasó, dónde y por qué cadena de llamadas.
 

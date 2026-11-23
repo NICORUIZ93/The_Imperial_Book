@@ -10,14 +10,14 @@ JPA abstrae el mapeo objeto-relacional, pero no elimina SQL ni el modelo relacio
 
 ## Proyecto desde cero: tienda-aurora-java-m16
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-java-m16/
@@ -29,7 +29,7 @@ tienda-aurora-java-m16/
             └── Main.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -55,13 +55,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m16"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run

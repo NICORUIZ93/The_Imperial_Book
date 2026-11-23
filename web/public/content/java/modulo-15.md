@@ -10,14 +10,14 @@ M8 y M9 dieron la base; este módulo la lleva al contexto profesional: Maven/Gra
 
 ## Proyecto desde cero: tienda-aurora-java-m15
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-java-m15/
@@ -29,7 +29,7 @@ tienda-aurora-java-m15/
             └── Main.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -55,13 +55,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m15"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run

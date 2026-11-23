@@ -10,14 +10,14 @@ Las pruebas automatizadas convierten cambios riesgosos en cambios verificables. 
 
 ## Proyecto desde cero: tienda-aurora-testing
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-testing/
@@ -32,7 +32,7 @@ tienda-aurora-testing/
             └── CalculatorTest.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -63,13 +63,13 @@ tasks.test {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-testing"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew test
@@ -80,7 +80,7 @@ javac -cp "out:lib/*" -d out src/test/java/com/aurora/testing/*.java
 java -cp "out:lib/*" org.junit.platform.console.ConsoleLauncher --scan-classpath
 ```
 
-### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
+### ### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
 
 **Caso guía.** validar una calculadora de descuentos. Debe cubrir caso feliz, borde y error.
 
@@ -182,7 +182,7 @@ class CicloTest {
 
 **Verificación.** 2 tests pasan.
 
-### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
+### ### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
 
 **Caso guía.** un servicio guarda y envía email. No quieres SMTP/DB real en unit test.
 
@@ -251,7 +251,7 @@ class NotificadorTest {
 
 **Verificación (Mockito 5.14.2, 2026-05-22).** Tests pasan.
 
-### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
+### ### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
 
 **Caso guía.** misma regla de validación con múltiples entradas.
 
@@ -282,7 +282,7 @@ class ParamTest {
 
 **Verificación.** 3 invocaciones pasan.
 
-### Tema 4: Pruebas basadas en propiedades · Avanzado · 45 min
+### ### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
 **Caso guía.** `reverse(reverse(x)) == x` para muchas entradas aleatorias.
 
