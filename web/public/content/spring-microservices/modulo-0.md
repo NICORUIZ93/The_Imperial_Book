@@ -4,6 +4,65 @@ Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesit
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los ejemplos Java puros se ejecutaron localmente. CRaC/GraalVM reales requieren toolchain específico; se incluyen notas de verificación honestas.
 
+## Proyecto desde cero: tienda-aurora-foundation
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-foundation/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/foundation/
+            └── Main.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.foundation.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-foundation"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+```
+
 ### Tema 1: Java 21+: streams, lambdas, Optional, records, pattern matching · Intermedio · 45 min
 
 ## Java 21+: streams, lambdas, Optional, records y pattern matching

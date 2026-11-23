@@ -7088,6 +7088,26 @@
   "spring-microservices": {
     "0": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
         "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
       },
