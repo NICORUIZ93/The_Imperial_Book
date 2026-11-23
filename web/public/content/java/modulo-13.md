@@ -401,13 +401,15 @@ Si pones lógica de negocio, SQL/IO, y `System.out.println` en la misma clase, e
 
 #### Capas y regla de dependencia
 
-```mermaid
-flowchart LR
-  App[app / composition root] --> A[aplicacion: casos de uso]
-  A --> D[dominio: entidades, reglas, puertos]
-  I[infraestructura: adaptadores] --> D
-  App --> I
+```text
+[app / composition root]
+        | \
+        |  +--> [infraestructura: adaptadores] --implements--> 
+        v                                                   \
+[aplicacion: casos de uso] --depends on--> [dominio: entidades, reglas, puertos]
 ```
+
+Lectura del diagrama: `app` compone el sistema; `aplicacion` orquesta el caso de uso; `dominio` define reglas y puertos; `infraestructura` implementa esos puertos. Las dependencias apuntan hacia el dominio, no al revés.
 
 - **Dominio**: reglas e invariantes. No importa frameworks.
 - **Aplicación**: orquesta casos de uso. Depende de interfaces del dominio.
