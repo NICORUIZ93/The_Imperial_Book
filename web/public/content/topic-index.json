@@ -4154,6 +4154,26 @@
     ],
     "1": [
       {
+        "title": "Dominio base: dinero y códigos",
+        "fragment": "dominio-base-dinero-y-codigos"
+      },
+      {
+        "title": "Jerarquía de productos",
+        "fragment": "jerarquia-de-productos"
+      },
+      {
+        "title": "Records: valores inmutables",
+        "fragment": "records-valores-inmutables"
+      },
+      {
+        "title": "Contratos de variación: descuentos y pagos",
+        "fragment": "contratos-de-variacion-descuentos-y-pagos"
+      },
+      {
+        "title": "Catálogo, reglas y servicios",
+        "fragment": "catalogo-reglas-y-servicios"
+      },
+      {
         "title": "Clases, objetos, constructores y encapsulación",
         "fragment": "tema-1-clases-objetos-constructores-y-encapsulacion"
       },
