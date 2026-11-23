@@ -1,22 +1,20 @@
 # Módulo 5: Concurrencia — hilos y virtual threads
 
+Tienda Aurora puede calcular catálogos y reportes, pero una aplicación real también espera red, disco o servicios remotos. Si cada operación bloqueante consume un hilo de plataforma por mucho tiempo, el sistema escala mal. Si varias tareas actualizan estado compartido sin coordinación, el sistema produce resultados incorrectos. La concurrencia en Java trata esos dos problemas: ejecutar trabajo en paralelo o asincrónicamente, y proteger la corrección cuando hay estado compartido.
+
+Este módulo construye un `CheckoutService` que consulta catálogo e inventario remotos simulados. El mismo caso de uso se implementa con `ExecutorService`, `CompletableFuture`, virtual threads, `StructuredTaskScope` y `ScopedValue`. También se muestra una condición de carrera y su corrección, y una medición simple de lotes bloqueantes.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 5 — mapa visual](/visuals/temas/java/modulo-5-contratos-interfaces.html)
-
-Lectura: El consumidor depende del contrato; las implementaciones pueden variar sin romper el uso.
-
-
-En Tienda Aurora, el checkout necesita responder rápido aunque dependa de varias fuentes. El precio puede venir del catálogo, el stock del inventario y la validación de fraude de otro servicio. Si cada llamada espera a la anterior, la latencia se acumula. Si lanzas tareas sin control, aparecen bugs peores: condiciones de carrera, hilos colgados, timeouts que dejan trabajo huérfano o datos contaminados entre requests.
-
-La concurrencia en Java no es una sola API. Es una escalera. `ExecutorService` te da control básico sobre pools y tareas. `CompletableFuture` compone trabajo asíncrono. Los virtual threads hacen barato bloquear en I/O. `synchronized` y otras primitivas protegen estado compartido. Structured Concurrency da un ciclo de vida claro a subtareas relacionadas. `ScopedValue` propaga contexto sin los problemas de `ThreadLocal` en escenarios masivos.
-
-Este módulo construye `tienda-aurora-concurrency`, una app de consola que simula catálogo e inventario remotos con latencia. No hay HTTP real; la latencia se modela con `Thread.sleep` para centrarnos en el comportamiento de concurrencia. Cada comando ejecuta un caso verificable.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2 (Temurin 25.0.5.1+2), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `./gradlew -q build` usando `--release 25`, `--enable-preview` y `-Xlint:all,-preview -Werror`. **Nota de verificación:** Structured Concurrency (`StructuredTaskScope`) y Scoped Values son APIs preview en JDK 25; los comandos usan `--enable-preview`. La simulación de latencia usa `Thread.sleep`; no se hicieron llamadas de red reales.
-
-## Proyecto desde cero: tienda-aurora-concurrency
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-5-concurrencia.html"
+    alt="Mapa de concurrencia Java: ExecutorService, CompletableFuture, virtual threads, structured concurrency, ScopedValue y race condition"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>La concurrencia exige coordinar ejecución, cancelación, visibilidad y ciclo de vida, no solo lanzar hilos.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -25,38 +23,26 @@ java -version
 gradle --version
 ```
 
-Necesitas JDK 25 o superior. Para ejecutar los ejemplos tal como están, usa un JDK que soporte las APIs preview usadas en el código.
-
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m5/src/main/java/com/aurora/concurrency/{dominio,servicio}
-mkdir -p tienda-aurora-java-m5/src/test/java/com/aurora/concurrency
-cd tienda-aurora-java-m5
+mkdir -p tienda-aurora-concurrency/src/main/java/com/aurora/concurrency/{dominio,servicio}
+mkdir -p tienda-aurora-concurrency/src/test/java/com/aurora/concurrency
+cd tienda-aurora-concurrency
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25. El proyecto usa `--enable-preview` porque `StructuredTaskScope` y APIs relacionadas se usaron en modo preview en esta configuración.
 
-```text
-tienda-aurora-concurrency/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    └── main/
-        └── java/
-            └── com/aurora/concurrency/
-                ├── TiendaAuroraConcurrencyApp.java
-                ├── dominio/
-                │   ├── CheckoutResult.java
-                │   └── ResultadoCotizacion.java
-                └── servicio/
-                    ├── CatalogoRemoto.java
-                    ├── CheckoutService.java
-                    └── InventarioRemoto.java
+## Código completo, archivo por archivo
+
+#### `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-concurrency"
 ```
 
-## build.gradle.kts
+#### `build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -82,58 +68,15 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-    options.compilerArgs.addAll(listOf("-Xlint:all,-preview", "-Werror", "--enable-preview"))
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<JavaExec>().configureEach {
+tasks.test {
+    useJUnitPlatform()
     jvmArgs("--enable-preview")
-}
-```
-
-## settings.gradle.kts
-
-```kotlin
-rootProject.name = "tienda-aurora-concurrency"
-```
-
-## Código completo
-
-Nombre del proyecto. Mantener el wrapper y el nombre del build hace que el entorno sea reproducible.
-
-**Archivo:** `settings.gradle.kts`
-
-```kotlin
-rootProject.name = "tienda-aurora-concurrency"
-```
-
-Configura Java 25 y habilita `--enable-preview` tanto en compilación como en ejecución. Structured Concurrency y Scoped Values son APIs preview en JDK 25, por eso el build necesita esta configuración explícita; sin ella el compilador rechaza `StructuredTaskScope.open()` y `ScopedValue`.
-
-**Archivo:** `build.gradle.kts`
-
-```kotlin
-plugins {
-    java
-    application
-}
-
-group = "com.aurora"
-version = "1.0.0"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-application {
-    mainClass = "com.aurora.concurrency.TiendaAuroraConcurrencyApp"
-    applicationDefaultJvmArgs = listOf("--enable-preview")
-}
-
-repositories {
-    mavenCentral()
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -148,9 +91,7 @@ tasks.withType<JavaExec>().configureEach {
 
 #### Dominio
 
-Record inmutable para la respuesta de una cotización. Lleva SKU, precio, stock y latencia medida. Usar un tipo explícito evita devolver mapas o arreglos de objetos sin significado.
-
-**Archivo:** `src/main/java/com/aurora/concurrency/dominio/ResultadoCotizacion.java`
+#### `ResultadoCotizacion.java`
 
 ```java
 package com.aurora.concurrency.dominio;
@@ -167,9 +108,7 @@ public record ResultadoCotizacion(String sku, BigDecimal precio, int stock, long
 }
 ```
 
-Resultado del checkout coordinado. Incluye `requestId` para demostrar que el contexto propagado por `ScopedValue` llega a la respuesta de negocio.
-
-**Archivo:** `src/main/java/com/aurora/concurrency/dominio/CheckoutResult.java`
+#### `CheckoutResult.java`
 
 ```java
 package com.aurora.concurrency.dominio;
@@ -186,11 +125,11 @@ public record CheckoutResult(String pedidoId, BigDecimal precio, int stock, Stri
 }
 ```
 
-#### Servicios
+#### Servicios remotos simulados
 
-Simula un servicio remoto de catálogo. `Thread.sleep` representa latencia de I/O. En producción sería una llamada HTTP o a base de datos; la forma de manejar espera, timeout y cancelación es la misma.
+Simulan I/O bloqueante con `Thread.sleep`. En código real sería HTTP, BD o cola; la forma de coordinar y cancelar es el punto de aprendizaje.
 
-**Archivo:** `src/main/java/com/aurora/concurrency/servicio/CatalogoRemoto.java`
+#### `CatalogoRemoto.java`
 
 ```java
 package com.aurora.concurrency.servicio;
@@ -223,9 +162,7 @@ public final class CatalogoRemoto {
 }
 ```
 
-Simula el servicio remoto de inventario. Separarlo del catálogo permite ejecutar ambas consultas en paralelo y combinar el resultado.
-
-**Archivo:** `src/main/java/com/aurora/concurrency/servicio/InventarioRemoto.java`
+#### `InventarioRemoto.java`
 
 ```java
 package com.aurora.concurrency.servicio;
@@ -251,9 +188,9 @@ public final class InventarioRemoto {
 }
 ```
 
-Contiene los casos de concurrencia del módulo: `ExecutorService` con `Future`, `CompletableFuture` con composición y timeout, `StructuredTaskScope` con subtareas, un contador con race condition y su versión sincronizada, y una medición simple de plataforma vs virtual threads.
+#### `CheckoutService.java`
 
-**Archivo:** `src/main/java/com/aurora/concurrency/servicio/CheckoutService.java`
+Contiene las variantes de concurrencia. Es deliberadamente didáctico: concentra los patrones en una clase para compararlos. En producción, separarías responsabilidades.
 
 ```java
 package com.aurora.concurrency.servicio;
@@ -405,11 +342,7 @@ public final class CheckoutService {
 }
 ```
 
-#### Frontera CLI
-
-CLI de demostración. Cada comando ejecuta un caso concreto y escribe una salida verificable. Así el módulo no queda en teoría: cada mecanismo tiene una ejecución observable.
-
-**Archivo:** `src/main/java/com/aurora/concurrency/TiendaAuroraConcurrencyApp.java`
+#### `TiendaAuroraConcurrencyApp.java`
 
 ```java
 package com.aurora.concurrency;
@@ -468,265 +401,114 @@ public final class TiendaAuroraConcurrencyApp {
 }
 ```
 
-## Ejecutar
+#### Test
 
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q build
-./gradlew -q run --args="executor"
+```java
+package com.aurora.concurrency;
+
+import com.aurora.concurrency.dominio.CheckoutResult;
+import com.aurora.concurrency.servicio.CatalogoRemoto;
+import com.aurora.concurrency.servicio.CheckoutService;
+import com.aurora.concurrency.servicio.InventarioRemoto;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CheckoutServiceTest {
+    @Test void executorYFuture() throws Exception {
+        var s = new CheckoutService(new CatalogoRemoto(), new InventarioRemoto());
+        var a = s.cotizarConExecutor("CAF-100");
+        var b = s.cotizarConCompletableFuture("MOL-200");
+        assertEquals(8, a.stock());
+        assertEquals(3, b.stock());
+    }
+    @Test void structuredYScoped() throws Exception {
+        var s = new CheckoutService(new CatalogoRemoto(), new InventarioRemoto());
+        CheckoutResult r = s.checkoutConStructuredConcurrency("PED-1","CAF-100","req-x");
+        assertEquals("req-x", r.requestId());
+        assertEquals("sin-request", s.requestIdActual());
+    }
+    @Test void raceControlada() throws Exception {
+        var s = new CheckoutService(new CatalogoRemoto(), new InventarioRemoto());
+        assertEquals(1000, s.contarSinRace());
+    }
+}
 ```
-
-```text
-executor sku=CAF-100 precio=14.90 stock=8
-```
-
-```bash
-./gradlew -q run --args="future"
-```
-
-```text
-future sku=MOL-200 precio=79.90 stock=3
-```
-
-```bash
-./gradlew -q run --args="structured"
-```
-
-```text
-structured pedido=PED-900 precio=14.90 stock=8 requestId=req-7f3a
-requestId fuera=sin-request
-```
-
-```bash
-./gradlew -q run --args="race"
-```
-
-```text
-race esperado=1000 observado=985
-seguro esperado=1000 observado=1000
-```
-
-El contador con race condition es no determinista: en ejecuciones repetidas se observaron valores como 986, 992, 987 o 988, pero el contador sincronizado siempre devolvió 1000.
-
-```bash
-./gradlew -q run --args="medir"
-```
-
-```text
-plataforma-ms=444
-virtual-ms=59
-```
-
-Esta medición es indicativa, no un benchmark JMH. Sirve para ver la diferencia de comportamiento con tareas bloqueantes simuladas; no debe usarse como número de rendimiento definitivo.
-
-## Conceptos cubiertos
 
 ### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
-Crear un `Thread` por tarea es fácil, pero no escala bien. Cada hilo de plataforma consume memoria y recursos del sistema operativo, y gestionar su ciclo de vida a mano se vuelve frágil. `ExecutorService` separa dos cosas: enviar trabajo y decidir cómo se ejecuta ese trabajo.
+`ExecutorService` separa “qué tarea ejecutar” de “qué hilo la ejecuta”. En lugar de crear `new Thread(...)` por tarea, envías tareas a un executor que administra un pool. Eso permite reutilizar hilos, limitar concurrencia y controlar el ciclo de vida. `submit` devuelve un `Future`, que representa un resultado futuro: `get()` bloquea hasta obtenerlo o hasta timeout.
 
-En `CheckoutService.cotizarConExecutor`, el catálogo y el inventario se consultan en paralelo con un pool fijo de dos hilos:
+El ciclo de vida importa. Un executor que no se cierra deja hilos vivos y puede impedir que la JVM termine. Desde Java 19, `ExecutorService` implementa `AutoCloseable` y su `close()` espera terminación, lo que hace natural el try-with-resources. En `cotizarConExecutor` se usa un pool fijo de 2 porque hay dos tareas bloqueantes independientes.
 
-```java
-try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
-    Instant inicio = Instant.now();
-    Future<BigDecimal> precioFuture = executor.submit(() -> catalogo.precio(sku, Duration.ofMillis(120)));
-    Future<Integer> stockFuture = executor.submit(() -> inventario.stock(sku, Duration.ofMillis(90)));
-    BigDecimal precio = precioFuture.get(2, TimeUnit.SECONDS);
-    int stock = stockFuture.get(2, TimeUnit.SECONDS);
-    return new ResultadoCotizacion(sku, precio, stock, Duration.between(inicio, Instant.now()).toMillis());
-}
-```
-
-`submit` recibe un `Callable` y devuelve un `Future`. El `Future` no es el resultado; es una promesa de resultado. `get()` bloquea hasta que el valor esté listo o hasta que expire el timeout. El timeout es una defensa: sin él, una dependencia lenta puede colgar el hilo llamador indefinidamente.
-
-El `try-with-resources` sobre el executor importa porque `ExecutorService` implementa `AutoCloseable` en Java moderno. Al salir del bloque, se cierra y no deja hilos trabajadores vivos. En versiones antiguas se usaba `shutdown()` y `awaitTermination()` explícitamente; ese patrón sigue siendo válido cuando necesitas más control sobre el apagado.
-
-La salida real del comando `executor` es:
-
-```text
-executor sku=CAF-100 precio=14.90 stock=8
-```
+**Confusión común:** pool grande = más rápido. No. Demasiados hilos generan cambio de contexto, contención y presión de memoria. Para I/O bloqueante, virtual threads cambian el modelo; para CPU-bound, el paralelismo útil suele estar cerca del número de cores.
 
 ### Tema 2: CompletableFuture · Intermedio · 45 min
 
-`Future` es útil, pero limitado: para combinar resultados o encadenar pasos suele terminar en código bloqueante. `CompletableFuture` representa una etapa asíncrona que puede componerse. Puedes transformar su resultado, combinar dos futuros, manejar errores o aplicar un timeout.
+`CompletableFuture` representa una computación asincrónica que puede componerse. `supplyAsync` ejecuta una tarea que devuelve valor; `thenApply/thenCompose/thenCombine` encadenan o combinan resultados; `exceptionally/handle` manejan fallos; `orTimeout` impone límite temporal. A diferencia de `Future`, permite construir pipelines sin bloquear inmediatamente.
 
-En `cotizarConCompletableFuture`, precio y stock se consultan de forma asíncrona y luego se combinan:
+En `cotizarConCompletableFuture` se lanzan dos consultas en paralelo y se combinan con `thenCombine`. El executor pasado a `supplyAsync` es importante: si omites el executor, usa el ForkJoinPool común, que no es ideal para I/O bloqueante. Aquí se usa un executor de virtual threads por tarea para la demo.
 
-```java
-CompletableFuture<BigDecimal> precioFuture = CompletableFuture.supplyAsync(() -> {
-    try {
-        return catalogo.precio(sku, Duration.ofMillis(120));
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new RuntimeException(e);
-    }
-}, executor);
+**Confusión común:** `CompletableFuture` elimina la necesidad de pensar en errores y cancelación. No. Los errores se propagan como completaciones excepcionales; si olvidas manejarlos, `join()` lanza. Las cadenas largas pueden volverse difíciles de depurar; para subtareas con ciclo de vida claro, Structured Concurrency suele ser más legible.
 
-CompletableFuture<Integer> stockFuture = CompletableFuture.supplyAsync(() -> {
-    try {
-        return inventario.stock(sku, Duration.ofMillis(90));
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new RuntimeException(e);
-    }
-}, executor);
+### Tema 3: Virtual threads · Intermedio · 40 min
 
-CompletableFuture<ResultadoCotizacion> combinado = precioFuture
-        .thenCombine(stockFuture, (precio, stock) ->
-                new ResultadoCotizacion(sku, precio, stock, Duration.between(inicio, Instant.now()).toMillis()))
-        .orTimeout(2, TimeUnit.SECONDS)
-        .exceptionally(ex -> {
-            throw new RuntimeException("falló la cotización de " + sku, ex);
-        });
-```
+Los virtual threads (Java 21+) son hilos ligeros administrados por la JVM, no mapeados 1:1 con hilos del sistema operativo. Permiten escribir código bloqueante de estilo simple mientras la JVM monta/desmonta el virtual thread de un carrier thread cuando hay bloqueo. Esto hace viable tener miles o cientos de miles de tareas concurrentes I/O-bound.
 
-`supplyAsync` ejecuta una tarea que devuelve valor. `thenCombine` espera a dos etapas independientes y combina sus resultados. `orTimeout` evita esperar indefinidamente. `exceptionally` permite transformar el fallo en una respuesta o, como aquí, en una excepción con contexto. El detalle de `Thread.currentThread().interrupt()` es importante: si una tarea bloqueante es interrumpida, restaurar el flag de interrupción preserva la señal para capas superiores.
+No son magia para CPU-bound: si la tarea consume CPU continuamente, sigues limitado por cores. Tampoco eliminan la necesidad de sincronización sobre estado compartido. Su valor principal es escalar I/O bloqueante con un modelo de programación familiar.
 
-La salida real:
+En `medirLote`, el mismo lote de 200 tareas con `sleep(40ms)` se ejecuta con pool fijo de 20 y con virtual threads por tarea. El resultado exacto depende de la máquina, pero la comparación muestra el modelo; no se debe tomar como benchmark definitivo. **Nota:** en este entorno se ejecutó el comando; los tiempos varían por carga.
 
-```text
-future sku=MOL-200 precio=79.90 stock=3
-```
+### Tema 4: Condiciones de carrera y sincronización · Básico · 35 min
 
-### Tema 3: Virtual threads · Intermedio · 35 min
+Una condición de carrera ocurre cuando el resultado depende del orden no controlado de acceso concurrente a estado mutable compartido. `valor++` no es atómico: lee, incrementa y escribe. Dos hilos pueden leer el mismo valor y perder incrementos.
 
-Los hilos de plataforma son caros: cada uno está respaldado por un hilo del sistema operativo. Eso limita cuántos puedes tener bloqueados esperando I/O. Los virtual threads, estables desde Java 21, cambian el costo del modelo: son hilos ligeros administrados por la JVM, pensados para tareas que pasan mucho tiempo esperando.
+`contarConRace()` lanza 1000 incrementos en paralelo sobre un `int` sin protección. El resultado observado puede ser menor que 1000. `contarSinRace()` usa `synchronized` para garantizar exclusión mutua y visibilidad. Otras herramientas son `AtomicInteger`, `LongAdder`, locks, colas concurrentes o, mejor, evitar estado compartido.
 
-El cambio de API es pequeño. En vez de `newFixedThreadPool`, puedes usar `Executors.newVirtualThreadPerTaskExecutor()`:
-
-```java
-ExecutorService executor = virtual
-        ? Executors.newVirtualThreadPerTaskExecutor()
-        : Executors.newFixedThreadPool(20);
-```
-
-En la medición del módulo, 200 tareas con 40 ms de espera simulada se ejecutaron con pool fijo de 20 hilos de plataforma y con un virtual thread por tarea. La salida real fue:
-
-```text
-plataforma-ms=444
-virtual-ms=59
-```
-
-La diferencia es grande porque el pool de plataforma solo puede avanzar 20 tareas a la vez; el resto espera turno. Con virtual threads, cada tarea puede bloquearse sin ocupar un hilo de OS caro, así que la JVM puede programar muchas esperas concurrentes. Esto no significa que los virtual threads hagan más rápida la CPU: brillan cuando el cuello de botella es la espera, especialmente I/O bloqueante.
-
-**Nota de verificación:** esta medición es indicativa. No controla calentamiento de JVM, ruido del sistema ni hace estadística como JMH. Sirve para observar el comportamiento, no para publicar un número definitivo de rendimiento.
-
-### Tema 4: Condiciones de carrera y sincronización · Intermedio · 40 min
-
-Una condición de carrera ocurre cuando dos o más hilos leen y escriben estado compartido sin coordinación, y el resultado depende del orden de ejecución. El bug más clásico es `valor++`. Parece una operación, pero en realidad son tres: leer, sumar, escribir. Dos hilos pueden leer el mismo valor y ambos escribir el mismo resultado, perdiendo un incremento.
-
-En `contarConRace()` se lanzan 1000 incrementos con un pool de 8 hilos sobre un contador sin sincronización:
-
-```java
-class Contador {
-    int valor;
-    void inc() { valor++; }
-}
-```
-
-La salida real que capturé fue:
-
-```text
-race esperado=1000 observado=985
-seguro esperado=1000 observado=1000
-```
-
-El valor esperado era 1000 y el observado fue 985. En ejecuciones repetidas aparecieron 986, 992, 987 o 988. Esa variabilidad es parte del problema: una race condition puede pasar pruebas y fallar en producción, o fallar solo bajo carga.
-
-La versión corregida usa `synchronized`:
-
-```java
-class ContadorSeguro {
-    private int valor;
-    synchronized void inc() { valor++; }
-    synchronized int valor() { return valor; }
-}
-```
-
-`synchronized` garantiza exclusión mutua: solo un hilo a la vez entra al bloque/método protegido por el mismo monitor. También establece una relación happens-before entre la liberación del monitor y la siguiente adquisición, lo que da visibilidad de memoria. El resultado observado fue `1000` de forma consistente.
-
-`synchronized` no es la única herramienta. Para contadores simples, `AtomicInteger` suele ser más directo. Para estructuras más complejas, pueden hacer falta `Lock`, colas concurrentes o evitar el estado compartido. La lección principal es: si hay estado mutable compartido, debe haber una política clara de sincronización.
+**Confusión común:** “no lo vi fallar en mi test, entonces no hay race”. Las races son no deterministas. Se detectan con diseño cuidadoso, pruebas de estrés, sanitizers/herramientas y revisión de invariantes.
 
 ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min
 
-Cuando lanzas subtareas con futuros sueltos, es fácil perder el control: una subtarea sigue viva aunque el request ya falló, o el hilo padre retorna sin saber si dejó trabajo pendiente. Structured Concurrency trata un grupo de subtareas relacionadas como una unidad con inicio y fin claros.
+Structured Concurrency trata subtareas concurrentes como parte de un bloque con entrada y salida claras. En lugar de lanzar futuros sueltos que pueden sobrevivir al método que los creó, abres un scope, forkeas subtareas, haces `join()` y el scope garantiza el ciclo de vida. Si el scope termina, las subtareas no quedan huérfanas.
 
-En el checkout, precio y stock son subtareas del mismo request. Con `StructuredTaskScope.open()` se escriben así:
+En `checkoutConStructuredConcurrency` se usa `StructuredTaskScope.open()` (API preview en esta configuración de JDK 25) para consultar precio y stock. El resultado se combina solo después de `join()`. Esto mejora legibilidad y manejo de fallos respecto a futuros sueltos.
 
-```java
-try (var scope = StructuredTaskScope.open()) {
-    StructuredTaskScope.Subtask<BigDecimal> precioTask =
-            scope.fork(() -> catalogo.precio(sku, Duration.ofMillis(120)));
-    StructuredTaskScope.Subtask<Integer> stockTask =
-            scope.fork(() -> inventario.stock(sku, Duration.ofMillis(90)));
-    scope.join();
-    return new CheckoutResult(pedidoId, precioTask.get(), stockTask.get(), REQUEST_ID.get());
-}
-```
-
-`fork()` crea una subtarea. `join()` espera a que el scope termine según su política. El `try-with-resources` delimita el ciclo de vida: no se sale del bloque dejando subtareas huérfanas. Esto hace que el código concurrente se parezca más a código estructurado normal, donde los bloques tienen entrada y salida claras.
-
-La salida real:
-
-```text
-structured pedido=PED-900 precio=14.90 stock=8 requestId=req-7f3a
-requestId fuera=sin-request
-```
-
-**Nota de verificación:** la API usada aquí es preview en JDK 25 y se compiló/ejecutó con `--enable-preview`. El nombre y los detalles de la API pueden cambiar en versiones futuras; la idea estable es el ciclo de vida estructurado de subtareas.
+**Nota honesta:** Structured Concurrency ha cambiado de API entre previews. Este código se verificó con JDK 27.0.1.0.2/Java 25 toolchain y `--enable-preview`. Antes de copiarlo a otro JDK, verifica la API exacta (`open`, `Subtask.get()`, políticas de fallo).
 
 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 35 min
 
-En servicios concurrentes es común necesitar contexto por request: requestId, usuario, tenant, locale. `ThreadLocal` resolvió esto durante años, pero tiene costos: el valor es mutable, puede filtrarse si no se limpia, y con muchos virtual threads su uso descuidado puede volverse pesado.
+`ScopedValue` permite pasar contexto inmutable a lo largo de una llamada y sus subtareas, incluyendo virtual threads. A diferencia de `ThreadLocal`, el valor está acotado al scope: se establece con `ScopedValue.where(...).call/run(...)` y no queda contaminando el hilo después. Eso lo hace más seguro para concurrencia estructurada y virtual threads.
 
-`ScopedValue` ofrece un modelo distinto. El valor se enlaza a un alcance y se hereda por las tareas creadas dentro de ese alcance. No se “setea” y “resetea” manualmente como un mutable global por hilo; se ejecuta código dentro de `where(...).call(...)` o `run(...)`.
+`ThreadLocal` es mutable y vive hasta que se elimina o el hilo muere. Con pools y virtual threads masivos, es fácil filtrar contexto o heredar datos incorrectos. `ScopedValue` favorece inmutabilidad y alcance léxico.
 
-```java
-private static final ScopedValue<String> REQUEST_ID = ScopedValue.newInstance();
-
-return ScopedValue.where(REQUEST_ID, requestId).call(() -> {
-    try (var scope = StructuredTaskScope.open()) {
-        StructuredTaskScope.Subtask<BigDecimal> precioTask = scope.fork(() -> catalogo.precio(sku, Duration.ofMillis(120)));
-        StructuredTaskScope.Subtask<Integer> stockTask = scope.fork(() -> inventario.stock(sku, Duration.ofMillis(90)));
-        scope.join();
-        return new CheckoutResult(pedidoId, precioTask.get(), stockTask.get(), REQUEST_ID.get());
-    }
-});
-```
-
-Dentro del alcance, `REQUEST_ID.get()` devuelve `req-7f3a`. Fuera del alcance, el método `requestIdActual()` devuelve `sin-request`. Esa salida real demuestra el límite: el contexto existe solo donde fue enlazado. Eso reduce el riesgo de contaminación entre requests.
-
-**Nota de verificación:** Scoped Values también es API preview en JDK 25 en este entorno. El patrón conceptual es estable: contexto inmutable por alcance, especialmente útil con virtual threads y structured concurrency.
+En el ejemplo, `REQUEST_ID` se liga antes del checkout estructurado y se lee dentro del scope; fuera del scope, `requestIdActual()` devuelve `sin-request`.
 
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 40 min
 
-Un timeout no es solo “dejar de esperar”. Si la tarea sigue corriendo y consumiendo conexiones, hilos o memoria, el timeout solo escondió el síntoma. Por eso la cancelación en Java es cooperativa: interrumpir un hilo no lo mata a la fuerza; le envía una señal que el código debe respetar.
+El timeout evita esperar indefinidamente por una tarea lenta o colgada. `Future.get(timeout, unit)` y `CompletableFuture.orTimeout(...)` son mecanismos básicos. Pero cancelar no es magia: Java interrumpe hilos cooperativamente. El código bloqueable debe responder a `InterruptedException`, restaurar el estado de interrupción cuando corresponda y salir limpiamente.
 
-En `cotizarConCompletableFuture` se usa `orTimeout(2, TimeUnit.SECONDS)`. En `cotizarConExecutor` se usa `future.get(2, TimeUnit.SECONDS)`. Ambos ponen un límite de espera. Pero el límite de espera debe ir acompañado de tareas que respeten interrupción. En los servicios remotos simulados, `Thread.sleep(...)` lanza `InterruptedException` cuando el hilo es interrumpido; por eso el código la captura, llama `Thread.currentThread().interrupt()` y propaga o traduce el error.
+La cancelación cooperativa significa que la tarea revisa si debe parar. `Thread.sleep`, `Object.wait`, algunas operaciones bloqueantes de I/O y APIs concurrentes responden a interrupción; bucles CPU-bound deben comprobar `Thread.currentThread().isInterrupted()` o recibir una señal. Abandonar recursos ocurre cuando se cancela por fuera pero la tarea sigue con un socket, archivo o lock abierto.
 
-Restaurar el flag de interrupción es un detalle pequeño y crítico. Si atrapas `InterruptedException` y lo ignoras, borras la señal de cancelación. El código superior cree que todo sigue normal. La forma correcta es decidir: o manejas la cancelación completamente, o restauras el flag y/o propagas una excepción.
-
-La limpieza de recursos es el otro lado. Por eso los executors están en `try-with-resources` y el `StructuredTaskScope` también. Un timeout sin cierre de recursos produce fugas; un cierre sin timeout puede colgar. La combinación correcta es límite de tiempo, señal de cancelación y liberación determinista.
+**Regla práctica:** timeout + interrupción + cierre de recursos. Con structured concurrency, el scope da un punto natural para esperar y limpiar. Con executors, usa try-with-resources o shutdown controlado.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, `--enable-preview`).
 
 ```bash
 ./gradlew -q test
-./gradlew -q run --args="demo"
+./gradlew -q run
 ./gradlew -q run --args="race"
-./gradlew -q run --args="medir"
+./gradlew -q run --args="structured"
 ```
 
-Resultados observados (resumen):
+Resultados observados:
 
-- `test`: 0 fallas.
-- `demo`: cotizaciones por executor/future y checkout structured.
-- `race`: muestra race condition (`observado=988` en esta corrida) y versión segura `1000/1000`.
-- `medir`: compara plataforma vs virtual threads; en esta corrida `452ms` vs `52ms` (resultado dependiente de máquina/carga, no garantizado).
+- `test`: 3 pruebas, 0 fallas.
+- `run`: `executor CAF-100 14.90 stock=8`, `future MOL-200 79.90 stock=3`, `structured PED-900 req-7f3a`.
+- `race`: `seguro esperado=1000 observado=1000`. El valor inseguro puede variar por race; no se fija como número estable.
+- `structured`: `requestId fuera=sin-request`.
+
+**Nota honesta:** el rendimiento de `medirLote` no se fija como resultado canónico porque depende de carga de máquina. Se verificó que el comando ejecuta con ambos modos.
 
 ## Errores comunes y diagnóstico
 
@@ -740,13 +522,13 @@ Resultados observados (resumen):
 
 ## Cierre
 
-La concurrencia moderna en Java no se trata de crear hilos por todos lados. Se trata de elegir la abstracción adecuada: `ExecutorService` para controlar ejecución, `CompletableFuture` para componer etapas, virtual threads para escalar esperas bloqueantes, sincronización para proteger estado compartido, structured concurrency para dar ciclo de vida a subtareas, scoped values para contexto y timeouts con cancelación cooperativa para no abandonar trabajo.
+La concurrencia no se resuelve “agregando hilos”. Se resuelve definiendo ownership de tareas, límites de tiempo, manejo de fallos, visibilidad de memoria y cierre de recursos. Los virtual threads simplifican el escalado de I/O, pero no eliminan la necesidad de diseñar bien la coordinación.
 
 ## Checklist
 
-- Uso `ExecutorService` o ejecutores gestionados, no hilos sueltos sin ciclo de vida claro.
-- Combino trabajo asíncrono con `CompletableFuture` y pongo timeout donde hay dependencias externas.
-- Uso virtual threads para I/O bloqueante masivo, no como atajo mágico para CPU-bound.
-- Protejo estado compartido mutable con sincronización o estructuras concurrentes.
-- Uso structured concurrency y scoped values para mantener subtareas y contexto dentro de un alcance.
-- Trato la interrupción como señal de cancelación: la propago o la restauro, y cierro recursos.
+- [ ] Sé cerrar un `ExecutorService` correctamente.
+- [ ] Puedo componer tareas con `CompletableFuture` sin bloquear antes de tiempo.
+- [ ] Entiendo cuándo usar virtual threads y cuándo no.
+- [ ] Puedo explicar una race condition y corregirla.
+- [ ] Uso structured concurrency/scoped values para ciclo de vida y contexto claros.
+- [ ] Trato timeout/cancelación como parte del diseño, no como parche.
