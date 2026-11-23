@@ -1,6 +1,6 @@
 # Módulo 5: Concurrencia
 
-La concurrencia aparece cuando una aplicación debe hacer varias cosas a la vez: atender requests, llamar servicios externos, procesar lotes o aprovechar múltiples núcleos. También es una de las fuentes más peligrosas de bugs: condiciones de carrera, deadlocks, starvation, fugas de hilos y recursos abandonados por timeouts. Java moderno ofrece un stack progresivo: `ExecutorService`, `CompletableFuture`, virtual threads, primitivas de sincronización, structured concurrency y scoped values.
+En Tienda Aurora, la concurrencia se usa para consultar catálogo e inventario en paralelo durante el checkout. La concurrencia aparece cuando una aplicación debe hacer varias cosas a la vez: atender requests, llamar servicios externos, procesar lotes o aprovechar múltiples núcleos. También es una de las fuentes más peligrosas de bugs: condiciones de carrera, deadlocks, starvation, fugas de hilos y recursos abandonados por timeouts. Java moderno ofrece un stack progresivo: `ExecutorService`, `CompletableFuture`, virtual threads, primitivas de sincronización, structured concurrency y scoped values.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Structured Concurrency y Scoped Values pueden requerir `--enable-preview` según la versión; los ejemplos se ejecutaron con JDK 27.
 
@@ -8,14 +8,14 @@ La concurrencia aparece cuando una aplicación debe hacer varias cosas a la vez:
 
 ## Proyecto desde cero: tienda-aurora-concurrency
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-concurrency/
@@ -29,7 +29,7 @@ tienda-aurora-concurrency/
                 └── OrderService.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -55,13 +55,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-concurrency"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
@@ -71,7 +71,7 @@ javac -d out src/main/java/com/aurora/concurrency/**/*.java
 java -cp out com.aurora.concurrency.Main
 ```
 
-### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
+### ### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
 **Caso guía.** procesar 4 tareas independientes. Crear un `Thread` por tarea manualmente no escala y complica el apagado.
 
@@ -123,7 +123,7 @@ java DemoExec
 
 **Verificación (JDK 27, 2026-05-22).** `42`.
 
-### Tema 2: CompletableFuture · Intermedio · 40 min
+### ### Tema 2: CompletableFuture · Intermedio · 40 min
 
 **Caso guía.** obtener precio y descuento en paralelo y combinar. `Future.get()` bloqueante compone mal.
 
@@ -164,7 +164,7 @@ java DemoCF
 
 **Verificación (JDK 27, 2026-05-22).** `90`.
 
-### Tema 3: Virtual threads · Intermedio · 40 min
+### ### Tema 3: Virtual threads · Intermedio · 40 min
 
 **Caso guía.** miles de tareas bloqueantes I/O. Hilos de plataforma son caros; virtual threads permiten un modelo por tarea más liviano.
 
@@ -212,7 +212,7 @@ java DemoVT
 
 **Verificación (JDK 27, 2026-05-22).** `virtual`.
 
-### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
+### ### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
 
 **Caso guía.** dos hilos incrementan un contador compartido. Sin sincronización, se pierden actualizaciones.
 
@@ -268,7 +268,7 @@ java DemoRace
 
 **Verificación (JDK 27, 2026-05-22).** `1000`.
 
-### Tema 5: Structured Concurrency (Java 25/preview) · Avanzado · 45 min
+### ### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min
 
 **Caso guía.** lanzar dos subtareas relacionadas; si una falla o hay timeout, cancelar las demás y no fugar hilos.
 
@@ -313,7 +313,7 @@ java --enable-preview DemoSTS
 
 > Nota de verificación: requiere `--enable-preview` en JDK 27.0.1.0.2; la API puede evolucionar entre previews.
 
-### Tema 6: Scoped Values frente a ThreadLocal · Avanzado · 45 min
+### ### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 45 min
 
 **Caso guía.** propagar un `requestId` por llamadas. `ThreadLocal` funciona, pero con virtual threads y herencia puede filtrar contexto o volverse difícil de limpiar.
 
@@ -350,7 +350,7 @@ java --enable-preview DemoSV
 
 **Verificación (JDK 27 preview, 2026-05-22).** `req-1`.
 
-### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
+### ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
 
 **Caso guía.** una llamada externa puede colgarse. Cancelar mal deja sockets/hilos colgados.
 
