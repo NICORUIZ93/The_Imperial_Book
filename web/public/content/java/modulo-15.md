@@ -554,11 +554,94 @@ void guardaYLeeReserva() {
 
 Un log en producción no es un `System.out.println`. Tiene que responder preguntas bajo presión: ¿qué pedido falló?, ¿en qué operación?, ¿en qué servicio?, ¿fue un rechazo de negocio o un error técnico?, ¿qué pasó antes y después? Para eso el log necesita estructura y contexto.
 
-SLF4J es una fachada. El código llama a `LoggerFactory.getLogger(...)` y escribe `log.info("Reserva confirmada total={} cantidad={}", total, cantidad)`. No depende de Logback directamente. Logback es la implementación que decide cómo formatear y adónde enviar el evento. Esta separación permite cambiar la implementación de logging sin tocar el código de negocio.
+**La dependencia correcta: fachada en compilación, implementación en runtime.** En `app/build.gradle.kts` el código depende de `slf4j-api`, mientras Logback y el encoder JSON quedan como `runtimeOnly`. Eso significa que `TiendaAuroraBuildApp` compila contra la API de SLF4J, no contra clases de Logback:
 
-El MDC (Mapped Diagnostic Context) es un mapa de contexto asociado al hilo actual. Antes de procesar la reserva, la aplicación pone `pedidoId`, `sku` y `operacion`. Cada línea de log emitida en ese hilo puede incluir esos campos. Después del procesamiento, el `finally` los elimina con `MDC.remove(...)`. Limpiar es tan importante como agregar: si el hilo se reutiliza, un contexto viejo contamina el siguiente pedido.
+```kotlin
+dependencies {
+    implementation(project(":domain"))
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    runtimeOnly("ch.qos.logback:logback-classic:1.5.18")
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:8.1")
 
-La configuración de `logback.xml` usa `LogstashEncoder`, que emite JSON. El resultado real de una ejecución válida fue:
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+```
+
+SLF4J es la fachada. El código obtiene un logger con `LoggerFactory.getLogger(...)` y escribe eventos con placeholders `{}`. Logback es la implementación que decide cómo formatear y adónde enviar el evento. Esta separación permite cambiar la implementación sin tocar la lógica de negocio.
+
+**El código que emite el log.** La frontera de la aplicación pone contexto en el MDC antes de procesar la reserva, registra el inicio, confirma o rechaza, y limpia el MDC en `finally`. `MDC` es el Mapped Diagnostic Context: un mapa asociado al hilo actual. Cada evento emitido por ese hilo puede incluir esos campos.
+
+```java
+package com.aurora.build.app;
+
+import com.aurora.build.domain.ResultadoReserva;
+import com.aurora.build.domain.ServicioReservas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+public final class TiendaAuroraBuildApp {
+
+    private static final Logger log = LoggerFactory.getLogger(TiendaAuroraBuildApp.class);
+
+    public static void main(String[] args) {
+        String pedidoId = argumento(args, 0, "PED-100");
+        String sku = argumento(args, 1, "CAF-001");
+        int cantidad = Integer.parseInt(argumento(args, 2, "2"));
+
+        ServicioReservas servicio = new ServicioReservas(new CatalogoEnMemoria());
+        MDC.put("pedidoId", pedidoId);
+        MDC.put("sku", sku);
+        MDC.put("operacion", "reservar");
+        try {
+            log.info("Iniciando reserva");
+            try {
+                ResultadoReserva resultado = servicio.reservar(pedidoId, sku, cantidad);
+                log.info("Reserva confirmada total={} cantidad={}",
+                        resultado.total().monto(), resultado.cantidad());
+                System.out.println("RESERVA_OK " + resultado.pedidoId() + " " + resultado.total().monto());
+            } catch (IllegalArgumentException e) {
+                log.warn("Reserva rechazada motivo={}", e.getMessage());
+                System.out.println("RESERVA_RECHAZADA " + e.getMessage());
+                System.exit(2);
+            }
+        } finally {
+            MDC.remove("pedidoId");
+            MDC.remove("sku");
+            MDC.remove("operacion");
+        }
+    }
+
+    private static String argumento(String[] args, int indice, String defecto) {
+        if (args.length > indice && !args[indice].isBlank()) {
+            return args[indice];
+        }
+        return defecto;
+    }
+}
+```
+
+Hay tres decisiones de código que vale leer con cuidado. Primero, `LoggerFactory.getLogger(TiendaAuroraBuildApp.class)` crea un logger con nombre estable; ese nombre aparece en el campo `logger_name` del JSON y permite filtrar por clase. Segundo, los mensajes usan placeholders `{}`: `log.info("Reserva confirmada total={} cantidad={}", total, cantidad)`. SLF4J resuelve el mensaje solo cuando el nivel está habilitado y evita la concatenación manual. Tercero, el `finally` limpia con `MDC.remove(...)` clave por clave. No se usa `MDC.clear()` porque borrar todo el contexto puede eliminar claves que otro componente haya puesto en el mismo hilo.
+
+**La configuración que lo vuelve estructurado.** Logback lee `logback.xml` desde el classpath. Aquí el appender escribe a consola, pero el encoder no emite texto libre: `LogstashEncoder` produce un objeto JSON por evento. El campo fijo `service` identifica el emisor.
+
+```xml
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"service":"tienda-aurora-build"}</customFields>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+```
+
+El resultado real de una ejecución válida fue:
 
 ```text
 {"@timestamp":"2026-11-22T22:29:34.098561-05:00","@version":"1","message":"Iniciando reserva","logger_name":"com.aurora.build.app.TiendaAuroraBuildApp","thread_name":"main","level":"INFO","level_value":20000,"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"}
@@ -566,9 +649,9 @@ La configuración de `logback.xml` usa `LogstashEncoder`, que emite JSON. El res
 RESERVA_OK PED-100 25.00
 ```
 
-Esos campos hacen que el log sea consultable. En un agregador puedes filtrar por `pedidoId=PED-100` o por `operacion=reservar`. Si fuera texto libre, tendrías que parsear frases.
+Esos campos hacen que el log sea consultable. En un agregador puedes filtrar por `pedidoId=PED-100` o por `operacion=reservar`. Si fuera texto libre, tendrías que parsear frases. Observa también la separación de responsabilidades: `RESERVA_OK` va por `System.out` como salida del comando, mientras los eventos JSON van por el logger. El log no reemplaza la salida funcional; la enriquece con contexto operativo.
 
-Hay varios errores comunes que vale evitar. Concatenar strings en vez de usar placeholders crea trabajo aunque el nivel de log esté desactivado y hace más fácil meter datos mal formateados. Usar `MDC.clear()` borra todo el contexto del hilo, incluyendo claves que otro componente pudo haber puesto; `MDC.remove` de las claves propias es más seguro. Loguear objetos gigantes, payloads completos, secretos o tokens es un riesgo de seguridad y de costo. Y asumir que el MDC se propaga solo a hilos nuevos es falso: en ejecutores, `CompletableFuture` o virtual threads hay que propagar el contexto explícitamente.
+**Errores comunes que vale evitar.** Concatenar strings en vez de usar placeholders crea trabajo aunque el nivel de log esté desactivado y hace más fácil meter datos mal formateados. Usar `MDC.clear()` borra todo el contexto del hilo, incluyendo claves ajenas; `MDC.remove` de las claves propias es más seguro. Loguear objetos gigantes, payloads completos, secretos o tokens es un riesgo de seguridad y de costo. Y asumir que el MDC se propaga solo a hilos nuevos es falso: en ejecutores, `CompletableFuture` o virtual threads hay que propagar el contexto explícitamente, por ejemplo copiando el mapa con `MDC.getCopyOfContextMap()` y restaurándolo en el hilo que ejecuta la tarea.
 
 ## Cierre
 
