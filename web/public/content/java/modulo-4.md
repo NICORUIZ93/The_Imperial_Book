@@ -1,67 +1,48 @@
 # Módulo 4: Streams y programación funcional
 
+Cuando el módulo 2 te dejó con colecciones y el módulo 3 con errores controlados, el siguiente problema práctico es transformar datos sin escribir bucles imperativos por todos lados. Tienda Aurora necesita responder preguntas como: qué productos activos hay en una categoría, cuál es el valor de inventario por categoría, cuánto facturó un conjunto de pedidos, quiénes son los mejores clientes, o qué ciudades fueron atendidas. Se puede resolver con `for`, acumuladores y mapas mutables; Java Streams permite expresar la intención como un pipeline de transformación.
+
+Un stream no es una colección. Es una secuencia de elementos que se consume una vez, con operaciones intermedias perezosas (`filter`, `map`, `sorted`) y una operación terminal (`collect`, `reduce`, `forEach`, `toList`) que dispara la ejecución. La ventaja no es “menos líneas”, sino separar qué quieres calcular de cómo iterar. El costo es que un pipeline opaco también puede ser difícil de leer; el criterio es usar streams cuando aclaran la transformación, no por moda.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 4 — mapa visual](/visuals/temas/java/modulo-4-herencia-composicion.html)
-
-Lectura: Herencia modela “es-un”; composición modela “tiene-un”. Prefiere composición cuando la jerarquía no es estable.
-
-
-En Tienda Aurora, los reportes no se escriben como una sola consulta SQL mágica cuando los datos ya están en memoria. A veces tienes una lista de productos, pedidos o líneas de venta y necesitas responder preguntas concretas: qué bebidas están activas, qué SKUs están agotados, cuánto vale el inventario por categoría, cuáles fueron los clientes que más compraron, o cómo se ven los totales en ventanas. Ese tipo de transformación de datos es donde la Stream API brilla.
-
-Un stream no es una colección nueva. Es un pipeline: una fuente de datos, cero o más operaciones intermedias que describen la transformación, y una operación terminal que dispara la ejecución y produce un resultado. La ventaja no es “escribir menos líneas”, sino expresar la intención. `filter` dice “qué elementos quiero”, `map` dice “cómo los transformo”, `reduce` dice “cómo los combino”, `collect` dice “en qué estructura quiero el resultado”.
-
-Este módulo construye `tienda-aurora-streams`, una app de consola con datos reales en memoria. El código usa Streams, Optional, Gatherers de Java 24, referencias a método y un caso de stream paralelo medible por resultado. La regla importante es la misma que en producción: usar streams cuando hacen más clara la transformación, y no forzarlos cuando un bucle simple sea más legible.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, macOS arm64. El proyecto se compiló con `./gradlew -q build` usando `--release 25` y `-Xlint:all -Werror`. Las salidas de `catalogo`, `ventas` y `auditoria` son reales.
-
-## Proyecto desde cero: tienda-aurora-streams
-
-El proyecto separa dominio y reportes. El dominio define productos, clientes y pedidos. La capa de reportes no muta esos objetos; los consulta con pipelines. La app CLI expone tres comandos para ver el resultado sin modificar código.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-4-streams.html"
+    alt="Pipeline de Java Streams con fuente, operaciones intermedias, gather, terminal y Optional"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Fuente → operaciones intermedias perezosas → terminal. Optional hace explícita la ausencia.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
 ```bash
 java -version
-javac -version
 gradle --version
 ```
-
-Necesitas JDK 25 o superior. Los Gatherers usados aquí (`Gatherers.windowFixed`) están disponibles desde Java 24; el entorno de referencia ejecutó con JDK 27.
 
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m4/src/main/java/com/aurora/colecciones/{dominio,servicio}
-mkdir -p tienda-aurora-java-m4/src/test/java/com/aurora/colecciones
-cd tienda-aurora-java-m4
+mkdir -p tienda-aurora-streams/src/main/java/com/aurora/streams/{dominio,reporte}
+mkdir -p tienda-aurora-streams/src/test/java/com/aurora/streams
+cd tienda-aurora-streams
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
 
-```text
-tienda-aurora-streams/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    └── main/
-        └── java/
-            └── com/aurora/streams/
-                ├── TiendaAuroraStreamsApp.java
-                ├── dominio/
-                │   ├── Categoria.java
-                │   ├── Cliente.java
-                │   ├── LineaPedido.java
-                │   ├── Pedido.java
-                │   └── Producto.java
-                └── reporte/
-                    ├── CatalogoProductos.java
-                    └── ReporteVentas.java
+## Código completo, archivo por archivo
+
+#### `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-streams"
 ```
 
-## build.gradle.kts
+#### `build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -86,27 +67,25 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test { useJUnitPlatform() }
+
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
 }
 ```
 
-## settings.gradle.kts
-
-```kotlin
-rootProject.name = "tienda-aurora-streams"
-```
-
-## Código completo
-
-El orden de lectura va de los tipos de dominio a los reportes y termina en la CLI. Así puedes ver primero qué datos existen y después cómo los streams los transforman.
-
 #### Dominio
 
-`Categoria` es un enum. Usar un enum en vez de `String` evita valores inválidos como `"bebida"` o `"BEBIDAS "` y permite agrupar por categoría con seguridad de tipos.
+Los records hacen el dominio pequeño e inmutable. Las validaciones fallan temprano y evitan que un pipeline procese datos ambiguos.
 
-**Archivo:** `src/main/java/com/aurora/streams/dominio/Categoria.java`
+#### `Categoria.java`
 
 ```java
 package com.aurora.streams.dominio;
@@ -119,9 +98,29 @@ public enum Categoria {
 }
 ```
 
-`Producto` es un record inmutable. Valida SKU, nombre, precio y stock en el constructor compacto. `valorInventario()` encapsula el cálculo precio×stock; los streams después pueden usar esta intención en vez de repetir la fórmula.
+#### `Cliente.java`
 
-**Archivo:** `src/main/java/com/aurora/streams/dominio/Producto.java`
+```java
+package com.aurora.streams.dominio;
+
+import java.util.Objects;
+
+public record Cliente(String id, String nombre, String ciudad) {
+    public Cliente {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(nombre, "nombre");
+        Objects.requireNonNull(ciudad, "ciudad");
+        id = id.trim();
+        nombre = nombre.trim();
+        ciudad = ciudad.trim();
+        if (id.isBlank()) throw new IllegalArgumentException("id vacío");
+        if (nombre.isBlank()) throw new IllegalArgumentException("nombre vacío");
+        if (ciudad.isBlank()) throw new IllegalArgumentException("ciudad vacío");
+    }
+}
+```
+
+#### `Producto.java`
 
 ```java
 package com.aurora.streams.dominio;
@@ -158,33 +157,7 @@ public record Producto(
 }
 ```
 
-`Cliente` es otro record de dominio. Su función aquí es dar identidad legible a los reportes: el pipeline de ventas puede convertir ids de cliente en nombres o ciudades sin salir a buscar strings sueltos.
-
-**Archivo:** `src/main/java/com/aurora/streams/dominio/Cliente.java`
-
-```java
-package com.aurora.streams.dominio;
-
-import java.util.Objects;
-
-public record Cliente(String id, String nombre, String ciudad) {
-    public Cliente {
-        Objects.requireNonNull(id, "id");
-        Objects.requireNonNull(nombre, "nombre");
-        Objects.requireNonNull(ciudad, "ciudad");
-        id = id.trim();
-        nombre = nombre.trim();
-        ciudad = ciudad.trim();
-        if (id.isBlank()) throw new IllegalArgumentException("id vacío");
-        if (nombre.isBlank()) throw new IllegalArgumentException("nombre vacío");
-        if (ciudad.isBlank()) throw new IllegalArgumentException("ciudad vacío");
-    }
-}
-```
-
-`LineaPedido` representa una unidad vendida: SKU, cantidad y precio unitario. `subtotal()` es un método de dominio pequeño; `ReporteVentas` lo usa como base para `map`/`reduce`.
-
-**Archivo:** `src/main/java/com/aurora/streams/dominio/LineaPedido.java`
+#### `LineaPedido.java`
 
 ```java
 package com.aurora.streams.dominio;
@@ -208,9 +181,9 @@ public record LineaPedido(String sku, int cantidad, BigDecimal precioUnitario) {
 }
 ```
 
-`Pedido` agrupa líneas y calcula el total con un stream: `lineas.stream().map(LineaPedido::subtotal).reduce(BigDecimal.ZERO, BigDecimal::add)`. Es un ejemplo deliberado de `map + reduce` con identidad `ZERO` y operación asociativa de suma.
+#### `Pedido.java`
 
-**Archivo:** `src/main/java/com/aurora/streams/dominio/Pedido.java`
+`total()` usa `stream().map(...).reduce(...)`: un ejemplo pequeño de pipeline dentro del dominio. Es aceptable aquí porque la intención es clara; si el cálculo creciera, podría extraerse.
 
 ```java
 package com.aurora.streams.dominio;
@@ -243,9 +216,9 @@ public record Pedido(String id, String clienteId, LocalDate fecha, List<LineaPed
 
 #### Reportes
 
-`CatalogoProductos` concentra consultas de lectura sobre productos. Cada método expresa una pregunta de negocio con un pipeline: filtrar activos por categoría, encontrar agotados, agrupar valor de inventario, buscar por SKU con `Optional`, y obtener el más caro con `max`.
+#### `CatalogoProductos.java`
 
-**Archivo:** `src/main/java/com/aurora/streams/reporte/CatalogoProductos.java`
+Muestra filtros, mapeos, ordenamiento, collectors y `Optional`. `activosDe` filtra por activo y categoría, luego ordena por nombre. `valorInventarioPorCategoria` agrupa y reduce con `Collectors.groupingBy` + `reducing`. `buscarPorSku` devuelve `Optional<Producto>`: la ausencia es parte del contrato.
 
 ```java
 package com.aurora.streams.reporte;
@@ -313,9 +286,9 @@ public final class CatalogoProductos {
 }
 ```
 
-`ReporteVentas` transforma pedidos en métricas. Usa `flatMap` para pasar de pedidos a líneas, `groupingBy` para acumular unidades y gasto, `Optional` para resolver nombres de clientes, y `Gatherers.windowFixed` para agrupar totales en ventanas.
+#### `ReporteVentas.java`
 
-**Archivo:** `src/main/java/com/aurora/streams/reporte/ReporteVentas.java`
+Combina `flatMap` para desarmar líneas de pedido, `groupingBy` para sumar unidades, y `Gatherers.windowFixed` para ventanas de totales. También muestra la resolución segura de ausencia con `Optional.ofNullable`.
 
 ```java
 package com.aurora.streams.reporte;
@@ -397,11 +370,9 @@ public final class ReporteVentas {
 }
 ```
 
-#### Frontera CLI
+#### `TiendaAuroraStreamsApp.java`
 
-La clase `main` es la frontera CLI. Carga datos de ejemplo, ejecuta comandos `catalogo`, `ventas` y `auditoria`, e imprime resultados. La auditoría muestra comportamientos puntuales de `Optional`, `filter/sum`, `distinct/sorted/collect`, `Gatherers`, streams paralelos y referencias a método.
-
-**Archivo:** `src/main/java/com/aurora/streams/TiendaAuroraStreamsApp.java`
+CLI mínima para ejecutar los reportes y una auditoría de operaciones de stream/Optional/gather/parallel.
 
 ```java
 package com.aurora.streams;
@@ -554,155 +525,75 @@ public final class TiendaAuroraStreamsApp {
 }
 ```
 
-## Ejecutar
-
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q build
-./gradlew -q run --args="catalogo"
-```
-
-```text
-== Catalogo ==
-Bebidas activas:
-  - CAF-100 Cafe Aurora $14.90
-  - CAF-101 Cafe Sierra $16.50
-  - TEA-100 Te Andino $11.00
-Agotados: Cafe Sierra
-Valor inventario por categoria:
-  ACCESORIOS=237.50
-  BEBIDAS=284.20
-  MOLIENDA=239.70
-SKU MOL-200: Molino Manual
-SKU XXX-999: no encontrado
-Mas caro: Molino Manual $79.90
-```
-
-```bash
-./gradlew -q run --args="ventas"
-```
-
-```text
-== Ventas ==
-Total facturado: $186.10
-Unidades por SKU:
-  CAF-100=3
-  FIL-300=3
-  TEA-100=3
-  MOL-200=1
-Top clientes: Bruno=79.90, Ana=72.30
-Ciudades: Cusco, Lima
-Ventanas de totales (2): [[39.30, 79.90], [33.00, 33.90]]
-```
-
-```bash
-./gradlew -q run --args="auditoria"
-```
-
-```text
-== Auditoria ==
-Optional presente: caf-100
-Optional ausente: NA
-Suma filtrada: 24
-SKUs distintos: CAF-100,FIL-300,MOL-200
-Gatherers windowFixed: [[1, 2], [3, 4], [5]]
-Parallel sum: 500500
-Method ref: [CAFE, TAZA]
-```
-
-## Conceptos cubiertos
-
-### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 45 min
-
-La Stream API se entiende mejor con una pregunta de negocio. “Quiero las bebidas activas, ordenadas por nombre” es una transformación: filtrar por categoría, filtrar por estado activo, ordenar y materializar. En `CatalogoProductos.activosDe` eso se escribe así:
+#### Test
 
 ```java
-public List<Producto> activosDe(Categoria categoria) {
-    return productos.stream()
-            .filter(Producto::activo)
-            .filter(p -> p.categoria() == categoria)
-            .sorted(Comparator.comparing(Producto::nombre))
-            .toList();
-}
-```
+package com.aurora.streams;
 
-`stream()` crea el pipeline desde la fuente. `filter` es una operación intermedia: no recorre toda la lista inmediatamente para producir otra lista; describe la condición. `sorted` también es intermedia. `toList()` es terminal: dispara la ejecución y devuelve el resultado. Esta distinción importa porque las intermedias son lazy. Si una terminal como `findFirst()` ya encontró lo que buscaba, el pipeline puede dejar de procesar elementos.
+import com.aurora.streams.dominio.*;
+import com.aurora.streams.reporte.CatalogoProductos;
+import com.aurora.streams.reporte.ReporteVentas;
+import org.junit.jupiter.api.Test;
 
-`map` transforma cada elemento. En `nombresAgotados()` se filtran productos activos con stock cero y luego se transforma `Producto` a `String` con `Producto::nombre` antes de recolectar. El pipeline no modifica el producto original; produce una nueva vista de datos.
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
-`reduce` combina elementos en un solo valor. En `Pedido.total()` la identidad es `BigDecimal.ZERO` y la operación es `BigDecimal::add`. La identidad importa: es el valor inicial y también el resultado correcto cuando no hay líneas. La operación debe ser asociativa para que tenga sentido en reducciones paralelas; la suma lo es.
+import static org.junit.jupiter.api.Assertions.*;
 
-`collect` materializa en una estructura más rica. `ReporteVentas.unidadesPorSku()` usa `Collectors.groupingBy(LineaPedido::sku, Collectors.summingLong(LineaPedido::cantidad))`. Aquí `flatMap` primero convierte cada pedido en un stream de líneas; después `collect` agrupa por SKU y suma cantidades. Es declarativo, pero hay que leerlo con calma: la clave es el SKU, el downstream collector es la suma de cantidades.
-
-El error más común con streams es usarlos con efectos secundarios. Si dentro de un `forEach` modificas una lista externa o un contador compartido, pierdes las garantías del modelo y creas bugs difíciles, especialmente con paralelismo. La regla práctica es: los streams deben transformar datos; los efectos secundarios, si existen, deben estar en el borde y ser obvios.
-
-### Tema 2: Optional — evitar null explícitamente · Intermedio · 35 min
-
-`Optional<T>` representa ausencia de forma explícita. En vez de devolver `null` y confiar en que todos recuerden validarlo, el tipo obliga a decidir qué hacer cuando no hay valor. En el catálogo, `buscarPorSku` devuelve `Optional<Producto>`:
-
-```java
-public Optional<Producto> buscarPorSku(String sku) {
-    String buscado = sku == null ? "" : sku.trim().toUpperCase();
-    return productos.stream()
-            .filter(p -> p.sku().equals(buscado))
-            .findFirst();
-}
-```
-
-El llamador no puede usar el producto como si siempre existiera sin tomar una decisión. En la CLI se usa `ifPresentOrElse`:
-
-```java
-catalogo.buscarPorSku("MOL-200")
-        .ifPresentOrElse(
-                p -> System.out.println("SKU MOL-200: " + p.nombre()),
-                () -> System.out.println("SKU MOL-200: no encontrado")
+class ReporteVentasTest {
+    @Test
+    void totalYTop() {
+        var clientes = List.of(new Cliente("C1","Ana","Lima"), new Cliente("C2","Bruno","Cusco"));
+        var pedidos = List.of(
+            new Pedido("P1","C1",LocalDate.of(2026,11,1), List.of(new LineaPedido("CAF-100",2,new BigDecimal("10.00")))),
+            new Pedido("P2","C2",LocalDate.of(2026,11,2), List.of(new LineaPedido("MOL-200",1,new BigDecimal("50.00"))))
         );
-```
+        var r = new ReporteVentas(pedidos, clientes);
+        assertEquals(new BigDecimal("70.00"), r.totalFacturado());
+        assertEquals(List.of("Bruno=50.00","Ana=20.00"), r.topClientesPorGasto(2));
+    }
 
-La salida real muestra ambos casos: `SKU MOL-200: Molino Manual` y `SKU XXX-999: no encontrado`. Eso es mejor que un `NullPointerException` en otro lugar del programa.
-
-`Optional` también se compone. `map` transforma el valor si existe; `orElse` da un valor por defecto; `orElseThrow` convierte la ausencia en un error explícito. En `ReporteVentas.nombreCliente` se usa `Optional.ofNullable(...)` porque el mapa puede devolver `null`; si el cliente existe, se extrae el nombre; si no, se devuelve un fallback legible.
-
-Lo que no hay que hacer es abusar de Optional. No conviene usarlo como campo de entidad, como parámetro de todos los métodos, ni envolver colecciones que ya pueden estar vacías. Un `List<Producto>` vacía es una buena representación de “no hay productos”; `Optional<List<Producto>>` agrega ambigüedad. Optional sirve sobre todo como valor de retorno cuando la ausencia es parte normal del contrato.
-
-### Tema 3: Stream Gatherers (Java 24) · Avanzado · 40 min
-
-Hay transformaciones que `map`, `filter` y `flatMap` no expresan bien. Un ejemplo clásico son las ventanas fijas o deslizantes: quieres agrupar elementos en lotes de tamaño N mientras recorres el stream. Antes de los Gatherers, esto solía terminar en bucles externos, acumuladores mutables o código más difícil de leer.
-
-Java 24 incorporó la Stream Gatherer API. Un gatherer es una operación intermedia personalizada que puede acumular estado interno, emitir cero o muchos elementos por entrada, y controlar cuándo termina. No necesitas implementar un gatherer para usar los built-in. En este proyecto, `ReporteVentas.ventanasDeTotales` usa `Gatherers.windowFixed`:
-
-```java
-public List<List<BigDecimal>> ventanasDeTotales(int tamano) {
-    return pedidos.stream()
-            .sorted(Comparator.comparing(Pedido::fecha).thenComparing(Pedido::id))
-            .map(Pedido::total)
-            .gather(Gatherers.windowFixed(tamano))
-            .toList();
+    @Test
+    void optionalYCatalogo() {
+        var c = new CatalogoProductos(List.of(new Producto("CAF-100","Cafe",Categoria.BEBIDAS,new BigDecimal("10.00"),1,true)));
+        assertTrue(c.buscarPorSku("CAF-100").isPresent());
+        assertTrue(c.buscarPorSku("NOPE").isEmpty());
+    }
 }
 ```
 
-El pipeline ordena pedidos por fecha e id para que la ventana tenga un criterio estable, transforma cada pedido a su total, y después agrupa esos totales en listas de tamaño 2. La salida real es `[[39.30, 79.90], [33.00, 33.90]]`. Cada sublista es una ventana emitida por el gatherer.
+### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 40 min
 
-La auditoría muestra también el caso simple con enteros: `IntStream.rangeClosed(1, 5).boxed().gather(Gatherers.windowFixed(2)).toList()` produce `[[1, 2], [3, 4], [5]]`. La última ventana puede ser más corta cuando no hay suficientes elementos.
+La Stream API procesa una secuencia con operaciones declarativas. Una operación intermedia (`filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`) devuelve otro stream y es perezosa: no hace trabajo hasta que una terminal lo pide. Una operación terminal (`collect`, `reduce`, `forEach`, `findFirst`, `count`, `toList`) consume el stream y produce un valor o efecto.
 
-Un gatherer es poderoso, pero no debe ser la primera herramienta. Si `filter` y `map` resuelven el problema con claridad, úsalos. Los gatherers valen la pena cuando la transformación intermedia es realmente estructural, como ventanas, escaneo con estado o emisión personalizada.
+`filter` conserva elementos que cumplen un predicado. `map` transforma cada elemento. `flatMap` transforma cada elemento en cero o más elementos y aplana el resultado; es la herramienta correcta cuando tienes pedidos con líneas y quieres un stream de líneas. `reduce` combina elementos en un acumulador; requiere una identidad y una operación asociativa para ser correcto, especialmente en paralelo. `collect` delega en un `Collector`, que define cómo acumular: `toList()`, `joining()`, `groupingBy()`, `summingLong()`, `toUnmodifiableMap()`.
 
-### Tema 4: Streams paralelos y referencias a métodos · Intermedio · 35 min
+El error común es usar streams para todo. Si un `for` con dos variables es más claro, úsalo. Otro error es mutar estado externo desde lambdas: rompe legibilidad y puede romper corrección en paralelo. El pipeline debe leer como transformación de datos.
 
-Una referencia a método es una forma compacta de escribir una lambda que solo delega. `Producto::nombre`, `String::toUpperCase`, `BigDecimal::add` y `LineaPedido::subtotal` son referencias a método usadas en este módulo. Se leen bien cuando el nombre del método ya comunica la intención. Si la lambda necesita lógica adicional o el nombre no es claro, una lambda explícita puede ser mejor.
+### Tema 2: Optional — evitar null explícitamente · Básico · 30 min
 
-Los streams paralelos son otro tema: no son una mejora gratuita. `parallel()` divide el trabajo en subtareas que se ejecutan en el ForkJoinPool común por defecto. Puede ayudar en operaciones CPU-bound, grandes, independientes y sin estado compartido mutable. También puede empeorar si el dataset es pequeño, si hay mucho overhead de coordinación, si la fuente no se divide bien, o si la operación hace I/O bloqueante.
+`Optional<T>` representa un valor que puede estar presente o ausente. Su objetivo es hacer visible esa ausencia en el tipo. `buscarPorSku` devuelve `Optional<Producto>`: el llamador debe decidir qué hacer si no existe. Eso es mejor que devolver `null` y esperar que todos recuerden comprobarlo.
 
-La auditoría ejecuta un caso verificable y seguro:
+Usa `map`, `flatMap`, `filter`, `orElse`, `orElseGet`, `orElseThrow`, `ifPresentOrElse`. Evita `Optional.get()` sin comprobar; si el valor no está, lanza `NoSuchElementException`. `orElse` evalúa el valor por defecto siempre; `orElseGet` lo evalúa solo si está vacío, útil cuando el default es costoso.
 
-```java
-int sumaParalela = IntStream.rangeClosed(1, 1000).parallel().sum();
-System.out.println("Parallel sum: " + sumaParalela);
-```
+**Confusión común:** poner `Optional` en campos, parámetros o serialización por defecto. No es su propósito principal. Úsalo sobre todo como retorno donde la ausencia es esperable. Para parámetros obligatorios, usa tipos normales y valida.
 
-La salida es `500500`, igual que la suma secuencial. Lo importante no es el número —es trivial— sino la forma: la operación es pura, sin estado compartido, y el resultado no depende del orden de ejecución. Ese es el tipo de caso donde `parallel()` puede considerarse. Si en cambio cada hilo escribiera en una `ArrayList` compartida, tendrías una condición de carrera.
+### Tema 3: Stream Gatherers (Java 24) · Avanzado · 35 min
 
-La regla profesional es medir antes de paralelizar. Un `parallelStream()` puesto “por si acaso” puede volver más lento el código y más difícil de diagnosticar. Primero hazlo correcto y claro; luego mide con datos reales.
+Los gatherers extienden la Stream API con operaciones intermedias personalizadas cuando `map/filter/reduce` no alcanzan. `Stream.gather(Gatherer)` permite mantener estado local durante el procesamiento y emitir cero, uno o varios elementos por entrada. Java 24 incorpora gatherers integrados como `Gatherers.windowFixed`, `windowSliding`, `fold` y `scan`.
+
+En `ReporteVentas.ventanasDeTotales`, `windowFixed(2)` agrupa totales en ventanas de tamaño fijo. Es más claro que mantener índices manuales. El gatherer es intermedio y perezoso, igual que `map`.
+
+**Nota de versión:** Gatherers son de Java 24+. En este proyecto se verificó con JDK 27.0.1.0.2, donde funcionan. Si tu runtime es Java 21, no compilará este código; debes usar un JDK 24+ o reemplazar por lógica manual.
+
+### Tema 4: Streams paralelos y referencias a métodos · Intermedio · 30 min
+
+Una referencia a método (`Producto::nombre`, `String::toUpperCase`) es azúcar para una lambda que solo llama a un método existente. Mejora legibilidad cuando el nombre comunica bien la intención. No la fuerces si oscurece.
+
+`parallelStream()` o `stream().parallel()` divide el trabajo entre hilos del ForkJoinPool común. Puede mejorar rendimiento en colecciones grandes, operaciones CPU-bound e independientes. También puede empeorar: overhead de partición, contención, boxing, orden, y fuente difícil de dividir. Nunca asumas; mide. Y nunca uses paralelo con estado mutable compartido.
+
+En `auditoria()`, `IntStream.rangeClosed(1,1000).parallel().sum()` es seguro porque la reducción es independiente y asociativa. En datos pequeños, secuencial suele ser mejor.
 
 ## Verificación real
 
@@ -711,12 +602,14 @@ Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m4` (macOS arm64, JDK 27.0.1.0.
 ```bash
 ./gradlew -q test
 ./gradlew -q run
+./gradlew -q run --args="auditoria"
 ```
 
-Resultados observados (resumen):
+Resultados observados:
 
-- `test`: 0 fallas.
-- `run`: imprime catálogo filtrado/ordenado, agotados, valor por categoría, búsqueda por SKU, total facturado, unidades por SKU, top clientes, ciudades y ventanas de totales.
+- `test`: 2 pruebas, 0 fallas.
+- `run`: catálogo activo, agotados, valor por categoría, SKU presente/ausente con Optional, más caro, total facturado, unidades por SKU, top clientes, ciudades y ventanas de totales `[[39.30, 79.90], [33.00, 33.90]]`.
+- `auditoria`: `Optional presente: caf-100`, `Optional ausente: NA`, `Suma filtrada: 24`, `SKUs distintos: CAF-100,FIL-300,MOL-200`, `Gatherers windowFixed: [[1, 2], [3, 4], [5]]`, `Parallel sum: 500500`, `Method ref: [CAFE, TAZA]`.
 
 ## Errores comunes y diagnóstico
 
@@ -730,12 +623,12 @@ Resultados observados (resumen):
 
 ## Cierre
 
-La Stream API convierte transformaciones de colecciones en pipelines legibles cuando se usa con disciplina. `Optional` hace explícita la ausencia. Los Gatherers abren la puerta a operaciones intermedias que antes requerían código imperativo extra. Los streams paralelos solo valen cuando el trabajo y la medición lo justifican. En todos los casos, la meta es la misma: código que exprese intención sin esconder costos ni efectos secundarios.
+Streams no reemplazan el pensamiento de colecciones; lo complementan. Un buen pipeline es legible, no muta estado externo y termina en una operación que expresa el resultado. En el siguiente módulo, el foco pasa a concurrencia: cuando varias tareas compiten por CPU, I/O y estado compartido, la claridad del pipeline no basta si el modelo de ejecución es incorrecto.
 
 ## Checklist
 
-- Distingo operaciones intermedias lazy de operaciones terminales que disparan la ejecución.
-- Uso `map`, `filter`, `reduce` y `collect` con funciones puras y sin mutación compartida.
-- Devuelvo `Optional` cuando la ausencia es parte del contrato, y evito `get()` sin decisión explícita.
-- Uso gatherers cuando la transformación intermedia no se expresa bien con operaciones estándar.
-- Solo uso `parallel()` tras comprobar independencia, tamaño suficiente y medición.
+- [ ] Distingo operación intermedia perezosa de terminal.
+- [ ] Uso `flatMap` cuando necesito aplanar.
+- [ ] Uso `Optional` como contrato de ausencia, sin `get()` ciego.
+- [ ] Sé cuándo un gatherer aporta claridad.
+- [ ] No uso `parallelStream()` sin medir y sin asegurar independencia.
