@@ -1,52 +1,57 @@
-# Módulo 17: JDBC
+# Módulo 17: JDBC, DAO y transacciones
 
-Una aplicación puede validar reglas en memoria, pero si no persiste datos con garantías, pierde confiabilidad en cuanto hay reinicios, concurrencia o fallos parciales. JDBC es la capa estándar que Java ofrece para hablar con bases de datos relacionales. Aunque uses JPA/Hibernate en el día a día, JDBC sigue siendo la base: entenderlo te permite depurar ORMs, escribir consultas críticas, controlar transacciones y razonar sobre aislamiento, recursos y latencia.
+Una aplicación de envíos puede validar objetos en memoria, pero si no persiste bien sus datos, el negocio pierde trazabilidad. El problema aparece en los bordes: un `INSERT` con concatenación de strings abre la puerta a SQL injection; una transferencia que debita una cuenta y falla antes de acreditar la otra deja saldos inconsistentes; una consulta sin mapeo claro mezcla SQL, infraestructura y dominio.
 
-**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+En este módulo vas a construir `tienda-aurora-java-m17` desde cero. La primera parte resuelve persistencia con JDBC y el patrón DAO usando H2 en memoria para que sea ejecutable localmente. La segunda parte modela transacciones con commit/rollback y verifica aislamiento `READ COMMITTED`. PostgreSQL/MySQL usan el mismo contrato JDBC; al final indico qué cambia al salir de H2.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, H2 2.3.232 (jar local), Docker 29.9.3 disponible para pruebas opcionales con PostgreSQL. Todos los ejemplos ejecutables de este módulo usan H2 en memoria para ser reproducibles desde cero.
+## Visual del módulo
 
-## Setup ejecutable del módulo
+**Herramienta (diagram-design, estático):** [JDBC, DAO y transacción — mapa visual](/visuals/temas/java/modulo-17-jdbc-transaccion.html)
 
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-curl -L -o h2.jar https://repo1.maven.org/maven2/com/h2database/h2/2.3.232/h2-2.3.232.jar
-```
+Lectura: el servicio llama al DAO; el DAO usa `PreparedStatement` con parámetros tipados; la transacción agrupa operaciones para que se confirmen todas o ninguna.
 
-Compila y ejecuta cada ejemplo con:
+## Prerrequisitos y bootstrap
+
+Necesitas JDK 25 y Gradle 9.x.
 
 ```bash
-javac -cp ".:h2.jar" Archivo.java
-java -cp ".:h2.jar" Archivo
+java -version
+gradle --version
+mkdir -p tienda-aurora-java-m17/src/main/java/com/aurora/jdbc
+mkdir -p tienda-aurora-java-m17/src/test/java/com/aurora/jdbc
+cd tienda-aurora-java-m17
+gradle wrapper --gradle-version 9.9.1
 ```
 
-> En Windows, el separador de classpath es `;` en lugar de `:`.
-
-## Aprende construyendo
-
-## Proyecto desde cero: tienda-aurora-java-m17
-
-## Prerrequisitos
-
-```bash
-java -version    # JDK 25+
-gradle --version # Gradle 9.x
-```
-
-## Estructura del proyecto
+Estructura:
 
 ```text
 tienda-aurora-java-m17/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── src/
-    └── main/
-        └── java/com/aurora/java/
-            └── Main.java
+    ├── main/java/com/aurora/jdbc/
+    │   ├── App.java
+    │   ├── DataSourceFactory.java
+    │   ├── Guia.java
+    │   ├── GuiaDao.java
+    │   ├── Schema.java
+    │   └── TransferenciaService.java
+    └── test/java/com/aurora/jdbc/
+        └── JdbcTest.java
 ```
 
-## build.gradle.kts
+## Build desde cero
+
+#### `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m17"
+```
+
+#### `build.gradle.kts`
+
+Usamos H2 como BD embebida para ejecución local verificable. El driver JDBC entra como dependencia normal; JUnit 5 cubre las pruebas.
 
 ```kotlin
 plugins {
@@ -63,498 +68,488 @@ java {
     }
 }
 
-application {
-    mainClass.set("com.aurora.java.Main")
-}
-
 repositories {
     mavenCentral()
 }
+
+dependencies {
+    implementation("com.h2database:h2:2.3.232")
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+application {
+    mainClass = "com.aurora.jdbc.App"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-Werror"))
+}
 ```
 
-## settings.gradle.kts
+## Modelo y esquema
 
-```kotlin
-rootProject.name = "tienda-aurora-java-m17"
+#### `Guia.java`
+
+El record representa el dato que viaja entre la aplicación y el DAO. Valida invariantes antes de persistir; el DAO no debería tener que defenderse de objetos inválidos.
+
+```java
+package com.aurora.jdbc;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+public record Guia(int id, String remitente, String destino, BigDecimal pesoKg) {
+    public Guia {
+        Objects.requireNonNull(remitente, "remitente");
+        Objects.requireNonNull(destino, "destino");
+        Objects.requireNonNull(pesoKg, "pesoKg");
+        if (id <= 0) throw new IllegalArgumentException("id debe ser > 0");
+        if (remitente.isBlank() || destino.isBlank()) throw new IllegalArgumentException("texto vacío");
+        if (pesoKg.signum() <= 0) throw new IllegalArgumentException("pesoKg debe ser > 0");
+    }
+}
 ```
 
-## Ejecutar
+#### `DataSourceFactory.java`
 
-```bash
-./gradlew run
-# O directamente:
-mkdir -p out
-javac -d out src/main/java/com/aurora/java/**/*.java
-java -cp out com.aurora.java.Main
+`DataSource` es el punto de entrada a conexiones. En producción suele venir de un pool (HikariCP). Aquí creamos un H2 en memoria para que el ejemplo sea reproducible sin instalar BD externa.
+
+```java
+package com.aurora.jdbc;
+
+import org.h2.jdbcx.JdbcDataSource;
+
+import javax.sql.DataSource;
+
+public final class DataSourceFactory {
+    private DataSourceFactory() {}
+
+    public static DataSource h2Mem(String dbName) {
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1");
+        ds.setUser("sa");
+        ds.setPassword("");
+        return ds;
+    }
+}
+```
+
+`DB_CLOSE_DELAY=-1` mantiene la BD viva mientras la JVM esté activa. Sin eso, la BD en memoria puede desaparecer al cerrar la última conexión.
+
+#### `Schema.java`
+
+El esquema es código ejecutable, no una suposición. Lo creamos al inicio para que el módulo sea autocontenido.
+
+```java
+package com.aurora.jdbc;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public final class Schema {
+    private Schema() {}
+
+    public static void init(DataSource ds) throws SQLException {
+        try (Connection c = ds.getConnection(); Statement st = c.createStatement()) {
+            st.execute("""
+                CREATE TABLE guias (
+                  id INT PRIMARY KEY,
+                  remitente VARCHAR(100) NOT NULL,
+                  destino VARCHAR(100) NOT NULL,
+                  peso_kg DECIMAL(10,2) NOT NULL
+                )
+                """);
+            st.execute("""
+                CREATE TABLE cuentas (
+                  id INT PRIMARY KEY,
+                  titular VARCHAR(100) NOT NULL,
+                  saldo DECIMAL(12,2) NOT NULL
+                )
+                """);
+        }
+    }
+}
 ```
 
 ### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
 
-**Caso guía.** un servicio interno debe registrar guías de envío y consultarlas por ID. No puede permitir inyección SQL, no debe filtrar `ResultSet` a la capa de negocio y debe cerrar recursos siempre, incluso ante errores.
+JDBC es la API estándar de Java para hablar con bases de datos relacionales. El código Java usa interfaces como `Connection`, `PreparedStatement` y `ResultSet`; el driver JDBC traduce esas llamadas al protocolo de la BD concreta. Esto permite cambiar de H2 a PostgreSQL o MySQL sin reescribir la lógica, aunque SQL y detalles de tipos sí pueden variar.
 
-JDBC
+El problema que resuelve un DAO es separar persistencia de negocio. Si el servicio arma SQL, abre conexiones, mapea `ResultSet` y además aplica reglas, termina con una clase imposible de probar. El DAO encapsula el acceso a datos: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
 
-**Definición.** JDBC (Java Database Connectivity) es la API estándar del paquete `java.sql`/`javax.sql` que define contratos para conectar aplicaciones Java con bases de datos relacionales mediante drivers.
+`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados. El driver los envía separados, no como fragmentos de SQL ejecutable.
 
- La aplicación no habla directamente con PostgreSQL, MySQL u H2; habla con interfaces JDBC. El driver JDBC traduce esas llamadas al protocolo del motor. `DriverManager` localiza un driver compatible con la URL JDBC, abre una `Connection`, y sobre esa conexión se crean sentencias SQL. Esto desacopla el código Java del motor específico, aunque el SQL y algunos detalles transaccionales sigan siendo propios de cada base.
-
-**Diagrama (diagram-design, estático):** [JDBC: capas entre Java y la base de datos](/visuals/temas/java/modulo-17-jdbc-arquitectura.html)
-
-Lectura: la app usa la API JDBC; el driver traduce al protocolo de la BD. Tu código depende de `java.sql`, no del wire protocol.
-
-**Contrato/reglas clave.** La URL JDBC identifica el motor y destino (`jdbc:h2:mem:db`, `jdbc:postgresql://host/db`). La conexión es un recurso costoso: debe cerrarse. JDBC no elimina diferencias SQL entre motores; abstrae el acceso, no la semántica completa.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando necesites control directo de SQL, transacciones, batch, rendimiento o depuración bajo un ORM. No lo uses como excusa para esparcir SQL por toda la UI/capa web; encapsula el acceso.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoJdbcApi.java`:
+#### `GuiaDao.java`
 
 ```java
+package com.aurora.jdbc;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-public class DemoJdbcApi {
-  public static void main(String[] args) throws Exception {
-    try (Connection c = DriverManager.getConnection("jdbc:h2:mem:j1;DB_CLOSE_DELAY=-1", "sa", "")) {
-      System.out.println(c.getMetaData().getDatabaseProductName());
-      System.out.println(c.isValid(1));
+public class GuiaDao {
+    private final DataSource ds;
+
+    public GuiaDao(DataSource ds) {
+        this.ds = ds;
     }
-  }
-}
-```
 
-
-
-```bash
-javac -cp ".:h2.jar" DemoJdbcApi.java
-java -cp ".:h2.jar" DemoJdbcApi
-```
-
-**Caso de uso real.** Un job batch de conciliación ejecuta SQL optimizado directamente con JDBC porque necesita control de fetch size, batch inserts y tiempos.
-
-**Error común.** Driver no en classpath. Síntoma: `No suitable driver found for jdbc:...` o `ClassNotFoundException`. Causa: jar ausente o URL mal escrita. Corrección: incluir el driver en classpath y verificar la URL exacta del motor.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
-
-```text
-H2
-true
-```
-
-`PreparedStatement`
-
-**Definición.** `PreparedStatement` es una sentencia SQL precompilada/parametrizada que separa el texto SQL de los valores, asignados mediante placeholders `?` y setters tipados.
-
- En vez de construir `"select ... where id=" + id`, envías la plantilla SQL y luego los parámetros como datos. El driver/envía los valores con su tipo, evitando que el input del usuario se interprete como SQL. Además, muchos motores pueden reutilizar el plan para la misma sentencia parametrizada.
-
-**Diagrama (diagram-design, estático):** [PreparedStatement: SQL y datos viajan separados](/visuals/temas/java/modulo-17-prepared-statement.html)
-
-Lectura: el SQL se prepara con placeholder y el valor viaja como parámetro tipado. No se concatena input dentro del SQL.
-
-**Contrato/reglas clave.** Los parámetros se indexan desde 1, no desde 0. Usa el setter correcto (`setInt`, `setString`, `setTimestamp`, etc.). `PreparedStatement` no sirve para parametrizar identificadores SQL (nombres de tabla/columna/order by dinámico); esos casos requieren allow-list controlada.
-
-**Cuándo usarlo y cuándo no.** Úsalo siempre con input externo o variable. No concatenes strings para SQL. No lo uses para inyectar nombres de columna recibidos del usuario sin validación estricta.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoPs.java`:
-
-```java
-import java.sql.*;
-
-public class DemoPs {
-  public static void main(String[] args) throws Exception {
-    try (Connection c = DriverManager.getConnection("jdbc:h2:mem:j2;DB_CLOSE_DELAY=-1", "sa", "")) {
-      try (Statement st = c.createStatement()) {
-        st.execute("create table guia(id int primary key, codigo varchar(50), estado varchar(20))");
-      }
-      try (PreparedStatement ps = c.prepareStatement("insert into guia(id,codigo,estado) values(?,?,?)")) {
-        ps.setInt(1, 1);
-        ps.setString(2, "G-1");
-        ps.setString(3, "CREADA");
-        System.out.println(ps.executeUpdate());
-      }
-      try (PreparedStatement ps = c.prepareStatement("select codigo, estado from guia where id=?")) {
-        ps.setInt(1, 1);
-        try (ResultSet rs = ps.executeQuery()) {
-          rs.next();
-          System.out.println(rs.getString("codigo") + ":" + rs.getString("estado"));
+    public void insertar(Guia guia) throws SQLException {
+        String sql = "INSERT INTO guias(id, remitente, destino, peso_kg) VALUES (?, ?, ?, ?)";
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, guia.id());
+            ps.setString(2, guia.remitente());
+            ps.setString(3, guia.destino());
+            ps.setBigDecimal(4, guia.pesoKg());
+            ps.executeUpdate();
         }
-      }
     }
-  }
+
+    public Optional<Guia> buscarPorId(int id) throws SQLException {
+        String sql = "SELECT id, remitente, destino, peso_kg FROM guias WHERE id = ?";
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return Optional.empty();
+                return Optional.of(map(rs));
+            }
+        }
+    }
+
+    public List<Guia> listarPorDestino(String destino) throws SQLException {
+        String sql = "SELECT id, remitente, destino, peso_kg FROM guias WHERE destino = ? ORDER BY id";
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, destino);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Guia> out = new ArrayList<>();
+                while (rs.next()) out.add(map(rs));
+                return out;
+            }
+        }
+    }
+
+    private Guia map(ResultSet rs) throws SQLException {
+        return new Guia(
+                rs.getInt("id"),
+                rs.getString("remitente"),
+                rs.getString("destino"),
+                rs.getBigDecimal("peso_kg")
+        );
+    }
 }
 ```
 
+Puntos que vale leer con calma:
 
+- `try-with-resources` cierra `Connection`, `PreparedStatement` y `ResultSet`. Un leak de conexiones en producción derriba el pool.
+- `buscarPorId` devuelve `Optional<Guia>` para hacer explícita la ausencia.
+- `map` concentra la conversión de fila a objeto. Si la tabla cambia, el cambio se localiza aquí.
+- El SQL usa `?`, nunca concatenación de input.
 
-```bash
-javac -cp ".:h2.jar" DemoPs.java
-java -cp ".:h2.jar" DemoPs
-```
+**Caso de borde:** `executeUpdate()` devuelve cantidad de filas afectadas. En inserts/updates críticos conviene inspeccionarlo; aquí el id es PK y un duplicado lanzará excepción SQL.
 
-**Caso de uso real.** Endpoint `GET /guias/{id}` consulta por ID sin exponer la base a inyección SQL.
-
-**Error común.** Concatenar input: `"where codigo='" + input + "'"`. Síntoma: inyección SQL, errores de comillas, o consultas manipuladas. Causa: input tratado como código SQL. Corrección: `prepareStatement` + `setString`.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
-
-```text
-1
-G-1:CREADA
-```
-
-DAO
-
-**Definición.** DAO (Data Access Object) es un patrón que encapsula el acceso a persistencia detrás de una interfaz/métodos orientados al dominio, ocultando SQL, JDBC y mapeo de filas.
-
- El servicio de negocio pide `dao.buscarPorId(id)` o `dao.guardar(guia)`; no arma SQL ni recorre `ResultSet`. El DAO traduce objetos de dominio a parámetros SQL y filas a objetos. Esto concentra el conocimiento de persistencia, reduce duplicación y permite probar la lógica de negocio con dobles del DAO.
-
-**Diagrama (diagram-design, estático):** [DAO: el servicio habla dominio, el DAO habla SQL](/visuals/temas/java/modulo-17-dao.html)
-
-Lectura: el servicio orquesta negocio; el DAO encapsula SQL y mapeo JDBC. El cambio de persistencia se concentra en el borde.
-
-**Contrato/reglas clave.** El DAO no debe exponer `Connection`, `Statement` o `ResultSet`. Debe mapear errores de persistencia de forma consistente. Mantén métodos pequeños y con intención (`insertar`, `buscarPorId`, `listar`).
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando haya acceso a datos repetido o quieras separar persistencia de negocio. No lo conviertas en “god class” con reglas de negocio complejas, validaciones HTTP o UI.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoDao.java`:
-
-```java
-import java.sql.*;
-import java.util.*;
-
-record Guia(int id, String codigo) {}
-
-class GuiaDao {
-  private final String url;
-  GuiaDao(String url) { this.url = url; }
-  private Connection open() throws SQLException { return DriverManager.getConnection(url, "sa", ""); }
-
-  void crearTabla() throws SQLException {
-    try (Connection c = open(); Statement st = c.createStatement()) {
-      st.execute("create table if not exists guia(id int primary key, codigo varchar(50) not null)");
-    }
-  }
-
-  void insertar(Guia guia) throws SQLException {
-    try (Connection c = open();
-         PreparedStatement ps = c.prepareStatement("insert into guia(id,codigo) values(?,?)")) {
-      ps.setInt(1, guia.id());
-      ps.setString(2, guia.codigo());
-      ps.executeUpdate();
-    }
-  }
-
-  Optional<Guia> buscarPorId(int id) throws SQLException {
-    try (Connection c = open();
-         PreparedStatement ps = c.prepareStatement("select id,codigo from guia where id=?")) {
-      ps.setInt(1, id);
-      try (ResultSet rs = ps.executeQuery()) {
-        if (!rs.next()) return Optional.empty();
-        return Optional.of(new Guia(rs.getInt("id"), rs.getString("codigo")));
-      }
-    }
-  }
-}
-
-public class DemoDao {
-  public static void main(String[] args) throws Exception {
-    GuiaDao dao = new GuiaDao("jdbc:h2:mem:j3;DB_CLOSE_DELAY=-1");
-    dao.crearTabla();
-    dao.insertar(new Guia(1, "G-1"));
-    System.out.println(dao.buscarPorId(1).map(Guia::codigo).orElse("NA"));
-    System.out.println(dao.buscarPorId(99).isEmpty());
-  }
-}
-```
-
-
-
-```bash
-javac -cp ".:h2.jar" DemoDao.java
-java -cp ".:h2.jar" DemoDao
-```
-
-**Caso de uso real.** En un monolito legacy sin JPA, los DAOs JDBC aíslan SQL y permiten migrar gradualmente a repositorios más modernos.
-
-**Error común.** Devolver `ResultSet` o `Connection` al servicio. Síntoma: fugas de recursos y acoplamiento. Causa: DAO incompleto. Corrección: mapear a objetos/dtos y cerrar recursos dentro del DAO.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
-
-```text
-G-1
-true
-```
-
-`Connection`, `ResultSet` y try-with-resources
-
-**Definición.** `Connection` representa una sesión con la base; `Statement/PreparedStatement` ejecuta SQL; `ResultSet` itera filas. Todos son `AutoCloseable` o recursos asociados que deben liberarse determinísticamente.
-
- Una conexión abierta ocupa socket, memoria y, en pools, un slot limitado. Un `ResultSet` puede mantener cursor/recursos del lado del driver/DB. Si no se cierran, el sistema degrada hasta agotar el pool: las nuevas peticiones esperan o fallan por timeout.
-
-**Diagrama (diagram-design, estático):** [try-with-resources: cierre garantizado](/visuals/temas/java/modulo-17-try-with-resources.html)
-
-Lectura: los recursos se cierran al salir del `try`, también ante excepción, en orden inverso al de apertura.
-
-**Contrato/reglas clave.** Usa try-with-resources para cada recurso. Cierra en orden inverso al de apertura; try-with-resources lo hace por ti. No reutilices un `ResultSet` después de cerrar su statement.
-
-**Cuándo usarlo.** Siempre. Especialmente en servicios web con pool de conexiones.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoClose.java`:
-
-```java
-import java.sql.*;
-
-public class DemoClose {
-  public static void main(String[] args) throws Exception {
-    try (Connection c = DriverManager.getConnection("jdbc:h2:mem:j4;DB_CLOSE_DELAY=-1", "sa", "");
-         Statement st = c.createStatement()) {
-      st.execute("create table t(id int)");
-      st.execute("insert into t values(1)");
-      try (ResultSet rs = st.executeQuery("select count(*) from t")) {
-        rs.next();
-        System.out.println(rs.getInt(1));
-      }
-    }
-    System.out.println("cerrado");
-  }
-}
-```
-
-
-
-```bash
-javac -cp ".:h2.jar" DemoClose.java
-java -cp ".:h2.jar" DemoClose
-```
-
-**Caso de uso real.** En un servicio con HikariCP, cerrar la conexión devuelve el slot al pool; no cerrarla provoca `Connection is not available`.
-
-**Error común.** Abrir conexión y depender del GC. Síntoma: saturación de pool, latencia creciente, timeouts. Causa: recursos no liberados. Corrección: try-with-resources y monitoreo de pool.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
-
-```text
-1
-cerrado
-```
+**Error común:** crear una `Connection` por consulta en un sistema real sin pool. Funciona en demos, pero es caro. En producción se usa `DataSource` respaldado por HikariCP u otro pool.
 
 ### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
 
-**Caso guía.** una transferencia interna debita una cuenta y acredita otra. Si el segundo paso falla, el sistema no puede dejar dinero descontado sin acreditar. Además, dos transacciones concurrentes no deben corromper saldos.
+Una transacción agrupa operaciones que deben comportarse como unidad. El caso clásico es una transferencia: debitar una cuenta y acreditar otra. Si el débito se confirma y el crédito falla, el dinero desaparece del sistema. Ese es exactamente el tipo de bug que ACID busca evitar.
 
-Transacciones
+- **Atomicidad**: todo o nada. Commit confirma; rollback revierte.
+- **Consistencia**: la BD pasa de un estado válido a otro válido según constraints/reglas.
+- **Aislamiento**: transacciones concurrentes no deben verse de formas que rompan el contrato elegido.
+- **Durabilidad**: una vez confirmado, el cambio debe sobrevivir a fallas.
 
-**Definición.** Una transacción es una unidad lógica de trabajo que agrupa operaciones para que se apliquen como todo-o-nada, típicamente controlada con `commit` y `rollback`.
+El aislamiento tiene niveles. Más aislamiento reduce anomalías, pero puede reducir concurrencia. `READ COMMITTED` evita leer cambios no confirmados (dirty reads); `REPEATABLE_READ` y `SERIALIZABLE` dan garantías más fuertes con mayor costo. La elección depende de la anomalía que el negocio no puede tolerar.
 
- Con `autoCommit=true`, cada sentencia se confirma individualmente. Para operaciones multi-paso, se desactiva auto-commit, se ejecutan las sentencias, y se decide `commit()` si todo salió bien o `rollback()` ante error. La base garantiza atomicidad del conjunto.
-
-**Diagrama (animdiagram, animado con fallback estático):** [Transacción: commit o rollback](/visuals/temas/java/modulo-17-transaccion.html)
-
-Lectura: el flujo resalta el camino feliz y el rollback. Con `prefers-reduced-motion` la animación se desactiva; el diagrama sigue explicando commit/rollback.
-
-**Contrato/reglas clave.** `commit` confirma; `rollback` revierte. Usa `setAutoCommit(false)` solo en el alcance necesario. Siempre cierra la conexión y restaura comportamiento si usas pool.
-
-**Cuándo usarlo.** Transferencias, creación de pedido + ítems, reserva de stock + registro de evento: cualquier flujo donde el estado parcial sea inválido.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoTx.java`:
+#### `TransferenciaService.java`
 
 ```java
-import java.sql.*;
+package com.aurora.jdbc;
 
-public class DemoTx {
-  static Connection open() throws SQLException {
-    return DriverManager.getConnection("jdbc:h2:mem:j5;DB_CLOSE_DELAY=-1", "sa", "");
-  }
-  static void print(Connection c) throws SQLException {
-    try (Statement st = c.createStatement();
-         ResultSet rs = st.executeQuery("select id,saldo from cuentas order by id")) {
-      while (rs.next()) System.out.print(rs.getInt("saldo") + (rs.getInt("id") == 1 ? "," : "\n"));
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class TransferenciaService {
+    private final DataSource ds;
+
+    public TransferenciaService(DataSource ds) {
+        this.ds = ds;
     }
-  }
-  public static void main(String[] args) throws Exception {
-    try (Connection c = open(); Statement st = c.createStatement()) {
-      st.execute("create table cuentas(id int primary key, saldo int)");
-      st.execute("insert into cuentas values(1,100),(2,100)");
+
+    public void crearCuenta(int id, String titular, BigDecimal saldo) throws SQLException {
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement("INSERT INTO cuentas(id,titular,saldo) VALUES(?,?,?)")) {
+            ps.setInt(1, id);
+            ps.setString(2, titular);
+            ps.setBigDecimal(3, saldo);
+            ps.executeUpdate();
+        }
     }
-    try (Connection c = open()) {
-      c.setAutoCommit(false);
-      try (PreparedStatement d = c.prepareStatement("update cuentas set saldo=saldo-? where id=?");
-           PreparedStatement cr = c.prepareStatement("update cuentas set saldo=saldo+? where id=?")) {
-        d.setInt(1, 30); d.setInt(2, 1); d.executeUpdate();
-        cr.setInt(1, 30); cr.setInt(2, 2); cr.executeUpdate();
-        c.commit();
-      }
+
+    public BigDecimal saldo(int id) throws SQLException {
+        try (Connection c = ds.getConnection();
+             PreparedStatement ps = c.prepareStatement("SELECT saldo FROM cuentas WHERE id=?")) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) throw new SQLException("cuenta no existe: " + id);
+                return rs.getBigDecimal("saldo");
+            }
+        }
     }
-    try (Connection c = open()) { print(c); }
-    try (Connection c = open()) {
-      c.setAutoCommit(false);
-      try (PreparedStatement d = c.prepareStatement("update cuentas set saldo=saldo-? where id=?")) {
-        d.setInt(1, 200); d.setInt(2, 1); d.executeUpdate();
-        if (true) throw new SQLException("fallo simulado");
-        c.commit();
-      } catch (Exception e) {
-        c.rollback();
-        System.out.println("rollback");
-      }
+
+    public void transferir(int desde, int hacia, BigDecimal monto) throws SQLException {
+        if (monto.signum() <= 0) throw new IllegalArgumentException("monto debe ser > 0");
+        try (Connection c = ds.getConnection()) {
+            c.setAutoCommit(false);
+            try {
+                debitar(c, desde, monto);
+                acreditar(c, hacia, monto);
+                c.commit();
+            } catch (Exception e) {
+                c.rollback();
+                throw e;
+            } finally {
+                c.setAutoCommit(true);
+            }
+        }
     }
-    try (Connection c = open()) { print(c); }
-  }
+
+    private void debitar(Connection c, int id, BigDecimal monto) throws SQLException {
+        BigDecimal actual = saldoForUpdate(c, id);
+        if (actual.compareTo(monto) < 0) throw new IllegalStateException("saldo insuficiente");
+        try (PreparedStatement ps = c.prepareStatement("UPDATE cuentas SET saldo = saldo - ? WHERE id=?")) {
+            ps.setBigDecimal(1, monto);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        }
+    }
+
+    private void acreditar(Connection c, int id, BigDecimal monto) throws SQLException {
+        saldoForUpdate(c, id); // valida existencia
+        try (PreparedStatement ps = c.prepareStatement("UPDATE cuentas SET saldo = saldo + ? WHERE id=?")) {
+            ps.setBigDecimal(1, monto);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        }
+    }
+
+    private BigDecimal saldoForUpdate(Connection c, int id) throws SQLException {
+        try (PreparedStatement ps = c.prepareStatement("SELECT saldo FROM cuentas WHERE id=? FOR UPDATE")) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) throw new SQLException("cuenta no existe: " + id);
+                return rs.getBigDecimal("saldo");
+            }
+        }
+    }
 }
 ```
 
+La parte crítica es `setAutoCommit(false)`. Sin eso, cada sentencia se confirma sola y no hay transacción de negocio. El `rollback()` en `catch` evita el estado parcial. El `finally` restaura auto-commit; si la conexión vuelve a un pool, es buena higiene.
 
+`FOR UPDATE` bloquea la fila seleccionada dentro de la transacción (según motor/aislamiento). Sirve para evitar que dos transferencias lean el mismo saldo y ambas debiten.
 
-```bash
-javac -cp ".:h2.jar" DemoTx.java
-java -cp ".:h2.jar" DemoTx
-```
+**Nota de verificación honesta:** la prueba de aislamiento se ejecutó en H2 con `READ_COMMITTED` y confirmó que no hay dirty read. Los niveles de aislamiento y el comportamiento de bloqueos varían entre motores; antes de asumirlo en PostgreSQL/MySQL, ejecuta pruebas de integración equivalentes contra ese motor.
 
-**Caso de uso real.** Pago: se registra cobro, se descuenta inventario y se crea envío; si el envío falla, se revierte toda la operación o se compensa según diseño.
-
-**Error común.** Hacer commit por paso en un flujo multi-paso. Síntoma: estados parciales difíciles de reparar. Causa: no delimitar transacción. Corrección: una frontera transaccional por unidad de negocio.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
-
-```text
-70,130
-rollback
-70,130
-```
-
-ACID
-
-**Definición.** ACID es el conjunto de propiedades que caracterizan transacciones confiables: Atomicidad, Consistencia, Aislamiento y Durabilidad.
-
- Atomicidad garantiza todo-o-nada. Consistencia exige que la transacción lleve la BD de un estado válido a otro según restricciones. Aislamiento controla interferencia entre transacciones concurrentes. Durabilidad asegura que, una vez confirmado, el cambio sobrevive fallos del sistema (según garantías del motor).
-
-**Diagrama (diagram-design, estático):** [ACID: cuatro garantías de una transacción](/visuals/temas/java/modulo-17-acid.html)
-
-Lectura: cada propiedad cubre un fallo distinto. Atomicidad está acentuada porque es la garantía visible en la transferencia.
-
-**Cuándo usarlo como criterio.** Al diseñar operaciones financieras, inventario, reservas, o cualquier estado donde una inconsistencia tenga costo real. No todo flujo necesita la misma rigidez; a veces se aceptan compensaciones/eventual consistency.
-
-**Ejemplo mínimo enfocado (ejecutable).** La verificación de atomicidad se observa con `DemoTx`: el fallo fuerza rollback y el saldo final se mantiene consistente.
-
-**Caso de uso real.** Una transferencia contable no puede dejar débito sin crédito.
-
-**Error común.** Confundir "usa transacción" con "es consistente en negocio". Corrección: ACID protege la transacción en BD; las invariantes de negocio también deben modelarse (constraints, validaciones, diseño).
-
-**Verificación (2026-05-22).** Evidencia: `DemoTx` produce `70,130` tras commit y `70,130` tras rollback.
-
-Aislamiento
-
-**Definición.** El aislamiento define cómo una transacción ve cambios realizados por otras transacciones concurrentes. JDBC expone niveles con `Connection.setTransactionIsolation(...)`.
-
- Niveles más estrictos evitan más anomalías (dirty read, non-repeatable read, phantom read), pero suelen costar más en bloqueos, abortos o versión de filas. El nivel correcto depende del motor y del caso de uso.
-
-**Diagrama (diagram-design, estático):** [Niveles de aislamiento: más garantía, más costo](/visuals/temas/java/modulo-17-aislamiento.html)
-
-Lectura: a mayor aislamiento, menos anomalías; el costo puede ser menor concurrencia o más contención. Elige por la anomalía que no puedes aceptar.
-
-**Contrato/reglas clave.** Los niveles son constantes de `Connection`. No todos los motores implementan igual todos los niveles; por ejemplo, algunos mapean internamente. Verifica el comportamiento real del motor.
-
-**Cuándo usarlo y cuándo no.** Usa el nivel mínimo que evite la anomalía que te importa. No uses `SERIALIZABLE` por defecto sin medir contención.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p jdbc-m17
-cd jdbc-m17
-```
-
-Crea el archivo `DemoIsolation.java`:
+#### `App.java`
 
 ```java
-import java.sql.*;
-public class DemoIsolation {
-  public static void main(String[] args) throws Exception {
-    try (Connection c = DriverManager.getConnection("jdbc:h2:mem:j6;DB_CLOSE_DELAY=-1","sa","")) {
-      c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-      System.out.println(c.getTransactionIsolation() == Connection.TRANSACTION_READ_COMMITTED);
-      System.out.println(Connection.TRANSACTION_SERIALIZABLE);
+package com.aurora.jdbc;
+
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+
+public final class App {
+    public static void main(String[] args) throws Exception {
+        DataSource ds = DataSourceFactory.h2Mem("aurora-m17");
+        Schema.init(ds);
+
+        GuiaDao dao = new GuiaDao(ds);
+        dao.insertar(new Guia(1, "Ana", "BOG", new BigDecimal("2.50")));
+        dao.insertar(new Guia(2, "Luis", "MED", new BigDecimal("1.20")));
+        dao.insertar(new Guia(3, "Marta", "BOG", new BigDecimal("3.00")));
+
+        System.out.println("G1=" + dao.buscarPorId(1).map(Guia::remitente).orElse("NA"));
+        System.out.println("BOG=" + dao.listarPorDestino("BOG").size());
+
+        TransferenciaService tx = new TransferenciaService(ds);
+        tx.crearCuenta(10, "Ana", new BigDecimal("100.00"));
+        tx.crearCuenta(20, "Luis", new BigDecimal("50.00"));
+        tx.transferir(10, 20, new BigDecimal("30.00"));
+        System.out.println("SALDO_10=" + tx.saldo(10));
+        System.out.println("SALDO_20=" + tx.saldo(20));
+        try {
+            tx.transferir(10, 20, new BigDecimal("1000.00"));
+        } catch (Exception e) {
+            System.out.println("ROLLBACK=" + e.getClass().getSimpleName());
+        }
+        System.out.println("SALDO_10_POST=" + tx.saldo(10));
+        System.out.println("SALDO_20_POST=" + tx.saldo(20));
     }
-  }
 }
 ```
 
+#### `JdbcTest.java`
 
+```java
+package com.aurora.jdbc;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class JdbcTest {
+    private DataSource ds;
+    private GuiaDao dao;
+    private TransferenciaService tx;
+
+    @BeforeEach
+    void setup() throws Exception {
+        ds = DataSourceFactory.h2Mem("test-" + System.nanoTime());
+        Schema.init(ds);
+        dao = new GuiaDao(ds);
+        tx = new TransferenciaService(ds);
+    }
+
+    @Test
+    void preparedStatementInsertaYConsulta() throws Exception {
+        dao.insertar(new Guia(1, "Ana", "BOG", new BigDecimal("2.50")));
+        Optional<Guia> g = dao.buscarPorId(1);
+        assertTrue(g.isPresent());
+        assertEquals("Ana", g.get().remitente());
+        assertEquals(1, dao.listarPorDestino("BOG").size());
+    }
+
+    @Test
+    void transaccionHaceCommit() throws Exception {
+        tx.crearCuenta(1, "A", new BigDecimal("100.00"));
+        tx.crearCuenta(2, "B", new BigDecimal("50.00"));
+        tx.transferir(1, 2, new BigDecimal("30.00"));
+        assertEquals(new BigDecimal("70.00"), tx.saldo(1));
+        assertEquals(new BigDecimal("80.00"), tx.saldo(2));
+    }
+
+    @Test
+    void transaccionHaceRollback() throws Exception {
+        tx.crearCuenta(1, "A", new BigDecimal("100.00"));
+        tx.crearCuenta(2, "B", new BigDecimal("50.00"));
+        assertThrows(IllegalStateException.class, () -> tx.transferir(1, 2, new BigDecimal("1000.00")));
+        assertEquals(new BigDecimal("100.00"), tx.saldo(1));
+        assertEquals(new BigDecimal("50.00"), tx.saldo(2));
+    }
+
+    @Test
+    void aislamientoReadCommittedNoVeDirtyRead() throws Exception {
+        tx.crearCuenta(1, "A", new BigDecimal("100.00"));
+        try (Connection c1 = ds.getConnection(); Connection c2 = ds.getConnection()) {
+            c1.setAutoCommit(false);
+            c2.setAutoCommit(false);
+            c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            try (var ps = c1.prepareStatement("UPDATE cuentas SET saldo = saldo - ? WHERE id=?")) {
+                ps.setBigDecimal(1, new BigDecimal("10.00"));
+                ps.setInt(2, 1);
+                ps.executeUpdate();
+            }
+            BigDecimal vistoPorC2;
+            try (var ps = c2.prepareStatement("SELECT saldo FROM cuentas WHERE id=?")) {
+                ps.setInt(1, 1);
+                try (var rs = ps.executeQuery()) {
+                    rs.next();
+                    vistoPorC2 = rs.getBigDecimal("saldo");
+                }
+            }
+            c1.rollback();
+            c2.commit();
+            assertEquals(new BigDecimal("100.00"), vistoPorC2);
+        }
+    }
+}
+```
+
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m17` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232):
 
 ```bash
-javac -cp ".:h2.jar" DemoIsolation.java
-java -cp ".:h2.jar" DemoIsolation
+./gradlew -q test
+./gradlew -q run
 ```
 
-**Caso de uso real.** Un reporte puede tolerar `READ_COMMITTED`; una reserva crítica puede requerir mayor aislamiento o bloqueo explícito.
+`./gradlew -q test`: **4 tests, 0 fallas**.
 
-**Error común.** Asumir que el aislamiento resuelve todas las carreras de negocio. Corrección: combinar aislamiento, constraints, locks optimistas/pesimistas y diseño idempotente según el caso.
-
-**Verificación (JDK 27, H2 2.3.232, 2026-05-22).** Salida real:
+Salida real de `./gradlew -q run`:
 
 ```text
-true
-8
+G1=Ana
+BOG=2
+SALDO_10=70.00
+SALDO_20=80.00
+ROLLBACK=IllegalStateException
+SALDO_10_POST=70.00
+SALDO_20_POST=80.00
 ```
 
-Rollback ante error
+La salida confirma dos cosas: el DAO consulta por id y por destino; la transferencia fallida hace rollback y los saldos quedan intactos.
 
-**Definición.** `rollback()` deshace los cambios no confirmados de la transacción actual, restaurando el estado previo visible para esa unidad transaccional.
+## Errores comunes y diagnóstico
 
- Cuando ocurre una excepción, la app debe capturarla en la frontera transaccional, ejecutar `rollback()` y propagar o manejar el error. Si no lo hace, puede dejar la transacción en estado inválido o depender de comportamientos implícitos al cerrar la conexión.
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| SQL injection o errores raros con comillas | Concatenar input en SQL | Revisar strings SQL con `+` | Usar `PreparedStatement` con `?` |
+| Saldos inconsistentes | Falta `setAutoCommit(false)` o no hay rollback | Revisar logs/transacciones; reproducir falla intermedia | Envolver en transacción, `commit/rollback` en `try/catch/finally` |
+| Agotamiento de conexiones | No cerrar recursos o no usar pool | Métricas del pool, errores `too many connections` | `try-with-resources` y `DataSource` con pool |
+| Datos no visibles entre tests | BD en memoria cerrada | URL H2 sin `DB_CLOSE_DELAY=-1` o nombres distintos | Controlar ciclo de vida del `DataSource` por test |
+| Bloqueos/deadlocks | Orden de locks inconsistente, transacciones largas | Logs del motor, `FOR UPDATE`, tiempos | Ordenar acceso a filas, acortar transacciones, elegir aislamiento adecuado |
 
-**Contrato/reglas clave.** Rollback solo afecta lo no commiteado en la transacción actual. En pools, asegúrate de dejar la conexión en estado limpio.
+## De H2 a PostgreSQL/MySQL
 
-**Cuándo usarlo.** En todo flujo multi-paso con `autoCommit=false`.
+Este módulo se ejecutó con H2 por reproducibilidad. Para llevarlo a PostgreSQL o MySQL:
 
-**Ejemplo mínimo enfocado (ejecutable).** `DemoTx` demuestra el caso: tras `SQLException`, se ejecuta `rollback` y el estado vuelve a `70,130`.
+- cambia la dependencia del driver y la URL JDBC;
+- ajusta tipos SQL si usas características específicas del motor;
+- usa pool (HikariCP) en vez de `JdbcDataSource` simple;
+- valida aislamiento/bloqueos con el motor real.
 
-**Caso de uso real.** Falla al insertar detalle de factura después de actualizar cabecera; rollback evita factura inconsistente.
+**Nota de verificación honesta:** no ejecuté PostgreSQL/MySQL/Testcontainers en esta corrida. El contrato JDBC y la lógica de transacción son los mismos; la verificación de motor real queda pendiente cuando haya infraestructura disponible.
 
-**Error común.** `catch (Exception e) { log(e); }` sin rollback. Síntoma: datos parciales o transacción colgada. Corrección: `catch -> rollback -> throw/log con contexto`.
+## Checklist de cierre
 
-**Verificación (2026-05-22).** Evidencia real en `DemoTx`: línea `rollback` y saldos finales `70,130`.
+- [ ] Puedo explicar por qué `PreparedStatement` evita inyección y mejora claridad.
+- [ ] El DAO encapsula SQL y mapeo; el servicio no arma queries.
+- [ ] Sé cuándo usar `commit` y `rollback`.
+- [ ] Puedo explicar ACID y el trade-off de aislamiento.
+- [ ] Probé el comportamiento con salida real, no solo leyendo código.
 
-## Cierre del módulo
-
-JDBC es la base operativa de la persistencia relacional en Java. Si dominas `PreparedStatement`, DAO, cierre de recursos y transacciones, puedes usar JPA con criterio y depurar problemas que el ORM oculta. La siguiente capa natural es comparar este control explícito con JPA/Hibernate, sabiendo exactamente qué garantías estás delegando.
-
-## Checklist de verificación
-
-- Puedo abrir una conexión JDBC y ejecutar SQL parametrizado.
-- No concateno input de usuario en SQL.
-- Encapsulo acceso a datos en DAO y cierro recursos con try-with-resources.
-- Puedo delimitar una transacción con commit/rollback.
-- Entiendo qué problema resuelve ACID y qué trade-offs introduce el aislamiento.
+Siguiente paso natural: **Módulo 18 — HTTP, seguridad y backend con Java**, donde el mismo criterio de bordes explícitos se aplica a clientes HTTP, timeouts, validación y criptografía.
