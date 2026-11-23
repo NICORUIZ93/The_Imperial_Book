@@ -1,6 +1,6 @@
 # Módulo 9 · Observabilidad en Spring
 
-Cuando un sistema distribuido falla, los logs locales no bastan. Necesitas responder tres preguntas: qué está pasando (métricas), dónde está pasando (trazas) y por qué pasó (logs correlacionados). Este módulo construye observabilidad con Micrometer, OpenTelemetry, logs estructurados y SLOs.
+Tienda Aurora tiene 5 microservicios en producción. Cuando un usuario reporta que "el checkout falló", los logs locales de cada servicio no bastan para reconstruir qué pasó. Necesitas responder tres preguntas: qué está pasando (métricas), dónde está pasando (trazas) y por qué pasó (logs correlacionados). Necesitas responder tres preguntas: qué está pasando (métricas), dónde está pasando (trazas) y por qué pasó (logs correlacionados). Este módulo construye observabilidad con Micrometer, OpenTelemetry, logs estructurados y SLOs.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes validan lógica de contadores, propagación de traceId, logs JSON y alertas por SLO en Java puro. Prometheus, Grafana, OTel Collector, Tempo/Loki y Spring Boot Actuator reales requieren infraestructura; se incluyen **Notas de verificación** honestas.
 
