@@ -4240,10 +4240,6 @@
       {
         "title": "Build reproducible y cierre del track",
         "fragment": "tema-2-build-reproducible-y-cierre-del-track"
-      },
-      {
-        "title": "Integrando concurrencia, modelado y testing",
-        "fragment": "tema-3-integrando-concurrencia-modelado-y-testing"
       }
     ],
     "14": [
