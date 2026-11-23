@@ -1,6 +1,6 @@
 # Módulo 4: Programación funcional y Streams
 
-En el módulo anterior aprendiste a manejar errores y recursos. Ahora el foco cambia a cómo transformar datos con claridad. En código de negocio aparecen pipelines repetidos: filtrar, mapear, agrupar, sumar, buscar. Los Streams y lambdas no reemplazan todo `for`; aportan un modelo declarativo cuando la operación es una transformación de datos. La clave es usarlos con disciplina: sin efectos secundarios ocultos, con tipos claros y sabiendo cuándo `Optional` o un bucle simple es mejor.
+En el módulo anterior aprendiste a manejar errores y recursos. Ahora el foco cambia a cómo transformar datos con claridad. En código de negocio aparecen pipelines repetidos: filtrar, mapear, agrupar, sumar, buscar. En Tienda Aurora, los streams se usan para filtrar productos por categoría, mapear a DTOs y calcular totales de pedidos. Los Streams y lambdas no reemplazan todo `for`; aportan un modelo declarativo cuando la operación es una transformación de datos. La clave es usarlos con disciplina: sin efectos secundarios ocultos, con tipos claros y sabiendo cuándo `Optional` o un bucle simple es mejor.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
@@ -8,14 +8,14 @@ En el módulo anterior aprendiste a manejar errores y recursos. Ahora el foco ca
 
 ## Proyecto desde cero: tienda-aurora-streams
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-streams/
@@ -29,7 +29,7 @@ tienda-aurora-streams/
                 └── Order.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -55,13 +55,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-streams"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
