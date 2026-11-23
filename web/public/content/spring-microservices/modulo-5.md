@@ -8,13 +8,13 @@ Los microservicios no fallan por falta de endpoints: fallan por contratos ambigu
 
 ### Tema 1: REST con Spring MVC y WebClient · Intermedio · 150 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `orders-service` necesita el precio actual desde `catalog-service`. El desarrollador hace una llamada HTTP sin timeout. Un día `catalog-service` se degrada y tarda 5 segundos por respuesta. Los hilos de `orders-service` quedan esperando, el pool se agota y el checkout deja de responder. Un servicio lento tumbó otro servicio sano.
 
 El síntoma no es un 500 inmediato: es un sistema que se queda “pensando” hasta colapsar.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Una llamada REST síncrona es como llamar por teléfono y quedarte en la línea. Si la otra persona no contesta, necesitas decidir cuánto esperar antes de colgar. El **connect timeout** es cuánto esperas a que contesten; el **request/read timeout** es cuánto esperas a que terminen de hablar. Colgar a tiempo es doloroso, pero mejor que bloquear toda la operación.
 
@@ -31,7 +31,7 @@ sequenceDiagram
   end
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 Primero construyes un cliente HTTP que falla rápido. Luego lo expresas con WebClient en Spring.
 
@@ -106,7 +106,7 @@ public class CatalogClient {
 
 **Lectura:** el smoke demuestra el comportamiento real: el servidor responde, pero tarde; el cliente corta por timeout. En Spring, WebClient/HttpClient deben configurar connect timeout, response timeout y manejo de errores. El timeout no arregla al servicio lento; protege tu servicio.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Ejecuta el smoke con timeout 100ms y servidor dormido 500ms. Esperas `timeout`.
 2. Cambia `timeout(Duration.ofMillis(100))` a `Duration.ofMillis(1000)`. Esperas `ok` (o respuesta exitosa). Esto muestra el trade-off: timeout muy agresivo da falsos errores; muy laxo bloquea recursos.
@@ -118,7 +118,7 @@ Salida esperada:
 timeout
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 REST sigue siendo la opción más simple e interoperable para request-response. La lección de producción es que una llamada remota sin presupuesto de tiempo es una deuda que se cobra en el peor momento.
 
@@ -178,11 +178,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `timeout`.
 
 ### Tema 2: gRPC con Spring · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Dos servicios internos intercambian miles de mensajes por segundo. JSON funciona, pero el parsing cuesta CPU y, peor, un equipo cambia el campo `status` por `state` en un payload y rompe consumidores en producción. No hubo contrato tipado ni regla de compatibilidad.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Protobuf es como un formulario con casillas numeradas: la casilla 1 es `order_id`, la casilla 2 es `status`. Si reusas la casilla 1 para otra cosa, el receptor lee basura “válida” con una interpretación equivocada. gRPC usa esos contratos binarios sobre HTTP/2 para llamadas eficientes y tipadas.
 
@@ -194,7 +194,7 @@ flowchart LR
   S -->|respuesta tipada| C
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 Primero entiendes el contrato de campos Protobuf. Luego ves cómo se expresa en gRPC/Spring.
 
@@ -268,7 +268,7 @@ message OrderResponse {
 
 **Lectura:** el smoke muestra el punto crítico: el wire format conserva el número de campo. Si reutilizas el tag 1 para otro significado, el binario decodifica “bien” pero la semántica queda corrupta. La regla real de Protobuf es: no reusar tags, no cambiar wire type incompatible, agregar campos nuevos con tags nuevos.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Ejecuta el smoke. Esperas `1`, `7`, `42`, `7:3`.
 2. Observa el tercer valor: `42` se decodifica sin error. Ese es el peligro: corrupción silenciosa, no excepción obvia.
@@ -283,7 +283,7 @@ Salida esperada:
 7:3
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 gRPC/Protobuf da eficiencia y contratos fuertes, pero exige disciplina de esquema. La compatibilidad no es accidental: se diseña con reglas de evolución.
 
@@ -347,11 +347,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `1`, `7`, `42`, `7
 
 ### Tema 3: Mensajería con Spring Cloud Stream · Avanzado · 150 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Cuando un pedido se confirma, `orders-service` llama por HTTP a email, analytics, inventario y facturación. Si analytics está caído, el pedido falla. Peor: un retry de red duplica el evento y el cliente recibe dos emails de confirmación.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un broker de mensajes es un buzón compartido. El remitente deja el mensaje y sigue. El destinatario lo recoge cuando puede. Esto desacopla el tiempo, pero introduce una realidad incómoda: el buzón puede entregar el mismo mensaje dos veces. Por eso el consumidor debe ser idempotente.
 
@@ -363,7 +363,7 @@ flowchart LR
   E -->|dup e1| D[Dedup store]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `MessagingIdempotencySmoke.java` → redelivery real y deduplicación.
 
@@ -428,7 +428,7 @@ public Consumer<OrderCreated> orderCreated(IdempotencyStore store, EmailService 
 
 **Lectura:** el smoke simula redelivery at-least-once: tres entregas, un solo efecto secundario. La clave es `eventId` estable y deduplicación transaccional/persistente en producción.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Entrega el mismo `eventId` tres veces. Esperas `1` efecto y `3` entregas.
 2. Quita `seen.add(...)`. Esperas tres efectos secundarios: bug real.
@@ -441,7 +441,7 @@ Salida esperada:
 3
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La mensajería reduce acoplamiento temporal, pero te obliga a diseñar para duplicados, orden parcial, reintentos y DLQ. Async no elimina complejidad; la mueve al contrato operativo.
 
@@ -502,11 +502,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `1`, `3`.
 
 ### Tema 4: Sync vs async, timeouts e idempotencia · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo hace todo síncrono: al confirmar pedido llama a inventario, pago, email y analytics en la misma request. Un email lento bloquea el checkout. Luego, por un timeout de red, el cliente reintenta el POST de pago y el sistema cobra dos veces. La arquitectura “simple” creó dos incidentes.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Sync es esperar en ventanilla: lo usas cuando necesitas la respuesta para continuar. Async es tomar un ticket: lo usas cuando el trabajo puede ocurrir después. El timeout es cuánto esperas en ventanilla. La idempotency key es el número de ticket que evita que te atiendan dos veces por el mismo trámite.
 
@@ -520,7 +520,7 @@ flowchart TD
   C -->|No| D[Ejecutar una vez con control]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `SyncAsyncIdempotencySmoke.java` → timeout budget + idempotency.
 
@@ -567,7 +567,7 @@ public class SyncAsyncIdempotencySmoke {
 
 **Lectura:** el mismo `idempotencyKey` produce un solo cobro. El budget de timeout decide rápido cuando una dependencia no cumple. El async acepta y encola trabajo diferible.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Repite el mismo `PaymentRequest` dos veces. Esperas `charged:ord-1:100` dos veces como respuesta, pero el efecto de negocio es único (mismo valor devuelto por la misma clave).
 2. Remote 200ms con budget 300ms: `ok`. Remote 800ms: `timeout`.
@@ -584,7 +584,7 @@ accepted
 OrderCreated:ord-1
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La decisión sync/async define la experiencia y el modo de falla. El timeout evita bloqueos; la idempotencia evita duplicados. Sin estas reglas, los reintentos son peligrosos.
 
@@ -652,11 +652,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `charged:ord-1:100
 
 ### Tema 5: HTTP Service Clients declarativos y RSocket · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `orders-service` tiene 15 llamadas HTTP repartidas en clases distintas. Cada una repite base URL, headers, parseo, manejo de errores y timeouts. Cuando cambia `/v1/orders/{id}` a `/v2/orders/{id}`, la corrección se vuelve caza de strings. En paralelo, un canal interno necesita streaming de eventos con backpressure y REST no encaja.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un cliente HTTP declarativo es como definir un contrato en una interfaz: dices “qué operación existe” y el runtime se encarga de ejecutar la llamada. Es el mismo salto que de JDBC manual a un cliente tipado. RSocket, en cambio, es otro idioma de comunicación: sirve cuando la conversación no es solo request-response, sino stream o canal bidireccional.
 
@@ -667,7 +667,7 @@ flowchart LR
   C[Requester RSocket] -->|request-stream| S[Responder RSocket]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `DeclarativeClientSmoke.java` → proxy declarativo por anotaciones (mecanismo análogo).
 
@@ -734,7 +734,7 @@ public interface OrdersApi {
 
 **Lectura:** el smoke con `Proxy` no es Spring; demuestra el mecanismo central: interfaz declarativa + metadatos + proxy. Spring HTTP Interface hace esto con integración de WebClient/RestClient, conversión, observabilidad y configuración. RSocket se evalúa por semántica de interacción, no por novedad.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Llama `api.byId("A1")`. Esperas `order:A1`.
 2. Inspecciona la anotación base. Esperas `/orders`.
@@ -750,7 +750,7 @@ HTTP
 RSOCKET_OR_MESSAGING
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Los clientes declarativos mejoran mantenibilidad al convertir contratos HTTP en interfaces tipadas. RSocket amplía el repertorio para streams/canales. Ninguno elimina la necesidad de timeouts, idempotencia y observabilidad.
 

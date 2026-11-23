@@ -8,11 +8,11 @@ EDA desacopla productores y consumidores mediante eventos. El beneficio es escal
 
 ### Tema 1: Kafka, particiones y consumer groups · Avanzado · 150 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `orders-service` publica `OrderCreated`. El equipo asume que los eventos se procesan en orden global. En producción, `OrderCancelled` se procesa antes de `OrderCreated` y billing falla con “orden no encontrada”. Además, al escalar `billing-service` a 3 instancias, los mensajes se duplican porque no hay consumer group coordinado.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Kafka es como un cuaderno con varias secciones (particiones). Dentro de cada sección, las páginas están en orden. Si escribes todas las páginas de un pedido en la misma sección (misma key), el orden se conserva. Si las repartes en secciones distintas, el orden global se pierde. Un consumer group es un equipo de lectores: cada lector toma una sección distinta.
 
@@ -27,7 +27,7 @@ flowchart LR
   P2 --> C2[Consumer instance C]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `KafkaPartitionSmoke.java` → particionado determinista.
 
@@ -62,7 +62,7 @@ spring:
 
 **Lectura:** el smoke verifica que la misma key siempre cae en la misma partición (determinismo) y que el resultado está en rango. En Kafka real, el número de particiones afecta el balanceo y la compatibilidad.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Misma key, 3 particiones. Esperas determinismo (`true`, `true`).
 2. Key aleatoria/ausente. Observa que el orden por agregado se pierde.
@@ -76,7 +76,7 @@ true
 true
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Kafka escala por particiones, pero el orden solo existe dentro de una partición. La key por agregado es la decisión que preserva causalidad.
 
@@ -140,11 +140,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `true`, `t
 
 ### Tema 2: RabbitMQ, acks y DLQ · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Un worker procesa pagos. Un mensaje con payload inválido falla, se reintentan infinitamente y bloquea la cola. El mismo `messageId` aparece miles de veces en logs. La cola crece sin que nadie pueda procesar los mensajes válidos detrás del veneno.
 
-#### Paso 2 · La intuición
+## La intuición
 
 RabbitMQ es como una oficina de correos con ventanillas. Un exchange es el clasificador que decide a qué ventanilla (queue) va cada carta. Un ack es el empleado diciendo “procesé esta carta”. Si no hay ack, la carta vuelve a la ventanilla. Una DLQ es el buzón de cartas no entregables: en vez de reintentar eternamente, se aíslan para inspección.
 
@@ -157,7 +157,7 @@ flowchart LR
   W -->|nack + retries agotados| DLQ[Dead Letter Queue]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `RabbitDlqSmoke.java` → aislamiento de poison message.
 
@@ -203,7 +203,7 @@ public SimpleRabbitListenerContainerFactory factory(ConnectionFactory cf) {
 
 **Lectura:** el smoke modela el flujo: retries acotados y luego DLQ. En Spring AMQP, `RetryInterceptor` + `RepublishMessageRecoverer` automatizan esto.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Procesa `m1` con fallo permanente. Esperas `dlq=1` con `m1`.
 2. Procesa `m2` con éxito (ack). Esperas que no vaya a DLQ.
@@ -217,7 +217,7 @@ dlq=1
 dlq-contains-m1=true
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 RabbitMQ ofrece routing flexible y semántica de cola. DLQ y retries acotados son obligatorios para evitar poison messages.
 
@@ -279,11 +279,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `queue=2`, `dlq=1`
 
 ### Tema 3: Schema Registry y evolución · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo agrega `status` a `OrderCreated` y despliega el productor. Consumidores viejos que no conocen el campo fallan al deserializar. No hay registro central de esquemas ni política de compatibilidad. El despliegue independiente se vuelve un incidente.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un Schema Registry es como un notario de contratos: cada versión del esquema se registra y se valida contra las anteriores. La compatibilidad backward es como escribir un documento nuevo que los lectores viejos aún pueden leer (campos nuevos tienen defaults). La compatibilidad forward es lo inverso.
 
@@ -295,7 +295,7 @@ flowchart LR
   SR -->|esquema compatible| C
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `SchemaCompatSmoke.java` → política de compatibilidad.
 
@@ -336,7 +336,7 @@ public class SchemaCompatSmoke {
 
 **Lectura:** el smoke modela las reglas: backward requiere que los campos viejos existan en el nuevo. Agregar `status` con default es backward-compatible. Quitar un campo requerido no lo es.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. v1={id}, v2={id,status}. Backward: `true`.
 2. v2={id,status}, v1={id}. Backward: `false` (status se perdió).
@@ -350,7 +350,7 @@ false
 false
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Schema Registry hace la evolución de esquemas controlada y auditable. El costo es disciplina en cambios y CI que valide compatibilidad.
 
@@ -412,11 +412,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `
 
 ### Tema 4: Idempotencia en consumidores · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `OrderCreated` se entrega dos veces por un reintento del broker. El consumidor crea dos cobros. El cliente reclama. El equipo asume que “el broker entrega una vez”. No fue así: at-least-once es el modelo base.
 
-#### Paso 2 · La intuición
+## La intuición
 
 La idempotencia es como un sello de “ya procesado” en el buzón. Si la misma carta llega dos veces, la segunda se detecta y se ignora. El sello debe persistir (no en memoria) para sobrevivir reinicios.
 
@@ -429,7 +429,7 @@ flowchart LR
   P --> OK[Efecto único]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `ConsumerIdempotencySmoke.java` → deduplicación persistente.
 
@@ -475,7 +475,7 @@ public void consume(OrderCreated event) {
 
 **Lectura:** el smoke muestra redelivery: dos entregas, un solo efecto. En producción, `inbox` debe ser una tabla con constraint único, no un `HashSet` en memoria.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Entrega `evt-1` dos veces. Esperas `processed`, `duplicate-ignored`, `effects=1`.
 2. Usa `HashSet` en memoria. Reinicia el servicio y redelivera: el duplicado se procesa. Observa el bug.
@@ -489,7 +489,7 @@ duplicate-ignored
 effects=1
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Idempotencia en consumidores es la defensa estándar ante at-least-once. El costo es almacenamiento de dedup y gestión de la ventana de deduplicación.
 

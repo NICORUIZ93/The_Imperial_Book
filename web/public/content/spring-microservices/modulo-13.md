@@ -8,11 +8,11 @@ Los microservicios no fallan solo por código; fallan por decisiones no registra
 
 ### Tema 1: ADRs y C4 · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo eligió Kafka para eventos de pedidos hace seis meses. Hoy nadie recuerda por qué no se usó RabbitMQ ni qué trade-offs se aceptaron. Un nuevo integrante propone cambiar a RabbitMQ “porque es más simple”. La discusión se repite desde cero porque la decisión nunca se registró.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un ADR es como el acta de una reunión importante: registra qué se decidió, por qué, qué alternativas se consideraron y qué consecuencias se aceptaron. No es documentación exhaustiva; es memoria institucional. C4 es como un mapa a distintas escalas: desde la ciudad (contexto) hasta el edificio (componentes). No dibujas todos los detalles en un solo mapa.
 
@@ -23,7 +23,7 @@ flowchart LR
   Repo --> Future[Decisión futura supersede]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `AdrSmoke.java` → estructura mínima de ADR.
 
@@ -56,7 +56,7 @@ public class AdrSmoke {
 
 **Lectura:** el smoke modela la estructura mínima. En la práctica, el ADR vive en el repo y se versiona con el código.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Crea ADR con status accepted. Esperas `accepted`, `2`, `ADR-001:Kafka for events`.
 2. Marca un ADR como superseded por otro. Observa que no se borra; se reemplaza.
@@ -70,7 +70,7 @@ accepted
 ADR-001:Kafka for events
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 ADRs y C4 hacen la arquitectura comunicable y auditable. El costo es disciplina de escribir decisiones relevantes, no todas.
 
@@ -132,11 +132,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `accepted`, `2`, `
 
 ### Tema 2: Fitness functions y ATAM ligero · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 La arquitectura documenta que `domain` no depende de `web`. Tres meses después, alguien importa un DTO web en el dominio. Nadie se da cuenta hasta un refactor. La regla era humana, no ejecutable.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Una fitness function es como una alarma en la puerta: si alguien intenta entrar por la puerta prohibida, la alarma suena en CI, no en producción. ATAM ligero es como una revisión de riesgos pragmática: identificas escenarios de calidad, evalúas decisiones y documentas trade-offs sin el peso de un proceso formal largo.
 
@@ -147,7 +147,7 @@ flowchart LR
   FF -->|ok| Pass[CI continúa]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `FitnessSmoke.java` → regla de dependencia.
 
@@ -182,7 +182,7 @@ static final ArchRule domainDoesNotDependOnWeb =
 
 **Lectura:** el smoke modela la regla. En CI, ArchUnit inspecciona bytecode y falla si la regla se viola.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. `domain` → `app`. Esperas `true`.
 2. `domain` → `web`. Esperas `false`.
@@ -195,7 +195,7 @@ true
 false
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Fitness functions hacen la arquitectura ejecutable. ATAM ligero documenta trade-offs sin proceso pesado. El costo es elegir pocas reglas de alto valor.
 
@@ -255,11 +255,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
 
 ### Tema 3: FinOps: costo, right-sizing y observability tax · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 La factura cloud crece 40% tras agregar tracing, logs detallados y réplicas por defecto. Nadie sabe qué servicio cuesta más. El equipo de observabilidad no tiene budget. El CFO pregunta “¿cuánto cuesta un pedido?” y nadie puede responder.
 
-#### Paso 2 · La intuición
+## La intuición
 
 FinOps es como el medidor de agua de un edificio: si no mides por apartamento, nadie ahorra. Right-sizing es ajustar el tamaño del apartamento al número de personas. El observability tax es el costo de medir: si mides todo con la máxima resolución, el medidor cuesta más que el agua.
 
@@ -271,7 +271,7 @@ flowchart LR
   C --> D[Sampling/cardinalidad]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `FinOpsSmoke.java` → budget y right-sizing.
 
@@ -293,7 +293,7 @@ public class FinOpsSmoke {
 
 **Lectura:** el smoke modela la lógica de budget y right-sizing. En producción, se usa el dashboard del proveedor cloud y alertas de budget.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Costo 80, budget 100. Esperas `true`.
 2. Costo 120, budget 100. Esperas `false`.
@@ -308,7 +308,7 @@ false
 50
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 FinOps hace el costo visible y accionable. El trade-off es no sacrificar observabilidad crítica por ahorro.
 
@@ -370,11 +370,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`, `
 
 ### Tema 4: Ley de Conway y Team Topologies · Intermedio · 90 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Dos equipos comparten un servicio crítico. Los incidentes rebotan entre ellos: “no es mío”. Los cambios requieren coordinación constante. El MTTR es alto porque nadie es dueño completo. La arquitectura refleja la organización disfuncional.
 
-#### Paso 2 · La intuición
+## La intuición
 
 La Ley de Conway dice que el sistema refleja la estructura de comunicación de la organización. Si dos equipos comparten un servicio, el servicio tendrá dos dueños y ninguna responsabilidad clara. Team Topologies propone equipos stream-aligned (dueños de un flujo de valor), platform (servicios internos), enabling (ayudan a otros) y complicated-subsystem (especialistas). La regla: you build it, you run it.
 
@@ -386,7 +386,7 @@ flowchart LR
   EN[Enabling team] -->|facilitates| SA
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `TeamTopologySmoke.java` → ownership.
 
@@ -408,7 +408,7 @@ public class TeamTopologySmoke {
 
 **Lectura:** el smoke modela la regla: ownership end-to-end requiere código + on-call + SLO. Si falta alguno, el ownership es difuso.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Equipo dueño de código, on-call y SLO. Esperas `true`.
 2. Equipo dueño de código pero sin on-call. Esperas `false`.
@@ -422,7 +422,7 @@ false
 collaboration-needed
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La gobernanza organizacional es tan importante como la técnica. Ownership claro y cognitive load controlado son prerequisitos para microservicios exitosos.
 

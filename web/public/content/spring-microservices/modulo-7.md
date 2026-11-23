@@ -8,13 +8,13 @@ En distribución, el fallo parcial es normal: un servicio lento, una red inestab
 
 ### Tema 1: Circuit breaker, retry, rate limiter, bulkhead, time limiter · Avanzado · 180 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Tienda Aurora depende de `inventory-service` para confirmar stock. Un martes, `inventory-service` empieza a responder en 8 segundos. `order-service` sigue esperando, sus hilos se agotan, y ahora tampoco puede atender pedidos que no necesitan inventario. Una dependencia lenta tumbó un flujo completo.
 
 Reintentar a ciegas empeora el problema: si el servicio está caído, cada reintento agrega carga. Necesitas límites, no esperanza.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Piensa en el tablero eléctrico de una casa. El **circuit breaker** corta la corriente cuando detecta una falla, para evitar un incendio. El **retry** es volver a encender un interruptor, pero solo si tiene sentido y con espera. El **rate limiter** es la válvula que limita cuánta agua pasa por minuto. El **bulkhead** son los compartimentos estancos de un barco: una filtración no hunde toda la nave. El **time limiter** es el temporizador que apaga el horno si nadie lo atiende.
 
@@ -32,7 +32,7 @@ flowchart LR
 
 Ningún patrón basta solo. Un retry sin timeout puede bloquear hilos. Un breaker sin fallback solo devuelve error más rápido. La resiliencia es una composición.
 
-#### Paso 3 · La construcción
+## La construcción
 
 Vas a modelar las decisiones básicas de Resilience4j. Primero entiendes la lógica; después la conectas a Spring Boot.
 
@@ -92,7 +92,7 @@ public class InventoryClient {
 
 **Lectura del código:** el breaker abre cuando la tasa de fallos supera el umbral. `@Retry` solo aplica a excepciones transitorias configuradas. El fallback devuelve una respuesta segura, no inventa stock. El time limiter evita esperar indefinidamente.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Baja `timeoutDuration` a `100ms` con un servicio que tarda 300ms. Observas fallos por timeout y activación del fallback.
 2. Cambia `maxAttempts` a `5` sin backoff en un servicio caído. Observas tormenta de reintentos en métricas.
@@ -106,7 +106,7 @@ true
 false
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La dependencia de inventario dejó de tumbar pedidos completos. El sistema ahora degrada: si inventario falla, responde rápido con una decisión segura. Ganaste control, pero agregaste complejidad: umbrales, métricas, fallbacks y pruebas de fallo.
 
@@ -183,11 +183,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `fallback`, `true`
 
 ### Tema 2: Timeouts en cascada · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `checkout-service` llama a `order-service`, que llama a `payment-service`. `payment-service` tarda 10 segundos. El cliente ya canceló a los 2 segundos, pero los servicios internos siguen ocupados esperando. El sistema hace trabajo inútil y agota hilos.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Imagina una cadena de llamadas telefónicas con espera. Si la primera persona cuelga a los 2 minutos, no tiene sentido que la tercera siga esperando 10. Un **timeout budget** reparte el tiempo total entre saltos: cada servicio recibe un límite y lo respeta.
 
@@ -200,7 +200,7 @@ flowchart LR
   X --> B --> A --> U
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Budget.java` → valida presupuesto de tiempo.
 
@@ -229,7 +229,7 @@ spring:
 
 **Lectura:** el presupuesto total no puede ser la suma ingenua de máximos. Cada salto debe tener timeout menor al presupuesto restante y alineado al SLA del cliente.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Configura `payment` con 10s y cliente con 2s. Observas trabajo descartado y hilos ocupados.
 2. Reduce `payment` a 800ms y propaga deadline. Observas fallo rápido y liberación de recursos.
@@ -242,7 +242,7 @@ true
 false
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 El timeout budget evita que un servicio lento consuma recursos después de que el cliente ya se fue. Es un límite simple, pero requiere disciplina en todos los hops.
 
@@ -301,11 +301,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
 
 ### Tema 3: Fallback strategies · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El servicio de recomendaciones cae. El usuario intenta comprar café en Tienda Aurora y el checkout falla completo, aunque las recomendaciones no son necesarias para pagar. Una dependencia opcional tumbó un flujo crítico.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Cuando el sommelier de la tienda no está disponible, el cajero no cierra la tienda. Te cobra el café y omite la recomendación. Un **fallback** es esa respuesta alternativa segura: no finge que todo está bien, pero preserva lo esencial.
 
@@ -318,7 +318,7 @@ flowchart LR
   FB --> Pay
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Fb.java` → fallback seguro para dependencia opcional.
 
@@ -352,7 +352,7 @@ private List<ProductDto> fallback(String userId, Exception ex) {
 
 **Lectura:** el fallback es visible en logs/métricas. No oculta el fallo; degrada el comportamiento.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Simula caída de recomendaciones. Esperas checkout exitoso con lista vacía.
 2. Simula caída de pagos. **No** debes usar fallback que “apruebe” el pago. Esperas error controlado.
@@ -365,7 +365,7 @@ Salida esperada:
 2
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Un fallback bueno preserva la experiencia crítica y hace visible la degradación. Un fallback malo oculta fallos y viola reglas de negocio.
 
@@ -423,11 +423,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `0`, `2`.
 
 ### Tema 4: Chaos engineering · Avanzado · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Tienes circuit breakers, timeouts y fallbacks configurados. Nadie sabe si funcionan. El primer incidente real ocurre en Black Friday, y descubres que el fallback no estaba conectado.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Chaos engineering es como un simulacro de incendio. No enciendes el edificio para destruirlo; pruebas que la alarma suena, las rutas de salida funcionan y la gente sabe actuar. Inyectas fallos controlados para validar hipótesis.
 
@@ -440,7 +440,7 @@ flowchart LR
   A -->|No| F[Corregir resiliencia]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Chaos.java` → modelo simple de resultado ante falla inyectada.
 
@@ -474,7 +474,7 @@ metrics:
 
 **Lectura:** el experimento tiene hipótesis, alcance, métricas y condición de aborto. Sin eso, solo estás rompiendo cosas.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Inyecta 2s de latencia con Toxiproxy a inventory. Esperas `degraded`, no caída total.
 2. Quita el fallback y repite. Esperas `error`; ese resultado indica deuda de resiliencia.
@@ -487,7 +487,7 @@ degraded
 error
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Chaos engineering convierte la resiliencia en evidencia. No busca caos; busca confianza bajo fallos controlados.
 

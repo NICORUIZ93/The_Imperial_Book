@@ -8,11 +8,11 @@ Un microservicio Spring expone contratos HTTP, valida entrada, traduce errores, 
 
 ### Tema 1: Spring MVC: DispatcherServlet, Controllers y validación · Intermedio · 180 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `POST /orders` recibe JSON del frontend. El equipo confía en que el cliente valida. Un día llega `{"sku":"", "qty":0}` y el servicio lo acepta, persiste basura y luego falla en billing. El síntoma no es el 500 posterior; es que la validación estaba en el lugar equivocado.
 
-#### Paso 2 · La intuición
+## La intuición
 
 `DispatcherServlet` es como el recepcionista de un hotel: recibe toda petición, la clasifica, la envía al departamento correcto y entrega la respuesta. El controller es el departamento: orquesta, pero no hace el trabajo de negocio. La validación es el filtro de entrada: si el dato no cumple el contrato, no entra al hotel.
 
@@ -26,7 +26,7 @@ flowchart LR
   V -->|fail| E[400 ProblemDetail]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `MvcValidationSmoke.java` → validación de entrada.
 
@@ -70,7 +70,7 @@ public class OrderController {
 
 **Lectura:** el smoke modela la regla: sku obligatorio y qty positivo. En Spring, `@Valid` + Bean Validation ejecuta antes de entrar al servicio. El controller no contiene lógica de negocio.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Request válido. Esperas `201`.
 2. `sku` vacío. Esperas `400`.
@@ -85,7 +85,7 @@ Salida esperada:
 400
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La validación en backend protege el sistema de datos inválidos. El costo es mantener el contrato de entrada explícito y consistente.
 
@@ -148,11 +148,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `201`, `400`, `400
 
 ### Tema 2: DTOs, Jackson y validación · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo expone la entidad JPA `Order` directamente en la API. Al agregar una columna interna `internalNotes`, el JSON cambia y rompe clientes. Peor: la serialización lazy dispara queries y expone datos sensibles.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un DTO es como el menú de un restaurante: muestra lo que el cliente puede pedir, no la cocina completa. La entidad JPA es la cocina. Jackson es el mesero que traduce entre menú y cocina. Si dejas que el cliente entre a la cocina, se rompe todo.
 
@@ -167,7 +167,7 @@ flowchart LR
   D2 --> J2[JSON response]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `DtoSmoke.java` → separación de contrato.
 
@@ -203,7 +203,7 @@ public record OrderResponse(
 
 **Lectura:** el smoke muestra que el DTO de respuesta tiene su propia forma (`order_id`, no `id` interno). La entidad JPA puede tener campos que nunca llegan al JSON.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Crea request y response. Esperas `o-1` y `A1:2`.
 2. Agrega campo interno a la entidad. El DTO no cambia; el JSON permanece estable.
@@ -216,7 +216,7 @@ o-1
 A1:2
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 DTOs en el borde protegen el contrato HTTP de cambios internos de persistencia. El costo es mapeo explícito, pero ese costo es mucho menor que un contrato roto.
 
@@ -276,11 +276,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `o-1`, `A1:2`.
 
 ### Tema 3: Manejo global de excepciones (@ControllerAdvice) · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Cada controller maneja sus propios try/catch y devuelve formatos distintos: uno devuelve `{"error":"bad"}`, otro devuelve stack trace, otro devuelve 200 con `{"success":false}`. Los clientes no saben cómo interpretar fallos y el soporte no tiene correlación.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un manejador global de excepciones es como la recepción de emergencias de un hospital: sin importar qué departamento falló, el paciente recibe una respuesta estandarizada con código, mensaje y referencia. ProblemDetail (RFC 9457) es ese formato estándar.
 
@@ -292,7 +292,7 @@ flowchart LR
   PD --> R[HTTP 4xx/5xx + JSON estándar]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `ProblemDetailSmoke.java` → mapeo de errores.
 
@@ -339,7 +339,7 @@ public class GlobalExceptionHandler {
 
 **Lectura:** el smoke modela el mapeo status→respuesta. En Spring, `@ControllerAdvice` + `@ExceptionHandler` centraliza y ProblemDetail estandariza.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. `IllegalArgumentException`. Esperas `400`.
 2. `NoSuchElementException`. Esperas `Not Found`.
@@ -352,7 +352,7 @@ Salida esperada:
 Not Found
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 El manejo global convierte fallos en contratos HTTP consistentes. El costo es mantener el mapeo actualizado cuando se agregan nuevas excepciones de negocio.
 
@@ -413,11 +413,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `400`, `Not Found`
 
 ### Tema 4: Spring Data JPA, Hibernate, entidades, relaciones y transacciones · Avanzado · 240 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo crea un pedido con 5 líneas. A mitad del proceso, falla la inserción de la línea 3. Sin transacción, quedan 2 líneas huérfanas en la base. Al listar pedidos, Hibernate dispara 1 query por pedido + 1 por cada línea (N+1). La API tarda 4 segundos para 50 pedidos.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Una transacción es como una operación de cirugía: o se completa entera o se revierte. JPA gestiona el ciclo de vida de las entidades como un médico gestiona el estado del paciente (nuevo, en tratamiento, dado de alta). `@Transactional` es el quirófano: define los límites de la operación.
 
@@ -429,7 +429,7 @@ flowchart LR
   R2 -->|ok| C[Commit]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `TransactionSmoke.java` → atomicidad simulada.
 
@@ -480,7 +480,7 @@ public class OrderService {
 
 **Lectura:** el smoke muestra el problema sin transacción: estado huérfano. `@Transactional` hace rollback automático ante `RuntimeException`. LAZY requiere sesión activa o fetch plan.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Ejecuta sin transacción. Esperas `2` (1 order + 1 line orphan).
 2. Con `@Transactional` y fallo, esperas `0` cambios persistidos (rollback).
@@ -493,7 +493,7 @@ Salida esperada:
 use-@Transactional
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 JPA + `@Transactional` simplifican persistencia, pero exigen entender estados de entidad, lazy loading y límites de transacción. El N+1 es el bug más común y silencioso.
 
@@ -555,11 +555,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `use-@Transac
 
 ### Tema 5: Criteria API y Specifications · Avanzado · 180 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo construye queries dinámicas concatenando strings: `WHERE status = '` + status + `' AND customer = '` + customer + `'`. Un input con comilla rompe la query. Un input malicioso inyecta SQL. El problema no es el SQL; es construir queries con texto.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Criteria API es como armar una query con bloques de Lego tipados: cada predicado es una pieza que se combina con `and/or`. No concatenas texto; compones objetos. Si un filtro es null, simplemente no agregas esa pieza.
 
@@ -571,7 +571,7 @@ flowchart LR
   Q --> DB[(DB)]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `CriteriaSmoke.java` → composición de predicados.
 
@@ -617,7 +617,7 @@ public class OrderSpecs {
 
 **Lectura:** el smoke muestra composición tipada. En Spring Data, `Specification` compone predicados con `and/or`. Null filters se omiten para queries flexibles.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Filtro status=NEW y customer=a. Esperas `1` resultado.
 2. Quita el filtro customer. Observa que la query se adapta sin concatenación.
@@ -630,7 +630,7 @@ Salida esperada:
 NEW:a
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Criteria/Specifications permiten filtros dinámicos seguros. El costo es verbosidad, pero la seguridad y mantenibilidad compensan.
 
@@ -691,11 +691,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `1`, `NEW:a`.
 
 ### Tema 6: Flyway/Liquibase · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Un desarrollador edita `V1__init.sql` para “corregir” una columna. El checksum de Flyway no coincide y la app no arranca en producción. Otro entorno ya aplicó la migración; el historial es ahora inconsistente. La causa fue tratar migraciones como código editable.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Las migraciones son como el libro de bitácora de un barco: cada entrada se escribe una vez, en orden, y no se borra. Si te equivocas, escribes una nueva entrada que corrige la anterior. El checksum es el sello que prueba que nadie alteró la entrada.
 
@@ -706,7 +706,7 @@ flowchart LR
   V3 --> DB[(DB + schema_history)]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `MigrationSmoke.java` → inmutabilidad de migraciones.
 
@@ -748,7 +748,7 @@ db/migration/
 
 **Lectura:** el smoke modela la regla: misma versión + mismo checksum = OK (idempotente). Misma versión + distinto checksum = fallo (alteración). La corrección es una nueva migración.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Aplica V1 primera vez. Esperas `true`.
 2. Reintenta V1 mismo checksum. Esperas `true`.
@@ -765,7 +765,7 @@ true
 2
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Las migraciones versionadas e inmutables hacen el esquema auditable y reproducible. El costo es disciplina: nunca editar lo aplicado.
 
@@ -829,11 +829,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `true`, `f
 
 ### Tema 7: PostgreSQL y MySQL · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo elige MySQL “porque todos lo conocen”. Luego necesita JSONB, extensiones geoespaciales y full-text avanzado. Migrar a PostgreSQL a mitad del proyecto cuesta semanas. La elección de DB no fue por requisitos, fue por inercia.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Elegir una base de datos es como elegir vehículo: un sedán sirve para la mayoría, pero si necesitas transportar carga pesada, no compras un sedán y luego le agregas un remolque. PostgreSQL y MySQL son ambos sólidos, pero tienen fortalezas distintas.
 
@@ -844,7 +844,7 @@ flowchart TD
   Q -->|ambos sirven| Eval[Evaluar equipo/tooling/costo]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `DbChoiceSmoke.java` → decisión por requisitos.
 
@@ -864,7 +864,7 @@ public class DbChoiceSmoke {
 
 **Lectura:** la decisión se basa en requisitos reales, no en popularidad. PostgreSQL destaca en tipos avanzados (JSONB, arrays, rangos), extensiones (PostGIS) y MVCC. MySQL destaca en simplicidad operativa y ecosistema existente.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Necesita JSONB. Esperas `postgres`.
 2. Equipo experto en MySQL, sin JSONB. Esperas `mysql-or-postgres`.
@@ -877,7 +877,7 @@ postgres
 mysql-or-postgres
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La elección de DB es una decisión de largo plazo. Documentarla con ADR y probar con Testcontainers reduce el riesgo.
 

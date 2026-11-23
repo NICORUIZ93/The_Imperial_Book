@@ -8,11 +8,11 @@ Cuando un sistema distribuido falla, los logs locales no bastan. Necesitas respo
 
 ### Tema 1: Micrometer y Prometheus · Intermedio · 150 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 `catalog-service` empieza a responder lento después de un despliegue. El equipo revisa CPU y memoria: parecen normales. Los usuarios se quejan, pero nadie puede decir cuántas requests fallan, cuál endpoint es lento ni si el problema empezó antes o después del despliegue. Sin métricas, la discusión se vuelve opinión.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Las métricas son el tablero de instrumentos de un avión. No te dicen la causa raíz de todo, pero te dicen si estás perdiendo altitud, velocidad o combustible. **RED** (Rate, Errors, Duration) mide la experiencia del servicio; **USE** (Utilization, Saturation, Errors) mide recursos. Micrometer es la fachada que expone métricas; Prometheus las recolecta; Grafana las visualiza.
 
@@ -23,7 +23,7 @@ flowchart LR
   G --> A[Alerta por síntoma]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Metrics.java` → contador mínimo por status.
 
@@ -72,7 +72,7 @@ class CatalogController {
 
 **Lectura:** usa `counter` para acumulados, `timer` para latencia, `gauge` para estado actual. Los tags deben tener baja cardinalidad: `status=200` sí, `userId=...` no.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Incrementa dos `200` y un `500`. Esperas `2` y `1`.
 2. Agrega un tag con `userId`. En Prometheus, la cardinalidad crece por usuario y degrada el TSDB. Evítalo.
@@ -85,7 +85,7 @@ Salida esperada:
 1
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Las métricas dieron visibilidad inmediata. No explican por sí solas la causa raíz, pero permiten detectar síntomas, acotar impacto y alertar con criterio.
 
@@ -146,11 +146,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `1`.
 
 ### Tema 2: OpenTelemetry por defecto: métricas, trazas y logs correlacionados · Avanzado · 150 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Una compra falla con 500. El log de `gateway` dice timeout, el de `orders` dice error al llamar inventory, y el de `inventory` dice consulta lenta a DB. Están en tres servicios, tres formatos y tres relojes. Reconstruir la historia lleva 40 minutos.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Una traza distribuida es como el número de seguimiento de un paquete. Cada oficina por donde pasa el paquete sella el mismo número. Puedes ver el recorrido completo, no solo el sello local. En OTel, ese número es el `traceId`; cada sello es un `span`.
 
@@ -163,7 +163,7 @@ flowchart LR
   O -. traceId=t1 .-> I
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Trace.java` → correlación por traceId.
 
@@ -197,7 +197,7 @@ otel:
 
 **Lectura:** el `traceId` se propaga por headers W3C `traceparent`. Cada servicio crea spans hijos. El collector recibe OTLP y exporta a Tempo/Jaeger.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Crea root y child con el mismo `traceId`. Esperas `true`.
 2. Omite la propagación de contexto entre servicios. Esperas spans huérfanos con traceIds distintos.
@@ -210,7 +210,7 @@ true
 db
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 La traza conectó la falla end-to-end. Ganaste visibilidad; pagaste costo de instrumentación, sampling y backend de observabilidad.
 
@@ -271,11 +271,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `db`.
 
 ### Tema 3: Logs estructurados y propagación de contexto · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 Durante un incidente, el equipo busca “error pedido” en logs. Aparecen 12.000 líneas de cinco servicios. Nadie sabe cuáles pertenecen al usuario afectado. Los logs son texto libre, sin `traceId`, sin `service`, sin estructura.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un log estructurado es como un formulario con campos, no una nota en servilleta. Si todos usan el mismo formulario, puedes filtrar por `traceId=t1`. Si cada uno escribe texto libre, dependes de suerte y `grep`.
 
@@ -288,7 +288,7 @@ flowchart LR
   L --> Q[query traceId=t1]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Log.java` → log JSON mínimo.
 
@@ -318,7 +318,7 @@ public class Log {
 
 **Lectura:** en Spring, MDC guarda `traceId/spanId` por request. El encoder JSON los emite. Nunca loguees secretos, tokens o PII sin redacción.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. Emite log con `traceId=t1`. Esperas `true`, `true`.
 2. Emite logs sin `traceId`. Intenta reconstruir incidente: el costo de búsqueda explota.
@@ -331,7 +331,7 @@ true
 true
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 Los logs estructurados no son más logs; son evidencia consultable. Con `traceId` y campos consistentes, el incidente se reconstruye en minutos.
 
@@ -394,11 +394,11 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `true`.
 
 ### Tema 4: SLO, p99 y alerting · Intermedio · 120 min
 
-#### Paso 1 · El dolor
+## El dolor
 
 El equipo tiene 200 alertas al día: CPU alta, GC, un pod reinició, latencia de un endpoint interno. Nadie las mira. El día que el checkout falla para usuarios reales, la alerta importante queda enterrada en ruido. Esto es alert fatigue.
 
-#### Paso 2 · La intuición
+## La intuición
 
 Un SLO es como un acuerdo de servicio con el usuario: “el 99.9% de checkouts responden en menos de 300ms”. El error budget es cuánto puedes fallar sin romper el acuerdo. Alertar por burn rate es avisar cuando estás gastando ese presupuesto demasiado rápido, no cuando una CPU sube por 30 segundos sin afectar a nadie.
 
@@ -411,7 +411,7 @@ flowchart LR
   BR -->|no| Obs[Observar]
 ```
 
-#### Paso 3 · La construcción
+## La construcción
 
 **Archivo:** `Slo.java` → alerta por síntoma.
 
@@ -439,7 +439,7 @@ groups:
 
 **Lectura:** la alerta se dispara por impacto al usuario (latencia/errores), no por CPU aislada. CPU puede ser una señal secundaria de diagnóstico.
 
-#### Paso 4 · El experimento
+## El experimento
 
 1. p99 200ms, error 0.1%. Esperas `false`.
 2. p99 500ms. Esperas `true`.
@@ -452,7 +452,7 @@ false
 true
 ```
 
-#### Paso 5 · El cierre
+## El cierre
 
 SLOs y alertas por síntoma reducen ruido y enfocan la respuesta en el usuario. El costo es definir SLIs correctos y mantenerlos.
 
