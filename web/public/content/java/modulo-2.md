@@ -6,6 +6,72 @@ Un arreglo resuelve almacenamiento contiguo, pero falla cuando el dominio pide d
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-collections
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-collections/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/collections/
+            ├── Main.java
+            └── domain/
+                ├── Product.java
+                └── Money.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.collections.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-collections"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/collections/**/*.java
+java -cp out com.aurora.collections.Main
+```
+
 ### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 40 min
 
 **Caso guía.** registro de envíos. Necesitas preservar orden de llegada, evitar IDs duplicados y consultar estado por código. Una sola estructura no expresa las tres intenciones con la misma claridad.
