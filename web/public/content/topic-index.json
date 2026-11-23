@@ -7224,6 +7224,34 @@
     ],
     "12": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Dockerfile",
+        "fragment": "dockerfile"
+      },
+      {
+        "title": ".dockerignore",
+        "fragment": "dockerignore"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
         "title": "Dockerfile multi-stage y runtime Java",
         "fragment": "tema-1-dockerfile-multi-stage-y-runtime-java"
       },
