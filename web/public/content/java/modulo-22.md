@@ -43,6 +43,16 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
+## Visual del módulo
+
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-22-copia-defensiva.html`; regeneración: editar el HTML/SVG en esa ruta):** [Copia defensiva: proteger el estado interno](/visuals/temas/java/modulo-22-copia-defensiva.html)
+
+Lectura: devolver la referencia interna permite que el llamador rompa el invariante; copiar al entrar y al salir lo conserva.
+
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-22-clases-anidadas.html`; regeneración: editar el HTML/SVG en esa ruta):** [Clases anidadas: quién captura `this$0`](/visuals/temas/java/modulo-22-clases-anidadas.html)
+
+Lectura: una inner no estática conserva la referencia a la instancia exterior; eso explica fugas de memoria y errores de creación sin instancia.
+
 ### Tema 1: Copia defensiva para proteger invariantes · Intermedio · 40 min
 
 La copia defensiva es una técnica para proteger el estado interno de un objeto cuando recibe o expone objetos mutables. Si tu clase guarda una `List` mutable que recibió desde afuera, el llamador puede seguir teniendo la referencia original y modificarla después del constructor. El objeto que parecía válido queda en un estado que nunca pasó por sus validaciones. Lo mismo ocurre al revés: si devuelves tu lista interna mutable, el consumidor puede alterarla sin pasar por la API.

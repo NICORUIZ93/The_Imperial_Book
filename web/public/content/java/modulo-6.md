@@ -6,15 +6,9 @@ Este módulo construye utilidades de Tienda Aurora: escribe y lee un catálogo J
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-6-io.html"
-    alt="NIO.2, Jackson, streaming de archivos grandes y recursos classpath"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Path/Files para archivos, Jackson para JSON, Buffered/streams para volumen, classpath para recursos empaquetados.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-6-io.html`; regeneración: editar el HTML/SVG en esa ruta):** [NIO.2, Jackson, streaming de archivos grandes y recursos classpath](/visuals/temas/java/modulo-6-io.html)
+
+Lectura: Path/Files para archivos, Jackson para JSON, Buffered/streams para volumen, classpath para recursos empaquetados.
 
 ## Prerrequisitos
 

@@ -4,15 +4,9 @@ Un proyecto Java profesional no se define solo por compilar. Se define por poder
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-15-build-testing.html"
-    alt="Build reproducible, módulos domain/app, tests JUnit y logging estructurado"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Dominio aislado, app como adaptador, wrapper/build reproducible y tests como feedback rápido.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-15-build-testing.html`; regeneración: editar el HTML/SVG en esa ruta):** [Build reproducible, módulos domain/app, tests JUnit y logging estructurado](/visuals/temas/java/modulo-15-build-testing.html)
+
+Lectura: Dominio aislado, app como adaptador, wrapper/build reproducible y tests como feedback rápido.
 
 ## Proyecto desde cero
 

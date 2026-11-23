@@ -6,15 +6,9 @@ La regla práctica es medir antes de tunear. Cada herramienta responde una pregu
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-11-jvm.html"
-    alt="Mapa visual de JVM: heap y GC, JFR/JIT, referencias y heap dump, FFM y memoria nativa"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Mapa visual: cada herramienta de diagnóstico responde una pregunta distinta. La evidencia debe tomarse en tu workload y entorno.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-11-jvm.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa visual de JVM: heap y GC, JFR/JIT, referencias y heap dump, FFM y memoria nativa](/visuals/temas/java/modulo-11-jvm.html)
+
+Lectura: Mapa visual: cada herramienta de diagnóstico responde una pregunta distinta. La evidencia debe tomarse en tu workload y entorno.
 
 ## Proyecto desde cero: `tienda-aurora-jvm`
 

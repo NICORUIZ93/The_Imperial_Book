@@ -3,15 +3,9 @@
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-8-build-tools.html"
-    alt="Maven y Gradle construyen el mismo proyecto multi-módulo con fases/tareas y salida de negocio idéntica"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Maven y Gradle son dos modelos de build; el comportamiento de negocio debe permanecer igual.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-8-build-tools.html`; regeneración: editar el HTML/SVG en esa ruta):** [Maven y Gradle construyen el mismo proyecto multi-módulo con fases/tareas y salida de negocio idéntica](/visuals/temas/java/modulo-8-build-tools.html)
+
+Lectura: Maven y Gradle son dos modelos de build; el comportamiento de negocio debe permanecer igual.
 
 
 Tienda Aurora ya tiene código, pero el código no vive solo en un IDE. Necesita compilarse en CI, declarar dependencias, ejecutar tests, empaquetar artefactos y hacerlo igual en la máquina de cualquier persona del equipo. Eso es el trabajo de un build tool. Maven y Gradle resuelven el mismo problema con filosofías distintas: Maven favorece convención y configuración declarativa en XML; Gradle favorece un modelo programable con DSL Kotlin/Groovy y mejor incrementalidad.

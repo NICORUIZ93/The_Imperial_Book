@@ -8,15 +8,9 @@ En este módulo construimos `tienda-aurora-excepciones`, una pequeña app de lí
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-3-excepciones.html"
-    alt="Mapa de excepciones Java: checked, unchecked, try-with-resources y preservación de causa"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>El tipo define el contrato, el mensaje da contexto, la causa preserva el origen y try-with-resources garantiza el cierre.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-3-excepciones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de excepciones Java: checked, unchecked, try-with-resources y preservación de causa](/visuals/temas/java/modulo-3-excepciones.html)
+
+Lectura: El tipo define el contrato, el mensaje da contexto, la causa preserva el origen y try-with-resources garantiza el cierre.
 
 ## Prerrequisitos
 

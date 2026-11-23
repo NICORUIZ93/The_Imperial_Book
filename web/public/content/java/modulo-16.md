@@ -6,15 +6,9 @@ Este módulo construye `tienda-aurora-jpa`, un proyecto pequeño con H2 en memor
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-16-jpa.html"
-    alt="Mapa JPA: entidades, EntityManager, consultas, SQL real, N+1 y EntityGraph"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>JPA abstrae el mapeo, no el costo. El SQL generado y la estrategia de carga deben ser visibles.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-16-jpa.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa JPA: entidades, EntityManager, consultas, SQL real, N+1 y EntityGraph](/visuals/temas/java/modulo-16-jpa.html)
+
+Lectura: JPA abstrae el mapeo, no el costo. El SQL generado y la estrategia de carga deben ser visibles.
 
 ## Proyecto desde cero
 

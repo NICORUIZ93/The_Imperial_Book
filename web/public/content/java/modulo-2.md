@@ -3,15 +3,9 @@
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-2-colecciones.html"
-    alt="Mapa de colecciones: List, Set, Map, Queue/Deque, contratos y genéricos"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>La estructura correcta expresa el contrato: orden, unicidad, clave o espera.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-2-colecciones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de colecciones: List, Set, Map, Queue/Deque, contratos y genéricos](/visuals/temas/java/modulo-2-colecciones.html)
+
+Lectura: La estructura correcta expresa el contrato: orden, unicidad, clave o espera.
 
 
 En el módulo anterior Tienda Aurora ya tenía productos, descuentos y pagos modelados como objetos. El siguiente problema aparece en cuanto la tienda crece: hay que guardar productos en orden de alta, evitar SKUs duplicados, consultar por etiqueta, atender pedidos por prioridad, paginar resultados y deshacer la última atención. Un arreglo no expresa ninguna de esas intenciones. Una `ArrayList` usada para todo tampoco: funciona al principio y después empiezan los bugs sutiles —duplicados silenciosos, búsquedas lineales por todas partes, claves que “desaparecen” de un mapa, comparaciones que no dicen qué orden significan.

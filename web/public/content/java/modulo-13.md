@@ -4,15 +4,9 @@ Este módulo junta piezas que antes se trabajaron por separado: dominio, casos d
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-13-arquitectura.html"
-    alt="Arquitectura por capas con dependencias apuntando al dominio"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Las dependencias apuntan al dominio. La infraestructura implementa puertos; la app solo compone.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-13-arquitectura.html`; regeneración: editar el HTML/SVG en esa ruta):** [Arquitectura por capas con dependencias apuntando al dominio](/visuals/temas/java/modulo-13-arquitectura.html)
+
+Lectura: Las dependencias apuntan al dominio. La infraestructura implementa puertos; la app solo compone.
 
 ## Proyecto desde cero: `tienda-aurora-java-m13`
 

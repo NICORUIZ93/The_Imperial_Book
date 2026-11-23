@@ -6,15 +6,9 @@ Este módulo construye `tienda-aurora-jpms`, un proyecto multi-módulo Gradle co
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-10-jpms.html"
-    alt="JPMS con exports, opens y paquete interno no exportado"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>exports publica API, opens habilita reflexión controlada, y lo no exportado queda encapsulado.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-10-jpms.html`; regeneración: editar el HTML/SVG en esa ruta):** [JPMS con exports, opens y paquete interno no exportado](/visuals/temas/java/modulo-10-jpms.html)
+
+Lectura: exports publica API, opens habilita reflexión controlada, y lo no exportado queda encapsulado.
 
 ## Prerrequisitos
 

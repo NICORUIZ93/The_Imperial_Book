@@ -6,15 +6,9 @@ Este módulo construye un `CheckoutService` que consulta catálogo e inventario 
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-5-concurrencia.html"
-    alt="Mapa de concurrencia Java: ExecutorService, CompletableFuture, virtual threads, structured concurrency, ScopedValue y race condition"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>La concurrencia exige coordinar ejecución, cancelación, visibilidad y ciclo de vida, no solo lanzar hilos.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-5-concurrencia.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de concurrencia Java: ExecutorService, CompletableFuture, virtual threads, structured concurrency, ScopedValue y race condition](/visuals/temas/java/modulo-5-concurrencia.html)
+
+Lectura: La concurrencia exige coordinar ejecución, cancelación, visibilidad y ciclo de vida, no solo lanzar hilos.
 
 ## Prerrequisitos
 

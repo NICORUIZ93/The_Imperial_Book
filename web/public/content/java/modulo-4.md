@@ -6,15 +6,9 @@ Un stream no es una colección. Es una secuencia de elementos que se consume una
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-4-streams.html"
-    alt="Pipeline de Java Streams con fuente, operaciones intermedias, gather, terminal y Optional"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Fuente → operaciones intermedias perezosas → terminal. Optional hace explícita la ausencia.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-4-streams.html`; regeneración: editar el HTML/SVG en esa ruta):** [Pipeline de Java Streams con fuente, operaciones intermedias, gather, terminal y Optional](/visuals/temas/java/modulo-4-streams.html)
+
+Lectura: Fuente → operaciones intermedias perezosas → terminal. Optional hace explícita la ausencia.
 
 ## Prerrequisitos
 

@@ -4,15 +4,9 @@ El runtime de Java no es un detalle invisible: decide cómo se ve la memoria ent
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-14-jvm-runtime.html"
-    alt="Mapa de runtime JVM: visibilidad, JIT, deserialización y ciclo de vida"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Visibilidad, JIT, deserialización y ciclo de vida son comportamientos de runtime que se diseñan y verifican.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-14-jvm-runtime.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de runtime JVM: visibilidad, JIT, deserialización y ciclo de vida](/visuals/temas/java/modulo-14-jvm-runtime.html)
+
+Lectura: Visibilidad, JIT, deserialización y ciclo de vida son comportamientos de runtime que se diseñan y verifican.
 
 ## Proyecto desde cero: `tienda-aurora-java-m14`
 

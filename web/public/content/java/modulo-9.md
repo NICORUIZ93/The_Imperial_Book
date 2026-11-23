@@ -6,15 +6,9 @@ Este módulo construye `tienda-aurora-testing`: un servicio de pedidos con descu
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-9-testing.html"
-    alt="JUnit, Mockito, tests parametrizados y propiedades"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Reglas unitarias, dobles para dependencias, tablas de casos y propiedades para invariantes.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-9-testing.html`; regeneración: editar el HTML/SVG en esa ruta):** [JUnit, Mockito, tests parametrizados y propiedades](/visuals/temas/java/modulo-9-testing.html)
+
+Lectura: Reglas unitarias, dobles para dependencias, tablas de casos y propiedades para invariantes.
 
 ## Prerrequisitos
 

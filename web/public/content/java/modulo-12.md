@@ -6,15 +6,9 @@ En este módulo vas a construir `tienda-aurora-java-m12`, un proyecto pequeño d
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-12-patrones.html"
-    alt="Mapa de patrones por intención: creación, comportamiento y estructura"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Patrones organizados por intención. El criterio es: problema real, presión de cambio y prueba que lo justifique.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-12-patrones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de patrones por intención: creación, comportamiento y estructura](/visuals/temas/java/modulo-12-patrones.html)
+
+Lectura: Patrones organizados por intención. El criterio es: problema real, presión de cambio y prueba que lo justifique.
 
 ## Prerrequisitos y bootstrap
 

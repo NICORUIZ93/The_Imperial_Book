@@ -6,7 +6,7 @@ En este módulo construirás `tienda-aurora-java-m18`: un cliente HTTP con `java
 
 ## Visual del módulo
 
-**Herramienta (animdiagram, animado con fallback estático):** [HttpClient: petición, timeout y respuesta](/visuals/temas/java/modulo-18-httpclient.html)
+**Visual (animdiagram, animado con fallback estático; fuente `visuals/temas/java/modulo-18-httpclient.html`; regeneración: editar el HTML/SVG en esa ruta):** [HttpClient: petición, timeout y respuesta](/visuals/temas/java/modulo-18-httpclient.html)
 
 Lectura: la app envía request con timeout; el servicio puede responder 200, error o agotar el tiempo. La animación solo resalta ida/vuelta y se desactiva con reduced motion.
 
@@ -155,7 +155,7 @@ Un token es una credencial. Tratarlo como string decorativo es un error común: 
 
 La regla práctica es defensa en capas. Valida formato/tamaño antes de usar el token. Envia el token solo al destino esperado. No lo escribas en logs. Maneja 401/403 como fallo de autenticación/autorización, no como “reintenta hasta que funcione”. Limita la superficie de entrada: ids, headers y cuerpos tienen forma y tamaño.
 
-**Diagrama (diagram-design, estático):** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-18-seguridad-http.html`; regeneración: editar el HTML/SVG en esa ruta):** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
 
 Lectura: valida input y allowlist antes de llamar; aplica timeout; maneja status; reintenta solo si la operación es idempotente.
 

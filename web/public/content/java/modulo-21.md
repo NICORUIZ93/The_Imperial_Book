@@ -52,6 +52,12 @@ project(":app") {
 
 `api-v1` y `api-v2` representan la evolución del contrato. `app` consume `api-v2`; los tests fijan expectativas de compatibilidad.
 
+## Visual del módulo
+
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-21-compatibilidad.html`; regeneración: editar el HTML/SVG en esa ruta):** [Compatibilidad: fuente frente a binaria](/visuals/temas/java/modulo-21-compatibilidad.html)
+
+Lectura: cambiar una firma puede conservar la compatibilidad de fuente y romper la binaria; por eso la superficie pública se verifica con artefactos, no de memoria.
+
 ### Tema 1: Qué es la superficie pública de una API · Básico · 35 min
 
 La superficie pública de una API es todo lo que un consumidor externo puede usar o observar y, por lo tanto, todo aquello que no puedes cambiar libremente sin evaluar impacto. No se limita a los nombres de clases públicas. Incluye firmas de métodos y constructores, tipos de parámetros y retornos, excepciones lanzadas o declaradas, constantes públicas, jerarquías de herencia, comportamiento observable, precondiciones/postcondiciones, reglas de nullabilidad, formato de datos expuestos y semántica documentada.

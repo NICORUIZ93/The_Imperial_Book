@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Java del día a día: reflexión, regex, dinero, i18n y accesso controlado</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--panel:#fff;--accent:#b45309}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>Herramientas del día a día: elige la correcta para cada borde</h1>
+<p class="lead">Cada mecanismo responde una pregunta distinta. Usar reflexión para todo, double para dinero o regex sin Pattern compilado crea código frágil.</p>
+<section class="card">
+<svg viewBox="0 0 980 320" role="img" aria-label="Mapa de utilidades Java cotidianas">
+<rect x="45" y="30" width="285" height="78" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="187" y="57" text-anchor="middle" font-weight="700">Reflexión y anotaciones</text><text x="187" y="80" text-anchor="middle" font-size="12" fill="#6b7280">inspeccionar en runtime</text>
+<rect x="350" y="30" width="285" height="78" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="492" y="57" text-anchor="middle" font-weight="700">Pattern / Matcher</text><text x="492" y="80" text-anchor="middle" font-size="12" fill="#6b7280">texto estructurado y grupos</text>
+<rect x="655" y="30" width="280" height="78" rx="12" fill="#fff" stroke="#b45309"/><text x="795" y="57" text-anchor="middle" font-weight="700">BigDecimal</text><text x="795" y="80" text-anchor="middle" font-size="12" fill="#6b7280">dinero exacto, jamás double</text>
+<rect x="45" y="150" width="285" height="78" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="187" y="177" text-anchor="middle" font-weight="700">ServiceLoader y proxys</text><text x="187" y="200" text-anchor="middle" font-size="12" fill="#6b7280">extensión y comportamiento transversal</text>
+<rect x="350" y="150" width="285" height="78" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="492" y="177" text-anchor="middle" font-weight="700">i18n</text><text x="492" y="200" text-anchor="middle" font-size="12" fill="#6b7280">Locale, moneda, fecha y orden</text>
+<rect x="655" y="150" width="280" height="78" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="795" y="177" text-anchor="middle" font-weight="700">MethodHandles / VarHandles</text><text x="795" y="200" text-anchor="middle" font-size="12" fill="#6b7280">acceso tipado y controlado</text>
+<rect x="150" y="265" width="680" height="45" rx="12" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="293" text-anchor="middle" font-size="13" fill="#374151"><tspan font-weight="700">Regla:</tspan> la herramienta debe hacer explícito el contrato y fallar de forma comprobable.</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> identifica primero el borde —datos, texto, dinero, plugins, locale o acceso— y después elige el mecanismo. Mezclarlos oculta errores que el compilador podría detectar.</p>
+</main></body></html>

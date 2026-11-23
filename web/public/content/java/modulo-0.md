@@ -3,15 +3,9 @@
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-0-jvm-pipeline.html"
-    alt="De .java a ejecución en JVM: compilación a bytecode, carga, verificación y ejecución"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>El bytecode es el puente portable entre el código fuente y la JVM.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-0-jvm-pipeline.html`; regeneración: editar el HTML/SVG en esa ruta):** [De .java a ejecución en JVM: compilación a bytecode, carga, verificación y ejecución](/visuals/temas/java/modulo-0-jvm-pipeline.html)
+
+Lectura: El bytecode es el puente portable entre el código fuente y la JVM.
 
 
 Tienda Aurora arranca como una aplicación de consola que cotiza pedidos. No hay Spring todavía, no hay base de datos, no hay HTTP: solo Java. Esa restricción es deliberada. Antes de repartir responsabilidades entre frameworks conviene entender qué hace el lenguaje por sí mismo, porque los errores más caros de un sistema grande —un total que no cuadra por un céntimo, una fecha que se guarda un día antes, un `==` que compara direcciones en lugar de valores— nacen en estas primeras decisiones y se propagan sin ruido hasta producción.

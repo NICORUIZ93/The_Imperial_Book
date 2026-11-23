@@ -4,15 +4,9 @@ El modelado de dominio mejora cuando el tipo expresa las posibilidades reales. U
 
 ## Visual del módulo
 
-<figure class="lesson-figure">
-  <img
-    src="/visuals/temas/java/modulo-7-patterns.html"
-    alt="Jerarquía sealed Pago con record patterns y switch exhaustivo"
-    loading="lazy"
-    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
-  />
-  <figcaption>Sealed limita subtipos permitidos; el switch exhaustivo obliga a cubrir cada variante.</figcaption>
-</figure>
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-7-patterns.html`; regeneración: editar el HTML/SVG en esa ruta):** [Jerarquía sealed Pago con record patterns y switch exhaustivo](/visuals/temas/java/modulo-7-patterns.html)
+
+Lectura: Sealed limita subtipos permitidos; el switch exhaustivo obliga a cubrir cada variante.
 
 ## Prerrequisitos
 

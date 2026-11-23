@@ -81,6 +81,12 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
+## Visual del módulo
+
+**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-19-dia-a-dia.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de utilidades del día a día](/visuals/temas/java/modulo-19-dia-a-dia.html)
+
+Lectura: cada mecanismo cubre un borde distinto; la herramienta correcta hace explícito el contrato y falla de forma comprobable.
+
 ### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 45 min
 
 La reflexión es la capacidad del programa para inspeccionar su propia estructura en tiempo de ejecución: clases, campos, métodos, constructores y anotaciones. En vez de llamar `pedido.getId()` directamente, puedes pedirle a la clase `Pedido` qué campos tiene, qué anotaciones llevan y leer sus valores dinámicamente. Esto es poderoso porque permite construir herramientas genéricas —serializadores, validadores, frameworks de inyección, ORMs— que trabajan sobre tipos que no conocían al compilar.
