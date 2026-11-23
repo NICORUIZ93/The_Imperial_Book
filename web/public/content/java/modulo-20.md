@@ -79,12 +79,9 @@ Interfaces funcionales core
 
 **Definición.** `Predicate<T>` (T->boolean), `Function<T,R>` (T->R), `Consumer<T>` (T->void), `Supplier<T>` (()->T). Son contratos para pasar comportamiento.
 
-```mermaid
-flowchart LR
-  P[Predicate\ntest] --> F[Function\napply]
-  F --> C[Consumer\naccept]
-  S[Supplier\nget] --> F
-```
+**Diagrama (diagram-design, estático):** [Interfaces funcionales: rol de cada una](/visuals/temas/java/modulo-20-interfaces-funcionales.html)
+
+Lectura: Predicate prueba, Function transforma, Consumer consume y Supplier produce. La forma de entrada/salida define cuál usar.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -494,15 +491,9 @@ java DemoPure
 
 **Definición.** Flow API (Java 9) implementa Reactive Streams con backpressure: el suscriptor solicita `n` elementos.
 
-```mermaid
-sequenceDiagram
-  participant P as Publisher
-  participant S as Subscriber
-  P->>S: onSubscribe(subscription)
-  S->>P: request(n)
-  P->>S: onNext(item) * n
-  P->>S: onComplete()
-```
+**Diagrama (animdiagram, animado con fallback estático):** [Flow API: backpressure por demanda](/visuals/temas/java/modulo-20-flow.html)
+
+Lectura: el Subscriber controla la demanda con `request(n)`. El Publisher no debe inundarlo; con reduced motion el diagrama queda estático.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

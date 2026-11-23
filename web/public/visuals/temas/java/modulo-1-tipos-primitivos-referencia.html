@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Primitivo vs referencia en memoria</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Primitivo vs referencia en memoria</h1><p class="lead">Qué debe entender: un primitivo guarda el valor; una referencia guarda la dirección de un objeto.</p>
+<section class="card" aria-label="Primitivo vs referencia en memoria"><svg viewBox="0 0 960 250" role="img" aria-label="Primitivo vs referencia">
+<rect x="60" y="60" width="360" height="140" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="240" y="90" text-anchor="middle" font-size="18" font-weight="700">Stack / variable local</text>
+<rect x="90" y="115" width="120" height="55" rx="10" fill="#f8fafc" stroke="#d7dbe2"/><text x="150" y="138" text-anchor="middle" font-size="13" fill="#6b7280">int edad</text><text x="150" y="158" text-anchor="middle" font-size="20" font-weight="700">20</text>
+<rect x="250" y="115" width="140" height="55" rx="10" fill="#fff7ed" stroke="#b45309" stroke-width="2"/><text x="320" y="138" text-anchor="middle" font-size="13" fill="#6b7280">Pedido p</text><text x="320" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#b45309">ref 0xA1</text>
+<rect x="560" y="70" width="300" height="120" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="710" y="100" text-anchor="middle" font-size="18" font-weight="700">Heap / objeto</text>
+<rect x="610" y="120" width="200" height="50" rx="10" fill="#fff" stroke="#b45309"/><text x="710" y="150" text-anchor="middle" font-size="14">Pedido(id="P-1", ...)</text>
+<line x1="390" y1="142" x2="605" y2="142" stroke="#b45309" stroke-width="2" marker-end="url(#m0)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> El primitivo contiene su valor directamente. La referencia apunta al objeto en heap; copiar la referencia no copia el objeto.</p>
+</main></body></html>

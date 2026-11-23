@@ -1,0 +1,21 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genéricos: seguridad de tipos en compile-time</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Genéricos: seguridad de tipos en compile-time</h1><p class="lead">Qué debe entender: el tipo parametrizado evita casts inseguros y detecta errores antes de ejecutar.</p>
+<section class="card" aria-label="Genéricos: seguridad de tipos en compile-time"><svg viewBox="0 0 960 230" role="img" aria-label="Genéricos">
+<rect x="70" y="70" width="250" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="195" y="102" text-anchor="middle" font-weight="700">List sin genérico</text><text x="195" y="128" text-anchor="middle" font-size="13" fill="#b45309">Object → cast inseguro</text>
+<rect x="410" y="70" width="250" height="90" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="535" y="102" text-anchor="middle" font-weight="700">List&lt;Pedido&gt;</text><text x="535" y="128" text-anchor="middle" font-size="13" fill="#0f766e">tipo verificado por compilador</text>
+<text x="480" y="200" text-anchor="middle" font-size="13" fill="#6b7280">Genéricos mueven errores de runtime a compile-time.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Con `List&lt;Pedido&gt;` el compilador impide insertar tipos incompatibles. El acento está en la seguridad en compilación.</p>
+</main></body></html>

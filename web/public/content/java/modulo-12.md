@@ -1,5 +1,13 @@
 # Módulo 12: Patrones de diseño y SOLID
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 12 — mapa visual](/visuals/temas/java/modulo-12-testing.html)
+
+Lectura: Base amplia de unitarios rápidos, menos integración, pocos E2E críticos para feedback barato.
+
+
 Un patrón de diseño no es una plantilla para copiar y pegar. Es un nombre compartido para una solución recurrente, con un costo y un contexto. El mismo patrón que ordena un diseño en un lugar puede volverlo artificial en otro. SOLID sirve como brújula: te ayuda a justificar por qué una abstracción existe, qué dependencia inviertes, y qué parte del código debería cambiar cuando cambie el negocio.
 
 En Tienda Aurora, estos problemas ya aparecen antes de microservicios: construir un email sin constructores telescópicos, elegir canal de notificación, cambiar reglas de precio, crear familias de UI coherentes, copiar plantillas sin aliasing, y conectar un proveedor de pago externo sin contaminar el dominio.

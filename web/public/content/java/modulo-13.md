@@ -1,5 +1,13 @@
 # Módulo 13: Proyecto integrador
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 13 — mapa visual](/visuals/temas/java/modulo-13-arquitectura.html)
+
+Lectura: Las dependencias apuntan al dominio; infraestructura implementa puertos; app compone.
+
+
 Este módulo junta lo que antes estaba separado: dominio, casos de uso, infraestructura, concurrencia, pruebas y build. El objetivo no es “hacer un CRUD grande”; es construir una pieza pequeña pero completa que puedas clonar, ejecutar y entender. En Tienda Aurora, el caso es procesar pedidos pendientes en paralelo sin perder claridad de diseño.
 
 **Verificación real (2026-11-23, macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4, Mockito 5.18.0):** `./gradlew -q test` pasó. `./gradlew -q run` produjo la salida esperada con un error controlado y dos pedidos procesados.

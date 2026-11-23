@@ -1,5 +1,13 @@
 # Módulo 14: Mecánica JVM y evolución de plataforma
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 14 — mapa visual](/visuals/temas/java/modulo-14-concurrencia-moderna.html)
+
+Lectura: Los hilos virtuales escalan espera I/O; la seguridad sigue dependiendo de datos compartidos, timeouts y cancelación.
+
+
 La JVM no es solo "donde corre Java". Es un runtime que decide visibilidad de memoria, optimiza código caliente, carga clases, gestiona objetos, y define herramientas de diagnóstico y empaquetado. Este módulo baja del “escribe código” al “entiende qué hace la plataforma con tu código”.
 
 **Verificación real (2026-11-23, macOS arm64, JDK 27.0.1.0.2 Temurin, Gradle 9.9.1, JUnit 5.13.4):** `./gradlew -q test` pasó con 4 tests, 0 fallas. `./gradlew -q run` produjo la salida mostrada. `jdeps -s` y `jdeprscan` se ejecutaron sobre el JAR generado con el JDK Temurin 27. **Nota honesta:** no ejecuté JMH, jcstress, jlink image completa, JFR profiling de producción, ni mediciones CDS/AOT comparativas; donde corresponda indico comandos y límites.
@@ -312,7 +320,7 @@ La escritura a `listo` (volatile) ocurre después de `valor=42` en el hilo escri
 
 #### Qué no hace
 
-`volatile` no hace atómico `count++`. Para contadores usa `AtomicInteger/LongAdder`; para invariantes compuestos usa locks o estructuras concurrentes. Para explicar este flujo visualmente, herramientas como diagramas de secuencia Mermaid o recursos de animación/diagramación (p. ej. animdiagram, dashmotion, manim_skill) pueden ayudar, pero la evidencia técnica debe seguir siendo el código y la prueba.
+`volatile` no hace atómico `count++`. Para contadores usa `AtomicInteger/LongAdder`; para invariantes compuestos usa locks o estructuras concurrentes. Para explicar este flujo visualmente, usa herramientas aprobadas (diagram-design para secuencia/estado estático, animdiagram/dashmotion para recorrido animado con fallback, manim_skill solo para procesos de alto valor), pero la evidencia técnica debe seguir siendo el código y la prueba.
 
 #### Error común
 

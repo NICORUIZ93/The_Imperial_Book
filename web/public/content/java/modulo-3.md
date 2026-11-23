@@ -1,5 +1,13 @@
 # Módulo 3: Excepciones y manejo de recursos
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 3 — mapa visual](/visuals/temas/java/modulo-3-oop-objetos.html)
+
+Lectura: Un objeto agrupa estado y comportamiento; la API pública protege invariantes.
+
+
 Tienda Aurora ya puede vender, pero el mundo real no le entrega datos perfectos. Un CSV llega con columnas rotas, un operador pide reservar más stock del disponible, un archivo no existe, o un campo numérico trae texto. Si el sistema responde mal a esos casos, el fallo es peor que una excepción: puede quedar un estado inconsistente, ocultar el error original o darle al operador un mensaje inútil.
 
 Las excepciones en Java son el mecanismo para separar el flujo normal del flujo de error. No son “eventos malos” genéricos; son objetos con tipo, mensaje, causa y traza. El tipo comunica qué clase de problema ocurrió. El mensaje comunica el contexto. La causa conserva el error de más bajo nivel que lo originó. La traza dice por dónde pasó. Un buen diseño de excepciones no intenta atrapar todo lo antes posible: decide dónde un error se puede recuperar, dónde debe traducirse y dónde debe subir con contexto.

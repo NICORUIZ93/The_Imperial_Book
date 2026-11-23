@@ -1,0 +1,23 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Concurrencia moderna en Java</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--panel:#fff;--soft:#f3f4f6}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px} h1{font-size:28px;margin:0 0 6px}.lead{color:var(--muted);margin:0 0 20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px} svg{width:100%;height:auto;display:block}.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media(prefers-reduced-motion:reduce){.anim{animation:none!important}}
+</style></head>
+<body><main class="wrap"><h1>Concurrencia moderna en Java</h1><p class="lead">Qué debe entender: virtual threads mejoran escalabilidad I/O, pero no reemplazan diseño de concurrencia seguro.</p>
+<section class="card"><svg viewBox="0 0 960 260" role="img" aria-label="Concurrencia moderna">
+<style>.anim{stroke-dasharray:8 8;animation:d 10s linear infinite}@keyframes d{to{stroke-dashoffset:-180}}@media(prefers-reduced-motion:reduce){.anim{animation:none}}</style>
+<defs><marker id="m14" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="40" y="70" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="130" y="105" text-anchor="middle" font-weight="700">Tareas I/O</text><text x="130" y="128" text-anchor="middle" font-size="12" fill="#6b7280">muchas esperas</text>
+<rect x="290" y="55" width="200" height="120" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="390" y="95" text-anchor="middle" font-weight="700">Virtual Threads</text><text x="390" y="118" text-anchor="middle" font-size="12" fill="#6b7280">ligeros, JVM-scheduled</text><text x="390" y="140" text-anchor="middle" font-size="12" fill="#6b7280">no eliminan races</text>
+<rect x="560" y="70" width="170" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="645" y="105" text-anchor="middle" font-weight="700">Structured</text><text x="645" y="128" text-anchor="middle" font-size="12" fill="#6b7280">alcance/cancelación</text>
+<rect x="790" y="70" width="130" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="855" y="105" text-anchor="middle" font-weight="700">Resultado</text><text x="855" y="128" text-anchor="middle" font-size="12" fill="#6b7280">éxito/fallo</text>
+<line class="anim" x1="220" y1="115" x2="285" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m14)"/>
+<line x1="490" y1="115" x2="555" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m14)"/>
+<line x1="730" y1="115" x2="785" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m14)"/>
+<text x="480" y="220" text-anchor="middle" font-size="13" fill="#6b7280">Virtual threads escalan espera; structured concurrency da límites claros; el estado compartido sigue necesitando protección.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Virtual threads ayudan con muchas tareas bloqueantes; structured concurrency controla ciclo de vida/cancelación; la corrección ante estado compartido sigue siendo tu responsabilidad.</p>
+<p class="note"><strong>Movimiento reducido:</strong> la animación se desactiva con <code>prefers-reduced-motion</code>.</p>
+</main></body></html>

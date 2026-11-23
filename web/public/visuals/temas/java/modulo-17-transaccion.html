@@ -1,0 +1,31 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transacción: commit o rollback</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Transacción: commit o rollback</h1><p class="lead">Qué debe entender: un conjunto de cambios se confirma completo o se revierte completo.</p>
+<section class="card" aria-label="Transacción: commit o rollback"><svg viewBox="0 0 960 300" role="img" aria-label="Transacción">
+<style>.flow{stroke-dasharray:8 8;animation:dash 8s linear infinite}@keyframes dash{to{stroke-dashoffset:-160}}@media(prefers-reduced-motion:reduce){.flow{animation:none}}</style>
+<defs><marker id="a5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="60" y="60" width="170" height="56" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="145" y="93" text-anchor="middle" font-size="15" font-weight="700">BEGIN</text>
+<rect x="280" y="60" width="170" height="56" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="365" y="93" text-anchor="middle" font-size="15" font-weight="700">UPDATE debitar</text>
+<rect x="500" y="60" width="170" height="56" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="585" y="93" text-anchor="middle" font-size="15" font-weight="700">UPDATE acreditar</text>
+<rect x="730" y="20" width="170" height="56" rx="12" fill="#ecfdf5" stroke="#0f766e" stroke-width="2"/><text x="815" y="53" text-anchor="middle" font-size="15" font-weight="700">COMMIT</text>
+<rect x="730" y="110" width="170" height="56" rx="12" fill="#fff7ed" stroke="#b45309" stroke-width="2"/><text x="815" y="143" text-anchor="middle" font-size="15" font-weight="700">ROLLBACK</text>
+<line class="flow" x1="230" y1="88" x2="275" y2="88" stroke="#6b7280" stroke-width="2" marker-end="url(#a5)"/>
+<line class="flow" x1="450" y1="88" x2="495" y2="88" stroke="#6b7280" stroke-width="2" marker-end="url(#a5)"/>
+<line x1="670" y1="88" x2="725" y2="48" stroke="#0f766e" stroke-width="2" marker-end="url(#a5)"/>
+<line x1="670" y1="88" x2="725" y2="138" stroke="#b45309" stroke-width="2" marker-end="url(#a5)"/>
+<text x="700" y="58" font-size="12" fill="#0f766e">todo ok</text>
+<text x="700" y="130" font-size="12" fill="#b45309">falla</text>
+<rect x="60" y="210" width="840" height="56" rx="12" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="480" y="243" text-anchor="middle" font-size="14" fill="#374151"><tspan font-weight="700">Acento:</tspan> la atomicidad evita estados intermedios persistidos (debité pero no acredité).</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Si todas las operaciones son válidas se hace commit; si alguna falla, rollback restaura el estado previo. La animación solo resalta el flujo; el significado es legible en estático.</p><p class="note"><strong>Movimiento reducido:</strong> si tu sistema pide reduced motion, la animación se desactiva y el diagrama queda estático.</p>
+</main></body></html>

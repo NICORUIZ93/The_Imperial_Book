@@ -1,0 +1,21 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OOP: objeto = estado + comportamiento + invariantes</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>OOP: objeto = estado + comportamiento + invariantes</h1><p class="lead">Qué debe entender: una clase define contrato; el objeto encapsula estado y lo protege con métodos.</p>
+<section class="card" aria-label="OOP: objeto = estado + comportamiento + invariantes"><svg viewBox="0 0 960 250" role="img" aria-label="OOP">
+<rect x="330" y="40" width="300" height="170" rx="16" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="480" y="75" text-anchor="middle" font-size="20" font-weight="700">Objeto Pedido</text>
+<rect x="360" y="95" width="240" height="45" rx="10" fill="#f8fafc" stroke="#d7dbe2"/><text x="480" y="122" text-anchor="middle" font-size="13"><tspan font-weight="700">Estado:</tspan> id, total, estado</text>
+<rect x="360" y="150" width="240" height="45" rx="10" fill="#f8fafc" stroke="#d7dbe2"/><text x="480" y="177" text-anchor="middle" font-size="13"><tspan font-weight="700">Comportamiento:</tspan> confirmar()</text>
+<text x="480" y="230" text-anchor="middle" font-size="13" fill="#6b7280">La API pública protege invariantes; no expongas campos mutables sin control.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> El objeto agrupa datos y operaciones. La encapsulación evita que código externo deje el estado inválido.</p>
+</main></body></html>

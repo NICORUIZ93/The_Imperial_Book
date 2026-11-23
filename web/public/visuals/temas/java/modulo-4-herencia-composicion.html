@@ -1,0 +1,27 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Herencia vs composición</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Herencia vs composición</h1><p class="lead">Qué debe entender: herencia reutiliza por &quot;es-un&quot;; composición delega por &quot;tiene-un&quot;.</p>
+<section class="card" aria-label="Herencia vs composición"><svg viewBox="0 0 960 240" role="img" aria-label="Herencia vs composición">
+<defs><marker id="m4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="80" y="40" width="320" height="160" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="240" y="72" text-anchor="middle" font-weight="700">Herencia: es-un</text>
+<rect x="170" y="90" width="140" height="40" rx="10" fill="#f8fafc" stroke="#d7dbe2"/><text x="240" y="115" text-anchor="middle">Animal</text>
+<rect x="170" y="150" width="140" height="40" rx="10" fill="#fff" stroke="#b45309"/><text x="240" y="175" text-anchor="middle">Perro</text>
+<line x1="240" y1="150" x2="240" y2="135" stroke="#b45309" stroke-width="2" marker-end="url(#m4)"/>
+<rect x="560" y="40" width="320" height="160" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="720" y="72" text-anchor="middle" font-weight="700">Composición: tiene-un</text>
+<rect x="590" y="120" width="120" height="40" rx="10" fill="#fff" stroke="#b45309"/><text x="650" y="145" text-anchor="middle">Pedido</text>
+<rect x="740" y="120" width="120" height="40" rx="10" fill="#f8fafc" stroke="#d7dbe2"/><text x="800" y="145" text-anchor="middle">Pago</text>
+<line x1="710" y1="140" x2="735" y2="140" stroke="#b45309" stroke-width="2" marker-end="url(#m4)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Herencia acopla jerarquías; composición ensambla capacidades. Prefiere composición cuando la relación no sea un “es-un” estable.</p>
+</main></body></html>

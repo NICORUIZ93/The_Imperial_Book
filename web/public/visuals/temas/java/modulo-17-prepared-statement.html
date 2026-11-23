@@ -1,0 +1,34 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PreparedStatement: SQL y datos viajan separados</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>PreparedStatement: SQL y datos viajan separados</h1><p class="lead">Qué debe entender: el parámetro no se concatena como SQL; el driver lo envía tipado.</p>
+<section class="card" aria-label="PreparedStatement: SQL y datos viajan separados"><svg viewBox="0 0 960 260" role="img" aria-label="PreparedStatement">
+<defs><marker id="a2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="40" y="50" width="230" height="160" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="155" y="82" text-anchor="middle" font-size="18" font-weight="700">App</text>
+<text x="60" y="115" font-size="13" fill="#374151">prepare(SQL con ?)</text>
+<text x="60" y="140" font-size="13" fill="#374151">setInt(1, 42)</text>
+<text x="60" y="165" font-size="13" fill="#374151">executeQuery()</text>
+<rect x="350" y="70" width="250" height="120" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="475" y="100" text-anchor="middle" font-size="18" font-weight="700">PreparedStatement</text>
+<text x="475" y="128" text-anchor="middle" font-size="13" fill="#6b7280">SQL template + parámetro tipado</text>
+<text x="475" y="152" text-anchor="middle" font-size="13" fill="#b45309" font-weight="700">No concatenar input</text>
+<rect x="690" y="60" width="220" height="140" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="800" y="95" text-anchor="middle" font-size="18" font-weight="700">Base de datos</text>
+<text x="800" y="125" text-anchor="middle" font-size="13" fill="#6b7280">recibe plan/SQL + valor</text>
+<text x="800" y="150" text-anchor="middle" font-size="13" fill="#6b7280">devuelve ResultSet</text>
+<line x1="270" y1="130" x2="345" y2="130" stroke="#6b7280" stroke-width="2" marker-end="url(#a2)"/>
+<line x1="600" y1="130" x2="685" y2="130" stroke="#6b7280" stroke-width="2" marker-end="url(#a2)"/>
+<line x1="685" y1="155" x2="605" y2="155" stroke="#9ca3af" stroke-width="2" marker-end="url(#a2)"/>
+<line x1="345" y1="155" x2="275" y2="155" stroke="#9ca3af" stroke-width="2" marker-end="url(#a2)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> El SQL se prepara con placeholders y los valores viajan como parámetros. Esto reduce riesgo de inyección y hace el contrato de tipos explícito.</p>
+</main></body></html>

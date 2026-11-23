@@ -1,5 +1,13 @@
 # Módulo 11: JVM interna — GC, profiling y JIT
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 11 — mapa visual](/visuals/temas/java/modulo-11-concurrencia.html)
+
+Lectura: Entrega tareas a un executor y observa resultados/fallos; evita crear hilos sin control.
+
+
 Cuando Tienda Aurora se vuelve lenta en producción, el código fuente no siempre alcanza. Una pausa larga puede venir del recolector de basura, un pico de CPU de un método compilado en caliente, una fuga por referencias retenidas, o un uso incorrecto de memoria nativa. Este módulo abre la caja negra de la JVM con evidencia: logs de GC, Java Flight Recorder, referencias especiales, heap dump por OOM y Foreign Function & Memory API.
 
 La idea no es “tunear por intuición”. Es medir, observar y luego cambiar una cosa a la vez. Cada herramienta responde una pregunta distinta: GC logs para pausas y recolecciones, JFR para eventos del runtime, heap dump para quién retiene memoria, y FFM para interoperar con código nativo con un dueño explícito de memoria.

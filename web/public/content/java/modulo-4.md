@@ -1,5 +1,13 @@
 # Módulo 4: Streams y programación funcional
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 4 — mapa visual](/visuals/temas/java/modulo-4-herencia-composicion.html)
+
+Lectura: Herencia modela “es-un”; composición modela “tiene-un”. Prefiere composición cuando la jerarquía no es estable.
+
+
 En Tienda Aurora, los reportes no se escriben como una sola consulta SQL mágica cuando los datos ya están en memoria. A veces tienes una lista de productos, pedidos o líneas de venta y necesitas responder preguntas concretas: qué bebidas están activas, qué SKUs están agotados, cuánto vale el inventario por categoría, cuáles fueron los clientes que más compraron, o cómo se ven los totales en ventanas. Ese tipo de transformación de datos es donde la Stream API brilla.
 
 Un stream no es una colección nueva. Es un pipeline: una fuente de datos, cero o más operaciones intermedias que describen la transformación, y una operación terminal que dispara la ejecución y produce un resultado. La ventaja no es “escribir menos líneas”, sino expresar la intención. `filter` dice “qué elementos quiero”, `map` dice “cómo los transformo”, `reduce` dice “cómo los combino”, `collect` dice “en qué estructura quiero el resultado”.

@@ -1,5 +1,13 @@
 # Módulo 1: Programación orientada a objetos
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 1 — mapa visual](/visuals/temas/java/modulo-1-tipos-primitivos-referencia.html)
+
+Lectura: Un primitivo guarda valor directo; una referencia apunta a un objeto en heap. Copiar la referencia no copia el objeto.
+
+
 La aplicación de Tienda Aurora del módulo anterior funciona, pero su diseño es procedural. Un producto es un contenedor de datos y toda la lógica vive en métodos que preguntan de qué tipo es cada cosa. Mientras solo hay productos físicos, el `if` es manejable. Cuando la tienda empieza a vender cursos digitales, tarjetas regalo y suscripciones, cada nueva variante obliga a tocar el catálogo, el carrito, el recibo y la factura. Ese es el síntoma clásico de un modelo que no representa el dominio: el código sabe demasiado y cambia en todos lados a la vez.
 
 La programación orientada a objetos no es “usar clases”. Es distribuir responsabilidades para que cada pieza proteja sus invariantes y el sistema pueda crecer agregando tipos, no reescribiendo condicionales. En este módulo construimos `tienda-aurora-poo`, una evolución del proyecto anterior donde `Producto` encapsula su estado, `ProductoFisico` y `ServicioDigital` especializan el comportamiento, `Descuento` y `MedioPago` representan dos formas distintas de variación, y `Direccion`, `LineaPedido` y `ResultadoPrecio` se modelan como `record`.

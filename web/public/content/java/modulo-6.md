@@ -1,5 +1,13 @@
 # Módulo 6: I/O, NIO.2 y serialización
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 6 — mapa visual](/visuals/temas/java/modulo-6-genericos.html)
+
+Lectura: Los genéricos mueven errores de tipo a compile-time y eliminan casts inseguros.
+
+
 Tienda Aurora no vive solo en memoria. El catálogo se carga desde archivos, los pedidos se exportan para integraciones, los reportes se generan como CSV y los recursos empaquetados viajan dentro de la aplicación. Cuando el I/O está mal hecho, aparecen bugs silenciosos: rutas que solo funcionan en la máquina del desarrollador, archivos medio escritos, JSON inválido, encoding inconsistente o cargas completas de archivos enormes en memoria.
 
 Este módulo construye `tienda-aurora-io`, una app de consola que usa NIO.2 para trabajar con rutas y archivos, Jackson para serializar JSON, y streams/lectura por líneas para tratar archivos como secuencias. También muestra la diferencia entre leer un archivo del sistema de archivos y leer un recurso del classpath.

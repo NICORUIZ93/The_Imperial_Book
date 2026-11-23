@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compatibilidad: fuente vs binaria</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Compatibilidad: fuente vs binaria</h1><p class="lead">Qué debe entender: un cambio puede romper recompilación, ejecución de bytecode ya compilado, o ambas.</p>
+<section class="card" aria-label="Compatibilidad: fuente vs binaria"><svg viewBox="0 0 960 240" role="img" aria-label="Compatibilidad">
+<defs><marker id="a12" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="70" y="90" width="170" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="155" y="120" text-anchor="middle" font-size="16" font-weight="700">Librería v1</text><text x="155" y="142" text-anchor="middle" font-size="12" fill="#6b7280">API publicada</text>
+<rect x="390" y="40" width="210" height="70" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="495" y="70" text-anchor="middle" font-size="16" font-weight="700">Cliente compilado</text><text x="495" y="92" text-anchor="middle" font-size="12" fill="#6b7280">bytecode existente</text>
+<rect x="390" y="140" width="210" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="495" y="170" text-anchor="middle" font-size="16" font-weight="700">Cliente recompilado</text><text x="495" y="192" text-anchor="middle" font-size="12" fill="#6b7280">código fuente</text>
+<rect x="720" y="90" width="170" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="805" y="120" text-anchor="middle" font-size="16" font-weight="700">Librería v2</text><text x="805" y="142" text-anchor="middle" font-size="12" fill="#6b7280">cambio API</text>
+<line x1="240" y1="115" x2="385" y2="75" stroke="#6b7280" stroke-width="2" marker-end="url(#a12)"/>
+<line x1="720" y1="115" x2="605" y2="75" stroke="#b45309" stroke-width="2" marker-end="url(#a12)"/><text x="665" y="82" font-size="12" fill="#b45309">¿binaria?</text>
+<line x1="720" y1="135" x2="605" y2="175" stroke="#6b7280" stroke-width="2" marker-end="url(#a12)"/><text x="665" y="170" font-size="12" fill="#6b7280">¿fuente?</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Compatibilidad binaria afecta bytecode ya compilado; compatibilidad de fuente afecta recompilar. Un cambio puede pasar una y romper la otra.</p>
+</main></body></html>

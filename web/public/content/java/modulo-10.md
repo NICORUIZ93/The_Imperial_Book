@@ -1,5 +1,13 @@
 # Módulo 10: Módulos (JPMS) y proyectos grandes
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 10 — mapa visual](/visuals/temas/java/modulo-10-io-nio.html)
+
+Lectura: I/O mueve bytes/caracteres con buffering, charset y cierre explícito de recursos.
+
+
 Cuando un proyecto Java crece, `public` deja de ser suficiente como límite. Un paquete interno puede ser `public` porque otra clase del mismo JAR lo necesita, pero eso no significa que deba ser API para todo el mundo. JPMS, el Java Platform Module System, agrega una frontera más: el módulo. Un módulo declara qué paquetes exporta, de qué módulos depende y qué paquetes abre a reflexión.
 
 En Tienda Aurora, esto sirve para separar el dominio reusable (`core`) de la aplicación (`app`). `app` puede usar `com.aurora.jpms.core`, pero no debería tocar `com.aurora.jpms.internal`. Este módulo construye ese ejemplo con dos módulos JPMS y verifica tanto el caso feliz como el límite de encapsulación.

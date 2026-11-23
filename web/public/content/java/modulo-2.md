@@ -1,5 +1,13 @@
 # Módulo 2: Colecciones y genéricos
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 2 — mapa visual](/visuals/temas/java/modulo-2-control-flujo.html)
+
+Lectura: Las condiciones bifurcan el flujo; los bucles reevalúan; las guard clauses salen temprano ante estados inválidos.
+
+
 En el módulo anterior Tienda Aurora ya tenía productos, descuentos y pagos modelados como objetos. El siguiente problema aparece en cuanto la tienda crece: hay que guardar productos en orden de alta, evitar SKUs duplicados, consultar por etiqueta, atender pedidos por prioridad, paginar resultados y deshacer la última atención. Un arreglo no expresa ninguna de esas intenciones. Una `ArrayList` usada para todo tampoco: funciona al principio y después empiezan los bugs sutiles —duplicados silenciosos, búsquedas lineales por todas partes, claves que “desaparecen” de un mapa, comparaciones que no dicen qué orden significan.
 
 Las colecciones de Java son estructuras de datos con contratos. Elegir una colección es elegir un comportamiento: ¿importa el orden? ¿se permiten duplicados? ¿se busca por posición o por clave? ¿la unicidad depende de `equals`? ¿el orden lo define la inserción, un orden natural o un comparador? Los genéricos completan la imagen: permiten que ese contrato se exprese con tipos reales (`Map<Sku, Producto>`) en lugar de `Object`, y dejan que el compilador detecte errores antes de ejecutar.

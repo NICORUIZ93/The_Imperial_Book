@@ -1,5 +1,13 @@
 # Módulo 19: Java avanzado
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 19 — mapa visual](/visuals/temas/java/modulo-19-build-tools.html)
+
+Lectura: El build tool hace repetible resolver dependencias, compilar, testear y empaquetar.
+
+
 Este módulo cubre capacidades avanzadas de la plataforma: reflexión, regex, dinero exacto, contratos, ServiceLoader, i18n, proxies dinámicos, class loading y MethodHandles/VarHandles. Son herramientas potentes; mal usadas crean código frágil, inseguro o difícil de mantener.
 
 **Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.

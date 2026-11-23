@@ -1,0 +1,25 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Niveles de aislamiento: más garantía, más costo</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Niveles de aislamiento: más garantía, más costo</h1><p class="lead">Qué debe entender: subir aislamiento reduce anomalías, pero puede reducir concurrencia.</p>
+<section class="card" aria-label="Niveles de aislamiento: más garantía, más costo"><svg viewBox="0 0 960 220" role="img" aria-label="Aislamiento">
+<defs><marker id="a7" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="40" y="80" width="170" height="60" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="125" y="106" text-anchor="middle" font-size="13" font-weight="700">READ UNCOMMITTED</text><text x="125" y="124" text-anchor="middle" font-size="11" fill="#6b7280">más laxo</text>
+<rect x="250" y="80" width="170" height="60" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="335" y="106" text-anchor="middle" font-size="13" font-weight="700">READ COMMITTED</text><text x="335" y="124" text-anchor="middle" font-size="11" fill="#6b7280">común por defecto</text>
+<rect x="460" y="80" width="170" height="60" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="545" y="106" text-anchor="middle" font-size="13" font-weight="700">REPEATABLE READ</text><text x="545" y="124" text-anchor="middle" font-size="11" fill="#6b7280">más estable</text>
+<rect x="670" y="80" width="170" height="60" rx="12" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="755" y="106" text-anchor="middle" font-size="13" font-weight="700">SERIALIZABLE</text><text x="755" y="124" text-anchor="middle" font-size="11" fill="#6b7280">más estricto</text>
+<line x1="210" y1="110" x2="245" y2="110" stroke="#6b7280" stroke-width="2" marker-end="url(#a7)"/>
+<line x1="420" y1="110" x2="455" y2="110" stroke="#6b7280" stroke-width="2" marker-end="url(#a7)"/>
+<line x1="630" y1="110" x2="665" y2="110" stroke="#6b7280" stroke-width="2" marker-end="url(#a7)"/>
+<text x="480" y="170" text-anchor="middle" font-size="13" fill="#6b7280">Mayor aislamiento suele implicar menor concurrencia o mayor costo. Elegir según anomalía inaceptable.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Los niveles crecen en garantías de aislamiento. SERIALIZABLE es el más estricto, pero no siempre es el default correcto por costo/concurrencia.</p>
+</main></body></html>

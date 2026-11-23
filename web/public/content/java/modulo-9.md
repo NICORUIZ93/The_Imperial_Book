@@ -1,5 +1,13 @@
 # Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 9 — mapa visual](/visuals/temas/java/modulo-9-streams.html)
+
+Lectura: Un stream es lazy: las intermedias describen el pipeline y la terminal dispara la ejecución.
+
+
 Un cambio en Tienda Aurora puede romper el cálculo de descuentos, saltarse una auditoría o guardar un pedido rechazado como aprobado. Sin tests, ese error se descubre tarde y lejos del cambio. Con tests, se descubre cerca, con un nombre claro y una señal repetible. El objetivo no es “tener cobertura”, sino proteger contratos importantes con pruebas rápidas y confiables.
 
 Este módulo construye `tienda-aurora-testing`, un pequeño dominio de pedidos con una regla pura de descuento y un servicio que coordina inventario, persistencia y auditoría. Es el escenario justo para aprender la diferencia entre test unitario, mock y property-based test.

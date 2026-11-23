@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interfaces funcionales: rol de cada una</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Interfaces funcionales: rol de cada una</h1><p class="lead">Qué debe entender: Predicate prueba, Function transforma, Consumer consume, Supplier produce.</p>
+<section class="card" aria-label="Interfaces funcionales: rol de cada una"><svg viewBox="0 0 960 240" role="img" aria-label="Interfaces funcionales">
+<defs><marker id="a10" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="60" y="90" width="170" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="145" y="120" text-anchor="middle" font-size="16" font-weight="700">Predicate&lt;T&gt;</text><text x="145" y="142" text-anchor="middle" font-size="12" fill="#6b7280">T -> boolean</text>
+<rect x="290" y="90" width="170" height="70" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="375" y="120" text-anchor="middle" font-size="16" font-weight="700">Function&lt;T,R&gt;</text><text x="375" y="142" text-anchor="middle" font-size="12" fill="#6b7280">T -> R</text>
+<rect x="520" y="90" width="170" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="605" y="120" text-anchor="middle" font-size="16" font-weight="700">Consumer&lt;T&gt;</text><text x="605" y="142" text-anchor="middle" font-size="12" fill="#6b7280">T -> void</text>
+<rect x="290" y="10" width="170" height="60" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="375" y="38" text-anchor="middle" font-size="16" font-weight="700">Supplier&lt;T&gt;</text><text x="375" y="56" text-anchor="middle" font-size="12" fill="#6b7280">() -> T</text>
+<line x1="230" y1="125" x2="285" y2="125" stroke="#6b7280" stroke-width="2" marker-end="url(#a10)"/>
+<line x1="460" y1="125" x2="515" y2="125" stroke="#6b7280" stroke-width="2" marker-end="url(#a10)"/>
+<line x1="375" y1="70" x2="375" y2="85" stroke="#6b7280" stroke-width="2" marker-end="url(#a10)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Cada interfaz funcional tiene una forma de entrada/salida. Function está acentuada porque transforma datos; las demás prueban, consumen o producen.</p>
+</main></body></html>

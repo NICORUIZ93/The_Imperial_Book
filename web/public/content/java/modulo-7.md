@@ -1,5 +1,13 @@
 # Módulo 7: Sealed classes y pattern matching
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 7 — mapa visual](/visuals/temas/java/modulo-7-excepciones.html)
+
+Lectura: Lanza con contexto, propaga cuando no puedes decidir y maneja en el borde con una respuesta útil.
+
+
 En Tienda Aurora, un pago no es “un monto y ya”. Puede ser tarjeta, transferencia o efectivo. Cada variante tiene datos distintos y reglas distintas. Si lo modelas con una clase llena de campos opcionales y `if (tipo == ...)`, el código acepta estados imposibles y cada nuevo tipo obliga a cazar condiciones dispersas por el sistema.
 
 Las sealed classes y el pattern matching moderno de Java permiten modelar ese dominio como un conjunto cerrado de casos. Un record expresa datos inmutables con poco ruido. Una sealed interface dice qué subtipos existen. Un `switch` exhaustivo obliga al compilador a avisarte cuando falta un caso. El resultado es un modelo más seguro, no solo más bonito.

@@ -81,16 +81,9 @@ HttpClient, request/response, timeouts
 
 **Reglas.** Configura timeout de conexión y de request. Maneja códigos 2xx/4xx/5xx explícitamente. Reintenta solo operaciones idempotentes y con backoff.
 
-```mermaid
-sequenceDiagram
-  participant A as App
-  participant H as HttpClient
-  participant S as Servicio REST
-  A->>H: send(request, timeout)
-  H->>S: GET /guias/G1
-  S-->>H: 200 JSON / 503 / timeout
-  H-->>A: HttpResponse o excepción
-```
+**Diagrama (animdiagram, animado con fallback estático):** [HttpClient: petición, timeout y respuesta](/visuals/temas/java/modulo-18-httpclient.html)
+
+Lectura: la app envía request con timeout; el servicio puede responder 200, error o agotar el tiempo. La animación solo resalta ida/vuelta y se desactiva con reduced motion.
 
 **Ejemplo mínimo enfocado (ejecutable, servidor local).**
 
@@ -148,16 +141,9 @@ Seguridad básica en clientes HTTP
 
 **Reglas.** Nunca interpolar URLs sin validar; allowlist de hosts; no seguir redirects a dominios no confiables; no loguear `Authorization`.
 
-```mermaid
-flowchart TD
-  I[Input URL/id] --> V{¿válido y allowlist?}
-  V -- No --> R[Rechazar]
-  V -- Sí --> C[HttpClient + timeout]
-  C --> A{status}
-  A -->|200| OK[Procesar]
-  A -->|401/403| SEC[Error auth/permisos]
-  A -->|5xx| RET[Retry idempotente con backoff]
-```
+**Diagrama (diagram-design, estático):** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
+
+Lectura: valida input y allowlist antes de llamar; aplica timeout; maneja status; reintenta solo si la operación es idempotente.
 
 **Ejemplo mínimo enfocado (validación).**
 

@@ -1,5 +1,13 @@
 # Módulo 5: Concurrencia — hilos y virtual threads
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 5 — mapa visual](/visuals/temas/java/modulo-5-contratos-interfaces.html)
+
+Lectura: El consumidor depende del contrato; las implementaciones pueden variar sin romper el uso.
+
+
 En Tienda Aurora, el checkout necesita responder rápido aunque dependa de varias fuentes. El precio puede venir del catálogo, el stock del inventario y la validación de fraude de otro servicio. Si cada llamada espera a la anterior, la latencia se acumula. Si lanzas tareas sin control, aparecen bugs peores: condiciones de carrera, hilos colgados, timeouts que dejan trabajo huérfano o datos contaminados entre requests.
 
 La concurrencia en Java no es una sola API. Es una escalera. `ExecutorService` te da control básico sobre pools y tareas. `CompletableFuture` compone trabajo asíncrono. Los virtual threads hacen barato bloquear en I/O. `synchronized` y otras primitivas protegen estado compartido. Structured Concurrency da un ciclo de vida claro a subtareas relacionadas. `ScopedValue` propaga contexto sin los problemas de `ThreadLocal` en escenarios masivos.

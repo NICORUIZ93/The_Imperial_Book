@@ -115,12 +115,9 @@ Source vs binary compatibility
 
 **Definición.** Compatibilidad de fuente: el código cliente recompila. Compatibilidad binaria: artefactos ya compilados siguen enlazando/ejecutando sin recompilar.
 
-```mermaid
-flowchart LR
-  V1[Lib v1] --> C[Cliente compilado]
-  V2[Lib v2] -->|binario compatible?| C
-  V2 -->|fuente compatible?| SC[Cliente recompilado]
-```
+**Diagrama (diagram-design, estático):** [Compatibilidad: fuente vs binaria](/visuals/temas/java/modulo-21-compatibilidad.html)
+
+Lectura: compatibilidad binaria afecta bytecode ya compilado; compatibilidad de fuente afecta recompilar. Evalúa ambas antes de publicar un cambio.
 
 **Ejemplo mínimo (conceptual ejecutable).** Agregar método con default en interfaz suele ser binario compatible; cambiar firma rompe ambos.
 

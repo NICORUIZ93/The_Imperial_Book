@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>try-with-resources: cierre garantizado</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>try-with-resources: cierre garantizado</h1><p class="lead">Qué debe entender: ResultSet, Statement y Connection se cierran aunque haya excepción.</p>
+<section class="card" aria-label="try-with-resources: cierre garantizado"><svg viewBox="0 0 960 280" role="img" aria-label="try-with-resources">
+<defs><marker id="a4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="60" y="40" width="220" height="56" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="170" y="74" text-anchor="middle" font-size="16" font-weight="700">open Connection</text>
+<rect x="60" y="116" width="220" height="56" rx="12" fill="#fff" stroke="#d7dbe2"/><text x="170" y="150" text-anchor="middle" font-size="16" font-weight="700">prepare Statement</text>
+<rect x="60" y="192" width="220" height="56" rx="12" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="170" y="226" text-anchor="middle" font-size="16" font-weight="700">execute / read ResultSet</text>
+<rect x="430" y="192" width="220" height="56" rx="12" fill="#fff" stroke="#0f766e"/><text x="540" y="226" text-anchor="middle" font-size="16" font-weight="700">close ResultSet</text>
+<rect x="430" y="116" width="220" height="56" rx="12" fill="#fff" stroke="#0f766e"/><text x="540" y="150" text-anchor="middle" font-size="16" font-weight="700">close Statement</text>
+<rect x="430" y="40" width="220" height="56" rx="12" fill="#fff" stroke="#0f766e"/><text x="540" y="74" text-anchor="middle" font-size="16" font-weight="700">close Connection</text>
+<line x1="170" y1="96" x2="170" y2="116" stroke="#6b7280" stroke-width="2" marker-end="url(#a4)"/>
+<line x1="170" y1="172" x2="170" y2="192" stroke="#6b7280" stroke-width="2" marker-end="url(#a4)"/>
+<line x1="280" y1="220" x2="425" y2="220" stroke="#6b7280" stroke-width="2" marker-end="url(#a4)"/>
+<line x1="540" y1="192" x2="540" y2="172" stroke="#0f766e" stroke-width="2" marker-end="url(#a4)"/>
+<line x1="540" y1="116" x2="540" y2="96" stroke="#0f766e" stroke-width="2" marker-end="url(#a4)"/>
+<text x="355" y="205" text-anchor="middle" font-size="13" fill="#6b7280">éxito o excepción</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> El bloque try abre recursos; al salir, Java los cierra en orden inverso. Esto evita leaks de conexiones y cursores.</p>
+</main></body></html>

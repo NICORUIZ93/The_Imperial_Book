@@ -1,5 +1,13 @@
 # Módulo 0: Sintaxis, tipos y el modelo de la JVM
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 0 — mapa visual](/visuals/temas/java/modulo-0-jvm-pipeline.html)
+
+Lectura: El .java se compila a bytecode y la JVM lo carga, verifica y ejecuta; el bytecode es el puente portable.
+
+
 Tienda Aurora arranca como una aplicación de consola que cotiza pedidos. No hay Spring todavía, no hay base de datos, no hay HTTP: solo Java. Esa restricción es deliberada. Antes de repartir responsabilidades entre frameworks conviene entender qué hace el lenguaje por sí mismo, porque los errores más caros de un sistema grande —un total que no cuadra por un céntimo, una fecha que se guarda un día antes, un `==` que compara direcciones en lugar de valores— nacen en estas primeras decisiones y se propagan sin ruido hasta producción.
 
 La aplicación que construimos en este módulo se llama `tienda-aurora-fundamentos` y tiene cuatro comandos reales: `catalogo` lista los productos con su stock, `cotizar` arma un pedido y emite el recibo, `interactivo` atiende a un cliente por teclado y `diagnostico` ejecuta una batería de comprobaciones sobre supuestos del lenguaje que afectan al dinero y a las fechas. Cada tema de este capítulo añade una pieza a ese mismo proyecto; no hay ejemplos sueltos que se tiran después. Al terminar tendrás una aplicación que compila con Gradle, se ejecuta desde la terminal y produce exactamente la salida que verás aquí.

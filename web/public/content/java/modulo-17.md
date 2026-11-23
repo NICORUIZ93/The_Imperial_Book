@@ -98,13 +98,9 @@ JDBC
 
  La aplicación no habla directamente con PostgreSQL, MySQL u H2; habla con interfaces JDBC. El driver JDBC traduce esas llamadas al protocolo del motor. `DriverManager` localiza un driver compatible con la URL JDBC, abre una `Connection`, y sobre esa conexión se crean sentencias SQL. Esto desacopla el código Java del motor específico, aunque el SQL y algunos detalles transaccionales sigan siendo propios de cada base.
 
-```mermaid
-flowchart LR
-  A[App Java] --> B[JDBC API\njava.sql]
-  B --> C[Driver JDBC\nH2/Postgres/MySQL]
-  C --> D[(Base de datos)]
-  D --> C --> B --> A
-```
+**Diagrama (diagram-design, estático):** [JDBC: capas entre Java y la base de datos](/visuals/temas/java/modulo-17-jdbc-arquitectura.html)
+
+Lectura: la app usa la API JDBC; el driver traduce al protocolo de la BD. Tu código depende de `java.sql`, no del wire protocol.
 
 **Contrato/reglas clave.** La URL JDBC identifica el motor y destino (`jdbc:h2:mem:db`, `jdbc:postgresql://host/db`). La conexión es un recurso costoso: debe cerrarse. JDBC no elimina diferencias SQL entre motores; abstrae el acceso, no la semántica completa.
 
@@ -157,18 +153,9 @@ true
 
  En vez de construir `"select ... where id=" + id`, envías la plantilla SQL y luego los parámetros como datos. El driver/envía los valores con su tipo, evitando que el input del usuario se interprete como SQL. Además, muchos motores pueden reutilizar el plan para la misma sentencia parametrizada.
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant App
-  participant PS as PreparedStatement
-  participant DB as Base de datos
-  App->>PS: prepare("... where id=?")
-  App->>PS: setInt(1, 42)
-  PS->>DB: SQL + parámetro tipado
-  DB-->>PS: filas
-  PS-->>App: ResultSet
-```
+**Diagrama (diagram-design, estático):** [PreparedStatement: SQL y datos viajan separados](/visuals/temas/java/modulo-17-prepared-statement.html)
+
+Lectura: el SQL se prepara con placeholder y el valor viaja como parámetro tipado. No se concatena input dentro del SQL.
 
 **Contrato/reglas clave.** Los parámetros se indexan desde 1, no desde 0. Usa el setter correcto (`setInt`, `setString`, `setTimestamp`, etc.). `PreparedStatement` no sirve para parametrizar identificadores SQL (nombres de tabla/columna/order by dinámico); esos casos requieren allow-list controlada.
 
@@ -234,13 +221,9 @@ DAO
 
  El servicio de negocio pide `dao.buscarPorId(id)` o `dao.guardar(guia)`; no arma SQL ni recorre `ResultSet`. El DAO traduce objetos de dominio a parámetros SQL y filas a objetos. Esto concentra el conocimiento de persistencia, reduce duplicación y permite probar la lógica de negocio con dobles del DAO.
 
-```mermaid
-flowchart LR
-  S[Servicio/Use case] --> D[GuiaDao]
-  D --> J[JDBC/SQL]
-  J --> DB[(H2/Postgres)]
-  DB --> J --> D --> S
-```
+**Diagrama (diagram-design, estático):** [DAO: el servicio habla dominio, el DAO habla SQL](/visuals/temas/java/modulo-17-dao.html)
+
+Lectura: el servicio orquesta negocio; el DAO encapsula SQL y mapeo JDBC. El cambio de persistencia se concentra en el borde.
 
 **Contrato/reglas clave.** El DAO no debe exponer `Connection`, `Statement` o `ResultSet`. Debe mapear errores de persistencia de forma consistente. Mantén métodos pequeños y con intención (`insertar`, `buscarPorId`, `listar`).
 
@@ -328,16 +311,9 @@ true
 
  Una conexión abierta ocupa socket, memoria y, en pools, un slot limitado. Un `ResultSet` puede mantener cursor/recursos del lado del driver/DB. Si no se cierran, el sistema degrada hasta agotar el pool: las nuevas peticiones esperan o fallan por timeout.
 
-```mermaid
-flowchart TD
-  A[try-with-resources] --> B[open Connection]
-  B --> C[prepare Statement]
-  C --> D[execute query]
-  D --> E[read ResultSet]
-  E --> F[close ResultSet]
-  F --> G[close Statement]
-  G --> H[close Connection/return to pool]
-```
+**Diagrama (diagram-design, estático):** [try-with-resources: cierre garantizado](/visuals/temas/java/modulo-17-try-with-resources.html)
+
+Lectura: los recursos se cierran al salir del `try`, también ante excepción, en orden inverso al de apertura.
 
 **Contrato/reglas clave.** Usa try-with-resources para cada recurso. Cierra en orden inverso al de apertura; try-with-resources lo hace por ti. No reutilices un `ResultSet` después de cerrar su statement.
 
@@ -399,22 +375,9 @@ Transacciones
 
  Con `autoCommit=true`, cada sentencia se confirma individualmente. Para operaciones multi-paso, se desactiva auto-commit, se ejecutan las sentencias, y se decide `commit()` si todo salió bien o `rollback()` ante error. La base garantiza atomicidad del conjunto.
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant App
-  participant DB
-  App->>DB: setAutoCommit(false)
-  App->>DB: UPDATE debitar
-  App->>DB: UPDATE acreditar
-  alt todo ok
-    App->>DB: commit
-    DB-->>App: cambios persistidos
-  else falla
-    App->>DB: rollback
-    DB-->>App: estado previo restaurado
-  end
-```
+**Diagrama (animdiagram, animado con fallback estático):** [Transacción: commit o rollback](/visuals/temas/java/modulo-17-transaccion.html)
+
+Lectura: el flujo resalta el camino feliz y el rollback. Con `prefers-reduced-motion` la animación se desactiva; el diagrama sigue explicando commit/rollback.
 
 **Contrato/reglas clave.** `commit` confirma; `rollback` revierte. Usa `setAutoCommit(false)` solo en el alcance necesario. Siempre cierra la conexión y restaura comportamiento si usas pool.
 
@@ -498,13 +461,9 @@ ACID
 
  Atomicidad garantiza todo-o-nada. Consistencia exige que la transacción lleve la BD de un estado válido a otro según restricciones. Aislamiento controla interferencia entre transacciones concurrentes. Durabilidad asegura que, una vez confirmado, el cambio sobrevive fallos del sistema (según garantías del motor).
 
-```mermaid
-flowchart TB
-  A[ACID] --> B[Atomicidad\nTodo o nada]
-  A --> C[Consistencia\nReglas/invariantes]
-  A --> D[Aislamiento\nConcurrencia controlada]
-  A --> E[Durabilidad\nCommit persiste]
-```
+**Diagrama (diagram-design, estático):** [ACID: cuatro garantías de una transacción](/visuals/temas/java/modulo-17-acid.html)
+
+Lectura: cada propiedad cubre un fallo distinto. Atomicidad está acentuada porque es la garantía visible en la transferencia.
 
 **Cuándo usarlo como criterio.** Al diseñar operaciones financieras, inventario, reservas, o cualquier estado donde una inconsistencia tenga costo real. No todo flujo necesita la misma rigidez; a veces se aceptan compensaciones/eventual consistency.
 
@@ -522,13 +481,9 @@ Aislamiento
 
  Niveles más estrictos evitan más anomalías (dirty read, non-repeatable read, phantom read), pero suelen costar más en bloqueos, abortos o versión de filas. El nivel correcto depende del motor y del caso de uso.
 
-```mermaid
-flowchart LR
-  RU[READ_UNCOMMITTED] --> RC[READ_COMMITTED]
-  RC --> RR[REPEATABLE_READ]
-  RR --> SR[SERIALIZABLE]
-  SR --> C[Más consistencia\nmenos concurrencia/costo]
-```
+**Diagrama (diagram-design, estático):** [Niveles de aislamiento: más garantía, más costo](/visuals/temas/java/modulo-17-aislamiento.html)
+
+Lectura: a mayor aislamiento, menos anomalías; el costo puede ser menor concurrencia o más contención. Elige por la anomalía que no puedes aceptar.
 
 **Contrato/reglas clave.** Los niveles son constantes de `Connection`. No todos los motores implementan igual todos los niveles; por ejemplo, algunos mapean internamente. Verifica el comportamiento real del motor.
 

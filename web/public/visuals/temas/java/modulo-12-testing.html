@@ -1,0 +1,23 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Testing: pirámide y feedback rápido</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Testing: pirámide y feedback rápido</h1><p class="lead">Qué debe entender: tests unitarios rápidos en base, integración donde hay bordes reales.</p>
+<section class="card" aria-label="Testing: pirámide y feedback rápido"><svg viewBox="0 0 960 260" role="img" aria-label="Testing">
+<polygon points="480,40 650,210 310,210" fill="#fff" stroke="#d7dbe2"/>
+<line x1="385" y1="150" x2="575" y2="150" stroke="#d7dbe2"/>
+<line x1="430" y1="100" x2="530" y2="100" stroke="#d7dbe2"/>
+<text x="480" y="85" text-anchor="middle" font-size="13" font-weight="700">E2E / pocos</text>
+<text x="480" y="132" text-anchor="middle" font-size="13" font-weight="700">Integración</text>
+<text x="480" y="185" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">Unitarios / muchos</text>
+<text x="480" y="235" text-anchor="middle" font-size="13" fill="#6b7280">Más base = feedback rápido y barato; menos cima = más lentos y frágiles.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> La mayoría de tests debe ser unitarios y rápidos. La integración valida bordes reales; E2E solo casos críticos.</p>
+</main></body></html>

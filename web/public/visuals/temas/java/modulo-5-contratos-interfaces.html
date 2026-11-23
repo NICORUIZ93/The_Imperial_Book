@@ -1,0 +1,24 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contrato: interfaz, implementación, consumidor</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>Contrato: interfaz, implementación, consumidor</h1><p class="lead">Qué debe entender: el consumidor depende del contrato; la implementación puede variar.</p>
+<section class="card" aria-label="Contrato: interfaz, implementación, consumidor"><svg viewBox="0 0 960 230" role="img" aria-label="Contratos">
+<defs><marker id="m5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="70" y="85" width="190" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="165" y="116" text-anchor="middle" font-weight="700">Consumidor</text><text x="165" y="136" text-anchor="middle" font-size="12" fill="#6b7280">usa contrato</text>
+<rect x="360" y="85" width="220" height="70" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="470" y="116" text-anchor="middle" font-weight="700">Interfaz / sealed</text><text x="470" y="136" text-anchor="middle" font-size="12" fill="#6b7280">contrato explícito</text>
+<rect x="680" y="45" width="190" height="60" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="775" y="80" text-anchor="middle" font-weight="700">Impl. A</text>
+<rect x="680" y="135" width="190" height="60" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="775" y="170" text-anchor="middle" font-weight="700">Impl. B</text>
+<line x1="260" y1="120" x2="355" y2="120" stroke="#6b7280" stroke-width="2" marker-end="url(#m5)"/>
+<line x1="580" y1="110" x2="675" y2="75" stroke="#6b7280" stroke-width="2" marker-end="url(#m5)"/>
+<line x1="580" y1="130" x2="675" y2="165" stroke="#6b7280" stroke-width="2" marker-end="url(#m5)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> El contrato define qué se puede hacer; las implementaciones definen cómo. El consumidor no debe depender de detalles internos.</p>
+</main></body></html>

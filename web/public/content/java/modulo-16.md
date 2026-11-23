@@ -1,5 +1,13 @@
 # Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 16 — mapa visual](/visuals/temas/java/modulo-16-jpa.html)
+
+Lectura: JPA mapea objetos, pero el contexto de persistencia y el SQL real determinan corrección y costo.
+
+
 En Tienda Aurora, un pedido no es solo una fila. Es un objeto con cliente, líneas, pago, estado y reglas. En la base de datos, ese mismo pedido se reparte en tablas con claves foráneas, columnas, joins y restricciones. El conflicto entre estos dos modelos se llama **impedance mismatch objeto-relacional**: objetos tienen identidad, referencias, colecciones y herencia; las tablas tienen filas, claves primarias, claves foráneas y joins.
 
 JPA (Jakarta Persistence) es la especificación que define cómo describir ese mapeo en Java. Hibernate es la implementación que ejecuta el trabajo real: genera SQL, decide cuándo cargar asociaciones, rastrea cambios, administra caché de primer nivel y traduce excepciones/operaciones a la semántica de persistencia.

@@ -1,5 +1,13 @@
 # Módulo 8: Build tools — Maven y Gradle
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 8 — mapa visual](/visuals/temas/java/modulo-8-colecciones.html)
+
+Lectura: Elige la colección por la operación dominante: orden, unicidad, clave-valor o cola.
+
+
 Tienda Aurora ya tiene código, pero el código no vive solo en un IDE. Necesita compilarse en CI, declarar dependencias, ejecutar tests, empaquetar artefactos y hacerlo igual en la máquina de cualquier persona del equipo. Eso es el trabajo de un build tool. Maven y Gradle resuelven el mismo problema con filosofías distintas: Maven favorece convención y configuración declarativa en XML; Gradle favorece un modelo programable con DSL Kotlin/Groovy y mejor incrementalidad.
 
 En este módulo vas a ver el mismo proyecto en ambas herramientas: un multi-módulo pequeño con `core` y `api`. `core` contiene el dominio y serializa JSON con Jackson; `api` depende de `core` y expone un `main`. La meta no es memorizar XML o Kotlin, sino entender qué problema resuelve cada archivo del build.

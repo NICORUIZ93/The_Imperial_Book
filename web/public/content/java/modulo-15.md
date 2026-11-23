@@ -1,5 +1,13 @@
 # Módulo 15: Java Master — builds, pruebas y observabilidad
 
+
+## Visual del módulo
+
+**Herramienta (diagram-design, estático):** [Modulo 15 — mapa visual](/visuals/temas/java/modulo-15-jvm-internals.html)
+
+Lectura: La JVM carga/verifica bytecode, ejecuta con runtime/JIT y expone señales de GC/observabilidad.
+
+
 Cuando Tienda Aurora pasa de ser un ejercicio a ser un proyecto mantenible, el problema ya no es solo escribir clases que compilen. El problema es que el build sea reproducible, que las dependencias estén controladas, que los módulos no se acoplen en círculos, que las pruebas den feedback rápido y que los logs permitan entender qué pasó en producción sin leer texto ambiguo.
 
 Este módulo junta esas piezas en un proyecto pequeño pero real: `tienda-aurora-build`. El dominio calcula reservas; la aplicación de consola ejecuta el caso de uso y emite logs estructurados JSON con contexto de pedido. La separación por módulos obliga a decidir dónde vive cada responsabilidad. Las pruebas verifican la regla de negocio sin levantar infraestructura innecesaria.

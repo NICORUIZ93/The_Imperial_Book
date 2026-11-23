@@ -79,11 +79,9 @@ Copia defensiva
 
 **Definición.** Copia defensiva es crear copias de objetos mutables al entrar o salir de una frontera para proteger invariantes internos.
 
-```mermaid
-flowchart LR
-  E[Estado interno mutable] -->|getter devuelve copia/inmutable| C[Cliente]
-  C -.no puede mutar interno.-x E
-```
+**Diagrama (diagram-design, estático):** [Copia defensiva: proteger el estado interno](/visuals/temas/java/modulo-22-copia-defensiva.html)
+
+Lectura: no expongas la colección mutable interna. Devuelve copia o vista inmutable para preservar invariantes.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -206,11 +204,9 @@ Clases anidadas
 
 **Definición.** Java tiene static nested classes, inner classes, local classes y anonymous classes. Las inner no estáticas capturan `this` de la clase externa (`this$0`).
 
-```mermaid
-flowchart LR
-  O[Outer instancia] <-->|this$0 implícito| I[Inner no estática]
-  O -.sin captura.-> S[Static nested]
-```
+**Diagrama (diagram-design, estático):** [Clases anidadas: quién captura this$0](/visuals/temas/java/modulo-22-clases-anidadas.html)
+
+Lectura: la inner no estática captura `this$0`; la static nested no. Esto impacta GC, serialización y acoplamiento.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

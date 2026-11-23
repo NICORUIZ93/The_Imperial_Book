@@ -1,0 +1,26 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>De .java a ejecución en JVM</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>De .java a ejecución en JVM</h1><p class="lead">Qué debe entender: el código fuente se compila a bytecode y la JVM lo carga, verifica y ejecuta/JIT-compila.</p>
+<section class="card" aria-label="De .java a ejecución en JVM"><svg viewBox="0 0 960 230" role="img" aria-label="Pipeline Java">
+<defs><marker id="m0" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="30" y="80" width="150" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="105" y="110" text-anchor="middle" font-weight="700">.java</text><text x="105" y="130" text-anchor="middle" font-size="12" fill="#6b7280">código fuente</text>
+<rect x="220" y="80" width="150" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="295" y="110" text-anchor="middle" font-weight="700">javac</text><text x="295" y="130" text-anchor="middle" font-size="12" fill="#6b7280">compilador</text>
+<rect x="410" y="80" width="150" height="70" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/><text x="485" y="110" text-anchor="middle" font-weight="700">.class</text><text x="485" y="130" text-anchor="middle" font-size="12" fill="#6b7280">bytecode</text>
+<rect x="600" y="80" width="150" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="675" y="110" text-anchor="middle" font-weight="700">JVM</text><text x="675" y="130" text-anchor="middle" font-size="12" fill="#6b7280">class loader/verifier</text>
+<rect x="790" y="80" width="140" height="70" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="860" y="110" text-anchor="middle" font-weight="700">Ejecución</text><text x="860" y="130" text-anchor="middle" font-size="12" fill="#6b7280">interp/JIT</text>
+<line x1="180" y1="115" x2="215" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m0)"/>
+<line x1="370" y1="115" x2="405" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m0)"/>
+<line x1="560" y1="115" x2="595" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m0)"/>
+<line x1="750" y1="115" x2="785" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#m0)"/>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> Java compila a bytecode portable; la JVM lo valida y ejecuta. El bytecode es el artefacto intermedio clave, no el .java ni el binario nativo.</p>
+</main></body></html>

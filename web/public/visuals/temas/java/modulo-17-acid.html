@@ -1,0 +1,33 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACID: cuatro garantías de una transacción</title><style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--accent2:#0f766e;--panel:#ffffff;--soft:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px} .lead{color:var(--muted);margin:0 0 20px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+svg{width:100%;height:auto;display:block}
+.note{margin-top:14px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: reduce){.anim,.pulse,.flow,.dash{animation:none !important;transition:none !important}}
+</style></head><body><main class="wrap">
+<h1>ACID: cuatro garantías de una transacción</h1><p class="lead">Qué debe entender: atomicidad, consistencia, aislamiento y durabilidad atacan fallos distintos.</p>
+<section class="card" aria-label="ACID: cuatro garantías de una transacción"><svg viewBox="0 0 960 260" role="img" aria-label="ACID">
+<rect x="60" y="90" width="180" height="90" rx="14" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="150" y="125" text-anchor="middle" font-size="22" font-weight="800" fill="#b45309">A</text>
+<text x="150" y="150" text-anchor="middle" font-size="14" font-weight="700">Atomicidad</text>
+<text x="150" y="168" text-anchor="middle" font-size="12" fill="#6b7280">todo o nada</text>
+<rect x="270" y="90" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="360" y="125" text-anchor="middle" font-size="22" font-weight="800">C</text>
+<text x="360" y="150" text-anchor="middle" font-size="14" font-weight="700">Consistencia</text>
+<text x="360" y="168" text-anchor="middle" font-size="12" fill="#6b7280">invariantes válidas</text>
+<rect x="480" y="90" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="570" y="125" text-anchor="middle" font-size="22" font-weight="800">I</text>
+<text x="570" y="150" text-anchor="middle" font-size="14" font-weight="700">Aislamiento</text>
+<text x="570" y="168" text-anchor="middle" font-size="12" fill="#6b7280">concurrencia controlada</text>
+<rect x="690" y="90" width="180" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/>
+<text x="780" y="125" text-anchor="middle" font-size="22" font-weight="800">D</text>
+<text x="780" y="150" text-anchor="middle" font-size="14" font-weight="700">Durabilidad</text>
+<text x="780" y="168" text-anchor="middle" font-size="12" fill="#6b7280">commit persiste</text>
+<text x="480" y="55" text-anchor="middle" font-size="14" fill="#6b7280">Cada letra responde a un tipo distinto de fallo.</text>
+</svg></section>
+<p class="note"><strong>Lectura:</strong> ACID no es una etiqueta genérica: cada propiedad cubre un riesgo diferente. La atomicidad está acentuada porque es la más visible en el ejemplo de transferencia.</p>
+</main></body></html>
