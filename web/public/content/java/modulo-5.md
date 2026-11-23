@@ -6,6 +6,71 @@ La concurrencia aparece cuando una aplicación debe hacer varias cosas a la vez:
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-concurrency
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-concurrency/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/concurrency/
+            ├── Main.java
+            └── service/
+                └── OrderService.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.concurrency.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-concurrency"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/concurrency/**/*.java
+java -cp out com.aurora.concurrency.Main
+```
+
 ### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
 **Caso guía.** procesar 4 tareas independientes. Crear un `Thread` por tarea manualmente no escala y complica el apagado.
