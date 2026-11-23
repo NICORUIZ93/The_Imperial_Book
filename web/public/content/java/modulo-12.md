@@ -16,14 +16,14 @@ En Tienda Aurora, estos problemas ya aparecen antes de microservicios: construir
 
 ## Proyecto desde cero: `tienda-aurora-java-m12`
 
-### Prerrequisitos
+#### Prerrequisitos
 
 ```bash
 java -version
 gradle --version
 ```
 
-### 1. Crear la base
+#### 1. Crear la base
 
 ```bash
 mkdir -p tienda-aurora-java-m12
@@ -33,7 +33,7 @@ mkdir -p src/main/java/com/aurora/patrones/ui
 mkdir -p src/test/java/com/aurora/patrones
 ```
 
-### 2. Estructura
+#### 2. Estructura
 
 ```text
 tienda-aurora-java-m12/
@@ -66,7 +66,7 @@ tienda-aurora-java-m12/
         └── PatronesTest.java
 ```
 
-### 3. Código, archivo por archivo
+#### 3. Código, archivo por archivo
 
 #### `settings.gradle.kts`
 
@@ -674,7 +674,7 @@ class PatronesTest {
 }
 ```
 
-### 4. Ejecutar
+#### 4. Ejecutar
 
 Desde la raíz `tienda-aurora-java-m12/`:
 

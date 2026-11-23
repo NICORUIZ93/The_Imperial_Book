@@ -62,7 +62,7 @@ gradle wrapper --gradle-version 9.9.1
 
 ## Código, archivo por archivo
 
-### `settings.gradle.kts`
+#### `settings.gradle.kts`
 
 Define el nombre del build. Gradle lo usa para identificar el proyecto.
 
@@ -70,7 +70,7 @@ Define el nombre del build. Gradle lo usa para identificar el proyecto.
 rootProject.name = "tienda-aurora-java-m20"
 ```
 
-### `build.gradle.kts`
+#### `build.gradle.kts`
 
 Configura Java 25 con toolchain, JUnit 5 y la clase principal. `-Xlint:all -Werror` hace visibles problemas que en ejemplos pequeños suelen pasar desapercibidos.
 
@@ -117,7 +117,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-### `EstadoEnvio.java`
+#### `EstadoEnvio.java`
 
 Un `enum` acota los estados posibles. Esto evita strings mágicos como `"entregado"` o `"ENTREGADO"` dispersos por el código.
 
@@ -129,7 +129,7 @@ public enum EstadoEnvio {
 }
 ```
 
-### `Envio.java`
+#### `Envio.java`
 
 El record es inmutable. La validación en el constructor compacto protege invariantes antes de que el objeto circule por streams o collectors. `List.copyOf` evita que alguien modifique la lista de paradas desde afuera.
 
@@ -166,7 +166,7 @@ public record Envio(
 
 **Caso de borde:** si `paradas` fuera una lista mutable expuesta tal cual, un consumidor podría agregar elementos después de crear el envío. La copia defensiva hace que el record mantenga su promesa.
 
-### `ReglaEnvio.java`
+#### `ReglaEnvio.java`
 
 Aquí aparece una decisión de diseño importante. `Predicate<Envio>` ya prueba una condición, pero en negocio también queremos saber *por qué* una regla existe. Por eso definimos `ReglaEnvio`, con `test` y `motivo`.
 
@@ -219,7 +219,7 @@ public interface ReglaEnvio {
 
 **Trade-off:** si solo necesitas filtrar en un stream local, `Predicate<Envio>` basta. Si la regla es parte del lenguaje del dominio, un tipo propio da mejor diagnóstico y composición con significado.
 
-### `ReglasEnvio.java`
+#### `ReglasEnvio.java`
 
 Esta clase concentra funciones puras. Es el corazón de los primeros seis temas: las cuatro interfaces funcionales core, `Function/BiFunction`, composición y operadores.
 
@@ -291,7 +291,7 @@ public final class ReglasEnvio {
 
 Observa la separación: `Supplier` y `Consumer` están cerca del borde, no calculan reglas de negocio. `Function`, `BiFunction`, `UnaryOperator` y `BinaryOperator` sí transforman valores. La función `normalizarYRedondear` muestra composición con `andThen`: primero sanea, luego da formato numérico.
 
-### `EnvioRepository.java`
+#### `EnvioRepository.java`
 
 `Optional` sirve bien en un borde de consulta: “puede existir o no”. No lo usamos como campo de `Envio`; el dominio debe ser claro. El repositorio en memoria simula una búsqueda por id.
 
@@ -322,7 +322,7 @@ public class EnvioRepository {
 
 **Error común:** `optional.get()` sin verificar. Aquí usamos `map(...).orElse(...)` o `orElseThrow(...)` con mensaje útil. `Optional` no elimina el caso ausente; lo hace visible.
 
-### `ReporteEnvios.java`
+#### `ReporteEnvios.java`
 
 Este archivo concentra streams, collectors, pereza, orden, paralelismo seguro e inseguro. La regla es simple: entra una colección, sale un valor o colección nueva; no hay impresión ni persistencia.
 
@@ -440,7 +440,7 @@ public final class ReporteEnvios {
 
 Hay dos detalles pedagógicos deliberados. `contarConTraza` usa una lista externa solo para observar la pereza en un test controlado; no es el patrón recomendado para negocio. `sumaParalelaInsegura` existe para mostrar por qué el estado mutable compartido rompe en paralelo; en producción esa versión no debe existir.
 
-### `EventosEnvio.java`
+#### `EventosEnvio.java`
 
 La Flow API implementa Reactive Streams en Java estándar. El punto clave es backpressure: el suscriptor pide `n` elementos con `request(n)`. El publicador no debe empujar sin límite a un consumidor lento.
 
@@ -519,7 +519,7 @@ public final class EventosEnvio {
 
 **Límite:** Flow es útil para entender backpressure en el JDK estándar. En producción, librerías como Reactor o Mutiny aportan operadores, scheduling y manejo de errores más ricos; la idea de demanda controlada es la misma.
 
-### `App.java`
+#### `App.java`
 
 `App` es el composition root. Aquí se conectan datos, reglas puras y efectos. La consola es un efecto; por eso el `Consumer<String>` se inyecta con `System.out::println`.
 
@@ -608,7 +608,7 @@ public final class App {
 }
 ```
 
-### `FuncionalTest.java`
+#### `FuncionalTest.java`
 
 Los tests fijan el comportamiento. No prueban la consola; prueban funciones puras y contratos. Esa es la ventaja de separar cálculo de efectos.
 

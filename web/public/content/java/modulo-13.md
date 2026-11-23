@@ -14,14 +14,14 @@ Este módulo junta lo que antes estaba separado: dominio, casos de uso, infraest
 
 ## Proyecto desde cero: `tienda-aurora-java-m13`
 
-### Prerrequisitos
+#### Prerrequisitos
 
 ```bash
 java -version
 gradle --version
 ```
 
-### 1. Crear base
+#### 1. Crear base
 
 ```bash
 mkdir -p tienda-aurora-java-m13
@@ -31,7 +31,7 @@ mkdir -p src/main/java/com/aurora/integrador/{dominio,aplicacion,infraestructura
 mkdir -p src/test/java/com/aurora/integrador/aplicacion
 ```
 
-### 2. Estructura
+#### 2. Estructura
 
 ```text
 tienda-aurora-java-m13/
@@ -50,7 +50,7 @@ tienda-aurora-java-m13/
     └── test/java/com/aurora/integrador/aplicacion/ProcesarPedidosUseCaseTest.java
 ```
 
-### 3. Código desde cero
+#### 3. Código desde cero
 
 #### `settings.gradle.kts`
 
@@ -373,7 +373,7 @@ class ProcesarPedidosUseCaseTest {
 }
 ```
 
-### 4. Ejecutar
+#### 4. Ejecutar
 
 Desde la raíz del proyecto:
 

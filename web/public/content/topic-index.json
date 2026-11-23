@@ -4212,26 +4212,6 @@
     ],
     "12": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "1. Crear la base",
-        "fragment": "1-crear-la-base"
-      },
-      {
-        "title": "2. Estructura",
-        "fragment": "2-estructura"
-      },
-      {
-        "title": "3. Código, archivo por archivo",
-        "fragment": "3-codigo-archivo-por-archivo"
-      },
-      {
-        "title": "4. Ejecutar",
-        "fragment": "4-ejecutar"
-      },
-      {
         "title": "Builder — configuración paso a paso y validación",
         "fragment": "tema-1-builder-configuracion-paso-a-paso-y-validacion"
       },
@@ -4257,26 +4237,6 @@
       }
     ],
     "13": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "1. Crear base",
-        "fragment": "1-crear-base"
-      },
-      {
-        "title": "2. Estructura",
-        "fragment": "2-estructura"
-      },
-      {
-        "title": "3. Código desde cero",
-        "fragment": "3-codigo-desde-cero"
-      },
-      {
-        "title": "4. Ejecutar",
-        "fragment": "4-ejecutar"
-      },
       {
         "title": "Arquitectura por capas del proyecto integrador",
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
@@ -4521,50 +4481,6 @@
       }
     ],
     "20": [
-      {
-        "title": "`settings.gradle.kts`",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "`build.gradle.kts`",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "`EstadoEnvio.java`",
-        "fragment": "estadoenvio-java"
-      },
-      {
-        "title": "`Envio.java`",
-        "fragment": "envio-java"
-      },
-      {
-        "title": "`ReglaEnvio.java`",
-        "fragment": "reglaenvio-java"
-      },
-      {
-        "title": "`ReglasEnvio.java`",
-        "fragment": "reglasenvio-java"
-      },
-      {
-        "title": "`EnvioRepository.java`",
-        "fragment": "enviorepository-java"
-      },
-      {
-        "title": "`ReporteEnvios.java`",
-        "fragment": "reporteenvios-java"
-      },
-      {
-        "title": "`EventosEnvio.java`",
-        "fragment": "eventosenvio-java"
-      },
-      {
-        "title": "`App.java`",
-        "fragment": "app-java"
-      },
-      {
-        "title": "`FuncionalTest.java`",
-        "fragment": "funcionaltest-java"
-      },
       {
         "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
