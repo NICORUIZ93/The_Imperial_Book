@@ -2,17 +2,19 @@
 
 M8 y M9 dieron la base; este módulo la lleva al contexto profesional: Maven/Gradle avanzados, multi-módulo, testing con dobles/assertions expresivas, integración reproducible y logging estructurado. El foco es confiabilidad de build y feedback.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Maven avanzado · Intermedio · 40 min
 
-Caso guía: estandarizar versiones y plugins en un build empresarial.
+**Caso guía.** estandarizar versiones y plugins en un build empresarial.
 
-#### BOM, dependencyManagement, plugins, perfiles
+BOM, dependencyManagement, plugins, perfiles
 
-**Definición formal.** `dependencyManagement` centraliza versiones; un BOM importa versiones coherentes; plugins se configuran en `build/plugins` o `pluginManagement`; perfiles activan variantes.
+**Definición.** `dependencyManagement` centraliza versiones; un BOM importa versiones coherentes; plugins se configuran en `build/plugins` o `pluginManagement`; perfiles activan variantes.
 
 **Ejemplo mínimo enfocado.**
 
@@ -33,11 +35,11 @@ Caso guía: estandarizar versiones y plugins en un build empresarial.
 
 ### Tema 2: Gradle y builds reproducibles · Avanzado · 45 min
 
-Caso guía: builds rápidos y reproducibles en CI.
+**Caso guía.** builds rápidos y reproducibles en CI.
 
-#### Wrapper, version catalogs, caché
+Wrapper, version catalogs, caché
 
-**Definición formal.** Gradle wrapper fija versión. Version catalogs (`libs.versions.toml`) centralizan versiones. Caches y incremental build aceleran; reproducibilidad exige fijar inputs.
+**Definición.** Gradle wrapper fija versión. Version catalogs (`libs.versions.toml`) centralizan versiones. Caches y incremental build aceleran; reproducibilidad exige fijar inputs.
 
 **Ejemplo mínimo.** `gradle wrapper` genera wrapper; `./gradlew -v` fija versión.
 
@@ -45,11 +47,11 @@ Caso guía: builds rápidos y reproducibles en CI.
 
 ### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
 
-Caso guía: `domain`, `app`, `infra`. `domain` no depende de `infra`.
+**Caso guía.** `domain`, `app`, `infra`. `domain` no depende de `infra`.
 
-#### Dependencias acíclicas
+Dependencias acíclicas
 
-**Definición formal.** Un grafo de módulos sano es un DAG. Ciclos impiden build claro y señalan acoplamiento.
+**Definición.** Un grafo de módulos sano es un DAG. Ciclos impiden build claro y señalan acoplamiento.
 
 ```mermaid
 flowchart LR
@@ -65,11 +67,11 @@ flowchart LR
 
 ### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 35 min
 
-Caso guía: tests legibles que fallen con mensaje útil.
+**Caso guía.** tests legibles que fallen con mensaje útil.
 
-#### Assertions expresivas
+Assertions expresivas
 
-**Definición formal.** Una aserción expresiva comunica intención y muestra diferencia relevante al fallar. JUnit/AssertJ/Hamcrest son opciones; lo clave es claridad.
+**Definición.** Una aserción expresiva comunica intención y muestra diferencia relevante al fallar. JUnit/AssertJ/Hamcrest son opciones; lo clave es claridad.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -82,11 +84,11 @@ mvn -q -Dtest=CalcTest test
 
 ### Tema 5: Pruebas de integración reproducibles · Avanzado · 45 min
 
-Caso guía: probar integración con DB/cola en entorno limpio.
+**Caso guía.** probar integración con DB/cola en entorno limpio.
 
-#### Testcontainers / entornos efímeros
+Testcontainers / entornos efímeros
 
-**Definición formal.** Pruebas de integración reproducibles crean dependencias efímeras controladas (contenedores, DB embebida) y limpian estado.
+**Definición.** Pruebas de integración reproducibles crean dependencias efímeras controladas (contenedores, DB embebida) y limpian estado.
 
 **Nota de verificación.** Testcontainers requiere Docker; este entorno tiene Docker 29.9.3, pero la ejecución completa puede ser pesada. Se recomienda ejecutar: `mvn -q -Dtest=*IT test` con configuración Testcontainers en proyecto real. No marcar como salida fija aquí.
 
@@ -94,11 +96,11 @@ Caso guía: probar integración con DB/cola en entorno limpio.
 
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 40 min
 
-Caso guía: logs útiles en producción con contexto.
+**Caso guía.** logs útiles en producción con contexto.
 
-#### Logging estructurado
+Logging estructurado
 
-**Definición formal.** Log estructurado emite campos clave-valor (JSON o patrón consistente) para consulta/agregación. MDC aporta contexto por request.
+**Definición.** Log estructurado emite campos clave-valor (JSON o patrón consistente) para consulta/agregación. MDC aporta contexto por request.
 
 **Ejemplo mínimo enfocado.** Reusar M7: SLF4J + placeholders + MDC.clear en finally.
 

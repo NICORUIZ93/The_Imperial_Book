@@ -2,17 +2,19 @@
 
 Este módulo profundiza en aspectos donde Java sorprende a quien solo conoce la superficie: visibilidad de memoria, optimizaciones JIT, serialización, ciclo de vida del runtime, CDS/AOT y migración entre LTS. Son temas avanzados porque los errores son sutiles y a veces solo aparecen en producción o bajo carga.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Herramientas `jdeprscan`, `jdeps`, `jfr` disponibles en el JDK.
 
 ## Aprende construyendo
 
 ### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
-Caso guía: un hilo escribe una bandera; otro la lee. Sin sincronización, puedes ver valores obsoletos.
+**Caso guía.** un hilo escribe una bandera; otro la lee. Sin sincronización, puedes ver valores obsoletos.
 
-#### Java Memory Model, `volatile`, happens-before
+Java Memory Model, `volatile`, happens-before
 
-**Definición formal.** El JMM define qué escrituras son visibles para qué lecturas en concurrencia. `volatile` garantiza visibilidad y orden de ciertos accesos; `synchronized` y locks establecen happens-before.
+**Definición.** El JMM define qué escrituras son visibles para qué lecturas en concurrencia. `volatile` garantiza visibilidad y orden de ciertos accesos; `synchronized` y locks establecen happens-before.
 
 ```mermaid
 sequenceDiagram
@@ -58,11 +60,11 @@ java DemoVolatile
 
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
 
-Caso guía: medir rendimiento con un loop simple puede dar resultados falsos por optimización JIT.
+**Caso guía.** medir rendimiento con un loop simple puede dar resultados falsos por optimización JIT.
 
-#### JIT y benchmarks ingenuos
+JIT y benchmarks ingenuos
 
-**Definición formal.** El JIT optimiza código caliente. Puede eliminar código muerto, hacer constant folding o inlining, invalidando microbenchmarks mal escritos.
+**Definición.** El JIT optimiza código caliente. Puede eliminar código muerto, hacer constant folding o inlining, invalidando microbenchmarks mal escritos.
 
 **Ejemplo mínimo enfocado (conceptual ejecutable).**
 
@@ -96,11 +98,11 @@ java DemoNaive
 
 ### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
 
-Caso guía: deserializar datos no confiables puede crear objetos inesperados o ejecutar rutas peligrosas.
+**Caso guía.** deserializar datos no confiables puede crear objetos inesperados o ejecutar rutas peligrosas.
 
-#### Serialización Java y riesgos
+Serialización Java y riesgos
 
-**Definición formal.** La serialización nativa de Java convierte objetos en bytes; deserializar reconstruye objetos. Es poderosa pero peligrosa si el input no es confiable.
+**Definición.** La serialización nativa de Java convierte objetos en bytes; deserializar reconstruye objetos. Es poderosa pero peligrosa si el input no es confiable.
 
 **Contrato/riesgo.** No deserialices datos no confiables con `ObjectInputStream` sin filtros. Preferir JSON/Protobuf con esquemas explícitos cuando sea posible.
 
@@ -140,11 +142,11 @@ java DemoSer
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
 
-Caso guía: tu app depende de hooks de shutdown, señales y recursos abiertos.
+**Caso guía.** tu app depende de hooks de shutdown, señales y recursos abiertos.
 
-#### Shutdown hooks y ciclo de vida
+Shutdown hooks y ciclo de vida
 
-**Definición formal.** Un shutdown hook es un hilo registrado con `Runtime.getRuntime().addShutdownHook(...)` que la JVM intenta ejecutar al apagarse normalmente.
+**Definición.** Un shutdown hook es un hilo registrado con `Runtime.getRuntime().addShutdownHook(...)` que la JVM intenta ejecutar al apagarse normalmente.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -175,11 +177,11 @@ java DemoHook
 
 ### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
 
-Caso guía: un CLI Java arranca lento; CDS/AOT pueden ayudar en arranques repetidos.
+**Caso guía.** un CLI Java arranca lento; CDS/AOT pueden ayudar en arranques repetidos.
 
-#### CDS/AOT cache
+CDS/AOT cache
 
-**Definición formal.** CDS (Class Data Sharing) y cachés AOT almacenan metadatos/clases preprocesadas para acelerar arranque. La disponibilidad y flags dependen de la versión de JDK.
+**Definición.** CDS (Class Data Sharing) y cachés AOT almacenan metadatos/clases preprocesadas para acelerar arranque. La disponibilidad y flags dependen de la versión de JDK.
 
 **Ejemplo mínimo (nota honesta).**
 
@@ -191,11 +193,11 @@ java -Xshare:off -version
 
 ### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
 
-Caso guía: migrar un jar viejo a JDK nuevo.
+**Caso guía.** migrar un jar viejo a JDK nuevo.
 
-#### `jdeprscan` y `jdeps`
+`jdeprscan` y `jdeps`
 
-**Definición formal.** `jdeprscan` analiza uso de APIs deprecadas/removidas. `jdeps` analiza dependencias de módulos/paquetes y acceso a APIs internas.
+**Definición.** `jdeprscan` analiza uso de APIs deprecadas/removidas. `jdeps` analiza dependencias de módulos/paquetes y acceso a APIs internas.
 
 **Ejemplo mínimo enfocado.**
 

@@ -2,17 +2,19 @@
 
 Este módulo cierra Java con fundamentos de objetos que suelen causar bugs sutiles: copia defensiva vs superficial vs clone, enums ricos de dominio y clases anidadas con captura de `this$0`. Dominar esto evita fugas de mutabilidad, modelos pobres y memory leaks inesperados.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Copia defensiva, copia superficial y clone · Intermedio · 40 min
 
-Caso guía: un pedido expone su lista de items; si devuelves la lista interna mutable, el llamador rompe invariantes.
+**Caso guía.** un pedido expone su lista de items; si devuelves la lista interna mutable, el llamador rompe invariantes.
 
-#### Copia defensiva
+Copia defensiva
 
-**Definición formal.** Copia defensiva es crear copias de objetos mutables al entrar o salir de una frontera para proteger invariantes internos.
+**Definición.** Copia defensiva es crear copias de objetos mutables al entrar o salir de una frontera para proteger invariantes internos.
 
 ```mermaid
 flowchart LR
@@ -54,9 +56,9 @@ java DemoDef
 
 **Verificación (JDK 27, 2026-05-22).** `[A]`, `protegido`.
 
-#### Shallow vs deep copy y `clone`
+Shallow vs deep copy y `clone`
 
-**Definición formal.** Shallow copy copia referencias de objetos anidados; deep copy copia también la estructura anidada. `clone()` es el mecanismo histórico de Java, con muchas trampas (Cloneable, casting, shallow por defecto).
+**Definición.** Shallow copy copia referencias de objetos anidados; deep copy copia también la estructura anidada. `clone()` es el mecanismo histórico de Java, con muchas trampas (Cloneable, casting, shallow por defecto).
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -94,11 +96,11 @@ java DemoClone
 
 ### Tema 2: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min
 
-Caso guía: estados de pedido con transición válida y código.
+**Caso guía.** estados de pedido con transición válida y código.
 
-#### Enum rico
+Enum rico
 
-**Definición formal.** Un `enum` define un conjunto cerrado de constantes. Puede llevar campos, constructor y métodos para modelar comportamiento de dominio.
+**Definición.** Un `enum` define un conjunto cerrado de constantes. Puede llevar campos, constructor y métodos para modelar comportamiento de dominio.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -135,11 +137,11 @@ java DemoEnum
 
 ### Tema 3: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min
 
-Caso guía: una inner class no estática captura referencia a la instancia externa, lo que puede impedir GC.
+**Caso guía.** una inner class no estática captura referencia a la instancia externa, lo que puede impedir GC.
 
-#### Clases anidadas
+Clases anidadas
 
-**Definición formal.** Java tiene static nested classes, inner classes, local classes y anonymous classes. Las inner no estáticas capturan `this` de la clase externa (`this$0`).
+**Definición.** Java tiene static nested classes, inner classes, local classes y anonymous classes. Las inner no estáticas capturan `this` de la clase externa (`this$0`).
 
 ```mermaid
 flowchart LR

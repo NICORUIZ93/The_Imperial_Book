@@ -2,17 +2,19 @@
 
 Las aplicaciones modernas se integran por HTTP. Consumir una API parece simple hasta que aparecen timeouts, retries incorrectos, 401/403, SSRF, secretos filtrados o criptografía mal usada. Este módulo cubre `HttpClient`, contratos REST, validación/seguridad básica y criptografía con JCA.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2 (incluye `java.net.http.HttpClient`).
 
 ## Aprende construyendo
 
 ### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
-Caso guía: consultar el estado de una guía en un servicio REST. Si la red tarda, el hilo no puede quedar colgado indefinidamente.
+**Caso guía.** consultar el estado de una guía en un servicio REST. Si la red tarda, el hilo no puede quedar colgado indefinidamente.
 
-#### HttpClient, request/response, timeouts
+HttpClient, request/response, timeouts
 
-**Definición formal.** `HttpClient` (Java 11+) es el cliente HTTP estándar. `HttpRequest` define URI, método, headers y body; `HttpResponse` expone status, headers y body.
+**Definición.** `HttpClient` (Java 11+) es el cliente HTTP estándar. `HttpRequest` define URI, método, headers y body; `HttpResponse` expone status, headers y body.
 
 **Contrato/reglas.** Configura timeout de conexión y de request. Maneja códigos 2xx/4xx/5xx explícitamente. Reintenta solo operaciones idempotentes y con backoff.
 
@@ -75,11 +77,11 @@ java DemoHttp
 
 ### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
 
-Caso guía: la API requiere Bearer token; además debes validar entradas y evitar SSRF.
+**Caso guía.** la API requiere Bearer token; además debes validar entradas y evitar SSRF.
 
-#### Seguridad básica en clientes HTTP
+Seguridad básica en clientes HTTP
 
-**Definición formal.** El cliente debe enviar credenciales/tokens solo a destinos confiables, validar entradas, manejar 401/403 y no filtrar secretos en logs.
+**Definición.** El cliente debe enviar credenciales/tokens solo a destinos confiables, validar entradas, manejar 401/403 y no filtrar secretos en logs.
 
 **Reglas.** Nunca interpolar URLs sin validar; allowlist de hosts; no seguir redirects a dominios no confiables; no loguear `Authorization`.
 
@@ -130,11 +132,11 @@ java DemoAllowlist
 
 ### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM · Avanzado · 45 min
 
-Caso guía: hashear contenido, firmar mensaje con clave compartida y cifrar dato sensible.
+**Caso guía.** hashear contenido, firmar mensaje con clave compartida y cifrar dato sensible.
 
-#### JCA/JCE, hash, HMAC, AES-GCM
+JCA/JCE, hash, HMAC, AES-GCM
 
-**Definición formal.** JCA/JCE es la API criptográfica de Java. SHA-256 es hash; HMAC provee integridad/autenticidad con clave; AES-GCM cifra y autentica (AEAD).
+**Definición.** JCA/JCE es la API criptográfica de Java. SHA-256 es hash; HMAC provee integridad/autenticidad con clave; AES-GCM cifra y autentica (AEAD).
 
 **Reglas.** No inventes criptografía. Usa algoritmos estándar, IV aleatorio único por cifrado en GCM, claves gestionadas con cuidado, y no uses hashes simples para passwords (usa BCrypt/Argon2/PBKDF2).
 

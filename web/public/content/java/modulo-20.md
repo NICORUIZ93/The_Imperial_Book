@@ -2,17 +2,19 @@
 
 Este módulo profundiza el estilo funcional en Java: interfaces funcionales core, composición, referencias a métodos, Optional, streams intermedios/terminales, collectors, paralelismo, pureza y Flow API. La meta es escribir transformaciones claras y seguras, no forzar “todo stream”.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
 
-Caso guía: filtrar guías válidas, transformarlas, imprimirlas y generar IDs.
+**Caso guía.** filtrar guías válidas, transformarlas, imprimirlas y generar IDs.
 
-#### Interfaces funcionales core
+Interfaces funcionales core
 
-**Definición formal.** `Predicate<T>` (T->boolean), `Function<T,R>` (T->R), `Consumer<T>` (T->void), `Supplier<T>` (()->T). Son contratos para pasar comportamiento.
+**Definición.** `Predicate<T>` (T->boolean), `Function<T,R>` (T->R), `Consumer<T>` (T->void), `Supplier<T>` (()->T). Son contratos para pasar comportamiento.
 
 ```mermaid
 flowchart LR
@@ -52,9 +54,9 @@ java DemoCore
 
 ### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
 
-Caso guía: calcular precio con impuesto (dos entradas) o transformar un valor (una entrada).
+**Caso guía.** calcular precio con impuesto (dos entradas) o transformar un valor (una entrada).
 
-#### `Function` y `BiFunction`
+`Function` y `BiFunction`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -86,11 +88,11 @@ java DemoFn
 
 ### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
 
-Caso guía: validar con varias reglas y componer transformaciones.
+**Caso guía.** validar con varias reglas y componer transformaciones.
 
-#### Composición
+Composición
 
-**Definición formal.** `andThen/compose` encadenan funciones; `and/or/negate` combinan predicados.
+**Definición.** `andThen/compose` encadenan funciones; `and/or/negate` combinan predicados.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -124,11 +126,11 @@ java DemoComp
 
 ### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
 
-Caso guía: un pipeline parece ejecutar todo, pero intermedias son lazy.
+**Caso guía.** un pipeline parece ejecutar todo, pero intermedias son lazy.
 
-#### Laziness y orden
+Laziness y orden
 
-**Definición formal.** Operaciones intermedias se evalúan al ejecutar una terminal. El orden importa (`filter` antes de `map` puede reducir trabajo).
+**Definición.** Operaciones intermedias se evalúan al ejecutar una terminal. El orden importa (`filter` antes de `map` puede reducir trabajo).
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -160,9 +162,9 @@ java DemoLazy
 
 ### Tema 5: UnaryOperator y BinaryOperator · Intermedio · 35 min
 
-Caso guía: transformaciones donde tipo de entrada y salida son iguales.
+**Caso guía.** transformaciones donde tipo de entrada y salida son iguales.
 
-#### Operadores
+Operadores
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -194,9 +196,9 @@ java DemoOp
 
 ### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
 
-Caso guía: `x -> System.out.println(x)` vs `System.out::println`.
+**Caso guía.** `x -> System.out.println(x)` vs `System.out::println`.
 
-#### Method references
+Method references
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -225,9 +227,9 @@ java DemoRef
 
 ### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
 
-Caso guía: repo devuelve vacío si no existe.
+**Caso guía.** repo devuelve vacío si no existe.
 
-#### Optional
+Optional
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -255,9 +257,9 @@ java DemoOpt
 
 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
 
-Caso guía: normalizar y aplanar listas de tags.
+**Caso guía.** normalizar y aplanar listas de tags.
 
-#### `filter`, `map`, `flatMap`, `sorted`, `distinct`
+`filter`, `map`, `flatMap`, `sorted`, `distinct`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -288,9 +290,9 @@ java DemoMid
 
 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
 
-Caso guía: contar, encontrar y reducir.
+**Caso guía.** contar, encontrar y reducir.
 
-#### Terminales
+Terminales
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -322,9 +324,9 @@ java DemoTerm
 
 ### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
 
-Caso guía: agrupar guías por estado.
+**Caso guía.** agrupar guías por estado.
 
-#### Collectors
+Collectors
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -355,9 +357,9 @@ java DemoCol
 
 ### Tema 11: Streams paralelos · Intermedio · 40 min
 
-Caso guía: operación CPU-bound grande e independiente.
+**Caso guía.** operación CPU-bound grande e independiente.
 
-#### Parallel streams
+Parallel streams
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -384,11 +386,11 @@ java DemoPar
 
 ### Tema 12: Pureza y efectos · Intermedio · 40 min
 
-Caso guía: una lambda que modifica una lista externa hace el pipeline impredecible.
+**Caso guía.** una lambda que modifica una lista externa hace el pipeline impredecible.
 
-#### Pureza y efectos secundarios
+Pureza y efectos secundarios
 
-**Definición formal.** Función pura: mismo input, mismo output, sin efectos secundarios observables. En streams, favorece predictibilidad y paralelismo seguro.
+**Definición.** Función pura: mismo input, mismo output, sin efectos secundarios observables. En streams, favorece predictibilidad y paralelismo seguro.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -423,11 +425,11 @@ java DemoPure
 
 ### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
 
-Caso guía: productor emite eventos; consumidor controla demanda.
+**Caso guía.** productor emite eventos; consumidor controla demanda.
 
-#### `Flow.Publisher/Subscriber/Subscription`
+`Flow.Publisher/Subscriber/Subscription`
 
-**Definición formal.** Flow API (Java 9) implementa Reactive Streams con backpressure: el suscriptor solicita `n` elementos.
+**Definición.** Flow API (Java 9) implementa Reactive Streams con backpressure: el suscriptor solicita `n` elementos.
 
 ```mermaid
 sequenceDiagram

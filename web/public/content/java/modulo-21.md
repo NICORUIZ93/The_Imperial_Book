@@ -2,17 +2,19 @@
 
 Publicar una librería o módulo interno compartido crea una promesa: otros códigos dependen de tu superficie pública. Cambiarla sin criterio rompe compilaciones, binarios o comportamiento. Este módulo trata la evolución de APIs con compatibilidad fuente/binaria, deprecación, generics/erasure y verificación en build.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Qué es la superficie pública de una API · Básico · 40 min
 
-Caso guía: una librería expone `public` y otros equipos la usan. Cualquier cambio en esa superficie tiene costo.
+**Caso guía.** una librería expone `public` y otros equipos la usan. Cualquier cambio en esa superficie tiene costo.
 
-#### Superficie pública
+Superficie pública
 
-**Definición formal.** La superficie pública incluye tipos, métodos, campos, constructores, firmas, excepciones declaradas, comportamiento observable y semántica documentada accesibles por consumidores.
+**Definición.** La superficie pública incluye tipos, métodos, campos, constructores, firmas, excepciones declaradas, comportamiento observable y semántica documentada accesibles por consumidores.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -44,11 +46,11 @@ java Main
 
 ### Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min
 
-Caso guía: recompilar clientes funciona, pero clientes ya compilados fallan; o al revés.
+**Caso guía.** recompilar clientes funciona, pero clientes ya compilados fallan; o al revés.
 
-#### Source vs binary compatibility
+Source vs binary compatibility
 
-**Definición formal.** Compatibilidad de fuente: el código cliente recompila. Compatibilidad binaria: artefactos ya compilados siguen enlazando/ejecutando sin recompilar.
+**Definición.** Compatibilidad de fuente: el código cliente recompila. Compatibilidad binaria: artefactos ya compilados siguen enlazando/ejecutando sin recompilar.
 
 ```mermaid
 flowchart LR
@@ -63,11 +65,11 @@ flowchart LR
 
 ### Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min
 
-Caso guía: agregar capacidad a una interfaz sin obligar a todos a implementar.
+**Caso guía.** agregar capacidad a una interfaz sin obligar a todos a implementar.
 
-#### `default`, `@Deprecated`, `forRemoval`
+`default`, `@Deprecated`, `forRemoval`
 
-**Definición formal.** Un método `default` en interfaz provee implementación. `@Deprecated` señala obsolescencia; `forRemoval` indica intención de retiro futuro.
+**Definición.** Un método `default` en interfaz provee implementación. `@Deprecated` señala obsolescencia; `forRemoval` indica intención de retiro futuro.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -95,11 +97,11 @@ java DemoDefault
 
 ### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
 
-Caso guía: un override genérico genera bridge methods y puede afectar compatibilidad.
+**Caso guía.** un override genérico genera bridge methods y puede afectar compatibilidad.
 
-#### Erasure y bridge methods
+Erasure y bridge methods
 
-**Definición formal.** Por type erasure, el compilador puede generar métodos puente (bridge) para preservar polimorfismo con genéricos.
+**Definición.** Por type erasure, el compilador puede generar métodos puente (bridge) para preservar polimorfismo con genéricos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -131,11 +133,11 @@ java DemoBridge
 
 ### Tema 5: Verificar la compatibilidad en el build · Avanzado · 45 min
 
-Caso guía: impedir que un PR rompa API accidentalmente.
+**Caso guía.** impedir que un PR rompa API accidentalmente.
 
-#### Herramientas de compatibilidad
+Herramientas de compatibilidad
 
-**Definición formal.** Herramientas como japicmp/Revapi comparan versiones de API y fallan el build ante incompatibilidades.
+**Definición.** Herramientas como japicmp/Revapi comparan versiones de API y fallan el build ante incompatibilidades.
 
 **Ejemplo mínimo (nota operativa).** En Maven, configurar plugin japicmp entre versión base y actual.
 

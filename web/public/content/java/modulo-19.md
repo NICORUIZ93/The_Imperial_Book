@@ -2,17 +2,19 @@
 
 Este módulo cubre capacidades avanzadas de la plataforma: reflexión, regex, dinero exacto, contratos, ServiceLoader, i18n, proxies dinámicos, class loading y MethodHandles/VarHandles. Son herramientas potentes; mal usadas crean código frágil, inseguro o difícil de mantener.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min
 
-Caso guía: un mini-framework necesita leer anotaciones en runtime.
+**Caso guía.** un mini-framework necesita leer anotaciones en runtime.
 
-#### Reflection y anotaciones runtime
+Reflection y anotaciones runtime
 
-**Definición formal.** Reflexión permite inspeccionar/modificar clases, campos y métodos en runtime. Las anotaciones con `@Retention(RUNTIME)` pueden leerse por reflexión.
+**Definición.** Reflexión permite inspeccionar/modificar clases, campos y métodos en runtime. Las anotaciones con `@Retention(RUNTIME)` pueden leerse por reflexión.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -47,11 +49,11 @@ java DemoRef
 
 ### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min
 
-Caso guía: validar formato de código de guía.
+**Caso guía.** validar formato de código de guía.
 
-#### Regex, `Pattern`, `Matcher`
+Regex, `Pattern`, `Matcher`
 
-**Definición formal.** Regex describe patrones textuales. `Pattern` compila; `Matcher` evalúa sobre input.
+**Definición.** Regex describe patrones textuales. `Pattern` compila; `Matcher` evalúa sobre input.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -84,11 +86,11 @@ java DemoRegex
 
 ### Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min
 
-Caso guía: sumar precios monetarios sin errores de punto flotante.
+**Caso guía.** sumar precios monetarios sin errores de punto flotante.
 
-#### `BigDecimal`
+`BigDecimal`
 
-**Definición formal.** `BigDecimal` representa decimales de precisión arbitraria. Para dinero, usar constructor desde `String` y `MathContext`/`scale` explícitos.
+**Definición.** `BigDecimal` representa decimales de precisión arbitraria. Para dinero, usar constructor desde `String` y `MathContext`/`scale` explícitos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -121,11 +123,11 @@ java DemoMoney
 
 ### Tema 4: Assertions y diseño por contrato · Intermedio · 40 min
 
-Caso guía: invariantes internas que no deberían ocurrir si el código es correcto.
+**Caso guía.** invariantes internas que no deberían ocurrir si el código es correcto.
 
-#### `assert`
+`assert`
 
-**Definición formal.** `assert` verifica una condición interna; se habilita con `-ea`. No reemplaza validación de entrada externa.
+**Definición.** `assert` verifica una condición interna; se habilita con `-ea`. No reemplaza validación de entrada externa.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -154,11 +156,11 @@ java -ea DemoAssert
 
 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min
 
-Caso guía: cargar implementaciones de un servicio por SPI.
+**Caso guía.** cargar implementaciones de un servicio por SPI.
 
-#### ServiceLoader/SPI
+ServiceLoader/SPI
 
-**Definición formal.** `ServiceLoader` carga implementaciones de una interfaz declaradas en `META-INF/services/`.
+**Definición.** `ServiceLoader` carga implementaciones de una interfaz declaradas en `META-INF/services/`.
 
 **Ejemplo mínimo (concepto).** Requiere archivo de servicio y providers en classpath/module path. Útil para plugins.
 
@@ -168,9 +170,9 @@ Caso guía: cargar implementaciones de un servicio por SPI.
 
 ### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min
 
-Caso guía: mostrar monto y fecha según locale.
+**Caso guía.** mostrar monto y fecha según locale.
 
-#### i18n/l10n con `Locale`, `NumberFormat`, `DateTimeFormatter`
+i18n/l10n con `Locale`, `NumberFormat`, `DateTimeFormatter`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -203,9 +205,9 @@ java DemoI18n
 
 ### Tema 7: Proxies dinámicos · Avanzado · 45 min
 
-Caso guía: interceptar llamadas a una interfaz para logging o validación.
+**Caso guía.** interceptar llamadas a una interfaz para logging o validación.
 
-#### `InvocationHandler` y `Proxy`
+`InvocationHandler` y `Proxy`
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -239,21 +241,21 @@ java DemoProxy
 
 ### Tema 8: Carga de clases · Avanzado · 45 min
 
-Caso guía: entender por qué dos clases “iguales” pueden ser incompatibles si las cargó distinto ClassLoader.
+**Caso guía.** entender por qué dos clases “iguales” pueden ser incompatibles si las cargó distinto ClassLoader.
 
-#### ClassLoader
+ClassLoader
 
-**Definición formal.** Un `ClassLoader` carga clases en la JVM. La identidad de una clase en runtime incluye su nombre y su loader.
+**Definición.** Un `ClassLoader` carga clases en la JVM. La identidad de una clase en runtime incluye su nombre y su loader.
 
 **Error común.** `ClassCastException` entre la misma clase en loaders distintos. Corrección: entender jerarquía de loaders y aislamiento.
 
 ### Tema 9: MethodHandles y VarHandles · Experto · 45 min
 
-Caso guía: acceso de bajo nivel más tipado/performante que reflexión en ciertos casos.
+**Caso guía.** acceso de bajo nivel más tipado/performante que reflexión en ciertos casos.
 
-#### MethodHandles/VarHandles
+MethodHandles/VarHandles
 
-**Definición formal.** MethodHandles ofrece referencias invocables a métodos/campos; VarHandles ofrece acceso con semánticas de memoria a variables/fields.
+**Definición.** MethodHandles ofrece referencias invocables a métodos/campos; VarHandles ofrece acceso con semánticas de memoria a variables/fields.
 
 **Ejemplo mínimo (conceptual).** Requiere `Lookup`; útil en frameworks y librerías de alto rendimiento.
 

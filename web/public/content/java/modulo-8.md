@@ -2,17 +2,19 @@
 
 Compilar con `javac` enseña el ciclo básico, pero un proyecto real necesita dependencias, tests, empaquetado, versiones, plugins, CI y reproducibilidad. Maven y Gradle resuelven ese problema. No son solo “comandos”: son modelos de build. Entenderlos evita builds frágiles y dependencias incontroladas.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2.
 
 ## Aprende construyendo
 
 ### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
 
-Caso guía: empaquetar una app Java simple con estructura estándar y salida reproducible.
+**Caso guía.** empaquetar una app Java simple con estructura estándar y salida reproducible.
 
-#### Maven y el POM
+Maven y el POM
 
-**Definición formal.** Maven es una herramienta de build basada en convención sobre configuración. El `pom.xml` declara coordenadas, dependencias, plugins y propiedades.
+**Definición.** Maven es una herramienta de build basada en convención sobre configuración. El `pom.xml` declara coordenadas, dependencias, plugins y propiedades.
 
 **Cómo funciona por dentro.** Maven resuelve dependencias desde repositorios, construye un modelo efectivo (POM + herencia + perfiles) y ejecuta fases del lifecycle. Las coordenadas `groupId:artifactId:version` identifican el artefacto.
 
@@ -70,9 +72,9 @@ java -cp target/demo-1.0.0.jar com.academia.App
 
 **Verificación (Maven 3.10.0, JDK 27, 2026-05-22).** `Maven OK`.
 
-#### Gradle y `build.gradle.kts`
+Gradle y `build.gradle.kts`
 
-**Definición formal.** Gradle es una herramienta de build basada en tareas y un DAG de ejecución, con DSL Groovy/Kotlin.
+**Definición.** Gradle es una herramienta de build basada en tareas y un DAG de ejecución, con DSL Groovy/Kotlin.
 
 **Cómo funciona por dentro.** Gradle evalúa scripts, construye un grafo de tareas y ejecuta solo lo necesario usando incrementalidad/caché. El wrapper fija la versión del build.
 
@@ -124,11 +126,11 @@ gradle -q run
 
 ### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
-Caso guía: necesitas compilar, testear y empaquetar; las dependencias de test no deben ir a runtime.
+**Caso guía.** necesitas compilar, testear y empaquetar; las dependencias de test no deben ir a runtime.
 
-#### Lifecycle Maven y scopes
+Lifecycle Maven y scopes
 
-**Definición formal.** Maven tiene lifecycles (default, clean, site). En default: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Los scopes (`compile`, `provided`, `runtime`, `test`, `system` obsoleto) controlan el classpath.
+**Definición.** Maven tiene lifecycles (default, clean, site). En default: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Los scopes (`compile`, `provided`, `runtime`, `test`, `system` obsoleto) controlan el classpath.
 
 ```mermaid
 flowchart LR
@@ -145,9 +147,9 @@ mvn -q -DskipTests package
 
 **Verificación.** `mvn -q test` compila y ejecuta tests; `package` genera artefacto.
 
-#### Gradle tasks y configurations
+Gradle tasks y configurations
 
-**Definición formal.** Gradle modela trabajo como tareas con dependencias. Las configurations (`implementation`, `testImplementation`, `runtimeOnly`, etc.) definen dependencias y classpaths.
+**Definición.** Gradle modela trabajo como tareas con dependencias. Las configurations (`implementation`, `testImplementation`, `runtimeOnly`, etc.) definen dependencias y classpaths.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -161,11 +163,11 @@ gradle -q tasks --all | head
 
 ### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
-Caso guía: separar `domain` y `app` evita acoplamiento y permite builds por módulo.
+**Caso guía.** separar `domain` y `app` evita acoplamiento y permite builds por módulo.
 
-#### Multi-módulo Maven/Gradle
+Multi-módulo Maven/Gradle
 
-**Definición formal.** Un build multi-módulo agrupa varios subproyectos con un build raíz. Maven usa `<modules>` y POM padre; Gradle usa `settings.gradle.kts` e `include`.
+**Definición.** Un build multi-módulo agrupa varios subproyectos con un build raíz. Maven usa `<modules>` y POM padre; Gradle usa `settings.gradle.kts` e `include`.
 
 **Cómo funciona por dentro.** El reactor (Maven) o el grafo (Gradle) determina orden por dependencias inter-módulo. Permite reutilizar código y acotar compilación/tests.
 
@@ -246,11 +248,11 @@ java -cp domain/target/domain-1.0.0.jar:app/target/app-1.0.0.jar com.academia.ap
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
-Caso guía: comparar la misma app empaquetada con Maven y con Gradle.
+**Caso guía.** comparar la misma app empaquetada con Maven y con Gradle.
 
-#### Equivalencia conceptual
+Equivalencia conceptual
 
-**Definición formal.** Ambos resuelven dependencias, compilan, prueban y empaquetan. Maven se orienta a lifecycle/fases; Gradle a tareas/DAG.
+**Definición.** Ambos resuelven dependencias, compilan, prueban y empaquetan. Maven se orienta a lifecycle/fases; Gradle a tareas/DAG.
 
 **Cuándo elegir.** Maven: convención y previsibilidad. Gradle: flexibilidad, incrementalidad, DSL potente. En equipos, la consistencia y mantenibilidad pesan más que la moda.
 

@@ -2,17 +2,19 @@
 
 Los patrones de diseño son soluciones probadas a problemas recurrentes de diseño. No son recetas para copiar ciegamente: aplicados mal, agregan complejidad accidental. SOLID proporciona principios para evaluar si un diseño resiste el cambio. Este módulo cubre patrones creacionales, comportamentales, estructurales y el criterio para no sobre-diseñar.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
 
-Caso guía: crear un `Email` con campos obligatorios/opcionales sin telescoping constructors.
+**Caso guía.** crear un `Email` con campos obligatorios/opcionales sin telescoping constructors.
 
-#### Builder
+Builder
 
-**Definición formal.** Builder separa la construcción compleja de un objeto de su representación final, permitiendo pasos nombrados y validación antes de construir.
+**Definición.** Builder separa la construcción compleja de un objeto de su representación final, permitiendo pasos nombrados y validación antes de construir.
 
 **Cuándo usar / cuándo no.** Úsalo cuando hay muchos parámetros opcionales, invariantes de construcción o legibilidad. No lo uses para objetos simples de 2-3 campos.
 
@@ -59,11 +61,11 @@ java DemoBuilder
 
 ### Tema 2: Factory Method y Strategy · Intermedio · 40 min
 
-Caso guía: crear notificaciones por canal y cambiar algoritmo de precio sin `if/switch` dispersos.
+**Caso guía.** crear notificaciones por canal y cambiar algoritmo de precio sin `if/switch` dispersos.
 
-#### Factory Method
+Factory Method
 
-**Definición formal.** Define una interfaz para crear un objeto, dejando que subclases/implementaciones decidan la instancia concreta.
+**Definición.** Define una interfaz para crear un objeto, dejando que subclases/implementaciones decidan la instancia concreta.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -97,9 +99,9 @@ java DemoFactory
 
 **Verificación (JDK 27, 2026-05-22).** `sms`.
 
-#### Strategy
+Strategy
 
-**Definición formal.** Encapsula una familia de algoritmos detrás de una interfaz intercambiable.
+**Definición.** Encapsula una familia de algoritmos detrás de una interfaz intercambiable.
 
 ```mermaid
 flowchart LR
@@ -141,11 +143,11 @@ java DemoStrategy
 
 ### Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min
 
-Caso guía: crear una familia UI (botón + input) para tema claro u oscuro sin mezclar productos incompatibles.
+**Caso guía.** crear una familia UI (botón + input) para tema claro u oscuro sin mezclar productos incompatibles.
 
-#### Abstract Factory
+Abstract Factory
 
-**Definición formal.** Provee una interfaz para crear familias de objetos relacionados sin especificar clases concretas.
+**Definición.** Provee una interfaz para crear familias de objetos relacionados sin especificar clases concretas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -180,11 +182,11 @@ java DemoAbsFactory
 
 ### Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min
 
-Caso guía: un servicio de facturación crece y empieza a mezclar cálculo, persistencia y envío.
+**Caso guía.** un servicio de facturación crece y empieza a mezclar cálculo, persistencia y envío.
 
-#### SOLID
+SOLID
 
-**Definición formal.** SRP: una razón para cambiar. OCP: extender sin modificar núcleo. LSP: subtipos respetan contrato. ISP: interfaces pequeñas. DIP: depender de abstracciones.
+**Definición.** SRP: una razón para cambiar. OCP: extender sin modificar núcleo. LSP: subtipos respetan contrato. ISP: interfaces pequeñas. DIP: depender de abstracciones.
 
 ```mermaid
 flowchart TD
@@ -227,11 +229,11 @@ java DemoSolid
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min
 
-Caso guía: duplicar una plantilla de pedido sin que mutaciones afecten la original.
+**Caso guía.** duplicar una plantilla de pedido sin que mutaciones afecten la original.
 
-#### Prototype / copia defensiva
+Prototype / copia defensiva
 
-**Definición formal.** Prototype crea nuevos objetos copiando una instancia prototipo. La clave es el tipo de copia: superficial o profunda según datos mutables anidados.
+**Definición.** Prototype crea nuevos objetos copiando una instancia prototipo. La clave es el tipo de copia: superficial o profunda según datos mutables anidados.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -272,11 +274,11 @@ java DemoProto
 
 ### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
 
-Caso guía: adaptar una API legacy, decorar un servicio con logging y simplificar una fachada.
+**Caso guía.** adaptar una API legacy, decorar un servicio con logging y simplificar una fachada.
 
-#### Adapter, Decorator, Facade
+Adapter, Decorator, Facade
 
-**Definición formal.** Adapter traduce una interfaz a otra esperada. Decorator agrega comportamiento sin modificar la clase base. Facade ofrece una interfaz simple sobre un subsistema complejo.
+**Definición.** Adapter traduce una interfaz a otra esperada. Decorator agrega comportamiento sin modificar la clase base. Facade ofrece una interfaz simple sobre un subsistema complejo.
 
 ```mermaid
 flowchart LR

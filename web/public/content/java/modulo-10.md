@@ -2,17 +2,19 @@
 
 Cuando un proyecto crece, la visibilidad por paquetes y classpath deja de ser suficiente: todo queda “abierto” a todo, y las dependencias internas se vuelven accidentales. JPMS (Java 9+) introduce módulos para declarar dependencias y encapsulación fuerte. No todo proyecto lo necesita; su valor aparece en bases grandes, librerías y runtimes controlados.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: module-info.java y encapsulación fuerte · Intermedio · 40 min
 
-Caso guía: una librería `com.academia.core` expone API pública pero oculta implementación interna.
+**Caso guía.** una librería `com.academia.core` expone API pública pero oculta implementación interna.
 
-#### `module-info.java`, `exports`, `requires`
+`module-info.java`, `exports`, `requires`
 
-**Definición formal.** Un módulo es una unidad nombrada de código con `module-info.java` que declara dependencias (`requires`) y paquetes exportados (`exports`).
+**Definición.** Un módulo es una unidad nombrada de código con `module-info.java` que declara dependencias (`requires`) y paquetes exportados (`exports`).
 
 **Cómo funciona por dentro.** El compilador y la JVM aplican accesibilidad fuerte de módulo: un paquete no exportado no es accesible desde otros módulos, aunque sea `public`. Esto es más fuerte que package-private/classpath.
 
@@ -82,11 +84,11 @@ java --module-path out -m com.academia.app/com.academia.app.Main
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 35 min
 
-Caso guía: un monolito en classpath quiere modularizarse gradualmente.
+**Caso guía.** un monolito en classpath quiere modularizarse gradualmente.
 
-#### Classpath, module path y módulos automáticos
+Classpath, module path y módulos automáticos
 
-**Definición formal.** El classpath es el modelo clásico sin encapsulación fuerte. El module path habilita módulos. Un jar no modular en module path puede convertirse en módulo automático (nombre derivado).
+**Definición.** El classpath es el modelo clásico sin encapsulación fuerte. El module path habilita módulos. Un jar no modular en module path puede convertirse en módulo automático (nombre derivado).
 
 **Cuándo usar JPMS.** Aporta en librerías/plataformas grandes, JDK/runtime custom (jlink), y encapsulación interna fuerte. No es obligatorio para toda app; el costo de migración puede superar el beneficio en apps pequeñas.
 
@@ -104,11 +106,11 @@ flowchart TD
 
 ### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 35 min
 
-Caso guía: un framework como Jackson/Hibernate necesita reflexión sobre campos privados. JPMS lo bloquea salvo que se abra.
+**Caso guía.** un framework como Jackson/Hibernate necesita reflexión sobre campos privados. JPMS lo bloquea salvo que se abra.
 
-#### `opens` y `opens ... to`
+`opens` y `opens ... to`
 
-**Definición formal.** `exports` permite acceso en compilación/runtime a tipos públicos. `opens` permite acceso reflexivo profundo (incluyendo no públicos) en runtime; `opens ... to` lo limita a módulos específicos.
+**Definición.** `exports` permite acceso en compilación/runtime a tipos públicos. `opens` permite acceso reflexivo profundo (incluyendo no públicos) en runtime; `opens ... to` lo limita a módulos específicos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

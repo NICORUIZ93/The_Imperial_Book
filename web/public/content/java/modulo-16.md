@@ -2,17 +2,19 @@
 
 JPA abstrae el mapeo objeto-relacional, pero no elimina SQL ni el modelo relacional. Hibernate es una implementación popular. Usado bien, reduce boilerplate y centraliza mapeo; usado sin entenderlo, produce N+1, fetches accidentales, bugs de transacción y migraciones peligrosas.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los ejemplos conceptuales/runnables mínimos usan Java/H2/JPA en forma de snippets ejecutables cuando se agregan dependencias; para bloques que requieren contenedor JPA completo se incluye setup Maven honesto.
 
 ## Aprende construyendo
 
 ### Tema 1: Entidades y relaciones JPA · Intermedio · 35 min
 
-Caso guía: una `Guia` pertenece a un `Cliente`.
+**Caso guía.** una `Guia` pertenece a un `Cliente`.
 
-#### Entidad, `@Entity`, `@Id`, `@ManyToOne`
+Entidad, `@Entity`, `@Id`, `@ManyToOne`
 
-**Definición formal.** Una entidad JPA es una clase mapeada a una tabla, con identidad (`@Id`) y estado gestionado por el contexto de persistencia.
+**Definición.** Una entidad JPA es una clase mapeada a una tabla, con identidad (`@Id`) y estado gestionado por el contexto de persistencia.
 
 ```mermaid
 erDiagram
@@ -47,21 +49,21 @@ class Guia {
 
 ### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
-Caso guía: usuario-perfil (1:1), estudiante-curso (N:M), jerarquía de pago (herencia).
+**Caso guía.** usuario-perfil (1:1), estudiante-curso (N:M), jerarquía de pago (herencia).
 
-#### Mapeos y trade-offs
+Mapeos y trade-offs
 
-**Definición formal.** `@OneToOne`, `@ManyToMany`, `@Inheritance` modelan relaciones. N:M suele implementarse con tabla join; herencia tiene estrategias `SINGLE_TABLE`, `JOINED`, `TABLE_PER_CLASS`.
+**Definición.** `@OneToOne`, `@ManyToMany`, `@Inheritance` modelan relaciones. N:M suele implementarse con tabla join; herencia tiene estrategias `SINGLE_TABLE`, `JOINED`, `TABLE_PER_CLASS`.
 
 **Error común.** `@ManyToMany` sin entender tabla intermedia ni ownership. Corrección: en dominios complejos, modelar entidad intermedia explícita.
 
 ### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
-Caso guía: cargar, modificar y persistir una entidad en una transacción.
+**Caso guía.** cargar, modificar y persistir una entidad en una transacción.
 
-#### Estados de entidad
+Estados de entidad
 
-**Definición formal.** Estados típicos: new/transient, managed, detached, removed. El contexto de persistencia hace dirty checking en entidades managed.
+**Definición.** Estados típicos: new/transient, managed, detached, removed. El contexto de persistencia hace dirty checking en entidades managed.
 
 ```mermaid
 stateDiagram-v2
@@ -86,21 +88,21 @@ em.getTransaction().commit();
 
 ### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
-Caso guía: filtros opcionales por estado, fecha y cliente.
+**Caso guía.** filtros opcionales por estado, fecha y cliente.
 
-#### Criteria API
+Criteria API
 
-**Definición formal.** API tipada para construir consultas dinámicas programáticamente. Útil cuando el query depende de filtros opcionales.
+**Definición.** API tipada para construir consultas dinámicas programáticamente. Útil cuando el query depende de filtros opcionales.
 
 **Error común.** Concatenar JPQL por strings. Riesgo: errores y posibles inyecciones si mete valores. Corrección: parámetros/Criteria/Querydsl.
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
-Caso guía: listar guías y acceder al cliente dispara una query por guía.
+**Caso guía.** listar guías y acceder al cliente dispara una query por guía.
 
-#### N+1
+N+1
 
-**Definición formal.** N+1 ocurre cuando se ejecuta 1 query para la lista y N queries adicionales para cargar asociaciones por elemento.
+**Definición.** N+1 ocurre cuando se ejecuta 1 query para la lista y N queries adicionales para cargar asociaciones por elemento.
 
 ```mermaid
 sequenceDiagram
@@ -116,21 +118,21 @@ sequenceDiagram
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
-Caso guía: cargar guía con cliente en una sola query cuando la vista lo necesita.
+**Caso guía.** cargar guía con cliente en una sola query cuando la vista lo necesita.
 
-#### EntityGraph y cachés
+EntityGraph y cachés
 
-**Definición formal.** EntityGraph define qué asociaciones cargar. Caché de primer nivel pertenece al persistence context; segundo nivel es compartido (si se configura) y requiere invalidación cuidadosa.
+**Definición.** EntityGraph define qué asociaciones cargar. Caché de primer nivel pertenece al persistence context; segundo nivel es compartido (si se configura) y requiere invalidación cuidadosa.
 
 **Error común.** Activar caché de segundo nivel sin estrategia de invalidación. Corrección: cachear solo datos de lectura predominante y con TTL/invalidación claros.
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
-Caso guía: dos usuarios actualizan el mismo registro.
+**Caso guía.** dos usuarios actualizan el mismo registro.
 
-#### Locking optimista/pesimista
+Locking optimista/pesimista
 
-**Definición formal.** Optimista usa versión (`@Version`) y falla en commit si hubo conflicto. Pesimista bloquea filas/recursos durante la transacción.
+**Definición.** Optimista usa versión (`@Version`) y falla en commit si hubo conflicto. Pesimista bloquea filas/recursos durante la transacción.
 
 **Ejemplo mínimo.**
 
@@ -143,11 +145,11 @@ private long version;
 
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
-Caso guía: evolucionar esquema sin romper producción.
+**Caso guía.** evolucionar esquema sin romper producción.
 
-#### Migraciones
+Migraciones
 
-**Definición formal.** Migraciones versionadas (Flyway/Liquibase) aplican cambios de esquema de forma controlada y reproducible.
+**Definición.** Migraciones versionadas (Flyway/Liquibase) aplican cambios de esquema de forma controlada y reproducible.
 
 **Nota de verificación.** Testcontainers/JPA full-stack requiere Docker y dependencias. Docker 29.9.3 disponible; la ejecución completa es un lab de integración (no se inventa salida). Setup recomendado: Flyway + H2/Testcontainers PostgreSQL + `@DataJpaTest`/JUnit.
 

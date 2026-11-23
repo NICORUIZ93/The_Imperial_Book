@@ -2,17 +2,19 @@
 
 Las pruebas automatizadas convierten cambios riesgosos en cambios verificables. No eliminan todos los bugs, pero reducen regresiones, documentan comportamiento y permiten refactorizar. El objetivo no es “tener tests”, sino tener tests confiables, rápidos y claros sobre el contrato que protegen.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, JUnit Jupiter 5.11.4, Mockito 5.14.2, jqwik 1.9.2.
 
 ## Aprende construyendo
 
 ### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
 
-Caso guía: validar una calculadora de descuentos. Debe cubrir caso feliz, borde y error.
+**Caso guía.** validar una calculadora de descuentos. Debe cubrir caso feliz, borde y error.
 
-#### JUnit Jupiter y aserciones
+JUnit Jupiter y aserciones
 
-**Definición formal.** JUnit Jupiter es el módulo de programación/ejecución de JUnit 5/6 para tests en JVM. Las aserciones verifican el contrato esperado.
+**Definición.** JUnit Jupiter es el módulo de programación/ejecución de JUnit 5/6 para tests en JVM. Las aserciones verifican el contrato esperado.
 
 **Cómo funciona por dentro.** El runner descubre tests por anotaciones, crea el ciclo de vida, ejecuta hooks, captura aserciones/excepciones y reporta resultados. Por defecto, una instancia por test (aislamiento).
 
@@ -85,9 +87,9 @@ mvn -q test
 
 **Verificación (Maven 3.10.0, JDK 27, 2026-05-22).** `BUILD SUCCESS`.
 
-#### Ciclo de vida y aislamiento
+Ciclo de vida y aislamiento
 
-**Definición formal.** `@BeforeEach/@AfterEach` ejecutan antes/después de cada test; `@BeforeAll/@AfterAll` una vez por clase (estáticos por defecto).
+**Definición.** `@BeforeEach/@AfterEach` ejecutan antes/después de cada test; `@BeforeAll/@AfterAll` una vez por clase (estáticos por defecto).
 
 **Ejemplo mínimo enfocado.** Crea `src/test/java/com/academia/CicloTest.java`:
 
@@ -110,11 +112,11 @@ class CicloTest {
 
 ### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
 
-Caso guía: un servicio guarda y envía email. No quieres SMTP/DB real en unit test.
+**Caso guía.** un servicio guarda y envía email. No quieres SMTP/DB real en unit test.
 
-#### Mock, stub, verify
+Mock, stub, verify
 
-**Definición formal.** Mock es un doble de prueba programable. Stub define respuesta; verify confirma interacción.
+**Definición.** Mock es un doble de prueba programable. Stub define respuesta; verify confirma interacción.
 
 ```mermaid
 flowchart LR
@@ -179,11 +181,11 @@ class NotificadorTest {
 
 ### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
 
-Caso guía: misma regla de validación con múltiples entradas.
+**Caso guía.** misma regla de validación con múltiples entradas.
 
-#### `@ParameterizedTest`
+`@ParameterizedTest`
 
-**Definición formal.** Ejecuta la misma prueba con distintos datos desde fuentes (`@CsvSource`, `@ValueSource`, `@MethodSource`).
+**Definición.** Ejecuta la misma prueba con distintos datos desde fuentes (`@CsvSource`, `@ValueSource`, `@MethodSource`).
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -210,11 +212,11 @@ class ParamTest {
 
 ### Tema 4: Pruebas basadas en propiedades · Avanzado · 45 min
 
-Caso guía: `reverse(reverse(x)) == x` para muchas entradas aleatorias.
+**Caso guía.** `reverse(reverse(x)) == x` para muchas entradas aleatorias.
 
-#### Property-based testing (jqwik)
+Property-based testing (jqwik)
 
-**Definición formal.** Técnica que verifica propiedades que deben cumplirse para un rango amplio de entradas generadas, en vez de solo ejemplos fijos.
+**Definición.** Técnica que verifica propiedades que deben cumplirse para un rango amplio de entradas generadas, en vez de solo ejemplos fijos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

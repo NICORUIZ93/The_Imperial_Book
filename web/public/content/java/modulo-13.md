@@ -2,17 +2,19 @@
 
 Los módulos anteriores enseñaron piezas sueltas: POO, colecciones, errores, streams, concurrencia, I/O, logging, build, tests, módulos, JVM y patrones. El integrador obliga a combinar esas piezas en un sistema pequeño pero realista. Aquí la calidad no se mide por conocer un concepto, sino por ensamblarlo con límites claros, build reproducible y pruebas.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0.
 
 ## Aprende construyendo
 
 ### Tema 1: Arquitectura por capas del proyecto integrador · Intermedio · 40 min
 
-Caso guía: un servicio de registro de guías. La UI/CLI no debe hablar directo con persistencia; el dominio no debe conocer detalles de consola.
+**Caso guía.** un servicio de registro de guías. La UI/CLI no debe hablar directo con persistencia; el dominio no debe conocer detalles de consola.
 
-#### Capas y responsabilidades
+Capas y responsabilidades
 
-**Definición formal.** Arquitectura por capas separa responsabilidades: presentación/entrada, aplicación/servicio, dominio y persistencia/adaptadores. Cada capa expone contratos y depende hacia dentro o a través de interfaces.
+**Definición.** Arquitectura por capas separa responsabilidades: presentación/entrada, aplicación/servicio, dominio y persistencia/adaptadores. Cada capa expone contratos y depende hacia dentro o a través de interfaces.
 
 ```mermaid
 flowchart LR
@@ -58,11 +60,11 @@ java -cp out com.academia.GuiaService
 
 ### Tema 2: Build reproducible y cierre del track · Intermedio · 40 min
 
-Caso guía: el integrador debe compilar y testear en otra máquina/CI.
+**Caso guía.** el integrador debe compilar y testear en otra máquina/CI.
 
-#### Build reproducible
+Build reproducible
 
-**Definición formal.** Build reproducible: mismas entradas, mismo resultado esperado. Requiere fijar versiones, plugins, JDK compatible y comandos claros.
+**Definición.** Build reproducible: mismas entradas, mismo resultado esperado. Requiere fijar versiones, plugins, JDK compatible y comandos claros.
 
 **Ejemplo mínimo enfocado.**
 
@@ -77,11 +79,11 @@ mvn -q test
 
 ### Tema 3: Integrando concurrencia, modelado y testing · Avanzado · 45 min
 
-Caso guía: procesar guías en paralelo pero conservar consistencia y testear sin flakiness.
+**Caso guía.** procesar guías en paralelo pero conservar consistencia y testear sin flakiness.
 
-#### Integración con pruebas
+Integración con pruebas
 
-**Definición formal.** Una prueba de integración en este nivel verifica colaboración entre componentes (servicio + repo + validación), con dobles solo en fronteras externas.
+**Definición.** Una prueba de integración en este nivel verifica colaboración entre componentes (servicio + repo + validación), con dobles solo en fronteras externas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

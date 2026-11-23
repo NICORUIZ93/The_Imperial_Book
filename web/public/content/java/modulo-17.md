@@ -2,6 +2,8 @@
 
 Una aplicación puede validar reglas en memoria, pero si no persiste datos con garantías, pierde confiabilidad en cuanto hay reinicios, concurrencia o fallos parciales. JDBC es la capa estándar que Java ofrece para hablar con bases de datos relacionales. Aunque uses JPA/Hibernate en el día a día, JDBC sigue siendo la base: entenderlo te permite depurar ORMs, escribir consultas críticas, controlar transacciones y razonar sobre aislamiento, recursos y latencia.
 
+**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, H2 2.3.232 (jar local), Docker 29.9.3 disponible para pruebas opcionales con PostgreSQL. Todos los ejemplos ejecutables de este módulo usan H2 en memoria para ser reproducibles desde cero.
 
 ## Setup ejecutable del módulo
@@ -26,11 +28,11 @@ java -cp ".:h2.jar" Archivo
 
 ### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
 
-Caso guía: un servicio interno debe registrar guías de envío y consultarlas por ID. No puede permitir inyección SQL, no debe filtrar `ResultSet` a la capa de negocio y debe cerrar recursos siempre, incluso ante errores.
+**Caso guía.** un servicio interno debe registrar guías de envío y consultarlas por ID. No puede permitir inyección SQL, no debe filtrar `ResultSet` a la capa de negocio y debe cerrar recursos siempre, incluso ante errores.
 
-#### JDBC
+JDBC
 
-**Definición formal.** JDBC (Java Database Connectivity) es la API estándar del paquete `java.sql`/`javax.sql` que define contratos para conectar aplicaciones Java con bases de datos relacionales mediante drivers.
+**Definición.** JDBC (Java Database Connectivity) es la API estándar del paquete `java.sql`/`javax.sql` que define contratos para conectar aplicaciones Java con bases de datos relacionales mediante drivers.
 
 **Cómo funciona por dentro.** La aplicación no habla directamente con PostgreSQL, MySQL u H2; habla con interfaces JDBC. El driver JDBC traduce esas llamadas al protocolo del motor. `DriverManager` localiza un driver compatible con la URL JDBC, abre una `Connection`, y sobre esa conexión se crean sentencias SQL. Esto desacopla el código Java del motor específico, aunque el SQL y algunos detalles transaccionales sigan siendo propios de cada base.
 
@@ -87,9 +89,9 @@ H2
 true
 ```
 
-#### `PreparedStatement`
+`PreparedStatement`
 
-**Definición formal.** `PreparedStatement` es una sentencia SQL precompilada/parametrizada que separa el texto SQL de los valores, asignados mediante placeholders `?` y setters tipados.
+**Definición.** `PreparedStatement` es una sentencia SQL precompilada/parametrizada que separa el texto SQL de los valores, asignados mediante placeholders `?` y setters tipados.
 
 **Cómo funciona por dentro.** En vez de construir `"select ... where id=" + id`, envías la plantilla SQL y luego los parámetros como datos. El driver/envía los valores con su tipo, evitando que el input del usuario se interprete como SQL. Además, muchos motores pueden reutilizar el plan para la misma sentencia parametrizada.
 
@@ -164,9 +166,9 @@ java -cp ".:h2.jar" DemoPs
 G-1:CREADA
 ```
 
-#### DAO
+DAO
 
-**Definición formal.** DAO (Data Access Object) es un patrón que encapsula el acceso a persistencia detrás de una interfaz/métodos orientados al dominio, ocultando SQL, JDBC y mapeo de filas.
+**Definición.** DAO (Data Access Object) es un patrón que encapsula el acceso a persistencia detrás de una interfaz/métodos orientados al dominio, ocultando SQL, JDBC y mapeo de filas.
 
 **Cómo funciona por dentro.** El servicio de negocio pide `dao.buscarPorId(id)` o `dao.guardar(guia)`; no arma SQL ni recorre `ResultSet`. El DAO traduce objetos de dominio a parámetros SQL y filas a objetos. Esto concentra el conocimiento de persistencia, reduce duplicación y permite probar la lógica de negocio con dobles del DAO.
 
@@ -258,9 +260,9 @@ G-1
 true
 ```
 
-#### `Connection`, `ResultSet` y try-with-resources
+`Connection`, `ResultSet` y try-with-resources
 
-**Definición formal.** `Connection` representa una sesión con la base; `Statement/PreparedStatement` ejecuta SQL; `ResultSet` itera filas. Todos son `AutoCloseable` o recursos asociados que deben liberarse determinísticamente.
+**Definición.** `Connection` representa una sesión con la base; `Statement/PreparedStatement` ejecuta SQL; `ResultSet` itera filas. Todos son `AutoCloseable` o recursos asociados que deben liberarse determinísticamente.
 
 **Cómo funciona por dentro.** Una conexión abierta ocupa socket, memoria y, en pools, un slot limitado. Un `ResultSet` puede mantener cursor/recursos del lado del driver/DB. Si no se cierran, el sistema degrada hasta agotar el pool: las nuevas peticiones esperan o fallan por timeout.
 
@@ -327,11 +329,11 @@ cerrado
 
 ### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
 
-Caso guía: una transferencia interna debita una cuenta y acredita otra. Si el segundo paso falla, el sistema no puede dejar dinero descontado sin acreditar. Además, dos transacciones concurrentes no deben corromper saldos.
+**Caso guía.** una transferencia interna debita una cuenta y acredita otra. Si el segundo paso falla, el sistema no puede dejar dinero descontado sin acreditar. Además, dos transacciones concurrentes no deben corromper saldos.
 
-#### Transacciones
+Transacciones
 
-**Definición formal.** Una transacción es una unidad lógica de trabajo que agrupa operaciones para que se apliquen como todo-o-nada, típicamente controlada con `commit` y `rollback`.
+**Definición.** Una transacción es una unidad lógica de trabajo que agrupa operaciones para que se apliquen como todo-o-nada, típicamente controlada con `commit` y `rollback`.
 
 **Cómo funciona por dentro.** Con `autoCommit=true`, cada sentencia se confirma individualmente. Para operaciones multi-paso, se desactiva auto-commit, se ejecutan las sentencias, y se decide `commit()` si todo salió bien o `rollback()` ante error. La base garantiza atomicidad del conjunto.
 
@@ -428,9 +430,9 @@ rollback
 70,130
 ```
 
-#### ACID
+ACID
 
-**Definición formal.** ACID es el conjunto de propiedades que caracterizan transacciones confiables: Atomicidad, Consistencia, Aislamiento y Durabilidad.
+**Definición.** ACID es el conjunto de propiedades que caracterizan transacciones confiables: Atomicidad, Consistencia, Aislamiento y Durabilidad.
 
 **Cómo funciona por dentro.** Atomicidad garantiza todo-o-nada. Consistencia exige que la transacción lleve la BD de un estado válido a otro según restricciones. Aislamiento controla interferencia entre transacciones concurrentes. Durabilidad asegura que, una vez confirmado, el cambio sobrevive fallos del sistema (según garantías del motor).
 
@@ -452,9 +454,9 @@ flowchart TB
 
 **Verificación (2026-05-22).** Evidencia: `DemoTx` produce `70,130` tras commit y `70,130` tras rollback.
 
-#### Aislamiento
+Aislamiento
 
-**Definición formal.** El aislamiento define cómo una transacción ve cambios realizados por otras transacciones concurrentes. JDBC expone niveles con `Connection.setTransactionIsolation(...)`.
+**Definición.** El aislamiento define cómo una transacción ve cambios realizados por otras transacciones concurrentes. JDBC expone niveles con `Connection.setTransactionIsolation(...)`.
 
 **Cómo funciona por dentro.** Niveles más estrictos evitan más anomalías (dirty read, non-repeatable read, phantom read), pero suelen costar más en bloqueos, abortos o versión de filas. El nivel correcto depende del motor y del caso de uso.
 
@@ -510,9 +512,9 @@ true
 8
 ```
 
-#### Rollback ante error
+Rollback ante error
 
-**Definición formal.** `rollback()` deshace los cambios no confirmados de la transacción actual, restaurando el estado previo visible para esa unidad transaccional.
+**Definición.** `rollback()` deshace los cambios no confirmados de la transacción actual, restaurando el estado previo visible para esa unidad transaccional.
 
 **Cómo funciona por dentro.** Cuando ocurre una excepción, la app debe capturarla en la frontera transaccional, ejecutar `rollback()` y propagar o manejar el error. Si no lo hace, puede dejar la transacción en estado inválido o depender de comportamientos implícitos al cerrar la conexión.
 
