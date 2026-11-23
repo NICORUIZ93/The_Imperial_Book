@@ -2233,6 +2233,16 @@ Resultados observados (resumen):
 - `cotizar`: total `$38.70` con descuento Bienvenida, envío y efectivo sin recargo.
 - `diagnostico`: ejecuta sin error (salida de diagnóstico de tipos/modelo POO).
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `NullPointerException` por campo no inicializado | Constructor no valida invariantes | NPE en métodos | Validar en constructor/factory |
+| Estado inconsistente | Campos mutables expuestos | Cambia desde afuera | Encapsular, devolver copias/inmutables |
+| `equals/hashCode` inconsistente | Se sobreescribe uno solo | Fallos en `HashSet/Map` | Implementar contrato completo o usar `record` |
+| Jerarquía rígida | Herencia por conveniencia | Cambios rompen subclases | Preferir composición/interfaces |
+| `instanceof` por todos lados | Polimorfismo ausente | Switches repetidos | Mover comportamiento a tipo/polimorfismo |
+
 ## Cierre
 
 Tienda Aurora pasó de un montón de datos y condicionales a un modelo donde cada tipo protege sus reglas. `Producto` encapsula y valida; `ProductoFisico` y `ServicioDigital` especializan sin duplicar; `Descuento` y `MedioPago` representan dos formas de variación con la herramienta adecuada; los records eliminan el boilerplate de los valores; y los constructores flexibles permiten que la validación ocurra antes de construir la base.

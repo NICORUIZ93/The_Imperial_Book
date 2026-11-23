@@ -1475,6 +1475,16 @@ Resultados observados (resumen):
 - `catalogo`: muestra productos en orden de alta y por precio ascendente.
 - `auditoria`: confirma contrato `equals/hashCode`, problema de clave mutable en `HashMap`, borrado de tipos, orden con `Comparable/Comparator`, y comportamiento de `Queue/Deque/PriorityQueue/LinkedHashSet`.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `ConcurrentModificationException` | Modificar colección mientras iteras | Falla en `for-each` | Usar iterador.remove, copia o colección concurrente |
+| Elemento no encontrado en `HashMap/HashSet` | `equals/hashCode` mal o clave mutable | `get` retorna null | Claves inmutables y contrato correcto |
+| `ClassCastException` con genéricos raw | Uso de raw types | Warning/Runtime | Parametrizar tipos, no usar raw |
+| `NoSuchElementException` | `Queue/Iterator` vacío | Llamar `remove/next` sin comprobar | Usar `poll/isEmpty/hasNext` |
+| Orden inesperado | Colección no garantiza orden | Iteración variable | Usar `List`, `LinkedHashMap`, `TreeMap` según necesidad |
+
 ## Cierre
 
 Las colecciones no son contenedores intercambiables. Una `List` expresa secuencia, un `Set` expresa unicidad, un `Map` expresa acceso por clave, una `PriorityQueue` expresa urgencia y un `Deque` puede expresar fila o pila según cómo lo uses. Los genéricos hacen que esos contratos sean comprobables por el compilador, y `equals`/`hashCode` hacen que las colecciones hash sean confiables.

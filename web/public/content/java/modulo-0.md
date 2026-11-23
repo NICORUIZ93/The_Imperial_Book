@@ -1766,6 +1766,16 @@ Resultados observados (resumen):
 - `cotizar`: genera recibo `AUR-2026-0001`, total `$45.38`, entrega `25/11/2026`, `timestampUtc=1795343400000`.
 - `diagnostico`: confirma diferencias `double` vs `Dinero`, desbordamiento `int`/`long`/`Math.multiplyExact`, `==` vs `equals`, caché `Integer`, copia defensiva de arreglos y comportamiento heredado de `Date/Calendar`.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `javac`/`java` no encontrados | JDK no instalado o PATH mal | `java -version` falla | Instalar JDK y configurar PATH/JAVA_HOME |
+| `class X is public, should be declared in a file named X.java` | Nombre archivo/clase no coincide | Error de compilación | Renombrar archivo o clase |
+| `NoSuchMethodError: main` | Firma/ubicación de `main` incorrecta | Ejecutar con `java` falla | Usar `public static void main(String[] args)` |
+| Error de encoding/caracteres raros | Encoding distinto | Salida ilegible | Compilar/guardar en UTF-8 |
+| Dependencias no resuelven | Build mal configurado | Gradle falla al resolver | Revisar `build.gradle.kts`, repos, wrapper |
+
 ## Cierre
 
 Tienda Aurora ya tiene una aplicación real que compila, se ejecuta y produce recibos correctos. El recorrido no fue una lista de características del lenguaje: cada tema resolvió un problema del mismo producto. El dinero se volvió un `long` de centavos porque `double` no cuadra. El SKU se volvió un objeto de valor porque la entrada del usuario es sucia. El catálogo copia sus arreglos porque compartir estado interno termina en bugs. El carrito expresa los tramos con un `switch` exhaustivo porque las reglas comerciales cambian y el compilador debe avisar si falta un caso. Las fechas usan `java.time` porque `Date` mezcla instantes, zonas y meses base cero.

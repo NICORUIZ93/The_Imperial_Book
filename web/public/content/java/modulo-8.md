@@ -425,6 +425,16 @@ Resultados observados:
 
 **Nota honesta:** se verificó la variante Gradle multi-módulo extraída del módulo. Los comandos Maven del contenido no se ejecutaron en esta corrida porque el entorno no tenía `mvn` instalado; la estructura POM quedó incluida en el proyecto para ejecución en un entorno con Maven.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| Build falla en otra máquina | Versiones de JDK/Gradle no fijadas | "funciona en mi máquina" | Wrapper + toolchain + versiones declaradas |
+| Dependencia no encontrada | Repos/config incompleta | Error de resolución | Verificar `repositories`, coordenadas, red/cache |
+| Ciclo de módulos | Dependencia bidireccional | Gradle/Maven falla | Extraer API común, invertir dependencia |
+| Tests no corren | JUnit platform mal configurada | "No tests found" | `useJUnitPlatform()` y dependencias correctas |
+| Artefacto con configuración sensible | Secretos en repo/build | Fuga en VCS/logs | Variables de entorno, vault, `.gitignore` |
+
 ## Cierre
 
 Maven y Gradle son dos interfaces para el mismo contrato: construir software de forma repetible. Aprende a leer sus archivos como mapas de dependencias, scopes, módulos y tareas/fases. Cuando entiendas ese mapa, cambiar de herramienta deja de ser una migración mística y pasa a ser una traducción.
