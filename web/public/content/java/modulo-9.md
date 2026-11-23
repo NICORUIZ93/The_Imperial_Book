@@ -1,20 +1,20 @@
-# Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito
+# Módulo 9: Pruebas con JUnit, Mockito y calidad
 
+El código que no se puede probar con confianza se vuelve caro de cambiar. Las pruebas no son un ritual después de programar: son feedback sobre el diseño. Si un servicio necesita cinco mocks difíciles de configurar, el diseño probablemente tiene demasiadas responsabilidades o acoplamientos. Si una regla de negocio se puede probar con un input y un output, el dominio está bien aislado.
+
+Este módulo construye `tienda-aurora-testing`: un servicio de pedidos con descuento, inventario externo, repositorio y auditoría. El dominio se prueba con JUnit 5, las dependencias se aíslan con Mockito, los casos repetitivos usan tests parametrizados y una regla simple se verifica con pruebas basadas en propiedades usando jqwik.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 9 — mapa visual](/visuals/temas/java/modulo-9-streams.html)
-
-Lectura: Un stream es lazy: las intermedias describen el pipeline y la terminal dispara la ejecución.
-
-
-Un cambio en Tienda Aurora puede romper el cálculo de descuentos, saltarse una auditoría o guardar un pedido rechazado como aprobado. Sin tests, ese error se descubre tarde y lejos del cambio. Con tests, se descubre cerca, con un nombre claro y una señal repetible. El objetivo no es “tener cobertura”, sino proteger contratos importantes con pruebas rápidas y confiables.
-
-Este módulo construye `tienda-aurora-testing`, un pequeño dominio de pedidos con una regla pura de descuento y un servicio que coordina inventario, persistencia y auditoría. Es el escenario justo para aprender la diferencia entre test unitario, mock y property-based test.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, JUnit Jupiter 5.13.4, Mockito 5.17.0, jqwik 1.9.2, macOS arm64. `./gradlew -q test` pasó con 11 tests, 0 fallas. Se configuró `mock-maker-subclass` para Mockito en este JDK.
-
-## Proyecto desde cero: tienda-aurora-testing
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-9-testing.html"
+    alt="JUnit, Mockito, tests parametrizados y propiedades"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Reglas unitarias, dobles para dependencias, tablas de casos y propiedades para invariantes.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -26,51 +26,24 @@ gradle --version
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m9/src/main/java/com/aurora/testing/{dominio,servicio}
-mkdir -p tienda-aurora-java-m9/src/test/java/com/aurora/testing
-cd tienda-aurora-java-m9
+mkdir -p tienda-aurora-testing/src/main/java/com/aurora/testing/{dominio,servicio}
+mkdir -p tienda-aurora-testing/src/test/java/com/aurora/testing/servicio
+mkdir -p tienda-aurora-testing/src/test/resources/mockito-extensions
+cd tienda-aurora-testing
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4, Mockito 5.17.0, jqwik 1.9.2. Se usó `mock-maker-subclass` para compatibilidad en este runtime.
 
-```text
-tienda-aurora-testing/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    ├── main/java/com/aurora/testing/
-    │   ├── dominio/
-    │   │   ├── Pedido.java
-    │   │   └── ResultadoPedido.java
-    │   └── servicio/
-    │       ├── AuditoriaService.java
-    │       ├── DescuentoService.java
-    │       ├── InventarioClient.java
-    │       ├── PedidoRepository.java
-    │       └── PedidoService.java
-    └── test/
-        ├── java/com/aurora/testing/servicio/
-        │   ├── DescuentoPropertyTest.java
-        │   ├── DescuentoServiceTest.java
-        │   └── PedidoServiceTest.java
-        └── resources/mockito-extensions/
-            └── org.mockito.plugins.MockMaker
-```
+## Código completo, archivo por archivo
 
-## Código completo
-
-Nombre del proyecto.
-
-**Archivo:** `settings.gradle.kts`
+#### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-testing"
 ```
 
-Configura Java 25, JUnit Jupiter 5.13.4, Mockito 5.17.0 y jqwik 1.9.2. `useJUnitPlatform()` es necesario porque JUnit Jupiter corre sobre JUnit Platform. `mockito-extensions/org.mockito.plugins.MockMaker` con `mock-maker-subclass` se usa en el proyecto verificado para evitar problemas del inline mock maker en este JDK.
-
-**Archivo:** `build.gradle.kts`
+#### `build.gradle.kts`
 
 ```kotlin
 plugins { java }
@@ -93,9 +66,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+tasks.test { useJUnitPlatform() }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -103,9 +74,15 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-Record de dominio con invariantes básicas. Los tests deben poder construir estados válidos fácilmente y fallar ante estados inválidos.
+#### `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker`
 
-**Archivo:** `src/main/java/com/aurora/testing/dominio/Pedido.java`
+```text
+mock-maker-subclass
+```
+
+## Dominio y puertos
+
+#### `Pedido.java`
 
 ```java
 package com.aurora.testing.dominio;
@@ -120,9 +97,7 @@ public record Pedido(String id, String clienteId, BigDecimal subtotal, int unida
 }
 ```
 
-Resultado explícito del procesamiento: id, total calculado y si fue aprobado.
-
-**Archivo:** `src/main/java/com/aurora/testing/dominio/ResultadoPedido.java`
+#### `ResultadoPedido.java`
 
 ```java
 package com.aurora.testing.dominio;
@@ -130,9 +105,33 @@ import java.math.BigDecimal;
 public record ResultadoPedido(String pedidoId, BigDecimal total, boolean aprobado) {}
 ```
 
-Regla de negocio pura: si hay 5 o más unidades aplica 10%. Al no depender de IO ni de repositorios, se prueba con tests unitarios rápidos.
+#### Puertos: `InventarioClient`, `PedidoRepository`, `AuditoriaService`
 
-**Archivo:** `src/main/java/com/aurora/testing/servicio/DescuentoService.java`
+Las interfaces definen dependencias externas. En tests, Mockito las dobla; en producción, una implementación real hablaría con BD o servicio remoto.
+
+```java
+package com.aurora.testing.servicio;
+public interface InventarioClient { boolean hayStock(String clienteId, int unidades); }
+```
+
+```java
+package com.aurora.testing.servicio;
+import com.aurora.testing.dominio.ResultadoPedido;
+public interface PedidoRepository { void guardar(ResultadoPedido resultado); }
+```
+
+```java
+package com.aurora.testing.servicio;
+import com.aurora.testing.dominio.Pedido;
+import java.math.BigDecimal;
+public interface AuditoriaService { void registrarAprobado(Pedido pedido, BigDecimal total); }
+```
+
+## Servicios
+
+#### `DescuentoService.java`
+
+Regla pura: fácil de probar sin mocks. 10% desde 5 unidades.
 
 ```java
 package com.aurora.testing.servicio;
@@ -149,45 +148,9 @@ public final class DescuentoService {
 }
 ```
 
-Puerto para consultar stock. En tests unitarios se reemplaza por un mock para no depender de red o base de datos.
+#### `PedidoService.java`
 
-**Archivo:** `src/main/java/com/aurora/testing/servicio/InventarioClient.java`
-
-```java
-package com.aurora.testing.servicio;
-public interface InventarioClient {
-    boolean hayStock(String clienteId, int unidades);
-}
-```
-
-Puerto de persistencia. El servicio lo invoca; el test verifica esa interacción.
-
-**Archivo:** `src/main/java/com/aurora/testing/servicio/PedidoRepository.java`
-
-```java
-package com.aurora.testing.servicio;
-import com.aurora.testing.dominio.ResultadoPedido;
-public interface PedidoRepository {
-    void guardar(ResultadoPedido resultado);
-}
-```
-
-Puerto de auditoría. Solo debe llamarse cuando el pedido se aprueba.
-
-**Archivo:** `src/main/java/com/aurora/testing/servicio/AuditoriaService.java`
-
-```java
-package com.aurora.testing.servicio;
-import com.aurora.testing.dominio.Pedido;
-import java.math.BigDecimal;
-public interface AuditoriaService {
-    void registrarAprobado(Pedido pedido, BigDecimal total);
-}
-```
-
-Orquesta la regla: consulta stock, calcula total con `DescuentoService`, guarda resultado y audita solo si fue aprobado. Es el caso ideal para Mockito: tiene dependencias externas y lógica de coordinación.
-
-**Archivo:** `src/main/java/com/aurora/testing/servicio/PedidoService.java`
+Orquesta dependencias. El test debe verificar comportamiento: guarda resultado, y solo audita cuando aprueba.
 
 ```java
 package com.aurora.testing.servicio;
@@ -220,9 +183,11 @@ public final class PedidoService {
 }
 ```
 
-Tests unitarios con JUnit Jupiter. `@BeforeEach` crea el servicio antes de cada test. `@Test` cubre casos felices y de error. `@ParameterizedTest` con `@CsvSource` evita duplicar la misma prueba para varios datos.
+## Tests
 
-**Archivo:** `src/test/java/com/aurora/testing/servicio/DescuentoServiceTest.java`
+#### `DescuentoServiceTest.java`
+
+JUnit 5: `@BeforeEach` crea estado limpio, `@Test` cubre casos puntuales, `@ParameterizedTest` + `@CsvSource` cubre tabla de casos sin duplicar código.
 
 ```java
 package com.aurora.testing.servicio;
@@ -278,9 +243,9 @@ class DescuentoServiceTest {
 }
 ```
 
-Tests con Mockito. `@ExtendWith(MockitoExtension.class)` inicializa mocks. `when(...)` define comportamiento del stub/mock. `verify(...)` comprueba interacciones. `never()` asegura que la auditoría no se llamó cuando el pedido no fue aprobado.
+#### `PedidoServiceTest.java`
 
-**Archivo:** `src/test/java/com/aurora/testing/servicio/PedidoServiceTest.java`
+Mockito aísla dependencias externas. `when` define comportamiento del doble; `verify` confirma interacciones relevantes. No se mockea `DescuentoService` porque es simple y determinista: usar el real da más confianza.
 
 ```java
 package com.aurora.testing.servicio;
@@ -300,14 +265,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PedidoServiceTest {
 
-    @Mock
-    private InventarioClient inventario;
-
-    @Mock
-    private PedidoRepository repository;
-
-    @Mock
-    private AuditoriaService auditoria;
+    @Mock private InventarioClient inventario;
+    @Mock private PedidoRepository repository;
+    @Mock private AuditoriaService auditoria;
 
     @Test
     void apruebaPedidoCuandoHayStock() {
@@ -341,9 +301,9 @@ class PedidoServiceTest {
 }
 ```
 
-Prueba basada en propiedades con jqwik. En vez de ejemplos sueltos, declara una regla: para cualquier subtotal positivo y unidades entre 1 y 100, el total no es negativo y no supera el subtotal. jqwik genera muchos casos automáticamente.
+#### `DescuentoPropertyTest.java`
 
-**Archivo:** `src/test/java/com/aurora/testing/servicio/DescuentoPropertyTest.java`
+jqwik genera muchas entradas y verifica una propiedad: el total nunca es negativo ni mayor que el subtotal. No reemplaza tests de ejemplo; los complementa.
 
 ```java
 package com.aurora.testing.servicio;
@@ -373,125 +333,49 @@ class DescuentoPropertyTest {
 }
 ```
 
-Configura Mockito para usar `mock-maker-subclass`. Es una decisión de compatibilidad del entorno verificado; se documenta porque afecta cómo corren los mocks.
+### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Básico · 35 min
 
-**Archivo:** `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker`
+JUnit Jupiter es el modelo de programación y ejecución moderno de JUnit. Las anotaciones principales son `@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll`, `@AfterAll`, `@DisplayName`, `@Disabled`, `@Nested`. El ciclo de vida por defecto crea una instancia nueva de la clase de test por cada método de test, lo que evita que un test contamine estado de otro.
 
-```text
-mock-maker-subclass
-```
+`@BeforeEach` prepara un estado fresco; debe ser simple. `@AfterEach` limpia recursos externos. `@BeforeAll/@AfterAll` son para setup costoso compartido y deben usarse con cuidado porque introducen acoplamiento entre tests. Las assertions (`assertEquals`, `assertThrows`, `assertTrue`, `assertAll`) expresan el comportamiento esperado. Un buen test tiene Arrange, Act, Assert claros.
 
-## Ejecutar
+**Confusión común:** un test sin assertions útiles. Si solo ejecuta código, puede pasar aunque el comportamiento esté mal. Otro error es probar demasiadas cosas en un test; cuando falla, no sabes por qué.
 
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q test
-```
+### Tema 2: Mockito — aislar dependencias · Intermedio · 45 min
 
-Salida esperada: el build termina sin fallos. En la verificación real se ejecutaron 11 tests (5 unitarios parametrizados/casos, 2 con Mockito, 1 property con 1000 intentos reportados por jqwik) y todos pasaron.
+Mockito crea dobles de prueba: objetos que simulan dependencias. `@Mock` crea el doble, `@ExtendWith(MockitoExtension.class)` integra el ciclo de vida. `when(...).thenReturn(...)` define comportamiento; `verify(...)` verifica interacciones. `never()` y `verifyNoMoreInteractions()` son útiles, pero no deben usarse por reflejo en cada test porque vuelven la prueba frágil.
 
-## Conceptos cubiertos
+El límite de Mockito es conceptual: no mockees lo que puedes usar real. `DescuentoService` es puro y barato; mockearlo solo duplica la implementación en el test. Mockea puertos lentos o externos: BD, HTTP, colas, reloj, filesystem si conviene. El mock debe representar el contrato de la dependencia, no detalles internos.
 
-### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
-
-JUnit Jupiter es la API de programación y extensión de JUnit 5/6. Un test es un método que verifica un contrato. `@Test` marca el método. `@BeforeEach` ejecuta preparación antes de cada test, lo que evita compartir estado mutable entre pruebas. `assertEquals`, `assertTrue` y `assertThrows` expresan lo que esperas.
-
-En `DescuentoServiceTest`, la regla se prueba sin base de datos ni HTTP:
-
-```java
-@BeforeEach
-void setUp() {
-    service = new DescuentoService();
-}
-
-@Test
-void aplicaDiezPorCientoDesdeCincoUnidades() {
-    BigDecimal total = service.aplicar(new BigDecimal("100.00"), 5);
-    assertEquals(new BigDecimal("90.00"), total);
-}
-```
-
-La ventaja de este test es que es barato y preciso. Si falla, el problema está en la regla de descuento, no en la red. `assertThrows` también importa: no solo prueba el “camino feliz”, sino el contrato de error.
-
-### Tema 2: Mockito — aislar dependencias · Avanzado · 45 min
-
-Mockito sirve para aislar la unidad bajo prueba cuando tiene dependencias. `PedidoService` necesita inventario, repositorio y auditoría. En un unit test no queremos una base real ni un servicio externo; queremos controlar esas dependencias y observar cómo interactúa el servicio.
-
-```java
-@ExtendWith(MockitoExtension.class)
-class PedidoServiceTest {
-    @Mock private InventarioClient inventario;
-    @Mock private PedidoRepository repository;
-    @Mock private AuditoriaService auditoria;
-
-    @Test
-    void apruebaPedidoCuandoHayStock() {
-        Pedido pedido = new Pedido("PED-1", "CLI-1", new BigDecimal("100.00"), 5);
-        when(inventario.hayStock("CLI-1", 5)).thenReturn(true);
-        PedidoService service = new PedidoService(new DescuentoService(), inventario, repository, auditoria);
-
-        ResultadoPedido resultado = service.procesar(pedido);
-
-        assertTrue(resultado.aprobado());
-        verify(repository).guardar(resultado);
-        verify(auditoria).registrarAprobado(pedido, new BigDecimal("90.00")); 
-    }
-}
-```
-
-`when(...).thenReturn(...)` define el comportamiento del doble. `verify(...)` comprueba que ocurrió una interacción. `never()` comprueba que no ocurrió. Un mock no es magia: es un objeto controlado para observar colaboraciones. No lo uses para reemplazar la lógica que realmente quieres probar; úsalo en las fronteras.
-
-**Nota de verificación:** Mockito 5.17.0 funcionó en este entorno con JDK 25 usando `mock-maker-subclass` en `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker`. Sin esa configuración, el inline mock maker falló al crear mocks de interfaces en el JDK verificado. Documenta siempre este tipo de ajuste de runtime de test.
+**Confusión común:** sobre-mockear convierte el test en un espejo de la implementación. El refactor cambia internals y los tests fallan aunque el comportamiento observable sea correcto.
 
 ### Tema 3: Tests parametrizados y cobertura · Intermedio · 35 min
 
-Un test parametrizado ejecuta la misma lógica con varios datos. Evita copiar/pegar cinco tests casi iguales. En `DescuentoServiceTest`, `@ParameterizedTest` y `@CsvSource` declaran entradas y salidas esperadas:
+`@ParameterizedTest` ejecuta el mismo test con múltiples entradas. `@CsvSource`, `@MethodSource`, `@ValueSource` y `@EnumSource` son fuentes comunes. Sirven para bordes y tablas de decisión: 1, 4, 5, 6 unidades; subtotal válido/inválido; casos límite.
 
-```java
-@ParameterizedTest
-@CsvSource({
-        "100.00,1,100.00",
-        "100.00,4,100.00",
-        "100.00,5,90.00",
-        "50.00,6,45.00",
-        "19.99,5,17.99"
-})
-void calculaTotalesEsperados(String subtotal, int unidades, String esperado) {
-    assertEquals(new BigDecimal(esperado), service.aplicar(new BigDecimal(subtotal), unidades));
-}
-```
+La cobertura de código mide líneas/ramas ejecutadas, no calidad. 100% de cobertura puede coexistir con assertions débiles. Úsala como señal de zonas no probadas, no como objetivo aislado. Prioriza cobertura de reglas de negocio, ramas de error y casos borde.
 
-La cobertura (JaCoCo, por ejemplo) mide qué líneas o ramas ejecutaron los tests. Es útil para encontrar zonas ciegas, pero una cobertura alta no garantiza buen testing. Puedes ejecutar una línea sin afirmar nada importante. Usa cobertura como radar, no como objetivo absoluto.
+### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 35 min
 
-### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 40 min
+Una prueba basada en propiedades define un invariante que debe cumplirse para muchas entradas generadas. En vez de “para 100.00 y 5 unidades espero 90.00”, dices “para cualquier subtotal positivo y cantidad válida, el total no es negativo ni mayor que el subtotal”. jqwik genera valores, encuentra contraejemplos y puede hacer shrinking para reducir el caso mínimo que falla.
 
-Los tests basados en ejemplos dicen “para este input, este output”. Las pruebas basadas en propiedades dicen “para todos los inputs de este dominio, esta regla debe cumplirse”. jqwik genera muchos valores y busca contraejemplos.
+Las propiedades buenas son generales pero no triviales. Ejemplos: serializar/deserializar devuelve equivalente, ordenar es idempotente, total nunca negativo, aplicar descuento no supera subtotal. Las propiedades no eliminan tests de ejemplo; los ejemplos documentan casos concretos, las propiedades exploran el espacio.
 
-```java
-@Property
-void totalNuncaEsNegativoNiMayorQueSubtotal(
-        @ForAll @Positive double subtotalRaw,
-        @ForAll @IntRange(min = 1, max = 100) int unidades) {
-    BigDecimal subtotal = BigDecimal.valueOf(subtotalRaw);
-    BigDecimal total = service.aplicar(subtotal, unidades);
-    assertTrue(total.signum() >= 0);
-    assertTrue(total.compareTo(subtotal.setScale(2, java.math.RoundingMode.HALF_UP)) <= 0);
-}
-```
-
-Esta propiedad no reemplaza los ejemplos concretos; los complementa. Los ejemplos son fáciles de leer y depurar. Las propiedades cubren mucho más terreno. En la ejecución verificada, jqwik reportó `tries = 1000, checks = 1000`.
+**Nota honesta:** el generador depende de restricciones. Si permites NaN, infinitos o escalas absurdas, puedes probar algo distinto a tu dominio. Acota los generadores al contrato real.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m9` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m9` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4, Mockito 5.17.0, jqwik 1.9.2).
 
 ```bash
 ./gradlew -q test
 ```
 
-Resultados observados:
+Resultado observado:
 
-- `test`: 0 fallas. El módulo es un proyecto de pruebas (JUnit/Mockito); la verificación principal es la suite verde.
+- `test`: 0 fallas. Incluye tests JUnit, parametrizados, Mockito y propiedad jqwik.
+
+**Nota honesta:** se configuró `mock-maker-subclass` para compatibilidad del runtime. En entornos con agente Mockito/Byte Buddy soportado, puede no ser necesario.
 
 ## Errores comunes y diagnóstico
 
@@ -505,13 +389,12 @@ Resultados observados:
 
 ## Cierre
 
-Un buen suite de tests mezcla niveles: unitarios rápidos para reglas puras, tests con mocks para coordinación entre componentes, parametrizados para tablas de casos y propiedades para invariantes. La clave es que cada test tenga un motivo claro y falle por una razón útil.
+Una suite de pruebas útil es rápida, legible y sensible a regresiones reales. JUnit da estructura, Mockito aísla bordes, los parametrizados cubren tablas, y las propiedades buscan invariantes. El criterio es siempre el mismo: probar comportamiento que importe.
 
 ## Checklist
 
-- Cada test tiene un nombre que describe el contrato o comportamiento.
-- Uso `@BeforeEach` para estado común, sin compartir estado mutable entre tests.
-- Uso mocks en fronteras; no mockeo la lógica que estoy probando.
-- Uso tests parametrizados para evitar duplicación de casos.
-- Uso cobertura como indicador, no como meta vacía.
-- Considero property-based tests cuando hay invariantes que deben valer para muchos inputs.
+- [ ] Escribo tests con Arrange/Act/Assert claro.
+- [ ] Mockeo dependencias externas, no reglas puras simples.
+- [ ] Uso parametrizados para tablas de casos.
+- [ ] Uso propiedades para invariantes generales.
+- [ ] No confundo cobertura con confianza.
