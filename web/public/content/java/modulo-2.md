@@ -8,7 +8,7 @@ Un arreglo resuelve almacenamiento contiguo, pero falla cuando el dominio pide d
 
 ### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 40 min
 
-Caso guía: registro de envíos. Necesitas preservar orden de llegada, evitar IDs duplicados y consultar estado por código. Una sola estructura no expresa las tres intenciones con la misma claridad.
+**Caso guía.** registro de envíos. Necesitas preservar orden de llegada, evitar IDs duplicados y consultar estado por código. Una sola estructura no expresa las tres intenciones con la misma claridad.
 
 ```mermaid
 flowchart LR
@@ -24,9 +24,9 @@ flowchart LR
   M --> TM[TreeMap]
 ```
 
-#### List
+List
 
-**Definición formal.** `List<E>` es una colección ordenada que permite duplicados y acceso posicional por índice.
+**Definición.** `List<E>` es una colección ordenada que permite duplicados y acceso posicional por índice.
 
 **Contrato/reglas.** Mantiene orden de inserción (salvo operaciones explícitas). `get(i)` es O(1) en `ArrayList`, O(n) en `LinkedList`. `contains` es O(n).
 
@@ -63,9 +63,9 @@ java DemoList
 
 **Verificación (JDK 27, 2026-05-22).** `[A, B, A]`, `A`.
 
-#### Set
+Set
 
-**Definición formal.** `Set<E>` modela una colección sin duplicados; la unicidad depende de `equals/hashCode` (`HashSet`) o comparación (`TreeSet`).
+**Definición.** `Set<E>` modela una colección sin duplicados; la unicidad depende de `equals/hashCode` (`HashSet`) o comparación (`TreeSet`).
 
 **Contrato/reglas.** `HashSet`: O(1) promedio, sin orden. `LinkedHashSet`: conserva inserción. `TreeSet`: ordenado, O(log n), requiere elementos comparables/comparator.
 
@@ -97,9 +97,9 @@ java DemoSet
 
 **Verificación (JDK 27, 2026-05-22).** `2`, `true`.
 
-#### Map
+Map
 
-**Definición formal.** `Map<K,V>` asocia claves únicas a valores; no es `Collection`.
+**Definición.** `Map<K,V>` asocia claves únicas a valores; no es `Collection`.
 
 **Contrato/reglas.** `put` sobre clave existente reemplaza valor. `HashMap`: O(1) promedio. `LinkedHashMap`: orden de inserción/acceso. `TreeMap`: ordenado por clave.
 
@@ -133,7 +133,7 @@ java DemoMap
 
 **Verificación (JDK 27, 2026-05-22).** `ENTREGADO`, `a`.
 
-#### Ejemplo integrado
+Ejemplo integrado
 
 ```bash
 mkdir -p /tmp/j2-t1 && cd /tmp/j2-t1
@@ -167,7 +167,7 @@ java ColeccionesBasicas
 
 ### Tema 2: El contrato de equals y hashCode · Intermedio · 45 min
 
-Caso guía: usas `Guia` como clave en `HashMap` o elemento en `HashSet`. Si `equals/hashCode` están mal, el mapa "pierde" datos o el set acepta duplicados lógicos.
+**Caso guía.** usas `Guia` como clave en `HashMap` o elemento en `HashSet`. Si `equals/hashCode` están mal, el mapa "pierde" datos o el set acepta duplicados lógicos.
 
 ```mermaid
 flowchart TD
@@ -177,9 +177,9 @@ flowchart TD
   E -->|false| N[no encontrado]
 ```
 
-#### `equals`
+`equals`
 
-**Definición formal.** `equals` define igualdad lógica entre objetos. Debe ser reflexiva, simétrica, transitiva, consistente y devolver false frente a null (salvo casos especiales).
+**Definición.** `equals` define igualdad lógica entre objetos. Debe ser reflexiva, simétrica, transitiva, consistente y devolver false frente a null (salvo casos especiales).
 
 **Cuándo usar.** Cuando dos objetos distintos representan la misma entidad lógica.
 
@@ -206,9 +206,9 @@ java DemoEq
 
 **Verificación (JDK 27, 2026-05-22).** `true`.
 
-#### `hashCode`
+`hashCode`
 
-**Definición formal.** `hashCode` devuelve un entero usado por estructuras hash para ubicar buckets.
+**Definición.** `hashCode` devuelve un entero usado por estructuras hash para ubicar buckets.
 
 **Contrato.** Si `a.equals(b)` es true, `a.hashCode() == b.hashCode()` debe ser true. Lo inverso no es obligatorio.
 
@@ -235,9 +235,9 @@ java DemoHash
 
 **Verificación (JDK 27, 2026-05-22).** `1`.
 
-#### Claves mutables y el mapa que pierde entradas
+Claves mutables y el mapa que pierde entradas
 
-**Definición formal.** Una clave mutable es un objeto cuya identidad lógica/campos usados por `equals/hashCode` cambian después de insertarse en una estructura hash.
+**Definición.** Una clave mutable es un objeto cuya identidad lógica/campos usados por `equals/hashCode` cambian después de insertarse en una estructura hash.
 
 **Cómo falla.** El bucket se calculó con el hash viejo; tras mutar, `containsKey/get` buscan en otro bucket y "no encuentran" la entrada.
 
@@ -285,11 +285,11 @@ java DemoMut
 
 ### Tema 3: Genéricos, wildcards y type erasure · Intermedio · 45 min
 
-Caso guía: quieres una caja/repo reutilizable sin perder seguridad de tipos y sin caer en `List<Object>`.
+**Caso guía.** quieres una caja/repo reutilizable sin perder seguridad de tipos y sin caer en `List<Object>`.
 
-#### Genéricos
+Genéricos
 
-**Definición formal.** Los genéricos parametrizan tipos (`class Box<T>`, `List<String>`) permitiendo reutilización con comprobación en compilación.
+**Definición.** Los genéricos parametrizan tipos (`class Box<T>`, `List<String>`) permitiendo reutilización con comprobación en compilación.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -313,9 +313,9 @@ java DemoGen
 
 **Verificación (JDK 27, 2026-05-22).** `HOLA`.
 
-#### Wildcards
+Wildcards
 
-**Definición formal.** `? extends T` (covariante para lectura), `? super T` (contravariante para escritura), `?` (desconocido). Regla PECS: Producer Extends, Consumer Super.
+**Definición.** `? extends T` (covariante para lectura), `? super T` (contravariante para escritura), `?` (desconocido). Regla PECS: Producer Extends, Consumer Super.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -342,9 +342,9 @@ java DemoWc
 
 **Verificación (JDK 27, 2026-05-22).** `6.0`.
 
-#### Type erasure
+Type erasure
 
-**Definición formal.** En Java, los genéricos se borran en compilación (erasure): en runtime `List<String>` y `List<Integer>` son `List`.
+**Definición.** En Java, los genéricos se borran en compilación (erasure): en runtime `List<String>` y `List<Integer>` son `List`.
 
 **Implicación.** No puedes hacer `new T()`, `instanceof List<String>`, ni crear arreglos genéricos directamente.
 
@@ -372,11 +372,11 @@ java DemoEr
 
 ### Tema 4: Comparable vs Comparator, e iteración · Intermedio · 40 min
 
-Caso guía: mostrar guías por prioridad natural o por fecha/vista alternativa sin tocar la clase.
+**Caso guía.** mostrar guías por prioridad natural o por fecha/vista alternativa sin tocar la clase.
 
-#### Comparable
+Comparable
 
-**Definición formal.** `Comparable<T>` define el orden natural del tipo con `compareTo`.
+**Definición.** `Comparable<T>` define el orden natural del tipo con `compareTo`.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -399,9 +399,9 @@ java DemoCmp
 
 **Verificación (JDK 27, 2026-05-22).** `[Guia[codigo=A], Guia[codigo=B]]`.
 
-#### Comparator
+Comparator
 
-**Definición formal.** `Comparator<T>` define un orden externo/alternativo sin modificar la clase.
+**Definición.** `Comparator<T>` define un orden externo/alternativo sin modificar la clase.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -424,9 +424,9 @@ java DemoCmpr
 
 **Verificación (JDK 27, 2026-05-22).** `B`.
 
-#### Iteración e Iterator
+Iteración e Iterator
 
-**Definición formal.** `Iterator` permite recorrer y eliminar de forma segura durante la iteración; for-each usa `Iterator/Iterable` por debajo.
+**Definición.** `Iterator` permite recorrer y eliminar de forma segura durante la iteración; for-each usa `Iterator/Iterable` por debajo.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
