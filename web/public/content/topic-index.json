@@ -7440,6 +7440,30 @@
     ],
     "8": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "docker-compose.yml (Keycloak)",
+        "fragment": "docker-compose-yml-keycloak"
+      },
+      {
         "title": "Spring Security filter chain",
         "fragment": "tema-1-spring-security-filter-chain"
       },

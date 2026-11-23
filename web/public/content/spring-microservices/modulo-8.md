@@ -2,47 +2,149 @@
 
 La seguridad en sistemas distribuidos no es una feature: es una propiedad del sistema. Cada request cruza redes, servicios e identidades; asumir confianza por "estar adentro" es el camino rápido al incidente. Este módulo construye defensa en profundidad con Spring Security, OAuth2/OIDC, RBAC, mTLS/Zero-Trust, secretos y cadena de suministro, usando Tienda Aurora como proyecto integrador.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes ejecutan lógica de autenticación/autorización, validación de claims, RBAC/ownership y gates de secretos/CVE en Java puro. Spring Security, Keycloak, Vault, mTLS y herramientas SBOM/CVE reales requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los smokes ejecutan lógica de autenticación/autorización, validación de claims, RBAC/ownership y gates de secretos/CVE en Java puro. Spring Security, Keycloak, Vault, mTLS y herramientas SBOM/CVE reales requieren infraestructura; se incluyen notas de verificación honestas.
+
+## Proyecto desde cero: tienda-aurora-security
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para Keycloak/Vault si se usan)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-security/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── src/
+│   ├── main/
+│   │   ├── java/com/aurora/security/
+│   │   │   ├── SecurityApplication.java
+│   │   │   ├── config/SecurityConfig.java
+│   │   │   ├── controller/OrderController.java
+│   │   │   └── service/OrderService.java
+│   │   └── resources/
+│   │       └── application.yml
+│   └── test/
+│       └── java/com/aurora/security/
+│           └── SecuritySmokeTest.java
+└── docker-compose.yml
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-security"
+```
+
+### application.yml
+
+```yaml
+spring:
+  application:
+    name: security-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://idp.tienda-aurora.local/realms/aurora
+
+server:
+  port: 8080
+```
+
+### docker-compose.yml (Keycloak)
+
+```yaml
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    command: start-dev
+```
 
 ### Tema 1: Spring Security filter chain · Intermedio · 150 min
 
-## Spring Security filter chain: de la puerta lateral al control explícito
+## Spring Security filter chain: control explícito
 
 Tienda Aurora expone `/api/orders` para clientes y `/actuator/health` para el orquestador. Un desarrollador, apurado, deshabilita seguridad para "probar rápido" y olvida reactivarla. A la semana, alguien descubre el endpoint y crea pedidos sin autenticación. El frontend tenía un botón oculto, pero la API no tenía control. El síntoma es un 200 donde debía haber 401. La causa es confundir interfaz con seguridad.
 
 Piensa en un edificio con recepcionista, torniquete y guardias por piso. No importa que la puerta lateral "no esté en el mapa": cada acceso pasa por controles. La filter chain de Spring Security es esa secuencia de controles: cada request entra por la cadena y puede ser autenticada, autorizada o rechazada antes de tocar tu lógica de negocio.
 
-La construcción comienza con la regla mínima de acceso y la cadena explícita en Spring Boot:
-
 ```java
-public class SecuritySmoke {
+public class SecurityExample {
     static int status(String path, boolean auth) {
         if (path.equals("/health")) return 200;
         return auth ? 200 : 401;
     }
 
     public static void main(String[] args) {
-        System.out.println(status("/health", false));
-        System.out.println(status("/orders", false));
-        System.out.println(status("/orders", true));
+        System.out.println("health-no-auth=" + status("/health", false));
+        System.out.println("orders-no-auth=" + status("/orders", false));
+        System.out.println("orders-with-auth=" + status("/orders", true));
     }
 }
 ```
 
 ```bash
-javac SecuritySmoke.java
-java SecuritySmoke
+javac SecurityExample.java
+java SecurityExample
 ```
 
 Salida esperada:
 
 ```text
-200
-401
-200
+health-no-auth=200
+orders-no-auth=401
+orders-with-auth=200
 ```
 
-En Spring Boot 3/4, la configuración explícita es:
+En Spring Boot, la configuración explícita es:
 
 ```java
 @Bean
@@ -72,7 +174,7 @@ Un JWT es como un pase de backstage firmado. Mirar el pase no basta: hay que ver
 ```java
 import java.util.*;
 
-public class JwtSmoke {
+public class JwtExample {
     static boolean valid(Map<String, Object> claims, String aud) {
         return "iss1".equals(claims.get("iss"))
             && aud.equals(claims.get("aud"))
@@ -80,31 +182,29 @@ public class JwtSmoke {
     }
 
     public static void main(String[] args) {
-        System.out.println(valid(Map.of("iss", "iss1", "aud", "orders", "exp", 200), "orders"));
-        System.out.println(valid(Map.of("iss", "bad", "aud", "orders", "exp", 200), "orders"));
+        System.out.println("valid-token=" + valid(Map.of("iss", "iss1", "aud", "orders", "exp", 200), "orders"));
+        System.out.println("bad-issuer=" + valid(Map.of("iss", "bad", "aud", "orders", "exp", 200), "orders"));
     }
 }
 ```
 
 ```bash
-javac JwtSmoke.java
-java JwtSmoke
+javac JwtExample.java
+java JwtExample
 ```
 
 Salida esperada:
 
 ```text
-true
-false
+valid-token=true
+bad-issuer=false
 ```
 
-El primer token tiene issuer correcto y expiración futura. El segundo tiene issuer incorrecto. En producción, Spring Security valida firma con JWKS del issuer, `iss`, `aud`, `exp`, `nbf` y algoritmo permitido. Nunca aceptes `alg=none`.
-
-El error más común es solo decodificar JWT. El síntoma es token forjado o expirado aceptado. La causa es no validar firma/claims. La corrección es validar firma JWKS, `iss`, `aud`, `exp`, `nbf`, `alg` permitido.
+En producción, Spring Security valida firma con JWKS del issuer, `iss`, `aud`, `exp`, `nbf` y algoritmo permitido. Nunca aceptes `alg=none`. El error más común es solo decodificar JWT: el síntoma es token forjado o expirado aceptado.
 
 ### Tema 3: RBAC, scopes y mTLS/Zero-Trust · Avanzado · 150 min
 
-## RBAC, scopes y mTLS/Zero-Trust: de autenticación a autorización real
+## RBAC, scopes y mTLS/Zero-Trust
 
 Un usuario autenticado descubre que puede borrar pedidos ajenos cambiando el ID en la URL. El token era válido, pero la API solo verificó login. En otro incidente, un servicio interno falso en la red llama a un endpoint interno porque "la red es privada".
 
@@ -113,31 +213,31 @@ Autenticación sin autorización es media cerradura. Red privada sin identidad e
 ```java
 import java.util.*;
 
-public class RbacSmoke {
+public class RbacExample {
     static boolean canDelete(Set<String> roles) { return roles.contains("ADMIN"); }
     static boolean canRead(String owner, String userId) { return owner.equals(userId); }
 
     public static void main(String[] args) {
-        System.out.println(canDelete(Set.of("USER")));
-        System.out.println(canDelete(Set.of("ADMIN")));
-        System.out.println(canRead("u1", "u1"));
-        System.out.println(canRead("u1", "u2"));
+        System.out.println("user-delete=" + canDelete(Set.of("USER")));
+        System.out.println("admin-delete=" + canDelete(Set.of("ADMIN")));
+        System.out.println("owner-read=" + canRead("u1", "u1"));
+        System.out.println("other-read=" + canRead("u1", "u2"));
     }
 }
 ```
 
 ```bash
-javac RbacSmoke.java
-java RbacSmoke
+javac RbacExample.java
+java RbacExample
 ```
 
 Salida esperada:
 
 ```text
-false
-true
-true
-false
+user-delete=false
+admin-delete=true
+owner-read=true
+other-read=false
 ```
 
 RBAC cubre permisos gruesos. Ownership/ABAC cubre reglas por recurso. mTLS autentica workloads. Zero-Trust combina identidad, least privilege, cifrado y observabilidad.
@@ -146,14 +246,14 @@ El error más común es solo validar login. El síntoma es usuario autenticado q
 
 ### Tema 4: Vault, gestión de secretos, SBOM y CVE scanning · Intermedio · 120 min
 
-## Vault, secretos, SBOM y CVE scanning: de secreto en Git a cadena de suministro segura
+## Vault, secretos, SBOM y CVE scanning
 
 La contraseña de base de datos está en `application-prod.yml` dentro del repositorio. Alguien hace fork por error y el secreto queda expuesto. En paralelo, una dependencia con CVE crítica entra por una actualización menor y nadie lo detecta antes del release.
 
 Un secreto es como la llave maestra: no se deja pegada en la pared del pasillo. Se guarda en una caja fuerte con acceso auditado. El SBOM es la lista de ingredientes del producto; el CVE scan es revisar si algún ingrediente tiene retiro sanitario.
 
 ```java
-public class VaultSmoke {
+public class VaultExample {
     static String getSecret(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("missing");
         return "***";
@@ -161,24 +261,24 @@ public class VaultSmoke {
     static boolean releaseBlocked(int criticalCves) { return criticalCves > 0; }
 
     public static void main(String[] args) {
-        System.out.println(getSecret("db"));
-        try { getSecret(""); } catch (Exception e) { System.out.println(e.getMessage()); }
-        System.out.println(releaseBlocked(1));
+        System.out.println("secret=" + getSecret("db"));
+        try { getSecret(""); } catch (Exception e) { System.out.println("error=" + e.getMessage()); }
+        System.out.println("release-blocked=" + releaseBlocked(1));
     }
 }
 ```
 
 ```bash
-javac VaultSmoke.java
-java VaultSmoke
+javac VaultExample.java
+java VaultExample
 ```
 
 Salida esperada:
 
 ```text
-***
-missing
-true
+secret=***
+error=missing
+release-blocked=true
 ```
 
 Vault entrega credenciales DB con TTL. En CI, Syft genera SBOM y Trivy/Grype escanean. Una CVE crítica bloquea el release. El secreto se inyecta en runtime, nunca en Git.
@@ -187,7 +287,7 @@ El error más común es secreto en repositorio. El síntoma es credencial filtra
 
 ## Cierre
 
-La seguridad distribuida se construye en capas: identidad, autorización, transporte, secretos y cadena de suministro. Ninguna capa reemplaza a otra. El objetivo no es "estar seguro", sino reducir riesgo, detectar fallos rápido y limitar el impacto cuando algo sale mal.
+La seguridad distribuida se construye en capas: identidad, autorización, transporte, secretos y cadena de suministro. Ninguna capa reemplaza a otra. El objetivo no es "estar seguro", sino reducir riesgo, detectar fallos rápido y limitar el impacto cuando algo sale mal. Tienda Aurora se protege con Spring Security + OAuth2/OIDC, RBAC por recurso, mTLS entre servicios, Vault para secretos y SBOM/CVE scan en CI.
 
 ## Checklist
 
