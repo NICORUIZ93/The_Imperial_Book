@@ -1,26 +1,22 @@
 # Módulo 3: Excepciones y manejo de recursos
 
-
-## Visual del módulo
-
-**Herramienta (diagram-design, estático):** [Modulo 3 — mapa visual](/visuals/temas/java/modulo-3-oop-objetos.html)
-
-Lectura: Un objeto agrupa estado y comportamiento; la API pública protege invariantes.
-
-
 Tienda Aurora ya puede vender, pero el mundo real no le entrega datos perfectos. Un CSV llega con columnas rotas, un operador pide reservar más stock del disponible, un archivo no existe, o un campo numérico trae texto. Si el sistema responde mal a esos casos, el fallo es peor que una excepción: puede quedar un estado inconsistente, ocultar el error original o darle al operador un mensaje inútil.
 
 Las excepciones en Java son el mecanismo para separar el flujo normal del flujo de error. No son “eventos malos” genéricos; son objetos con tipo, mensaje, causa y traza. El tipo comunica qué clase de problema ocurrió. El mensaje comunica el contexto. La causa conserva el error de más bajo nivel que lo originó. La traza dice por dónde pasó. Un buen diseño de excepciones no intenta atrapar todo lo antes posible: decide dónde un error se puede recuperar, dónde debe traducirse y dónde debe subir con contexto.
 
-En este módulo construimos `tienda-aurora-excepciones`, una pequeña aplicación que importa productos desde CSV y reserva stock. El mismo proyecto muestra los tres casos que un desarrollador Java necesita distinguir: fallos externos que el llamador debe decidir cómo manejar, violaciones de datos o reglas de dominio que deben expresarse con precisión, y recursos que deben cerrarse incluso cuando algo sale mal.
+En este módulo construimos `tienda-aurora-excepciones`, una pequeña app de línea de comandos que importa productos desde CSV y reserva stock. El proyecto es deliberadamente pequeño, pero toca las decisiones que importan: qué excepción es checked y cuál unchecked, cómo cerrar recursos con `try-with-resources`, cómo crear excepciones propias con contexto, y por qué “tragarse” una excepción es una forma de corromper el diagnóstico.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `./gradlew -q build` usando `--release 25` y `-Xlint:all -Werror`. Las salidas de `importar`, `reservar` y `auditoria` son transcripciones reales de la ejecución local.
+## Visual del módulo
 
-## Proyecto desde cero: tienda-aurora-excepciones
-
-El proyecto tiene tres comandos. `importar` lee un CSV, acepta las filas válidas y reporta las filas rechazadas sin tumbar toda la importación. `reservar` carga un catálogo desde CSV y aplica una reserva, respondiendo con una excepción de dominio cuando el dato o el stock no son válidos. `auditoria` ejecuta casos controlados para mostrar el comportamiento de checked exceptions, unchecked exceptions, `try-with-resources`, excepciones suprimidas, preservación de causa y propagación correcta.
-
-La decisión de diseño central es la frontera. El dominio y el importador no imprimen ni silencian errores por su cuenta; lanzan excepciones con significado. La CLI, que es la frontera con el usuario, decide cómo presentarlas.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-3-excepciones.html"
+    alt="Mapa de excepciones Java: checked, unchecked, try-with-resources y preservación de causa"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>El tipo define el contrato, el mensaje da contexto, la causa preserva el origen y try-with-resources garantiza el cierre.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -34,13 +30,17 @@ gradle --version
 
 ## Bootstrap
 
+Desde un directorio de trabajo vacío:
+
 ```bash
 mkdir -p tienda-aurora-excepciones/src/main/java/com/aurora/excepciones/{dominio,importacion,servicio}
 cd tienda-aurora-excepciones
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
+
+## Estructura final
 
 ```text
 tienda-aurora-excepciones/
@@ -48,29 +48,30 @@ tienda-aurora-excepciones/
 ├── settings.gradle.kts
 ├── productos.csv
 ├── productos-buenos.csv
-└── src/
-    └── main/
-        └── java/
-            └── com/aurora/excepciones/
-                ├── TiendaAuroraExcepcionesApp.java
-                ├── dominio/
-                │   ├── DatoInvalidoException.java
-                │   ├── Dinero.java
-                │   ├── Producto.java
-                │   ├── ProductoNoEncontradoException.java
-                │   ├── Sku.java
-                │   └── StockInsuficienteException.java
-                ├── importacion/
-                │   ├── ImportacionException.java
-                │   ├── ImportadorProductos.java
-                │   ├── LineaInvalidaException.java
-                │   └── ResultadoImportacion.java
-                └── servicio/
-                    ├── Catalogo.java
-                    └── ServicioPedidos.java
+└── src/main/java/com/aurora/excepciones/
+    ├── TiendaAuroraExcepcionesApp.java
+    ├── dominio/
+    │   ├── DatoInvalidoException.java
+    │   ├── Dinero.java
+    │   ├── Producto.java
+    │   ├── ProductoNoEncontradoException.java
+    │   ├── Sku.java
+    │   └── StockInsuficienteException.java
+    ├── importacion/
+    │   ├── ImportacionException.java
+    │   ├── ImportadorProductos.java
+    │   ├── LineaInvalidaException.java
+    │   └── ResultadoImportacion.java
+    └── servicio/
+        ├── Catalogo.java
+        └── ServicioPedidos.java
 ```
 
-## build.gradle.kts
+## Código completo, archivo por archivo
+
+##### `build.gradle.kts`
+
+Configura Java 25 por toolchain, la aplicación CLI y compilación estricta. `-Werror` evita que warnings se acumulen como deuda silenciosa.
 
 ```kotlin
 plugins {
@@ -99,23 +100,17 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
 }
-
 ```
 
-El build usa Java 25, aplicación de consola y compilación estricta. No hay dependencias externas: el objetivo es entender el modelo de excepciones del JDK y la forma de estructurar errores en código propio.
-
-## settings.gradle.kts
+##### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-excepciones"
-
 ```
 
-## Archivos de datos
+##### Datos de prueba
 
-El módulo usa dos CSV para que los comandos sean reproducibles sin editar código. `productos.csv` contiene filas válidas y filas rotas a propósito; `productos-buenos.csv` contiene solo filas válidas para el flujo de reserva.
-
-**Archivo:** `productos.csv`
+`productos.csv` incluye filas válidas e inválidas para observar rechazos sin abortar toda la importación:
 
 ```csv
 sku;nombre;precio;stock
@@ -126,7 +121,7 @@ TAZ-0002;Taza Aurora;precio;2
 FIL-0004;Filtros x100;4.75;10
 ```
 
-**Archivo:** `productos-buenos.csv`
+`productos-buenos.csv` contiene solo datos válidos para la demo de reserva:
 
 ```csv
 sku;nombre;precio;stock
@@ -134,16 +129,77 @@ CAF-0001;Café Aurora;12.50;3
 FIL-0004;Filtros x100;4.75;10
 ```
 
-## Código completo
+## Dominio
 
-El código se lee mejor desde el dominio hacia afuera. Primero están los tipos y las excepciones que describen el problema. Después la importación, que traduce fallos de E/S y de formato. Luego el servicio, que aplica reglas sin atrapar errores prematuramente. Al final está la CLI, que es donde los errores se convierten en mensajes para el usuario.
+El dominio modela reglas de negocio. Sus errores indican contratos violados o estados de negocio que la capa superior debe presentar con claridad. Aquí conviven excepciones unchecked: si llegan, normalmente el llamador pasó datos inválidos o pidió una operación imposible según el estado actual.
 
-#### Dominio
+##### `Sku.java`
 
+`Sku` valida formato `AAA-0000` en el constructor. La normalización (`strip`, mayúsculas, reemplazo de espacio/guion bajo) ocurre antes de validar. Si el dato es inválido, lanza `DatoInvalidoException` con el valor recibido. Esto evita que un SKU mal formado circule por el sistema.
 
-`Dinero` sigue siendo un value object inmutable en centavos. La novedad de este módulo está en el borde: cuando el texto no representa un importe válido, `de(String)` no deja escapar un `NumberFormatException` crudo; lo traduce a `DatoInvalidoException` preservando la causa. Así el dominio habla el idioma del problema de entrada, y el diagnóstico conserva la excepción técnica original.
+```java
+package com.aurora.excepciones.dominio;
 
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/Dinero.java`
+import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+public record Sku(String valor) {
+
+    private static final Pattern FORMATO = Pattern.compile("[A-Z]{3}-\\d{4}");
+
+    public Sku {
+        Objects.requireNonNull(valor, "valor");
+        String limpio = valor.strip()
+                .toUpperCase(Locale.ROOT)
+                .replace(" ", "")
+                .replace("_", "-");
+        if (!FORMATO.matcher(limpio).matches()) {
+            throw new DatoInvalidoException("SKU inválido: '" + valor + "' (formato AAA-0000)");
+        }
+        valor = limpio;
+    }
+
+    public static Sku de(String crudo) {
+        return new Sku(crudo);
+    }
+
+    @Override
+    public String toString() {
+        return valor;
+    }
+}
+```
+
+##### `DatoInvalidoException.java`
+
+Excepción unchecked de base para datos/precondiciones inválidas. Extiende `RuntimeException` porque representa un problema que el llamador puede evitar pasando datos correctos; obligar a declararla en todos los métodos volvería ruidoso el código sin añadir recuperabilidad real. Incluye constructor con causa para preservar el error técnico original cuando se traduce.
+
+```java
+package com.aurora.excepciones.dominio;
+
+/**
+ * Violación de datos o precondición. Es unchecked porque el llamador puede y
+ * debe evitarla pasando datos válidos; si llega a ocurrir, es un error de uso
+ * o de entrada que debe corregirse, no una condición externa recuperable.
+ */
+public class DatoInvalidoException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    public DatoInvalidoException(String mensaje) {
+        super(mensaje);
+    }
+
+    public DatoInvalidoException(String mensaje, Throwable causa) {
+        super(mensaje, causa);
+    }
+}
+```
+
+##### `Dinero.java`
+
+Value object inmutable en centavos. El punto clave del módulo es `de(String)`: si `BigDecimal` falla por formato o escala, captura `NumberFormatException | ArithmeticException` y lanza `DatoInvalidoException` con la causa. Así el dominio no filtra detalles técnicos sin contexto, pero tampoco pierde el diagnóstico.
 
 ```java
 package com.aurora.excepciones.dominio;
@@ -218,47 +274,55 @@ public final class Dinero implements Comparable<Dinero> {
 }
 ```
 
-`Sku` valida el formato en el constructor compacto del record. Si el SKU es inválido, lanza una excepción de dominio unchecked. Es una precondición: el llamador debe entregar un dato con forma válida, y si no lo hace, el error debe ser visible de inmediato.
+##### `ProductoNoEncontradoException.java` y `StockInsuficienteException.java`
 
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/Sku.java`
+Excepciones de dominio con contexto de negocio. `ProductoNoEncontradoException` lleva el `Sku`; `StockInsuficienteException` lleva SKU, disponible y solicitado. Eso permite a la CLI o a una API responder con precisión sin parsear strings.
 
 ```java
 package com.aurora.excepciones.dominio;
 
-import java.util.Locale;
-import java.util.Objects;
-import java.util.regex.Pattern;
+public final class ProductoNoEncontradoException extends RuntimeException {
 
-public record Sku(String valor) {
+    private static final long serialVersionUID = 1L;
+    private final transient Sku sku;
 
-    private static final Pattern FORMATO = Pattern.compile("[A-Z]{3}-\\d{4}");
-
-    public Sku {
-        Objects.requireNonNull(valor, "valor");
-        String limpio = valor.strip()
-                .toUpperCase(Locale.ROOT)
-                .replace(" ", "")
-                .replace("_", "-");
-        if (!FORMATO.matcher(limpio).matches()) {
-            throw new DatoInvalidoException("SKU inválido: '" + valor + "' (formato AAA-0000)");
-        }
-        valor = limpio;
+    public ProductoNoEncontradoException(Sku sku) {
+        super("no existe el producto " + sku);
+        this.sku = sku;
     }
 
-    public static Sku de(String crudo) {
-        return new Sku(crudo);
-    }
-
-    @Override
-    public String toString() {
-        return valor;
+    public Sku sku() {
+        return sku;
     }
 }
 ```
 
-`Producto` agrupa las invariantes del catálogo: nombre no vacío, precio positivo, stock no negativo. El método `reservar` devuelve un nuevo `Producto` con el stock actualizado; si la cantidad es inválida o no hay stock suficiente, lanza excepciones de dominio distintas. Esa diferencia importa porque el llamador puede responder distinto a un dato mal formado que a una regla de negocio insatisfecha.
+```java
+package com.aurora.excepciones.dominio;
 
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/Producto.java`
+public final class StockInsuficienteException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+    private final transient Sku sku;
+    private final int disponible;
+    private final int solicitado;
+
+    public StockInsuficienteException(Sku sku, int disponible, int solicitado) {
+        super("stock insuficiente para " + sku + ": disponible=" + disponible + ", solicitado=" + solicitado);
+        this.sku = sku;
+        this.disponible = disponible;
+        this.solicitado = solicitado;
+    }
+
+    public Sku sku() { return sku; }
+    public int disponible() { return disponible; }
+    public int solicitado() { return solicitado; }
+}
+```
+
+##### `Producto.java`
+
+Record con validación compacta. El método `reservar` no modifica el objeto existente: devuelve un nuevo `Producto` con stock reducido. Si la cantidad es inválida, usa `DatoInvalidoException`; si no hay stock suficiente, usa `StockInsuficienteException`. El llamador no recibe un booleano ambiguo; recibe éxito o una excepción con significado.
 
 ```java
 package com.aurora.excepciones.dominio;
@@ -294,104 +358,11 @@ public record Producto(Sku sku, String nombre, Dinero precio, int stock) {
 }
 ```
 
-`DatoInvalidoException` es unchecked. Hereda de `RuntimeException` porque representa una violación de precondición o dato inválido: algo que el código llamador puede prevenir. Lleva mensaje y, cuando envuelve otra excepción, la causa original.
+## Importación
 
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/DatoInvalidoException.java`
+La importación es una frontera de I/O. Leer un archivo puede fallar porque el archivo no existe, no hay permisos o el disco falla. Esos fallos son externos al dominio y a menudo recuperables a nivel de operación: el usuario puede elegir otro archivo. Por eso la capa de importación usa excepciones checked en su contrato público.
 
-```java
-package com.aurora.excepciones.dominio;
-
-/**
- * Violación de datos o precondición. Es unchecked porque el llamador puede y
- * debe evitarla pasando datos válidos; si llega a ocurrir, es un error de uso
- * o de entrada que debe corregirse, no una condición externa recuperable.
- */
-public class DatoInvalidoException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
-
-
-
-    public DatoInvalidoException(String mensaje) {
-        super(mensaje);
-    }
-
-    public DatoInvalidoException(String mensaje, Throwable causa) {
-        super(mensaje, causa);
-    }
-}
-```
-
-`ProductoNoEncontradoException` también es unchecked en este diseño, porque se usa cuando el flujo asumía o pedía un producto que debe existir; incluye el `Sku` para que el mensaje sea accionable. La marca `transient` en el campo `Sku` evita una advertencia de serialización porque `Sku` es un record no serializable; el detalle importante aquí es el dato de dominio que porta la excepción.
-
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/ProductoNoEncontradoException.java`
-
-```java
-package com.aurora.excepciones.dominio;
-
-public final class ProductoNoEncontradoException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
-
-
-
-    private final transient Sku sku;
-
-    public ProductoNoEncontradoException(Sku sku) {
-        super("no existe el producto " + sku);
-        this.sku = sku;
-    }
-
-    public Sku sku() {
-        return sku;
-    }
-}
-```
-
-`StockInsuficienteException` modela una regla de negocio: la cantidad solicitada supera el stock disponible. No es un bug del programador ni un fallo de disco; es un estado válido del dominio que hay que comunicar con precisión. Incluir `sku`, `disponible` y `solicitado` permite decidir en la UI, API o log sin parsear el mensaje.
-
-**Archivo:** `src/main/java/com/aurora/excepciones/dominio/StockInsuficienteException.java`
-
-```java
-package com.aurora.excepciones.dominio;
-
-public final class StockInsuficienteException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
-
-
-
-    private final transient Sku sku;
-    private final int disponible;
-    private final int solicitado;
-
-    public StockInsuficienteException(Sku sku, int disponible, int solicitado) {
-        super("stock insuficiente para " + sku + ": disponible=" + disponible + ", solicitado=" + solicitado);
-        this.sku = sku;
-        this.disponible = disponible;
-        this.solicitado = solicitado;
-    }
-
-    public Sku sku() {
-        return sku;
-    }
-
-    public int disponible() {
-        return disponible;
-    }
-
-    public int solicitado() {
-        return solicitado;
-    }
-}
-```
-
-#### Importación
-
-
-`ImportacionException` es checked (`extends Exception`). Representa un fallo externo al leer el archivo: el llamador puede elegir otro archivo, avisar al operador o abortar la importación. El compilador obliga a tratarla, lo que hace visible esa decisión en la firma.
-
-**Archivo:** `src/main/java/com/aurora/excepciones/importacion/ImportacionException.java`
+##### `ImportacionException.java`
 
 ```java
 package com.aurora.excepciones.importacion;
@@ -407,8 +378,6 @@ public final class ImportacionException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-
-
     public ImportacionException(String mensaje) {
         super(mensaje);
     }
@@ -419,9 +388,9 @@ public final class ImportacionException extends Exception {
 }
 ```
 
-`LineaInvalidaException` es checked y se usa dentro de la importación para representar una fila que no se puede convertir en `Producto`. Guarda número de línea y contenido original; esa información es oro en diagnóstico porque permite corregir el CSV sin adivinar.
+##### `LineaInvalidaException.java`
 
-**Archivo:** `src/main/java/com/aurora/excepciones/importacion/LineaInvalidaException.java`
+Excepción checked interna de la importación para una línea concreta. Lleva número de línea y contenido original. El importador la captura por fila, la convierte en rechazo legible y sigue con la siguiente línea. No aborta el archivo completo por una fila mala: esa es una decisión de política de importación.
 
 ```java
 package com.aurora.excepciones.importacion;
@@ -429,9 +398,6 @@ package com.aurora.excepciones.importacion;
 public final class LineaInvalidaException extends Exception {
 
     private static final long serialVersionUID = 1L;
-
-
-
     private final int numeroLinea;
     private final String contenido;
 
@@ -447,25 +413,19 @@ public final class LineaInvalidaException extends Exception {
         this.contenido = contenido;
     }
 
-    public int numeroLinea() {
-        return numeroLinea;
-    }
-
-    public String contenido() {
-        return contenido;
-    }
+    public int numeroLinea() { return numeroLinea; }
+    public String contenido() { return contenido; }
 }
 ```
 
-`ResultadoImportacion` separa dos resultados posibles de la misma operación: productos importados y rechazos. Es un record inmutable con copias defensivas. Esta estructura evita el antipatrón de “todo o nada” cuando el negocio tolera rechazos parciales.
+##### `ResultadoImportacion.java`
 
-**Archivo:** `src/main/java/com/aurora/excepciones/importacion/ResultadoImportacion.java`
+Objeto de resultado inmutable: productos válidos y rechazos. Es preferible a imprimir desde el importador o a lanzar por cada fila mala. La importación puede tener éxito parcial; el resultado lo hace explícito.
 
 ```java
 package com.aurora.excepciones.importacion;
 
 import com.aurora.excepciones.dominio.Producto;
-
 import java.util.List;
 
 public record ResultadoImportacion(List<Producto> productos, List<String> rechazos) {
@@ -475,19 +435,14 @@ public record ResultadoImportacion(List<Producto> productos, List<String> rechaz
         rechazos = List.copyOf(rechazos);
     }
 
-    public int importados() {
-        return productos.size();
-    }
-
-    public int rechazados() {
-        return rechazos.size();
-    }
+    public int importados() { return productos.size(); }
+    public int rechazados() { return rechazos.size(); }
 }
 ```
 
-`ImportadorProductos` es el centro del módulo. Usa `try-with-resources` para abrir el `BufferedReader`; si la lectura falla, envuelve el `IOException` en `ImportacionException` y preserva la causa. Cada línea se parsea por separado: una línea inválida se convierte en rechazo y la importación continúa. Aquí se ve la diferencia práctica entre un fallo externo (archivo ilegible) y un dato inválido recuperable por fila.
+##### `ImportadorProductos.java`
 
-**Archivo:** `src/main/java/com/aurora/excepciones/importacion/ImportadorProductos.java`
+Aquí aparecen dos decisiones importantes. Primero, `try-with-resources` abre el `BufferedReader` y garantiza el cierre aunque haya excepción. Segundo, `IOException` se traduce a `ImportacionException` preservando la causa: el llamador ve un error de importación con contexto del archivo, y el diagnóstico conserva la excepción original de I/O.
 
 ```java
 package com.aurora.excepciones.importacion;
@@ -558,12 +513,11 @@ public final class ImportadorProductos {
 }
 ```
 
-#### Servicio
+## Servicio y CLI
 
+##### `Catalogo.java`
 
-`Catalogo` es un repositorio en memoria simple. `obtener` lanza `ProductoNoEncontradoException` cuando el SKU no existe. Usar una excepción de dominio evita que el servicio tenga que devolver `null` o códigos especiales.
-
-**Archivo:** `src/main/java/com/aurora/excepciones/servicio/Catalogo.java`
+Almacén en memoria. `obtener` lanza `ProductoNoEncontradoException` si el SKU no existe; `actualizar` también valida existencia. No atrapa excepciones para devolver `null`: el contrato es explícito.
 
 ```java
 package com.aurora.excepciones.servicio;
@@ -610,9 +564,9 @@ public final class Catalogo {
 }
 ```
 
-`ServicioPedidos` orquesta la reserva. Traduce el SKU crudo, obtiene el producto, pide al dominio que reserve y actualiza el catálogo. No atrapa excepciones aquí porque no puede tomar una decisión útil; las deja subir a la frontera que sabe cómo reportarlas.
+##### `ServicioPedidos.java`
 
-**Archivo:** `src/main/java/com/aurora/excepciones/servicio/ServicioPedidos.java`
+Caso de uso pequeño: normaliza SKU, obtiene producto, reserva y actualiza. No tiene `try/catch` porque aquí no hay una recuperación útil; traducir o reportar corresponde a la frontera CLI/API.
 
 ```java
 package com.aurora.excepciones.servicio;
@@ -639,12 +593,9 @@ public final class ServicioPedidos {
 }
 ```
 
-#### Frontera CLI
+##### `TiendaAuroraExcepcionesApp.java`
 
-
-`TiendaAuroraExcepcionesApp` es la frontera CLI. Aquí sí hay manejo de excepciones: captura las de dominio para mostrar un error claro al usuario, y el comando `auditoria` ejecuta casos controlados que demuestran checked, unchecked, `try-with-resources`, excepciones suprimidas, causa preservada y propagación correcta.
-
-**Archivo:** `src/main/java/com/aurora/excepciones/TiendaAuroraExcepcionesApp.java`
+La CLI es la frontera. Aquí se decide qué se imprime al usuario, qué código de salida se usa y dónde se captura una excepción de negocio. El comando `auditoria` ejecuta escenarios controlados para mostrar checked, unchecked, try-with-resources, excepción suprimida, causa preservada y la corrección de un catch que no debe tragar.
 
 ```java
 package com.aurora.excepciones;
@@ -844,173 +795,33 @@ public final class TiendaAuroraExcepcionesApp {
 }
 ```
 
-## Ejecutar
-
-Compila el proyecto:
-
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q build
-```
-
-Importa el CSV con filas válidas y filas rotas:
-
-```bash
-./gradlew -q run --args="importar --archivo productos.csv"
-```
-
-```text
-Importados: 3
-Rechazados: 2
-  CAF-0001  Café Aurora         $12.50 stock=3
-  MOL-0003  Molino manual       $34.90 stock=1
-  FIL-0004  Filtros x100         $4.75 stock=10
-  RECHAZO línea 4 inválida: datos inválidos | contenido=BAD-0001;;8.00;2
-  RECHAZO línea 5 inválida: datos inválidos | contenido=TAZ-0002;Taza Aurora;precio;2
-```
-
-Reserva stock válido:
-
-```bash
-./gradlew -q run --args="reservar --archivo productos-buenos.csv --sku CAF-0001 --cantidad 2"
-```
-
-```text
-Reserva OK: CAF-0001 x2 total=$25.00
-Stock restante: 1
-```
-
-Reserva más stock del disponible:
-
-```bash
-./gradlew -q run --args="reservar --archivo productos-buenos.csv --sku CAF-0001 --cantidad 99"
-```
-
-```text
-ERROR_NEGOCIO: StockInsuficienteException
-mensaje: stock insuficiente para CAF-0001: disponible=3, solicitado=99
-```
-
-Ejecuta la auditoría de comportamientos:
-
-```bash
-./gradlew -q run --args="auditoria"
-```
-
-```text
-== checked ==
-ImportacionException
-causa: NoSuchFileException
-== unchecked ==
-StockInsuficienteException
-stock insuficiente para CAF-0001: disponible=3, solicitado=99
-== try-with-resources ==
-sku;nombre;precio;stock
-== suprimida ==
-recurso abierto
-principal: falló el cuerpo
-suprimidas: 1
-suprimida: falló el cierre
-== causa preservada ==
-cantidad inválida: 'x'
-causa: NumberFormatException
-== no tragar ==
-propagada: ImportacionException
-```
-
-## Conceptos cubiertos
-
 ### Tema 1: Checked vs unchecked exceptions · Básico · 35 min
 
-La primera decisión ante una falla no es “¿la atrapo?”, sino “¿qué tipo de falla es y quién puede hacer algo útil con ella?”. Java distingue dos grandes familias dentro de `Exception`: las checked exceptions, que heredan de `Exception` pero no de `RuntimeException`, y las unchecked exceptions, que heredan de `RuntimeException`.
+Una excepción checked es aquella que el compilador obliga a declarar o manejar si puede salir de un método. En Java, esto aplica a las subclases de `Exception` que no son `RuntimeException`. Existe para hacer visible una condición externa o recuperable en el contrato del método: leer un archivo puede fallar por I/O, parsear una fuente externa puede fallar por formato, una llamada remota puede fallar por red. El llamador debería decidir si reintenta, usa un fallback, pide otro input o reporta el error.
 
-Una checked exception representa un problema que el llamador razonablemente puede anticipar y manejar. Leer un archivo puede fallar porque el archivo no existe, no hay permisos o el disco falló. Ese no es un bug de lógica del programa; es una condición externa. Por eso `Files.newBufferedReader` declara `IOException`. El compilador obliga a capturarla o declararla con `throws`. Esa obligación no es burocracia: hace visible el contrato. Si un método firma `throws ImportacionException`, quien lo llama sabe que debe tomar una decisión.
+Una excepción unchecked es una `RuntimeException` o `Error`. El compilador no obliga a declararla. Se usa cuando el problema normalmente representa un bug de programación, una violación de precondición o un estado que el llamador debió evitar: índice fuera de rango, argumento nulo, estado inválido, SKU mal formado. Obligar a capturarla en todas partes suele generar ruido y `catch` vacíos.
 
-En Tienda Aurora, `ImportadorProductos.importar` traduce `IOException` a `ImportacionException`:
+La decisión no es dogmática. Pregunta: “¿el llamador inmediato tiene una acción razonable de recuperación?”. Si la respuesta es sí y el fallo es externo/esperable, una checked puede ser apropiada en la frontera. Si la respuesta es no, o es un contrato violado, unchecked es más clara. En el proyecto, `ImportacionException` es checked porque importar desde archivo es una operación de frontera; `DatoInvalidoException` y `StockInsuficienteException` son unchecked porque expresan violación de contrato o regla de negocio que la capa superior debe manejar de forma consciente, no por obligación sintáctica en cada llamada.
 
-```java
-try (BufferedReader lector = Files.newBufferedReader(ruta, StandardCharsets.UTF_8)) {
-    // parseo por linea
-} catch (IOException e) {
-    throw new ImportacionException("no se pudo leer el archivo " + ruta, e);
-}
-```
-
-Hay dos detalles importantes en ese bloque. Primero, el método no se queda con el `IOException` crudo: lo envuelve en una excepción de su propio dominio de importación. Eso evita que detalles de bajo nivel se filtren por toda la aplicación. Segundo, pasa `e` como causa. Si mañana alguien ve el error en un log, puede seguir la cadena hasta el `NoSuchFileException` original. Perder la causa es perder la explicación.
-
-Una unchecked exception representa otra clase de problema: una precondición violada, un dato inválido o una regla que el llamador debió respetar. `DatoInvalidoException` y `StockInsuficienteException` son unchecked en este proyecto. El compilador no obliga a capturarlas en cada llamada, porque obligar a hacerlo produciría código defensivo ruidoso en todos los niveles. Lo correcto es dejarlas subir hasta una frontera donde tenga sentido responder: una CLI, un controlador HTTP, un job, una cola.
-
-La auditoría muestra las dos familias en ejecución:
-
-```text
-== checked ==
-ImportacionException
-causa: NoSuchFileException
-
-== unchecked ==
-StockInsuficienteException
-stock insuficiente para CAF-0001: disponible=3, solicitado=99
-```
-
-La diferencia no es “grave vs leve”. Un archivo faltante puede ser grave. La diferencia es el tipo de contrato. La checked exception dice “este fallo externo puede pasar; decide”. La unchecked dice “este estado o dato no cumple el contrato; corrige el uso o maneja la regla en la frontera adecuada”. Usar checked para todo vuelve el código inmanejable; usar unchecked para todo esconde fallos recuperables que deberían ser explícitos.
-
-También conviene evitar el extremo de capturar `Exception` o `RuntimeException` “por si acaso”. Ese tipo de catch grande suele borrar la señal. Si capturas, hazlo porque sabes qué harás con ese caso: recuperar, convertir, reintentar con límite, registrar con contexto o devolver un error de negocio. Si no sabes qué hacer, normalmente es mejor dejar que suba.
+**Confusión común:** “checked es más segura”. No automáticamente. Un checked mal usada produce `catch (Exception e) {}` o `throws Exception` por todos lados, que es peor que una unchecked bien ubicada. La seguridad viene de decidir bien el punto de manejo.
 
 ### Tema 2: try-with-resources · Básico · 40 min
 
-Un recurso externo —archivo, socket, conexión JDBC, stream— debe cerrarse aunque ocurra un error. Antes de Java 7, esto se hacía con `try/finally` manual y era fácil equivocarse: cerrar en el lugar equivocado, olvidar el cierre en una rama, o pisar la excepción original con la excepción del `close()`.
+`try-with-resources` es la forma segura de manejar recursos que deben cerrarse: archivos, streams, conexiones JDBC, sockets, locks con `AutoCloseable`. Un recurso que implementa `AutoCloseable` o `Closeable` se declara en la cabecera del `try`; Java llama a `close()` al salir del bloque, tanto si termina normal como si lanza excepción.
 
-`try-with-resources` resuelve ese problema con un contrato simple: si un objeto implementa `AutoCloseable`, puedes declararlo en la cabecera del `try` y Java lo cerrará al salir del bloque, tanto si el cuerpo termina normal como si lanza excepción.
+El mecanismo importa porque el cierre manual con `finally` es fácil de hacer mal: hay que cuidar nulls, no perder la excepción original si el cierre también falla, y no olvidar el cierre en ramas tempranas. `try-with-resources` hace esto correctamente. Si el cuerpo lanza una excepción y `close()` lanza otra, la excepción del cuerpo se mantiene como principal y la del cierre se adjunta como *suppressed*. Puedes verla con `Throwable.getSuppressed()`.
 
-En el importador, el recurso es un `BufferedReader`:
+En `ImportadorProductos`, el `BufferedReader` se abre en el try-with-resources. Si la lectura falla a mitad de archivo, el reader se cierra igual. En `auditoria()`, `RecursoRuidoso` demuestra la excepción suprimida: el cuerpo lanza “falló el cuerpo” y el cierre lanza “falló el cierre”; la principal es la del cuerpo, la secundaria queda suprimida.
 
-```java
-try (BufferedReader lector = Files.newBufferedReader(ruta, StandardCharsets.UTF_8)) {
-    String linea;
-    int numeroLinea = 0;
-    while ((linea = lector.readLine()) != null) {
-        // parseo por linea
-    }
-} catch (IOException e) {
-    throw new ImportacionException("no se pudo leer el archivo " + ruta, e);
-}
-```
-
-El lector se cierra aunque `readLine()` falle, aunque una línea provoque una excepción no capturada dentro del bloque, o aunque el método retorne antes. No hace falta un `finally` con `if (lector != null) lector.close()`; el compilador genera el cierre correcto.
-
-El caso interesante es cuando fallan dos cosas a la vez: el cuerpo del `try` y el `close()`. Java no puede lanzar dos excepciones principales al mismo tiempo. Conserva la excepción del cuerpo como principal y adjunta la del cierre como *suppressed exception*. Eso es lo correcto porque la causa raíz suele estar en el cuerpo; el fallo al cerrar es contexto adicional.
-
-La auditoría lo demuestra con un recurso ruidoso:
-
-```text
-== suprimida ==
-recurso abierto
-principal: falló el cuerpo
-suprimidas: 1
-suprimida: falló el cierre
-```
-
-Ese detalle importa en diagnóstico. Si el cierre reemplazara la excepción principal, verías “falló el cierre” y perderías la razón real por la que el trabajo falló. `Throwable.getSuppressed()` existe precisamente para inspeccionar esas excepciones secundarias. No necesitas usarlo todos los días, pero debes saber que try-with-resources las preserva.
-
-La regla práctica es directa: todo `AutoCloseable` que abras debe vivir en un try-with-resources o ser cerrado por un dueño claramente definido. No confíes en el garbage collector para liberar archivos, sockets o conexiones. El GC libera memoria; no garantiza cuándo se ejecuta un cierre externo.
+**Confusión común:** “try-with-resources atrapa excepciones”. No. Solo garantiza cierre. Las excepciones siguen propagándose a menos que las captures. También no reemplaza decisiones de diseño: cerrar el recurso no significa que el error ya esté manejado.
 
 ### Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 35 min
 
-Una excepción personalizada vale la pena cuando su tipo comunica algo que el tipo genérico no comunica, o cuando lleva datos que el llamador necesita. `StockInsuficienteException` no existe solo por estética: permite distinguir “no hay stock” de “el SKU no existe” o “la cantidad es inválida”. En una API, esos casos pueden mapearse a respuestas distintas; en una CLI, a mensajes distintos; en un job, a reintentos o a descarte.
+Una excepción personalizada tiene sentido cuando el tipo comunica algo que las excepciones estándar no comunican bien, o cuando necesitas transportar contexto estructurado. `StockInsuficienteException` lleva SKU, disponible y solicitado; eso es más útil que un `IllegalStateException` con un string genérico. Pero no se crean clases por crear: si `IllegalArgumentException` con buen mensaje basta, úsala.
 
-Una buena excepción de dominio tiene tres propiedades. El nombre dice qué pasó. El mensaje incluye contexto útil: qué SKU, qué cantidad, qué línea, qué archivo. La causa preserva el error técnico cuando la excepción es una traducción. `DatoInvalidoException("cantidad inválida: 'x'", e)` es mejor que `RuntimeException("error")` porque no borra ni el dato ni la causa.
+Una buena excepción personalizada define: tipo correcto (checked/unchecked), mensaje claro con contexto, causa cuando traduce otro error, y solo los campos necesarios. No debe exponer secretos ni datos sensibles en mensajes que puedan terminar en logs públicos.
 
-La preservación de causa es una disciplina pequeña con mucho impacto. La auditoría muestra este caso:
-
-```text
-== causa preservada ==
-cantidad inválida: 'x'
-causa: NumberFormatException
-```
-
-El método `parsearCantidad` captura `NumberFormatException`, que es una excepción técnica del JDK, y lanza `DatoInvalidoException`, que es un error con significado en el dominio de entrada. Quien recibe la excepción de dominio entiende el problema; quien depura puede inspeccionar la causa y ver el detalle técnico original. Es una traducción, no un borrado.
-
-El antipatrón opuesto es tragar excepciones. Tragar una excepción es capturarla y no hacer nada útil: ni registrarla, ni devolver un valor documentado, ni traducirla, ni relanzarla. El caso más dañino es el catch vacío:
+“No tragar excepciones” significa no hacer esto:
 
 ```java
 try {
@@ -1020,39 +831,30 @@ try {
 }
 ```
 
-Ese código convierte un fallo en silencio. El sistema sigue como si todo hubiera salido bien, pero el archivo no se importó, el stock no se actualizó o el dato quedó incompleto. El bug aparece después, lejos del origen, y no hay traza útil. En producción, un catch vacío es una deuda que se cobra con horas de diagnóstico.
+Ese catch elimina la señal de fallo. El sistema sigue como si nada, pero el estado puede estar incompleto. Tampoco es correcto solo loguear y continuar cuando el fallo invalida la operación. Las respuestas válidas son: manejar realmente (fallback, reintento, valor por defecto justificado), traducir y relanzar con causa, o dejar propagar. En `importarSilenciosoIncorrecto` del demo, el catch incorrecto se corrige propagando; en producción, la decisión depende del contrato.
 
-La corrección depende del contexto. Si estás en una frontera, puedes registrar y responder con un error claro. Si estás en una capa intermedia sin capacidad de decisión, normalmente debes propagar. Si el fallo es recuperable por elemento, como una fila CSV inválida, puedes acumular el rechazo y seguir con las demás filas. Eso es lo que hace `ImportadorProductos`: no traga la línea mala, la convierte en un rechazo con número de línea, contenido y motivo.
+**Confusión común:** “loguear es manejar”. Loguear es observabilidad. Manejar es tomar una decisión que mantiene el contrato del sistema. A veces se loguea y se relanza; a veces se loguea y se responde al usuario; casi nunca se loguea y se sigue como si hubiera salido bien.
 
-La salida de `importar` muestra esa decisión:
+## Ejecutar
 
-```text
-Importados: 3
-Rechazados: 2
-  CAF-0001  Café Aurora         $12.50 stock=3
-  MOL-0003  Molino manual       $34.90 stock=1
-  FIL-0004  Filtros x100         $4.75 stock=10
-  RECHAZO línea 4 inválida: datos inválidos | contenido=BAD-0001;;8.00;2
-  RECHAZO línea 5 inválida: datos inválidos | contenido=TAZ-0002;Taza Aurora;precio;2
+Desde la raíz de `tienda-aurora-excepciones`:
+
+```bash
+./gradlew -q run --args="importar --archivo productos.csv"
+./gradlew -q run --args="reservar --archivo productos-buenos.csv --sku CAF-0001 --cantidad 2"
+./gradlew -q run --args="auditoria"
+./gradlew -q test
 ```
-
-No se perdió la información del error, no se cayó toda la importación y tampoco se fingió éxito. El resultado es explícito. Esa es la diferencia entre manejar una excepción y esconderla.
 
 ## Verificación real
 
 Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
-```bash
-./gradlew -q test
-./gradlew -q run --args="importar --archivo productos.csv"
-./gradlew -q run --args="auditoria"
-```
+Resultados observados:
 
-Resultados observados (resumen):
-
-- `test`: 0 fallas.
-- `importar`: 3 importados, 2 rechazados con causa por línea.
-- `auditoria`: muestra checked (`ImportacionException` con causa `NoSuchFileException`), unchecked (`StockInsuficienteException`), `try-with-resources`, excepción suprimida en cierre, causa preservada (`NumberFormatException`) y propagación correcta.
+- `./gradlew -q test`: BUILD SUCCESSFUL.
+- `importar --archivo productos.csv`: `Importados: 3`, `Rechazados: 2`, con rechazos por nombre vacío y precio inválido.
+- `auditoria`: muestra `ImportacionException` con causa `NoSuchFileException`, `StockInsuficienteException`, lectura por try-with-resources, excepción suprimida (`suprimidas: 1`), causa preservada (`NumberFormatException`) y propagación correcta.
 
 ## Errores comunes y diagnóstico
 
@@ -1066,15 +868,12 @@ Resultados observados (resumen):
 
 ## Cierre
 
-Las excepciones bien diseñadas hacen visible el mapa de fallos del sistema. Las checked exceptions fuerzan a decidir ante condiciones externas recuperables. Las unchecked expresan precondiciones rotas o reglas de dominio que deben subir hasta una frontera competente. `try-with-resources` garantiza el cierre de recursos y preserva la excepción principal cuando el cierre también falla. Las excepciones personalizadas dan nombre y contexto; preservar la causa da diagnóstico.
-
-La regla de oro es simple: si capturas una excepción, haz algo útil con ella. Si no puedes hacer algo útil, no la captures ahí. Y si la traduces, no le borres la causa.
+Manejar excepciones bien no es “poner try/catch”. Es diseñar contratos de fallo: qué puede fallar, quién puede recuperarse, qué contexto se conserva y qué recursos se liberan. En el siguiente módulo ese mismo criterio se aplica a colecciones y streams, donde muchos errores aparecen por mutar datos compartidos o asumir formas que no se cumplen.
 
 ## Checklist
 
-- Distingo fallos externos recuperables de violaciones de precondición o reglas de dominio antes de elegir checked o unchecked.
-- Uso `try-with-resources` para todo `AutoCloseable` y entiendo el comportamiento de excepciones suprimidas.
-- Preservo la causa original cuando traduzco una excepción técnica a una excepción de dominio.
-- No trago excepciones: registro, traduzco, recupero con criterio o propago.
-- Diseño excepciones personalizadas solo cuando aportan significado, contexto o una decisión distinta al llamador.
-- Devuelvo errores observables: mensaje claro, datos relevantes y, cuando aplica, línea/contenido/identificador.
+- [ ] Distingo cuándo usar checked y cuándo unchecked según recuperabilidad y contrato.
+- [ ] Uso `try-with-resources` para todo `AutoCloseable`.
+- [ ] Preservo la causa al traducir excepciones.
+- [ ] No trago excepciones; manejo, traduzco o propago.
+- [ ] Mis excepciones personalizadas llevan contexto útil y no datos sensibles.
