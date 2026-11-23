@@ -1,6 +1,6 @@
 # Módulo 1: Programación orientada a objetos
 
-Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno, con el enfoque de cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
+Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`, macOS/Linux shell compatible. Los ejemplos son Java puro, sin Maven/Gradle.
 
@@ -8,11 +8,12 @@ Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser s
 
 ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
-Caso guía: modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
+**Caso guía.** modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
 
-#### Clases
 
-**Definición formal.** Una clase es un tipo de referencia que define la estructura (campos) y el comportamiento (métodos/constructores) de sus instancias.
+Clases
+
+**Definición.** Una clase es un tipo de referencia que define la estructura (campos) y el comportamiento (métodos/constructores) de sus instancias.
 
 **Cómo funciona por dentro.** La clase es la plantilla/tipo en tiempo de compilación y de carga. Define qué campos tendrá cada objeto, qué métodos puede invocar y qué invariantes debe preservar. La JVM usa la definición cargada para crear instancias con el layout esperado.
 
@@ -62,9 +63,10 @@ java DemoClase
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `10.0`.
 
-#### Objetos
 
-**Definición formal.** Un objeto es una instancia concreta de una clase, creada con `new`, con identidad, estado y comportamiento.
+Objetos
+
+**Definición.** Un objeto es una instancia concreta de una clase, creada con `new`, con identidad, estado y comportamiento.
 
 **Cómo funciona por dentro.** `new` asigna memoria para la instancia, inicializa campos, ejecuta el constructor y devuelve una referencia. Dos objetos de la misma clase pueden tener el mismo estado pero distinta identidad.
 
@@ -103,11 +105,12 @@ java DemoObj
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `false`, `1 2`.
 
-#### Constructores
 
-**Definición formal.** Un constructor es una rutina especial con el nombre de la clase, sin tipo de retorno, que inicializa una instancia durante la creación.
+Constructores
 
-**Contrato/reglas.** Debe dejar el objeto en estado válido. Puede validar argumentos, asignar campos y delegar con `this(...)` o `super(...)`. No debe hacer I/O pesado innecesario.
+**Definición.** Un constructor es una rutina especial con el nombre de la clase, sin tipo de retorno, que inicializa una instancia durante la creación.
+
+**Reglas.** Debe dejar el objeto en estado válido. Puede validar argumentos, asignar campos y delegar con `this(...)` o `super(...)`. No debe hacer I/O pesado innecesario.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -142,9 +145,10 @@ java DemoCtor
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `Ada`, `error`.
 
-#### Encapsulación
 
-**Definición formal.** Encapsulación es ocultar la representación interna (`private`) y exponer operaciones controladas que preservan invariantes.
+Encapsulación
+
+**Definición.** Encapsulación es ocultar la representación interna (`private`) y exponer operaciones controladas que preservan invariantes.
 
 **Cómo funciona por dentro.** Los campos privados no son accesibles desde fuera de la clase. Los métodos públicos actúan como frontera: validan entradas y cambian estado de forma coherente. Esto permite cambiar la representación interna sin romper clientes.
 
@@ -181,7 +185,8 @@ java DemoEnc
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `5`, `bloqueado`.
 
-#### Ejemplo integrado: Cuenta
+
+Ejemplo integrado: Cuenta
 
 ```bash
 mkdir -p java-m1-t1
@@ -244,11 +249,12 @@ Saldo insuficiente
 
 ### Tema 2: Herencia y sobreescritura · Básico · 40 min
 
-Caso guía: empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
+**Caso guía.** empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
 
-#### Herencia
 
-**Definición formal.** Herencia es el mecanismo por el cual una subclase (`extends`) reutiliza y especializa miembros accesibles de una superclase, modelando una relación “es un”.
+Herencia
+
+**Definición.** Herencia es el mecanismo por el cual una subclase (`extends`) reutiliza y especializa miembros accesibles de una superclase, modelando una relación “es un”.
 
 **Cómo funciona por dentro.** La subclase contiene la parte de la superclase y su propia especialización. La JVM resuelve métodos sobrescritos por dispatch dinámico según el objeto real.
 
@@ -290,11 +296,12 @@ java DemoHer
 
 **Verificación (JDK 27, 2026-05-22).** `animal`.
 
-#### Sobreescritura
 
-**Definición formal.** Sobreescritura es redefinir en una subclase un método con la misma firma y contrato compatible que uno visible de la superclase.
+Sobreescritura
 
-**Contrato/reglas.** Usa `@Override`. Misma firma; tipo de retorno covariante permitido; no puedes reducir visibilidad; no debes romper el contrato del método base.
+**Definición.** Sobreescritura es redefinir en una subclase un método con la misma firma y contrato compatible que uno visible de la superclase.
+
+**Reglas.** Usa `@Override`. Misma firma; tipo de retorno covariante permitido; no puedes reducir visibilidad; no debes romper el contrato del método base.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -321,7 +328,8 @@ java DemoOv
 
 **Verificación (JDK 27, 2026-05-22).** `B`.
 
-#### Ejemplo integrado
+
+Ejemplo integrado
 
 ```bash
 mkdir -p /tmp/j1-t2 && cd /tmp/j1-t2
@@ -371,11 +379,12 @@ Grace: 1600.0
 
 ### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
 
-Caso guía: un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
+**Caso guía.** un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
 
-#### Interfaz
 
-**Definición formal.** Una interfaz declara un contrato de comportamiento (`interface`); las clases lo implementan con `implements`.
+Interfaz
+
+**Definición.** Una interfaz declara un contrato de comportamiento (`interface`); las clases lo implementan con `implements`.
 
 **Cómo funciona por dentro.** El cliente depende del tipo contrato, no de la implementación. La JVM despacha al método de la implementación real en tiempo de ejecución.
 
@@ -414,9 +423,10 @@ java DemoInt
 
 **Verificación (JDK 27, 2026-05-22).** `121.0`.
 
-#### Clase abstracta
 
-**Definición formal.** Clase declarada `abstract` que no puede instanciarse; puede tener estado, métodos concretos y métodos abstractos.
+Clase abstracta
+
+**Definición.** Clase declarada `abstract` que no puede instanciarse; puede tener estado, métodos concretos y métodos abstractos.
 
 **Cuándo usarla.** Cuando hay relación “es un” y base común real con partes incompletas.
 
@@ -454,9 +464,10 @@ java DemoAbs
 
 **Verificación (JDK 27, 2026-05-22).** `R1:100.0`.
 
-#### Polimorfismo
 
-**Definición formal.** Capacidad de tratar objetos de tipos concretos distintos a través de un tipo común, ejecutando la implementación real en runtime.
+Polimorfismo
+
+**Definición.** Capacidad de tratar objetos de tipos concretos distintos a través de un tipo común, ejecutando la implementación real en runtime.
 
 **Cómo funciona por dentro.** La variable es de tipo base/interfaz, el objeto real es concreto. La llamada a método virtual se resuelve por el tipo real del objeto.
 
@@ -497,7 +508,8 @@ java DemoPoly
 
 **Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`.
 
-#### Ejemplo integrado
+
+Ejemplo integrado
 
 ```bash
 mkdir -p /tmp/j1-t3 && cd /tmp/j1-t3
@@ -543,11 +555,12 @@ java Polimorfismo
 
 ### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
 
-Caso guía: una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
+**Caso guía.** una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
 
-#### Sobrecarga
 
-**Definición formal.** Sobrecarga (overload) es definir varios métodos con el mismo nombre pero distinta lista de parámetros en el mismo ámbito.
+Sobrecarga
+
+**Definición.** Sobrecarga (overload) es definir varios métodos con el mismo nombre pero distinta lista de parámetros en el mismo ámbito.
 
 **Contrato.** Se resuelve en compilación por tipos/aritidad. No se diferencia solo por tipo de retorno.
 
@@ -578,9 +591,10 @@ java DemoOver
 
 **Verificación (JDK 27, 2026-05-22).** `3`, `4.0`.
 
-#### Sobreescritura
 
-**Definición formal.** Sobreescritura (override) redefine en runtime el comportamiento de un método heredado con la misma firma.
+Sobreescritura
+
+**Definición.** Sobreescritura (override) redefine en runtime el comportamiento de un método heredado con la misma firma.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -605,9 +619,10 @@ java DemoOverr
 
 **Verificación (JDK 27, 2026-05-22).** `sub`.
 
-#### Modificadores de acceso
 
-**Definición formal.** `private`, package-private (sin modificador), `protected`, `public` controlan visibilidad de miembros/tipos.
+Modificadores de acceso
+
+**Definición.** `private`, package-private (sin modificador), `protected`, `public` controlan visibilidad de miembros/tipos.
 
 **Cómo funciona.** `private`: solo clase. package-private: mismo paquete. `protected`: paquete y subclases. `public`: todos.
 
@@ -642,11 +657,12 @@ java DemoMod
 
 ### Tema 5: `record` — modelos inmutables sin boilerplate · Intermedio · 35 min
 
-Caso guía: necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
+**Caso guía.** necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
 
-#### Record
 
-**Definición formal.** Un `record` es una clase especial para portadores de datos inmutables cuyos componentes definen su API y estado.
+Record
+
+**Definición.** Un `record` es una clase especial para portadores de datos inmutables cuyos componentes definen su API y estado.
 
 **Cómo funciona por dentro.** El compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en componentes.
 
@@ -674,9 +690,10 @@ java DemoRec
 
 **Verificación (JDK 27, 2026-05-22).** `Punto[x=1, y=2]`.
 
-#### Constructor compacto y validación
 
-**Definición formal.** El constructor compacto permite validar/normalizar componentes sin reescribir la asignación canónica.
+Constructor compacto y validación
+
+**Definición.** El constructor compacto permite validar/normalizar componentes sin reescribir la asignación canónica.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -707,19 +724,21 @@ java DemoRecV
 
 ### Tema 6: Constructores flexibles (Java 25) · Avanzado · 30 min
 
-Caso guía: antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
+**Caso guía.** antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
 
-#### Regla clásica de `super(...)` / `this(...)`
 
-**Definición formal.** Antes de constructores flexibles, la invocación a otro constructor debía ser la primera sentencia del constructor.
+Regla clásica de `super(...)` / `this(...)`
+
+**Definición.** Antes de constructores flexibles, la invocación a otro constructor debía ser la primera sentencia del constructor.
 
 **Error común.** Poner validación antes de `super(...)` en versiones/estilos antiguos causa error de compilación.
 
 **Verificación.** El ejemplo siguiente demuestra el enfoque moderno.
 
-#### Constructores flexibles
 
-**Definición formal.** Java permite prologar con lógica antes de `super(...)`/`this(...)` en el modelo de constructores flexibles (JEP 513, Java 25), con reglas que preservan inicialización segura.
+Constructores flexibles
+
+**Definición.** Java permite prologar con lógica antes de `super(...)`/`this(...)` en el modelo de constructores flexibles (JEP 513, Java 25), con reglas que preservan inicialización segura.
 
 **Ejemplo mínimo enfocado (ejecutable, JDK 27).**
 
