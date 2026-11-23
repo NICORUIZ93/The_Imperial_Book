@@ -7258,7 +7258,32 @@
         "fragment": "tema-4-carga-restriccion-sobrevenida-y-defensa-arb"
       }
     ],
-    "2": [],
+    "2": [
+      {
+        "title": "JUnit 5, Mockito y MockMvc",
+        "fragment": "tema-1-junit-5-mockito-y-mockmvc"
+      },
+      {
+        "title": "Testcontainers",
+        "fragment": "tema-2-testcontainers"
+      },
+      {
+        "title": "Contract Testing con Pact",
+        "fragment": "tema-3-contract-testing-con-pact"
+      },
+      {
+        "title": "ArchUnit",
+        "fragment": "tema-4-archunit"
+      },
+      {
+        "title": "SonarQube",
+        "fragment": "tema-5-sonarqube"
+      },
+      {
+        "title": "Floci para emular dependencias cloud en tests/CI",
+        "fragment": "tema-6-floci-para-emular-dependencias-cloud-en-tests-ci"
+      }
+    ],
     "3": [
       {
         "title": "@Cacheable, @CacheEvict y TTL",

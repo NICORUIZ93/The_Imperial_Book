@@ -4,6 +4,8 @@ Los microservicios fallan en las fronteras: contratos, datos, red, configuració
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes ejecutan reglas de decisión, dobles, contratos, invariantes arquitectónicas, gates y configuración cloud-like en Java puro. JUnit/Mockito/MockMvc/Testcontainers/Pact/ArchUnit/SonarQube requieren dependencias o infraestructura; se incluyen notas de verificación honestas.
 
+### Tema 1: JUnit 5, Mockito y MockMvc · Intermedio · 180 min
+
 ## JUnit, Mockito y MockMvc: tests que dan confianza
 
 El equipo tiene "90% de cobertura" y aun así un deploy rompe producción. Los tests mockean el repositorio, el cliente HTTP y el servicio de pagos; verifican que los mocks se llamen con ciertos argumentos, pero nunca verifican una regla de negocio real ni un contrato de datos. La cobertura es alta, la confianza es cero.
@@ -43,6 +45,8 @@ tax-rate=0.21
 
 En Spring Boot, `@WebMvcTest` + `MockMvc` prueba la capa web sin levantar HTTP real. `Mockito` crea dobles para fronteras externas (clock, gateway, payment). El error más común es mockear todo: tests verdes pero producción falla. La causa es dobles que no representan contratos reales. La corrección es dobles en fronteras, integración para DB/HTTP reales.
 
+### Tema 2: Testcontainers · Intermedio · 180 min
+
 ## Testcontainers: integración realista
 
 El equipo usa H2 para tests porque "es rápido". En producción PostgreSQL falla por un tipo JSON, un índice o un lock. El test pasó, el deploy falló. La causa fue confiar en una base distinta a la de producción.
@@ -81,6 +85,8 @@ pure-logic=NO_CONTAINER
 ```
 
 El error más común es usar H2 para todo. El síntoma es falla en prod por dialecto. La causa son diferencias H2/Postgres. La corrección es Testcontainers con DB real. No asumas H2 compatible con PostgreSQL.
+
+### Tema 3: Contract Testing con Pact · Avanzado · 180 min
 
 ## Contract Testing con Pact: contratos entre servicios
 
@@ -130,6 +136,8 @@ evolution-compatible=true
 
 El error más común es contratos sobre-especificados. El síntoma son fallos por campos irrelevantes. La causa es verificar más de lo que el consumidor usa. La corrección es contrato mínimo basado en uso real.
 
+### Tema 4: ArchUnit · Intermedio · 120 min
+
 ## ArchUnit: reglas de arquitectura ejecutables
 
 El equipo define "domain no depende de web" en una wiki. Con el tiempo, alguien importa `spring-web` en un aggregate. Nadie se da cuenta hasta que un refactor rompe la arquitectura. La regla era humana, no ejecutable.
@@ -165,6 +173,8 @@ domain->web=false
 
 El error más común es reglas solo en documentación. El síntoma es erosión arquitectónica gradual. La causa es sin enforcement automático. La corrección es ArchUnit en CI con reglas clave.
 
+### Tema 5: SonarQube · Intermedio · 120 min
+
 ## SonarQube: calidad estática en CI
 
 El equipo acumula deuda técnica: métodos de 300 líneas, complejidad ciclomática alta, duplicación y vulnerabilidades conocidas. Nadie las arregla porque "funciona". Cuando un bug crítico aparece, la causa es código que nadie quería tocar.
@@ -197,6 +207,8 @@ gate-fail-bug=false
 ```
 
 El error más común es ignorar quality gate. El síntoma es deuda crece sin control. La causa es no bloquear merges. La corrección es gate razonable y gradual, revisión de hallazgos.
+
+### Tema 6: Floci para emular dependencias cloud en tests/CI · Avanzado · 120 min
 
 ## Floci: emular cloud en tests/CI
 
