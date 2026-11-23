@@ -2,7 +2,90 @@
 
 Migrar a microservicios es fácil de empezar y difícil de sostener. Este módulo cubre anti-patrones, monolito distribuido, sobre-descomposición, sagas innecesarias, Strangler Fig y métricas DORA, usando Tienda Aurora como caso de estudio.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Smokes de detección de smells, decisión local-vs-saga, routing de migración y DORA ejecutados con Java puro.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de detección de smells, decisión local-vs-saga, routing de migración y DORA ejecutados con Java puro.
+
+## Proyecto desde cero: tienda-aurora-evolution
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-evolution/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── src/
+│   ├── main/
+│   │   ├── java/com/aurora/evolution/
+│   │   │   ├── EvolutionApplication.java
+│   │   │   └── analysis/
+│   │   │       ├── SmellDetector.java
+│   │   │       └── DoraMetrics.java
+│   │   └── resources/
+│   │       └── application.yml
+│   └── test/
+│       └── java/com/aurora/evolution/
+│           └── EvolutionSmokeTest.java
+└── docs/
+    └── adr/
+        └── 0010-migration-strategy.md
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-evolution"
+```
+
+### application.yml
+
+```yaml
+spring:
+  application:
+    name: evolution-service
+
+server:
+  port: 8080
+```
 
 ### Tema 1: Monolito distribuido y sobre-descomposición · Avanzado · 120 min
 
@@ -13,7 +96,7 @@ El sistema de Tienda Aurora tiene 20 "microservicios", pero un cambio de esquema
 Un monolito distribuido es como una casa con paredes de papel: parece que hay habitaciones separadas, pero todo se oye y se siente. La sobre-descomposición es como dividir una pizza en 100 porciones: más piezas, más bordes, más desorden. El microservicio no es el objetivo; la autonomía con costo aceptable lo es.
 
 ```java
-public class DistributedMonolithSmoke {
+public class DistributedMonolithExample {
     static int smells(boolean sharedDb, boolean lockstepDeploy, int syncChain, boolean diffuseOwnership) {
         int s = 0;
         if (sharedDb) s++;
@@ -31,8 +114,8 @@ public class DistributedMonolithSmoke {
 ```
 
 ```bash
-javac DistributedMonolithSmoke.java
-java DistributedMonolithSmoke
+javac DistributedMonolithExample.java
+java DistributedMonolithExample
 ```
 
 Salida esperada:
@@ -53,7 +136,7 @@ Un equipo de Tienda Aurora usa saga con compensaciones para actualizar dos tabla
 Una saga innecesaria es como usar un convoy de camiones para mover una caja dentro de la misma habitación. La transacción local es recoger la caja y ponerla en el estante. La saga solo tiene sentido cuando el objeto debe cruzar fronteras (otro servicio, otra DB). El acoplamiento temporal es como una cadena de favores: si uno no está disponible, todos se bloquean.
 
 ```java
-public class SagaNecessitySmoke {
+public class SagaNecessityExample {
     static String choose(boolean crossesServiceBoundary, boolean singleDatabase) {
         if (singleDatabase && !crossesServiceBoundary) return "local-transaction";
         if (crossesServiceBoundary) return "evaluate-saga";
@@ -71,8 +154,8 @@ public class SagaNecessitySmoke {
 ```
 
 ```bash
-javac SagaNecessitySmoke.java
-java SagaNecessitySmoke
+javac SagaNecessityExample.java
+java SagaNecessityExample
 ```
 
 Salida esperada:
@@ -96,7 +179,7 @@ Strangler Fig es como renovar un edificio por pisos mientras la gente sigue vivi
 ```java
 import java.util.*;
 
-public class StranglerSmoke {
+public class StranglerExample {
     static String route(String capability, Set<String> migrated) {
         return migrated.contains(capability) ? "new" : "legacy";
     }
@@ -116,8 +199,8 @@ public class StranglerSmoke {
 ```
 
 ```bash
-javac StranglerSmoke.java
-java StranglerSmoke
+javac StranglerExample.java
+java StranglerExample
 ```
 
 Salida esperada:
@@ -140,7 +223,7 @@ Tras migrar Tienda Aurora a microservicios, el equipo despliega más (DF sube), 
 DORA metrics son como el tablero de un hospital: deployment frequency es cuántas operaciones se hacen, lead time es cuánto tarda una desde que se agenda, change failure rate es cuántas salen mal, MTTR es cuánto tarda en recuperarse. Si solo miras "cuántas operaciones", puedes celebrar mientras la mortalidad sube.
 
 ```java
-public class DoraSmoke {
+public class DoraExample {
     record DoraMetrics(double changeFailRate, int mttrHours, double deployFreqPerWeek) {}
 
     static boolean healthy(DoraMetrics m) {
@@ -168,8 +251,8 @@ public class DoraSmoke {
 ```
 
 ```bash
-javac DoraSmoke.java
-java DoraSmoke
+javac DoraExample.java
+java DoraExample
 ```
 
 Salida esperada:
@@ -184,7 +267,7 @@ DORA metrics miden si la evolución mejoró la entrega. La deuda técnica necesi
 
 ## Cierre
 
-Evolucionar a microservicios requiere podar complejidad. El éxito se mide en autonomía, estabilidad y delivery, no en cantidad de servicios. Tienda Aurora se evalúa con DORA antes y después de cada extracción de servicio, y la deuda técnica tiene dueño y plan.
+Evolucionar a microservicios requiere podar complejidad. El éxito se mide en autonomía, estabilidad y delivery, no en cantidad de servicios. Tienda Aurora se evalúa con DORA antes y después de cada extracción de servicio, y la deuda técnica tiene dueño y plan. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 

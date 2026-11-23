@@ -7312,6 +7312,26 @@
     ],
     "14": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
         "title": "Monolito distribuido y sobre-descomposición",
         "fragment": "tema-1-monolito-distribuido-y-sobre-descomposicion"
       },
