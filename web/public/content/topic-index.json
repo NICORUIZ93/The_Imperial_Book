@@ -7410,8 +7410,8 @@
         "fragment": "tema-2-opentelemetry-por-defecto-metricas-trazas-y-logs-correlacionados"
       },
       {
-        "title": "Logs estructurados y correlación",
-        "fragment": "tema-3-logs-estructurados-y-correlacion"
+        "title": "Logs estructurados y propagación de contexto",
+        "fragment": "tema-3-logs-estructurados-y-propagacion-de-contexto"
       },
       {
         "title": "SLO, p99 y alerting",
