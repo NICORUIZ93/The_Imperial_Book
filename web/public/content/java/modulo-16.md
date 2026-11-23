@@ -289,7 +289,9 @@ import jakarta.persistence.Version;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "pedidos")
@@ -312,15 +314,16 @@ public class Pedido {
     @Version
     private long version;
 
-    @Column(name = "creado_en")
+    @Column(name = "creado_en", nullable = false, updatable = false)
     private LocalDateTime creadoEn;
 
     protected Pedido() {
+        // Requerido por JPA
     }
 
     public Pedido(LocalDate fecha, Cliente cliente) {
-        this.fecha = fecha;
-        this.cliente = cliente;
+        this.fecha = Objects.requireNonNull(fecha, "fecha");
+        this.cliente = Objects.requireNonNull(cliente, "cliente");
     }
 
     @PrePersist
@@ -331,17 +334,26 @@ public class Pedido {
     }
 
     public void agregarLinea(String sku, int cantidad) {
-        LineaPedido linea = new LineaPedido(this, sku, cantidad);
-        lineas.add(linea);
+        String skuNormalizado = Objects.requireNonNull(sku, "sku").trim();
+        if (skuNormalizado.isEmpty()) {
+            throw new IllegalArgumentException("sku no puede estar vacío");
+        }
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("cantidad debe ser > 0");
+        }
+        lineas.add(new LineaPedido(this, skuNormalizado, cantidad));
+    }
+
+    public void reprogramar(LocalDate nuevaFecha) {
+        this.fecha = Objects.requireNonNull(nuevaFecha, "nuevaFecha");
     }
 
     public Long getId() { return id; }
     public LocalDate getFecha() { return fecha; }
     public Cliente getCliente() { return cliente; }
-    public List<LineaPedido> getLineas() { return lineas; }
+    public List<LineaPedido> getLineas() { return Collections.unmodifiableList(lineas); }
     public long getVersion() { return version; }
     public LocalDateTime getCreadoEn() { return creadoEn; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 }
 ```
 
@@ -523,15 +535,17 @@ import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class PedidoRepositorio {
 
     private final EntityManager em;
 
     public PedidoRepositorio(EntityManager em) {
-        this.em = em;
+        this.em = Objects.requireNonNull(em, "em");
     }
 
+    /** Consulta base: carga pedidos, pero cliente queda LAZY. */
     public List<Pedido> pedidosPorFecha(LocalDate fecha) {
         TypedQuery<Pedido> q = em.createQuery(
                 "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
@@ -539,6 +553,7 @@ public final class PedidoRepositorio {
         return q.getResultList();
     }
 
+    /** Corrección con join fetch: una sola consulta SQL. */
     public List<Pedido> pedidosConClienteJoinFetch(LocalDate fecha) {
         TypedQuery<Pedido> q = em.createQuery(
                 "select distinct p from Pedido p join fetch p.cliente where p.fecha = :fecha order by p.id",
@@ -547,6 +562,18 @@ public final class PedidoRepositorio {
         return q.getResultList();
     }
 
+    /** Corrección declarativa por caso de uso. */
+    public List<Pedido> pedidosConClientePorFecha(LocalDate fecha) {
+        EntityGraph<Pedido> graph = em.createEntityGraph(Pedido.class);
+        graph.addAttributeNodes("cliente");
+        TypedQuery<Pedido> q = em.createQuery(
+                "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
+        q.setParameter("fecha", fecha);
+        q.setHint("jakarta.persistence.fetchgraph", graph);
+        return q.getResultList();
+    }
+
+    /** Filtros opcionales sin concatenar JPQL. */
     public List<Pedido> buscarDinamico(LocalDate fecha, String sku) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Pedido> cq = cb.createQuery(Pedido.class);
@@ -558,21 +585,11 @@ public final class PedidoRepositorio {
             predicates.add(cb.equal(root.get("fecha"), fecha));
         }
         if (sku != null && !sku.isBlank()) {
-            predicates.add(cb.equal(root.join("lineas").get("sku"), sku));
+            predicates.add(cb.equal(root.join("lineas").get("sku"), sku.trim()));
         }
         cq.where(predicates.toArray(Predicate[]::new));
         cq.orderBy(cb.asc(root.get("id")));
         return em.createQuery(cq).getResultList();
-    }
-
-    public List<Pedido> pedidosConClientePorFecha(LocalDate fecha) {
-        EntityGraph<Pedido> graph = em.createEntityGraph(Pedido.class);
-        graph.addAttributeNodes("cliente");
-        TypedQuery<Pedido> q = em.createQuery(
-                "select p from Pedido p where p.fecha = :fecha order by p.id", Pedido.class);
-        q.setParameter("fecha", fecha);
-        q.setHint("jakarta.persistence.fetchgraph", graph);
-        return q.getResultList();
     }
 }
 ```
@@ -591,10 +608,12 @@ import com.aurora.jpa.dominio.PagoTransferencia;
 import com.aurora.jpa.dominio.Pedido;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.OptimisticLockException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -603,7 +622,7 @@ public final class PedidoServicio {
     private final EntityManagerFactory emf;
 
     public PedidoServicio(EntityManagerFactory emf) {
-        this.emf = emf;
+        this.emf = Objects.requireNonNull(emf, "emf");
     }
 
     public void seed() {
@@ -634,19 +653,24 @@ public final class PedidoServicio {
         return query(em -> em.createQuery("select count(p) from Pedido p", Long.class).getSingleResult());
     }
 
-    public void demoCicloVida() {
-        tx(em -> {
+    /** Demuestra transient->managed->flush->clear->detached->find. */
+    public boolean demoCicloVida() {
+        return txRet(em -> {
             Cliente c = new Cliente("tmp@aurora.test", "Tmp", new Direccion("Piura", "Calle 1"));
-            em.persist(c); // transient -> managed
-            em.flush();     // fuerza SQL pero sigue managed
-            Long id = c.getId();
-            em.clear();     // managed -> detached
-            Cliente detached = em.find(Cliente.class, id);
-            System.out.println("managedAfterClear=" + (detached != null));
+            em.persist(c);
+            em.flush(); // fuerza INSERT, transacción sigue activa
+            Long id = Objects.requireNonNull(c.getId(), "id asignado tras flush/persist");
+            em.clear(); // desasocia todas las entidades managed
+            Cliente recargado = em.find(Cliente.class, id);
+            return recargado != null && em.contains(c) == false;
         });
     }
 
-    public String demoOptimista() throws Exception {
+    /**
+     * Simula dos transacciones concurrentes sobre el mismo pedido.
+     * La segunda debe fallar con OptimisticLockException por @Version.
+     */
+    public String demoOptimista() {
         Long id = txRet(em -> {
             Cliente c = new Cliente("lock@aurora.test", "Lock", new Direccion("Tacna", "Calle 9"));
             Pedido p = new Pedido(LocalDate.of(2026, 11, 21), c);
@@ -659,55 +683,62 @@ public final class PedidoServicio {
 
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
-        em1.getTransaction().begin();
-        em2.getTransaction().begin();
-        Pedido a = em1.find(Pedido.class, id);
-        Pedido b = em2.find(Pedido.class, id);
-        a.setFecha(LocalDate.of(2026, 11, 22));
-        b.setFecha(LocalDate.of(2026, 11, 23));
-        em1.flush();
-        em1.getTransaction().commit();
-        em1.close();
+        EntityTransaction tx1 = em1.getTransaction();
+        EntityTransaction tx2 = em2.getTransaction();
         try {
-            em2.flush();
-            em2.getTransaction().commit();
-            em2.close();
-            return "ok";
-        } catch (RuntimeException e) {
-            if (em2.getTransaction().isActive()) em2.getTransaction().rollback();
-            em2.close();
-            Throwable cause = e;
-            while (cause != null) {
-                if (cause instanceof OptimisticLockException) return "OptimisticLockException";
-                cause = cause.getCause();
+            tx1.begin();
+            tx2.begin();
+
+            Pedido a = em1.find(Pedido.class, id);
+            Pedido b = em2.find(Pedido.class, id);
+            a.reprogramar(LocalDate.of(2026, 11, 22));
+            b.reprogramar(LocalDate.of(2026, 11, 23));
+
+            em1.flush();
+            tx1.commit();
+
+            try {
+                em2.flush();
+                tx2.commit();
+                return "ok";
+            } catch (RuntimeException e) {
+                if (tx2.isActive()) tx2.rollback();
+                Throwable cause = e;
+                while (cause != null) {
+                    if (cause instanceof OptimisticLockException) {
+                        return "OptimisticLockException";
+                    }
+                    cause = cause.getCause();
+                }
+                return e.getClass().getSimpleName();
             }
-            return e.getClass().getSimpleName();
+        } catch (RuntimeException e) {
+            if (tx1.isActive()) tx1.rollback();
+            if (tx2.isActive()) tx2.rollback();
+            throw e;
+        } finally {
+            if (em1.isOpen()) em1.close();
+            if (em2.isOpen()) em2.close();
         }
     }
 
     public void tx(Consumer<EntityManager> work) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
+        txRet(em -> {
             work.accept(em);
-            em.getTransaction().commit();
-        } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            throw e;
-        } finally {
-            em.close();
-        }
+            return null;
+        });
     }
 
     public <T> T txRet(Function<EntityManager, T> work) {
         EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            em.getTransaction().begin();
+            tx.begin();
             T result = work.apply(em);
-            em.getTransaction().commit();
+            tx.commit();
             return result;
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (tx.isActive()) tx.rollback();
             throw e;
         } finally {
             em.close();
@@ -882,8 +913,9 @@ class JpaAuroraTest {
 
     @Test
     void cicloVidaYCallback() {
-        servicio.demoCicloVida();
-        Pedido pedido = servicio.query(em -> em.createQuery("select p from Pedido p order by p.id", Pedido.class).setMaxResults(1).getSingleResult());
+        assertTrue(servicio.demoCicloVida());
+        Pedido pedido = servicio.query(em -> em.createQuery("select p from Pedido p order by p.id", Pedido.class)
+                .setMaxResults(1).getSingleResult());
         assertNotNull(pedido.getCreadoEn());
         assertTrue(servicio.contarPedidos() >= 3);
     }
@@ -901,33 +933,31 @@ class JpaAuroraTest {
         stats.setStatisticsEnabled(true);
 
         stats.clear();
-        servicio.query(em -> {
+        long sinGraph = servicio.query(em -> {
             PedidoRepositorio repo = new PedidoRepositorio(em);
             List<Pedido> pedidos = repo.pedidosPorFecha(LocalDate.of(2026, 11, 20));
             for (Pedido p : pedidos) {
                 p.getCliente().getNombre();
             }
-            return pedidos.size();
+            return stats.getPrepareStatementCount();
         });
-        long sinGraph = stats.getPrepareStatementCount();
 
         stats.clear();
-        servicio.query(em -> {
+        long conGraph = servicio.query(em -> {
             PedidoRepositorio repo = new PedidoRepositorio(em);
             List<Pedido> pedidos = repo.pedidosConClientePorFecha(LocalDate.of(2026, 11, 20));
             for (Pedido p : pedidos) {
                 p.getCliente().getNombre();
             }
-            return pedidos.size();
+            return stats.getPrepareStatementCount();
         });
-        long conGraph = stats.getPrepareStatementCount();
 
         assertEquals(4L, sinGraph); // 1 lista + 3 clientes
         assertEquals(1L, conGraph);
     }
 
     @Test
-    void optimisticLock() throws Exception {
+    void optimisticLock() {
         String resultado = servicio.demoOptimista();
         assertEquals("OptimisticLockException", resultado);
     }
@@ -952,20 +982,7 @@ BUILD SUCCESSFUL
 Salida real relevante de `demoN1` (logs de Hibernate omitidos para legibilidad):
 
 ```text
-pedido=1 cliente=Ana
-pedido=2 cliente=Bruno
-pedido=3 cliente=Carla
-SQL_COUNT=4
-SQL: select p1_0.id,p1_0.cliente_id,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 where p1_0.fecha=? order by p1_0.id
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
----ENTITY_GRAPH---
-pedido=1 cliente=Ana
-pedido=2 cliente=Bruno
-pedido=3 cliente=Carla
-SQL_COUNT=1
-SQL: select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 join clientes c1_0 on c1_0.id=p1_0.cliente_id where p1_0.fecha=? order by p1_0.id
+
 ```
 
 ## Conceptos cubiertos
@@ -1277,20 +1294,7 @@ private Cliente cliente;
 Ejecuté `DemoN1`, que usa un `StatementInspector` de Hibernate y `SessionFactory.getStatistics()`.
 
 ```text
-pedido=1 cliente=Ana
-pedido=2 cliente=Bruno
-pedido=3 cliente=Carla
-SQL_COUNT=4
-SQL: select p1_0.id,p1_0.cliente_id,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 where p1_0.fecha=? order by p1_0.id
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
-SQL: select c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre from clientes c1_0 where c1_0.id=?
----ENTITY_GRAPH---
-pedido=1 cliente=Ana
-pedido=2 cliente=Bruno
-pedido=3 cliente=Carla
-SQL_COUNT=1
-SQL: select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.nombre,p1_0.creado_en,p1_0.fecha,p1_0.version from pedidos p1_0 join clientes c1_0 on c1_0.id=p1_0.cliente_id where p1_0.fecha=? order by p1_0.id
+
 ```
 
 Interpretación exacta:
