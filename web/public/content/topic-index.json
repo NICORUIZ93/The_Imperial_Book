@@ -7368,20 +7368,32 @@
     ],
     "6": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml (Nacos)",
+        "fragment": "docker-compose-yml-nacos"
+      },
+      {
         "title": "Service discovery con Eureka/Consul/Nacos",
         "fragment": "tema-1-service-discovery-con-eureka-consul-nacos"
       },
       {
         "title": "Spring Cloud Gateway",
         "fragment": "tema-2-spring-cloud-gateway"
-      },
-      {
-        "title": "Spring Cloud Config y configuración centralizada",
-        "fragment": "tema-3-spring-cloud-config-y-configuracion-centralizada"
-      },
-      {
-        "title": "Load balancing y BFF",
-        "fragment": "tema-4-load-balancing-y-bff"
       }
     ],
     "7": [
