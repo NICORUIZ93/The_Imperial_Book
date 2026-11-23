@@ -8,6 +8,76 @@ Cuando un bug ocurre en producción, no hay depurador adjunto. Lo que queda es l
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-logging
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-logging/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/logging/
+            ├── Main.java
+            └── service/
+                └── OrderService.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.logging.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.slf4j:slf4j-api:2.0.16")
+    implementation("ch.qos.logback:logback-classic:1.5.12")
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-logging"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -cp "lib/*" -d out src/main/java/com/aurora/logging/**/*.java
+java -cp "out:lib/*" com.aurora.logging.Main
+```
+
 ### Tema 1: SLF4J y Logback — logging estructurado · Intermedio · 40 min
 
 **Caso guía.** un servicio procesa guías. Necesitas saber qué pasó, cuándo, en qué nivel y con qué error, sin imprimir ruido ni secretos.
