@@ -1,4 +1,4 @@
-# Módulo 5: Concurrencia
+# Módulo 5: Concurrencia — hilos y virtual threads
 
 En Tienda Aurora, el checkout necesita responder rápido aunque dependa de varias fuentes. El precio puede venir del catálogo, el stock del inventario y la validación de fraude de otro servicio. Si cada llamada espera a la anterior, la latencia se acumula. Si lanzas tareas sin control, aparecen bugs peores: condiciones de carrera, hilos colgados, timeouts que dejan trabajo huérfano o datos contaminados entre requests.
 

@@ -9,7 +9,6 @@ Una aplicación puede validar reglas en memoria, pero si no persiste datos con g
 ## Setup ejecutable del módulo
 
 ```bash
-```bash
 mkdir -p jdbc-m17
 cd jdbc-m17
 curl -L -o h2.jar https://repo1.maven.org/maven2/com/h2database/h2/2.3.232/h2-2.3.232.jar

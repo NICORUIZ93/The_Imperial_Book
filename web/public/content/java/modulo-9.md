@@ -1,4 +1,4 @@
-# Módulo 9: Testing con JUnit 5 y Mockito
+# Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito
 
 Un cambio en Tienda Aurora puede romper el cálculo de descuentos, saltarse una auditoría o guardar un pedido rechazado como aprobado. Sin tests, ese error se descubre tarde y lejos del cambio. Con tests, se descubre cerca, con un nombre claro y una señal repetible. El objetivo no es “tener cobertura”, sino proteger contratos importantes con pruebas rápidas y confiables.
 

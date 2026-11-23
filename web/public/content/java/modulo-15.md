@@ -1,4 +1,4 @@
-# Módulo 15: Build, testing e integraciones
+# Módulo 15: Java Master — builds, pruebas y observabilidad
 
 Cuando Tienda Aurora pasa de ser un ejercicio a ser un proyecto mantenible, el problema ya no es solo escribir clases que compilen. El problema es que el build sea reproducible, que las dependencias estén controladas, que los módulos no se acoplen en círculos, que las pruebas den feedback rápido y que los logs permitan entender qué pasó en producción sin leer texto ambiguo.
 
