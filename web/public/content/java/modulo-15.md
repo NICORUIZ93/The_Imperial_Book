@@ -332,31 +332,53 @@ class CatalogoEnMemoriaTest {
 
 ### Tema 1: Maven avanzado · Intermedio · 40 min
 
-Maven organiza el build alrededor del POM, el ciclo de vida y plugins. En un proyecto maduro, la parte “avanzada” no es escribir XML por escribir, sino controlar versiones, reproducibilidad y fronteras entre módulos. El `pom.xml` declara coordenadas, dependencias, plugins y configuración. El ciclo de vida (`validate`, `compile`, `test`, `package`, `verify`, `install`) da puntos de enganche predecibles.
+Maven organiza el build alrededor del POM (`pom.xml`), un ciclo de vida estándar y plugins. El POM declara coordenadas (`groupId`, `artifactId`, `version`), dependencias, plugins y propiedades. El ciclo de vida da fases predecibles: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Los plugins enganchan goals a esas fases; por ejemplo Surefire ejecuta tests en `test`.
 
-En equipos, Maven se vuelve problemático cuando cada módulo fija versiones distintas o cuando el build depende de propiedades implícitas de la máquina. La respuesta es BOM/dependencyManagement, versiones explícitas, wrapper y perfiles acotados. En este módulo la verificación ejecutable se hizo con Gradle; el concepto Maven se mantiene porque el track lo pide: el criterio es el mismo, builds reproducibles y dependencias controladas.
+**Por qué existe:** en equipos, el problema no es compilar un archivo, sino compilar el mismo proyecto de la misma forma en CI, en laptops y en releases. Maven estandariza esa convención.
+
+**Implicación práctica:** la madurez en Maven aparece en `dependencyManagement`, BOMs, versiones explícitas, enforcer/wrapper, perfiles acotados y separación clara entre módulos. Un `pom` que “funciona” pero copia versiones por todos lados genera drift y conflictos transitivos.
+
+**Confusión común:** “Maven es solo XML”. El XML es el formato; el valor real está en el modelo de ciclo de vida, la resolución de dependencias y la reproducibilidad. En este módulo la ejecución verificada se realizó con Gradle wrapper; el criterio de build reproducible es equivalente y se indica honestamente.
 
 ### Tema 2: Gradle y builds reproducibles · Avanzado · 45 min
 
-Gradle describe el build como tareas y dependencias entre tareas. El wrapper (`./gradlew`) fija la versión de Gradle usada por el proyecto, evitando “en mi máquina tengo otro Gradle”. La toolchain fija Java 25. Las dependencias vienen de repositorios declarados con versiones concretas.
+Gradle modela el build como un grafo de tareas. Cada tarea declara inputs, outputs y dependencias; Gradle puede ejecutar en orden correcto, evitar trabajo innecesario y cachear resultados. El script Kotlin DSL (`build.gradle.kts`) es código tipado que configura plugins, toolchains y dependencias.
 
-Un build reproducible significa que el mismo comando produce el mismo resultado relevante en otra máquina compatible. No elimina diferencias inevitables (timestamp, entorno), pero sí elimina la mayoría de sorpresas operativas. `-Werror` y `-Xlint:all` convierten warnings en señal temprana.
+**Por qué existe:** los proyectos reales necesitan más que compilar: múltiples módulos, generación de código, tests, empaquetado, quality gates, publicación. Gradle da flexibilidad sin perder estructura.
+
+**Implicación práctica:** reproducibilidad significa fijar Gradle con wrapper (`./gradlew`), fijar Java con toolchain, declarar repositorios y versiones, y evitar depender de estado local oculto. `-Werror` y `-Xlint:all` convierten warnings en deuda visible.
+
+**Confusión común:** “Gradle siempre es no determinista porque es flexible”. La flexibilidad es un riesgo si se abusa, pero con wrapper, toolchain, inputs declarados y dependencias fijas el build puede ser muy estable. Otro error es commitear salidas `build/` en vez del wrapper.
 
 ### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
 
-Separar en módulos obliga a declarar dependencias. `domain` contiene reglas; `app` contiene el adaptador/entrada. `app` depende de `domain`, nunca al revés. Esta dirección evita ciclos y permite probar el dominio sin levantar logging, HTTP o infraestructura.
+Un multi-módulo divide el sistema en unidades con dependencias explícitas. En este proyecto, `domain` define reglas y puertos (`CatalogoProductos`, `ServicioReservas`, `Dinero`); `app` implementa adaptadores (`CatalogoEnMemoria`), configuración de logging y el `main`.
 
-La regla práctica: si un tipo de dominio necesita importar una clase de app, la frontera está mal. Se resuelve con puertos/interfaces (`CatalogoProductos`) o moviendo el tipo al lugar correcto. Los ciclos entre módulos son costosos porque rompen compilación incremental, empaquetado y claridad mental.
+**Por qué existe:** cuando todo vive en un solo módulo, los límites se vuelven sociales (“no importes esto”). El build no puede defenderlos. Los módulos hacen que la frontera sea compilable.
+
+**Implicación práctica:** la dirección de dependencia importa. `app` depende de `domain`; `domain` no conoce `app`. Si el dominio necesita algo externo, se expresa como puerto/interfaz en `domain` y se implementa en `app`. Esto permite probar dominio sin infraestructura.
+
+**Confusión común:** crear muchos módulos sin criterio. Un módulo debe representar una frontera con razón clara. Otro error es “romper” ciclos con utilidades compartidas que terminan siendo un basurero; el ciclo suele indicar un contrato mal ubicado.
 
 ### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 45 min
 
-Las pruebas unitarias deben ser rápidas, deterministas y legibles. JUnit 5/6 aporta el modelo de extensión y anotaciones (`@Test`, lifecycle, assertions). Mockito o dobles manuales aíslan dependencias. En este proyecto, `ServicioReservasTest` usa un lambda como catálogo: es más simple que Mockito para un puerto pequeño.
+JUnit 5/6 (Jupiter) ejecuta tests con un modelo extensible. `@Test` define casos; assertions verifican comportamiento; extensiones como MockitoExtension integran dobles. Mockito crea mocks/stubs para aislar colaboradores: `when(...)`, `verify(...)`, `ArgumentCaptor`.
 
-Las assertions expresivas dicen qué falló y por qué. `assertThrows` valida tipo y mensaje cuando el mensaje es parte del contrato. El error común es probar detalles internos (métodos privados, orden de llamadas irrelevante) en vez de comportamiento observable. Otro error es usar Mockito para todo; un fake/lambda simple suele ser más claro.
+**Por qué existe:** las reglas de dominio deben validarse rápido. Un test unitario rápido da feedback en segundos y localiza fallos. Los dobles aíslan dependencias lentas o externas.
+
+**Implicación práctica:** en `ServicioReservasTest` se usa un lambda como `CatalogoProductos` porque el puerto es simple; no hace falta Mockito. Reserva Mockito para colaboradores con comportamiento más complejo o cuando verificar interacción es parte del contrato. Las assertions deben ser expresivas: valor esperado, error esperado, estado observable.
+
+**Confusión común:** confundir cobertura con calidad. Otro error clásico es mockear todo, incluso value objects o lógica pura, produciendo tests frágiles que replican implementación. Si un refactor interno rompe tests pero el comportamiento sigue bien, los tests estaban mal acoplados.
 
 ### Tema 5: Pruebas de integración reproducibles · Avanzado · 40 min
 
-Las pruebas de integración verifican que piezas reales colaboran: BD, serialización, configuración, contenedor, filesystem. Deben ser reproducibles: misma entrada, mismo entorno controlado, mismo resultado. Testcontainers, H2 en memoria o fixtures controlados ayudan, pero cada uno tiene límites. H2 no es PostgreSQL; Testcontainers es más fiel pero más pesado.
+Una prueba de integración verifica colaboración real entre componentes: persistencia, serialización, configuración, HTTP, colas o arranque de contexto. No reemplaza unit tests; cubre riesgos de integración que los dobles no ven.
+
+**Por qué existe:** dos piezas pueden pasar sus unit tests y fallar juntas por configuración, mapeo, transacciones, SQL real o formato de mensajes.
+
+**Implicación práctica:** reproducibilidad exige controlar datos, tiempo, puertos, dependencias externas y orden. Testcontainers permite levantar BD/colas reales efímeras; fixtures y limpieza evitan contaminación entre tests. En este módulo la verificación real integra app+dominio+logging con entrada fija y salida observable; no se usó BD externa. Esa es una integración acotada y honesta.
+
+**Confusión común:** llamar “integración” a un test que en realidad levanta todo el sistema innecesariamente, o al revés, mockear la frontera que justamente querías validar. También es común usar H2 como sustituto perfecto de PostgreSQL; sirve para algunos casos, pero no cubre diferencias de dialecto/comportamiento.
 
 En este módulo la integración demostrada es app+dominio+logging con entrada fija (`:app:run --args="PED-100 CAF-001 2"`), y la suite corre con `./gradlew -q test`. Para integraciones de BD/cola, el mismo principio aplica: declarar dependencias, aislar datos, limpiar estado y evitar depender de servicios externos compartidos.
 
@@ -364,7 +386,7 @@ En este módulo la integración demostrada es app+dominio+logging con entrada fi
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m15` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado nuevamente el 2026-11-23 en `/tmp/opencode/aurora-m15` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q test
@@ -374,7 +396,7 @@ Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m15` (macOS arm64, JDK 27.0.1.0
 Resultados observados:
 
 - `test`: 0 fallas (tests en `domain` y `app`).
-- `:app:run`: logs JSON con MDC (`pedidoId=PED-100`, `sku=CAF-001`, `operacion=reservar`) y salida `RESERVA_OK PED-100 25.00`.
+- `:app:run`: logs JSON con MDC (`pedidoId=PED-100`, `sku=CAF-001`, `operacion=reservar`) y salida `RESERVA_OK PED-100 25.00` (verificado también el 2026-11-23).
 
 **Nota honesta:** el módulo cubre Maven conceptualmente (track), pero la ejecución verificada fue con Gradle wrapper. No se ejecutó Maven en esta corrida.
 
