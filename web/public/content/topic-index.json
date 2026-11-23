@@ -4220,8 +4220,8 @@
         "fragment": "tema-2-factory-method-y-strategy"
       },
       {
-        "title": "Abstract Factory y familias de productos compatibles",
-        "fragment": "tema-3-abstract-factory-y-familias-de-productos-compatibles"
+        "title": "Abstract Factory — familias de objetos compatibles",
+        "fragment": "tema-3-abstract-factory-familias-de-objetos-compatibles"
       },
       {
         "title": "SOLID y cuándo NO aplicar un patrón",
@@ -4230,10 +4230,6 @@
       {
         "title": "Prototype: copiar un objeto sin compartir sus datos",
         "fragment": "tema-5-prototype-copiar-un-objeto-sin-compartir-sus-datos"
-      },
-      {
-        "title": "Patrones estructurales para conectar piezas existentes",
-        "fragment": "tema-6-patrones-estructurales-para-conectar-piezas-existentes"
       }
     ],
     "13": [
