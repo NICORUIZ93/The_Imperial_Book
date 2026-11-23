@@ -7356,8 +7356,8 @@
         "fragment": "tema-2-spring-cloud-gateway"
       },
       {
-        "title": "Spring Cloud Config",
-        "fragment": "tema-3-spring-cloud-config"
+        "title": "Spring Cloud Config y configuración centralizada",
+        "fragment": "tema-3-spring-cloud-config-y-configuracion-centralizada"
       },
       {
         "title": "Load balancing y BFF",
