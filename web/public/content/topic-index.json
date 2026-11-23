@@ -4292,42 +4292,6 @@
     ],
     "16": [
       {
-        "title": "1. Crea la carpeta y el wrapper Gradle",
-        "fragment": "1-crea-la-carpeta-y-el-wrapper-gradle"
-      },
-      {
-        "title": "2. Declara el proyecto",
-        "fragment": "2-declara-el-proyecto"
-      },
-      {
-        "title": "3. Configura el build",
-        "fragment": "3-configura-el-build"
-      },
-      {
-        "title": "4. Crea la unidad de persistencia",
-        "fragment": "4-crea-la-unidad-de-persistencia"
-      },
-      {
-        "title": "5. Crea el modelo de dominio",
-        "fragment": "5-crea-el-modelo-de-dominio"
-      },
-      {
-        "title": "6. Crea el repositorio con consultas reales",
-        "fragment": "6-crea-el-repositorio-con-consultas-reales"
-      },
-      {
-        "title": "7. Crea el servicio transaccional",
-        "fragment": "7-crea-el-servicio-transaccional"
-      },
-      {
-        "title": "8. Captura SQL real para no adivinar",
-        "fragment": "8-captura-sql-real-para-no-adivinar"
-      },
-      {
-        "title": "9. Escribe las pruebas",
-        "fragment": "9-escribe-las-pruebas"
-      },
-      {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
       },
@@ -4354,10 +4318,6 @@
       {
         "title": "Concurrencia, transacciones y propagación",
         "fragment": "tema-7-concurrencia-transacciones-y-propagacion"
-      },
-      {
-        "title": "Migraciones y pruebas JPA con Testcontainers",
-        "fragment": "tema-8-migraciones-y-pruebas-jpa-con-testcontainers"
       }
     ],
     "17": [
