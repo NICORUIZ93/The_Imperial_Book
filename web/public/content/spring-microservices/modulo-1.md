@@ -6,6 +6,118 @@ Un microservicio Spring expone contratos HTTP, valida entrada, traduce errores, 
 
 ### Tema 1: Spring MVC y DispatcherServlet · Intermedio · 180 min
 
+## Proyecto desde cero: tienda-aurora-web
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para PostgreSQL)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-web/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── src/
+│   ├── main/
+│   │   ├── java/com/aurora/web/
+│   │   │   ├── WebApplication.java
+│   │   │   ├── controller/OrderController.java
+│   │   │   ├── dto/OrderRequest.java
+│   │   │   ├── dto/OrderResponse.java
+│   │   │   ├── service/OrderService.java
+│   │   │   ├── repository/OrderRepository.java
+│   │   │   ├── domain/Order.java
+│   │   │   └── exception/GlobalExceptionHandler.java
+│   │   └── resources/
+│   │       └── application.yml
+│   └── test/
+│       └── java/com/aurora/web/
+│           └── OrderControllerTest.java
+└── docker-compose.yml
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.postgresql:postgresql")
+    implementation("org.flywaydb:flyway-core")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:postgresql")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-web"
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aurora
+      POSTGRES_USER: aurora
+      POSTGRES_PASSWORD: aurora
+    ports:
+      - "5432:5432"
+```
+
+### application.yml
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aurora
+    username: aurora
+    password: aurora
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+```
+
 ## Spring MVC: DispatcherServlet y validación
 
 `POST /orders` recibe JSON del frontend. El equipo confía en que el cliente valida. Un día llega `{"sku":"", "qty":0}` y el servicio lo acepta, persiste basura y luego falla en billing. El síntoma no es el 500 posterior; es que la validación estaba en el lugar equivocado.

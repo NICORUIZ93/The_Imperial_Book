@@ -6,6 +6,94 @@ Los microservicios fallan en las fronteras: contratos, datos, red, configuració
 
 ### Tema 1: JUnit 5, Mockito y MockMvc · Intermedio · 180 min
 
+## Proyecto desde cero: tienda-aurora-testing
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para Testcontainers)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-testing/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── src/
+│   ├── main/
+│   │   └── java/com/aurora/testing/
+│   │       └── TestingApplication.java
+│   └── test/
+│       └── java/com/aurora/testing/
+│           ├── unit/TaxServiceTest.java
+│           ├── slice/OrderControllerTest.java
+│           ├── integration/OrderRepositoryIT.java
+│           └── architecture/ArchitectureTest.java
+└── docker-compose.yml
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.postgresql:postgresql")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-testing"
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aurora
+      POSTGRES_USER: aurora
+      POSTGRES_PASSWORD: aurora
+    ports:
+      - "5432:5432"
+```
+
 ## JUnit, Mockito y MockMvc: tests que dan confianza
 
 El equipo tiene "90% de cobertura" y aun así un deploy rompe producción. Los tests mockean el repositorio, el cliente HTTP y el servicio de pagos; verifican que los mocks se llamen con ciertos argumentos, pero nunca verifican una regla de negocio real ni un contrato de datos. La cobertura es alta, la confianza es cero.

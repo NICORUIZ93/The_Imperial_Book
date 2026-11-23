@@ -7122,6 +7122,30 @@
         "fragment": "tema-1-spring-mvc-y-dispatcherservlet"
       },
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
         "title": "DTOs, Jackson y validación",
         "fragment": "tema-2-dtos-jackson-y-validacion"
       },
@@ -7390,6 +7414,26 @@
       {
         "title": "JUnit 5, Mockito y MockMvc",
         "fragment": "tema-1-junit-5-mockito-y-mockmvc"
+      },
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
       },
       {
         "title": "Testcontainers",
