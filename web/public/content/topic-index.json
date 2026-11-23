@@ -4558,16 +4558,16 @@
     ],
     "22": [
       {
-        "title": "Copia defensiva, copia superficial y clone",
-        "fragment": "tema-1-copia-defensiva-copia-superficial-y-clone"
+        "title": "Copia defensiva para proteger invariantes",
+        "fragment": "tema-1-copia-defensiva-para-proteger-invariantes"
       },
       {
-        "title": "Enums de dominio: estado, código y comportamiento",
-        "fragment": "tema-2-enums-de-dominio-estado-codigo-y-comportamiento"
+        "title": "Copia superficial vs profunda y los problemas de clone()",
+        "fragment": "tema-2-copia-superficial-vs-profunda-y-los-problemas-de-clone"
       },
       {
-        "title": "Clases anidadas, this$0 y la referencia que retiene",
-        "fragment": "tema-3-clases-anidadas-this-0-y-la-referencia-que-retiene"
+        "title": "Enums, clases anidadas e inner: identidad, estado y captura",
+        "fragment": "tema-3-enums-clases-anidadas-e-inner-identidad-estado-y-captura"
       }
     ],
     "3": [
