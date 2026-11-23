@@ -1030,6 +1030,22 @@ Rechazados: 2
 
 No se perdió la información del error, no se cayó toda la importación y tampoco se fingió éxito. El resultado es explícito. Esa es la diferencia entre manejar una excepción y esconderla.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run --args="importar --archivo productos.csv"
+./gradlew -q run --args="auditoria"
+```
+
+Resultados observados (resumen):
+
+- `test`: 0 fallas.
+- `importar`: 3 importados, 2 rechazados con causa por línea.
+- `auditoria`: muestra checked (`ImportacionException` con causa `NoSuchFileException`), unchecked (`StockInsuficienteException`), `try-with-resources`, excepción suprimida en cierre, causa preservada (`NumberFormatException`) y propagación correcta.
+
 ## Cierre
 
 Las excepciones bien diseñadas hacen visible el mapa de fallos del sistema. Las checked exceptions fuerzan a decidir ante condiciones externas recuperables. Las unchecked expresan precondiciones rotas o reglas de dominio que deben subir hasta una frontera competente. `try-with-resources` garantiza el cierre de recursos y preserva la excepción principal cuando el cierre también falla. Las excepciones personalizadas dan nombre y contexto; preservar la causa da diagnóstico.

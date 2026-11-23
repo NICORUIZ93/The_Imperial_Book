@@ -695,6 +695,20 @@ La salida es `500500`, igual que la suma secuencial. Lo importante no es el núm
 
 La regla profesional es medir antes de paralelizar. Un `parallelStream()` puesto “por si acaso” puede volver más lento el código y más difícil de diagnosticar. Primero hazlo correcto y claro; luego mide con datos reales.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m4` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+Resultados observados (resumen):
+
+- `test`: 0 fallas.
+- `run`: imprime catálogo filtrado/ordenado, agotados, valor por categoría, búsqueda por SKU, total facturado, unidades por SKU, top clientes, ciudades y ventanas de totales.
+
 ## Cierre
 
 La Stream API convierte transformaciones de colecciones en pipelines legibles cuando se usa con disciplina. `Optional` hace explícita la ausencia. Los Gatherers abren la puerta a operaciones intermedias que antes requerían código imperativo extra. Los streams paralelos solo valen cuando el trabajo y la medición lo justifican. En todos los casos, la meta es la misma: código que exprese intención sin esconder costos ni efectos secundarios.

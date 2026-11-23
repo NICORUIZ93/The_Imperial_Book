@@ -720,6 +720,20 @@ Esos campos hacen que el log sea consultable. En un agregador puedes filtrar por
 
 **Errores comunes que vale evitar.** Concatenar strings en vez de usar placeholders crea trabajo aunque el nivel de log esté desactivado y hace más fácil meter datos mal formateados. Usar `MDC.clear()` borra todo el contexto del hilo, incluyendo claves ajenas; `MDC.remove` de las claves propias es más seguro. Loguear objetos gigantes, payloads completos, secretos o tokens es un riesgo de seguridad y de costo. Y asumir que el MDC se propaga solo a hilos nuevos es falso: en ejecutores, `CompletableFuture` o virtual threads hay que propagar el contexto explícitamente, por ejemplo copiando el mapa con `MDC.getCopyOfContextMap()` y restaurándolo en el hilo que ejecuta la tarea.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m15` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+Resultados observados:
+
+- `test`: 0 fallas.
+- `run`: emite logs JSON y `RESERVA_OK PED-100 25.00`.
+
 ## Cierre
 
 Un proyecto Java profesional no se define por la cantidad de frameworks, sino por la calidad de sus contratos de trabajo: build reproducible, dependencias claras, módulos sin ciclos, pruebas con intención y logs que sirvan en producción. El código de `tienda-aurora-build` es pequeño, pero tiene la forma correcta: el dominio se prueba aislado, la app ensambla dependencias y el logging estructurado agrega contexto sin invadir la regla de negocio.

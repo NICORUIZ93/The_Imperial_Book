@@ -273,6 +273,20 @@ Esto funciona porque `core` abre `com.aurora.jpms.core`. Si no lo abriera, obten
 
 Frameworks como Jackson, Hibernate o Spring históricamente usan reflexión. Con JPMS, debes abrir solo los paquetes que necesitan, idealmente a módulos específicos. Abrir todo el módulo por comodidad debilita la encapsulación que JPMS te da.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m10` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run
+```
+
+Resultados observados:
+
+- `test`: 0 fallas.
+- `run`: `productos=2`, `primero=CAF-100`, `reflexion=CAF-100:Cafe Aurora`.
+
 ## Cierre
 
 JPMS no reemplaza el diseño de paquetes ni los modificadores de acceso; agrega una frontera arquitectónica. `exports` define API pública, `requires` define dependencias y `opens` controla reflexión. Úsalo donde los límites importan, y migra de forma incremental.

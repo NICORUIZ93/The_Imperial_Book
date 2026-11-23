@@ -701,6 +701,24 @@ Restaurar el flag de interrupción es un detalle pequeño y crítico. Si atrapas
 
 La limpieza de recursos es el otro lado. Por eso los executors están en `try-with-resources` y el `StructuredTaskScope` también. Un timeout sin cierre de recursos produce fugas; un cierre sin timeout puede colgar. La combinación correcta es límite de tiempo, señal de cancelación y liberación determinista.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run --args="demo"
+./gradlew -q run --args="race"
+./gradlew -q run --args="medir"
+```
+
+Resultados observados (resumen):
+
+- `test`: 0 fallas.
+- `demo`: cotizaciones por executor/future y checkout structured.
+- `race`: muestra race condition (`observado=988` en esta corrida) y versión segura `1000/1000`.
+- `medir`: compara plataforma vs virtual threads; en esta corrida `452ms` vs `52ms` (resultado dependiente de máquina/carga, no garantizado).
+
 ## Cierre
 
 La concurrencia moderna en Java no se trata de crear hilos por todos lados. Se trata de elegir la abstracción adecuada: `ExecutorService` para controlar ejecución, `CompletableFuture` para componer etapas, virtual threads para escalar esperas bloqueantes, sincronización para proteger estado compartido, structured concurrency para dar ciclo de vida a subtareas, scoped values para contexto y timeouts con cancelación cooperativa para no abandonar trabajo.

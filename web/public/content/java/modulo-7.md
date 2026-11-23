@@ -432,6 +432,20 @@ En la transferencia, la referencia no se usa en ese mensaje; en el efectivo exac
 
 Esto mejora la lectura y también ayuda al mantenimiento. Si alguien ve una variable nombrada `referencia` que nunca se usa, puede pensar que falta lógica. Si ve `_`, sabe que la omisión es deliberada. Es un detalle pequeño, pero en switches exhaustivos con record patterns hace el código más honesto.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run --args="demo"
+```
+
+Resultados observados (resumen):
+
+- `test`: 0 fallas.
+- `demo`: procesa pedidos con `switch`/pattern matching sobre pagos sellados y genera auditoría por tipo.
+
 ## Cierre
 
 Sealed classes, records y pattern matching se complementan. Los records modelan datos inmutables; las sealed interfaces modelan conjuntos cerrados de casos; el pattern matching permite procesarlos de forma segura y expresiva. Cuando el dominio tiene variantes finitas, esta combinación reduce estados inválidos y convierte muchos errores de mantenimiento en errores de compilación.

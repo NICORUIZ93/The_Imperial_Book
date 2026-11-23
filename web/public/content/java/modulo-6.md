@@ -568,6 +568,20 @@ try (InputStream in = Thread.currentThread().getContextClassLoader().getResource
 
 Este enfoque funciona en desarrollo y también cuando el recurso está dentro de un JAR. El error común es usar `new File("src/main/resources/...")`, que solo funciona en el árbol fuente y se rompe al empaquetar o ejecutar desde otro directorio.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q run --args="demo"
+```
+
+Resultados observados:
+
+- `test`: 0 fallas.
+- `demo`: `catalogo=3`, `ndjsonLineas=3`, `csvLineas=4`, `plantilla=Tienda Aurora - Nota de despacho`.
+
 ## Cierre
 
 El I/O profesional en Java combina tres hábitos: usar NIO.2 para rutas y operaciones de archivo claras, serializar con un contrato explícito, y tratar archivos grandes como flujos en vez de cargar todo en memoria por reflejo. Los recursos del classpath se leen por classloader, no por rutas frágiles al árbol fuente. Cada escritura debe considerar atomicidad, encoding y cierre de recursos.

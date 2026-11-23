@@ -472,6 +472,18 @@ void totalNuncaEsNegativoNiMayorQueSubtotal(
 
 Esta propiedad no reemplaza los ejemplos concretos; los complementa. Los ejemplos son fáciles de leer y depurar. Las propiedades cubren mucho más terreno. En la ejecución verificada, jqwik reportó `tries = 1000, checks = 1000`.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m9` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+```
+
+Resultados observados:
+
+- `test`: 0 fallas. El módulo es un proyecto de pruebas (JUnit/Mockito); la verificación principal es la suite verde.
+
 ## Cierre
 
 Un buen suite de tests mezcla niveles: unitarios rápidos para reglas puras, tests con mocks para coordinación entre componentes, parametrizados para tablas de casos y propiedades para invariantes. La clave es que cada test tenga un motivo claro y falle por una razón útil.
