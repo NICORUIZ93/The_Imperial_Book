@@ -1,35 +1,76 @@
 # Módulo 12: Patrones de diseño y SOLID
 
-Los patrones de diseño son soluciones probadas a problemas recurrentes de diseño. No son recetas para copiar ciegamente: aplicados mal, agregan complejidad accidental. SOLID proporciona principios para evaluar si un diseño resiste el cambio. Este módulo cubre patrones creacionales, comportamentales, estructurales y el criterio para no sobre-diseñar.
+Un patrón de diseño no es una plantilla para copiar y pegar. Es un nombre compartido para una solución recurrente, con un costo y un contexto. El mismo patrón que ordena un diseño en un lugar puede volverlo artificial en otro. SOLID sirve como brújula: te ayuda a justificar por qué una abstracción existe, qué dependencia inviertes, y qué parte del código debería cambiar cuando cambie el negocio.
 
-**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+En Tienda Aurora, estos problemas ya aparecen antes de microservicios: construir un email sin constructores telescópicos, elegir canal de notificación, cambiar reglas de precio, crear familias de UI coherentes, copiar plantillas sin aliasing, y conectar un proveedor de pago externo sin contaminar el dominio.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
+**Verificación real (2026-11-23, macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, JUnit 5.13.4):** `./gradlew -q test` pasó con 5 tests, 0 fallas. `./gradlew -q run` ejecutó el recorrido de `App`.
 
-## Aprende construyendo
+## Proyecto desde cero: `tienda-aurora-java-m12`
 
-## Proyecto desde cero: tienda-aurora-java-m12
-
-## Prerrequisitos
+### Prerrequisitos
 
 ```bash
-java -version    # JDK 25+
-gradle --version # Gradle 9.x
+java -version
+gradle --version
 ```
 
-## Estructura del proyecto
+### 1. Crear la base
+
+```bash
+mkdir -p tienda-aurora-java-m12
+cd tienda-aurora-java-m12
+gradle wrapper --gradle-version 9.9.1
+mkdir -p src/main/java/com/aurora/patrones/ui
+mkdir -p src/test/java/com/aurora/patrones
+```
+
+### 2. Estructura
 
 ```text
 tienda-aurora-java-m12/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── src/
-    └── main/
-        └── java/com/aurora/java/
-            └── Main.java
+    ├── main/java/com/aurora/patrones/
+    │   ├── App.java
+    │   ├── Checkout.java
+    │   ├── Email.java
+    │   ├── EmailNotificacion.java
+    │   ├── Notificacion.java
+    │   ├── NotificacionFactory.java
+    │   ├── PagoExterno.java
+    │   ├── PagoExternoAdapter.java
+    │   ├── PagoFacade.java
+    │   ├── PlantillaCampana.java
+    │   ├── PricingStrategy.java
+    │   ├── ProcesadorPago.java
+    │   ├── ProcesadorPagoDecorado.java
+    │   ├── SmsNotificacion.java
+    │   └── ui/
+    │       ├── Boton.java
+    │       ├── ClaroUiFactory.java
+    │       ├── Input.java
+    │       ├── OscuroUiFactory.java
+    │       ├── PantallaCheckout.java
+    │       └── TemaUiFactory.java
+    └── test/java/com/aurora/patrones/
+        └── PatronesTest.java
 ```
 
-## build.gradle.kts
+### 3. Código, archivo por archivo
+
+#### `settings.gradle.kts`
+
+Nombre del build.
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m12"
+```
+
+#### `build.gradle.kts`
+
+Build Java 25 con JUnit 5, tarea `application` y flags estrictos. No hay dependencias Spring: este módulo enseña diseño en Java puro.
 
 ```kotlin
 plugins {
@@ -46,347 +87,842 @@ java {
     }
 }
 
-application {
-    mainClass.set("com.aurora.java.Main")
-}
-
 repositories {
     mavenCentral()
 }
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+application {
+    mainClass = "com.aurora.patrones.App"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-Werror"))
+}
 ```
 
-## settings.gradle.kts
+#### `src/main/java/com/aurora/patrones/Email.java`
 
-```kotlin
-rootProject.name = "tienda-aurora-java-m12"
+Builder con validación en `build()`. El objeto `Email` es inmutable; el constructor es privado.
+
+```java
+package com.aurora.patrones;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+/**
+ * Value object inmutable construido con Builder.
+ * El constructor es privado: la única forma de crear Email válido es por Builder.build().
+ */
+public final class Email {
+    private static final Pattern EMAIL_SIMPLE = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+
+    private final String to;
+    private final String subject;
+    private final String body;
+    private final List<String> tags;
+
+    private Email(Builder builder) {
+        this.to = builder.to;
+        this.subject = builder.subject;
+        this.body = builder.body;
+        this.tags = List.copyOf(builder.tags);
+    }
+
+    public String to() { return to; }
+    public String subject() { return subject; }
+    public String body() { return body; }
+    public List<String> tags() { return tags; }
+
+    @Override
+    public String toString() {
+        return "Email[to=" + to + ", subject=" + subject + ", tags=" + tags + "]";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private String to;
+        private String subject;
+        private String body = "";
+        private final List<String> tags = new ArrayList<>();
+
+        private Builder() {}
+
+        public Builder to(String to) {
+            this.to = Objects.requireNonNull(to, "to").trim();
+            return this;
+        }
+
+        public Builder subject(String subject) {
+            this.subject = Objects.requireNonNull(subject, "subject").trim();
+            return this;
+        }
+
+        public Builder body(String body) {
+            this.body = Objects.requireNonNull(body, "body");
+            return this;
+        }
+
+        public Builder tag(String tag) {
+            String normalized = Objects.requireNonNull(tag, "tag").trim();
+            if (normalized.isEmpty()) {
+                throw new IllegalArgumentException("tag no puede estar vacío");
+            }
+            this.tags.add(normalized);
+            return this;
+        }
+
+        public Email build() {
+            if (to == null || !EMAIL_SIMPLE.matcher(to).matches()) {
+                throw new IllegalStateException("to debe ser un email válido: " + to);
+            }
+            if (subject == null || subject.isEmpty()) {
+                throw new IllegalStateException("subject es obligatorio");
+            }
+            if (subject.length() > 120) {
+                throw new IllegalStateException("subject excede 120 caracteres");
+            }
+            return new Email(this);
+        }
+    }
+}
 ```
 
-## Ejecutar
+#### `src/main/java/com/aurora/patrones/Notificacion.java`
+
+Contrato del producto creado por la factory.
+
+```java
+package com.aurora.patrones;
+
+/** Producto creado por Factory Method: el remitente solo conoce el contrato. */
+public interface Notificacion {
+    String canal();
+    String enviar(String destinatario, String mensaje);
+}
+```
+
+#### `src/main/java/com/aurora/patrones/EmailNotificacion.java`
+
+Implementación concreta de notificación por email.
+
+```java
+package com.aurora.patrones;
+
+public final class EmailNotificacion implements Notificacion {
+    @Override
+    public String canal() { return "EMAIL"; }
+
+    @Override
+    public String enviar(String destinatario, String mensaje) {
+        return "[EMAIL] to=" + destinatario + " msg=" + mensaje;
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/SmsNotificacion.java`
+
+Implementación concreta de notificación por SMS.
+
+```java
+package com.aurora.patrones;
+
+public final class SmsNotificacion implements Notificacion {
+    @Override
+    public String canal() { return "SMS"; }
+
+    @Override
+    public String enviar(String destinatario, String mensaje) {
+        return "[SMS] to=" + destinatario + " msg=" + mensaje;
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/NotificacionFactory.java`
+
+Factory Method simple: centraliza la decisión de creación y falla explícitamente ante canales desconocidos.
+
+```java
+package com.aurora.patrones;
+
+/**
+ * Factory Method simple: centraliza creación.
+ * La decisión de QUÉ crear vive aquí; la lógica de negocio de notificación vive en el producto.
+ */
+public final class NotificacionFactory {
+    private NotificacionFactory() {}
+
+    public static Notificacion crear(String canal) {
+        return switch (canal == null ? "" : canal.trim().toUpperCase()) {
+            case "EMAIL" -> new EmailNotificacion();
+            case "SMS" -> new SmsNotificacion();
+            default -> throw new IllegalArgumentException("Canal no soportado: " + canal);
+        };
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/PricingStrategy.java`
+
+Contrato Strategy como interfaz funcional.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+
+/** Strategy: encapsula un algoritmo de precio detrás de un contrato estable. */
+@FunctionalInterface
+public interface PricingStrategy {
+    BigDecimal total(BigDecimal subtotal);
+}
+```
+
+#### `src/main/java/com/aurora/patrones/Checkout.java`
+
+Contexto que depende de la abstracción `PricingStrategy`, no de un algoritmo concreto.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+/**
+ * Contexto que usa Strategy. No sabe si el precio es normal, VIP o promocional.
+ * Solo depende del contrato PricingStrategy (DIP).
+ */
+public final class Checkout {
+    private final PricingStrategy pricing;
+
+    public Checkout(PricingStrategy pricing) {
+        this.pricing = Objects.requireNonNull(pricing, "pricing");
+    }
+
+    public BigDecimal cobrar(BigDecimal subtotal) {
+        BigDecimal base = Objects.requireNonNull(subtotal, "subtotal");
+        if (base.signum() < 0) {
+            throw new IllegalArgumentException("subtotal no puede ser negativo");
+        }
+        return pricing.total(base);
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ui/Boton.java`
+
+Producto abstracto de la familia UI.
+
+```java
+package com.aurora.patrones.ui;
+public interface Boton { String render(); }
+```
+
+#### `src/main/java/com/aurora/patrones/ui/Input.java`
+
+Producto abstracto de la familia UI.
+
+```java
+package com.aurora.patrones.ui;
+public interface Input { String render(); }
+```
+
+#### `src/main/java/com/aurora/patrones/ui/TemaUiFactory.java`
+
+Abstract Factory: declara la familia de productos compatibles.
+
+```java
+package com.aurora.patrones.ui;
+public interface TemaUiFactory {
+    Boton crearBoton();
+    Input crearInput();
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ui/ClaroUiFactory.java`
+
+Familia concreta clara.
+
+```java
+package com.aurora.patrones.ui;
+public final class ClaroUiFactory implements TemaUiFactory {
+    @Override public Boton crearBoton() { return () -> "[CLARO][BOTON]Confirmar"; }
+    @Override public Input crearInput() { return () -> "[CLARO][INPUT]email"; }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ui/OscuroUiFactory.java`
+
+Familia concreta oscura.
+
+```java
+package com.aurora.patrones.ui;
+public final class OscuroUiFactory implements TemaUiFactory {
+    @Override public Boton crearBoton() { return () -> "[OSCURO][BOTON]Confirmar"; }
+    @Override public Input crearInput() { return () -> "[OSCURO][INPUT]email"; }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ui/PantallaCheckout.java`
+
+Cliente que consume la familia sin mezclar implementaciones.
+
+```java
+package com.aurora.patrones.ui;
+import java.util.Objects;
+public final class PantallaCheckout {
+    private final Boton boton;
+    private final Input input;
+    public PantallaCheckout(TemaUiFactory factory) {
+        TemaUiFactory f = Objects.requireNonNull(factory, "factory");
+        this.boton = f.crearBoton();
+        this.input = f.crearInput();
+    }
+    public String render() { return input.render() + " " + boton.render(); }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/PlantillaCampana.java`
+
+Prototype con copia profunda de la lista mutable para evitar aliasing.
+
+```java
+package com.aurora.patrones;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Prototype: crear nuevas campañas copiando una plantilla base.
+ * La copia es profunda en la lista mutable de etiquetas para evitar aliasing.
+ */
+public final class PlantillaCampana {
+    private final String canal;
+    private final String asunto;
+    private final List<String> etiquetas;
+
+    public PlantillaCampana(String canal, String asunto, List<String> etiquetas) {
+        this.canal = Objects.requireNonNull(canal, "canal");
+        this.asunto = Objects.requireNonNull(asunto, "asunto");
+        this.etiquetas = new ArrayList<>(Objects.requireNonNull(etiquetas, "etiquetas"));
+    }
+
+    /** Copia profunda: modifica la copia no afecta al original. */
+    public PlantillaCampana copiar() {
+        return new PlantillaCampana(canal, asunto, new ArrayList<>(etiquetas));
+    }
+
+    public void agregarEtiqueta(String etiqueta) {
+        etiquetas.add(Objects.requireNonNull(etiqueta, "etiqueta"));
+    }
+
+    public String canal() { return canal; }
+    public String asunto() { return asunto; }
+    public List<String> etiquetas() { return List.copyOf(etiquetas); }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/PagoExterno.java`
+
+API legada/incompatible: recibe centavos y devuelve string propio.
+
+```java
+package com.aurora.patrones;
+
+/** API externa/legada con contrato incompatible al dominio. */
+public final class PagoExterno {
+    public String ejecutarPago(String clienteId, int centavos) {
+        return "OK:" + clienteId + ":" + centavos;
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ProcesadorPago.java`
+
+Contrato del dominio para cobrar.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+
+public interface ProcesadorPago {
+    String cobrar(String clienteId, BigDecimal monto);
+}
+```
+
+#### `src/main/java/com/aurora/patrones/PagoExternoAdapter.java`
+
+Adapter: traduce BigDecimal/céntimos y delega al SDK externo.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
+
+/** Adapter: traduce el contrato del dominio al contrato del proveedor externo. */
+public final class PagoExternoAdapter implements ProcesadorPago {
+    private final PagoExterno externo;
+
+    public PagoExternoAdapter(PagoExterno externo) {
+        this.externo = Objects.requireNonNull(externo, "externo");
+    }
+
+    @Override
+    public String cobrar(String clienteId, BigDecimal monto) {
+        Objects.requireNonNull(clienteId, "clienteId");
+        Objects.requireNonNull(monto, "monto");
+        int centavos = monto.multiply(new BigDecimal("100"))
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValueExact();
+        return externo.ejecutarPago(clienteId, centavos);
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/ProcesadorPagoDecorado.java`
+
+Decorator: agrega logging sin modificar el adaptador ni el proveedor.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+/** Decorator: agrega comportamiento sin modificar la implementación base. */
+public final class ProcesadorPagoDecorado implements ProcesadorPago {
+    private static final Logger LOG = Logger.getLogger(ProcesadorPagoDecorado.class.getName());
+    private final ProcesadorPago delegado;
+
+    public ProcesadorPagoDecorado(ProcesadorPago delegado) {
+        this.delegado = Objects.requireNonNull(delegado, "delegado");
+    }
+
+    @Override
+    public String cobrar(String clienteId, BigDecimal monto) {
+        LOG.info(() -> "iniciando cobro cliente=" + clienteId + " monto=" + monto);
+        String resultado = delegado.cobrar(clienteId, monto);
+        LOG.info(() -> "resultado=" + resultado);
+        return resultado;
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/PagoFacade.java`
+
+Facade: expone una operación simple y valida entrada antes de delegar.
+
+```java
+package com.aurora.patrones;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+/** Facade: expone una operación simple ocultando pasos internos. */
+public final class PagoFacade {
+    private final ProcesadorPago procesador;
+
+    public PagoFacade(ProcesadorPago procesador) {
+        this.procesador = Objects.requireNonNull(procesador, "procesador");
+    }
+
+    public String cobrarCliente(String clienteId, BigDecimal monto) {
+        if (clienteId == null || clienteId.isBlank()) {
+            throw new IllegalArgumentException("clienteId inválido");
+        }
+        return procesador.cobrar(clienteId, monto);
+    }
+}
+```
+
+#### `src/main/java/com/aurora/patrones/App.java`
+
+Punto de entrada que ejecuta un recorrido corto por todos los patrones.
+
+```java
+package com.aurora.patrones;
+
+import com.aurora.patrones.ui.ClaroUiFactory;
+import com.aurora.patrones.ui.PantallaCheckout;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class App {
+    public static void main(String[] args) {
+        Email email = Email.builder()
+                .to("ana@aurora.test")
+                .subject("Bienvenida")
+                .body("Hola Ana")
+                .tag("onboarding")
+                .build();
+        System.out.println(email);
+
+        Notificacion n = NotificacionFactory.crear("sms");
+        System.out.println(n.enviar("+51999", "Tu pedido va en camino"));
+
+        Checkout checkoutVip = new Checkout(sub -> sub.multiply(new BigDecimal("0.90")));
+        System.out.println("vip=" + checkoutVip.cobrar(new BigDecimal("100.00")));
+
+        PantallaCheckout pantalla = new PantallaCheckout(new ClaroUiFactory());
+        System.out.println(pantalla.render());
+
+        PlantillaCampana base = new PlantillaCampana("EMAIL", "Promo", new ArrayList<>(List.of("base")));
+        PlantillaCampana copia = base.copiar();
+        copia.agregarEtiqueta("vip");
+        System.out.println("base=" + base.etiquetas() + " copia=" + copia.etiquetas());
+
+        ProcesadorPago pago = new ProcesadorPagoDecorado(new PagoExternoAdapter(new PagoExterno()));
+        PagoFacade facade = new PagoFacade(pago);
+        System.out.println(facade.cobrarCliente("C-1", new BigDecimal("19.90")));
+    }
+
+    private App() {}
+}
+```
+
+#### `src/test/java/com/aurora/patrones/PatronesTest.java`
+
+Pruebas JUnit 5 que verifican comportamiento y casos de borde.
+
+```java
+package com.aurora.patrones;
+
+import com.aurora.patrones.ui.ClaroUiFactory;
+import com.aurora.patrones.ui.OscuroUiFactory;
+import com.aurora.patrones.ui.PantallaCheckout;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class PatronesTest {
+
+    @Test
+    void builderValidaYConstruye() {
+        Email email = Email.builder().to("ana@aurora.test").subject("Hola").tag("ops").build();
+        assertEquals("ana@aurora.test", email.to());
+        assertEquals(List.of("ops"), email.tags());
+        assertThrows(IllegalStateException.class, () -> Email.builder().subject("Sin to").build());
+    }
+
+    @Test
+    void factoryYStrategy() {
+        Notificacion n = NotificacionFactory.crear("email");
+        assertEquals("EMAIL", n.canal());
+        Checkout vip = new Checkout(sub -> sub.multiply(new BigDecimal("0.90")));
+        assertEquals(0, new BigDecimal("90.00").compareTo(vip.cobrar(new BigDecimal("100.00"))));
+    }
+
+    @Test
+    void abstractFactoryNoMezclaFamilia() {
+        assertTrue(new PantallaCheckout(new ClaroUiFactory()).render().contains("[CLARO]"));
+        assertTrue(new PantallaCheckout(new OscuroUiFactory()).render().contains("[OSCURO]"));
+    }
+
+    @Test
+    void prototypeCopiaProfunda() {
+        PlantillaCampana base = new PlantillaCampana("EMAIL", "Promo", List.of("base"));
+        PlantillaCampana copia = base.copiar();
+        copia.agregarEtiqueta("vip");
+        assertEquals(List.of("base"), base.etiquetas());
+        assertEquals(List.of("base", "vip"), copia.etiquetas());
+    }
+
+    @Test
+    void adapterDecoratorFacade() {
+        ProcesadorPago pago = new ProcesadorPagoDecorado(new PagoExternoAdapter(new PagoExterno()));
+        String resultado = new PagoFacade(pago).cobrarCliente("C-1", new BigDecimal("19.90"));
+        assertEquals("OK:C-1:1990", resultado);
+    }
+}
+```
+
+### 4. Ejecutar
+
+Desde la raíz `tienda-aurora-java-m12/`:
 
 ```bash
-./gradlew run
-# O directamente:
-mkdir -p out
-javac -d out src/main/java/com/aurora/java/**/*.java
-java -cp out com.aurora.java.Main
+./gradlew -q test
+./gradlew -q run
 ```
+
+Salida real de tests (resumen):
+
+```text
+> Task :test
+
+PatronesTest > adapterDecoratorFacade() PASSED
+PatronesTest > abstractFactoryNoMezclaFamilia() PASSED
+PatronesTest > prototypeCopiaProfunda() PASSED
+PatronesTest > builderValidaYConstruye() PASSED
+PatronesTest > factoryYStrategy() PASSED
+
+BUILD SUCCESSFUL
+```
+
+Salida real de `run` (logs JDK JUL resumidos):
+
+```text
+Email[to=ana@aurora.test, subject=Bienvenida, tags=[onboarding]]
+[SMS] to=+51999 msg=Tu pedido va en camino
+vip=90.0000
+[CLARO][INPUT]email [CLARO][BOTON]Confirmar
+base=[base] copia=[base, vip]
+INFORMACIÓN: iniciando cobro cliente=C-1 monto=19.90
+INFORMACIÓN: resultado=OK:C-1:1990
+OK:C-1:1990
+```
+
+## Conceptos cubiertos
 
 ### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
 
-**Caso guía.** crear un `Email` con campos obligatorios/opcionales sin telescoping constructors.
+#### El problema
 
-Builder
-
-**Definición.** Builder separa la construcción compleja de un objeto de su representación final, permitiendo pasos nombrados y validación antes de construir.
-
-**Cuándo usar / cuándo no.** Úsalo cuando hay muchos parámetros opcionales, invariantes de construcción o legibilidad. No lo uses para objetos simples de 2-3 campos.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m12-builder
-cd java-m12-builder
-```
-
-Crea el archivo `DemoBuilder.java`:
+Un email en Aurora tiene campos obligatorios (`to`, `subject`) y opcionales (`body`, `tags`). El intento ingenuo es un constructor telescópico:
 
 ```java
-class Email {
-  final String to, subject, body;
-  private Email(Builder b) { to=b.to; subject=b.subject; body=b.body; }
-  static class Builder {
-    String to, subject, body="";
-    Builder to(String v){ to=v; return this; }
-    Builder subject(String v){ subject=v; return this; }
-    Builder body(String v){ body=v; return this; }
-    Email build(){
-      if (to==null || subject==null) throw new IllegalStateException("to/subject");
-      return new Email(this);
-    }
-  }
-}
-public class DemoBuilder {
-  public static void main(String[] args) {
-    Email e = new Email.Builder().to("a@b.com").subject("Hola").body("Msg").build();
-    System.out.println(e.to + ":" + e.subject);
-  }
-}
+new Email(to, subject, body, tag1, tag2, tag3 ...)
 ```
 
-```bash
-javac DemoBuilder.java
-java DemoBuilder
+A las pocas semanas nadie recuerda qué significa el tercer `String`. Otro problema: un objeto puede quedar inválido si la validación se dispersa.
+
+#### Solución con Builder
+
+`Email.Builder` acumula estado y `build()` valida invariantes antes de construir:
+
+```java
+Email email = Email.builder()
+        .to("ana@aurora.test")
+        .subject("Bienvenida")
+        .body("Hola Ana")
+        .tag("onboarding")
+        .build();
 ```
 
-**Error común.** Builder que permite objeto inválido. Corrección: validar en `build()`.
+Decisiones importantes en el código:
 
-**Verificación (JDK 27, 2026-05-22).** `a@b.com:Hola`.
+- **Constructor privado**: impide `new Email(...)` con estado inválido.
+- **`build()` valida**: `to`, `subject`, longitud; la validación está en un solo punto.
+- **Inmutabilidad**: `List.copyOf(builder.tags)` evita que el llamador mute la lista interna.
+- **API fluida**: cada método retorna `this`; es legibilidad, no magia.
+
+#### Cuándo usar / cuándo no
+
+Usa Builder cuando hay 4+ parámetros, opcionales, o invariantes de construcción. No lo uses para un `Point(x,y)` o DTO simple; añades ruido. En Java moderno, records cubren muchos casos simples; Builder sigue siendo útil cuando hay opcionales, validación o normalización.
+
+#### Error común
+
+Permitir `build()` sin validar y devolver un objeto a medio construir. Síntoma: NPE o datos inválidos lejos del origen. Corrección: invariantes en `build()` y tests que verifiquen el rechazo (`assertThrows`).
 
 ### Tema 2: Factory Method y Strategy · Intermedio · 40 min
 
-**Caso guía.** crear notificaciones por canal y cambiar algoritmo de precio sin `if/switch` dispersos.
+#### Factory Method: separar creación de uso
 
-Factory Method
-
-**Definición.** Define una interfaz para crear un objeto, dejando que subclases/implementaciones decidan la instancia concreta.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m12-factory
-cd java-m12-factory
-```
-
-Crea el archivo `DemoFactory.java`:
+El código cliente necesita enviar una notificación, pero el canal llega de configuración o input. Sin factory, aparece un `switch` repetido por todo el sistema.
 
 ```java
-interface Notificacion { String enviar(); }
-class EmailN implements Notificacion { public String enviar(){ return "email"; } }
-class SmsN implements Notificacion { public String enviar(){ return "sms"; } }
-class NotificacionFactory {
-  static Notificacion crear(String tipo) {
-    return switch(tipo) { case "email" -> new EmailN(); case "sms" -> new SmsN(); default -> throw new IllegalArgumentException(tipo); };
-  }
-}
-public class DemoFactory {
-  public static void main(String[] args) { System.out.println(NotificacionFactory.crear("sms").enviar()); }
-}
+Notificacion n = NotificacionFactory.crear("sms");
+n.enviar("+51999", "Tu pedido va en camino");
 ```
 
-```bash
-javac DemoFactory.java
-java DemoFactory
-```
+La factory devuelve el contrato `Notificacion`. El cliente depende de `canal()`/`enviar()`, no de `SmsNotificacion`. Si mañana entra WhatsApp, agregas una clase y un caso en la factory; el cliente no cambia.
 
-**Error común.** Factory gigante con toda la lógica de negocio. Corrección: crear objeto, no decidir reglas complejas del dominio.
+**Límite:** una factory que contiene reglas de negocio, consultas a BD o decisiones complejas dejó de ser factory: se volvió un "God Service" disfrazado. La factory crea; el dominio decide.
 
-**Verificación (JDK 27, 2026-05-22).** `sms`.
+#### Strategy: separar algoritmo de contexto
 
-Strategy
-
-**Definición.** Encapsula una familia de algoritmos detrás de una interfaz intercambiable.
-
-```mermaid
-flowchart LR
-  Ctx[Checkout] --> S[PricingStrategy]
-  S --> N[Normal]
-  S --> V[Vip]
-```
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m12-strategy
-cd java-m12-strategy
-```
-
-Crea el archivo `DemoStrategy.java`:
+El precio en checkout puede ser normal, VIP o campaña. Strategy encapsula el algoritmo:
 
 ```java
-interface Pricing { double total(double base); }
-class Normal implements Pricing { public double total(double b){ return b; } }
-class Vip implements Pricing { public double total(double b){ return b * 0.9; } }
-public class DemoStrategy {
-  static double cobrar(double base, Pricing p){ return p.total(base); }
-  public static void main(String[] args) {
-    System.out.println(cobrar(100, new Normal()));
-    System.out.println(cobrar(100, new Vip()));
-  }
-}
+Checkout vip = new Checkout(sub -> sub.multiply(new BigDecimal("0.90")));
+vip.cobrar(new BigDecimal("100.00")); // 90.00
 ```
 
-```bash
-javac DemoStrategy.java
-java DemoStrategy
-```
+`Checkout` no sabe cómo se calcula el descuento. Depende de `PricingStrategy` (DIP). Puedes pasar una lambda, una clase o una estrategia compuesta.
 
-**Error común.** Crear estrategia por cada `if` trivial. Corrección: usarlo cuando hay variación real y se espera extensión.
+#### Diferencia práctica
 
-**Verificación (JDK 27, 2026-05-22).** `100.0`, `90.0`.
+| Patrón | Pregunta que responde | Eje de cambio |
+|---|---|---|
+| Factory Method | ¿Qué objeto creo? | Tipo concreto/creación |
+| Strategy | ¿Cómo ejecuto este algoritmo? | Comportamiento intercambiable |
+
+#### Error común
+
+Crear una interfaz Strategy para cada `if` simple. Si solo hay dos ramas y no hay expectativa real de variación, una función o `if` claro es mejor. Patrón no es sinónimo de calidad.
 
 ### Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min
 
-**Caso guía.** crear una familia UI (botón + input) para tema claro u oscuro sin mezclar productos incompatibles.
+#### El problema
 
-Abstract Factory
+Aurora tiene tema claro y oscuro. Cada tema debe producir un botón y un input compatibles. Si creas piezas sueltas, puedes mezclar `[CLARO][BOTON]` con `[OSCURO][INPUT]`.
 
-**Definición.** Provee una interfaz para crear familias de objetos relacionados sin especificar clases concretas.
+#### Solución
 
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m12-absf
-cd java-m12-absf
-```
-
-Crea el archivo `DemoAbsFactory.java`:
+`TemaUiFactory` declara la familia. `ClaroUiFactory` y `OscuroUiFactory` producen productos coherentes:
 
 ```java
-interface Button { String render(); }
-interface ThemeFactory { Button button(); }
-class DarkButton implements Button { public String render(){ return "dark-button"; } }
-class LightButton implements Button { public String render(){ return "light-button"; } }
-class DarkFactory implements ThemeFactory { public Button button(){ return new DarkButton(); } }
-class LightFactory implements ThemeFactory { public Button button(){ return new LightButton(); } }
-public class DemoAbsFactory {
-  static void paint(ThemeFactory f){ System.out.println(f.button().render()); }
-  public static void main(String[] args){ paint(new DarkFactory()); paint(new LightFactory()); }
-}
+PantallaCheckout pantalla = new PantallaCheckout(new ClaroUiFactory());
+pantalla.render(); // [CLARO][INPUT]email [CLARO][BOTON]Confirmar
 ```
 
-```bash
-javac DemoAbsFactory.java
-java DemoAbsFactory
-```
+`PantallaCheckout` no conoce clases concretas; solo pide una fábrica. La garantía es de consistencia familiar.
 
-**Error común.** Explosión de clases para variaciones simples. Corrección: aplicar solo cuando hay familias coherentes.
+#### Cuándo no usarlo
 
-**Verificación (JDK 27, 2026-05-22).** `dark-button`, `light-button`.
+Si solo hay un producto o una sola familia, Abstract Factory es sobreingeniería. También si las familias cambian con frecuencia en forma incompatible: agregar un nuevo producto a la interfaz obliga a tocar todas las fábricas.
+
+#### Error común
+
+Usar Abstract Factory cuando bastaba una factory simple. Síntoma: muchas interfaces/clases para dos variantes que no crecen.
 
 ### Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min
 
-**Caso guía.** un servicio de facturación crece y empieza a mezclar cálculo, persistencia y envío.
+#### SOLID en el código del módulo
 
-SOLID
+| Principio | Evidencia en el proyecto | Qué rompe si lo ignoras |
+|---|---|---|
+| **S** Single Responsibility | `PagoExternoAdapter` traduce; `ProcesadorPagoDecorado` loggea; `PagoFacade` simplifica entrada | Clases que cambian por motivos distintos y son difíciles de probar |
+| **O** Open/Closed | Nueva `PricingStrategy` o `Notificacion` sin modificar `Checkout`/cliente | `if/switch` creciendo en cada feature |
+| **L** Liskov Substitution | Cualquier `Notificacion` o `ProcesadorPago` respeta el contrato | Subclases que lanzan excepciones inesperadas o cambian semántica |
+| **I** Interface Segregation | `Boton` e `Input` son contratos pequeños | Interfaces gordas que obligan implementaciones vacías |
+| **D** Dependency Inversion | `Checkout` depende de `PricingStrategy`; `PagoFacade` de `ProcesadorPago` | Alto acoplamiento a detalles concretos |
 
-**Definición.** SRP: una razón para cambiar. OCP: extender sin modificar núcleo. LSP: subtipos respetan contrato. ISP: interfaces pequeñas. DIP: depender de abstracciones.
+#### Cuándo NO aplicar un patrón
 
-```mermaid
-flowchart TD
-  S[SRP\nuna responsabilidad] --> O[OCP\nextensible]
-  O --> L[LSP\nsubtipos válidos]
-  L --> I[ISP\ninterfaces pequeñas]
-  I --> D[DIP\ndepender de abstracciones]
-```
+Esta es la parte más importante del tema. Un patrón tiene costo: más tipos, más indirección, más archivos que leer. Aplica un patrón cuando el cambio esperado es real. No lo apliques por currículum.
 
-**Ejemplo mínimo enfocado (ejecutable, DIP/SRP).**
+Señales de sobre-diseño:
 
-```bash
-mkdir -p java-m12-solid
-cd java-m12-solid
-```
+- Solo hay una implementación y no hay evidencia de variación.
+- El nombre del patrón aparece en la clase pero nadie puede explicar qué cambio habilita.
+- Para entender un flujo simple hay que saltar por 7 archivos.
+- La abstracción fue creada "por si acaso".
 
-Crea el archivo `DemoSolid.java`:
+Regla práctica: **primero hazlo claro, luego extrae patrón cuando el dolor de cambio sea concreto**.
 
-```java
-interface Repo { void save(String id); }
-class MemRepo implements Repo { public void save(String id){ System.out.println("save:" + id); } }
-class Service {
-  private final Repo repo;
-  Service(Repo repo){ this.repo = repo; }
-  void crear(String id){ repo.save(id); }
-}
-public class DemoSolid { public static void main(String[] args){ new Service(new MemRepo()).crear("A1"); } }
-```
+#### Error común
 
-```bash
-javac DemoSolid.java
-java DemoSolid
-```
-
-**Cuándo NO aplicar un patrón.** Cuando el problema es simple y el patrón agrega indirección sin beneficio real. Regla: primero claridad, luego patrón si el cambio lo justifica.
-
-**Error común.** “Pattern-driven development”: usar patrones para verse sofisticado. Corrección: nombrar el problema antes del patrón.
-
-**Verificación (JDK 27, 2026-05-22).** `save:A1`.
+Tratar SOLID como checklist de ceremonia. SOLID no significa "crear interfaces para todo". Significa que las dependencias y responsabilidades estén donde el cambio duele menos.
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min
 
-**Caso guía.** duplicar una plantilla de pedido sin que mutaciones afecten la original.
+#### El problema
 
-Prototype / copia defensiva
-
-**Definición.** Prototype crea nuevos objetos copiando una instancia prototipo. La clave es el tipo de copia: superficial o profunda según datos mutables anidados.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m12-proto
-cd java-m12-proto
-```
-
-Crea el archivo `DemoProto.java`:
+Aurora tiene plantillas de campaña. El equipo de marketing quiere partir de una base y crear variantes. Si copias la referencia, ambas campañas comparten la misma lista de etiquetas:
 
 ```java
-import java.util.*;
-class Plantilla {
-  String nombre;
-  List<String> items;
-  Plantilla(String n, List<String> i){ nombre=n; items=new ArrayList<>(i); }
-  Plantilla copia(){ return new Plantilla(nombre, items); } // copia defensiva de lista
-}
-public class DemoProto {
-  public static void main(String[] args) {
-    Plantilla p1 = new Plantilla("base", List.of("A"));
-    Plantilla p2 = p1.copia();
-    p2.items.add("B");
-    System.out.println(p1.items);
-    System.out.println(p2.items);
-  }
+List<String> tags = base.getEtiquetas();
+tags.add("vip"); // muta también la base si es la misma lista
+```
+
+#### Copia profunda
+
+`PlantillaCampana.copiar()` crea una nueva lista:
+
+```java
+public PlantillaCampana copiar() {
+    return new PlantillaCampana(canal, asunto, new ArrayList<>(etiquetas));
 }
 ```
 
-```bash
-javac DemoProto.java
-java DemoProto
+La prueba lo verifica:
+
+```java
+PlantillaCampana base = new PlantillaCampana("EMAIL", "Promo", List.of("base"));
+PlantillaCampana copia = base.copiar();
+copia.agregarEtiqueta("vip");
+assertEquals(List.of("base"), base.etiquetas());
+assertEquals(List.of("base", "vip"), copia.etiquetas());
 ```
 
-**Error común.** Copia superficial de listas mutables. Síntoma: mutar copia afecta original. Corrección: copiar estructuras mutables anidadas.
+#### Shallow vs deep copy
 
-**Verificación (JDK 27, 2026-05-22).** `[A]`, `[A, B]`.
+Copia superficial duplica el objeto pero comparte referencias internas mutables. Copia profunda duplica también el grafo mutable necesario. No todo debe copiarse profundo: IDs, conexiones, recursos externos o entidades compartidas suelen requerir decisión de dominio.
+
+#### Error común
+
+Usar `clone()` de Java sin entenderlo, o hacer copia superficial de colecciones mutables. Síntoma: modificar una variante altera la plantilla original. Corrección: copy constructor/factory explícita y test de no-aliasing.
 
 ### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
 
-**Caso guía.** adaptar una API legacy, decorar un servicio con logging y simplificar una fachada.
+#### Tres problemas distintos
 
-Adapter, Decorator, Facade
+| Patrón | Problema | Intención |
+|---|---|---|
+| Adapter | El proveedor externo tiene otra interfaz | Traducir contrato |
+| Decorator | Quiero agregar comportamiento | Envolver sin modificar |
+| Facade | El subsistema es complejo para el cliente | Simplificar entrada |
 
-**Definición.** Adapter traduce una interfaz a otra esperada. Decorator agrega comportamiento sin modificar la clase base. Facade ofrece una interfaz simple sobre un subsistema complejo.
+#### Adapter
 
-```mermaid
-flowchart LR
-  C[Cliente] --> F[Facade]
-  F --> A[Adapter]
-  A --> L[Legacy API]
-  C2[Cliente] --> D[Decorator]
-  D --> S[Servicio base]
-```
-
-**Ejemplo mínimo enfocado (ejecutable, Adapter).**
-
-```bash
-mkdir -p java-m12-adapter
-cd java-m12-adapter
-```
-
-Crea el archivo `DemoAdapter.java`:
+`PagoExterno` recibe centavos y devuelve `OK:...`. El dominio quiere `cobrar(String, BigDecimal)`:
 
 ```java
-class Legacy { String oldPay(){ return "OK-legacy"; } }
-interface Payment { String pay(); }
-class LegacyAdapter implements Payment {
-  private final Legacy legacy;
-  LegacyAdapter(Legacy l){ legacy=l; }
-  public String pay(){ return legacy.oldPay(); }
-}
-public class DemoAdapter { public static void main(String[] args){ System.out.println(new LegacyAdapter(new Legacy()).pay()); } }
+ProcesadorPago pago = new PagoExternoAdapter(new PagoExterno());
+pago.cobrar("C-1", new BigDecimal("19.90")); // OK:C-1:1990
 ```
 
-```bash
-javac DemoAdapter.java
-java DemoAdapter
+El adapter traduce tipos/unidades. No debe contener reglas de negocio del dominio.
+
+#### Decorator
+
+El decorator envuelve el mismo contrato:
+
+```java
+ProcesadorPago pago = new ProcesadorPagoDecorado(new PagoExternoAdapter(new PagoExterno()));
 ```
 
-**Error común.** Poner lógica de negocio en adapters/decorators sin claridad. Corrección: cada patrón con responsabilidad específica.
+Agrega logging antes/después. Podrías apilar métricas, retry o auditoría; pero cada capa agrega complejidad y debe ser observable.
 
-**Verificación (JDK 27, 2026-05-22).** `OK-legacy`.
+#### Facade
+
+`PagoFacade` expone una operación simple y valida el input. En un sistema real ocultaría orquestación: validar cliente, convertir moneda, llamar adapter, emitir evento. La facade no reemplaza el dominio; reduce superficie.
+
+#### Error común
+
+Confundir Adapter con Facade. Adapter traduce una interfaz incompatible; Facade simplifica un subsistema. También confundir Decorator con herencia: herencia es estática y rígida; decorator compone en runtime.
 
 ## Cierre
 
-Los patrones son vocabulario de diseño, no fin. Usa SOLID para evaluar cambios y patrones para resolver problemas reales, no para anticipar todos los futuros.
+Los patrones son herramientas de comunicación y diseño. El valor no está en memorizar UML, sino en reconocer el problema: construcción inválida, creación variable, algoritmo intercambiable, familia compatible, copia segura, integración con legado, comportamiento añadido, superficie simplificada. Cuando el patrón no responde a un cambio real, no lo uses.
 
 ## Checklist
 
-- Sé cuándo Builder/Factory/Strategy/Adapter aportan claridad.
-- Entiendo SOLID y sus trade-offs.
-- Evito sobre-ingeniería y patrones innecesarios.
+- [ ] Puedo explicar qué problema resuelve cada patrón implementado.
+- [ ] Puedo distinguir Factory Method, Abstract Factory y Builder.
+- [ ] Puedo justificar Strategy frente a un `if/switch` creciente.
+- [ ] Puedo identificar una copia superficial peligrosa y corregirla con copia profunda.
+- [ ] Puedo diferenciar Adapter, Decorator y Facade por intención.
+- [ ] Puedo señalar cuándo NO aplicar un patrón.
+- [ ] Ejecuté `./gradlew -q test` y `./gradlew -q run` desde el proyecto.

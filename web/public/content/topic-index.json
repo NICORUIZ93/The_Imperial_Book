@@ -4212,6 +4212,26 @@
     ],
     "12": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "1. Crear la base",
+        "fragment": "1-crear-la-base"
+      },
+      {
+        "title": "2. Estructura",
+        "fragment": "2-estructura"
+      },
+      {
+        "title": "3. Código, archivo por archivo",
+        "fragment": "3-codigo-archivo-por-archivo"
+      },
+      {
+        "title": "4. Ejecutar",
+        "fragment": "4-ejecutar"
+      },
+      {
         "title": "Builder — configuración paso a paso y validación",
         "fragment": "tema-1-builder-configuracion-paso-a-paso-y-validacion"
       },
