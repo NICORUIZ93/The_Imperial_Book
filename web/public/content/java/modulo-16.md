@@ -79,19 +79,31 @@ tienda-aurora-jpa/
 
 Lee el proyecto en este orden: `persistence.xml` y build → entidades → repositorio → servicio → pruebas/demo. Después entra a los temas. Los temas no repiten el código como ficha; lo usan para explicar decisiones, SQL generado, estado de entidades y trade-offs.
 
-## Código completo
+## Construye el proyecto desde cero
 
-#### `settings.gradle.kts`
+La meta aquí no es copiar un zip; es entender cada archivo que hace falta para que JPA/Hibernate arranque, ejecute SQL real y puedas verificar comportamiento.
 
-Nombre del proyecto Gradle.
+### 1. Crea la carpeta y el wrapper Gradle
+
+```bash
+mkdir -p tienda-aurora-jpa
+cd tienda-aurora-jpa
+gradle wrapper --gradle-version 9.9.1
+```
+
+Esto crea la base del proyecto y fija la versión de Gradle. Fijar versión evita que “en mi máquina compila con otra Gradle”.
+
+### 2. Declara el proyecto
+
+**Archivo:** `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-jpa"
 ```
 
-#### `build.gradle.kts`
+### 3. Configura el build
 
-Build Java 25 con Hibernate ORM 7, JPA API de Jakarta, H2 para verificación local y JUnit 5. La tarea `demoN1` ejecuta la captura de SQL del problema N+1.
+**Archivo:** `build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -142,9 +154,24 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-#### `src/main/resources/META-INF/persistence.xml`
+Qué importa aquí:
 
-Unidad de persistencia `auroraPU`. Aquí se declara el proveedor Hibernate, las entidades, la conexión H2 y propiedades de esquema/estadísticas. `create-drop` solo se usa para pruebas locales.
+- `java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }`: compila con Java 25.
+- `hibernate-core`: implementación JPA.
+- `jakarta.persistence-api`: contratos JPA (`EntityManager`, anotaciones).
+- `h2`: BD embebida para pruebas locales verificables.
+- `-Werror`: no dejamos warnings escondidos.
+- tarea `demoN1`: ejecuta la demo donde capturamos SQL real del N+1.
+
+### 4. Crea la unidad de persistencia
+
+Crea la carpeta de recursos JPA:
+
+```bash
+mkdir -p src/main/resources/META-INF
+```
+
+**Archivo:** `src/main/resources/META-INF/persistence.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -171,9 +198,27 @@ Unidad de persistencia `auroraPU`. Aquí se declara el proveedor Hibernate, las 
 </persistence>
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/Direccion.java`
+Puntos clave:
 
-Entidad simple con identidad propia. Es el lado referenciado por `Cliente` en un OneToOne.
+- `persistence-unit name="auroraPU"`: nombre que usa `Persistence.createEntityManagerFactory("auroraPU")`.
+- Lista de `<class>`: entidades registradas explícitamente.
+- `hbm2ddl.auto=create-drop`: cómodo para aprendizaje/pruebas locales; **no** es estrategia de producción.
+- H2 en memoria: reproducible, sin instalar servidor.
+
+### 5. Crea el modelo de dominio
+
+Crea los paquetes:
+
+```bash
+mkdir -p src/main/java/com/aurora/jpa/dominio
+mkdir -p src/main/java/com/aurora/jpa/repositorio
+mkdir -p src/main/java/com/aurora/jpa/servicio
+mkdir -p src/test/java/com/aurora/jpa
+```
+
+#### 5.1 Dirección (entidad simple)
+
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/Direccion.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -213,9 +258,11 @@ public class Direccion {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/Cliente.java`
+`@Entity` + `@Id` la vuelven persistente. El constructor protegido vacío lo necesita JPA.
 
-Entidad dueña del OneToOne. La clave está en la restricción `unique` de la FK: el dominio dice "una dirección pertenece a un solo cliente" y la base lo hace cumplir.
+#### 5.2 Cliente con OneToOne real
+
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/Cliente.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -265,9 +312,11 @@ public class Cliente {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/Pedido.java`
+La regla importante es `@JoinColumn(... unique = true, nullable = false)`: no solo dice “uno a uno” en Java, lo impone en la BD.
 
-Agregado principal. Tiene ManyToOne LAZY hacia `Cliente`, OneToMany hacia líneas, `@Version` para concurrencia optimista y `@PrePersist` para ciclo de vida.
+#### 5.3 Pedido como agregado
+
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/Pedido.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -357,9 +406,17 @@ public class Pedido {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
+Qué observar:
 
-Entidad intermedia: la línea existe porque la relación pedido-SKU tiene datos propios (`cantidad`).
+- `@ManyToOne(fetch = LAZY)`: el cliente no se carga por defecto.
+- `@OneToMany(... orphanRemoval = true)`: las líneas pertenecen al pedido.
+- `@Version`: base del lock optimista.
+- `@PrePersist`: hook de ciclo de vida.
+- Validaciones en métodos (`agregarLinea`, `reprogramar`): el dominio protege invariantes antes de persistir.
+
+#### 5.4 Línea de pedido
+
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -407,9 +464,11 @@ public class LineaPedido {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/Pago.java`
+Es entidad intermedia porque la línea tiene datos propios (`sku`, `cantidad`).
 
-Raíz de herencia `SINGLE_TABLE`. Una tabla, un discriminador, consultas polimórficas simples.
+#### 5.5 Herencia de pagos
+
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/Pago.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -452,9 +511,7 @@ public abstract class Pago {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
-
-Subclase concreta. Su columna `ultimos4` convive en la tabla `pagos`.
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -484,9 +541,7 @@ public class PagoTarjeta extends Pago {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
-
-Subclase concreta. Hibernate la materializa por el discriminador `TRANSFERENCIA`.
+**Archivo:** `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
 
 ```java
 package com.aurora.jpa.dominio;
@@ -516,9 +571,11 @@ public class PagoTransferencia extends Pago {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
+`SINGLE_TABLE` guarda toda la jerarquía en `pagos` con `tipo_pago`. La consulta polimórfica es simple; el costo es columnas nullables por subclase.
 
-Consultas del caso de uso. La misma pregunta de negocio —"pedidos por fecha con cliente"— se implementa de dos formas: sin plan de fetch y con EntityGraph.
+### 6. Crea el repositorio con consultas reales
+
+**Archivo:** `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
 
 ```java
 package com.aurora.jpa.repositorio;
@@ -594,9 +651,16 @@ public final class PedidoRepositorio {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
+Este archivo es el laboratorio del tema N+1:
 
-Control explícito de transacciones con `EntityManager`. Permite ver `persist`, `flush`, `clear`, commit/rollback y el escenario de lock optimista.
+- `pedidosPorFecha`: solo carga pedidos; dispara N+1 si luego accedes a cliente.
+- `pedidosConClienteJoinFetch`: corrige con JPQL `join fetch`.
+- `pedidosConClientePorFecha`: corrige con `EntityGraph`.
+- `buscarDinamico`: compone filtros opcionales con Criteria.
+
+### 7. Crea el servicio transaccional
+
+**Archivo:** `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
 
 ```java
 package com.aurora.jpa.servicio;
@@ -756,9 +820,11 @@ public final class PedidoServicio {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/SqlCapture.java`
+Aquí se ve la mecánica que Spring suele ocultar: abrir transacción, ejecutar, commit/rollback, cerrar `EntityManager`. `demoOptimista()` usa dos EntityManagers para simular dos transacciones concurrentes.
 
-Inspector de SQL de Hibernate. Intercepta cada statement para evidenciar N+1 en vez de adivinarlo.
+### 8. Captura SQL real para no adivinar
+
+**Archivo:** `src/main/java/com/aurora/jpa/SqlCapture.java`
 
 ```java
 package com.aurora.jpa;
@@ -785,9 +851,7 @@ public class SqlCapture implements StatementInspector {
 }
 ```
 
-#### `src/main/java/com/aurora/jpa/DemoN1.java`
-
-Demo ejecutable que imprime SQL real y conteo de statements.
+**Archivo:** `src/main/java/com/aurora/jpa/DemoN1.java`
 
 ```java
 package com.aurora.jpa;
@@ -848,9 +912,11 @@ public final class DemoN1 {
 }
 ```
 
-#### `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
+`StatementInspector` intercepta SQL antes de ejecutarlo. Es evidencia: no suponemos N+1, lo contamos.
 
-Pruebas JUnit 5 verificadas. Miden comportamiento: restricción, herencia, ciclo de vida, Criteria, N+1 y `OptimisticLockException`.
+### 9. Escribe las pruebas
+
+**Archivo:** `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
 
 ```java
 package com.aurora.jpa;
@@ -964,13 +1030,22 @@ class JpaAuroraTest {
 }
 ```
 
+Las pruebas verifican comportamiento observable: restricción de BD, herencia, ciclo de vida, Criteria, N+1 medido y `OptimisticLockException`.
+
 ## Ejecución verificada
+
+Desde la raíz `tienda-aurora-jpa/`:
 
 ```bash
 gradle wrapper --gradle-version 9.9.1
 ./gradlew -q test
 ./gradlew -q demoN1
 ```
+
+Qué verifica cada comando:
+
+- `./gradlew -q test`: corre las 6 pruebas JUnit 5.
+- `./gradlew -q demoN1`: ejecuta la demo con `StatementInspector` y muestra SQL real del caso N+1.
 
 Resultado real de tests:
 
@@ -979,7 +1054,7 @@ BUILD SUCCESSFUL
 6 tests, 0 failures
 ```
 
-Salida real relevante de `demoN1` (logs de Hibernate omitidos para legibilidad):
+Salida real relevante de `demoN1` (logs INFO de Hibernate omitidos para legibilidad; el SQL y conteos son reales):
 
 ```text
 pedido=1 cliente=Ana
