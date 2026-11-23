@@ -2,7 +2,103 @@
 
 Cuando un proceso de negocio cruza servicios y bases de datos, no hay transacción ACID global simple. Tienda Aurora necesita crear un pedido que reserve stock, cobre el pago y notifique al cliente. Si el pago falla después de reservar, hay que compensar. Este módulo cubre outbox, CDC, sagas, idempotencia real y por qué 2PC suele ser una mala elección en microservicios.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Smokes de outbox, saga, idempotencia y decisión 2PC ejecutados con Java puro. Debezium/Kafka Connect/Temporal requieren infraestructura; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Smokes de outbox, saga, idempotencia y decisión 2PC ejecutados con Java puro. Debezium/Kafka Connect/Temporal requieren infraestructura; se incluyen notas de verificación honestas.
+
+## Proyecto desde cero: tienda-aurora-consistency
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+ (para PostgreSQL, Kafka, Debezium)
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-consistency/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── docker-compose.yml
+├── orders-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/orders/
+│       ├── OrdersApplication.java
+│       ├── domain/Order.java
+│       ├── domain/OrderCreated.java
+│       └── outbox/OutboxEvent.java
+├── billing-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/billing/
+│       ├── BillingApplication.java
+│       └── consumer/OrderCreatedConsumer.java
+└── inventory-service/
+    ├── build.gradle.kts
+    └── src/main/java/com/aurora/inventory/
+        ├── InventoryApplication.java
+        └── saga/InventorySaga.java
+```
+
+### build.gradle.kts (raíz)
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+}
+
+subprojects {
+    apply(plugin = "java")
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+    repositories { mavenCentral() }
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.postgresql:postgresql")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-consistency"
+include("orders-service", "billing-service", "inventory-service")
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aurora
+      POSTGRES_USER: aurora
+      POSTGRES_PASSWORD: aurora
+    ports:
+      - "5432:5432"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+```
 
 ### Tema 1: Outbox y CDC con Debezium · Avanzado · 150 min
 
@@ -15,7 +111,7 @@ El outbox es como dejar una nota en la misma bandeja de salida del pedido: si el
 ```java
 import java.util.*;
 
-public class OutboxSmoke {
+public class OutboxExample {
     static class Db {
         final List<String> orders = new ArrayList<>();
         final List<String> outbox = new ArrayList<>();
@@ -46,8 +142,8 @@ public class OutboxSmoke {
 ```
 
 ```bash
-javac OutboxSmoke.java
-java OutboxSmoke
+javac OutboxExample.java
+java OutboxExample
 ```
 
 Salida esperada:
@@ -59,7 +155,7 @@ outbox-after-relay=0
 published=[OrderCreated:o1]
 ```
 
-El error más común es dual write sin outbox. El síntoma es pedido creado pero evento no publicado (o viceversa). La causa es dos sistemas sin transacción compartida. La corrección es outbox transaccional + relay/CDC.
+El error más común es dual write sin outbox. El síntoma es pedido creado pero evento no publicado. La causa es dos sistemas sin transacción compartida. La corrección es outbox transaccional + relay/CDC.
 
 ### Tema 2: Sagas orquestadas/coreografiadas · Avanzado · 180 min
 
@@ -70,7 +166,7 @@ Crear un pedido en Tienda Aurora implica reservar inventario y cobrar pago. Si e
 Una saga es como un viaje con escalas: cada escala (transacción local) se confirma por separado, y si una falla, tomas el vuelo de regreso (compensación). No es un rollback de base de datos; es una acción de negocio que deshace el efecto. La orquestación es como un director de orquesta que indica quién toca; la coreografía es como músicos que escuchan al anterior y saben cuándo entrar.
 
 ```java
-public class SagaSmoke {
+public class SagaExample {
     static String run(boolean paymentOk, boolean inventoryReserved) {
         if (!inventoryReserved) return "fail: no inventory";
         if (!paymentOk) return "compensate: release inventory";
@@ -82,26 +178,26 @@ public class SagaSmoke {
     }
 
     public static void main(String[] args) {
-        System.out.println(run(false, true));
-        System.out.println(run(true, true));
-        System.out.println(run(true, false));
-        System.out.println(compensationIdempotent(3));
+        System.out.println("payment-fail=" + run(false, true));
+        System.out.println("all-ok=" + run(true, true));
+        System.out.println("no-inventory=" + run(true, false));
+        System.out.println("compensation-idempotent=" + compensationIdempotent(3));
     }
 }
 ```
 
 ```bash
-javac SagaSmoke.java
-java SagaSmoke
+javac SagaExample.java
+java SagaExample
 ```
 
 Salida esperada:
 
 ```text
-compensate: release inventory
-ok: order confirmed
-fail: no inventory
-true
+payment-fail=compensate: release inventory
+all-ok=ok: order confirmed
+no-inventory=fail: no inventory
+compensation-idempotent=true
 ```
 
 La compensación debe ser idempotente porque puede ejecutarse más de una vez. El error más común es falta de compensación o no idempotente: la reserva queda tomada sin pago.
@@ -117,7 +213,7 @@ Exactly-once end-to-end es como prometer que un paquete llega una sola vez en un
 ```java
 import java.util.*;
 
-public class ExactlyOnceSmoke {
+public class ExactlyOnceExample {
     record PaymentEvent(String eventId, String orderId, int amount) {}
 
     static class PaymentProcessor {
@@ -136,24 +232,24 @@ public class ExactlyOnceSmoke {
     public static void main(String[] args) {
         PaymentProcessor p = new PaymentProcessor();
         PaymentEvent e = new PaymentEvent("evt-1", "ord-1", 100);
-        System.out.println(p.process(e));
-        System.out.println(p.process(e));
-        System.out.println("ledger=" + p.ledgerSize());
+        System.out.println("first=" + p.process(e));
+        System.out.println("retry=" + p.process(e));
+        System.out.println("ledger-size=" + p.ledgerSize());
     }
 }
 ```
 
 ```bash
-javac ExactlyOnceSmoke.java
-java ExactlyOnceSmoke
+javac ExactlyOnceExample.java
+java ExactlyOnceExample
 ```
 
 Salida esperada:
 
 ```text
-applied
-duplicate-ignored
-ledger=1
+first=applied
+retry=duplicate-ignored
+ledger-size=1
 ```
 
 Exactly-once end-to-end es un objetivo, no una garantía mágica. La práctica es at-least-once + idempotencia + dedup + transacciones locales. El error más común es asumir exactly-once del broker: doble cargo o reserva.
@@ -167,7 +263,7 @@ El equipo propone XA/2PC para "garantizar consistencia" entre la DB de orders y 
 2PC es como una votación donde todos deben levantar la mano antes de que el presidente diga "aprobado". Si alguien no responde, todos quedan con la mano levantada esperando. En microservicios, esa espera bloquea recursos, aumenta latencia y crea un punto único de falla.
 
 ```java
-public class TwoPcDecisionSmoke {
+public class TwoPcDecisionExample {
     static String choose(boolean sameDatabase, boolean needsGlobalAtomicity) {
         if (sameDatabase) return "local-transaction";
         if (needsGlobalAtomicity) return "evaluate-2pc-with-caution";
@@ -175,31 +271,31 @@ public class TwoPcDecisionSmoke {
     }
 
     public static void main(String[] args) {
-        System.out.println(choose(true, true));
-        System.out.println(choose(false, false));
-        System.out.println(choose(false, true));
+        System.out.println("same-db=" + choose(true, true));
+        System.out.println("cross-system=" + choose(false, false));
+        System.out.println("needs-atomicity=" + choose(false, true));
     }
 }
 ```
 
 ```bash
-javac TwoPcDecisionSmoke.java
-java TwoPcDecisionSmoke
+javac TwoPcDecisionExample.java
+java TwoPcDecisionExample
 ```
 
 Salida esperada:
 
 ```text
-local-transaction
-outbox-or-saga
-evaluate-2pc-with-caution
+same-db=local-transaction
+cross-system=outbox-or-saga
+needs-atomicity=evaluate-2pc-with-caution
 ```
 
 2PC busca atomicidad global a costa de latencia, locks y disponibilidad. En microservicios, outbox + saga + idempotencia suelen ser el trade-off correcto.
 
 ## Cierre
 
-La consistencia distribuida se diseña: outbox para publicar confiablemente, sagas para procesos largos, idempotencia para duplicados. 2PC rara vez es el trade-off correcto en microservicios. Para Tienda Aurora, esto significa que cuando un pedido se confirma, el stock se reserva, el pago se procesa y la notificación se envía, todo con compensaciones si algo falla, sin bloquear el sistema entero.
+La consistencia distribuida se diseña: outbox para publicar confiablemente, sagas para procesos largos, idempotencia para duplicados. 2PC rara vez es el trade-off correcto en microservicios. Para Tienda Aurora, esto significa que cuando un pedido se confirma, el stock se reserva, el pago se procesa y la notificación se envía, todo con compensaciones si algo falla, sin bloquear el sistema entero. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 
