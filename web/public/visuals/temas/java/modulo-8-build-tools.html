@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maven y Gradle: mismo proyecto, dos modelos de build</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--panel:#fff;--accent:#b45309;--ok:#0f766e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>Build tools: Maven y Gradle lado a lado</h1>
+<p class="lead">El código es el mismo; cambia la forma de declarar dependencias, módulos, fases/tareas y reproducibilidad.</p>
+<section class="card">
+<svg viewBox="0 0 980 320" role="img" aria-label="Maven y Gradle construyen el mismo proyecto multi-modulo">
+<rect x="330" y="25" width="320" height="65" rx="14" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="52" text-anchor="middle" font-weight="700">Código Java idéntico</text>
+<text x="490" y="74" text-anchor="middle" font-size="12" fill="#6b7280">core (dominio + JSON) → api (main)</text>
+
+<rect x="75" y="130" width="350" height="120" rx="16" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="250" y="160" text-anchor="middle" font-weight="700">Maven</text>
+<text x="250" y="186" text-anchor="middle" font-size="12">pom.xml + ciclo de vida</text>
+<text x="250" y="207" text-anchor="middle" font-size="12" fill="#6b7280">validate → compile → test → package</text>
+<text x="250" y="229" text-anchor="middle" font-size="12" fill="#0f766e">mvn test · mvn package</text>
+
+<rect x="555" y="130" width="350" height="120" rx="16" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+<text x="730" y="160" text-anchor="middle" font-weight="700">Gradle</text>
+<text x="730" y="186" text-anchor="middle" font-size="12">build.gradle.kts + grafo de tareas</text>
+<text x="730" y="207" text-anchor="middle" font-size="12" fill="#6b7280">wrapper → toolchain → compileJava → test</text>
+<text x="730" y="229" text-anchor="middle" font-size="12" fill="#0f766e">./gradlew test · :api:run</text>
+
+<line x1="425" y1="90" x2="300" y2="128" stroke="#6b7280" stroke-width="2"/>
+<line x1="555" y1="90" x2="680" y2="128" stroke="#6b7280" stroke-width="2"/>
+<rect x="260" y="275" width="460" height="35" rx="12" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="298" text-anchor="middle" font-size="13" fill="#374151"><tspan font-weight="700">Resultado:</tspan> las mismas salidas de negocio; el build no cambia el comportamiento.</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> elige por convención y ecosistema (Maven) o por flexibilidad, incrementalidad y DSL (Gradle). En ambos casos, fija versiones, dependencias y wrapper para reproducir el build.</p>
+</main></body></html>

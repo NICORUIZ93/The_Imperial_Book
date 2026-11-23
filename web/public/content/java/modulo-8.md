@@ -3,9 +3,15 @@
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 8 — mapa visual](/visuals/temas/java/modulo-8-colecciones.html)
-
-Lectura: Elige la colección por la operación dominante: orden, unicidad, clave-valor o cola.
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-8-build-tools.html"
+    alt="Maven y Gradle construyen el mismo proyecto multi-módulo con fases/tareas y salida de negocio idéntica"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Maven y Gradle son dos modelos de build; el comportamiento de negocio debe permanecer igual.</figcaption>
+</figure>
 
 
 Tienda Aurora ya tiene código, pero el código no vive solo en un IDE. Necesita compilarse en CI, declarar dependencias, ejecutar tests, empaquetar artefactos y hacerlo igual en la máquina de cualquier persona del equipo. Eso es el trabajo de un build tool. Maven y Gradle resuelven el mismo problema con filosofías distintas: Maven favorece convención y configuración declarativa en XML; Gradle favorece un modelo programable con DSL Kotlin/Groovy y mejor incrementalidad.
@@ -346,9 +352,15 @@ productos=2
 
 ### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
 
-Maven usa `pom.xml`. POM significa Project Object Model: un modelo declarativo del proyecto. Defines coordenadas (`groupId`, `artifactId`, `version`), dependencias, plugins y módulos. Su fortaleza es la convención: si sigues la estructura estándar, Maven sabe dónde está el código, los tests y los recursos.
+Maven usa `pom.xml`. POM significa Project Object Model: un modelo declarativo del proyecto. Defines coordenadas (`groupId`, `artifactId`, `version`), dependencias, plugins y módulos. Su fortaleza es la convención: si sigues la estructura estándar, Maven sabe dónde está el código, los tests y los recursos. El mecanismo central es la resolución de dependencias desde repositorios y la ejecución de goals ligados a fases del ciclo de vida.
 
-Gradle usa scripts, en este caso `build.gradle.kts` con Kotlin DSL. También es declarativo en la práctica, pero el modelo es programable. Puedes escribir lógica de build cuando la necesitas. Su fortaleza es la flexibilidad y el rendimiento incremental; su riesgo es que un build demasiado “creativo” se vuelva difícil de entender.
+Gradle usa scripts, en este caso `build.gradle.kts` con Kotlin DSL. El build se describe como un grafo de tareas con entradas, salidas y relaciones. Puedes escribir lógica de build cuando la necesitas. Su fortaleza es la flexibilidad y el rendimiento incremental; su riesgo es que un build demasiado “creativo” se vuelva difícil de entender.
+
+**Por qué existen ambos formats:** Maven priorizó estandarización y previsibilidad; Gradle priorizó flexibilidad y ejecución incremental. Ninguno elimina la disciplina de declarar versiones, scopes y fronteras.
+
+**Implicación:** en equipos grandes, `pom.xml` facilita que cualquier persona lea el mismo modelo; `build.gradle.kts` permite automatizaciones sofisticadas, pero requiere revisión como código que es.
+
+**Confusión común:** “Gradle es siempre más moderno y mejor”. La herramienta que el equipo entiende y mantiene con discipline suele ser mejor que una migración impulsada por moda.
 
 Compara la misma dependencia. En Maven:
 
@@ -396,7 +408,9 @@ Y en Maven:
 </dependency>
 ```
 
-La herramienta cambia; la intención es la misma.
+La herramienta cambia; la intención es la misma: separar qué se necesita para compilar, qué se necesita para ejecutar y qué solo existe para verificar.
+
+**Confusión común:** usar `implementation`/`compile` para JUnit y empaquetarlo en produção. El scope correcto evita que dependencias de test aparezcan en el artefacto final.
 
 ### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
@@ -405,6 +419,12 @@ Un multi-módulo divide el build en unidades con responsabilidades claras. En es
 En Gradle, `settings.gradle.kts` incluye los módulos y `api/build.gradle.kts` declara `implementation(project(":core"))`. En Maven, el POM padre lista `<modules>` y `api/pom.xml` declara la dependencia a `com.aurora:core`.
 
 El beneficio práctico es que puedes compilar, testear y reutilizar `core` sin arrastrar la aplicación. También obliga a pensar en contratos entre módulos. Si `Catalogo.comoJson()` expusiera `JsonProcessingException` de Jackson, la app tendría que conocer un detalle de la librería usada por `core`; por eso el código lo traduce a `IllegalStateException`.
+
+**Por qué existe:** los módulos convierten una convención arquitectónica (“el dominio no depende de la app”) en una restricción del build.
+
+**Implicación:** una dependencia circular deja de ser un problema de disciplina y pasa a ser un error de compilación. Los contratos y traducciones de excepciones se vuelven visibles.
+
+**Confusión común:** crear módulos por moda, sin criterio, o compartir todo en un módulo `common` que termina acoplando a todos. Cada módulo debe tener un propósito y una dirección de dependencia justificable.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
@@ -419,21 +439,31 @@ productos=2
 
 Eso es lo que debería pasar. El build tool no debe cambiar el comportamiento de negocio; debe hacerlo reproducible. Cuando elijas entre Maven y Gradle, la pregunta no es cuál es “más pro”. La pregunta es qué necesita tu equipo: convención estricta y ecosistema XML predecible, o flexibilidad y rendimiento con una DSL programable. En muchos equipos existentes, la mejor herramienta es la que ya entienden y pueden mantener con disciplina.
 
+**Por qué importa ver ambos:** ver el mismo código en dos herramientas revela qué partes son del dominio y qué partes son del build. Si cambiar el build cambia la salida, hay una dependencia accidental del entorno.
+
+**Implicación:** la elección de herramienta es una decisión de mantenimiento a largo plazo, no una discusión estética.
+
+**Confusión común:** pensar que la salida de Gradle y Maven debe diferir. El comportamiento observable debe ser el mismo; lo que difiere es la forma de declarar y ejecutar el proceso.
+
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m8` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado originalmente el 2026-05-23 y re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m8` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, Maven 3.10.0).
 
 ```bash
 ./gradlew -q test
 ./gradlew -q :api:run
+mvn -q test
+mvn -q -DskipTests package
 ```
 
 Resultados observados:
 
-- `test`: 0 fallas (build exitoso).
-- `:api:run`: `productos=2` y JSON con los dos productos del catálogo.
+- Gradle `test`: 0 fallas (build exitoso).
+- Gradle `:api:run`: `productos=2` y JSON con los dos productos del catálogo.
+- Maven `test`: exitoso, 0 fallas.
+- Maven `package`: exitoso, artefactos `core`/`api` generados.
 
-**Nota honesta:** se verificó la variante Gradle multi-módulo extraída del módulo. Los comandos Maven del contenido no se ejecutaron en esta corrida porque el entorno no tenía `mvn` instalado; la estructura POM quedó incluida en el proyecto para ejecución en un entorno con Maven.
+**Nota honesta:** la ejecución Maven se realizó directamente con `mvn` en la corrida de 2026-11-23; la nota anterior que decía que Maven no estaba instalado quedó corregida. La salida de la app con Maven se mostró previamente usando classpath de runtime explícito; `exec:java` depende de configuración del plugin y no se usa como evidencia canónica.
 
 ## Errores comunes y diagnóstico
 
