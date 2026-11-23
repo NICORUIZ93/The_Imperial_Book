@@ -7350,6 +7350,26 @@
     ],
     "15": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
         "title": "Diseño del sistema y límites",
         "fragment": "tema-1-diseno-del-sistema-y-limites"
       },

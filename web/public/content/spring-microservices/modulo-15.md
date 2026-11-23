@@ -2,7 +2,114 @@
 
 El capstone cierra el track: diseño, implementación, operación y defensa. El objetivo es demostrar criterio arquitectónico con evidencia, no solo código funcionando. Tienda Aurora evoluciona desde monolito modular hasta sistema distribuido operado en producción.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes son ejecutables con Java; infraestructura completa (Kafka/Keycloak/K8s/Gatling) queda con nota de verificación honesta.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los smokes son ejecutables con Java; infraestructura completa (Kafka/Keycloak/K8s/Gatling) queda con nota de verificación honesta.
+
+## Proyecto desde cero: tienda-aurora-capstone
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+docker --version  # Docker 24+
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-capstone/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── docker-compose.yml
+├── catalog-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/catalog/
+│       ├── CatalogApplication.java
+│       └── service/ProductService.java
+├── orders-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/orders/
+│       ├── OrdersApplication.java
+│       └── service/OrderService.java
+├── billing-service/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/aurora/billing/
+│       ├── BillingApplication.java
+│       └── service/PaymentService.java
+└── notifications-service/
+    ├── build.gradle.kts
+    └── src/main/java/com/aurora/notifications/
+        ├── NotificationsApplication.java
+        └── service/NotificationService.java
+```
+
+### build.gradle.kts (raíz)
+
+```kotlin
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+}
+
+subprojects {
+    apply(plugin = "java")
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+    repositories { mavenCentral() }
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-capstone"
+include("catalog-service", "orders-service", "billing-service", "notifications-service")
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aurora
+      POSTGRES_USER: aurora
+      POSTGRES_PASSWORD: aurora
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+```
 
 ### Tema 1: Diseño del sistema y límites · Experto · 360 min
 
@@ -15,7 +122,7 @@ Diseñar límites es como dibujar el plano de una casa antes de construir. Si em
 ```java
 import java.util.*;
 
-public class CapstoneDesignSmoke {
+public class CapstoneDesignExample {
     record Service(String name, String owner, String db) {}
 
     static boolean validDesign(List<Service> services) {
@@ -40,8 +147,8 @@ public class CapstoneDesignSmoke {
 ```
 
 ```bash
-javac CapstoneDesignSmoke.java
-java CapstoneDesignSmoke
+javac CapstoneDesignExample.java
+java CapstoneDesignExample
 ```
 
 Salida esperada:
@@ -65,7 +172,7 @@ Los contratos son como los planos eléctricos del edificio: cada servicio sabe q
 ```java
 import java.util.*;
 
-public class CapstoneFlowSmoke {
+public class CapstoneFlowExample {
     record Event(String eventId, String orderId) {}
 
     static class IdempotentProcessor {
@@ -84,23 +191,23 @@ public class CapstoneFlowSmoke {
     public static void main(String[] args) {
         IdempotentProcessor p = new IdempotentProcessor();
         Event e = new Event("evt-1", "ord-1");
-        System.out.println(p.process(e, "charge"));
-        System.out.println(p.process(e, "charge"));
+        System.out.println("first=" + p.process(e, "charge"));
+        System.out.println("retry=" + p.process(e, "charge"));
         System.out.println("effects=" + p.effectCount());
     }
 }
 ```
 
 ```bash
-javac CapstoneFlowSmoke.java
-java CapstoneFlowSmoke
+javac CapstoneFlowExample.java
+java CapstoneFlowExample
 ```
 
 Salida esperada:
 
 ```text
-processed
-duplicate-ignored
+first=processed
+retry=duplicate-ignored
 effects=1
 ```
 
@@ -115,7 +222,7 @@ El capstone "funciona en local". En producción, un deploy causa downtime porque
 La operación productiva es como el sistema de soporte vital de un hospital: no es la cirugía (el código), pero sin él el paciente no sobrevive. Observabilidad es el monitor, seguridad es el control de acceso, despliegue es la anestesia que permite operar sin dolor.
 
 ```java
-public class CapstoneOpsSmoke {
+public class CapstoneOpsExample {
     static boolean ready(boolean db, boolean broker, boolean cache) {
         return db && broker && cache;
     }
@@ -134,8 +241,8 @@ public class CapstoneOpsSmoke {
 ```
 
 ```bash
-javac CapstoneOpsSmoke.java
-java CapstoneOpsSmoke
+javac CapstoneOpsExample.java
+java CapstoneOpsExample
 ```
 
 Salida esperada:
@@ -157,7 +264,7 @@ El ARB pide "reduce costo 30% sin romper p95 < 300ms ni error rate < 1%". El equ
 La defensa ARB es como un juicio: necesitas evidencia, no opiniones. p95 es el testigo experto, el error rate es el informe de daños, el costo es el presupuesto. Sin números, la defensa es "creo que funciona". Con números, es "aquí está la evidencia".
 
 ```java
-public class CapstoneArbSmoke {
+public class CapstoneArbExample {
     record Constraints(int p95Ms, double errorRate, double costDelta) {}
 
     static boolean pass(Constraints c) {
@@ -180,8 +287,8 @@ public class CapstoneArbSmoke {
 ```
 
 ```bash
-javac CapstoneArbSmoke.java
-java CapstoneArbSmoke
+javac CapstoneArbExample.java
+java CapstoneArbExample
 ```
 
 Salida esperada:
@@ -196,7 +303,7 @@ El error más común es claims sin métricas. El síntoma es rechazo en ARB. La 
 
 ## Cierre
 
-El capstone Spring demuestra que puedes diseñar, operar y defender un sistema distribuido con evidencia. Microservicios es un medio, no el objetivo. Tienda Aurora se diseña con bounded contexts, se implementa con contratos y idempotencia, se opera con observabilidad y seguridad, y se defiende con métricas y ADRs.
+El capstone Spring demuestra que puedes diseñar, operar y defender un sistema distribuido con evidencia. Microservicios es un medio, no el objetivo. Tienda Aurora se diseña con bounded contexts, se implementa con contratos y idempotencia, se opera con observabilidad y seguridad, y se defiende con métricas y ADRs. Gradle coordina el build multi-módulo con dependencias por servicio.
 
 ## Checklist
 
