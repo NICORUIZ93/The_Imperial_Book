@@ -4728,19 +4728,19 @@
     ],
     "9": [
       {
-        "title": "### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
+        "title": "JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
         "fragment": "tema-1-junit-6-jupiter-anotaciones-y-ciclo-de-vida"
       },
       {
-        "title": "### Tema 2: Mockito — aislar dependencias",
+        "title": "Mockito — aislar dependencias",
         "fragment": "tema-2-mockito-aislar-dependencias"
       },
       {
-        "title": "### Tema 3: Tests parametrizados y cobertura",
+        "title": "Tests parametrizados y cobertura",
         "fragment": "tema-3-tests-parametrizados-y-cobertura"
       },
       {
-        "title": "### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
+        "title": "Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
         "fragment": "tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
       }
     ]
