@@ -8,6 +8,78 @@ Las pruebas automatizadas convierten cambios riesgosos en cambios verificables. 
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-testing
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-testing/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    ├── main/
+    │   └── java/com/aurora/testing/
+    │       └── Calculator.java
+    └── test/
+        └── java/com/aurora/testing/
+            └── CalculatorTest.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testImplementation("org.mockito:mockito-core:5.14.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-testing"
+```
+
+### Ejecutar
+
+```bash
+./gradlew test
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/testing/*.java
+javac -cp "out:lib/*" -d out src/test/java/com/aurora/testing/*.java
+java -cp "out:lib/*" org.junit.platform.console.ConsoleLauncher --scan-classpath
+```
+
 ### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
 
 **Caso guía.** validar una calculadora de descuentos. Debe cubrir caso feliz, borde y error.
