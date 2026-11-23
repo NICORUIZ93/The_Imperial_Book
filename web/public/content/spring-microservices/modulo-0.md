@@ -1,8 +1,8 @@
 # Módulo 0 · Java moderno y Spring Boot para Tienda Aurora
 
-Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesita una base sólida: Java moderno, concurrencia, contenedor de dependencias, configuración y opciones de runtime. Este módulo va de cero a experto en esa base, usando Tienda Aurora como proyecto integrador. Los temas son: Java 21+, Virtual Threads, IoC/DI, auto-configuración, multi-módulo, perfiles, CRaC y GraalVM Native Image.
+Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesita una base sólida: Java moderno, concurrencia, contenedor de dependencias, configuración y opciones de runtime. Este módulo va de cero a experto en esa base, usando Tienda Aurora como proyecto integrador. Los temas son: Java 21+, Virtual Threads, IoC/DI, auto-configuración, multi-módulo con Gradle, perfiles, CRaC y GraalVM Native Image.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes Java se ejecutaron localmente. CRaC/GraalVM reales requieren toolchain específico; se incluyen notas de verificación honestas.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los ejemplos Java puros se ejecutaron localmente. CRaC/GraalVM reales requieren toolchain específico; se incluyen notas de verificación honestas.
 
 ### Tema 1: Java 21+: streams, lambdas, Optional, records, pattern matching · Intermedio · 45 min
 
@@ -16,25 +16,23 @@ Streams expresan transformaciones lazy; Optional expresa ausencia; records model
 import java.util.*;
 import java.util.stream.*;
 
-public class JavaModernSmoke {
+public class JavaModernExample {
     record Order(String sku, int qty) {}
     record OrderDto(String sku, int qty) {}
 
     public static void main(String[] args) {
-        var result = List.of(
+        var validOrders = List.of(
             new Order("A1", 2), new Order("", 1), new Order("B2", 0), new Order("C3", 5))
         .stream()
         .filter(o -> !o.sku().isBlank() && o.qty() > 0)
         .map(o -> new OrderDto(o.sku(), o.qty()))
         .toList();
-        System.out.println("valid-orders=" + result);
+        System.out.println("valid-orders=" + validOrders);
 
-        // Optional
         Optional<String> found = Optional.of("A");
         System.out.println("found=" + found.orElse("X"));
         System.out.println("empty=" + Optional.empty().orElse("X"));
 
-        // Pattern matching
         Object o = new Order("A1", 2);
         String label = switch (o) {
             case Order(String sku, int q) when q >= 5 -> sku + ":bulk";
@@ -47,8 +45,8 @@ public class JavaModernSmoke {
 ```
 
 ```bash
-javac JavaModernSmoke.java
-java JavaModernSmoke
+javac JavaModernExample.java
+java JavaModernExample
 ```
 
 Salida esperada:
@@ -68,12 +66,12 @@ El error más común es usar streams con efectos secundarios ocultos. El síntom
 
 `catalog-service` atiende 200 requests concurrentes. Cada request espera 200ms de DB. Con platform threads (pool de 50), las requests se encolan y la latencia sube a 1s. Agregar más threads consume memoria (1MB/stack). El sistema no escala en I/O.
 
-Un virtual thread es como un ticket de atención: en vez de tener 50 cajeros ocupados esperando, tienes miles de tickets que se atienden cuando el recurso está listo. La JVM monta/desmonta el virtual thread del carrier thread cuando bloquea en I/O. El código sigue siendo bloqueante y simple, pero la concurrencia es masiva.
+Un virtual thread es como un ticket de atención: en vez de tener 50 cajeros ocupados esperando, tienes miles de tickets que se atienden cuando el recurso está listo. La JVM monta/desmonta el virtual thread del carrier thread cuando bloquea en I/O.
 
 ```java
 import java.util.concurrent.*;
 
-public class VirtualThreadSmoke {
+public class VirtualThreadExample {
     public static void main(String[] args) throws Exception {
         try (var ex = Executors.newVirtualThreadPerTaskExecutor()) {
             Future<String> f1 = ex.submit(() -> { Thread.sleep(50); return "vt-1"; });
@@ -87,8 +85,8 @@ public class VirtualThreadSmoke {
 ```
 
 ```bash
-javac VirtualThreadSmoke.java
-java VirtualThreadSmoke
+javac VirtualThreadExample.java
+java VirtualThreadExample
 ```
 
 Salida esperada:
@@ -99,7 +97,7 @@ vt-2
 main-is-virtual=false
 ```
 
-Virtual threads escalan I/O-bound con código simple, pero no aceleran CPU-bound. El pinning en `synchronized` largo es el riesgo principal. El error más común es usar virtual threads para CPU-bound o con `synchronized` largos.
+Virtual threads escalan I/O-bound con código simple, pero no aceleran CPU-bound. El pinning en `synchronized` largo es el riesgo principal.
 
 ### Tema 3: Spring IoC, DI, bean lifecycle y ApplicationContext · Intermedio · 60 min
 
@@ -110,7 +108,7 @@ Virtual threads escalan I/O-bound con código simple, pero no aceleran CPU-bound
 IoC es como contratar un gerente de oficina: tú dices "necesito un servicio de pedidos con repositorio y cliente de pago", y el gerente (contenedor) contrata, conecta y gestiona el ciclo de vida. Constructor injection es el empleado diciendo "estas son mis herramientas obligatorias".
 
 ```java
-public class DiSmoke {
+public class DependencyInjectionExample {
     interface Repo { String get(); }
     static class RepoImpl implements Repo { public String get() { return "order-1"; } }
 
@@ -128,8 +126,8 @@ public class DiSmoke {
 ```
 
 ```bash
-javac DiSmoke.java
-java DiSmoke
+javac DependencyInjectionExample.java
+java DependencyInjectionExample
 ```
 
 Salida esperada:
@@ -140,6 +138,21 @@ result=order-1
 
 El error más común es field injection. El síntoma son tests difíciles, dependencias ocultas, NPE. La causa es dependencia no visible. La corrección es constructor injection, final fields.
 
+En Spring Boot, la inyección por constructor es el default cuando hay un solo constructor:
+
+```java
+@Service
+public class OrderService {
+    private final OrderRepository repo;
+    private final PaymentClient payment;
+
+    public OrderService(OrderRepository repo, PaymentClient payment) {
+        this.repo = repo;
+        this.payment = payment;
+    }
+}
+```
+
 ### Tema 4: Auto-configuración condicional, @Conditional y starters · Intermedio · 45 min
 
 ## Auto-configuración condicional y starters
@@ -149,7 +162,7 @@ El equipo agrega una dependencia y "mágicamente" aparece un bean. Nadie sabe po
 La auto-configuración es como un electricista inteligente: si detecta que hay cable de red, instala el router; si no, no. Las condiciones (`@ConditionalOnClass`, `@ConditionalOnProperty`, `@ConditionalOnMissingBean`) son los sensores. Starters son los kits que traen todas las piezas compatibles.
 
 ```java
-public class ConditionalSmoke {
+public class ConditionalConfigSmoke {
     static boolean enabled(String propertyValue, boolean classPresent, boolean beanMissing) {
         return "true".equalsIgnoreCase(propertyValue) && classPresent && beanMissing;
     }
@@ -163,8 +176,8 @@ public class ConditionalSmoke {
 ```
 
 ```bash
-javac ConditionalSmoke.java
-java ConditionalSmoke
+javac ConditionalConfigSmoke.java
+java ConditionalConfigSmoke
 ```
 
 Salida esperada:
