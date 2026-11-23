@@ -2,7 +2,7 @@
 
 Antes de escribir una aplicación grande, un desarrollador necesita dominar el ciclo completo: entender el problema, expresar la solución como código, compilarla, ejecutarla, observar el resultado y diagnosticar fallos. Este módulo construye esa base desde cero. No asume IDE, ni proyecto previo, ni experiencia en Java; solo una terminal y el deseo de entender qué ocurre realmente cuando un programa corre.
 
-**Entorno de referencia verificado (2026-05-22):**
+**Entorno de referencia verificado (2026-11-22):**
 
 ```bash
 java -version
