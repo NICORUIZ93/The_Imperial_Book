@@ -6,6 +6,74 @@ Un sistema que solo funciona en el “camino feliz” no es confiable. Los archi
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-exceptions
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-exceptions/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/exceptions/
+            ├── Main.java
+            ├── domain/
+            │   ├── Product.java
+            │   └── ProductNotFoundException.java
+            └── service/
+                └── ProductService.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.exceptions.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-exceptions"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/exceptions/**/*.java
+java -cp out com.aurora.exceptions.Main
+```
+
 ### Tema 1: Checked vs unchecked exceptions · Básico · 35 min
 
 **Caso guía.** un importador lee una edad desde un archivo. El archivo puede no existir (fallo externo) y el contenido puede ser inválido (violación de datos/precondición). Tratar ambos igual produce código ruidoso o bugs ocultos.
