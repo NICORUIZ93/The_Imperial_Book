@@ -565,11 +565,79 @@ class ReporteVentasTest {
 
 ### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 40 min
 
-La Stream API procesa una secuencia con operaciones declarativas. Una operación intermedia (`filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`) devuelve otro stream y es perezosa: no hace trabajo hasta que una terminal lo pide. Una operación terminal (`collect`, `reduce`, `forEach`, `findFirst`, `count`, `toList`) consume el stream y produce un valor o efecto.
+Un stream no es una colección ni un hilo: es una secuencia de valores sobre la que se construye un pipeline. El mecanismo tiene tres piezas. La **fuente** produce elementos (`lista.stream()`, `Stream.of(...)`, un generador, un archivo). Las **operaciones intermedias** (`filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`, `skip`) devuelven otro stream y son perezosas: registran una transformación, pero no recorren datos. La **operación terminal** (`collect`, `reduce`, `forEach`, `findFirst`, `count`, `toList`, `anyMatch`) consume el pipeline, dispara el trabajo y produce un valor o un efecto. Después de la terminal, el stream queda consumido: intentar reutilizarlo lanza `IllegalStateException`.
 
-`filter` conserva elementos que cumplen un predicado. `map` transforma cada elemento. `flatMap` transforma cada elemento en cero o más elementos y aplana el resultado; es la herramienta correcta cuando tienes pedidos con líneas y quieres un stream de líneas. `reduce` combina elementos en un acumulador; requiere una identidad y una operación asociativa para ser correcto, especialmente en paralelo. `collect` delega en un `Collector`, que define cómo acumular: `toList()`, `joining()`, `groupingBy()`, `summingLong()`, `toUnmodifiableMap()`.
+**Por qué existe:** en lugar de escribir cómo avanza un `for` —índice, acumulador, bandera— describes qué transformación quieres. Eso hace que el código se lea como una cadena de decisiones de negocio y permita cambiar la estrategia de ejecución sin reescribir la lógica. La ganancia no es “menos líneas”: es separar la intención (`filtrar activos`, `agrupar por categoría`, `sumar unidades`) del mecanismo de iteración.
 
-El error común es usar streams para todo. Si un `for` con dos variables es más claro, úsalo. Otro error es mutar estado externo desde lambdas: rompe legibilidad y puede romper corrección en paralelo. El pipeline debe leer como transformación de datos.
+**Implicación práctica:** la pereza importa. En `productos.stream().filter(...).map(...).toList()`, ni `filter` ni `map` hacen trabajo hasta que `toList()` lo pide. Eso permite que `findFirst()` o `limit(2)` corten el recorrido antes de procesar toda la fuente. Pero `sorted()` es una operación intermedia *stateful*: necesita ver todos los elementos antes de emitir el primero. Saber esto evita sorpresas de rendimiento.
+
+En Tienda Aurora, `Pedido.total()` muestra un pipeline mínimo y legible:
+
+```java
+public BigDecimal total() {
+    return lineas.stream()
+            .map(LineaPedido::subtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+}
+```
+
+Cada línea se transforma en su subtotal (`map`, uno a uno) y todos los subtotales se combinan (`reduce`). La identidad `BigDecimal.ZERO` responde “¿qué vale la suma de cero líneas?”. `BigDecimal::add` es asociativo: `(a + b) + c == a + (b + c)`. Sin esas dos propiedades, el resultado podría cambiar si el stream se ejecuta en paralelo.
+
+`map` y `flatMap` no son intercambiables. `map` produce un resultado por elemento de entrada. `flatMap` produce cero, uno o muchos elementos y los aplana en un solo stream. En `ReporteVentas.unidadesPorSku()`, cada pedido contiene varias líneas:
+
+```java
+public Map<String, Long> unidadesPorSku() {
+    return pedidos.stream()
+            .flatMap(p -> p.lineas().stream())
+            .collect(Collectors.groupingBy(
+                    LineaPedido::sku,
+                    Collectors.summingLong(LineaPedido::cantidad)));
+}
+```
+
+Si ahí usaras `map(p -> p.lineas().stream())`, tendrías un `Stream<Stream<LineaPedido>>`: un stream de streams, no un stream de líneas. `flatMap` es la herramienta correcta cuando la entrada es un contenedor y lo que quieres es su contenido.
+
+`reduce` condensa todo el stream en un único valor. Es la elección natural para sumas, máximos o concatenaciones simples. `collect` es más general: delega en un `Collector`, que describe cómo crear un contenedor, cómo acumular, cómo combinar particiones y cómo entregar el resultado. Por eso `groupingBy`, `joining`, `summingLong` y `toUnmodifiableMap` viven en `collect`, no en `reduce`.
+
+En `CatalogoProductos.valorInventarioPorCategoria()` se ve un collector con downstream:
+
+```java
+public Map<Categoria, BigDecimal> valorInventarioPorCategoria() {
+    return productos.stream()
+            .filter(Producto::activo)
+            .collect(Collectors.groupingBy(
+                    Producto::categoria,
+                    Collectors.reducing(BigDecimal.ZERO, Producto::valorInventario, BigDecimal::add)
+            ));
+}
+```
+
+El `groupingBy` crea un mapa por categoría; el segundo collector decide qué se acumula dentro de cada grupo. Es una composición: primero filtrar, después agrupar, después sumar. La salida verificada de `demo` confirma el resultado:
+
+```text
+Valor inventario por categoria:
+  ACCESORIOS=237.50
+  BEBIDAS=284.20
+  MOLIENDA=239.70
+```
+
+Y el `flatMap` de ventas produce:
+
+```text
+Unidades por SKU:
+  CAF-100=3
+  FIL-300=3
+  TEA-100=3
+  MOL-200=1
+```
+
+**Confusión común 1:** “stream es para todo”. Un `for` con dos variables, dos índices o una dependencia fuerte entre iteraciones suele ser más claro. Usa streams cuando el pipeline expresa una transformación; usa bucles cuando el algoritmo es imperativo por naturaleza.
+
+**Confusión común 2:** mutar estado externo desde una lambda. `lista.forEach(x -> total += x)` compila en ciertos contextos, pero es frágil, pero oscurece la intención y rompe la corrección en paralelo. El pipeline debe producir valores, no esconder efectos.
+
+**Confusión común 3:** confundir `reduce` con `collect`. `reduce` entrega un valor; `collect` construye un resultado estructurado. Para juntar elementos en una lista usa `toList()`, no un `reduce` con concatenación.
+
+**Confusión común 4:** reutilizar un stream. Los streams son de un solo uso. Si necesitas recorrer dos veces la misma fuente, crea dos streams desde la colección o materializa el primero con `toList()`.
 
 ### Tema 2: Optional — evitar null explícitamente · Básico · 30 min
 
