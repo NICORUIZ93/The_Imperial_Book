@@ -4150,6 +4150,10 @@
       {
         "title": "Java 25 para programas pequeños: `IO`, archivos compactos e `import module`",
         "fragment": "tema-9-java-25-para-programas-pequenos-io-archivos-compactos-e-import-module"
+      },
+      {
+        "title": "Ejercicio del track: `IO.readln` y el error de `--release 21`",
+        "fragment": "ejercicio-del-track-io-readln-y-el-error-de-release-21"
       }
     ],
     "1": [

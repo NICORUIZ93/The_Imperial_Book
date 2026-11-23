@@ -1263,7 +1263,6 @@ cd /tmp/opencode/aurora-m16
 Salida observada de `./gradlew test --rerun-tasks --console=plain` (resultados de tests):
 
 ```text
-JpaPostgresTest > flywayYRepositorioConPostgresReal() PASSED
 JpaAuroraTest > nPlusUnoYEntityGraph() PASSED
 JpaAuroraTest > herenciaSingleTable() PASSED
 JpaAuroraTest > cicloVidaYCallback() PASSED
@@ -1271,7 +1270,8 @@ JpaAuroraTest > criteriaDinamica() PASSED
 JpaAuroraTest > oneToOneYRestriccionUnica() PASSED
 JpaAuroraTest > optimisticLock() PASSED
 JpaAuroraTest > querydslDinamica() PASSED
-BUILD SUCCESSFUL in 9s
+JpaPostgresTest > flywayYRepositorioConPostgresReal() PASSED
+BUILD SUCCESSFUL in 14s
 ```
 
 Datos impresos por `JpaPostgresTest` (recolectados del reporte XML de JUnit):
