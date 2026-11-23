@@ -6,6 +6,75 @@ Muchos sistemas fallan en los bordes: leer un archivo que no existe, cargar un J
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-io
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-io/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/io/
+            ├── Main.java
+            └── service/
+                └── ReportService.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.io.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.0")
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-io"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -cp "lib/*" -d out src/main/java/com/aurora/io/**/*.java
+java -cp "out:lib/*" com.aurora.io.Main
+```
+
 ### Tema 1: NIO.2 — Path y Files · Intermedio · 40 min
 
 **Caso guía.** guardar y leer un reporte de texto de forma portable. `File` antiguo funciona, pero `Path`/`Files` ofrecen una API más clara y moderna.
