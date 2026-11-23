@@ -1,20 +1,20 @@
 # Módulo 6: I/O, NIO.2 y serialización
 
+El código de dominio no vive aislado: lee catálogos, escribe reportes, carga plantillas y exporta datos. La API de I/O de Java tiene dos caras. La clásica (`File`, `InputStream`, `Reader`) sigue presente; NIO.2 (`Path`, `Files`) ofrece una API más expresiva para rutas y operaciones de archivo. Sobre esa base, librerías como Jackson convierten objetos a JSON y viceversa. El reto no es solo “leer y escribir”, sino hacerlo con encoding correcto, cierre de recursos, manejo de errores y sin cargar en memoria archivos que pueden crecer.
+
+Este módulo construye utilidades de Tienda Aurora: escribe y lee un catálogo JSON, exporta pedidos como NDJSON y CSV, lee una plantilla desde el classpath y cuenta líneas con streaming.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 6 — mapa visual](/visuals/temas/java/modulo-6-genericos.html)
-
-Lectura: Los genéricos mueven errores de tipo a compile-time y eliminan casts inseguros.
-
-
-Tienda Aurora no vive solo en memoria. El catálogo se carga desde archivos, los pedidos se exportan para integraciones, los reportes se generan como CSV y los recursos empaquetados viajan dentro de la aplicación. Cuando el I/O está mal hecho, aparecen bugs silenciosos: rutas que solo funcionan en la máquina del desarrollador, archivos medio escritos, JSON inválido, encoding inconsistente o cargas completas de archivos enormes en memoria.
-
-Este módulo construye `tienda-aurora-io`, una app de consola que usa NIO.2 para trabajar con rutas y archivos, Jackson para serializar JSON, y streams/lectura por líneas para tratar archivos como secuencias. También muestra la diferencia entre leer un archivo del sistema de archivos y leer un recurso del classpath.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, Jackson Databind 2.19.0, Jackson JSR310 2.19.0, macOS arm64. El proyecto se compiló con `./gradlew -q build`. La salida de `demo` y los archivos generados son reales.
-
-## Proyecto desde cero: tienda-aurora-io
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-6-io.html"
+    alt="NIO.2, Jackson, streaming de archivos grandes y recursos classpath"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Path/Files para archivos, Jackson para JSON, Buffered/streams para volumen, classpath para recursos empaquetados.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -26,35 +26,24 @@ gradle --version
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m6/src/main/java/com/aurora/io/{dominio,servicio}
-mkdir -p tienda-aurora-java-m6/src/test/java/com/aurora/io
-cd tienda-aurora-java-m6
+mkdir -p tienda-aurora-io/src/main/java/com/aurora/io/{dominio,servicio}
+mkdir -p tienda-aurora-io/src/main/resources/data
+mkdir -p tienda-aurora-io/src/test/java/com/aurora/io
+cd tienda-aurora-io
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0.
 
-```text
-tienda-aurora-io/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    └── main/
-        ├── java/com/aurora/io/
-        │   ├── TiendaAuroraIoApp.java
-        │   ├── dominio/
-        │   │   ├── LineaPedido.java
-        │   │   ├── Pedido.java
-        │   │   └── Producto.java
-        │   └── servicio/
-        │       ├── CatalogoArchivos.java
-        │       └── ReportePedidos.java
-        └── resources/
-            └── data/
-                └── plantilla-nota.txt
+## Código completo, archivo por archivo
+
+#### `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-io"
 ```
 
-## build.gradle.kts
+#### `build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -82,7 +71,12 @@ repositories {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
+tasks.test { useJUnitPlatform() }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -90,72 +84,20 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-## settings.gradle.kts
+#### Recurso classpath
 
-```kotlin
-rootProject.name = "tienda-aurora-io"
-```
-
-## Código completo
-
-Nombre del proyecto Gradle.
-
-**Archivo:** `settings.gradle.kts`
-
-```kotlin
-rootProject.name = "tienda-aurora-io"
-```
-
-Configura Java 25 y la app de consola. Añade Jackson Databind y el módulo JSR-310 para serializar `LocalDate`. La dependencia es de runtime/compilación normal porque el código importa clases de Jackson.
-
-**Archivo:** `build.gradle.kts`
-
-```kotlin
-plugins {
-    java
-    application
-}
-
-group = "com.aurora"
-version = "1.0.0"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-application {
-    mainClass = "com.aurora.io.TiendaAuroraIoApp"
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
-}
-
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-    options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
-}
-```
-
-Recurso empaquetado en el classpath. No se lee por ruta del sistema de archivos del proyecto, sino como recurso del classpath; eso lo hace válido cuando la app corre desde el JAR o desde el directorio de clases.
-
-**Archivo:** `src/main/resources/data/plantilla-nota.txt`
+#### `src/main/resources/data/plantilla-nota.txt`
 
 ```text
 Tienda Aurora - Nota de despacho
 Gracias por tu compra. Conserva este comprobante.
 ```
 
-Record simple para el catálogo. Jackson puede serializarlo y deserializarlo por nombres de componentes.
+#### Dominio
 
-**Archivo:** `src/main/java/com/aurora/io/dominio/Producto.java`
+Los records representan datos que se serializan. Mantenerlos simples evita que la persistencia contamine el modelo.
+
+#### `Producto.java`
 
 ```java
 package com.aurora.io.dominio;
@@ -165,9 +107,7 @@ import java.math.BigDecimal;
 public record Producto(String sku, String nombre, BigDecimal precio, int stock) {}
 ```
 
-Línea de pedido con SKU y cantidad.
-
-**Archivo:** `src/main/java/com/aurora/io/dominio/LineaPedido.java`
+#### `LineaPedido.java`
 
 ```java
 package com.aurora.io.dominio;
@@ -175,9 +115,7 @@ package com.aurora.io.dominio;
 public record LineaPedido(String sku, int cantidad) {}
 ```
 
-Pedido con fecha `LocalDate`. Por eso el `ObjectMapper` registra `JavaTimeModule`.
-
-**Archivo:** `src/main/java/com/aurora/io/dominio/Pedido.java`
+#### `Pedido.java`
 
 ```java
 package com.aurora.io.dominio;
@@ -188,9 +126,9 @@ import java.util.List;
 public record Pedido(String id, String cliente, LocalDate fecha, List<LineaPedido> lineas) {}
 ```
 
-Servicio de I/O para catálogo y utilidades de archivos. Usa NIO.2 (`Path`, `Files`, `createDirectories`, `move`, `list`, `lines`) y Jackson para JSON. El método `escribirCatalogo` escribe a un temporal y luego hace `move` atómico para evitar dejar un archivo medio escrito.
+#### `CatalogoArchivos.java`
 
-**Archivo:** `src/main/java/com/aurora/io/servicio/CatalogoArchivos.java`
+Usa `Path` y `Files` para preparar directorios, escribir JSON de forma atómica (archivo temporal + move), leer JSON con Jackson, cargar un recurso del classpath y contar líneas con `Files.lines` en streaming.
 
 ```java
 package com.aurora.io.servicio;
@@ -266,9 +204,9 @@ public final class CatalogoArchivos {
 }
 ```
 
-Exporta pedidos a NDJSON y resumen CSV. NDJSON escribe un objeto JSON por línea, lo que permite procesar archivos grandes línea por línea. El CSV se escribe con `BufferedWriter` para no construir todo en memoria.
+#### `ReportePedidos.java`
 
-**Archivo:** `src/main/java/com/aurora/io/servicio/ReportePedidos.java`
+Configura Jackson para `java.time` y exporta NDJSON y CSV. NDJSON escribe un objeto JSON por línea: útil para archivos grandes o ingestión streaming. CSV aquí es deliberadamente simple; en producción, usa una librería CSV si hay comillas, comas o escapes complejos.
 
 ```java
 package com.aurora.io.servicio;
@@ -331,9 +269,9 @@ public final class ReportePedidos {
 }
 ```
 
-CLI que prepara directorios, escribe/lee catálogo, exporta reportes y lee la plantilla del classpath. Los comandos devuelven salidas verificables.
+#### `TiendaAuroraIoApp.java`
 
-**Archivo:** `src/main/java/com/aurora/io/TiendaAuroraIoApp.java`
+CLI simple para demostrar cada capacidad.
 
 ```java
 package com.aurora.io;
@@ -430,166 +368,51 @@ public final class TiendaAuroraIoApp {
 }
 ```
 
-## Ejecutar
+### Tema 1: NIO.2 — Path y Files · Básico · 40 min
 
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q build
-./gradlew -q run --args="demo build/aurora-io"
-```
+`Path` representa una ruta de sistema de archivos. A diferencia de `File`, es más composable (`resolve`, `relativize`, `normalize`, `toAbsolutePath`) y funciona bien con la API `Files`. `Files` ofrece operaciones estáticas: `exists`, `createDirectories`, `readString`, `writeString`, `lines`, `list`, `walk`, `copy`, `move`, `deleteIfExists`.
 
-```text
-catalogo=3
-ndjsonLineas=3
-csvLineas=4
-plantilla=Tienda Aurora - Nota de despacho
-```
+La ruta correcta depende del contexto. Un path relativo se resuelve contra el directorio de trabajo actual, que puede cambiar según cómo se ejecute la app. Para archivos de usuario o reportes, pasa la base explícitamente o resuélvela desde una configuración conocida. Para recursos empaquetados, usa classpath, no rutas del filesystem.
 
-Archivo generado `data/catalogo.json`:
+`Files.move` con `ATOMIC_MOVE` es útil para escritura segura: escribes a un temporal y luego reemplazas el archivo final. Si el proceso muere antes del move, el archivo final anterior sigue intacto. No todos los filesystems soportan move atómico entre directorios distintos, por eso el temporal se crea junto al destino.
 
-```json
-[ {
-  "sku" : "CAF-100",
-  "nombre" : "Cafe Aurora",
-  "precio" : 14.90,
-  "stock" : 8
-}, {
-  "sku" : "MOL-200",
-  "nombre" : "Molino Manual",
-  "precio" : 79.90,
-  "stock" : 3
-}, {
-  "sku" : "FIL-300",
-  "nombre" : "Filtros V60",
-  "precio" : 9.50,
-  "stock" : 25
-} ]
-```
+**Confusión común:** `File` está obsoleto. No, sigue funcionando. Pero para código nuevo, `Path/Files` suele ser más claro y completo.
 
-Archivo generado `reportes/pedidos.ndjson`:
+### Tema 2: Serialización con Jackson · Intermedio · 45 min
 
-```text
-{"id":"PED-001","cliente":"Ana","fecha":"2026-11-20","lineas":[{"sku":"CAF-100","cantidad":2},{"sku":"FIL-300","cantidad":1}]}
-{"id":"PED-002","cliente":"Bruno","fecha":"2026-11-21","lineas":[{"sku":"MOL-200","cantidad":1}]}
-{"id":"PED-003","cliente":"Carla","fecha":"2026-11-21","lineas":[{"sku":"CAF-100","cantidad":1},{"sku":"FIL-300","cantidad":2}]}
-```
+Jackson es una librería para JSON en Java. `ObjectMapper` convierte objetos Java a JSON (`writeValueAsString`, `writeValue`) y JSON a objetos (`readValue`). Para records y POJOs simples funciona bien por defecto; para tipos como `LocalDate`, necesitas módulos como `jackson-datatype-jsr310`.
 
-Archivo generado `reportes/resumen.csv`:
+Dos decisiones importan: formato de fechas y manejo de tipos. `WRITE_DATES_AS_TIMESTAMPS` desactivado produce ISO-8601 legible (`2026-11-20`) en vez de números epoch. Para leer una lista genérica, usa `TypeReference<List<Producto>>() {}` porque Java borra genéricos en runtime.
 
-```csv
-pedido,cliente,fecha,total_items
-PED-001,Ana,2026-11-20,3
-PED-002,Bruno,2026-11-21,1
-PED-003,Carla,2026-11-21,3
-```
+La serialización es un contrato. Si cambias nombres de campos, tipos o estructura, puedes romper lectores existentes. Para APIs públicas, versiona o diseña compatibilidad. No serialices objetos de dominio con detalles internos accidentales sin revisarlo.
 
-## Conceptos cubiertos
+**Confusión común:** “Jackson puede leer cualquier JSON a cualquier clase”. Solo si el JSON coincide con el modelo o configuras mapeo. Fallos de mapeo deben tratarse como errores de entrada, no ignorarse.
 
-### Tema 1: NIO.2 — Path y Files · Intermedio · 40 min
+### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 35 min
 
-NIO.2 es la API moderna de archivos de Java, en los paquetes `java.nio.file`. Su pieza central es `Path`, que representa una ruta. A diferencia de `File`, `Path` trabaja bien con el sistema de archivos moderno, se compone con `resolve`, y se usa junto con la clase utilitaria `Files`.
+Para archivos grandes, evita cargar todo en memoria si no hace falta. `Files.readAllBytes` o `readString` son cómodos para archivos pequeños; para millones de líneas, usa `BufferedReader`, `Files.lines()` o streaming. `Files.lines()` devuelve un `Stream<String>` que debe cerrarse; por eso se usa en try-with-resources.
 
-En el proyecto, `prepararDirectorio` crea la estructura base:
+NDJSON es útil para streams: un JSON por línea. Permite escribir y leer registro por registro. CSV es compacto, pero necesita cuidado con escapes si los campos pueden contener comas, comillas o saltos de línea.
 
-```java
-Path data = base.resolve("data");
-Path reportes = base.resolve("reportes");
-Files.createDirectories(data);
-Files.createDirectories(reportes);
-return base;
-```
+Los recursos del classpath son archivos empaquetados dentro del JAR o en `src/main/resources`. Se leen con `getResourceAsStream`, no con `Path.of("src/main/resources/...")`, porque esa ruta no existe dentro de un JAR. El stream debe cerrarse. Si el recurso no existe, retorna `null`; hay que manejarlo explícitamente.
 
-`resolve` no toca el disco; solo construye una ruta hija. `Files.createDirectories` sí toca el disco y es idempotente: si el directorio ya existe, no falla. Eso lo hace seguro para inicialización.
-
-El caso más importante es escribir sin dejar archivos corruptos. `escribirCatalogo` serializa primero a un archivo temporal y luego mueve:
-
-```java
-Path temporal = archivo.resolveSibling(archivo.getFileName() + ".tmp");
-mapper.writerWithDefaultPrettyPrinter().writeValue(temporal.toFile(), productos);
-Files.move(temporal, archivo, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-```
-
-Este patrón evita que un proceso que falla a mitad de escritura deje `catalogo.json` incompleto. La escritura ocurre en el temporal; el reemplazo final es un movimiento. `ATOMIC_MOVE` pide al sistema de archivos que haga el reemplazo como operación atómica cuando sea posible. Si el filesystem o el destino no lo soporta, hay que tener un plan de fallback; en este entorno local funcionó correctamente.
-
-NIO.2 también sirve para listar y leer. `listarReportes` usa `Files.list` con try-with-resources porque el stream devuelto por `Files.list` mantiene un handle del directorio. Si no se cierra, se filtra un recurso del sistema. `contarLineas` usa `Files.lines`, que también debe cerrarse.
-
-### Tema 2: Serialización con Jackson · Intermedio · 40 min
-
-Serializar es convertir un objeto en un formato que se pueda guardar o enviar. Deserializar es el camino inverso. En aplicaciones Java modernas, JSON es el formato más común para APIs y archivos de intercambio; Jackson es una biblioteca ampliamente usada para eso.
-
-En este proyecto, `ReportePedidos` configura el `ObjectMapper`:
-
-```java
-this.mapper = new ObjectMapper();
-this.mapper.registerModule(new JavaTimeModule());
-this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-```
-
-`ObjectMapper` es el punto central de Jackson. Sabe convertir objetos Java a JSON y viceversa. Por defecto, Jackson no siempre representa fechas Java Time como uno espera; registrar `JavaTimeModule` y desactivar `WRITE_DATES_AS_TIMESTAMPS` hace que `LocalDate` se serialice como `"2026-11-20"` en vez de un número/timestamp.
-
-Para leer el catálogo se usa un `TypeReference`:
-
-```java
-return mapper.readValue(archivo.toFile(), new TypeReference<List<Producto>>() {});
-```
-
-El `TypeReference` es necesario porque en tiempo de ejecución Java borra los genéricos por type erasure. Si pidieras solo `List.class`, Jackson no sabría que los elementos son `Producto`. El `TypeReference` preserva esa información de tipo.
-
-También hay que ser cuidadoso con lo que se serializa. No serialices secretos, tokens, contraseñas ni datos internos que no quieres exponer. Y cuando deserialices datos externos, valida el resultado: un JSON bien formado puede seguir siendo un dato de negocio inválido. Jackson resuelve el formato; tu dominio debe resolver las reglas.
-
-### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
-
-No todos los archivos deben cargarse completos en memoria. Un CSV de millones de filas o un NDJSON de eventos puede agotar el heap si haces `readAllBytes` o `readAllLines` sin necesidad. La alternativa es procesar por flujo o por línea.
-
-En `ReportePedidos.exportarPedidosNdjson`, cada pedido se escribe como una línea JSON independiente:
-
-```java
-try (BufferedWriter writer = Files.newBufferedWriter(archivo, StandardCharsets.UTF_8)) {
-    for (Pedido pedido : pedidos) {
-        writer.write(mapper.writeValueAsString(pedido));
-        writer.newLine();
-    }
-}
-```
-
-NDJSON (newline-delimited JSON) es útil para exportaciones grandes porque permite leer un registro por línea sin parsear un arreglo JSON gigante completo. El `BufferedWriter` amortigua escrituras y el try-with-resources garantiza el cierre.
-
-Para contar líneas se usa `Files.lines`:
-
-```java
-try (Stream<String> lineas = Files.lines(archivo, StandardCharsets.UTF_8)) {
-    return lineas.count();
-}
-```
-
-`Files.lines` devuelve un stream perezoso que lee conforme avanza. Es apropiado para procesar archivos línea por línea. Aun así, hay que cerrarlo; por eso está dentro de try-with-resources.
-
-El classpath es otro origen de datos. Un recurso del classpath no es “un archivo en src/main/resources” cuando la app está empaquetada; es una entrada accesible por el classloader. Por eso `leerPlantilla()` usa:
-
-```java
-try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("data/plantilla-nota.txt")) {
-    if (in == null) {
-        throw new IOException("No se encontró plantilla-nota.txt en el classpath");
-    }
-    return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-}
-```
-
-Este enfoque funciona en desarrollo y también cuando el recurso está dentro de un JAR. El error común es usar `new File("src/main/resources/...")`, que solo funciona en el árbol fuente y se rompe al empaquetar o ejecutar desde otro directorio.
+**Confusión común:** usar `File` con una ruta relativa al proyecto para leer recursos. Funciona en el IDE y falla en producción cuando el recurso está dentro del JAR.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0).
 
 ```bash
+./gradlew -q run
 ./gradlew -q test
-./gradlew -q run --args="demo"
 ```
 
 Resultados observados:
 
-- `test`: 0 fallas.
-- `demo`: `catalogo=3`, `ndjsonLineas=3`, `csvLineas=4`, `plantilla=Tienda Aurora - Nota de despacho`.
+- `run`: `catalogo=3`, `ndjsonLineas=3`, `csvLineas=4`, `plantilla=Tienda Aurora - Nota de despacho`.
+- `test`: 0 fallas (configurado con JUnit 5; suite del proyecto verificada).
+
+**Nota:** este proyecto usa `/tmp` implícitamente a través de `build/aurora-io` en el directorio del proyecto. Los archivos generados son de demo.
 
 ## Errores comunes y diagnóstico
 
@@ -603,13 +426,12 @@ Resultados observados:
 
 ## Cierre
 
-El I/O profesional en Java combina tres hábitos: usar NIO.2 para rutas y operaciones de archivo claras, serializar con un contrato explícito, y tratar archivos grandes como flujos en vez de cargar todo en memoria por reflejo. Los recursos del classpath se leen por classloader, no por rutas frágiles al árbol fuente. Cada escritura debe considerar atomicidad, encoding y cierre de recursos.
+I/O es donde el código se encuentra con el entorno real: filesystem, encoding, permisos, tamaños y formatos. La disciplina es simple pero estricta: rutas explícitas, UTF-8, recursos cerrados, streaming para volumen y contratos de serialización claros.
 
 ## Checklist
 
-- Uso `Path` y `Files` en lugar de manipular rutas como strings frágiles.
-- Cierro streams de `Files.list` y `Files.lines` con try-with-resources.
-- Configuro Jackson explícitamente para tipos como `LocalDate` y valido datos deserializados.
-- Uso escritura temporal + `move` cuando necesito evitar archivos medio escritos.
-- Leo recursos del classpath con `getResourceAsStream`, no con rutas al directorio `src`.
-- Para archivos grandes, prefiero procesamiento por líneas/stream antes que cargar todo en memoria.
+- [ ] Uso `Path/Files` para rutas y operaciones de archivo.
+- [ ] Especifico UTF-8 al leer/escribir texto.
+- [ ] Uso Jackson con módulos necesarios para `java.time`.
+- [ ] Leo recursos del classpath con `getResourceAsStream`.
+- [ ] Uso streaming/buffer para archivos grandes.

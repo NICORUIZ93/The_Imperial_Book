@@ -1,0 +1,26 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NIO.2, Jackson y archivos grandes</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2937;--muted:#6b7280;--line:#d7dbe2;--accent:#b45309;--ok:#0f766e;--panel:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{margin:0 0 6px;font-size:28px}.lead{margin:0 0 18px;color:var(--muted)}svg{width:100%;height:auto;display:block}.note{color:var(--muted);font-size:14px;margin-top:14px}
+</style></head><body><main class="wrap">
+<h1>I/O: rutas, serialización y streams de datos</h1>
+<p class="lead">NIO.2 maneja rutas y archivos, Jackson mapea objetos a JSON, y el streaming evita cargar archivos grandes completos en memoria.</p>
+<section class="card">
+<svg viewBox="0 0 980 300" role="img" aria-label="I/O Java">
+<defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6b7280"/></marker></defs>
+<rect x="40" y="70" width="210" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="145" y="100" text-anchor="middle" font-weight="700">Path/Files</text><text x="145" y="124" text-anchor="middle" font-size="12" fill="#6b7280">crear, mover, leer, listar</text>
+<rect x="290" y="70" width="210" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="395" y="100" text-anchor="middle" font-weight="700">Jackson</text><text x="395" y="124" text-anchor="middle" font-size="12" fill="#6b7280">Objeto ↔ JSON</text>
+<rect x="540" y="70" width="210" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="645" y="100" text-anchor="middle" font-weight="700">Buffered/Stream</text><text x="645" y="124" text-anchor="middle" font-size="12" fill="#6b7280">archivos grandes línea a línea</text>
+<rect x="790" y="70" width="150" height="90" rx="14" fill="#fff" stroke="#d7dbe2"/><text x="865" y="100" text-anchor="middle" font-weight="700">Classpath</text><text x="865" y="124" text-anchor="middle" font-size="12" fill="#6b7280">recursos empaquetados</text>
+<line x1="250" y1="115" x2="285" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+<line x1="500" y1="115" x2="535" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+<line x1="750" y1="115" x2="785" y2="115" stroke="#6b7280" stroke-width="2" marker-end="url(#a)"/>
+<rect x="200" y="210" width="580" height="60" rx="14" fill="#f8fafc" stroke="#d7dbe2"/>
+<text x="490" y="236" text-anchor="middle" font-size="13" fill="#374151"><tspan font-weight="700">Regla:</tspan> UTF-8 explícito, try-with-resources, y escritura atómica/temp cuando el archivo importa.</text>
+</svg>
+</section>
+<p class="note"><strong>Lectura:</strong> I/O falla por entorno: rutas, permisos, encoding, archivos parciales. El código debe hacerlo visible y seguro.</p>
+</main></body></html>
