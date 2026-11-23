@@ -4620,31 +4620,43 @@
     ],
     "5": [
       {
-        "title": "### Tema 1: ExecutorService y gestión de hilos",
+        "title": "Dominio",
+        "fragment": "dominio"
+      },
+      {
+        "title": "Servicios",
+        "fragment": "servicios"
+      },
+      {
+        "title": "Frontera CLI",
+        "fragment": "frontera-cli"
+      },
+      {
+        "title": "ExecutorService y gestión de hilos",
         "fragment": "tema-1-executorservice-y-gestion-de-hilos"
       },
       {
-        "title": "### Tema 2: CompletableFuture",
+        "title": "CompletableFuture",
         "fragment": "tema-2-completablefuture"
       },
       {
-        "title": "### Tema 3: Virtual threads",
+        "title": "Virtual threads",
         "fragment": "tema-3-virtual-threads"
       },
       {
-        "title": "### Tema 4: Condiciones de carrera y sincronización",
+        "title": "Condiciones de carrera y sincronización",
         "fragment": "tema-4-condiciones-de-carrera-y-sincronizacion"
       },
       {
-        "title": "### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+        "title": "Structured Concurrency (StructuredTaskScope, Java 25)",
         "fragment": "tema-5-structured-concurrency-structuredtaskscope-java-25"
       },
       {
-        "title": "### Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
+        "title": "Scoped Values frente a ThreadLocal (Java 25)",
         "fragment": "tema-6-scoped-values-frente-a-threadlocal-java-25"
       },
       {
-        "title": "### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
+        "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
         "fragment": "tema-7-timeouts-y-cancelacion-cooperativa-sin-abandonar-recursos"
       }
     ],
