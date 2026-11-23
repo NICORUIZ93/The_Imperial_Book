@@ -94,7 +94,7 @@ List
 
 **Definición.** `List<E>` es una colección ordenada que permite duplicados y acceso posicional por índice.
 
-**Contrato/reglas.** Mantiene orden de inserción (salvo operaciones explícitas). `get(i)` es O(1) en `ArrayList`, O(n) en `LinkedList`. `contains` es O(n).
+**Reglas.** Mantiene orden de inserción (salvo operaciones explícitas). `get(i)` es O(1) en `ArrayList`, O(n) en `LinkedList`. `contains` es O(n).
 
 **Cuándo usar / cuándo no.** Usa `List` para secuencias, historial, filas. No la uses para membresía masiva o búsqueda por clave natural.
 
@@ -133,7 +133,7 @@ Set
 
 **Definición.** `Set<E>` modela una colección sin duplicados; la unicidad depende de `equals/hashCode` (`HashSet`) o comparación (`TreeSet`).
 
-**Contrato/reglas.** `HashSet`: O(1) promedio, sin orden. `LinkedHashSet`: conserva inserción. `TreeSet`: ordenado, O(log n), requiere elementos comparables/comparator.
+**Reglas.** `HashSet`: O(1) promedio, sin orden. `LinkedHashSet`: conserva inserción. `TreeSet`: ordenado, O(log n), requiere elementos comparables/comparator.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -167,7 +167,7 @@ Map
 
 **Definición.** `Map<K,V>` asocia claves únicas a valores; no es `Collection`.
 
-**Contrato/reglas.** `put` sobre clave existente reemplaza valor. `HashMap`: O(1) promedio. `LinkedHashMap`: orden de inserción/acceso. `TreeMap`: ordenado por clave.
+**Reglas.** `put` sobre clave existente reemplaza valor. `HashMap`: O(1) promedio. `LinkedHashMap`: orden de inserción/acceso. `TreeMap`: ordenado por clave.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

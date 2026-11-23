@@ -79,7 +79,7 @@ Heap, generaciones y GC
 
 **Definición.** El heap es la memoria donde la JVM asigna objetos. Muchos GCs usan hipótesis generacional: la mayoría de objetos muere joven. El GC reclama objetos inalcanzables.
 
-**Cómo funciona por dentro.** Asignación rápida (TLAB/bump pointer). Objetos jóvenes viven en young generation; sobreviven a minor GCs y pueden promoverse a old. GC roots (stacks, static, JNI, etc.) determinan alcanzabilidad.
+ Asignación rápida (TLAB/bump pointer). Objetos jóvenes viven en young generation; sobreviven a minor GCs y pueden promoverse a old. GC roots (stacks, static, JNI, etc.) determinan alcanzabilidad.
 
 ```mermaid
 flowchart TD
@@ -232,7 +232,7 @@ FFM API
 
 **Definición.** FFM permite acceder a memoria fuera del heap y funciones nativas con APIs seguras respecto a lifecycle (`Arena`, `MemorySegment`, `Linker`, `SymbolLookup`).
 
-**Cómo funciona por dentro.** `Arena` controla el lifetime; al cerrar el arena, los segmentos asociados se invalidan. `ValueLayout` define cómo leer/escribir tipos.
+ `Arena` controla el lifetime; al cerrar el arena, los segmentos asociados se invalidan. `ValueLayout` define cómo leer/escribir tipos.
 
 ```mermaid
 flowchart LR

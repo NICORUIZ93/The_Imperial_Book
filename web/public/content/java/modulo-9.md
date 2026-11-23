@@ -88,7 +88,7 @@ JUnit Jupiter y aserciones
 
 **Definición.** JUnit Jupiter es el módulo de programación/ejecución de JUnit 5/6 para tests en JVM. Las aserciones verifican el contrato esperado.
 
-**Cómo funciona por dentro.** El runner descubre tests por anotaciones, crea el ciclo de vida, ejecuta hooks, captura aserciones/excepciones y reporta resultados. Por defecto, una instancia por test (aislamiento).
+ El runner descubre tests por anotaciones, crea el ciclo de vida, ejecuta hooks, captura aserciones/excepciones y reporta resultados. Por defecto, una instancia por test (aislamiento).
 
 ```mermaid
 flowchart LR

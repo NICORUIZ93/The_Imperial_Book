@@ -86,7 +86,7 @@ Stream, pipeline, pereza
 
 **Definición.** Un `Stream<T>` es una secuencia de elementos que soporta operaciones agregadas. Un pipeline tiene fuente, cero o más operaciones intermedias (lazy) y una terminal (eager).
 
-**Cómo funciona por dentro.** Las intermedias no ejecutan el trabajo; construyen el pipeline. La terminal lo dispara. Esto permite fusionar operaciones y evitar trabajo innecesario en algunos casos (como `findFirst`).
+ Las intermedias no ejecutan el trabajo; construyen el pipeline. La terminal lo dispara. Esto permite fusionar operaciones y evitar trabajo innecesario en algunos casos (como `findFirst`).
 
 **Cuándo usar / cuándo no.** Úsalo para transformar/consultar colecciones con claridad. No para lógica con muchos efectos secundarios, mutación compartida o control de flujo complejo.
 
@@ -171,7 +171,7 @@ java DemoOps
 
 **Definición.** `Optional<T>` es un contenedor que puede contener o no un valor no nulo, y expone operaciones para manejar ambos casos.
 
-**Cómo funciona por dentro.** `Optional.of(v)` rechaza null; `ofNullable(v)` acepta null; `empty()` representa ausencia. Métodos como `map`, `filter`, `orElse`, `orElseThrow` componen el manejo.
+ `Optional.of(v)` rechaza null; `ofNullable(v)` acepta null; `empty()` representa ausencia. Métodos como `map`, `filter`, `orElse`, `orElseThrow` componen el manejo.
 
 ```mermaid
 flowchart LR
@@ -224,7 +224,7 @@ Gatherers
 
 **Definición.** Un Gatherer es una operación intermedia personalizada de Stream que puede transformar, acumular, cortocircuitar o emitir elementos de forma controlada.
 
-**Cómo funciona por dentro.** Expone funciones de inicializador, integrador, combinador y finalizador. Java incluye gatherers built-in como `windowFixed` y `windowSliding` (según versión/API disponible).
+ Expone funciones de inicializador, integrador, combinador y finalizador. Java incluye gatherers built-in como `windowFixed` y `windowSliding` (según versión/API disponible).
 
 **Cuándo usar / cuándo no.** Úsalo cuando la operación intermedia no se expresa bien con `map/filter/flatMap`. No lo uses si una operación estándar ya es clara.
 

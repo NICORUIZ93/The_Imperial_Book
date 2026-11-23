@@ -93,7 +93,7 @@ Checked exceptions
 
 **Definición.** Excepción que hereda de `Exception` pero no de `RuntimeException`; el compilador exige capturarla o declararla con `throws`.
 
-**Cómo funciona por dentro.** El compilador verifica el flujo: si un método llama código que puede lanzar una checked exception, debe manejarla o declararla. Esto hace visible en la firma un fallo recuperable esperado.
+ El compilador verifica el flujo: si un método llama código que puede lanzar una checked exception, debe manejarla o declararla. Esto hace visible en la firma un fallo recuperable esperado.
 
 **Reglas.** `throws` documenta la posibilidad; `try-catch` la maneja. Capturar debe agregar valor: recuperar, traducir, reintentar con límite o registrar con contexto.
 
@@ -141,7 +141,7 @@ Unchecked exceptions
 
 **Definición.** `RuntimeException` y subclases; el compilador no obliga a declararlas/capturarlas.
 
-**Cómo funciona por dentro.** Se propagan por la pila hasta un `catch` compatible o hasta terminar el hilo. Suelen representar precondiciones violadas, estado inválido o bugs.
+ Se propagan por la pila hasta un `catch` compatible o hasta terminar el hilo. Suelen representar precondiciones violadas, estado inválido o bugs.
 
 **Cuándo usar / cuándo no.** Úsalas para validar argumentos (`IllegalArgumentException`), estado (`IllegalStateException`), índices/nulos. No captures genéricamente para “evitar caídas”.
 
@@ -290,7 +290,7 @@ Archivo: 30
 
 **Definición.** `try-with-resources` declara recursos que implementan `AutoCloseable`/`Closeable` y los cierra automáticamente al salir del bloque.
 
-**Cómo funciona por dentro.** El compilador genera la lógica de cierre. Si el cuerpo lanza excepción y `close()` también, la excepción de cierre se suprime y se adjunta como *suppressed* a la principal.
+ El compilador genera la lógica de cierre. Si el cuerpo lanza excepción y `close()` también, la excepción de cierre se suprime y se adjunta como *suppressed* a la principal.
 
 ```mermaid
 flowchart TD

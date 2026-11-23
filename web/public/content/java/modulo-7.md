@@ -86,7 +86,7 @@ SLF4J como fachada, Logback como implementación
 
 **Definición.** SLF4J es una fachada de logging; el código depende de `org.slf4j.Logger`. Logback es una implementación común que SLF4J delega en runtime.
 
-**Cómo funciona por dentro.** El código llama la API SLF4J. En el classpath, un binding/implementación (Logback) recibe los eventos y los escribe según configuración (consola, archivo, JSON, rolling).
+ El código llama la API SLF4J. En el classpath, un binding/implementación (Logback) recibe los eventos y los escribe según configuración (consola, archivo, JSON, rolling).
 
 ```mermaid
 flowchart LR

@@ -79,7 +79,7 @@ java -cp out com.aurora.java.Main
 
 **Definición.** Un módulo es una unidad nombrada de código con `module-info.java` que declara dependencias (`requires`) y paquetes exportados (`exports`).
 
-**Cómo funciona por dentro.** El compilador y la JVM aplican accesibilidad fuerte de módulo: un paquete no exportado no es accesible desde otros módulos, aunque sea `public`. Esto es más fuerte que package-private/classpath.
+ El compilador y la JVM aplican accesibilidad fuerte de módulo: un paquete no exportado no es accesible desde otros módulos, aunque sea `public`. Esto es más fuerte que package-private/classpath.
 
 ```mermaid
 flowchart LR

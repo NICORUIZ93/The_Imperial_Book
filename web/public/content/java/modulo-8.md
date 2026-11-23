@@ -16,7 +16,7 @@ Maven y el POM
 
 **Definición.** Maven es una herramienta de build basada en convención sobre configuración. El `pom.xml` declara coordenadas, dependencias, plugins y propiedades.
 
-**Cómo funciona por dentro.** Maven resuelve dependencias desde repositorios, construye un modelo efectivo (POM + herencia + perfiles) y ejecuta fases del lifecycle. Las coordenadas `groupId:artifactId:version` identifican el artefacto.
+ Maven resuelve dependencias desde repositorios, construye un modelo efectivo (POM + herencia + perfiles) y ejecuta fases del lifecycle. Las coordenadas `groupId:artifactId:version` identifican el artefacto.
 
 ```mermaid
 flowchart LR
@@ -76,7 +76,7 @@ Gradle y `build.gradle.kts`
 
 **Definición.** Gradle es una herramienta de build basada en tareas y un DAG de ejecución, con DSL Groovy/Kotlin.
 
-**Cómo funciona por dentro.** Gradle evalúa scripts, construye un grafo de tareas y ejecuta solo lo necesario usando incrementalidad/caché. El wrapper fija la versión del build.
+ Gradle evalúa scripts, construye un grafo de tareas y ejecuta solo lo necesario usando incrementalidad/caché. El wrapper fija la versión del build.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -169,7 +169,7 @@ Multi-módulo Maven/Gradle
 
 **Definición.** Un build multi-módulo agrupa varios subproyectos con un build raíz. Maven usa `<modules>` y POM padre; Gradle usa `settings.gradle.kts` e `include`.
 
-**Cómo funciona por dentro.** El reactor (Maven) o el grafo (Gradle) determina orden por dependencias inter-módulo. Permite reutilizar código y acotar compilación/tests.
+ El reactor (Maven) o el grafo (Gradle) determina orden por dependencias inter-módulo. Permite reutilizar código y acotar compilación/tests.
 
 ```mermaid
 flowchart TD

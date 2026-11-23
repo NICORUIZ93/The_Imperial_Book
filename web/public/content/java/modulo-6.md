@@ -83,7 +83,7 @@ java -cp "out:lib/*" com.aurora.io.Main
 
 **Definición.** `Path` representa una ruta del sistema de archivos; `Files` provee operaciones estáticas para crear, copiar, mover, leer, escribir y consultar metadatos.
 
-**Cómo funciona por dentro.** `Path` es una abstracción; no implica que el archivo exista. `Files` opera sobre el sistema de archivos real o virtual mediante providers. Las operaciones pueden lanzar `IOException`.
+ `Path` es una abstracción; no implica que el archivo exista. `Files` opera sobre el sistema de archivos real o virtual mediante providers. Las operaciones pueden lanzar `IOException`.
 
 ```mermaid
 flowchart LR
@@ -191,7 +191,7 @@ Streaming/lectura por líneas y classpath resources
 
 **Definición.** Leer por streaming procesa datos incrementalmente (`BufferedReader`, `Files.lines`, `InputStream`) en vez de cargar el archivo completo. Recursos del classpath se leen con `ClassLoader.getResourceAsStream`.
 
-**Cómo funciona por dentro.** `Files.lines()` devuelve un `Stream<String>` lazy que debe cerrarse. `getResourceAsStream` lee desde el classpath (directorio o jar), no como ruta de archivo garantizada.
+ `Files.lines()` devuelve un `Stream<String>` lazy que debe cerrarse. `getResourceAsStream` lee desde el classpath (directorio o jar), no como ruta de archivo garantizada.
 
 ```mermaid
 flowchart LR

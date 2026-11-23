@@ -79,7 +79,7 @@ java -cp out com.aurora.concurrency.Main
 
 **Definición.** `ExecutorService` es una abstracción para enviar tareas (`Runnable`/`Callable`) a un pool o estrategia de ejecución, desacoplando envío de ejecución.
 
-**Cómo funciona por dentro.** El pool mantiene workers y una cola (según implementación). `submit` devuelve `Future`; `shutdown` inicia apagado ordenado; `awaitTermination` espera; `close()` (Java 19+) en implementaciones compatibles ayuda al ciclo de vida.
+ El pool mantiene workers y una cola (según implementación). `submit` devuelve `Future`; `shutdown` inicia apagado ordenado; `awaitTermination` espera; `close()` (Java 19+) en implementaciones compatibles ayuda al ciclo de vida.
 
 ```mermaid
 flowchart LR
@@ -172,7 +172,7 @@ Virtual threads
 
 **Definición.** Hilos ligeros administrados por la JVM, diseñados para alta concurrencia en tareas que bloquean frecuentemente.
 
-**Cómo funciona por dentro.** La JVM monta/desmonta virtual threads sobre carrier threads de plataforma cuando bloquean en operaciones compatibles. No hacen mágica a CPU-bound; reducen costo de bloqueo.
+ La JVM monta/desmonta virtual threads sobre carrier threads de plataforma cuando bloquean en operaciones compatibles. No hacen mágica a CPU-bound; reducen costo de bloqueo.
 
 ```mermaid
 flowchart TB
@@ -220,7 +220,7 @@ Race condition y `synchronized`/`Atomic*`
 
 **Definición.** Condición de carrera: el resultado depende del orden no controlado de acceso concurrente a estado compartido mutable. `synchronized` proporciona exclusión mutua y visibilidad; `AtomicInteger` etc. proveen operaciones atómicas.
 
-**Cómo funciona por dentro.** `synchronized` adquiere monitor: solo un hilo entra a la sección crítica. El modelo de memoria Java garantiza visibilidad al adquirir/liberar el monitor. Los atómicos usan CAS/hardware primitives.
+ `synchronized` adquiere monitor: solo un hilo entra a la sección crítica. El modelo de memoria Java garantiza visibilidad al adquirir/liberar el monitor. Los atómicos usan CAS/hardware primitives.
 
 ```mermaid
 sequenceDiagram
