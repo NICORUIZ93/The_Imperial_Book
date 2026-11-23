@@ -4116,30 +4116,6 @@
   "java": {
     "0": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Código de ejemplo",
-        "fragment": "codigo-de-ejemplo"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "Del código fuente a la JVM",
         "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },
@@ -4178,71 +4154,31 @@
     ],
     "1": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "Clases, objetos, constructores y encapsulación",
+        "title": "### Tema 1: Clases, objetos, constructores y encapsulación",
         "fragment": "tema-1-clases-objetos-constructores-y-encapsulacion"
       },
       {
-        "title": "Herencia y sobreescritura",
+        "title": "### Tema 2: Herencia y sobreescritura",
         "fragment": "tema-2-herencia-y-sobreescritura"
       },
       {
-        "title": "Interfaces, clases abstractas y polimorfismo",
-        "fragment": "tema-3-interfaces-clases-abstractas-y-polimorfismo"
+        "title": "### Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+        "fragment": "tema-3-interfaces-clases-abstractas-y-cuando-usar-cada-una"
       },
       {
-        "title": "Sobrecarga, sobreescritura y modificadores de acceso",
-        "fragment": "tema-4-sobrecarga-sobreescritura-y-modificadores-de-acceso"
+        "title": "### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
+        "fragment": "tema-4-sobrecarga-vs-sobreescritura-y-modificadores-de-acceso"
       },
       {
-        "title": "`record` — modelos inmutables sin boilerplate",
+        "title": "### Tema 5: record — modelos inmutables sin boilerplate",
         "fragment": "tema-5-record-modelos-inmutables-sin-boilerplate"
       },
       {
-        "title": "Constructores flexibles (Java 25)",
-        "fragment": "tema-6-constructores-flexibles-java-25"
+        "title": "### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de super(...)",
+        "fragment": "tema-6-constructores-flexibles-java-25-validar-y-preparar-antes-de-super"
       }
     ],
     "10": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "module-info.java y encapsulación fuerte",
         "fragment": "tema-1-module-info-java-y-encapsulacion-fuerte"
@@ -4257,26 +4193,6 @@
       }
     ],
     "11": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Generaciones de memoria y recolectores",
         "fragment": "tema-1-generaciones-de-memoria-y-recolectores"
@@ -4295,26 +4211,6 @@
       }
     ],
     "12": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Builder — configuración paso a paso y validación",
         "fragment": "tema-1-builder-configuracion-paso-a-paso-y-validacion"
@@ -4342,26 +4238,6 @@
     ],
     "13": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "Arquitectura por capas del proyecto integrador",
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
       },
@@ -4375,26 +4251,6 @@
       }
     ],
     "14": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Compartir memoria requiere orden y visibilidad",
         "fragment": "tema-1-compartir-memoria-requiere-orden-y-visibilidad"
@@ -4422,26 +4278,6 @@
     ],
     "15": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "Maven avanzado",
         "fragment": "tema-1-maven-avanzado"
       },
@@ -4467,26 +4303,6 @@
       }
     ],
     "16": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
@@ -4522,26 +4338,6 @@
     ],
     "17": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },
@@ -4552,117 +4348,57 @@
     ],
     "18": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "HttpClient, REST, timeouts y fallos",
+        "title": "### Tema 1: HttpClient, REST, timeouts y fallos",
         "fragment": "tema-1-httpclient-rest-timeouts-y-fallos"
       },
       {
-        "title": "Tokens, validación y límites de seguridad",
+        "title": "### Tema 2: Tokens, validación y límites de seguridad",
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
       },
       {
-        "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM",
-        "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm"
+        "title": "### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
+        "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
       }
     ],
     "19": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "Reflexión y anotaciones en tiempo de ejecución",
+        "title": "### Tema 1: Reflexión y anotaciones en tiempo de ejecución",
         "fragment": "tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion"
       },
       {
-        "title": "Expresiones regulares con Pattern y Matcher",
+        "title": "### Tema 2: Expresiones regulares con Pattern y Matcher",
         "fragment": "tema-2-expresiones-regulares-con-pattern-y-matcher"
       },
       {
-        "title": "Dinero exacto con BigDecimal",
+        "title": "### Tema 3: Dinero exacto con BigDecimal",
         "fragment": "tema-3-dinero-exacto-con-bigdecimal"
       },
       {
-        "title": "Assertions y diseño por contrato",
+        "title": "### Tema 4: Assertions y diseño por contrato",
         "fragment": "tema-4-assertions-y-diseno-por-contrato"
       },
       {
-        "title": "ServiceLoader: plugins sin acoplar implementaciones",
+        "title": "### Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
         "fragment": "tema-5-serviceloader-plugins-sin-acoplar-implementaciones"
       },
       {
-        "title": "Internacionalización: números, monedas, fechas y orden de texto",
+        "title": "### Tema 6: Internacionalización: números, monedas, fechas y orden de texto",
         "fragment": "tema-6-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
       },
       {
-        "title": "Proxies dinámicos",
-        "fragment": "tema-7-proxies-dinamicos"
+        "title": "### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "fragment": "tema-7-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
       },
       {
-        "title": "Carga de clases",
-        "fragment": "tema-8-carga-de-clases"
+        "title": "### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader",
+        "fragment": "tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
       },
       {
-        "title": "MethodHandles y VarHandles",
-        "fragment": "tema-9-methodhandles-y-varhandles"
+        "title": "### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
+        "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
       }
     ],
     "2": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "List, Set, Map y sus implementaciones",
         "fragment": "tema-1-list-set-map-y-sus-implementaciones"
@@ -4672,109 +4408,77 @@
         "fragment": "tema-2-el-contrato-de-equals-y-hashcode"
       },
       {
+        "title": "Claves mutables y el mapa que pierde entradas",
+        "fragment": "tema-3-claves-mutables-y-el-mapa-que-pierde-entradas"
+      },
+      {
         "title": "Genéricos, wildcards y type erasure",
-        "fragment": "tema-3-genericos-wildcards-y-type-erasure"
+        "fragment": "tema-4-genericos-wildcards-y-type-erasure"
       },
       {
         "title": "Comparable vs Comparator, e iteración",
-        "fragment": "tema-4-comparable-vs-comparator-e-iteracion"
+        "fragment": "tema-5-comparable-vs-comparator-e-iteracion"
+      },
+      {
+        "title": "Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue",
+        "fragment": "tema-6-colas-y-pilas-queue-deque-arraydeque-y-priorityqueue"
       }
     ],
     "20": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "title": "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
       {
-        "title": "Function y BiFunction: transformar uno o dos datos",
+        "title": "### Tema 2: Function y BiFunction: transformar uno o dos datos",
         "fragment": "tema-2-function-y-bifunction-transformar-uno-o-dos-datos"
       },
       {
-        "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "title": "### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
         "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
       },
       {
-        "title": "Streams como composición: pereza, orden y efectos que se esconden",
+        "title": "### Tema 4: Streams como composición: pereza, orden y efectos que se esconden",
         "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       },
       {
-        "title": "UnaryOperator y BinaryOperator",
-        "fragment": "tema-5-unaryoperator-y-binaryoperator"
+        "title": "### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "fragment": "tema-5-unaryoperator-y-binaryoperator-la-salida-conserva-el-tipo"
       },
       {
-        "title": "Referencias a métodos: escribir la operación sin repetirla",
+        "title": "### Tema 6: Referencias a métodos: escribir la operación sin repetirla",
         "fragment": "tema-6-referencias-a-metodos-escribir-la-operacion-sin-repetirla"
       },
       {
-        "title": "Optional: buscar un envío que puede no existir",
+        "title": "### Tema 7: Optional: buscar un envío que puede no existir",
         "fragment": "tema-7-optional-buscar-un-envio-que-puede-no-existir"
       },
       {
-        "title": "Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "title": "### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
         "fragment": "tema-8-streams-intermedios-filtrar-transformar-aplanar-y-ordenar"
       },
       {
-        "title": "Streams terminales: encontrar, contar y combinar resultados",
+        "title": "### Tema 9: Streams terminales: encontrar, contar y combinar resultados",
         "fragment": "tema-9-streams-terminales-encontrar-contar-y-combinar-resultados"
       },
       {
-        "title": "Collectors: formar listas, mapas, grupos y texto",
+        "title": "### Tema 10: Collectors: formar listas, mapas, grupos y texto",
         "fragment": "tema-10-collectors-formar-listas-mapas-grupos-y-texto"
       },
       {
-        "title": "Streams paralelos",
-        "fragment": "tema-11-streams-paralelos"
+        "title": "### Tema 11: Streams paralelos: comparar antes de acelerarlos",
+        "fragment": "tema-11-streams-paralelos-comparar-antes-de-acelerarlos"
       },
       {
-        "title": "Pureza y efectos",
-        "fragment": "tema-12-pureza-y-efectos"
+        "title": "### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
+        "fragment": "tema-12-pureza-y-efectos-calcular-separado-de-guardar-o-imprimir"
       },
       {
-        "title": "Flow API: publicar datos con demanda y cierre",
+        "title": "### Tema 13: Flow API: publicar datos con demanda y cierre",
         "fragment": "tema-13-flow-api-publicar-datos-con-demanda-y-cierre"
       }
     ],
     "21": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Qué es la superficie pública de una API",
         "fragment": "tema-1-que-es-la-superficie-publica-de-una-api"
@@ -4798,26 +4502,6 @@
     ],
     "22": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "Copia defensiva, copia superficial y clone",
         "fragment": "tema-1-copia-defensiva-copia-superficial-y-clone"
       },
@@ -4832,26 +4516,6 @@
     ],
     "3": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
         "title": "Checked vs unchecked exceptions",
         "fragment": "tema-1-checked-vs-unchecked-exceptions"
       },
@@ -4862,33 +4526,9 @@
       {
         "title": "Excepciones personalizadas y no tragar excepciones",
         "fragment": "tema-3-excepciones-personalizadas-y-no-tragar-excepciones"
-      },
-      {
-        "title": "Incremento del proyecto: leer guías y respetar capacidad",
-        "fragment": "tema-4-incremento-del-proyecto-leer-guias-y-respetar-capacidad"
       }
     ],
     "4": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "Stream API — map, filter, reduce, collect",
         "fragment": "tema-1-stream-api-map-filter-reduce-collect"
@@ -4908,75 +4548,35 @@
     ],
     "5": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "ExecutorService y gestión de hilos",
+        "title": "### Tema 1: ExecutorService y gestión de hilos",
         "fragment": "tema-1-executorservice-y-gestion-de-hilos"
       },
       {
-        "title": "CompletableFuture",
+        "title": "### Tema 2: CompletableFuture",
         "fragment": "tema-2-completablefuture"
       },
       {
-        "title": "Virtual threads",
+        "title": "### Tema 3: Virtual threads",
         "fragment": "tema-3-virtual-threads"
       },
       {
-        "title": "Condiciones de carrera y sincronización",
+        "title": "### Tema 4: Condiciones de carrera y sincronización",
         "fragment": "tema-4-condiciones-de-carrera-y-sincronizacion"
       },
       {
-        "title": "Structured Concurrency (Java 25/preview)",
-        "fragment": "tema-5-structured-concurrency-java-25-preview"
+        "title": "### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+        "fragment": "tema-5-structured-concurrency-structuredtaskscope-java-25"
       },
       {
-        "title": "Scoped Values frente a ThreadLocal",
-        "fragment": "tema-6-scoped-values-frente-a-threadlocal"
+        "title": "### Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
+        "fragment": "tema-6-scoped-values-frente-a-threadlocal-java-25"
       },
       {
-        "title": "Timeouts y cancelación cooperativa sin abandonar recursos",
+        "title": "### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
         "fragment": "tema-7-timeouts-y-cancelacion-cooperativa-sin-abandonar-recursos"
       }
     ],
     "6": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
       {
         "title": "NIO.2 — Path y Files",
         "fragment": "tema-1-nio-2-path-y-files"
@@ -4992,36 +4592,16 @@
     ],
     "7": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
+        "title": "### Tema 1: sealed — jerarquías cerradas y exhaustividad",
+        "fragment": "tema-1-sealed-jerarquias-cerradas-y-exhaustividad"
       },
       {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
+        "title": "### Tema 2: Pattern matching exhaustivo y para instanceof",
+        "fragment": "tema-2-pattern-matching-exhaustivo-y-para-instanceof"
       },
       {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "SLF4J y Logback — logging estructurado",
-        "fragment": "tema-1-slf4j-y-logback-logging-estructurado"
-      },
-      {
-        "title": "MDC — contexto por request/hilo",
-        "fragment": "tema-2-mdc-contexto-por-request-hilo"
-      },
-      {
-        "title": "Depuración y stack traces",
-        "fragment": "tema-3-depuracion-y-stack-traces"
+        "title": "### Tema 3: Unnamed variables y patterns (_, Java 22)",
+        "fragment": "tema-3-unnamed-variables-y-patterns-java-22"
       }
     ],
     "8": [
@@ -5044,40 +4624,20 @@
     ],
     "9": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
-      },
-      {
-        "title": "JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
+        "title": "### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
         "fragment": "tema-1-junit-6-jupiter-anotaciones-y-ciclo-de-vida"
       },
       {
-        "title": "Mockito — aislar dependencias",
+        "title": "### Tema 2: Mockito — aislar dependencias",
         "fragment": "tema-2-mockito-aislar-dependencias"
       },
       {
-        "title": "Tests parametrizados y cobertura",
+        "title": "### Tema 3: Tests parametrizados y cobertura",
         "fragment": "tema-3-tests-parametrizados-y-cobertura"
       },
       {
-        "title": "Pruebas basadas en propiedades",
-        "fragment": "tema-4-pruebas-basadas-en-propiedades"
+        "title": "### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
+        "fragment": "tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
       }
     ]
   },

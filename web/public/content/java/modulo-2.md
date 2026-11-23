@@ -8,14 +8,14 @@ Un arreglo resuelve almacenamiento contiguo, pero falla cuando el dominio pide d
 
 ## Proyecto desde cero: tienda-aurora-collections
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version    # JDK 25+
 gradle --version # Gradle 9.x
 ```
 
-### Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 tienda-aurora-collections/
@@ -30,7 +30,7 @@ tienda-aurora-collections/
                 └── Money.java
 ```
 
-### build.gradle.kts
+## build.gradle.kts
 
 ```kotlin
 plugins {
@@ -56,13 +56,13 @@ repositories {
 }
 ```
 
-### settings.gradle.kts
+## settings.gradle.kts
 
 ```kotlin
 rootProject.name = "tienda-aurora-collections"
 ```
 
-### Ejecutar
+## Ejecutar
 
 ```bash
 ./gradlew run
@@ -301,6 +301,8 @@ java DemoHash
 
 **Verificación (JDK 27, 2026-05-22).** `1`.
 
+### Tema 3: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min
+
 Claves mutables y el mapa que pierde entradas
 
 **Definición.** Una clave mutable es un objeto cuya identidad lógica/campos usados por `equals/hashCode` cambian después de insertarse en una estructura hash.
@@ -349,7 +351,8 @@ java DemoMut
 
 **Verificación (JDK 27, 2026-05-22).** `null`, `1` (entrada "perdida" lógicamente).
 
-### Tema 3: Genéricos, wildcards y type erasure · Intermedio · 45 min
+
+### Tema 4: Genéricos, wildcards y type erasure · Intermedio · 45 min
 
 **Caso guía.** quieres una caja/repo reutilizable sin perder seguridad de tipos y sin caer en `List<Object>`.
 
@@ -436,7 +439,7 @@ java DemoEr
 
 **Verificación (JDK 27, 2026-05-22).** `true`.
 
-### Tema 4: Comparable vs Comparator, e iteración · Intermedio · 40 min
+### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 40 min
 
 **Caso guía.** mostrar guías por prioridad natural o por fecha/vista alternativa sin tocar la clase.
 
@@ -522,6 +525,52 @@ java DemoIt
 **Error común.** `ConcurrentModificationException` al modificar lista dentro de for-each. Corrección: usar `Iterator.remove()` o `removeIf`.
 
 **Verificación (JDK 27, 2026-05-22).** `[A, C]`.
+
+### Tema 6: Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue · Intermedio · 40 min
+
+**Definición.** `Queue` es una colección que soporta operaciones de inserción, extracción e inspección en orden FIFO (first-in, first-out). `Deque` (double-ended queue) permite inserción/extracción en ambos extremos. `ArrayDeque` es una implementación eficiente de Deque basada en array. `PriorityQueue` es una cola con prioridad donde el elemento con mayor prioridad se extrae primero.
+
+**Cuándo usarlo / cuándo no.** Usa `ArrayDeque` como pila (stack) en vez de `Stack` (obsoleto). Usa `PriorityQueue` para tareas con prioridad. No uses `LinkedList` como cola si la performance importa.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j2-queue && cd /tmp/j2-queue
+```
+
+Crea el archivo `DemoQueue.java`:
+
+```java
+import java.util.*;
+public class DemoQueue {
+  public static void main(String[] args) {
+    Deque<String> stack = new ArrayDeque<>();
+    stack.push("a"); stack.push("b");
+    System.out.println(stack.pop()); // b (LIFO)
+
+    Queue<String> queue = new ArrayDeque<>();
+    queue.offer("x"); queue.offer("y");
+    System.out.println(queue.poll()); // x (FIFO)
+
+    PriorityQueue<Integer> pq = new PriorityQueue<>();
+    pq.offer(3); pq.offer(1); pq.offer(2);
+    System.out.println(pq.poll()); // 1 (menor primero)
+  }
+}
+```
+
+```bash
+javac DemoQueue.java
+java DemoQueue
+```
+
+**Caso de uso real.** Cola de tareas en un worker pool, pila de undo/redo, cola de prioridad para alertas.
+
+**Error común.** Usar `Stack` (clase legacy, sincronizada, lenta) en vez de `ArrayDeque`.
+
+**Síntoma.** código lento y verboso. **Causa.** `Stack` extiende `Vector` y sincroniza cada operación. **Corrección.** usar `ArrayDeque` como pila. **Señal observable.** profiling muestra contención en `Stack`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `b`, `x`, `1`.
 
 ## Cierre
 
