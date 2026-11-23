@@ -7302,28 +7302,7 @@
         "fragment": "tema-4-cache-stampede-y-mitigaciones"
       }
     ],
-    "4": [
-      {
-        "title": "Monolito modular vs microservicios",
-        "fragment": "tema-1-monolito-modular-vs-microservicios"
-      },
-      {
-        "title": "DDD: bounded contexts, aggregates y domain events",
-        "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
-      },
-      {
-        "title": "Spring Modulith",
-        "fragment": "tema-3-spring-modulith"
-      },
-      {
-        "title": "Strangler Fig",
-        "fragment": "tema-4-strangler-fig"
-      },
-      {
-        "title": "Database-per-service",
-        "fragment": "tema-5-database-per-service"
-      }
-    ],
+    "4": [],
     "5": [
       {
         "title": "REST con Spring MVC y WebClient",
