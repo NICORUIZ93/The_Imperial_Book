@@ -1,8 +1,8 @@
 # Módulo 1: Programación orientada a objetos
 
-Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
+Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`, macOS/Linux shell compatible. Los ejemplos son Java puro, sin Maven/Gradle.
+**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`, macOS/Linux shell compatible. Los ejemplos son Java puro, sin Maven/Gradle.
 
 ## Aprende construyendo
 
@@ -57,7 +57,7 @@ javac DemoClase.java
 java DemoClase
 ```
 
-**Caso de uso real.** `Cuenta`, `Pedido`, `Reserva`, `Factura`.
+**Caso de uso real.** En Tienda Aurora: `Producto`, `Pedido`, `Cliente`, `Dinero`. Cada uno con invariantes claras.
 
 **Error común.** Clase con demasiadas responsabilidades. Síntoma: cambiar un requisito rompe otro. Causa: baja cohesión. Corrección: separar responsabilidades por tipo.
 
