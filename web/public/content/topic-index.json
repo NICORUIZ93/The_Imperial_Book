@@ -4154,27 +4154,27 @@
     ],
     "1": [
       {
-        "title": "### Tema 1: Clases, objetos, constructores y encapsulación",
+        "title": "Clases, objetos, constructores y encapsulación",
         "fragment": "tema-1-clases-objetos-constructores-y-encapsulacion"
       },
       {
-        "title": "### Tema 2: Herencia y sobreescritura",
+        "title": "Herencia y sobreescritura",
         "fragment": "tema-2-herencia-y-sobreescritura"
       },
       {
-        "title": "### Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+        "title": "Interfaces, clases abstractas y cuándo usar cada una",
         "fragment": "tema-3-interfaces-clases-abstractas-y-cuando-usar-cada-una"
       },
       {
-        "title": "### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
+        "title": "Sobrecarga vs sobreescritura, y modificadores de acceso",
         "fragment": "tema-4-sobrecarga-vs-sobreescritura-y-modificadores-de-acceso"
       },
       {
-        "title": "### Tema 5: record — modelos inmutables sin boilerplate",
+        "title": "record — modelos inmutables sin boilerplate",
         "fragment": "tema-5-record-modelos-inmutables-sin-boilerplate"
       },
       {
-        "title": "### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de super(...)",
+        "title": "Constructores flexibles (Java 25): validar y preparar antes de super(...)",
         "fragment": "tema-6-constructores-flexibles-java-25-validar-y-preparar-antes-de-super"
       }
     ],
