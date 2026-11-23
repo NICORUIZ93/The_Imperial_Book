@@ -77,7 +77,7 @@ java -cp out com.aurora.oop.Main
 
 ### ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
-**Caso guía.** modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
+ modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
 
 
 Clases
@@ -318,7 +318,7 @@ Saldo insuficiente
 
 ### ### Tema 2: Herencia y sobreescritura · Básico · 40 min
 
-**Caso guía.** empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
+ empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
 
 
 Herencia
@@ -448,7 +448,7 @@ Grace: 1600.0
 
 ### ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 45 min
 
-**Caso guía.** un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
+ un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
 
 
 Interfaz
@@ -624,7 +624,7 @@ java Polimorfismo
 
 ### ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min
 
-**Caso guía.** una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
+ una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
 
 
 Sobrecarga
@@ -726,7 +726,7 @@ java DemoMod
 
 ### ### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 35 min
 
-**Caso guía.** necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
+ necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
 
 
 Record
@@ -793,7 +793,7 @@ java DemoRecV
 
 ### ### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de super(...) · Avanzado · 30 min
 
-**Caso guía.** antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
+ antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
 
 
 Regla clásica de `super(...)` / `this(...)`
