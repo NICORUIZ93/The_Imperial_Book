@@ -409,6 +409,22 @@ productos=2
 
 Eso es lo que debería pasar. El build tool no debe cambiar el comportamiento de negocio; debe hacerlo reproducible. Cuando elijas entre Maven y Gradle, la pregunta no es cuál es “más pro”. La pregunta es qué necesita tu equipo: convención estricta y ecosistema XML predecible, o flexibilidad y rendimiento con una DSL programable. En muchos equipos existentes, la mejor herramienta es la que ya entienden y pueden mantener con disciplina.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m8` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q test
+./gradlew -q :api:run
+```
+
+Resultados observados:
+
+- `test`: 0 fallas (build exitoso).
+- `:api:run`: `productos=2` y JSON con los dos productos del catálogo.
+
+**Nota honesta:** se verificó la variante Gradle multi-módulo extraída del módulo. Los comandos Maven del contenido no se ejecutaron en esta corrida porque el entorno no tenía `mvn` instalado; la estructura POM quedó incluida en el proyecto para ejecución en un entorno con Maven.
+
 ## Cierre
 
 Maven y Gradle son dos interfaces para el mismo contrato: construir software de forma repetible. Aprende a leer sus archivos como mapas de dependencias, scopes, módulos y tareas/fases. Cuando entiendas ese mapa, cambiar de herramienta deja de ser una migración mística y pasa a ser una traducción.
