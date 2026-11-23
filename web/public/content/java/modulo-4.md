@@ -699,7 +699,37 @@ Optional ausente: NA
 
 Los gatherers extienden la Stream API con operaciones intermedias personalizadas cuando `map/filter/reduce` no alcanzan. `Stream.gather(Gatherer)` permite mantener estado local durante el procesamiento y emitir cero, uno o varios elementos por entrada. Java 24 incorpora gatherers integrados como `Gatherers.windowFixed`, `windowSliding`, `fold` y `scan`.
 
-En `ReporteVentas.ventanasDeTotales`, `windowFixed(2)` agrupa totales en ventanas de tamaño fijo. Es más claro que mantener índices manuales. El gatherer es intermedio y perezoso, igual que `map`.
+En `ReporteVentas.ventanasDeTotales`, `windowFixed(2)` agrupa totales en ventanas de tamaño fijo. Es más claro que mantener índices manuales. El gatherer es intermedio y perezoso, igual que `map`:
+
+```java
+public List<List<BigDecimal>> ventanasDeTotales(int tamano) {
+    return pedidos.stream()
+            .sorted(Comparator.comparing(Pedido::fecha).thenComparing(Pedido::id))
+            .map(Pedido::total)
+            .gather(Gatherers.windowFixed(tamano))
+            .toList();
+}
+```
+
+`windowSliding(3)` resuelve una pregunta distinta: detectar rachas. Cada ventana conserva tres elementos consecutivos y avanza de uno en uno. En la auditoría del proyecto se usa sobre `1..5`:
+
+```java
+List<List<Integer>> deslizantes = IntStream.rangeClosed(1, 5)
+        .boxed()
+        .gather(java.util.stream.Gatherers.windowSliding(3))
+        .toList();
+System.out.println("Gatherers windowSliding: " + deslizantes);
+```
+
+Salida observada:
+
+```text
+Gatherers windowSliding: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+```
+
+La diferencia con `windowFixed(3)` es esencial: fijo daría `[[1, 2, 3], [4, 5]]`; deslizante produce `[[1, 2, 3], [2, 3, 4], [3, 4, 5]]`. Para una racha de tres pedidos caros consecutivos, la ventana deslizante es la que conserve el traslape.
+
+`fold` y `scan` acumulan estado dentro del gatherer: `fold` emite solo el acumulador final y `scan` emite cada estado intermedio. `windowFixed` y `windowSliding` no son sustitutos de ellos; la familia cubre formas distintas de producir salida a partir del estado.
 
 **Nota de versión:** Gatherers son de Java 24+. En este proyecto se verificó con JDK 27.0.1.0.2, donde funcionan. Si tu runtime es Java 21, no compilará este código; debes usar un JDK 24+ o reemplazar por lógica manual.
 
@@ -709,13 +739,35 @@ Una referencia a método (`Producto::nombre`, `String::toUpperCase`) es azúcar 
 
 `parallelStream()` o `stream().parallel()` divide el trabajo entre hilos del ForkJoinPool común. Puede mejorar rendimiento en colecciones grandes, operaciones CPU-bound e independientes. También puede empeorar: overhead de partición, contención, boxing, orden, y fuente difícil de dividir. Nunca asumas; mide. Y nunca uses paralelo con estado mutable compartido.
 
-En `auditoria()`, `IntStream.rangeClosed(1,1000).parallel().sum()` es seguro porque la reducción es independiente y asociativa. En datos pequeños, secuencial suele ser mejor.
+En `auditoria()`, una suma de 10 millones de elementos compara las dos estrategias con el mismo tipo de dato primitivo (`LongStream`, sin boxing) y comprueba que el resultado sea idéntico:
+
+```java
+long inicioSecuencial = System.nanoTime();
+long sumaSecuencial = LongStream.rangeClosed(1, 10_000_000).sum();
+long msSecuencial = (System.nanoTime() - inicioSecuencial) / 1_000_000;
+long inicioParalelo = System.nanoTime();
+long sumaParalela = LongStream.rangeClosed(1, 10_000_000).parallel().sum();
+long msParalelo = (System.nanoTime() - inicioParalelo) / 1_000_000;
+System.out.println("Bench 10M suma=" + sumaSecuencial + " seq=" + msSecuencial
+        + "ms par=" + msParalelo + "ms same=" + (sumaSecuencial == sumaParalela));
+```
+
+Salida observada en esa corrida:
+
+```text
+Bench 10M suma=50000005000000 seq=12ms par=2ms same=true
+```
+
+El número relevante no es `2ms`: los tiempos dependen del equipo, la carga y la JVM. Lo verificable es `same=true` —la paralización no cambió el resultado— y que la medición se hizo sobre la misma operación. Si la fuente es pequeña, si hay boxing, si el orden importa o si los elementos no se pueden dividir, el paralelismo puede ser más lento. Mide siempre en tu datos y entorno.
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m4` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m4` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+Desde la raíz del proyecto:
 
 ```bash
+cd /tmp/opencode/aurora-m4
 ./gradlew -q test
 ./gradlew -q run
 ./gradlew -q run --args="auditoria"
@@ -725,7 +777,19 @@ Resultados observados:
 
 - `test`: 2 pruebas, 0 fallas.
 - `run`: catálogo activo, agotados, valor por categoría, SKU presente/ausente con Optional, más caro, total facturado, unidades por SKU, top clientes, ciudades y ventanas de totales `[[39.30, 79.90], [33.00, 33.90]]`.
-- `auditoria`: `Optional presente: caf-100`, `Optional ausente: NA`, `Suma filtrada: 24`, `SKUs distintos: CAF-100,FIL-300,MOL-200`, `Gatherers windowFixed: [[1, 2], [3, 4], [5]]`, `Parallel sum: 500500`, `Method ref: [CAFE, TAZA]`.
+- `auditoria` (salida literal verificada):
+
+```text
+== Auditoria ==
+Optional presente: caf-100
+Optional ausente: NA
+Suma filtrada: 24
+SKUs distintos: CAF-100,FIL-300,MOL-200
+Gatherers windowFixed: [[1, 2], [3, 4], [5]]
+Gatherers windowSliding: [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+Bench 10M suma=50000005000000 seq=12ms par=2ms same=true
+Method ref: [CAFE, TAZA]
+```
 
 ## Errores comunes y diagnóstico
 

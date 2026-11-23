@@ -436,11 +436,40 @@ El ciclo de vida importa. Un executor que no se cierra deja hilos vivos y puede 
 
 **Confusión común:** pool grande = más rápido. No. Demasiados hilos generan cambio de contexto, contención y presión de memoria. Para I/O bloqueante, virtual threads cambian el modelo; para CPU-bound, el paralelismo útil suele estar cerca del número de cores.
 
+Antes del executor, la forma mínima es crear y arrancar un hilo a mano. El proyecto lo demuestra con la API moderna:
+
+```java
+public int contarHiloManual() throws Exception {
+    AtomicInteger total = new AtomicInteger();
+    Thread hilo = Thread.ofPlatform().start(() -> total.incrementAndGet());
+    hilo.join();
+    return total.get();
+}
+```
+
+`join()` es la barrera: sin él, `main` podría terminar antes de que el hilo aumente el contador. Un `ExecutorService` sustituye ese patrón por una cola de tareas y un pool reutilizable, y `try-with-resources` garantiza el `close()` del executor. Salida verificada: `hilo-manual=1`.
+
 ### Tema 2: CompletableFuture · Intermedio · 45 min
 
 `CompletableFuture` representa una computación asincrónica que puede componerse. `supplyAsync` ejecuta una tarea que devuelve valor; `thenApply/thenCompose/thenCombine` encadenan o combinan resultados; `exceptionally/handle` manejan fallos; `orTimeout` impone límite temporal. A diferencia de `Future`, permite construir pipelines sin bloquear inmediatamente.
 
 En `cotizarConCompletableFuture` se lanzan dos consultas en paralelo y se combinan con `thenCombine`. El executor pasado a `supplyAsync` es importante: si omites el executor, usa el ForkJoinPool común, que no es ideal para I/O bloqueante. Aquí se usa un executor de virtual threads por tarea para la demo.
+
+`thenCombine` ejecuta dos futuros independientes y combina sus resultados. Cuando la segunda llamada **depende** de la primera, la herramienta es `thenCompose`:
+
+```java
+return CompletableFuture
+        .supplyAsync(() -> catalogo.precio(sku, Duration.ofMillis(40)), executor)
+        .thenCompose(precio -> CompletableFuture.supplyAsync(() ->
+                new ResultadoCotizacion(sku, precio,
+                        inventario.stock(sku, Duration.ofMillis(40)),
+                       Duration.between(inicio, Instant.now()).toMillis()), executor))
+        .exceptionally(ex -> new ResultadoCotizacion(sku, BigDecimal.ZERO, -1,
+                Duration.between(inicio, Instant.now()).toMillis()))
+        .join();
+```
+
+`thenApply` habría producido un `CompletableFuture<CompletableFuture<ResultadoCotizacion>>`; `thenCompose` aplana la cadena. `exceptionally` define el valor ante fallo, y `orTimeout` limita la espera en la variante anterior. Salida observada: `thenCompose sku=FIL-300 precio=9.50 stock=25`.
 
 **Confusión común:** `CompletableFuture` elimina la necesidad de pensar en errores y cancelación. No. Los errores se propagan como completaciones excepcionales; si olvidas manejarlos, `join()` lanza. Las cadenas largas pueden volverse difíciles de depurar; para subtareas con ciclo de vida claro, Structured Concurrency suele ser más legible.
 
@@ -450,7 +479,30 @@ Los virtual threads (Java 21+) son hilos ligeros administrados por la JVM, no ma
 
 No son magia para CPU-bound: si la tarea consume CPU continuamente, sigues limitado por cores. Tampoco eliminan la necesidad de sincronización sobre estado compartido. Su valor principal es escalar I/O bloqueante con un modelo de programación familiar.
 
-En `medirLote`, el mismo lote de 200 tareas con `sleep(40ms)` se ejecuta con pool fijo de 20 y con virtual threads por tarea. El resultado exacto depende de la máquina, pero la comparación muestra el modelo; no se debe tomar como benchmark definitivo. **Nota:** en este entorno se ejecutó el comando; los tiempos varían por carga.
+En `medirLote`, el mismo lote de 200 tareas con `sleep(40ms)` se ejecuta con pool fijo de 20 y con virtual threads por tarea. Con `./gradlew -q run --args="medir"` se obtuvo `plataforma-ms=442` y `virtual-ms=48`; son tiempos de una corrida, no un benchmark definitivo.
+
+La escala se aprecia mejor con 100 000 tareas. El proyecto usa un `CountDownLatch` para esperar a todas sin guardar 100 000 `Future`:
+
+```java
+public int lanzarVirtualThreads(int cantidad) throws Exception {
+    AtomicInteger completadas = new AtomicInteger();
+    CountDownLatch latch = new CountDownLatch(cantidad);
+    try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        for (int i = 0; i < cantidad; i++) {
+            executor.submit(() -> {
+                completadas.incrementAndGet();
+                latch.countDown();
+            });
+        }
+        if (!latch.await(30, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("no terminaron todas las tareas");
+        }
+    }
+    return completadas.get();
+}
+```
+
+Salida observada: `virtual-threads=100000`. Con hilos de plataforma ese número de hilos simultáneo no sería razonable en este entorno. La clave no es que cada tarea haga mucho, sino que cada una pueda bloquearse sin inmovilizar un hilo del SO.
 
 ### Tema 4: Condiciones de carrera y sincronización · Básico · 35 min
 
@@ -474,7 +526,22 @@ En `checkoutConStructuredConcurrency` se usa `StructuredTaskScope.open()` (API p
 
 `ThreadLocal` es mutable y vive hasta que se elimina o el hilo muere. Con pools y virtual threads masivos, es fácil filtrar contexto o heredar datos incorrectos. `ScopedValue` favorece inmutabilidad y alcance léxico.
 
-En el ejemplo, `REQUEST_ID` se liga antes del checkout estructurado y se lee dentro del scope; fuera del scope, `requestIdActual()` devuelve `sin-request`.
+En el ejemplo, `REQUEST_ID` se liga antes del checkout estructurado y se lee dentro del scope; fuera del scope, `requestIdActual()` devuelve `sin-request`. La diferencia con `ThreadLocal` se demuestra con un pool de un solo hilo que se reutiliza:
+
+```java
+executor.submit(() -> heredado.set("req-threadlocal")).get();
+String filtrado = executor.submit(heredado::get).get();
+String dentroScope = ScopedValue.where(REQUEST_ID, "req-scoped").call(this::requestIdActual);
+String fueraScope = requestIdActual();
+```
+
+Salida observada:
+
+```text
+threadlocal-reutilizado=req-threadlocal scoped-dentro=req-scoped scoped-fuera=sin-request
+```
+
+El `ThreadLocal` sobrevive a la tarea y contamina la siguiente ejecución en el mismo hilo. El `ScopedValue` desaparece al cerrar el scope. Eso es lo que evita filtrar un `requestId` de una petición a otra.
 
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 40 min
 
@@ -486,23 +553,46 @@ La cancelación cooperativa significa que la tarea revisa si debe parar. `Thread
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, `--enable-preview`).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, `--enable-preview`).
+
+Desde la raíz del proyecto:
 
 ```bash
+cd /tmp/opencode/aurora-m5
 ./gradlew -q test
 ./gradlew -q run
 ./gradlew -q run --args="race"
 ./gradlew -q run --args="structured"
+./gradlew -q run --args="medir"
+./gradlew -q run --args="auditoria"
 ```
 
 Resultados observados:
 
-- `test`: 3 pruebas, 0 fallas.
-- `run`: `executor CAF-100 14.90 stock=8`, `future MOL-200 79.90 stock=3`, `structured PED-900 req-7f3a`.
-- `race`: `seguro esperado=1000 observado=1000`. El valor inseguro puede variar por race; no se fija como número estable.
-- `structured`: `requestId fuera=sin-request`.
+```text
+$ ./gradlew -q run --args="race"
+race esperado=1000 observado=989
+seguro esperado=1000 observado=1000
 
-**Nota honesta:** el rendimiento de `medirLote` no se fija como resultado canónico porque depende de carga de máquina. Se verificó que el comando ejecuta con ambos modos.
+$ ./gradlew -q run --args="structured"
+structured pedido=PED-900 precio=14.90 stock=8 requestId=req-7f3a
+requestId fuera=sin-request
+
+$ ./gradlew -q run --args="medir"
+plataforma-ms=442
+virtual-ms=48
+
+$ ./gradlew -q run --args="auditoria"
+thenCompose sku=FIL-300 precio=9.50 stock=25
+hilo-manual=1
+virtual-threads=100000
+race=996 seguro=1000
+threadlocal-reutilizado=req-threadlocal scoped-dentro=req-scoped scoped-fuera=sin-request
+```
+
+`./gradlew -q test` (3 pruebas) terminó sin fallos. `run` produce `executor CAF-100 14.90 stock=8`, `future MOL-200 79.90 stock=3` y `structured PED-900 req-7f3a`.
+
+**Nota honesta:** el valor inseguro de `race` cambia en cada corrida (`989` y `996` en las dos ejecuciones mostradas); no es un número canónico. Lo relevante es que `seguro` siempre entrega `1000`. Los tiempos de `medirLote` también dependen de la carga de la máquina.
 
 ## Errores comunes y diagnóstico
 
