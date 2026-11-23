@@ -6,7 +6,7 @@ Un microservicio Spring expone contratos HTTP, valida entrada, traduce errores, 
 
 ## Aprende construyendo
 
-### Tema 1: Spring MVC: DispatcherServlet, Controllers y validación · Intermedio · 180 min
+### Tema 1: Spring MVC y DispatcherServlet · Intermedio · 180 min
 
 `POST /orders` recibe JSON del frontend. El equipo confía en que el cliente valida. Un día llega `{"sku":"", "qty":0}` y el servicio lo acepta, persiste basura y luego falla en billing. El síntoma no es el 500 posterior; es que la validación estaba en el lugar equivocado.
 
@@ -254,7 +254,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `o-1`, `A1:2`.
 
 **Nota de verificación:** Jackson `@JsonProperty` real requiere dependencia Jackson; comportamiento verificado conceptualmente.
 
-### Tema 3: Manejo global de excepciones (@ControllerAdvice) · Intermedio · 120 min
+### Tema 3: Manejo global de excepciones · Intermedio · 120 min
 
 Cada controller maneja sus propios try/catch y devuelve formatos distintos: uno devuelve `{"error":"bad"}`, otro devuelve stack trace, otro devuelve 200 con `{"success":false}`. Los clientes no saben cómo interpretar fallos y el soporte no tiene correlación.
 
@@ -381,7 +381,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `400`, `Not Found`
 
 **Nota de verificación:** Spring MVC real requiere app Boot; validar con MockMvc.
 
-### Tema 4: Spring Data JPA, Hibernate, entidades, relaciones y transacciones · Avanzado · 240 min
+### Tema 4: Spring Data JPA, Hibernate y transacciones · Avanzado · 240 min
 
 El equipo crea un pedido con 5 líneas. A mitad del proceso, falla la inserción de la línea 3. Sin transacción, quedan 2 líneas huérfanas en la base. Al listar pedidos, Hibernate dispara 1 query por pedido + 1 por cada línea (N+1). La API tarda 4 segundos para 50 pedidos.
 
@@ -513,7 +513,7 @@ Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `use-@Transac
 
 **Nota de verificación:** JPA/Hibernate real requiere Spring Data + DB. Verificación propuesta: app Boot con `spring.jpa.show-sql=true` y test de transacción con fallo.
 
-### Tema 5: Criteria API y Specifications · Avanzado · 180 min
+### Tema 5: Criteria/Specifications · Avanzado · 180 min
 
 El equipo construye queries dinámicas concatenando strings: `WHERE status = '` + status + `' AND customer = '` + customer + `'`. Un input con comilla rompe la query. Un input malicioso inyecta SQL. El problema no es el SQL; es construir queries con texto.
 

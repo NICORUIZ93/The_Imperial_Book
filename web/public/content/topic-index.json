@@ -7084,8 +7084,8 @@
   "spring-microservices": {
     "0": [
       {
-        "title": "Java 21+: streams, lambdas, Optional, records y pattern matching",
-        "fragment": "tema-1-java-21-streams-lambdas-optional-records-y-pattern-matching"
+        "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
       },
       {
         "title": "Virtual Threads (Project Loom)",
@@ -7118,24 +7118,24 @@
     ],
     "1": [
       {
-        "title": "Spring MVC: DispatcherServlet, Controllers y validación",
-        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-y-validacion"
+        "title": "Spring MVC y DispatcherServlet",
+        "fragment": "tema-1-spring-mvc-y-dispatcherservlet"
       },
       {
         "title": "DTOs, Jackson y validación",
         "fragment": "tema-2-dtos-jackson-y-validacion"
       },
       {
-        "title": "Manejo global de excepciones (@ControllerAdvice)",
-        "fragment": "tema-3-manejo-global-de-excepciones-controlleradvice"
+        "title": "Manejo global de excepciones",
+        "fragment": "tema-3-manejo-global-de-excepciones"
       },
       {
-        "title": "Spring Data JPA, Hibernate, entidades, relaciones y transacciones",
-        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-y-transacciones"
+        "title": "Spring Data JPA, Hibernate y transacciones",
+        "fragment": "tema-4-spring-data-jpa-hibernate-y-transacciones"
       },
       {
-        "title": "Criteria API y Specifications",
-        "fragment": "tema-5-criteria-api-y-specifications"
+        "title": "Criteria/Specifications",
+        "fragment": "tema-5-criteria-specifications"
       },
       {
         "title": "Flyway/Liquibase",
@@ -7302,7 +7302,28 @@
         "fragment": "tema-4-cache-stampede-y-mitigaciones"
       }
     ],
-    "4": [],
+    "4": [
+      {
+        "title": "Monolito modular vs microservicios",
+        "fragment": "tema-1-monolito-modular-vs-microservicios"
+      },
+      {
+        "title": "DDD: bounded contexts, aggregates y domain events",
+        "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
+      },
+      {
+        "title": "Spring Modulith",
+        "fragment": "tema-3-spring-modulith"
+      },
+      {
+        "title": "Strangler Fig",
+        "fragment": "tema-4-strangler-fig"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-5-database-per-service"
+      }
+    ],
     "5": [
       {
         "title": "REST con Spring MVC y WebClient",

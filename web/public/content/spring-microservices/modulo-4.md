@@ -4,6 +4,8 @@ Dividir un sistema en microservicios sin criterio crea un monolito distribuido: 
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Los smokes ejecutan modelos de decisión, invariantes de agregados, reglas de dependencia modular, routing de migración y ownership de datos en Java puro. Spring Modulith real requiere dependencias Spring; se incluye nota de verificación honesta.
 
+### Tema 1: Monolito modular vs microservicios · Intermedio · 120 min
+
 ## Monolito modular vs microservicios
 
 El equipo de Tienda Aurora tiene 6 personas y un solo producto. Alguien propone "pasarnos a microservicios" porque es lo moderno. Tres meses después hay 9 repos, despliegues coordinados, trazas rotas y un bug que cruza 4 servicios. El tiempo de entrega subió y los incidentes también. El problema no fue la tecnología: fue dividir antes de tener límites claros.
@@ -51,6 +53,8 @@ El primer caso tiene límites claros, equipos listos y alto dolor de coordinaci�
 Tienda Aurora mantiene catálogo y pedidos en un monolito modular. Extrae billing cuando el dominio regula facturación, tiene otro ritmo de cambio y necesita escalado independiente. Billing es el primer candidato porque tiene frontera clara y requisitos distintos.
 
 El error más común es extraer microservicios prematuramente. El síntoma es más incidentes y despliegues coordinados. La causa es límites inmaduros y costo distribuido subestimado. La corrección es empezar modular, medir coordinación y extraer por evidencia. La señal observable es que el lead time sube tras la división.
+
+### Tema 2: DDD: bounded contexts, aggregates y domain events · Avanzado · 180 min
 
 ## DDD: bounded contexts, aggregates y domain events
 
@@ -116,6 +120,8 @@ El error más común es crear aggregates gigantes. El síntoma es contención, t
 
 DDD táctico sirve para dominios con reglas reales. En CRUD simple, agrega ceremonia. El valor está en límites claros e invariantes protegidas.
 
+### Tema 3: Spring Modulith · Avanzado · 120 min
+
 ## Spring Modulith como paso intermedio
 
 El monolito modular "en teoría" tiene módulos, pero en la práctica cualquier paquete importa cualquier clase interna. Cuando intentas extraer `billing`, descubres 47 dependencias ocultas. El límite existía en el diagrama, no en el código.
@@ -163,6 +169,8 @@ El error más común es módulos sin test de frontera. El síntoma es acoplamien
 
 **Nota de verificación:** no se ejecutó Spring Modulith real. Verificación propuesta: proyecto Spring Boot con dependencia `spring-modulith` y test `ApplicationModules.verify()`.
 
+### Tema 4: Strangler Fig · Intermedio · 120 min
+
 ## Strangler Fig para migración incremental
 
 El monolito de facturación tiene 8 años. Reescribirlo desde cero en 6 meses suena tentador. A los 4 meses, el nuevo sistema no cubre casos borde, el viejo sigue recibiendo cambios y nadie sabe cuál es la fuente de verdad. El big bang falla.
@@ -208,6 +216,8 @@ false
 El routing por capacidad permite migrar incrementalmente. El cutover seguro requiere backfill completo, checksums coincidentes y rollback listo. Si falta alguno, el cutover es ciego.
 
 El error más común es doble escritura sin estrategia. El síntoma son datos divergentes. La causa es no definir source of truth ni cutover. La corrección es CDC/outbox, backfill, reconciliación y rollback. La señal observable son conteos distintos entre sistemas.
+
+### Tema 5: Database-per-service · Avanzado · 120 min
 
 ## Database-per-service para autonomía real
 

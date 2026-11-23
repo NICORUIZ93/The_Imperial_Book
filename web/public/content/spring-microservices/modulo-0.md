@@ -6,7 +6,7 @@ Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesit
 
 ## Aprende construyendo
 
-### Tema 1: Java 21+: streams, lambdas, Optional, records y pattern matching · Intermedio · 360 min
+### Tema 1: Java 21+: streams, lambdas, Optional, records, pattern matching · Intermedio · 360 min
 
 El equipo procesa pedidos entrantes con bucles anidados, mutación de listas compartidas y null checks dispersos. Un pedido inválido (qty ≤ 0) pasa el filtro y corrompe downstream. El código “funciona”, pero es difícil de leer, probar y paralelizar. La intención está enterrada en detalles imperativos.
 
