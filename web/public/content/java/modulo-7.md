@@ -446,6 +446,16 @@ Resultados observados (resumen):
 - `test`: 0 fallas.
 - `demo`: procesa pedidos con `switch`/pattern matching sobre pagos sellados y genera auditoría por tipo.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `ClassCastException` en patrón | Suposición de tipo incorrecta | Revisar switch/pattern | Usar sealed + pattern matching exhaustivo |
+| Switch no exhaustivo | Falta caso sealed/enum | Error compilación Java moderno | Cubrir todos los casos o default justificado |
+| Record mutable por campo mutable | Lista/objeto interno mutable | Mutación externa | Copia defensiva/`List.copyOf` |
+| `NullPointerException` al desestructurar | Componente null no esperado | Validar en constructor compacto | Validar invariantes al construir |
+| Texto block/formato confuso | Escapes/indentación | Salida inesperada | Usar text blocks y `formatted` con cuidado |
+
 ## Cierre
 
 Sealed classes, records y pattern matching se complementan. Los records modelan datos inmutables; las sealed interfaces modelan conjuntos cerrados de casos; el pattern matching permite procesarlos de forma segura y expresiva. Cuando el dominio tiene variantes finitas, esta combinación reduce estados inválidos y convierte muchos errores de mantenimiento en errores de compilación.

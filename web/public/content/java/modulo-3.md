@@ -1046,6 +1046,16 @@ Resultados observados (resumen):
 - `importar`: 3 importados, 2 rechazados con causa por línea.
 - `auditoria`: muestra checked (`ImportacionException` con causa `NoSuchFileException`), unchecked (`StockInsuficienteException`), `try-with-resources`, excepción suprimida en cierre, causa preservada (`NumberFormatException`) y propagación correcta.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| Se traga el error y sigue | `catch` vacío o solo log sin decisión | Revisar catches sin rethrow/retorno | Manejar, traducir con causa o propagar |
+| Se pierde la causa original | `throw new ...()` sin `cause` | Falta stack/cause en logs | `new XException(msg, e)` |
+| Recurso queda abierto | No usar try-with-resources | FDs/locks crecen, tests flaky | `try (var r = ...)` o cerrar en `finally` seguro |
+| Checked exception por todos lados | Usar checked para errores de programación | API difícil de usar | Checked en frontera recuperable; unchecked para bug/contrato |
+| Mensaje inútil | "error" sin contexto | Logs no permiten reproducir | Incluir archivo/línea/SKU/operación, sin secretos |
+
 ## Cierre
 
 Las excepciones bien diseñadas hacen visible el mapa de fallos del sistema. Las checked exceptions fuerzan a decidir ante condiciones externas recuperables. Las unchecked expresan precondiciones rotas o reglas de dominio que deben subir hasta una frontera competente. `try-with-resources` garantiza el cierre de recursos y preserva la excepción principal cuando el cierre también falla. Las excepciones personalizadas dan nombre y contexto; preservar la causa da diagnóstico.

@@ -287,6 +287,16 @@ Resultados observados:
 - `test`: 0 fallas.
 - `run`: `productos=2`, `primero=CAF-100`, `reflexion=CAF-100:Cafe Aurora`.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `InaccessibleObjectException` / warning acceso | Encapsulamiento fuerte de módulos/reflexión | Stack trace en runtime | Usar API pública, `--add-opens` solo si justificado |
+| `ClassNotFoundException`/`NoClassDefFoundError` | Dependencia/runtime classpath/modularidad | Revisar classpath/module-path | Corregir dependencia, exports/requires |
+| `ServiceConfigurationError` | `META-INF/services` mal formado | Falla al cargar ServiceLoader | Verificar nombre de archivo, implementación y constructor |
+| Código frágil por reflection | Nombres de métodos/campos hardcodeados | Falla al refactorizar | Preferir interfaces, records, anotaciones controladas |
+| Anotación no procesada | `@Retention` incorrecta | Valor null en runtime | Usar `RUNTIME` si se lee por reflection |
+
 ## Cierre
 
 JPMS no reemplaza el diseño de paquetes ni los modificadores de acceso; agrega una frontera arquitectónica. `exports` define API pública, `requires` define dependencias y `opens` controla reflexión. Úsalo donde los límites importan, y migra de forma incremental.

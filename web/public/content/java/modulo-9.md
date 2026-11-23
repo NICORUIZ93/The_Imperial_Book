@@ -484,6 +484,16 @@ Resultados observados:
 
 - `test`: 0 fallas. El módulo es un proyecto de pruebas (JUnit/Mockito); la verificación principal es la suite verde.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| Test flaky | Dependencia de tiempo/orden/IO/red | Falla intermitente | Aislar, fijar clock, limpiar estado, evitar sleeps |
+| Mock oculta bug real | Mockear demasiado o contrato mal asumido | Pasa test, falla en prod | Usar tests de integración/contrato donde importe |
+| Cobertura alta, poca confianza | Tests sin assertions útiles | Mutation testing/revisión | Aserciones sobre comportamiento, casos borde |
+| Test lento | Levanta contexto pesado innecesario | Tiempo suite | Unit puro para dominio, integración acotada |
+| `@BeforeEach` con estado oculto | Setup complejo compartido | Dificultad para leer test | Arrange explícito, helpers claros |
+
 ## Cierre
 
 Un buen suite de tests mezcla niveles: unitarios rápidos para reglas puras, tests con mocks para coordinación entre componentes, parametrizados para tablas de casos y propiedades para invariantes. La clave es que cada test tenga un motivo claro y falle por una razón útil.

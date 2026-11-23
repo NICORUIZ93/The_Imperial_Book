@@ -709,6 +709,16 @@ Resultados observados (resumen):
 - `test`: 0 fallas.
 - `run`: imprime catálogo filtrado/ordenado, agotados, valor por categoría, búsqueda por SKU, total facturado, unidades por SKU, top clientes, ciudades y ventanas de totales.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `NullPointerException` en stream | Fuente o mapper retorna null | Revisar pipeline y datos | Filtrar/validar, usar `Optional` donde corresponda |
+| Resultado inesperado en stream paralelo | Estado mutable compartido | Race en collectors/lambdas | Evitar side effects, usar collectors thread-safe |
+| `IllegalStateException: stream has already been operated upon` | Reusar stream | Stack trace en segunda terminal op | Crear nuevo stream |
+| Optional mal usado | `get()` sin verificar, campos Optional | NPE/ruido | `orElseThrow/orElse/map`; no usar Optional en campos/params salvo criterio |
+| Collector lento/memoria alta | Materializar innecesariamente | Perfil, tamaño colección | Usar streams con criterio, no por moda |
+
 ## Cierre
 
 La Stream API convierte transformaciones de colecciones en pipelines legibles cuando se usa con disciplina. `Optional` hace explícita la ausencia. Los Gatherers abren la puerta a operaciones intermedias que antes requerían código imperativo extra. Los streams paralelos solo valen cuando el trabajo y la medición lo justifican. En todos los casos, la meta es la misma: código que exprese intención sin esconder costos ni efectos secundarios.

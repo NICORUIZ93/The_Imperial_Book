@@ -719,6 +719,16 @@ Resultados observados (resumen):
 - `race`: muestra race condition (`observado=988` en esta corrida) y versión segura `1000/1000`.
 - `medir`: compara plataforma vs virtual threads; en esta corrida `452ms` vs `52ms` (resultado dependiente de máquina/carga, no garantizado).
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| Race condition intermitente | Estado mutable compartido sin protección | Tests concurrentes, logs no deterministas | `Atomic*`, locks, confinamiento, estructuras concurrentes |
+| Deadlock | Locks en orden inconsistente | Thread dump | Ordenar locks, timeout, evitar lock anidado |
+| Tareas nunca terminan | No manejar interrupción/cancelación | Hilos bloqueados, app no cierra | Chequear interrupción, propagar, cerrar recursos |
+| Virtual threads no mejoran | Carga CPU-bound o pinning | Métricas/JFR | Usar para I/O bloqueante; evitar pinning en secciones críticas |
+| `RejectedExecutionException` | Executor cerrado o cola saturada | Stack trace al submit | Política de rechazo clara, lifecycle del executor |
+
 ## Cierre
 
 La concurrencia moderna en Java no se trata de crear hilos por todos lados. Se trata de elegir la abstracción adecuada: `ExecutorService` para controlar ejecución, `CompletableFuture` para componer etapas, virtual threads para escalar esperas bloqueantes, sincronización para proteger estado compartido, structured concurrency para dar ciclo de vida a subtareas, scoped values para contexto y timeouts con cancelación cooperativa para no abandonar trabajo.

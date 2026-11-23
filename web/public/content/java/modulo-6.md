@@ -582,6 +582,16 @@ Resultados observados:
 - `test`: 0 fallas.
 - `demo`: `catalogo=3`, `ndjsonLineas=3`, `csvLineas=4`, `plantilla=Tienda Aurora - Nota de despacho`.
 
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `NoSuchFileException`/ruta inválida | Ruta relativa dependiente de CWD | Loggear `toAbsolutePath()` | Resolver rutas desde base conocida, validar existencia |
+| Caracteres corruptos | Encoding implícito | Diferencia entre entornos | Especificar `UTF-8` explícitamente |
+| Archivo parcial/corrupto | Escritura sin flush/atomicidad | Corte de proceso | Escribir a temp + move atómico, cerrar recursos |
+| JSON/XML mal mapeado | Esquema/campo faltante | Excepción de parser | Validar input, manejar errores, versionar formato |
+| Recurso no cerrado | Stream/file sin try-with-resources | FDs agotados | try-with-resources |
+
 ## Cierre
 
 El I/O profesional en Java combina tres hábitos: usar NIO.2 para rutas y operaciones de archivo claras, serializar con un contrato explícito, y tratar archivos grandes como flujos en vez de cargar todo en memoria por reflejo. Los recursos del classpath se leen por classloader, no por rutas frágiles al árbol fuente. Cada escritura debe considerar atomicidad, encoding y cierre de recursos.
