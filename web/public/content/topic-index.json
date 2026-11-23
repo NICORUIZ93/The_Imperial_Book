@@ -7084,7 +7084,7 @@
   "spring-microservices": {
     "0": [
       {
-        "title": "Java 21: streams, lambdas, Optional, records y pattern matching",
+        "title": "Java 21+: streams, lambdas, Optional, records y pattern matching",
         "fragment": "tema-1-java-21-streams-lambdas-optional-records-y-pattern-matching"
       },
       {
