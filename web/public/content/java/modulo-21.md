@@ -157,11 +157,11 @@ java DemoDefault
 
 ### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
 
-**Caso guía.** un override genérico genera bridge methods y puede afectar compatibilidad.
+Cuando escribes código con genéricos, el compilador usa los tipos como `String` o `Integer` para verificar errores en tiempo de compilación. Pero al generar el bytecode, Java aplica *type erasure*: borra los parámetros genéricos y los reemplaza por sus límites (normalmente `Object`) o por el tipo concreto indicado. Esto existe por compatibilidad con código Java anterior a los genéricos.
 
-Erasure y bridge methods
+El problema aparece en la superficie pública cuando una subclase concreta sobrescribe un método genérico. Después del borrado, la firma del método en la clase padre puede quedar como `Object get()`, mientras que la subclase implementa `String get()`. Para que el polimorfismo siga funcionando —que una llamada a través de la referencia base ejecute el método correcto— el compilador genera un **método puente (bridge method)**. Ese método puente tiene la firma borrada (`Object get()`), es sintético, y dentro delega al método concreto (`String get()`), haciendo el cast necesario.
 
-**Definición.** Por type erasure, el compilador puede generar métodos puente (bridge) para preservar polimorfismo con genéricos.
+Esto importa en APIs públicas porque la presencia de bridge methods afecta reflexión, generación de proxies, frameworks que inspeccionan métodos declarados, y verificadores de compatibilidad binaria. Cambiar tipos genéricos en una clase o interfaz pública puede agregar, quitar o alterar bridge methods, rompiendo consumidores ya compilados aunque el código fuente "parezca" igual.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
