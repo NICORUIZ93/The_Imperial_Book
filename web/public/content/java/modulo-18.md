@@ -71,7 +71,7 @@ javac -d out src/main/java/com/aurora/java/**/*.java
 java -cp out com.aurora.java.Main
 ```
 
-### ### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
+### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
 **Caso guía.** consultar el estado de una guía en un servicio REST. Si la red tarda, el hilo no puede quedar colgado indefinidamente.
 
@@ -138,7 +138,7 @@ java DemoHttp
 
 **Verificación (JDK 27, 2026-05-22).** `200`, `true`.
 
-### ### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
+### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
 
 **Caso guía.** la API requiere Bearer token; además debes validar entradas y evitar SSRF.
 
@@ -193,7 +193,7 @@ java DemoAllowlist
 
 **Verificación (JDK 27, 2026-05-22).** `true`, `false`.
 
-### ### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
+### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
 
 **Caso guía.** hashear contenido, firmar mensaje con clave compartida y cifrar dato sensible.
 

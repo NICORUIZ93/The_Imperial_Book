@@ -71,7 +71,7 @@ javac -d out src/main/java/com/aurora/java/**/*.java
 java -cp out com.aurora.java.Main
 ```
 
-### ### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
+### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
 
 **Caso guía.** filtrar guías válidas, transformarlas, imprimirlas y generar IDs.
 
@@ -115,7 +115,7 @@ java DemoCore
 
 **Verificación (JDK 27, 2026-05-22).** `N1`.
 
-### ### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
+### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
 
 **Caso guía.** calcular precio con impuesto (dos entradas) o transformar un valor (una entrada).
 
@@ -149,7 +149,7 @@ java DemoFn
 
 **Verificación (JDK 27, 2026-05-22).** `10`, `5`.
 
-### ### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
+### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
 
 **Caso guía.** validar con varias reglas y componer transformaciones.
 
@@ -187,7 +187,7 @@ java DemoComp
 
 **Verificación (JDK 27, 2026-05-22).** `true`, `7`.
 
-### ### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
+### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
 
 **Caso guía.** un pipeline parece ejecutar todo, pero intermedias son lazy.
 
@@ -223,7 +223,7 @@ java DemoLazy
 
 **Verificación (JDK 27, 2026-05-22).** `2`.
 
-### ### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
+### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
 
 **Caso guía.** transformaciones donde tipo de entrada y salida son iguales.
 
@@ -257,7 +257,7 @@ java DemoOp
 
 **Verificación (JDK 27, 2026-05-22).** `5`, `9`.
 
-### ### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
+### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
 
 **Caso guía.** `x -> System.out.println(x)` vs `System.out::println`.
 
@@ -288,7 +288,7 @@ java DemoRef
 
 **Verificación (JDK 27, 2026-05-22).** `a`, `b`.
 
-### ### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
+### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
 
 **Caso guía.** repo devuelve vacío si no existe.
 
@@ -318,7 +318,7 @@ java DemoOpt
 
 **Verificación (JDK 27, 2026-05-22).** `ok`, `no`.
 
-### ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
+### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
 
 **Caso guía.** normalizar y aplanar listas de tags.
 
@@ -351,7 +351,7 @@ java DemoMid
 
 **Verificación (JDK 27, 2026-05-22).** `[a, b, c]`.
 
-### ### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
+### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
 
 **Caso guía.** contar, encontrar y reducir.
 
@@ -385,7 +385,7 @@ java DemoTerm
 
 **Verificación (JDK 27, 2026-05-22).** `2`, `1`, `10`.
 
-### ### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
+### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
 
 **Caso guía.** agrupar guías por estado.
 
@@ -418,7 +418,7 @@ java DemoCol
 
 **Verificación (JDK 27, 2026-05-22).** `2`, `1`.
 
-### ### Tema 11: Streams paralelos: comparar antes de acelerarlos · Intermedio · 40 min
+### Tema 11: Streams paralelos: comparar antes de acelerarlos · Intermedio · 40 min
 
 **Caso guía.** operación CPU-bound grande e independiente.
 
@@ -447,7 +447,7 @@ java DemoPar
 
 **Verificación (JDK 27, 2026-05-22).** `500500`.
 
-### ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Intermedio · 40 min
+### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Intermedio · 40 min
 
 **Caso guía.** una lambda que modifica una lista externa hace el pipeline impredecible.
 
@@ -486,7 +486,7 @@ java DemoPure
 
 **Verificación (JDK 27, 2026-05-22).** `[2, 4, 6]`, `6`.
 
-### ### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
+### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
 
 **Caso guía.** productor emite eventos; consumidor controla demanda.
 

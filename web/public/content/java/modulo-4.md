@@ -85,7 +85,7 @@ rootProject.name = "tienda-aurora-streams"
 
 El orden de lectura va de los tipos de dominio a los reportes y termina en la CLI. Así puedes ver primero qué datos existen y después cómo los streams los transforman.
 
-### Dominio
+#### Dominio
 
 `Categoria` es un enum. Usar un enum en vez de `String` evita valores inválidos como `"bebida"` o `"BEBIDAS "` y permite agrupar por categoría con seguridad de tipos.
 
@@ -224,7 +224,7 @@ public record Pedido(String id, String clienteId, LocalDate fecha, List<LineaPed
 }
 ```
 
-### Reportes
+#### Reportes
 
 `CatalogoProductos` concentra consultas de lectura sobre productos. Cada método expresa una pregunta de negocio con un pipeline: filtrar activos por categoría, encontrar agotados, agrupar valor de inventario, buscar por SKU con `Optional`, y obtener el más caro con `max`.
 
@@ -380,7 +380,7 @@ public final class ReporteVentas {
 }
 ```
 
-### Frontera CLI
+#### Frontera CLI
 
 La clase `main` es la frontera CLI. Carga datos de ejemplo, ejecuta comandos `catalogo`, `ventas` y `auditoria`, e imprime resultados. La auditoría muestra comportamientos puntuales de `Optional`, `filter/sum`, `distinct/sorted/collect`, `Gatherers`, streams paralelos y referencias a método.
 

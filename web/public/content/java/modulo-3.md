@@ -122,7 +122,7 @@ FIL-0004;Filtros x100;4.75;10
 
 El código se lee mejor desde el dominio hacia afuera. Primero están los tipos y las excepciones que describen el problema. Después la importación, que traduce fallos de E/S y de formato. Luego el servicio, que aplica reglas sin atrapar errores prematuramente. Al final está la CLI, que es donde los errores se convierten en mensajes para el usuario.
 
-### Dominio
+#### Dominio
 
 
 `Dinero` sigue siendo un value object inmutable en centavos. La novedad de este módulo está en el borde: cuando el texto no representa un importe válido, `de(String)` no deja escapar un `NumberFormatException` crudo; lo traduce a `DatoInvalidoException` preservando la causa. Así el dominio habla el idioma del problema de entrada, y el diagnóstico conserva la excepción técnica original.
@@ -370,7 +370,7 @@ public final class StockInsuficienteException extends RuntimeException {
 }
 ```
 
-### Importación
+#### Importación
 
 
 `ImportacionException` es checked (`extends Exception`). Representa un fallo externo al leer el archivo: el llamador puede elegir otro archivo, avisar al operador o abortar la importación. El compilador obliga a tratarla, lo que hace visible esa decisión en la firma.
@@ -542,7 +542,7 @@ public final class ImportadorProductos {
 }
 ```
 
-### Servicio
+#### Servicio
 
 
 `Catalogo` es un repositorio en memoria simple. `obtener` lanza `ProductoNoEncontradoException` cuando el SKU no existe. Usar una excepción de dominio evita que el servicio tenga que devolver `null` o códigos especiales.
@@ -623,7 +623,7 @@ public final class ServicioPedidos {
 }
 ```
 
-### Frontera CLI
+#### Frontera CLI
 
 
 `TiendaAuroraExcepcionesApp` es la frontera CLI. Aquí sí hay manejo de excepciones: captura las de dominio para mostrar un error claro al usuario, y el comando `auditoria` ejecuta casos controlados que demuestran checked, unchecked, `try-with-resources`, excepciones suprimidas, causa preservada y propagación correcta.

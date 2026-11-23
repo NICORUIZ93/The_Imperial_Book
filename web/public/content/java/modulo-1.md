@@ -130,7 +130,7 @@ Los archivos están agrupados por paquete y por responsabilidad. El paquete `dom
 
 Puedes copiar los archivos tal cual, respetando la ruta de cada uno. El orden de lectura recomendado es el mismo en el que aparecen: primero los tipos base (`Dinero`, `Sku`), después la jerarquía de productos, luego los records, después los contratos de descuento y pago, y al final las reglas, servicios y la aplicación. Así cada archivo usa conceptos que ya viste en el anterior. Si prefieres escribirlo a mano, sigue ese orden y compila con `./gradlew classes` cuando tengas el dominio base para detectar errores temprano.
 
-### Dominio base: dinero y códigos
+#### Dominio base: dinero y códigos
 
 `Dinero` es un *value object*: un objeto que se identifica por su valor, no por una identidad propia. Dos importes de $12.50 son el mismo dinero aunque sean objetos distintos. Por eso es inmutable (`final`, sin setters) y tiene `equals`/`hashCode` por contenido. Internamente guarda centavos en un `long` para evitar los errores de redondeo de `double`; `BigDecimal` solo se usa en la fábrica `de(String)` para parsear texto con precisión. `Comparable<Dinero>` permite ordenar importes y compararlos con `compareTo`.
 
@@ -287,7 +287,7 @@ public final class Sku {
 }
 ```
 
-### Jerarquía de productos
+#### Jerarquía de productos
 
 `Producto` es la clase base. Sus campos son `private final`: la encapsulación impide que el exterior o incluso una subclase los modifique directamente. Las subclases acceden por getters (`sku()`, `nombre()`, `precioBase()`) y pueden reutilizar `normalizarNombre`, que es `protected static` porque es una utilidad de construcción, no un comportamiento de instancia. El constructor valida el invariante completo antes de asignar; si algo falla, el objeto no llega a existir.
 
@@ -475,7 +475,7 @@ public final class ServicioDigital extends Producto {
 }
 ```
 
-### Records: valores inmutables
+#### Records: valores inmutables
 
 Los siguientes tipos no son entidades con identidad propia; son datos que se reemplazan completos. Por eso se modelan como `record`: el compilador genera constructor, accesores, `equals`, `hashCode` y `toString`.
 
@@ -583,7 +583,7 @@ public record ResultadoPrecio(
 }
 ```
 
-### Contratos de variación: descuentos y pagos
+#### Contratos de variación: descuentos y pagos
 
 Aquí está la decisión de diseño central del módulo. Hay dos ejes que cambian: la regla de descuento y el medio de pago. Si metes ambos en `if/switch` dentro del pedido, cada regla nueva obliga a tocar el pedido. La alternativa es modelar cada eje como un tipo con comportamiento propio.
 
@@ -870,7 +870,7 @@ public final class ContraReembolso extends MedioPago {
 }
 ```
 
-### Catálogo, reglas y servicios
+#### Catálogo, reglas y servicios
 
 `Catalogo` es el punto único donde se definen los productos disponibles. Devuelve una lista inmutable (`List.copyOf`) para que ningún llamador pueda agregar o quitar productos por accidente. También expone `buscarPorSku`, que lanza una excepción clara si el SKU no existe.
 

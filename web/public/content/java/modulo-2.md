@@ -122,7 +122,7 @@ Los archivos están organizados por responsabilidad. `dominio` define los valore
 
 Puedes copiar los archivos respetando la ruta. El orden de lectura recomendado es: dominio, común, catálogo/pedidos, muestras, auditoría y finalmente la app.
 
-### Dominio: valores que pueden vivir en colecciones
+#### Dominio: valores que pueden vivir en colecciones
 
 `Dinero` es un value object inmutable en centavos. Implementa `Comparable<Dinero>` porque el precio necesita un orden natural. `equals` y `hashCode` se basan en el valor, no en la identidad del objeto.
 
@@ -395,7 +395,7 @@ public record Pedido(String numero, String cliente, Prioridad prioridad, List<Li
 }
 ```
 
-### Infraestructura genérica: repositorio y página
+#### Infraestructura genérica: repositorio y página
 
 `Repositorio<T, ID>` es una interfaz con dos parámetros de tipo. `T` es la entidad almacenada; `ID` es el tipo de su identificador. El contrato no sabe si guarda productos, pedidos o clientes. Ese es el valor práctico de los genéricos: el mismo diseño se reutiliza sin perder tipo.
 
@@ -525,7 +525,7 @@ public record Pagina<T>(List<T> items, int numero, int tamanoPagina, int tamanoT
 }
 ```
 
-### Catálogo indexado
+#### Catálogo indexado
 
 `Catalogo` combina varias colecciones porque responde preguntas distintas. `LinkedHashMap<Sku, Producto>` conserva el orden de alta y da búsqueda por SKU. `TreeMap<String, Set<Sku>>` ordena las etiquetas alfabéticamente. Cada etiqueta apunta a un `TreeSet<Sku>` para mantener SKUs únicos y ordenados. La estructura interna no se expone: los métodos devuelven copias o vistas inmodificables.
 
@@ -628,7 +628,7 @@ public final class Catalogo {
 }
 ```
 
-### Pedidos, prioridad y deshacer
+#### Pedidos, prioridad y deshacer
 
 `Comparadores` centraliza los criterios de orden. Tenerlos en un solo lugar evita que cada pantalla invente su propia comparación y que dos órdenes “por precio” se comporten distinto ante empates.
 
@@ -748,7 +748,7 @@ public final class ColaPedidos {
 }
 ```
 
-### Auditoría, legado y datos de muestra
+#### Auditoría, legado y datos de muestra
 
 `CodigoLegado` es una clase deliberadamente peligrosa: su `hashCode` depende de un campo mutable. Sirve para demostrar, con un caso realista, por qué una clave mutable rompe un `HashMap`. No es un patrón a copiar; es un anti-patrón controlado.
 
@@ -987,7 +987,7 @@ public final class AuditoriaColecciones {
 }
 ```
 
-### Aplicación de consola
+#### Aplicación de consola
 
 `TiendaAuroraColeccionesApp` solo conecta comandos con casos de uso. No implementa reglas de colección; las delega en `Catalogo`, `ColaPedidos`, `RepositorioEnMemoria`, `Pagina` y `AuditoriaColecciones`. Ese reparto es importante: la CLI es una interfaz, no el lugar donde vive el conocimiento del dominio.
 

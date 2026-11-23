@@ -129,7 +129,7 @@ tasks.withType<JavaExec>().configureEach {
 }
 ```
 
-### Dominio
+#### Dominio
 
 Record inmutable para la respuesta de una cotización. Lleva SKU, precio, stock y latencia medida. Usar un tipo explícito evita devolver mapas o arreglos de objetos sin significado.
 
@@ -169,7 +169,7 @@ public record CheckoutResult(String pedidoId, BigDecimal precio, int stock, Stri
 }
 ```
 
-### Servicios
+#### Servicios
 
 Simula un servicio remoto de catálogo. `Thread.sleep` representa latencia de I/O. En producción sería una llamada HTTP o a base de datos; la forma de manejar espera, timeout y cancelación es la misma.
 
@@ -388,7 +388,7 @@ public final class CheckoutService {
 }
 ```
 
-### Frontera CLI
+#### Frontera CLI
 
 CLI de demostración. Cada comando ejecuta un caso concreto y escribe una salida verificable. Así el módulo no queda en teoría: cada mecanismo tiene una ejecución observable.
 

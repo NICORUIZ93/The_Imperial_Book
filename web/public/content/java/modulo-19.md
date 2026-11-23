@@ -71,7 +71,7 @@ javac -d out src/main/java/com/aurora/java/**/*.java
 java -cp out com.aurora.java.Main
 ```
 
-### ### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min
+### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min
 
 **Caso guía.** un mini-framework necesita leer anotaciones en runtime.
 
@@ -110,7 +110,7 @@ java DemoRef
 
 **Verificación (JDK 27, 2026-05-22).** `nombre`.
 
-### ### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min
+### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min
 
 **Caso guía.** validar formato de código de guía.
 
@@ -147,7 +147,7 @@ java DemoRegex
 
 **Verificación (JDK 27, 2026-05-22).** `true`, `false`.
 
-### ### Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min
+### Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min
 
 **Caso guía.** sumar precios monetarios sin errores de punto flotante.
 
@@ -184,7 +184,7 @@ java DemoMoney
 
 **Verificación (JDK 27, 2026-05-22).** `0.30`.
 
-### ### Tema 4: Assertions y diseño por contrato · Intermedio · 40 min
+### Tema 4: Assertions y diseño por contrato · Intermedio · 40 min
 
 **Caso guía.** invariantes internas que no deberían ocurrir si el código es correcto.
 
@@ -217,7 +217,7 @@ java -ea DemoAssert
 
 **Verificación (JDK 27, 2026-05-22).** `4`.
 
-### ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min
+### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min
 
 **Caso guía.** cargar implementaciones de un servicio por SPI.
 
@@ -231,7 +231,7 @@ ServiceLoader/SPI
 
 **Nota de verificación.** Ejemplo completo requiere estructura de recursos; patrón estándar de JDK (`ServiceLoader.load`).
 
-### ### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min
+### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min
 
 **Caso guía.** mostrar monto y fecha según locale.
 
@@ -266,7 +266,7 @@ java DemoI18n
 
 **Verificación (JDK 27, 2026-05-22).** `$1,234.50`.
 
-### ### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min
+### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min
 
 **Caso guía.** interceptar llamadas a una interfaz para logging o validación.
 
@@ -302,7 +302,7 @@ java DemoProxy
 
 **Verificación (JDK 27, 2026-05-22).** `pong`.
 
-### ### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
+### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
 
 **Caso guía.** entender por qué dos clases “iguales” pueden ser incompatibles si las cargó distinto ClassLoader.
 
@@ -312,7 +312,7 @@ ClassLoader
 
 **Error común.** `ClassCastException` entre la misma clase en loaders distintos. Corrección: entender jerarquía de loaders y aislamiento.
 
-### ### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min
+### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min
 
 **Caso guía.** acceso de bajo nivel más tipado/performante que reflexión en ciertos casos.
 

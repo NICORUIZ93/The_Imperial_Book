@@ -4154,26 +4154,6 @@
     ],
     "1": [
       {
-        "title": "Dominio base: dinero y códigos",
-        "fragment": "dominio-base-dinero-y-codigos"
-      },
-      {
-        "title": "Jerarquía de productos",
-        "fragment": "jerarquia-de-productos"
-      },
-      {
-        "title": "Records: valores inmutables",
-        "fragment": "records-valores-inmutables"
-      },
-      {
-        "title": "Contratos de variación: descuentos y pagos",
-        "fragment": "contratos-de-variacion-descuentos-y-pagos"
-      },
-      {
-        "title": "Catálogo, reglas y servicios",
-        "fragment": "catalogo-reglas-y-servicios"
-      },
-      {
         "title": "Clases, objetos, constructores y encapsulación",
         "fragment": "tema-1-clases-objetos-constructores-y-encapsulacion"
       },
@@ -4368,81 +4348,57 @@
     ],
     "18": [
       {
-        "title": "### Tema 1: HttpClient, REST, timeouts y fallos",
+        "title": "HttpClient, REST, timeouts y fallos",
         "fragment": "tema-1-httpclient-rest-timeouts-y-fallos"
       },
       {
-        "title": "### Tema 2: Tokens, validación y límites de seguridad",
+        "title": "Tokens, validación y límites de seguridad",
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
       },
       {
-        "title": "### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
+        "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
         "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
       }
     ],
     "19": [
       {
-        "title": "### Tema 1: Reflexión y anotaciones en tiempo de ejecución",
+        "title": "Reflexión y anotaciones en tiempo de ejecución",
         "fragment": "tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion"
       },
       {
-        "title": "### Tema 2: Expresiones regulares con Pattern y Matcher",
+        "title": "Expresiones regulares con Pattern y Matcher",
         "fragment": "tema-2-expresiones-regulares-con-pattern-y-matcher"
       },
       {
-        "title": "### Tema 3: Dinero exacto con BigDecimal",
+        "title": "Dinero exacto con BigDecimal",
         "fragment": "tema-3-dinero-exacto-con-bigdecimal"
       },
       {
-        "title": "### Tema 4: Assertions y diseño por contrato",
+        "title": "Assertions y diseño por contrato",
         "fragment": "tema-4-assertions-y-diseno-por-contrato"
       },
       {
-        "title": "### Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
+        "title": "ServiceLoader: plugins sin acoplar implementaciones",
         "fragment": "tema-5-serviceloader-plugins-sin-acoplar-implementaciones"
       },
       {
-        "title": "### Tema 6: Internacionalización: números, monedas, fechas y orden de texto",
+        "title": "Internacionalización: números, monedas, fechas y orden de texto",
         "fragment": "tema-6-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
       },
       {
-        "title": "### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
         "fragment": "tema-7-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
       },
       {
-        "title": "### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader",
+        "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader",
         "fragment": "tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
       },
       {
-        "title": "### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
+        "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
         "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
       }
     ],
     "2": [
-      {
-        "title": "Dominio: valores que pueden vivir en colecciones",
-        "fragment": "dominio-valores-que-pueden-vivir-en-colecciones"
-      },
-      {
-        "title": "Infraestructura genérica: repositorio y página",
-        "fragment": "infraestructura-generica-repositorio-y-pagina"
-      },
-      {
-        "title": "Catálogo indexado",
-        "fragment": "catalogo-indexado"
-      },
-      {
-        "title": "Pedidos, prioridad y deshacer",
-        "fragment": "pedidos-prioridad-y-deshacer"
-      },
-      {
-        "title": "Auditoría, legado y datos de muestra",
-        "fragment": "auditoria-legado-y-datos-de-muestra"
-      },
-      {
-        "title": "Aplicación de consola",
-        "fragment": "aplicacion-de-consola"
-      },
       {
         "title": "List, Set, Map y sus implementaciones",
         "fragment": "tema-1-list-set-map-y-sus-implementaciones"
@@ -4470,55 +4426,55 @@
     ],
     "20": [
       {
-        "title": "### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
       {
-        "title": "### Tema 2: Function y BiFunction: transformar uno o dos datos",
+        "title": "Function y BiFunction: transformar uno o dos datos",
         "fragment": "tema-2-function-y-bifunction-transformar-uno-o-dos-datos"
       },
       {
-        "title": "### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
         "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
       },
       {
-        "title": "### Tema 4: Streams como composición: pereza, orden y efectos que se esconden",
+        "title": "Streams como composición: pereza, orden y efectos que se esconden",
         "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       },
       {
-        "title": "### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
         "fragment": "tema-5-unaryoperator-y-binaryoperator-la-salida-conserva-el-tipo"
       },
       {
-        "title": "### Tema 6: Referencias a métodos: escribir la operación sin repetirla",
+        "title": "Referencias a métodos: escribir la operación sin repetirla",
         "fragment": "tema-6-referencias-a-metodos-escribir-la-operacion-sin-repetirla"
       },
       {
-        "title": "### Tema 7: Optional: buscar un envío que puede no existir",
+        "title": "Optional: buscar un envío que puede no existir",
         "fragment": "tema-7-optional-buscar-un-envio-que-puede-no-existir"
       },
       {
-        "title": "### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "title": "Streams intermedios: filtrar, transformar, aplanar y ordenar",
         "fragment": "tema-8-streams-intermedios-filtrar-transformar-aplanar-y-ordenar"
       },
       {
-        "title": "### Tema 9: Streams terminales: encontrar, contar y combinar resultados",
+        "title": "Streams terminales: encontrar, contar y combinar resultados",
         "fragment": "tema-9-streams-terminales-encontrar-contar-y-combinar-resultados"
       },
       {
-        "title": "### Tema 10: Collectors: formar listas, mapas, grupos y texto",
+        "title": "Collectors: formar listas, mapas, grupos y texto",
         "fragment": "tema-10-collectors-formar-listas-mapas-grupos-y-texto"
       },
       {
-        "title": "### Tema 11: Streams paralelos: comparar antes de acelerarlos",
+        "title": "Streams paralelos: comparar antes de acelerarlos",
         "fragment": "tema-11-streams-paralelos-comparar-antes-de-acelerarlos"
       },
       {
-        "title": "### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
+        "title": "Pureza y efectos: calcular separado de guardar o imprimir",
         "fragment": "tema-12-pureza-y-efectos-calcular-separado-de-guardar-o-imprimir"
       },
       {
-        "title": "### Tema 13: Flow API: publicar datos con demanda y cierre",
+        "title": "Flow API: publicar datos con demanda y cierre",
         "fragment": "tema-13-flow-api-publicar-datos-con-demanda-y-cierre"
       }
     ],
@@ -4560,22 +4516,6 @@
     ],
     "3": [
       {
-        "title": "Dominio",
-        "fragment": "dominio"
-      },
-      {
-        "title": "Importación",
-        "fragment": "importacion"
-      },
-      {
-        "title": "Servicio",
-        "fragment": "servicio"
-      },
-      {
-        "title": "Frontera CLI",
-        "fragment": "frontera-cli"
-      },
-      {
         "title": "Checked vs unchecked exceptions",
         "fragment": "tema-1-checked-vs-unchecked-exceptions"
       },
@@ -4589,18 +4529,6 @@
       }
     ],
     "4": [
-      {
-        "title": "Dominio",
-        "fragment": "dominio"
-      },
-      {
-        "title": "Reportes",
-        "fragment": "reportes"
-      },
-      {
-        "title": "Frontera CLI",
-        "fragment": "frontera-cli"
-      },
       {
         "title": "Stream API — map, filter, reduce, collect",
         "fragment": "tema-1-stream-api-map-filter-reduce-collect"
@@ -4619,18 +4547,6 @@
       }
     ],
     "5": [
-      {
-        "title": "Dominio",
-        "fragment": "dominio"
-      },
-      {
-        "title": "Servicios",
-        "fragment": "servicios"
-      },
-      {
-        "title": "Frontera CLI",
-        "fragment": "frontera-cli"
-      },
       {
         "title": "ExecutorService y gestión de hilos",
         "fragment": "tema-1-executorservice-y-gestion-de-hilos"
@@ -4689,26 +4605,6 @@
       }
     ],
     "8": [
-      {
-        "title": "Código compartido",
-        "fragment": "codigo-compartido"
-      },
-      {
-        "title": "Build Gradle (Kotlin DSL)",
-        "fragment": "build-gradle-kotlin-dsl"
-      },
-      {
-        "title": "Build Maven (POM XML)",
-        "fragment": "build-maven-pom-xml"
-      },
-      {
-        "title": "Gradle",
-        "fragment": "gradle"
-      },
-      {
-        "title": "Maven",
-        "fragment": "maven"
-      },
       {
         "title": "pom.xml vs build.gradle.kts",
         "fragment": "tema-1-pom-xml-vs-build-gradle-kts"

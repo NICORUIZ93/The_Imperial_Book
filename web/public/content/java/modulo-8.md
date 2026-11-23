@@ -53,7 +53,7 @@ tienda-aurora-build-tools/
 
 ## Código completo
 
-### Código compartido
+#### Código compartido
 
 El código Java es el mismo en ambos builds. La diferencia está en cómo se declara y ejecuta.
 
@@ -126,7 +126,7 @@ public final class TiendaAuroraApiApp {
 }
 ```
 
-### Build Gradle (Kotlin DSL)
+#### Build Gradle (Kotlin DSL)
 
 Declara el nombre del build y los módulos incluidos. Gradle necesita saber qué subproyectos forman el build.
 
@@ -188,7 +188,7 @@ dependencies { implementation(project(":core")) }
 application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
 ```
 
-### Build Maven (POM XML)
+#### Build Maven (POM XML)
 
 POM padre. Declara packaging `pom`, módulos, propiedades comunes, `dependencyManagement` para el BOM de JUnit y configuración de plugins. En Maven, el padre es el lugar natural para centralizar versiones.
 
@@ -295,7 +295,7 @@ POM de `api`. Depende de `core` usando `${project.version}`. Maven resuelve el m
 
 ## Ejecutar
 
-### Gradle
+#### Gradle
 
 ```bash
 gradle wrapper --gradle-version 9.9.1
@@ -308,7 +308,7 @@ productos=2
 [{"sku":"CAF-100","nombre":"Cafe Aurora","precio":14.90},{"sku":"MOL-200","nombre":"Molino Manual","precio":79.90}]
 ```
 
-### Maven
+#### Maven
 
 ```bash
 mvn -q test
