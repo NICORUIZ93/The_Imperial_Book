@@ -1,20 +1,18 @@
 # Módulo 7: Sealed classes y pattern matching
 
+El modelado de dominio mejora cuando el tipo expresa las posibilidades reales. Un pago en Tienda Aurora no es “un objeto con muchos campos opcionales”; puede ser tarjeta, transferencia o efectivo. Si lo modelas con `if instanceof` sueltos y campos nulos, cada nuevo caso obliga a revisar código disperso. Las sealed classes e interfaces, junto con records y pattern matching, permiten cerrar el conjunto de variantes y hacer que el compilador ayude con exhaustividad.
 
 ## Visual del módulo
 
-**Herramienta (diagram-design, estático):** [Modulo 7 — mapa visual](/visuals/temas/java/modulo-7-excepciones.html)
-
-Lectura: Lanza con contexto, propaga cuando no puedes decidir y maneja en el borde con una respuesta útil.
-
-
-En Tienda Aurora, un pago no es “un monto y ya”. Puede ser tarjeta, transferencia o efectivo. Cada variante tiene datos distintos y reglas distintas. Si lo modelas con una clase llena de campos opcionales y `if (tipo == ...)`, el código acepta estados imposibles y cada nuevo tipo obliga a cazar condiciones dispersas por el sistema.
-
-Las sealed classes y el pattern matching moderno de Java permiten modelar ese dominio como un conjunto cerrado de casos. Un record expresa datos inmutables con poco ruido. Una sealed interface dice qué subtipos existen. Un `switch` exhaustivo obliga al compilador a avisarte cuando falta un caso. El resultado es un modelo más seguro, no solo más bonito.
-
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.9.1, macOS arm64. El proyecto se compiló con `./gradlew -q build`. Las salidas de `demo` y `record` son reales.
-
-## Proyecto desde cero: tienda-aurora-patterns
+<figure class="lesson-figure">
+  <img
+    src="/visuals/temas/java/modulo-7-patterns.html"
+    alt="Jerarquía sealed Pago con record patterns y switch exhaustivo"
+    loading="lazy"
+    style="width:100%;max-width:980px;border:1px solid #d7dbe2;border-radius:12px;background:#fbfaf7"
+  />
+  <figcaption>Sealed limita subtipos permitidos; el switch exhaustivo obliga a cubrir cada variante.</figcaption>
+</figure>
 
 ## Prerrequisitos
 
@@ -26,34 +24,23 @@ gradle --version
 ## Bootstrap
 
 ```bash
-mkdir -p tienda-aurora-java-m7/src/main/java/com/aurora/moderno/{dominio,servicio}
-mkdir -p tienda-aurora-java-m7/src/test/java/com/aurora/moderno
-cd tienda-aurora-java-m7
+mkdir -p tienda-aurora-patterns/src/main/java/com/aurora/patterns/{dominio,servicio}
+mkdir -p tienda-aurora-patterns/src/test/java/com/aurora/patterns
+cd tienda-aurora-patterns
 gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
 
-```text
-tienda-aurora-patterns/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    └── main/
-        └── java/
-            └── com/aurora/patterns/
-                ├── TiendaAuroraPatternsApp.java
-                ├── dominio/
-                │   ├── Pago.java
-                │   ├── PagoEfectivo.java
-                │   ├── PagoTarjeta.java
-                │   ├── PagoTransferencia.java
-                │   └── ResultadoPago.java
-                └── servicio/
-                    └── ProcesadorPagos.java
+## Código completo, archivo por archivo
+
+#### `settings.gradle.kts`
+
+```kotlin
+rootProject.name = "tienda-aurora-patterns"
 ```
 
-## build.gradle.kts
+#### `build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -78,54 +65,13 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-    options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
-}
-```
-
-## settings.gradle.kts
-
-```kotlin
-rootProject.name = "tienda-aurora-patterns"
-```
-
-## Código completo
-
-Nombre del proyecto.
-
-**Archivo:** `settings.gradle.kts`
-
-```kotlin
-rootProject.name = "tienda-aurora-patterns"
-```
-
-Build Java 25 sin dependencias externas. Sealed classes, records y pattern matching son características del lenguaje/JDK, no requieren librerías.
-
-**Archivo:** `build.gradle.kts`
-
-```kotlin
-plugins {
-    java
-    application
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-group = "com.aurora"
-version = "1.0.0"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-application {
-    mainClass = "com.aurora.patterns.TiendaAuroraPatternsApp"
-}
-
-repositories {
-    mavenCentral()
-}
+tasks.test { useJUnitPlatform() }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -133,9 +79,11 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-`Pago` es una interfaz sellada. `sealed` indica que solo las clases listadas en `permits` pueden implementarla. Esto convierte la jerarquía en cerrada: el compilador conoce todos los casos posibles.
+#### Dominio
 
-**Archivo:** `src/main/java/com/aurora/patterns/dominio/Pago.java`
+#### `Pago.java`
+
+Interfaz sellada: solo los tipos permitidos pueden implementarla. Esto convierte la jerarquía en un conjunto cerrado, útil para `switch` exhaustivo.
 
 ```java
 package com.aurora.patterns.dominio;
@@ -148,9 +96,9 @@ public sealed interface Pago permits PagoTarjeta, PagoTransferencia, PagoEfectiv
 }
 ```
 
-`PagoTarjeta` es un record que implementa `Pago`. Un record es un portador inmutable de datos: el compilador genera constructor, accesores, `equals`, `hashCode` y `toString`. La validación en el constructor compacto protege invariantes como monto positivo y últimos 4 dígitos.
+#### `PagoTarjeta.java`, `PagoTransferencia.java`, `PagoEfectivo.java`
 
-**Archivo:** `src/main/java/com/aurora/patterns/dominio/PagoTarjeta.java`
+Records inmutables. Cada variante lleva solo los datos que necesita. `PagoEfectivo` valida que el recibido cubra el monto y expone `vuelto()`.
 
 ```java
 package com.aurora.patterns.dominio;
@@ -170,10 +118,6 @@ public record PagoTarjeta(String pedidoId, BigDecimal monto, String titular, Str
 }
 ```
 
-`PagoTransferencia` modela un pago pendiente de confirmación bancaria. Tenerlo como tipo separado evita campos opcionales confusos en una sola clase “Pago genérico”.
-
-**Archivo:** `src/main/java/com/aurora/patterns/dominio/PagoTransferencia.java`
-
 ```java
 package com.aurora.patterns.dominio;
 
@@ -190,10 +134,6 @@ public record PagoTransferencia(String pedidoId, BigDecimal monto, String banco,
     }
 }
 ```
-
-`PagoEfectivo` incluye `recibido` y calcula `vuelto()`. El modelo hace imposible representar efectivo recibido menor al monto porque el constructor lo rechaza.
-
-**Archivo:** `src/main/java/com/aurora/patterns/dominio/PagoEfectivo.java`
 
 ```java
 package com.aurora.patterns.dominio;
@@ -216,9 +156,9 @@ public record PagoEfectivo(String pedidoId, BigDecimal monto, BigDecimal recibid
 }
 ```
 
-`ResultadoPago` también es sellado. Modela el resultado como estados explícitos: aprobado, rechazado o pendiente. Es una alternativa más segura que devolver strings mágicos o códigos numéricos.
+#### `ResultadoPago.java`
 
-**Archivo:** `src/main/java/com/aurora/patterns/dominio/ResultadoPago.java`
+Otro sealed: el resultado también es un conjunto cerrado. Esto evita códigos mágicos y hace que el renderizado sea exhaustivo.
 
 ```java
 package com.aurora.patterns.dominio;
@@ -232,9 +172,9 @@ public sealed interface ResultadoPago permits ResultadoPago.Aprobado, ResultadoP
 }
 ```
 
-`ProcesadorPagos` usa switch con pattern matching sobre la jerarquía sellada. No hay `default`: si mañana agregas un nuevo tipo de `Pago` y lo declaras en `permits`, el compilador obligará a actualizar este switch. También usa record patterns y `_` para descartar componentes no usados.
+#### `ProcesadorPagos.java`
 
-**Archivo:** `src/main/java/com/aurora/patterns/servicio/ProcesadorPagos.java`
+Usa switch con record patterns. En transferencia y efectivo, `_` ignora componentes que no se usan, haciendo explícita la intención. El switch sobre `ResultadoPago` es exhaustivo: si agregas un nuevo resultado, el compilador obliga a manejarlo.
 
 ```java
 package com.aurora.patterns.servicio;
@@ -286,9 +226,7 @@ public final class ProcesadorPagos {
 }
 ```
 
-CLI de demostración. Procesa pagos, genera etiquetas de auditoría y muestra la igualdad/toString generados por un record.
-
-**Archivo:** `src/main/java/com/aurora/patterns/TiendaAuroraPatternsApp.java`
+#### `TiendaAuroraPatternsApp.java`
 
 ```java
 package com.aurora.patterns;
@@ -297,7 +235,6 @@ import com.aurora.patterns.dominio.Pago;
 import com.aurora.patterns.dominio.PagoEfectivo;
 import com.aurora.patterns.dominio.PagoTarjeta;
 import com.aurora.patterns.dominio.PagoTransferencia;
-import com.aurora.patterns.dominio.ResultadoPago;
 import com.aurora.patterns.servicio.ProcesadorPagos;
 
 import java.math.BigDecimal;
@@ -344,102 +281,27 @@ public final class TiendaAuroraPatternsApp {
 }
 ```
 
-## Ejecutar
+### Tema 1: sealed — jerarquías cerradas y exhaustividad · Intermedio · 40 min
 
-```bash
-gradle wrapper --gradle-version 9.9.1
-./gradlew -q build
-./gradlew -q run --args="demo"
-```
+Una clase o interfaz `sealed` restringe qué tipos pueden extenderla o implementarla. Se declara con `sealed` y `permits`, y los subtipos permitidos deben ser `final`, `sealed` o `non-sealed`. Esto crea una jerarquía cerrada: el compilador conoce todas las variantes posibles.
 
-```text
-== procesar ==
-OK PED-100 - Tarjeta ****4242 de Ana por 39.90
-PENDIENTE PED-101 - Transferencia en Banco Aurora por 79.90 en verificación
-OK PED-102 - Efectivo recibido, vuelto 30.00
-OK PED-103 - Efectivo exacto
-== auditoria ==
-tarjeta pedido=PED-100 ****4242
-transferencia pedido=PED-101 banco=Banco Aurora
-efectivo pedido=PED-102
-efectivo pedido=PED-103
-```
+La ventaja principal es la exhaustividad. En un `switch` sobre un sealed, el compilador puede verificar que cubriste todos los casos. Si mañana agregas `PagoCrypto` a `permits`, todos los switches exhaustivos sobre `Pago` fallarán al compilar hasta que los actualices. Ese fallo es bueno: te obliga a decidir.
 
-```bash
-./gradlew -q run --args="record"
-```
-
-```text
-equals=true
-toString=PagoTarjeta[pedidoId=PED-1, monto=10.00, titular=Ana, ultimos4=4242]
-```
-
-## Conceptos cubiertos
-
-### Tema 1: sealed — jerarquías cerradas y exhaustividad · Intermedio · 35 min
-
-Una jerarquía sellada declara sus subtipos permitidos. En `Pago`, la declaración es:
-
-```java
-public sealed interface Pago permits PagoTarjeta, PagoTransferencia, PagoEfectivo {
-    String pedidoId();
-    BigDecimal monto();
-}
-```
-
-`sealed` significa que no cualquier clase puede implementar `Pago`. Solo las permitidas. `permits` lista esos casos. Cada subtipo debe ser `final`, `sealed` o `non-sealed`; los records son implícitamente final, por eso encajan bien.
-
-La ventaja es el conocimiento en compilación. Cuando `ProcesadorPagos` hace `switch (pago)`, el compilador sabe que solo existen tres casos. Si mañana agregas `PagoCripto` en `permits`, el switch deja de ser exhaustivo y el compilador lo señala. Eso convierte un cambio de dominio en un error de compilación localizado, no en un bug olvidado en producción.
-
-Esto es distinto de una clase base abierta. Una jerarquía abierta permite extensiones desconocidas; es útil para plugins. Una jerarquía sellada es útil para dominios donde los casos son finitos y quieres exhaustividad. Pagos, resultados, eventos de dominio y estados de workflow suelen ser buenos candidatos.
+Usa `sealed` cuando el dominio tiene un conjunto cerrado de variantes conocidas. No lo uses cuando la extensión abierta es parte del diseño, como un plugin de terceros. `non-sealed` existe para abrir un punto específico de la jerarquía, pero debe ser una decisión consciente.
 
 ### Tema 2: Pattern matching exhaustivo y para instanceof · Intermedio · 40 min
 
-El pattern matching permite inspeccionar un valor y extraer sus partes con seguridad de tipos. En el método `procesar`, el switch no solo selecciona por tipo; también desestructura records:
+Pattern matching permite probar una forma y extraer datos en el mismo paso. `instanceof` con patrón (`if (valor instanceof PagoTarjeta(var pedidoId, _, _, var ultimos4))`) evita el casteo manual. El record pattern desestructura componentes por posición.
 
-```java
-return switch (pago) {
-    case PagoTarjeta(var pedidoId, var monto, var titular, var ultimos4) ->
-            new ResultadoPago.Aprobado(pedidoId,
-                    "Tarjeta ****" + ultimos4 + " de " + titular + " por " + monto);
-    case PagoTransferencia(var pedidoId, var monto, var banco, _) ->
-            new ResultadoPago.Pendiente(pedidoId,
-                    "Transferencia en " + banco + " por " + monto + " en verificación");
-    case PagoEfectivo efectivo when efectivo.vuelto().signum() > 0 ->
-            new ResultadoPago.Aprobado(efectivo.pedidoId(),
-                    "Efectivo recibido, vuelto " + efectivo.vuelto());
-    case PagoEfectivo(var pedidoId, _, _) ->
-            new ResultadoPago.Aprobado(pedidoId, "Efectivo exacto");
-};
-```
+En `switch`, el pattern matching se vuelve aún más potente: cada `case` puede ser un tipo, un record pattern, o incluir un `when` guard. El guard `case PagoEfectivo efectivo when efectivo.vuelto().signum() > 0` agrega una condición; debes asegurar que los casos sigan siendo exhaustivos y que el orden no oculte casos más específicos.
 
-Aquí hay varias cosas importantes. `case PagoTarjeta(...)` es un record pattern: extrae componentes directamente. `when` agrega una guardia para el caso de efectivo con vuelto. No hay `default` porque la jerarquía está sellada y todos los casos están cubiertos. Si quitas un caso, el código no compila.
-
-El pattern matching para `instanceof` aparece en `etiquetaAuditoria`. La forma antigua era:
-
-```java
-if (valor instanceof PagoTarjeta) {
-    PagoTarjeta tarjeta = (PagoTarjeta) valor;
-    ...
-}
-```
-
-La forma moderna elimina el casteo manual y hace visible el alcance de la variable de patrón. Además, puede desestructurar el record en el mismo lugar. Eso reduce ruido y evita errores de casteo.
+**Confusión común:** poner `default` en todo. En jerarquías sealed, `default` puede ocultar un caso nuevo que deberías manejar. Prefiere exhaustividad real cuando el modelo está cerrado.
 
 ### Tema 3: Unnamed variables y patterns (_, Java 22) · Intermedio · 30 min
 
-A veces necesitas aceptar una estructura pero no todos sus campos. Antes se usaban nombres como `ignored`, `unused` o `__`, que son ambiguos: ¿lo ignoraste a propósito o olvidaste usarlo? Java 22 introdujo `_` como unnamed pattern/variable para indicar explícitamente que el valor se descarta.
+`_` se usa como variable o patrón sin nombre cuando el valor es deliberadamente ignorado. En un record pattern, `PagoTransferencia(var pedidoId, var monto, var banco, _)` comunica que la referencia no importa en esa rama. Es mejor que llamar la variable `ignored` o `ref` y no usarla, porque el compilador y el lector entienden la intención.
 
-En `ProcesadorPagos` se ve en dos lugares:
-
-```java
-case PagoTransferencia(var pedidoId, var monto, var banco, _) -> ...
-case PagoEfectivo(var pedidoId, _, _) -> ...
-```
-
-En la transferencia, la referencia no se usa en ese mensaje; en el efectivo exacto, monto y recibido no se necesitan porque el caso ya está cubierto por la guardia anterior. `_` deja clara la intención: el componente existe, pero no importa en esta rama.
-
-Esto mejora la lectura y también ayuda al mantenimiento. Si alguien ve una variable nombrada `referencia` que nunca se usa, puede pensar que falta lógica. Si ve `_`, sabe que la omisión es deliberada. Es un detalle pequeño, pero en switches exhaustivos con record patterns hace el código más honesto.
+También sirve en lambdas, catch y asignaciones en contextos soportados. No lo uses para ocultar datos que sí deberían validarse. Ignorar es una decisión de diseño; si el componente es relevante para la regla, debe nombrarse y usarse.
 
 ## Verificación real
 
@@ -447,13 +309,13 @@ Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.
 
 ```bash
 ./gradlew -q test
-./gradlew -q run --args="demo"
+./gradlew -q run
 ```
 
-Resultados observados (resumen):
+Resultados observados:
 
 - `test`: 0 fallas.
-- `demo`: procesa pedidos con `switch`/pattern matching sobre pagos sellados y genera auditoría por tipo.
+- `run`: procesamiento de 4 pagos con resultado OK/PENDIENTE según variante, y auditoría con `_` ignorando componentes no usados.
 
 ## Errores comunes y diagnóstico
 
@@ -467,12 +329,12 @@ Resultados observados (resumen):
 
 ## Cierre
 
-Sealed classes, records y pattern matching se complementan. Los records modelan datos inmutables; las sealed interfaces modelan conjuntos cerrados de casos; el pattern matching permite procesarlos de forma segura y expresiva. Cuando el dominio tiene variantes finitas, esta combinación reduce estados inválidos y convierte muchos errores de mantenimiento en errores de compilación.
+Sealed types y pattern matching no son azúcar sintáctica: son herramientas de modelado. Permiten que el dominio exprese sus variantes reales y que el compilador detecte casos faltantes. El resultado es código más directo, con menos casteos defensivos y menos estados imposibles.
 
 ## Checklist
 
-- Uso `sealed` cuando el conjunto de subtipos es finito y quiero exhaustividad.
-- Uso records para datos inmutables con validación en el constructor compacto.
-- Prefiero switches exhaustivos sin `default` cuando la jerarquía sellada lo permite.
-- Uso pattern matching para `instanceof` y record patterns para evitar casteos manuales.
-- Uso `_` para marcar explícitamente componentes o variables descartadas.
+- [ ] Uso `sealed` cuando el conjunto de variantes está cerrado.
+- [ ] Uso records para variantes inmutables de datos.
+- [ ] Prefiero switch exhaustivo sobre sealed antes que `default` ciego.
+- [ ] Uso `_` solo para valores deliberadamente ignorados.
+- [ ] Valido invariantes en constructores compactos de records.
