@@ -1,6 +1,6 @@
 # Módulo 2: Colecciones y genéricos
 
-Un arreglo resuelve almacenamiento contiguo, pero falla cuando el dominio pide duplicados permitidos, unicidad, búsqueda por clave, ordenamiento o tipos seguros. Las colecciones y genéricos de Java son la base de casi todo código de negocio: repositorios en memoria, caches, índices, agrupaciones, DTOs tipados y APIs que no degradan a `Object`. Elegir mal la estructura genera bugs sutiles (duplicados, pérdida de entradas, orden no determinista) o costos innecesarios.
+En Tienda Aurora, las colecciones se usan para filtrar productos por categoría, agrupar pedidos por cliente y ordenar por precio. Un arreglo resuelve almacenamiento contiguo, pero falla cuando el dominio pide duplicados permitidos, unicidad, búsqueda por clave, ordenamiento o tipos seguros. Las colecciones y genéricos de Java son la base de casi todo código de negocio: repositorios en memoria, caches, índices, agrupaciones, DTOs tipados y APIs que no degradan a `Object`. Elegir mal la estructura genera bugs sutiles (duplicados, pérdida de entradas, orden no determinista) o costos innecesarios.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`.
 
