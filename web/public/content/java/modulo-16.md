@@ -10,14 +10,14 @@ Este módulo recorre el problema desde cero: primero el mapeo y el ciclo de vida
 
 ## Proyecto desde cero: `tienda-aurora-jpa`
 
-### Prerrequisitos
+## Prerrequisitos
 
 ```bash
 java -version
 gradle --version
 ```
 
-### Estructura
+## Estructura
 
 ```text
 tienda-aurora-jpa/
@@ -44,13 +44,13 @@ tienda-aurora-jpa/
         └── JpaAuroraTest.java
 ```
 
-### Cómo leer este módulo
+## Cómo leer este módulo
 
 No leas los archivos como un catálogo. Léelos como un flujo: configuración (`persistence.xml`, Gradle) → modelo (`dominio`) → consultas (`repositorio`) → transacciones/casos (`servicio`) → evidencia (`JpaAuroraTest`). Cada tema abajo vuelve a estos archivos y explica la decisión.
 
 ## Código completo
 
-### `settings.gradle.kts`
+#### `settings.gradle.kts`
 
 Define el nombre del build. En Gradle, `settings.gradle.kts` identifica el proyecto raíz y, en builds multi-módulo, incluye subproyectos.
 
@@ -58,7 +58,7 @@ Define el nombre del build. En Gradle, `settings.gradle.kts` identifica el proye
 rootProject.name = "tienda-aurora-jpa"
 ```
 
-### `build.gradle.kts`
+#### `build.gradle.kts`
 
 Configura Java 25, dependencias y pruebas. `hibernate-core` trae el motor ORM; `jakarta.persistence-api` define las interfaces JPA; `h2` aporta una base embebida para verificar el comportamiento localmente; JUnit 5 ejecuta las pruebas. `useJUnitPlatform()` es obligatorio para JUnit Jupiter.
 
@@ -106,7 +106,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 ```
 
-### `src/main/resources/META-INF/persistence.xml`
+#### `src/main/resources/META-INF/persistence.xml`
 
 Configura la unidad de persistencia `auroraPU`. JPA arranca leyendo este archivo desde `META-INF/persistence.xml` en el classpath. Aquí se registran entidades, proveedor, conexión JDBC y propiedades de Hibernate. `create-drop` es útil para tests locales porque recrea el esquema; en producción se reemplaza por migraciones versionadas.
 
@@ -135,7 +135,7 @@ Configura la unidad de persistencia `auroraPU`. JPA arranca leyendo este archivo
 </persistence>
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/Direccion.java`
+#### `src/main/java/com/aurora/jpa/dominio/Direccion.java`
 
 Entidad simple con identidad propia. Representa el lado destino de un OneToOne. El constructor protegido sin argumentos lo exige JPA/Hibernate para instanciar la entidad por reflexión.
 
@@ -177,7 +177,7 @@ public class Direccion {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/Cliente.java`
+#### `src/main/java/com/aurora/jpa/dominio/Cliente.java`
 
 Entidad dueña de la relación OneToOne con `Direccion`. `@JoinColumn(unique=true, nullable=false)` convierte la regla de dominio en restricción de base de datos. `FetchType.LAZY` evita cargar la dirección salvo que el caso de uso la necesite.
 
@@ -229,7 +229,7 @@ public class Cliente {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/Pedido.java`
+#### `src/main/java/com/aurora/jpa/dominio/Pedido.java`
 
 Agregado central. Modela ManyToOne hacia `Cliente`, OneToMany hacia líneas, versión optimista con `@Version` y callback `@PrePersist`. El campo `creadoEn` demuestra un hook del ciclo de vida.
 
@@ -309,7 +309,7 @@ public class Pedido {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
+#### `src/main/java/com/aurora/jpa/dominio/LineaPedido.java`
 
 Entidad intermedia para líneas de pedido. Lleva `sku` y `cantidad`. Es el patrón correcto cuando la relación tiene datos propios; ManyToMany puro no los representa bien.
 
@@ -359,7 +359,7 @@ public class LineaPedido {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/Pago.java`
+#### `src/main/java/com/aurora/jpa/dominio/Pago.java`
 
 Raíz de herencia JPA con `SINGLE_TABLE`. Toda la jerarquía se guarda en una tabla con `tipo_pago` como discriminador. Permite consultas polimórficas simples.
 
@@ -404,7 +404,7 @@ public abstract class Pago {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
+#### `src/main/java/com/aurora/jpa/dominio/PagoTarjeta.java`
 
 Subclase concreta de `Pago`. Aporta `ultimos4`; en SINGLE_TABLE esa columna existe en la tabla común.
 
@@ -436,7 +436,7 @@ public class PagoTarjeta extends Pago {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
+#### `src/main/java/com/aurora/jpa/dominio/PagoTransferencia.java`
 
 Subclase concreta de `Pago` para transferencias. Hibernate usa el discriminador para instanciar el tipo correcto al consultar por `Pago`.
 
@@ -468,7 +468,7 @@ public class PagoTransferencia extends Pago {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
+#### `src/main/java/com/aurora/jpa/repositorio/PedidoRepositorio.java`
 
 Capa de consultas. Contiene JPQL simple, JPQL con `join fetch`, Criteria dinámica y EntityGraph. Estas variantes son la base para comparar N+1, composición dinámica y planes de fetch.
 
@@ -541,7 +541,7 @@ public final class PedidoRepositorio {
 }
 ```
 
-### `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
+#### `src/main/java/com/aurora/jpa/servicio/PedidoServicio.java`
 
 Pequeño servicio transaccional. Maneja `EntityManager`, commit/rollback, seed, ciclo de vida y un escenario de bloqueo optimista con dos contextos de persistencia. Está deliberadamente explícito para que se vea el límite transaccional.
 
@@ -689,7 +689,7 @@ public final class PedidoServicio {
 }
 ```
 
-### `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
+#### `src/test/java/com/aurora/jpa/JpaAuroraTest.java`
 
 Pruebas verificadas con JUnit 5. Cubren restricción OneToOne, herencia, callback/ciclo de vida, Criteria, N+1 medido con estadísticas de Hibernate y `OptimisticLockException`.
 
