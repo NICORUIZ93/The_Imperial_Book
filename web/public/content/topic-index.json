@@ -4116,6 +4116,30 @@
   "java": {
     "0": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Código de ejemplo",
+        "fragment": "codigo-de-ejemplo"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Del código fuente a la JVM",
         "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },

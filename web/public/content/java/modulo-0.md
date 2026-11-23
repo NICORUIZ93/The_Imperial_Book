@@ -4,6 +4,95 @@ Tienda Aurora comienza como un monolito modular: catálogo y pedidos en memoria.
 
 **Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, Gradle 9.8.2. Los ejemplos Java puros se ejecutaron localmente.
 
+## Proyecto desde cero: tienda-aurora-fundamentos
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-fundamentos/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/
+            └── com/aurora/fundamentos/
+                └── Hola.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.fundamentos.Hola")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-fundamentos"
+```
+
+### Código de ejemplo
+
+**Archivo:** `src/main/java/com/aurora/fundamentos/Hola.java`
+
+```java
+package com.aurora.fundamentos;
+
+public class Hola {
+    public static void main(String[] args) {
+        System.out.println("Hola, Tienda Aurora");
+    }
+}
+```
+
+### Ejecutar
+
+```bash
+# Compilar
+./gradlew compileJava
+
+# Ejecutar
+./gradlew run
+
+# O directamente con javac/java
+mkdir -p out
+javac -d out src/main/java/com/aurora/fundamentos/Hola.java
+java -cp out com.aurora.fundamentos.Hola
+```
+
+Salida esperada:
+
+```text
+Hola, Tienda Aurora
+```
+
 ### Tema 1: Del código fuente a la JVM · Básico · 25 min
 
 ## Del código fuente a la JVM
