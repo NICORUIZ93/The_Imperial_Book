@@ -95,7 +95,7 @@ Checked exceptions
 
 **Cómo funciona por dentro.** El compilador verifica el flujo: si un método llama código que puede lanzar una checked exception, debe manejarla o declararla. Esto hace visible en la firma un fallo recuperable esperado.
 
-**Contrato/reglas.** `throws` documenta la posibilidad; `try-catch` la maneja. Capturar debe agregar valor: recuperar, traducir, reintentar con límite o registrar con contexto.
+**Reglas.** `throws` documenta la posibilidad; `try-catch` la maneja. Capturar debe agregar valor: recuperar, traducir, reintentar con límite o registrar con contexto.
 
 **Cuándo usar / cuándo no.** Úsala para fallos externos recuperables (I/O, red, SQL). No para validación de argumentos o bugs de programación.
 
