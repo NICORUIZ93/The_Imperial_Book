@@ -14,7 +14,7 @@ La programación orientada a objetos no es “usar clases”. Es distribuir resp
 
 El proyecto tiene cinco comandos reales: `catalogo` lista productos con su tipo y costo de envío, `reglas` muestra las reglas de descuento y los medios de pago, `diagnostico` comprueba invariantes y la semántica de los records, `cotizar` calcula un pedido completo y `comparar` enfrenta los medios de pago para el mismo pedido. Cada tema añade o explica una pieza de ese mismo código.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `--release 25` y se ejecutó; las salidas son transcripciones reales. La comprobación de constructores flexibles se hizo además con `--release 21`, que rechaza el código, y con `--release 25`, que lo acepta.
+**Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `--release 25` y se ejecutó; las salidas son transcripciones reales. La comprobación de constructores flexibles se hizo además con `--release 21`, que rechaza el código, y con `--release 25`, que lo acepta.
 
 ## Proyecto desde cero: tienda-aurora-poo
 
@@ -1924,7 +1924,24 @@ public ResultadoPrecio calcular(List<LineaPedido> lineas, Descuento descuento) {
 }
 
 public ResultadoPrecio calcular(List<LineaPedido> lineas, Descuento descuento, MedioPago medioPago) {
-    // ...
+    if (lineas == null || lineas.isEmpty()) {
+        throw new IllegalArgumentException("el pedido no tiene líneas");
+    }
+    if (descuento == null) {
+        throw new IllegalArgumentException("descuento obligatorio");
+    }
+    if (medioPago == null) {
+        throw new IllegalArgumentException("medio de pago obligatorio");
+    }
+
+    Dinero subtotal = sumarSubtotales(lineas);
+    Dinero conDescuento = descuento.aplicar(subtotal);
+    Dinero descuentoAplicado = subtotal.menos(conDescuento);
+    Dinero envio = mayorEnvio(lineas);
+    Dinero base = conDescuento.mas(envio);
+    Dinero recargo = medioPago.recargo(base);
+
+    return new ResultadoPrecio(subtotal, descuentoAplicado, envio, recargo, base.mas(recargo));
 }
 ```
 

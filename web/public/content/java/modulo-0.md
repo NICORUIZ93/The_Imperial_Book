@@ -12,7 +12,7 @@ Tienda Aurora arranca como una aplicación de consola que cotiza pedidos. No hay
 
 La aplicación que construimos en este módulo se llama `tienda-aurora-fundamentos` y tiene cuatro comandos reales: `catalogo` lista los productos con su stock, `cotizar` arma un pedido y emite el recibo, `interactivo` atiende a un cliente por teclado y `diagnostico` ejecuta una batería de comprobaciones sobre supuestos del lenguaje que afectan al dinero y a las fechas. Cada tema de este capítulo añade una pieza a ese mismo proyecto; no hay ejemplos sueltos que se tiran después. Al terminar tendrás una aplicación que compila con Gradle, se ejecuta desde la terminal y produce exactamente la salida que verás aquí.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. Todo el código de este módulo se compiló con `--release 25` y se ejecutó en ese entorno; las salidas que aparecen son transcripciones reales, no ilustraciones.
+**Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. Todo el código de este módulo se compiló con `--release 25` y se ejecutó en ese entorno; las salidas que aparecen son transcripciones reales, no ilustraciones.
 
 ## Proyecto desde cero: tienda-aurora-fundamentos
 

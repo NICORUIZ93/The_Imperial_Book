@@ -32,7 +32,7 @@ cd tienda-aurora-excepciones
 gradle wrapper --gradle-version 9.9.1
 ```
 
-**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
+**Entorno de referencia verificado (2026-11-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
 
 ## Estructura final
 
@@ -842,13 +842,51 @@ Desde la raíz de `tienda-aurora-excepciones`:
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
-Resultados observados:
+Desde la raíz del proyecto:
 
-- `./gradlew -q test`: BUILD SUCCESSFUL.
-- `importar --archivo productos.csv`: `Importados: 3`, `Rechazados: 2`, con rechazos por nombre vacío y precio inválido.
-- `auditoria`: muestra `ImportacionException` con causa `NoSuchFileException`, `StockInsuficienteException`, lectura por try-with-resources, excepción suprimida (`suprimidas: 1`), causa preservada (`NumberFormatException`) y propagación correcta.
+```bash
+cd /tmp/opencode/aurora-m3
+./gradlew -q test
+./gradlew -q run --args="importar --archivo productos.csv"
+./gradlew -q run --args="auditoria"
+```
+
+Resultados observados (salida literal, recortada donde se indica):
+
+```text
+Importados: 3
+Rechazados: 2
+  CAF-0001  Café Aurora         $12.50 stock=3
+  MOL-0003  Molino manual       $34.90 stock=1
+  FIL-0004  Filtros x100         $4.75 stock=10
+  RECHAZO línea 4 inválida: datos inválidos | contenido=BAD-0001;;8.00;2
+  RECHAZO línea 5 inválida: datos inválidos | contenido=TAZ-0002;Taza Aurora;precio;2
+```
+
+```text
+== checked ==
+ImportacionException
+causa: NoSuchFileException
+== unchecked ==
+StockInsuficienteException
+stock insuficiente para CAF-0001: disponible=3, solicitado=99
+== try-with-resources ==
+sku;nombre;precio;stock
+== suprimida ==
+recurso abierto
+principal: falló el cuerpo
+suprimidas: 1
+suprimida: falló el cierre
+== causa preservada ==
+cantidad inválida: 'x'
+causa: NumberFormatException
+== no tragar ==
+propagada: ImportacionException
+```
+
+`./gradlew -q test` terminó sin fallos. La salida confirma que la traducción de la checked exception conserva la causa, que el recurso se cierra con try-with-resources, que la excepción suprimida aparece con `suprimidas: 1` y que un `catch` que decide propagar no pierde el tipo original.
 
 ## Errores comunes y diagnóstico
 

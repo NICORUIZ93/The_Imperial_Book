@@ -14,7 +14,7 @@ Las colecciones de Java son estructuras de datos con contratos. Elegir una colec
 
 En este módulo construimos `tienda-aurora-colecciones`, una extensión de la tienda con catálogo indexado, cola de pedidos por prioridad, paginación genérica y una auditoría ejecutable que demuestra los contratos que más fallos causan en producción: `equals`/`hashCode`, claves mutables, borrado de tipos, comparadores y colas/pilas.
 
-**Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `--release 25` y se ejecutó; las salidas son transcripciones reales de `./gradlew -q run --args="..."`. La inspección de bytecode se hizo con `javap -private -s` del JDK 27 y el error de borrado de tipos se capturó con `javac` sobre un archivo de demostración aislado.
+**Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `--release 25` y se ejecutó; las salidas son transcripciones reales de `./gradlew -q run --args="..."`. La inspección de bytecode se hizo con `javap -private -s` del JDK 27 y el error de borrado de tipos se capturó con `javac` sobre un archivo de demostración aislado.
 
 ## Proyecto desde cero: tienda-aurora-colecciones
 

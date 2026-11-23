@@ -24,7 +24,7 @@ cd tienda-aurora-patterns
 gradle wrapper --gradle-version 9.9.1
 ```
 
-**Entorno de referencia verificado (2026-05-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
+**Entorno de referencia verificado (2026-11-23):** macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25.
 
 ## Código completo, archivo por archivo
 
@@ -299,17 +299,37 @@ También sirve en lambdas, catch y asignaciones en contextos soportados. No lo u
 
 ## Verificación real
 
-Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q test
 ./gradlew -q run
 ```
 
-Resultados observados:
+Desde la raíz del proyecto:
 
-- `test`: 0 fallas.
-- `run`: procesamiento de 4 pagos con resultado OK/PENDIENTE según variante, y auditoría con `_` ignorando componentes no usados.
+```bash
+cd /tmp/opencode/aurora-m7
+./gradlew -q test
+./gradlew -q run
+```
+
+Resultados observados (`./gradlew -q test` terminó sin fallos):
+
+```text
+== procesar ==
+OK PED-100 - Tarjeta ****4242 de Ana por 39.90
+PENDIENTE PED-101 - Transferencia en Banco Aurora por 79.90 en verificación
+OK PED-102 - Efectivo recibido, vuelto 30.00
+OK PED-103 - Efectivo exacto
+== auditoria ==
+tarjeta pedido=PED-100 ****4242
+transferencia pedido=PED-101 banco=Banco Aurora
+efectivo pedido=PED-102
+efectivo pedido=PED-103
+```
+
+Cada rama del `sealed Pago` aparece una vez en `procesar`, y el patrón `_` de `auditoria` absorbe los componentes que no aportan a ese reporte.
 
 ## Errores comunes y diagnóstico
 
