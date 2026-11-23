@@ -4224,6 +4224,26 @@
     ],
     "10": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "module-info.java y encapsulación fuerte",
         "fragment": "tema-1-module-info-java-y-encapsulacion-fuerte"
       },
@@ -4237,6 +4257,26 @@
       }
     ],
     "11": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Generaciones de memoria y recolectores",
         "fragment": "tema-1-generaciones-de-memoria-y-recolectores"
@@ -4255,6 +4295,26 @@
       }
     ],
     "12": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Builder — configuración paso a paso y validación",
         "fragment": "tema-1-builder-configuracion-paso-a-paso-y-validacion"
@@ -4282,6 +4342,26 @@
     ],
     "13": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Arquitectura por capas del proyecto integrador",
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
       },
@@ -4295,6 +4375,26 @@
       }
     ],
     "14": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Compartir memoria requiere orden y visibilidad",
         "fragment": "tema-1-compartir-memoria-requiere-orden-y-visibilidad"
@@ -4322,6 +4422,26 @@
     ],
     "15": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Maven avanzado",
         "fragment": "tema-1-maven-avanzado"
       },
@@ -4347,6 +4467,26 @@
       }
     ],
     "16": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
@@ -4382,6 +4522,26 @@
     ],
     "17": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },
@@ -4391,6 +4551,26 @@
       }
     ],
     "18": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "HttpClient, REST, timeouts y fallos",
         "fragment": "tema-1-httpclient-rest-timeouts-y-fallos"
@@ -4405,6 +4585,26 @@
       }
     ],
     "19": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Reflexión y anotaciones en tiempo de ejecución",
         "fragment": "tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion"
@@ -4482,6 +4682,26 @@
     ],
     "20": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
@@ -4536,6 +4756,26 @@
     ],
     "21": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
+      {
         "title": "Qué es la superficie pública de una API",
         "fragment": "tema-1-que-es-la-superficie-publica-de-una-api"
       },
@@ -4557,6 +4797,26 @@
       }
     ],
     "22": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Ejecutar",
+        "fragment": "ejecutar"
+      },
       {
         "title": "Copia defensiva, copia superficial y clone",
         "fragment": "tema-1-copia-defensiva-copia-superficial-y-clone"

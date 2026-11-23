@@ -8,6 +8,69 @@ Las aplicaciones modernas se integran por HTTP. Consumir una API parece simple h
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-java-m18
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-java-m18/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/java/
+            └── Main.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.java.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m18"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/java/**/*.java
+java -cp out com.aurora.java.Main
+```
+
 ### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
 **Caso guía.** consultar el estado de una guía en un servicio REST. Si la red tarda, el hilo no puede quedar colgado indefinidamente.

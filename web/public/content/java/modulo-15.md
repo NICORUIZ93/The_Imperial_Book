@@ -8,6 +8,69 @@ M8 y M9 dieron la base; este módulo la lleva al contexto profesional: Maven/Gra
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-java-m15
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-java-m15/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/java/
+            └── Main.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.java.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m15"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/java/**/*.java
+java -cp out com.aurora.java.Main
+```
+
 ### Tema 1: Maven avanzado · Intermedio · 40 min
 
 **Caso guía.** estandarizar versiones y plugins en un build empresarial.

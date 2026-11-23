@@ -26,6 +26,69 @@ java -cp ".:h2.jar" Archivo
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-java-m17
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-java-m17/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/java/
+            └── Main.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.java.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m17"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/java/**/*.java
+java -cp out com.aurora.java.Main
+```
+
 ### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
 
 **Caso guía.** un servicio interno debe registrar guías de envío y consultarlas por ID. No puede permitir inyección SQL, no debe filtrar `ResultSet` a la capa de negocio y debe cerrar recursos siempre, incluso ante errores.

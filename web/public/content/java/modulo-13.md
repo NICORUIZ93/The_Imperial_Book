@@ -8,6 +8,69 @@ Los módulos anteriores enseñaron piezas sueltas: POO, colecciones, errores, st
 
 ## Aprende construyendo
 
+## Proyecto desde cero: tienda-aurora-java-m13
+
+### Prerrequisitos
+
+```bash
+java -version    # JDK 25+
+gradle --version # Gradle 9.x
+```
+
+### Estructura del proyecto
+
+```text
+tienda-aurora-java-m13/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+    └── main/
+        └── java/com/aurora/java/
+            └── Main.java
+```
+
+### build.gradle.kts
+
+```kotlin
+plugins {
+    java
+    application
+}
+
+group = "com.aurora"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+application {
+    mainClass.set("com.aurora.java.Main")
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+### settings.gradle.kts
+
+```kotlin
+rootProject.name = "tienda-aurora-java-m13"
+```
+
+### Ejecutar
+
+```bash
+./gradlew run
+# O directamente:
+mkdir -p out
+javac -d out src/main/java/com/aurora/java/**/*.java
+java -cp out com.aurora.java.Main
+```
+
 ### Tema 1: Arquitectura por capas del proyecto integrador · Intermedio · 40 min
 
 **Caso guía.** un servicio de registro de guías. La UI/CLI no debe hablar directo con persistencia; el dominio no debe conocer detalles de consola.
