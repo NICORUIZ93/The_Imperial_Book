@@ -4258,6 +4258,26 @@
     ],
     "13": [
       {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "1. Crear base",
+        "fragment": "1-crear-base"
+      },
+      {
+        "title": "2. Estructura",
+        "fragment": "2-estructura"
+      },
+      {
+        "title": "3. Código desde cero",
+        "fragment": "3-codigo-desde-cero"
+      },
+      {
+        "title": "4. Ejecutar",
+        "fragment": "4-ejecutar"
+      },
+      {
         "title": "Arquitectura por capas del proyecto integrador",
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
       },
