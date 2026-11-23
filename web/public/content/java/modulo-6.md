@@ -134,7 +134,7 @@ ObjectMapper, `@JsonProperty`, fechas
 
 **Definición.** Jackson es una librería de serialización/deserialización JSON. `ObjectMapper` convierte objetos Java ↔ JSON; anotaciones controlan nombres, inclusión y formato.
 
-**Contrato/reglas.** Para POJOs, Jackson necesita constructor/propiedades accesibles o configuración. Fechas Java Time requieren `jackson-datatype-jsr310` y `findAndAddModules()`/registro de módulo. Fallos de mapeo lanzan excepciones (`JsonProcessingException` y subtipos).
+**Reglas.** Para POJOs, Jackson necesita constructor/propiedades accesibles o configuración. Fechas Java Time requieren `jackson-datatype-jsr310` y `findAndAddModules()`/registro de módulo. Fallos de mapeo lanzan excepciones (`JsonProcessingException` y subtipos).
 
 ```mermaid
 flowchart LR

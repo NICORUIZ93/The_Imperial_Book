@@ -139,7 +139,7 @@ MDC (Mapped Diagnostic Context)
 
 **Definición.** MDC es un mapa de contexto asociado al hilo actual (o propagado) para enriquecer logs con datos como `requestId`, `userId`, `orderId`.
 
-**Contrato/reglas.** Poner valores con `MDC.put`, limpiar con `MDC.remove` o `MDC.clear` en `finally`. En pools/async, propagar contexto explícitamente.
+**Reglas.** Poner valores con `MDC.put`, limpiar con `MDC.remove` o `MDC.clear` en `finally`. En pools/async, propagar contexto explícitamente.
 
 ```mermaid
 sequenceDiagram

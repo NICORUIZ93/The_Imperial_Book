@@ -128,7 +128,7 @@ java DemoStream
 
 **Definición.** `filter` selecciona elementos por predicado; `map` transforma; `reduce` combina a un valor; `collect` materializa en una estructura o resumen.
 
-**Contrato/reglas.** Las lambdas deben ser no interferentes y preferiblemente sin estado. `reduce` necesita identidad y operador asociativo para ser correcto, especialmente en paralelo.
+**Reglas.** Las lambdas deben ser no interferentes y preferiblemente sin estado. `reduce` necesita identidad y operador asociativo para ser correcto, especialmente en paralelo.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 

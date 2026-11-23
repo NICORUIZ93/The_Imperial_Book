@@ -79,7 +79,7 @@ HttpClient, request/response, timeouts
 
 **Definición.** `HttpClient` (Java 11+) es el cliente HTTP estándar. `HttpRequest` define URI, método, headers y body; `HttpResponse` expone status, headers y body.
 
-**Contrato/reglas.** Configura timeout de conexión y de request. Maneja códigos 2xx/4xx/5xx explícitamente. Reintenta solo operaciones idempotentes y con backoff.
+**Reglas.** Configura timeout de conexión y de request. Maneja códigos 2xx/4xx/5xx explícitamente. Reintenta solo operaciones idempotentes y con backoff.
 
 ```mermaid
 sequenceDiagram

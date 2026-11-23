@@ -276,7 +276,7 @@ java DemoRace
 
 **Definición.** API que trata subtareas concurrentes como una unidad con alcance léxico: se abren en un bloque, se hacen fork/join y se cierran juntas.
 
-**Contrato/reglas.** Requiere `--enable-preview` en JDK 27 actual (verificar versión). El scope define política de fallo/cancelación. Evita “fire and forget” accidental.
+**Reglas.** Requiere `--enable-preview` en JDK 27 actual (verificar versión). El scope define política de fallo/cancelación. Evita “fire and forget” accidental.
 
 **Ejemplo mínimo enfocado (ejecutable, JDK 27 preview).**
 
