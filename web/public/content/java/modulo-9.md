@@ -23,6 +23,15 @@ java -version
 gradle --version
 ```
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-java-m9/src/main/java/com/aurora/testing/{dominio,servicio}
+mkdir -p tienda-aurora-java-m9/src/test/java/com/aurora/testing
+cd tienda-aurora-java-m9
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura del proyecto
 
 ```text

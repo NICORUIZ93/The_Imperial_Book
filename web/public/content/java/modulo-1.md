@@ -53,6 +53,14 @@ Gradle 9.9.1
 ------------------------------------------------------------
 ```
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-poo/src/main/java/com/aurora/poo/{dominio,catalogo,descuento,pago,servicio}
+cd tienda-aurora-poo
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura del proyecto
 
 ```text

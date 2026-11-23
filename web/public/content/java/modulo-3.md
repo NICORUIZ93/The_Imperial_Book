@@ -32,6 +32,14 @@ javac -version
 gradle --version
 ```
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-excepciones/src/main/java/com/aurora/excepciones/{dominio,importacion,servicio}
+cd tienda-aurora-excepciones
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura del proyecto
 
 ```text

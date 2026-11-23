@@ -30,6 +30,15 @@ gradle --version
 
 Necesitas JDK 25 o superior. Los Gatherers usados aquí (`Gatherers.windowFixed`) están disponibles desde Java 24; el entorno de referencia ejecutó con JDK 27.
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-java-m4/src/main/java/com/aurora/colecciones/{dominio,servicio}
+mkdir -p tienda-aurora-java-m4/src/test/java/com/aurora/colecciones
+cd tienda-aurora-java-m4
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura del proyecto
 
 ```text

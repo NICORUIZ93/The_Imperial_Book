@@ -27,6 +27,15 @@ gradle --version
 
 Necesitas JDK 25 o superior. Para ejecutar los ejemplos tal como están, usa un JDK que soporte las APIs preview usadas en el código.
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-java-m5/src/main/java/com/aurora/concurrency/{dominio,servicio}
+mkdir -p tienda-aurora-java-m5/src/test/java/com/aurora/concurrency
+cd tienda-aurora-java-m5
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura del proyecto
 
 ```text

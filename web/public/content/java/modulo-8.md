@@ -32,6 +32,16 @@ gradle --version
 mvn -v
 ```
 
+## Bootstrap
+
+```bash
+mkdir -p tienda-aurora-build/core/src/main/java/com/aurora/build/core
+mkdir -p tienda-aurora-build/core/src/test/java/com/aurora/build/core
+mkdir -p tienda-aurora-build/api/src/main/java/com/aurora/build/api
+cd tienda-aurora-build
+gradle wrapper --gradle-version 9.9.1
+```
+
 ## Estructura Gradle
 
 ```text
