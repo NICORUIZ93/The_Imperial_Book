@@ -1,217 +1,278 @@
-# Módulo 21: Evolución de API y compatibilidad
+# Módulo 21: APIs públicas, compatibilidad y evolución
 
-Publicar una librería o módulo interno compartido crea una promesa: otros códigos dependen de tu superficie pública. Cambiarla sin criterio rompe compilaciones, binarios o comportamiento. Este módulo trata la evolución de APIs con compatibilidad fuente/binaria, deprecación, generics/erasure y verificación en build.
+Cuando publicas una librería o un módulo interno que usan otros equipos, cada clase pública, método, firma y comportamiento observable se vuelve un contrato. Cambiarlo puede compilar en tu repo y aun así romper a quienes dependen de tu artefacto. Ese tipo de rotura es caro porque ocurre lejos de tu cambio: en el build de otro equipo, en runtime, o sutilmente en la semántica.
 
-**Contexto Tienda Aurora.** Este módulo aporta bases para Tienda Aurora: los conceptos aquí se aplican en el monolito modular y luego en los microservicios.
+En este módulo vas a construir `tienda-aurora-java-m21`, un proyecto multi-módulo con `api-v1`, `api-v2` y `app`. La idea es ver la evolución de una API pequeña: qué se considera superficie pública, la diferencia entre compatibilidad binaria y de fuente, cómo usar `default` y `@Deprecated`, por qué el borrado de genéricos genera bridge methods, y cómo verificar compatibilidad con pruebas y herramientas.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
-
-## Aprende construyendo
-
-## Proyecto desde cero: tienda-aurora-java-m21
-
-## Prerrequisitos
+## Prerrequisitos y bootstrap
 
 ```bash
-java -version    # JDK 25+
-gradle --version # Gradle 9.x
+java -version
+gradle --version
+mkdir -p tienda-aurora-java-m21/api-v1/src/main/java/com/aurora/api
+mkdir -p tienda-aurora-java-m21/api-v2/src/main/java/com/aurora/api
+mkdir -p tienda-aurora-java-m21/app/src/main/java/com/aurora/app
+mkdir -p tienda-aurora-java-m21/app/src/test/java/com/aurora/app
+cd tienda-aurora-java-m21
+gradle wrapper --gradle-version 9.9.1
 ```
 
-## Estructura del proyecto
+## Build desde cero
 
-```text
-tienda-aurora-java-m21/
-├── build.gradle.kts
-├── settings.gradle.kts
-└── src/
-    └── main/
-        └── java/com/aurora/java/
-            └── Main.java
-```
-
-## build.gradle.kts
-
-```kotlin
-plugins {
-    java
-    application
-}
-
-group = "com.aurora"
-version = "1.0.0"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-application {
-    mainClass.set("com.aurora.java.Main")
-}
-
-repositories {
-    mavenCentral()
-}
-```
-
-## settings.gradle.kts
+#### `settings.gradle.kts`
 
 ```kotlin
 rootProject.name = "tienda-aurora-java-m21"
+include("api-v1", "api-v2", "app")
 ```
 
-## Ejecutar
+#### `build.gradle.kts`
 
-```bash
-./gradlew run
-# O directamente:
-mkdir -p out
-javac -d out src/main/java/com/aurora/java/**/*.java
-java -cp out com.aurora.java.Main
+```kotlin
+plugins { java }
+allprojects { group = "com.aurora"; version = "1.0.0"; repositories { mavenCentral() } }
+subprojects {
+    apply(plugin = "java")
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-Xlint:all","-Xlint:-processing","-Werror"))
+    }
+}
+project(":app") {
+    dependencies {
+        implementation(project(":api-v2"))
+        testImplementation(platform("org.junit:junit-bom:5.13.4"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
+    tasks.test { useJUnitPlatform(); testLogging { events("passed","skipped","failed") } }
+}
 ```
 
-### Tema 1: Qué es la superficie pública de una API · Básico · 40 min
+`api-v1` y `api-v2` representan la evolución del contrato. `app` consume `api-v2`; los tests fijan expectativas de compatibilidad.
 
-**Caso guía.** una librería expone `public` y otros equipos la usan. Cualquier cambio en esa superficie tiene costo.
+### Tema 1: Qué es la superficie pública de una API · Básico · 35 min
 
-Superficie pública
+La superficie pública de una API es todo lo que un consumidor externo puede usar o observar y, por lo tanto, todo aquello que no puedes cambiar libremente sin evaluar impacto. No se limita a los nombres de clases públicas. Incluye firmas de métodos y constructores, tipos de parámetros y retornos, excepciones lanzadas o declaradas, constantes públicas, jerarquías de herencia, comportamiento observable, precondiciones/postcondiciones, reglas de nullabilidad, formato de datos expuestos y semántica documentada.
 
-**Definición.** La superficie pública incluye tipos, métodos, campos, constructores, firmas, excepciones declaradas, comportamiento observable y semántica documentada accesibles por consumidores.
+Esta definición importa porque muchos equipos creen que "API pública" es solo `public class`. En realidad, un cambio en un mensaje de excepción parseado por consumidores, un orden de iteración documentado, o una validación más estricta puede romper clientes. Por eso hay que distinguir entre detalle interno accidentalmente visible y contrato deliberado. Lo interno puede cambiar con libertad; lo público requiere estrategia de evolución.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+En `api-v1` definimos una superficie mínima:
 
-```bash
-mkdir -p java-m21-api
-cd java-m21-api
-```
-
-Crea el archivo `Api.java`:
+#### `api-v1/src/main/java/com/aurora/api/Repositorio.java`
 
 ```java
-public class Api { public static String greet(String name){ return "Hi " + name; } }
+package com.aurora.api;
+
+public interface Repositorio<T> {
+    T porId(String id);
+}
 ```
 
-Crea el archivo `Main.java`:
+#### `api-v1/src/main/java/com/aurora/api/ServicioEnvio.java`
 
 ```java
-public class Main { public static void main(String[] args){ System.out.println(Api.greet("Ada")); } }
+package com.aurora.api;
+
+public class ServicioEnvio {
+    public String estado(String id) { return "PENDIENTE:" + id; }
+}
 ```
 
-```bash
-javac Api.java Main.java
-java Main
-```
-
-**Error común.** Hacer `public` por conveniencia. Corrección: minimizar superficie; “public” es un compromiso.
-
-**Verificación (JDK 27, 2026-05-22).** `Hi Ada`.
+Aquí la superficie pública es: interfaz `Repositorio`, su método `porId`, la clase `ServicioEnvio` y su método `estado(String)`. Si mañana cambias `estado(String)` por `estado(String, boolean)` sin mantener la firma anterior, rompes clientes.
 
 ### Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min
 
-**Caso guía.** recompilar clientes funciona, pero clientes ya compilados fallan; o al revés.
+Compatibilidad de fuente significa que el código cliente compila nuevamente contra la nueva versión. Compatibilidad binaria significa que artefactos ya compilados —JARs, clases— siguen enlazando y ejecutando sin recompilar. Pueden fallar de formas distintas.
 
-Source vs binary compatibility
+Por ejemplo, agregar una sobrecarga puede ser compatible de fuente en muchos casos, pero hay casos donde afecta resolución de métodos. Quitar un método rompe ambas. Cambiar un tipo de retorno puede romper binario aunque el fuente se adapte. Renombrar un método rompe ambos. Agregar un `default` a una interfaz suele ser compatible binaria y de fuente para implementadores, pero tiene matices con herencia múltiple de interfaces.
 
-**Definición.** Compatibilidad de fuente: el código cliente recompila. Compatibilidad binaria: artefactos ya compilados siguen enlazando/ejecutando sin recompilar.
+La razón práctica: en ecosistemas con dependencias transitivas, no todos recompilan al mismo tiempo. Una librería usada por plugins, agentes o aplicaciones empaquetadas puede requerir compatibilidad binaria. Por eso no basta con "mi proyecto compila".
 
-**Diagrama (diagram-design, estático):** [Compatibilidad: fuente vs binaria](/visuals/temas/java/modulo-21-compatibilidad.html)
-
-Lectura: compatibilidad binaria afecta bytecode ya compilado; compatibilidad de fuente afecta recompilar. Evalúa ambas antes de publicar un cambio.
-
-**Ejemplo mínimo (conceptual ejecutable).** Agregar método con default en interfaz suele ser binario compatible; cambiar firma rompe ambos.
-
-**Error común.** Asumir “si compila mi repo, no rompí nada”. Corrección: pruebas de compatibilidad binaria para librerías.
+En el módulo, `api-v2` mantiene `estado(String)` y agrega `estado(String, boolean)`. Un cliente compilado contra v1 puede seguir llamando `estado(String)` si el bytecode de esa firma sigue existiendo.
 
 ### Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min
 
-**Caso guía.** agregar capacidad a una interfaz sin obligar a todos a implementar.
+Evolucionar una API pública es gestionar el cambio en el tiempo. Dos herramientas comunes son los métodos `default` en interfaces y la deprecación.
 
-`default`, `@Deprecated`, `forRemoval`
+Un método `default` permite agregar comportamiento a una interfaz sin obligar a todas las implementaciones existentes a recompilarse y modificar su código. Antes de Java 8, agregar un método a una interfaz rompía implementadores. Con `default`, la interfaz provee implementación por defecto. Debe usarse con cuidado: el default tiene que ser semánticamente correcto para implementaciones existentes, y puede generar conflictos de herencia múltiple (`implements A, B` con el mismo default).
 
-**Definición.** Un método `default` en interfaz provee implementación. `@Deprecated` señala obsolescencia; `forRemoval` indica intención de retiro futuro.
+`@Deprecated` marca un elemento como obsoleto. No lo elimina; avisa. La buena deprecación incluye desde qué versión (`since`), si está planeado para retiro (`forRemoval`), y qué alternativa usar en Javadoc. Deprecar sin camino de migración solo genera ruido. Retirar requiere un ciclo: deprecar, dar tiempo, comunicar, retirar en versión mayor.
 
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m21-default
-cd java-m21-default
-```
-
-Crea el archivo `DemoDefault.java`:
+#### `api-v2/src/main/java/com/aurora/api/Repositorio.java`
 
 ```java
-interface Greeting { String hi(); default String hiLoud(){ return hi().toUpperCase(); } }
-class G implements Greeting { public String hi(){ return "hola"; } }
-public class DemoDefault { public static void main(String[] args){ System.out.println(new G().hiLoud()); } }
+package com.aurora.api;
+
+public interface Repositorio<T> {
+    T porId(String id);
+    default String tipo() { return "generico"; } // método default: evolución compatible
+}
 ```
 
-```bash
-javac DemoDefault.java
-java DemoDefault
+#### `api-v2/src/main/java/com/aurora/api/ServicioEnvio.java`
+
+```java
+package com.aurora.api;
+
+public class ServicioEnvio {
+    /** @deprecated Use {@link #estado(String, boolean)}. Se mantiene para compatibilidad binaria/fuente. */
+    @Deprecated(since = "2.0", forRemoval = false)
+    public String estado(String id) { return estado(id, false); }
+
+    public String estado(String id, boolean detallado) {
+        return detallado ? "PENDIENTE:" + id + ":detalle" : "PENDIENTE:" + id;
+    }
+}
 ```
 
-**Error común.** Deprecar sin alternativa ni plan. Corrección: documentar reemplazo, versión y timeline.
-
-**Verificación (JDK 27, 2026-05-22).** `HOLA`.
+La firma antigua sigue existiendo. Eso preserva compatibilidad. El nuevo método cubre la necesidad nueva. `forRemoval=false` indica que no hay retiro inmediato; en una versión mayor futura podría pasar a `true`.
 
 ### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
 
 Cuando escribes código con genéricos, el compilador usa los tipos como `String` o `Integer` para verificar errores en tiempo de compilación. Pero al generar el bytecode, Java aplica *type erasure*: borra los parámetros genéricos y los reemplaza por sus límites (normalmente `Object`) o por el tipo concreto indicado. Esto existe por compatibilidad con código Java anterior a los genéricos.
 
-El problema aparece en la superficie pública cuando una subclase concreta sobrescribe un método genérico. Después del borrado, la firma del método en la clase padre puede quedar como `Object get()`, mientras que la subclase implementa `String get()`. Para que el polimorfismo siga funcionando —que una llamada a través de la referencia base ejecute el método correcto— el compilador genera un **método puente (bridge method)**. Ese método puente tiene la firma borrada (`Object get()`), es sintético, y dentro delega al método concreto (`String get()`), haciendo el cast necesario.
+El problema aparece en la superficie pública cuando una subclase concreta sobrescribe un método genérico. Después del borrado, la firma del método en la clase padre puede quedar como `Object porId(String)`, mientras que la subclase implementa `String porId(String)`. Para que el polimorfismo siga funcionando —que una llamada a través de la referencia base ejecute el método correcto— el compilador genera un **método puente (bridge method)**. Ese método puente tiene la firma borrada, es sintético, y dentro delega al método concreto, haciendo el cast necesario.
 
 Esto importa en APIs públicas porque la presencia de bridge methods afecta reflexión, generación de proxies, frameworks que inspeccionan métodos declarados, y verificadores de compatibilidad binaria. Cambiar tipos genéricos en una clase o interfaz pública puede agregar, quitar o alterar bridge methods, rompiendo consumidores ya compilados aunque el código fuente "parezca" igual.
 
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p java-m21-bridge
-cd java-m21-bridge
-```
-
-Crea el archivo `DemoBridge.java`:
+#### `api-v2/src/main/java/com/aurora/api/RepositorioTexto.java`
 
 ```java
-class Box<T> { T get(){ return null; } }
-class SBox extends Box<String> { @Override String get(){ return "s"; } }
-public class DemoBridge {
-  public static void main(String[] args) {
-    for (var m : SBox.class.getDeclaredMethods()) System.out.println(m.getName());
-  }
+package com.aurora.api;
+
+public class RepositorioTexto implements Repositorio<String> {
+    @Override
+    public String porId(String id) {
+        return "TXT:" + id;
+    }
 }
 ```
 
-```bash
-javac DemoBridge.java
-java DemoBridge
+El test verifica el bridge method con reflexión:
+
+```java
+boolean hayBridge = Arrays.stream(RepositorioTexto.class.getDeclaredMethods())
+        .anyMatch(m -> m.getName().equals("porId") && m.isBridge());
+assertTrue(hayBridge, "se espera bridge method por erasure");
 ```
 
-**Error común.** Cambiar tipos genéricos en API pública sin analizar erasure. Corrección: pruebas de compatibilidad y conocimiento de firmas borradas.
+En la ejecución verificada, ese test pasó. Es evidencia real de que el compilador generó el método sintético.
 
-**Verificación (JDK 27, 2026-05-22).** Salida incluye `get` (puede aparecer método puente según compilador; observar nombres).
+### Tema 5: Verificar la compatibilidad en el build, no de memoria · Intermedio · 40 min
 
-### Tema 5: Verificar la compatibilidad en el build · Avanzado · 45 min
+La compatibilidad no se “recuerda”, se verifica. El mínimo verificable es tener tests que ejerciten la firma antigua, la nueva y los casos de evolución. En equipos con librerías publicadas, se suman herramientas como japicmp o Revapi, que comparan dos versiones de JAR y reportan cambios binarios/fuente incompatibles.
 
-**Caso guía.** impedir que un PR rompa API accidentalmente.
+En este módulo la verificación es ejecutable con JUnit: se llama al método deprecado, se usa el `default` method, y se inspecciona el bridge method. En un pipeline real, agregarías japicmp/Revapi como tarea Gradle/Maven que falle el build ante rupturas no autorizadas.
 
-Herramientas de compatibilidad
+#### `app/src/main/java/com/aurora/app/App.java`
 
-**Definición.** Herramientas como japicmp/Revapi comparan versiones de API y fallan el build ante incompatibilidades.
+```java
+package com.aurora.app;
 
-**Ejemplo mínimo (nota operativa).** En Maven, configurar plugin japicmp entre versión base y actual.
+import com.aurora.api.Repositorio;
+import com.aurora.api.RepositorioTexto;
+import com.aurora.api.ServicioEnvio;
 
-**Error común.** Depender solo de revisión humana. Corrección: gate automático en CI para librerías compartidas.
+public final class App {
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
+        ServicioEnvio s = new ServicioEnvio();
+        System.out.println("LEGACY=" + s.estado("A1"));
+        System.out.println("NUEVO=" + s.estado("A1", true));
+        Repositorio<String> repo = new RepositorioTexto();
+        System.out.println("REPO=" + repo.porId("A1"));
+        System.out.println("TIPO=" + repo.tipo());
+    }
+}
+```
 
-**Nota de verificación.** La ejecución requiere configurar versiones base/publicadas; se documenta el gate, no se finge salida.
+#### `app/src/test/java/com/aurora/app/ApiCompatTest.java`
 
-## Cierre
+```java
+package com.aurora.app;
 
-Evolucionar una API es gestión de contratos. Minimiza superficie, versiona con disciplina y automatiza verificación.
+import com.aurora.api.Repositorio;
+import com.aurora.api.RepositorioTexto;
+import com.aurora.api.ServicioEnvio;
+import org.junit.jupiter.api.Test;
 
-## Checklist
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-- Distingo compatibilidad fuente y binaria.
-- Uso `default`/deprecación con plan.
-- Entiendo erasure/bridge en APIs públicas.
-- Automatizo chequeo de compatibilidad.
+import static org.junit.jupiter.api.Assertions.*;
+
+class ApiCompatTest {
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void metodoLegacySigueFuncionando() {
+        ServicioEnvio s = new ServicioEnvio();
+        assertEquals("PENDIENTE:A1", s.estado("A1"));
+        assertEquals("PENDIENTE:A1:detalle", s.estado("A1", true));
+    }
+
+    @Test
+    void defaultMethodNoRompeImplementaciones() {
+        Repositorio<String> repo = new RepositorioTexto();
+        assertEquals("TXT:A1", repo.porId("A1"));
+        assertEquals("generico", repo.tipo());
+    }
+
+    @Test
+    void bridgeMethodExistePorErasure() {
+        Set<String> nombres = Arrays.stream(RepositorioTexto.class.getDeclaredMethods())
+                .map(Method::getName)
+                .collect(Collectors.toSet());
+        assertTrue(nombres.contains("porId"));
+        boolean hayBridge = Arrays.stream(RepositorioTexto.class.getDeclaredMethods())
+                .anyMatch(m -> m.getName().equals("porId") && m.isBridge());
+        assertTrue(hayBridge, "se espera bridge method por erasure");
+    }
+}
+```
+
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m21` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+
+```bash
+./gradlew -q test
+./gradlew -q :app:classes
+java -cp app/build/classes/java/main:api-v2/build/classes/java/main com.aurora.app.App
+```
+
+`./gradlew -q test`: **3 tests, 0 fallas**.
+
+Salida real de `App`:
+
+```text
+LEGACY=PENDIENTE:A1
+NUEVO=PENDIENTE:A1:detalle
+REPO=TXT:A1
+TIPO=generico
+```
+
+## Errores comunes y diagnóstico
+
+| Síntoma | Causa probable | Diagnóstico | Corrección |
+|---|---|---|---|
+| `NoSuchMethodError` en runtime | Se eliminó/cambió firma usada por binarios ya compilados | Revisar cambios de firma; ejecutar japicmp | Mantener sobrecarga antigua, deprecar, retirar en mayor |
+| Código cliente no compila tras actualizar | Ruptura de fuente | Compilar cliente contra nueva versión | Documentar migración; ofrecer compatibilidad temporal |
+| Conflicto de `default` methods | Dos interfaces proveen mismo default | Error de compilación en implementador | Sobrescribir explícitamente en la clase implementadora |
+| Framework falla al inspeccionar métodos | Bridge/synthetic methods inesperados | Inspección por reflexión | Filtrar `isBridge()`/`isSynthetic()` según el caso |
+| Deprecación ignorada | Sin mensaje ni alternativa | Revisar Javadoc/warnings | `@Deprecated(since, forRemoval)` + Javadoc con reemplazo |
+
+## Checklist de cierre
+
+- [ ] Puedo identificar la superficie pública real de un módulo.
+- [ ] Distingo compatibilidad binaria de fuente.
+- [ ] Sé usar `default` y `@Deprecated` con criterio.
+- [ ] Entiendo por qué el erasure genera bridge methods.
+- [ ] Verifico compatibilidad con tests/herramientas, no de memoria.
+
+Siguiente paso natural: **Módulo 22 — El objeto por dentro: copia, enums y tipos anidados**, donde se baja al comportamiento real de objetos, copia, enums y clases anidadas.
