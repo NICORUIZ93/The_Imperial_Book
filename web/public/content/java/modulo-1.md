@@ -1,6 +1,6 @@
 # Módulo 1: Programación orientada a objetos
 
-Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
+Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico. En Tienda Aurora, los conceptos de este módulo se aplican para modelar `Producto`, `Pedido`, `Cliente` y `Dinero` como tipos con invariantes claras. El enfoque es cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
 
 **Entorno de referencia verificado (2026-11-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`, macOS/Linux shell compatible. Los ejemplos son Java puro, sin Maven/Gradle.
 
@@ -84,7 +84,7 @@ Clases
 
 **Definición.** Una clase es un tipo de referencia que define la estructura (campos) y el comportamiento (métodos/constructores) de sus instancias.
 
-**Cómo funciona por dentro.** La clase es la plantilla/tipo en tiempo de compilación y de carga. Define qué campos tendrá cada objeto, qué métodos puede invocar y qué invariantes debe preservar. La JVM usa la definición cargada para crear instancias con el layout esperado.
+ La clase es la plantilla/tipo en tiempo de compilación y de carga. Define qué campos tendrá cada objeto, qué métodos puede invocar y qué invariantes debe preservar. La JVM usa la definición cargada para crear instancias con el layout esperado.
 
 ```mermaid
 classDiagram
@@ -137,7 +137,7 @@ Objetos
 
 **Definición.** Un objeto es una instancia concreta de una clase, creada con `new`, con identidad, estado y comportamiento.
 
-**Cómo funciona por dentro.** `new` asigna memoria para la instancia, inicializa campos, ejecuta el constructor y devuelve una referencia. Dos objetos de la misma clase pueden tener el mismo estado pero distinta identidad.
+ `new` asigna memoria para la instancia, inicializa campos, ejecuta el constructor y devuelve una referencia. Dos objetos de la misma clase pueden tener el mismo estado pero distinta identidad.
 
 ```mermaid
 flowchart LR
@@ -219,7 +219,7 @@ Encapsulación
 
 **Definición.** Encapsulación es ocultar la representación interna (`private`) y exponer operaciones controladas que preservan invariantes.
 
-**Cómo funciona por dentro.** Los campos privados no son accesibles desde fuera de la clase. Los métodos públicos actúan como frontera: validan entradas y cambian estado de forma coherente. Esto permite cambiar la representación interna sin romper clientes.
+ Los campos privados no son accesibles desde fuera de la clase. Los métodos públicos actúan como frontera: validan entradas y cambian estado de forma coherente. Esto permite cambiar la representación interna sin romper clientes.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
@@ -325,7 +325,7 @@ Herencia
 
 **Definición.** Herencia es el mecanismo por el cual una subclase (`extends`) reutiliza y especializa miembros accesibles de una superclase, modelando una relación “es un”.
 
-**Cómo funciona por dentro.** La subclase contiene la parte de la superclase y su propia especialización. La JVM resuelve métodos sobrescritos por dispatch dinámico según el objeto real.
+ La subclase contiene la parte de la superclase y su propia especialización. La JVM resuelve métodos sobrescritos por dispatch dinámico según el objeto real.
 
 ```mermaid
 classDiagram
@@ -455,7 +455,7 @@ Interfaz
 
 **Definición.** Una interfaz declara un contrato de comportamiento (`interface`); las clases lo implementan con `implements`.
 
-**Cómo funciona por dentro.** El cliente depende del tipo contrato, no de la implementación. La JVM despacha al método de la implementación real en tiempo de ejecución.
+ El cliente depende del tipo contrato, no de la implementación. La JVM despacha al método de la implementación real en tiempo de ejecución.
 
 ```mermaid
 flowchart LR
@@ -538,7 +538,7 @@ Polimorfismo
 
 **Definición.** Capacidad de tratar objetos de tipos concretos distintos a través de un tipo común, ejecutando la implementación real en runtime.
 
-**Cómo funciona por dentro.** La variable es de tipo base/interfaz, el objeto real es concreto. La llamada a método virtual se resuelve por el tipo real del objeto.
+ La variable es de tipo base/interfaz, el objeto real es concreto. La llamada a método virtual se resuelve por el tipo real del objeto.
 
 ```mermaid
 sequenceDiagram
@@ -733,7 +733,7 @@ Record
 
 **Definición.** Un `record` es una clase especial para portadores de datos inmutables cuyos componentes definen su API y estado.
 
-**Cómo funciona por dentro.** El compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en componentes.
+ El compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en componentes.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
