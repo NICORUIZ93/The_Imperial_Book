@@ -8,7 +8,7 @@ En el módulo anterior aprendiste a manejar errores y recursos. Ahora el foco ca
 
 ### Tema 1: Stream API — map, filter, reduce, collect · Intermedio · 45 min
 
-Caso guía: tienes una lista de guías con pesos y quieres calcular el total de guías pesadas. El enfoque imperativo funciona, pero mezcla iteración, condición y acumulación; un stream expresa la intención como pipeline.
+**Caso guía.** tienes una lista de guías con pesos y quieres calcular el total de guías pesadas. El enfoque imperativo funciona, pero mezcla iteración, condición y acumulación; un stream expresa la intención como pipeline.
 
 ```mermaid
 flowchart LR
@@ -17,9 +17,9 @@ flowchart LR
   T --> R[Result]
 ```
 
-#### Stream, pipeline, pereza
+Stream, pipeline, pereza
 
-**Definición formal.** Un `Stream<T>` es una secuencia de elementos que soporta operaciones agregadas. Un pipeline tiene fuente, cero o más operaciones intermedias (lazy) y una terminal (eager).
+**Definición.** Un `Stream<T>` es una secuencia de elementos que soporta operaciones agregadas. Un pipeline tiene fuente, cero o más operaciones intermedias (lazy) y una terminal (eager).
 
 **Cómo funciona por dentro.** Las intermedias no ejecutan el trabajo; construyen el pipeline. La terminal lo dispara. Esto permite fusionar operaciones y evitar trabajo innecesario en algunos casos (como `findFirst`).
 
@@ -59,9 +59,9 @@ java DemoStream
 
 **Verificación (JDK 27, 2026-05-22).** `14`.
 
-#### `map`, `filter`, `reduce`, `collect`
+`map`, `filter`, `reduce`, `collect`
 
-**Definición formal.** `filter` selecciona elementos por predicado; `map` transforma; `reduce` combina a un valor; `collect` materializa en una estructura o resumen.
+**Definición.** `filter` selecciona elementos por predicado; `map` transforma; `reduce` combina a un valor; `collect` materializa en una estructura o resumen.
 
 **Contrato/reglas.** Las lambdas deben ser no interferentes y preferiblemente sin estado. `reduce` necesita identidad y operador asociativo para ser correcto, especialmente en paralelo.
 
@@ -100,11 +100,11 @@ java DemoOps
 
 ### Tema 2: Optional — evitar null explícitamente · Intermedio · 35 min
 
-Caso guía: buscar una guía por código. Puede existir o no. Devolver `null` obliga a recordar el chequeo; olvidarlo produce `NullPointerException`.
+**Caso guía.** buscar una guía por código. Puede existir o no. Devolver `null` obliga a recordar el chequeo; olvidarlo produce `NullPointerException`.
 
-#### `Optional<T>`
+`Optional<T>`
 
-**Definición formal.** `Optional<T>` es un contenedor que puede contener o no un valor no nulo, y expone operaciones para manejar ambos casos.
+**Definición.** `Optional<T>` es un contenedor que puede contener o no un valor no nulo, y expone operaciones para manejar ambos casos.
 
 **Cómo funciona por dentro.** `Optional.of(v)` rechaza null; `ofNullable(v)` acepta null; `empty()` representa ausencia. Métodos como `map`, `filter`, `orElse`, `orElseThrow` componen el manejo.
 
@@ -153,11 +153,11 @@ java DemoOpt
 
 ### Tema 3: Stream Gatherers (Java 24) · Avanzado · 40 min
 
-Caso guía: quieres ventanas deslizantes o agrupar por lotes en un stream. Antes se requerían bucles externos o colecciones mutables.
+**Caso guía.** quieres ventanas deslizantes o agrupar por lotes en un stream. Antes se requerían bucles externos o colecciones mutables.
 
-#### Gatherers
+Gatherers
 
-**Definición formal.** Un Gatherer es una operación intermedia personalizada de Stream que puede transformar, acumular, cortocircuitar o emitir elementos de forma controlada.
+**Definición.** Un Gatherer es una operación intermedia personalizada de Stream que puede transformar, acumular, cortocircuitar o emitir elementos de forma controlada.
 
 **Cómo funciona por dentro.** Expone funciones de inicializador, integrador, combinador y finalizador. Java incluye gatherers built-in como `windowFixed` y `windowSliding` (según versión/API disponible).
 
@@ -197,11 +197,11 @@ java DemoGather
 
 ### Tema 4: Streams paralelos y referencias a métodos · Intermedio · 35 min
 
-Caso guía: procesar muchos elementos CPU-bound puede beneficiarse de paralelismo, pero solo si la operación es independiente y segura.
+**Caso guía.** procesar muchos elementos CPU-bound puede beneficiarse de paralelismo, pero solo si la operación es independiente y segura.
 
-#### Streams paralelos
+Streams paralelos
 
-**Definición formal.** `parallelStream()` o `stream().parallel()` divide el trabajo en subtareas ejecutadas en el ForkJoinPool común por defecto.
+**Definición.** `parallelStream()` o `stream().parallel()` divide el trabajo en subtareas ejecutadas en el ForkJoinPool común por defecto.
 
 **Contrato/riesgos.** Requiere operaciones sin estado compartido mutable, asociativas para reduce, y cuidado con orden. El overhead puede superar el beneficio en colecciones pequeñas o tareas I/O bloqueantes.
 
@@ -234,9 +234,9 @@ java DemoPar
 
 **Verificación (JDK 27, 2026-05-22).** `500500`.
 
-#### Referencias a métodos
+Referencias a métodos
 
-**Definición formal.** Sintaxis compacta (`Class::method`, `obj::method`, `Class::new`) para lambdas que solo delegan a un método existente.
+**Definición.** Sintaxis compacta (`Class::method`, `obj::method`, `Class::new`) para lambdas que solo delegan a un método existente.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
