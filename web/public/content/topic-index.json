@@ -4116,40 +4116,36 @@
   "java": {
     "0": [
       {
-        "title": "Qué es programar y qué problema resuelve Java",
-        "fragment": "tema-1-que-es-programar-y-que-problema-resuelve-java"
+        "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
       },
       {
-        "title": "JDK, JRE, JVM y bytecode (WORA)",
-        "fragment": "tema-2-jdk-jre-jvm-y-bytecode-wora"
+        "title": "Virtual Threads (Project Loom)",
+        "fragment": "tema-2-virtual-threads-project-loom"
       },
       {
-        "title": "Instalar JDK y verificar entorno",
-        "fragment": "tema-3-instalar-jdk-y-verificar-entorno"
+        "title": "Spring IoC, DI, bean lifecycle y ApplicationContext",
+        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-y-applicationcontext"
       },
       {
-        "title": "Primer programa desde cero, sin IDE",
-        "fragment": "tema-4-primer-programa-desde-cero-sin-ide"
+        "title": "Auto-configuración condicional, @Conditional y starters",
+        "fragment": "tema-4-auto-configuracion-condicional-conditional-y-starters"
       },
       {
-        "title": "Tipos primitivos, variables y conversiones",
-        "fragment": "tema-5-tipos-primitivos-variables-y-conversiones"
+        "title": "Multi-module Spring Boot projects",
+        "fragment": "tema-5-multi-module-spring-boot-projects"
       },
       {
-        "title": "String, entrada/salida y formato",
-        "fragment": "tema-6-string-entrada-salida-y-formato"
+        "title": "Perfiles y configuración externalizada",
+        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
       },
       {
-        "title": "Operadores, expresiones y precedencia",
-        "fragment": "tema-7-operadores-expresiones-y-precedencia"
+        "title": "CRaC (Coordinated Restore at Checkpoint)",
+        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
       },
       {
-        "title": "Control de flujo: decisiones y repeticiones",
-        "fragment": "tema-8-control-de-flujo-decisiones-y-repeticiones"
-      },
-      {
-        "title": "Arreglos y métodos básicos",
-        "fragment": "tema-9-arreglos-y-metodos-basicos"
+        "title": "GraalVM Native Image",
+        "fragment": "tema-8-graalvm-native-image"
       }
     ],
     "1": [
@@ -7082,7 +7078,40 @@
     ]
   },
   "spring-microservices": {
-    "0": [],
+    "0": [
+      {
+        "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
+      },
+      {
+        "title": "Virtual Threads (Project Loom)",
+        "fragment": "tema-2-virtual-threads-project-loom"
+      },
+      {
+        "title": "Spring IoC, DI, bean lifecycle y ApplicationContext",
+        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-y-applicationcontext"
+      },
+      {
+        "title": "Auto-configuración condicional, @Conditional y starters",
+        "fragment": "tema-4-auto-configuracion-condicional-conditional-y-starters"
+      },
+      {
+        "title": "Multi-module Spring Boot projects",
+        "fragment": "tema-5-multi-module-spring-boot-projects"
+      },
+      {
+        "title": "Perfiles y configuración externalizada",
+        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
+      },
+      {
+        "title": "CRaC (Coordinated Restore at Checkpoint)",
+        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
+      },
+      {
+        "title": "GraalVM Native Image",
+        "fragment": "tema-8-graalvm-native-image"
+      }
+    ],
     "1": [
       {
         "title": "Spring MVC y DispatcherServlet",
