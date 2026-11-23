@@ -4522,6 +4522,50 @@
     ],
     "20": [
       {
+        "title": "`settings.gradle.kts`",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "`build.gradle.kts`",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "`EstadoEnvio.java`",
+        "fragment": "estadoenvio-java"
+      },
+      {
+        "title": "`Envio.java`",
+        "fragment": "envio-java"
+      },
+      {
+        "title": "`ReglaEnvio.java`",
+        "fragment": "reglaenvio-java"
+      },
+      {
+        "title": "`ReglasEnvio.java`",
+        "fragment": "reglasenvio-java"
+      },
+      {
+        "title": "`EnvioRepository.java`",
+        "fragment": "enviorepository-java"
+      },
+      {
+        "title": "`ReporteEnvios.java`",
+        "fragment": "reporteenvios-java"
+      },
+      {
+        "title": "`EventosEnvio.java`",
+        "fragment": "eventosenvio-java"
+      },
+      {
+        "title": "`App.java`",
+        "fragment": "app-java"
+      },
+      {
+        "title": "`FuncionalTest.java`",
+        "fragment": "funcionaltest-java"
+      },
+      {
         "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
