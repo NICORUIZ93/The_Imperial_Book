@@ -1748,6 +1748,24 @@ Esta forma es ideal para utilidades pequeñas y para enseñar, pero no reemplaza
 
 El error más común es ejecutar un archivo compacto con un JDK anterior a 25. La característica no existe y el lanzador no reconoce el archivo como código Java. La corrección es verificar `java -version` y, si el entorno es antiguo, convertir el archivo a la forma clásica con `public class` y `public static void main`. Otra confusión frecuente es creer que `import module` importa dependencias de Maven: solo importa módulos del propio JDK.
 
+## Verificación real
+
+Ejecutado el 2026-05-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+
+```bash
+./gradlew -q classes
+./gradlew -q run --args="catalogo"
+./gradlew -q run --args="cotizar --sku CAF-0001 --cantidad 3 --fecha 2026-11-22T10:30"
+./gradlew -q run --args="diagnostico"
+```
+
+Resultados observados (resumen):
+
+- `classes`: compilación exitosa, sin salida.
+- `catalogo`: lista 4 productos con SKU, nombre, precio y stock.
+- `cotizar`: genera recibo `AUR-2026-0001`, total `$45.38`, entrega `25/11/2026`, `timestampUtc=1795343400000`.
+- `diagnostico`: confirma diferencias `double` vs `Dinero`, desbordamiento `int`/`long`/`Math.multiplyExact`, `==` vs `equals`, caché `Integer`, copia defensiva de arreglos y comportamiento heredado de `Date/Calendar`.
+
 ## Cierre
 
 Tienda Aurora ya tiene una aplicación real que compila, se ejecuta y produce recibos correctos. El recorrido no fue una lista de características del lenguaje: cada tema resolvió un problema del mismo producto. El dinero se volvió un `long` de centavos porque `double` no cuadra. El SKU se volvió un objeto de valor porque la entrada del usuario es sucia. El catálogo copia sus arreglos porque compartir estado interno termina en bugs. El carrito expresa los tramos con un `switch` exhaustivo porque las reglas comerciales cambian y el compilador debe avisar si falta un caso. Las fechas usan `java.time` porque `Date` mezcla instantes, zonas y meses base cero.
