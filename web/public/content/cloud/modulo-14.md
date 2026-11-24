@@ -200,6 +200,9 @@ flowchart LR
     C["EKS"] --> C1["contenedores, Kubernetes estándar, portable multi-nube"]
 ```
 
+#### ► REGLA PRÁCTICA
+Si la carga es corta, orientada a eventos y puede escalar a cero, usa Lambda; si necesita correr continuamente o supera el límite de duración/recursos de Lambda, usa un contenedor en ECS (más simple) o EKS (si ya necesitas Kubernetes estándar y portabilidad multi-nube).
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

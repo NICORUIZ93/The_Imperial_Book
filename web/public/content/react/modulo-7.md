@@ -293,6 +293,9 @@ Piensa en estado de servidor vs estado de cliente, y cuándo no necesitas nada d
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+Si el dato vive en un servidor remoto y necesita cache/revalidación (la lista de envíos), usa TanStack Query; si es estado de UI compartido entre componentes lejanos sin servidor detrás (un filtro global), usa Zustand; si solo un componente lo necesita (un modal abierto), usa `useState` local.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

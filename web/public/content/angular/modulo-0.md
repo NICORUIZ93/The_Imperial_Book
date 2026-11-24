@@ -577,6 +577,10 @@ Detecta ciertos errores de plantilla durante la compilación, evita enviar el co
 - **Usarlo cuando**: construyes para desarrollo normal, CI, pruebas previas a despliegue o producción; es el camino por defecto.
 - **No usarlo cuando**: no hay un caso habitual moderno para preferir JIT en aplicaciones Angular actuales. Si te encuentras con documentación JIT, trátala como contexto histórico o de compatibilidad, no como práctica por defecto.
 
+**Regla práctica**
+
+Si no tienes una razón explícita para elegir JIT, no estás eligiendo: estás usando el valor por defecto, que es AOT. No busques cómo activar JIT en un proyecto Angular moderno a menos que estés depurando documentación o herramientas antiguas.
+
 **Ejemplo mínimo enfocado (ejecutable)**
 
 Carpeta: proyecto Angular con dependencias instaladas.

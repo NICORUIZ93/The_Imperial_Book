@@ -316,6 +316,8 @@ timeout
 
 El mismo `idempotencyKey` produce un solo cobro. Sync y async no compiten: se combinan. El checkout puede ser sync en lo crítico y async en lo secundario.
 
+**Regla práctica:** si el llamador necesita el resultado para decidir su siguiente paso (autorizar el pago antes de confirmar el pedido), usa sync con un presupuesto de timeout explícito. Si el llamador puede seguir sin esperar (enviar el recibo por email), usa async. En cualquiera de los dos casos, si la operación puede reintentarse, dale una clave de idempotencia — sin ella, un reintento después de un timeout duplica el efecto, no solo la llamada.
+
 ### Tema 5: HTTP Service Clients declarativos y RSocket · Avanzado · 120 min
 
 ## HTTP Service Clients declarativos y RSocket

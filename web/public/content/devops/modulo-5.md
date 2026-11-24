@@ -372,6 +372,9 @@ Piensa en feature flags vs branches por entorno como una herramienta de taller: 
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Un feature flag separa "el código ya está en producción" de "el código ya es visible": el mismo despliegue puede llegar con el flag en `false` y activarse después sin un nuevo deploy, incluso para un subconjunto de usuarios. Una rama por entorno (`develop`/`staging`/`main`) en cambio ata la visibilidad al propio despliegue: para que algo se vea hay que desplegar esa rama, lo que acopla "cuándo se sube el código" con "cuándo lo ve el usuario".
+
 #### ► CUÁNDO NO USAR ESTO
 No uses feature flags vs branches por entorno por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

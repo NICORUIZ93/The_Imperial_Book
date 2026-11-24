@@ -29,6 +29,9 @@ flowchart LR
     K["Kinesis/Kafka: registro persiste durante el retention period"] --> K1["múltiples consumidores leen independientemente, cada uno con su propio offset"]
 ```
 
+#### ► REGLA PRÁCTICA
+Si solo un consumidor debe procesar cada mensaje y luego puede descartarse, usa una cola (SQS). Si varios consumidores independientes necesitan leer el mismo evento (cada uno a su propio ritmo), usa un stream (Kinesis/Kafka).
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|
@@ -210,6 +213,9 @@ flowchart LR
     A["Kinesis Data Streams"] --> A1["control fino, procesamiento personalizado en tiempo real"]
     B["Kinesis Data Firehose"] --> B1["entrega automatizada gestionada hacia S3/warehouse, sin código de consumidor propio"]
 ```
+
+#### ► REGLA PRÁCTICA
+Si solo necesitas entregar los datos a un destino fijo (S3, un warehouse) sin procesarlos tú mismo, usa Firehose y evita escribir un consumidor. Si necesitas lógica de procesamiento personalizada en tiempo real sobre cada registro, usa Kinesis Data Streams.
 
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |

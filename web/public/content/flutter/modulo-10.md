@@ -135,6 +135,9 @@ flowchart TD
     B -->|false| D["ElevatedButton"]
 ```
 
+#### ► REGLA PRÁCTICA
+Detecta la plataforma en tiempo de ejecución (`Platform.isIOS`) y muestra el widget nativo correspondiente (`CupertinoButton` en iOS, `ElevatedButton` en Android) en vez de forzar un único estilo visual en ambas plataformas.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

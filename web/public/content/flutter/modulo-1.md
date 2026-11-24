@@ -39,6 +39,9 @@ graph TD
     style F fill:#fff3e0
 ```
 
+#### ► REGLA PRÁCTICA
+Usa `StatefulWidget` cuando el widget necesita datos propios que sobrevivan entre reconstrucciones (`setState`) y un ciclo de vida que gestionar (`initState`/`dispose`); si solo refleja datos que recibe desde afuera y se reconstruye cuando cambia su padre, `StatelessWidget` basta y es más simple.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

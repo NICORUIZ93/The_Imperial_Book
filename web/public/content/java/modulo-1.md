@@ -2194,6 +2194,8 @@ No todo lo que parece sobrescritura lo es. Un método `private` no se hereda, as
 
 El error más común es reducir la visibilidad al sobrescribir (por ejemplo, `protected` en la base y `private` en la subclase): el compilador lo rechaza porque rompe el contrato. El otro es exponer campos con getters que devuelven referencias mutables; en este proyecto, `Catalogo.productos()` devuelve una copia y `ReglasDescuento.codigos()` clona el arreglo por la misma razón.
 
+**Regla práctica:** si el tipo de retorno es lo único que cambia, no es sobrecarga ni sobreescritura, es un error de compilación; si dudas cuál aplica, pregunta si hay una subclase real con la misma firma exacta (sobreescritura, decide la JVM) o varias firmas distintas en la misma clase (sobrecarga, decide el compilador).
+
 ### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 40 min
 
 Antes de los records, una clase de valor exigía constructor, getters, `equals`, `hashCode` y `toString`. Treinta líneas para transportar tres datos, y una invitación constante a olvidar uno de los métodos. Un `record` declara los componentes y el compilador genera todo eso con una semántica correcta: igualdad por contenido y representación legible.

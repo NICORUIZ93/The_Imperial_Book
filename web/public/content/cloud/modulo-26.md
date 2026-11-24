@@ -113,6 +113,8 @@ En arquitecturas reales, ambos conviven con frecuencia: un productor escribe a u
 
 **¿Por qué es importante?** Esta distinción —¿necesito lógica de procesamiento en tránsito o solo entrega confiable?— es la misma pregunta de diseño que ya aplicaste al elegir entre SQS y SNS, o entre EventBridge y Step Functions: reconocer el patrón general de "¿cuánto control necesito realmente?" te ahorra sobre-ingeniería.
 
+**Regla práctica:** si necesitas procesamiento personalizado en tiempo real con varios consumidores independientes leyendo el mismo stream, usa Kinesis Data Streams; si solo necesitas que los datos terminen de forma confiable en un destino sin lógica intermedia, usa Firehose.
+
 **Practícalo tú:**
 
 ```bash

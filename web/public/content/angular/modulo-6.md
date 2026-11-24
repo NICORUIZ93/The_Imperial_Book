@@ -28,6 +28,9 @@ Piensa en observable frente a promise como una herramienta de taller: útil cuan
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+Si la operación produce un único valor y no necesitas cancelarla a medias, una Promise (o `async`/`await`) es más simple. Si necesitas cancelar una operación en curso (el usuario navega a otra pantalla, escribe una nueva búsqueda) o esperas múltiples valores en el tiempo, necesitas un Observable: una Promise ya empezó a ejecutarse en cuanto se creó y no tiene forma de detenerla.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

@@ -31,6 +31,9 @@ flowchart TD
     B --> E["Decide layout según pantalla completa"]
 ```
 
+#### ► REGLA PRÁCTICA
+Usa `MediaQuery` cuando necesites el tamaño de la pantalla completa; usa `LayoutBuilder` cuando el widget vive dentro de otro layout (un panel lateral, una columna parcial) y necesitas el espacio real disponible para ese widget, no el de toda la pantalla.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

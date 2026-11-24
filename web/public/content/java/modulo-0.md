@@ -1532,6 +1532,8 @@ Las conversiones siguen una regla simple. De un tipo más pequeño a uno más gr
 
 Las referencias se comportan distinto. `Producto` es un objeto: la variable guarda una dirección. Asignar `Producto otro = producto` no copia el producto, copia la referencia; ambos nombres apuntan al mismo objeto y `otro.descontar(1)` cambia el stock que ves por `producto`. Los primitivos, en cambio, se copian por valor. Esa diferencia explica por qué `Catalogo` necesita copias defensivas en el tema de arreglos y por qué comparar objetos con `==` casi nunca es lo que quieres.
 
+**Regla práctica:** para dinero usa un entero (`long` de centavos), nunca `float`/`double`; para cualquier otro dato, elige primitivo si necesitas copia por valor y referencia si varios nombres deben ver el mismo objeto cambiar.
+
 ### Tema 5: Variables, conversiones y `String` · Básico · 45 min
 
 Un SKU llega del usuario con espacios, mayúsculas mezcladas y guiones bajos. Si el catálogo compara cadenas sin normalizar, el mismo producto se comporta como dos. `Sku` resuelve el problema en un único punto:

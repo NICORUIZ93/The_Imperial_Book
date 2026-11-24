@@ -120,6 +120,9 @@ flowchart TD
     NEED -->|"claves dinámicas"| MAP["Map"]
 ```
 
+#### ► REGLA PRÁCTICA
+Si necesitas orden y puedes repetir valores, usa Array; si la forma de los campos es fija y conocida de antemano, usa Object; si solo te importa "¿ya existe esto?" sin duplicados, usa Set; si las claves se generan en tiempo de ejecución (IDs, códigos), usa Map en vez de Object — un Object con claves dinámicas puede chocar con propiedades heredadas del prototipo, un Map no.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

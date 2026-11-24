@@ -241,6 +241,8 @@ Core Data directo sigue siendo relevante en dos escenarios concretos: aplicacion
 
 **¿Por qué es importante?** SwiftData simplifica drásticamente la configuración frente a Core Data manual sin sacrificar la robustez del motor subyacente; Core Data directo sigue siendo relevante para apps existentes o casos que requieren control muy fino no expuesto todavía por la capa de más alto nivel de SwiftData.
 
+**Regla práctica:** para proyectos nuevos, prefiere SwiftData; usa Core Data directo solo si ya tienes una inversión grande en su configuración o necesitas control muy fino que SwiftData todavía no expone.
+
 **Diagrama:**
 
 ```

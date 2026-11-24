@@ -199,6 +199,9 @@ flowchart LR
     B["Secrets Manager"] --> B1["secretos sensibles, rotación automática programada, auditoría completa"]
 ```
 
+#### ► REGLA PRÁCTICA
+Si rotar manualmente es aceptable y el dato no es sensible, usa Parameter Store por costo; si el dato requiere rotación automática programada y auditoría, usa Secrets Manager aunque cueste más.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

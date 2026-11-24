@@ -374,6 +374,9 @@ flowchart LR
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Usa bind mount cuando quieres ver reflejado al instante el código que editas en tu máquina (desarrollo local); usa un volumen gestionado cuando necesitas que los datos sobrevivan a `docker rm` y sean portables entre hosts, sin depender de una ruta específica de tu filesystem (bases de datos, uploads en producción).
+
 #### ► CUÁNDO NO USAR ESTO
 No uses volúmenes vs bind mounts por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

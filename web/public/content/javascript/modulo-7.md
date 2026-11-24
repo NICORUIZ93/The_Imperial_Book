@@ -29,6 +29,9 @@ flowchart LR
     CJS["CommonJS: require dinámico"] --> RUNTIME["resolución al ejecutar"]
 ```
 
+#### ► REGLA PRÁCTICA
+Para código nuevo, usa ESM (`import`/`export`): al ser estático, una herramienta de build puede analizar el grafo de dependencias antes de ejecutar nada y eliminar lo que no se usa (tree-shaking). Solo recurre a `require` dinámico de CommonJS cuando necesites decidir en tiempo de ejecución qué módulo cargar, algo que ESM no permite de forma estática.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

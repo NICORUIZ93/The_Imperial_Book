@@ -389,6 +389,9 @@ flowchart LR
     end
 ```
 
+#### ► REGLA PRÁCTICA
+Usa clave simple (solo HASH) cuando cada entidad es un único ítem identificado por un valor único, como Usuarios; usa clave compuesta (HASH + RANGE) cuando un mismo HASH agrupa varios ítems relacionados que necesitas ordenar o filtrar, como los pedidos de un mismo usuario por fecha.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|
@@ -564,6 +567,9 @@ flowchart LR
     Q["Query usuario_id = u-001; lee solo items de esa particion"]
     S["Scan estado pendiente; examina todos los items de la tabla"]
 ```
+
+#### ► REGLA PRÁCTICA
+Si conoces la clave de partición que buscas, usa Query: lee solo esa partición. Si necesitas filtrar por un atributo que no es la clave, un Scan examina toda la tabla antes de filtrar — suele ser la señal de que falta un índice secundario adecuado.
 
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |

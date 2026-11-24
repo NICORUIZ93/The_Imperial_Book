@@ -165,6 +165,9 @@ Piensa en app bundle vs apk como una herramienta de taller: útil cuando conoces
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Para publicar en Google Play, sube siempre el App Bundle (`.aab`), nunca un APK universal: Play genera y firma por ti los APKs optimizados por idioma, densidad de pantalla y arquitectura de CPU, así que cada usuario descarga solo los recursos que su dispositivo necesita, no los de los tres idiomas y las tres densidades que el APK universal empaqueta para todos.
+
 #### ► CUÁNDO NO USAR ESTO
 No uses app bundle vs apk por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

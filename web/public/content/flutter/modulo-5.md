@@ -39,6 +39,9 @@ graph LR
     style F fill:#ffcccc
 ```
 
+#### ► REGLA PRÁCTICA
+Usa `dio` en vez de `http` cuando necesites cancelar peticiones en curso, interceptores para agregar headers o loguear de forma centralizada, o configuración avanzada de timeouts; para una llamada simple sin esos requisitos, `http` es más liviano.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

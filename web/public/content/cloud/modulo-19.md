@@ -219,6 +219,9 @@ flowchart LR
     B["Con particiones + partition pruning"] --> B1["Athena IGNORA por completo las carpetas fuera del filtro, sin leerlas"]
 ```
 
+#### ► REGLA PRÁCTICA
+Si tus consultas casi siempre filtran por una misma columna (como la fecha), particiona la tabla por esa columna: partition pruning hace que Athena ni siquiera lea los archivos fuera del filtro, en vez de escanearlos todos y descartar después.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

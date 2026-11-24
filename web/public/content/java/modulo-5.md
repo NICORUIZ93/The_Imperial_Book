@@ -543,6 +543,8 @@ threadlocal-reutilizado=req-threadlocal scoped-dentro=req-scoped scoped-fuera=si
 
 El `ThreadLocal` sobrevive a la tarea y contamina la siguiente ejecución en el mismo hilo. El `ScopedValue` desaparece al cerrar el scope. Eso es lo que evita filtrar un `requestId` de una petición a otra.
 
+**Regla práctica:** si el contexto solo se necesita dentro de una llamada y sus subtareas (un `requestId`, una transacción), usa `ScopedValue`; resérvate `ThreadLocal` para el caso real de mutar un valor y releerlo más tarde en el mismo hilo, no como costumbre heredada.
+
 ### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 40 min
 
 El timeout evita esperar indefinidamente por una tarea lenta o colgada. `Future.get(timeout, unit)` y `CompletableFuture.orTimeout(...)` son mecanismos básicos. Pero cancelar no es magia: Java interrumpe hilos cooperativamente. El código bloqueable debe responder a `InterruptedException`, restaurar el estado de interrupción cuando corresponda y salir limpiamente.

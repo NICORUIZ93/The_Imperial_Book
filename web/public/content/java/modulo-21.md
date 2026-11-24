@@ -433,6 +433,8 @@ Agregar una sobrecarga puede ser compatible de fuente en muchos casos, pero hay 
 
 En ecosistemas con dependencias transitivas, no todos recompilan al mismo tiempo. `api-v2` mantiene `estado(String)` y agrega `estado(String, boolean)`: un cliente compilado contra v1 puede seguir ejecutando la firma vieja porque esa firma sigue existiendo en el bytecode de v2. `api-v2-rompe` la elimina y produce `NoSuchMethodError` en el cliente congelado; también convierte `etiqueta()` en abstracta y produce `AbstractMethodError`. Ambas fallas se observan en la verificación real.
 
+**Regla práctica:** para saber si un cambio es seguro, pregunta primero si rompe binario (¿un JAR ya compilado sigue enlazando?) y luego si rompe fuente (¿el cliente recompila sin tocar código?); quitar o renombrar un método rompe ambos, pero cambiar un `default` a abstracto rompe binario sin que el fuente lo delate.
+
 ### Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min
 
 Evolucionar una API pública es gestionar el cambio en el tiempo. Un método `default` permite agregar comportamiento a una interfaz sin obligar a todas las implementaciones existentes a recompilarse y modificar su código. Antes de Java 8, agregar un método a una interfaz rompía implementadores. El default tiene que ser semánticamente correcto para implementaciones existentes y puede generar conflictos de herencia múltiple (`implements A, B` con el mismo default).

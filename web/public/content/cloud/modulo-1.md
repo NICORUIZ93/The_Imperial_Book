@@ -53,6 +53,9 @@ flowchart LR
     end
 ```
 
+#### ► REGLA PRÁCTICA
+Usa contenedores cuando varias apps pueden compartir el mismo kernel Linux del host; usa una VM completa cuando necesitas aislar sistemas operativos distintos entre sí o del host, no solo procesos.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

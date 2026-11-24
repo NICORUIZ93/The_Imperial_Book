@@ -359,6 +359,9 @@ flowchart LR
     style C2_Ref fill:#ffcccc
 ```
 
+#### ► REGLA PRÁCTICA
+Usa `struct` cuando cada variable debe tener su propia copia independiente de los datos, sin efectos compartidos al asignarla o pasarla; usa `class` cuando necesitas que varias referencias compartan y muten el mismo objeto.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

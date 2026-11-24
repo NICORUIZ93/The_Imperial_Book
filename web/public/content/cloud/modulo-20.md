@@ -197,6 +197,9 @@ flowchart LR
     B["Bedrock real (AWS)"] --> B1["verifica: calidad del contenido generado, comportamiento ante prompts reales"]
 ```
 
+#### ► REGLA PRÁCTICA
+Usa el stub local para todo lo que sea estructura de la llamada (request/response, manejo de errores) porque es rápido y repetible; reserva el servicio real de AWS para verificar la calidad del contenido generado, que el stub no puede reproducir.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

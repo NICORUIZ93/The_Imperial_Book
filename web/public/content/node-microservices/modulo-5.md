@@ -295,6 +295,8 @@ node decision.mjs
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `sync`, `async`, `coordinate`.
 
+**Regla práctica.** Si el llamador necesita el resultado antes de continuar, es sync; si puede continuar sin esperarlo y tolera consistencia eventual, es async; si no puede esperar pero tampoco tolera eventual, el problema real no es sync-vs-async, es que necesitas una saga o un request-reply coordinado.
+
 ## Cierre
 
 El protocolo es un detalle secundario frente al contrato y al modo de fallo. REST, gRPC, GraphQL y mensajería resuelven problemas distintos; la habilidad clave es elegir por latencia, acoplamiento, consistencia y operación.

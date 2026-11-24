@@ -73,6 +73,9 @@ flowchart TD
     A -->|Sí| C["AnimationController + Tween\n(explícita)"]
 ```
 
+#### ► REGLA PRÁCTICA
+Usa una animación implícita (`AnimatedContainer`) cuando solo necesites interpolar entre dos valores; usa una explícita (`AnimationController`/`Tween`) cuando necesites control sobre curvas, repetición o componer varias animaciones coordinadas entre sí.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

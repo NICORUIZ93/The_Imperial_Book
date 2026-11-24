@@ -350,6 +350,8 @@ node child.mjs
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `ok`.
 
+**Regla práctica.** Si el trabajo pesado es JavaScript puro (hash, cálculo), usa Worker Threads: menor overhead, memoria compartible por mensajes. Si necesitas ejecutar un binario externo o aislar código que puede crashear sin tumbar el proceso principal, usa Child Processes — y siempre con `execFile`/`spawn` y argumentos en array, nunca `exec` con un string construido a partir de input externo.
+
 ### Tema 6: Backpressure en Streams · Avanzado · 90 min
 
 Caso guía: copiar un archivo grande sin cargarlo en memoria.

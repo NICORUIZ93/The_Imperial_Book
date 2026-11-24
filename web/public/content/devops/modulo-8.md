@@ -393,6 +393,9 @@ flowchart TD
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Nunca corras `terraform apply` directo en un pipeline sin que un `terraform plan` haya mostrado primero exactamente qué se va a crear, modificar o destruir: es la única forma de detectar, antes de ejecutar, un recurso que el plan marque para destrucción por error (por ejemplo, un cambio que fuerza el reemplazo de un recurso con estado).
+
 #### ► CUÁNDO NO USAR ESTO
 No uses terraform plan vs apply por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

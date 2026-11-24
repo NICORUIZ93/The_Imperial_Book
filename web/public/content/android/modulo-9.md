@@ -354,6 +354,9 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 
 **Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
 
+#### ► REGLA PRÁCTICA
+Prefiere un fake por defecto: es código Kotlin reutilizable con comportamiento consistente entre tests. Recurre a un mock solo cuando lo que quieres verificar es una interacción puntual muy específica (que se llamó un método exacto, con esos argumentos exactos, esa cantidad de veces) y no el comportamiento general del colaborador.
+
 #### ► CÓMO FUNCIONA
 1. Identifica el problema que testing end-to-end con activity real, y fakes vs mocks resuelve.
 2. Observa sus componentes y relaciones.

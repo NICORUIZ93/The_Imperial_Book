@@ -28,6 +28,9 @@ Piensa en fs/promises frente a callbacks como una herramienta de taller: útil c
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+En código nuevo, usa `fs/promises` con `async`/`await`: se compone directamente con otras operaciones asíncronas sin anidar callbacks ni olvidar comprobar `err`. Usa el callback clásico (`fs.readFile(..., cb)`) solo si mantienes código existente que ya lo usa; usa la versión síncrona (`readFileSync`) exclusivamente fuera del camino de tráfico activo (scripts de arranque, CLIs), porque bloquea el único hilo de Node mientras lee.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

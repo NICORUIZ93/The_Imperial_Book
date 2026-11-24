@@ -164,6 +164,9 @@ Piensa en mutación frente a actualización inmutable como una herramienta de ta
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+Un signal detecta cambio por referencia, no por contenido: si llamas a un método que muta el array en el mismo lugar (`push`, `splice`, `sort` in-place), la referencia no cambió y nadie se entera. Siempre reemplaza con una copia nueva (`update(lista => [...lista, x])`) cuando el valor sea un array u objeto dentro de un signal.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|
@@ -299,6 +302,9 @@ flowchart LR
   O["Observable$ (RxJS)"] -->|"toSignal()"| S["signal de solo lectura"]
   S2["signal"] -->|"toObservable()"| O2["Observable$ (RxJS)"]
 ```
+
+#### ► REGLA PRÁCTICA
+Usa un signal para estado síncrono simple que se lee directamente; usa un Observable/RxJS cuando necesites componer tiempo (`debounceTime`, `switchMap`, cancelación). No elijas uno "por estilo": `toSignal()`/`toObservable()` son los puentes oficiales para cruzar entre ambos sin reescribir la lógica existente.
 
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |

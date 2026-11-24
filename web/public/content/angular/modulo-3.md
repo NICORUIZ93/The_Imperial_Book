@@ -174,6 +174,9 @@ Piensa en inject() frente a inyección por constructor como una herramienta de t
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+Usa inyección por constructor cuando ya estás dentro de una clase (es la opción más explícita); usa `inject()` cuando necesites inyectar fuera de un constructor —campo de clase, guard funcional, interceptor funcional— porque ahí la inyección por constructor simplemente no existe como opción. Fuera de un contexto de inyección válido, `inject()` falla con NG0203; no lo llames desde una función ordinaria.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

@@ -130,6 +130,9 @@ graph TD
     style H fill:#ffeb3b
 ```
 
+#### ► REGLA PRÁCTICA
+El render puede ejecutarse (y tu `console.log` puede correr, incluso varias veces) sin que haya ningún cambio visible en el DOM: el commit solo ocurre si la reconciliación encuentra una diferencia real entre el árbol nuevo y el anterior.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

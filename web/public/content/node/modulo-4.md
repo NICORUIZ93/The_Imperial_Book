@@ -416,6 +416,9 @@ Piensa en express frente a fastify como una herramienta de taller: útil cuando 
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+Elige Express si el equipo ya conoce su middleware lineal (`app.use`) y quieres aprovechar su ecosistema amplio, validando con una librería externa como Zod. Elige Fastify si necesitas más rendimiento y validación/serialización declarada con JSON Schema integrado — la serialización de respuesta se genera a partir de ese mismo schema, en vez de serializar objetos genéricamente.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

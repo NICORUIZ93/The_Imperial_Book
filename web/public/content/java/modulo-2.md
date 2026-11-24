@@ -1629,6 +1629,8 @@ La salida de la auditoría muestra los dos comparadores sobre el mismo catálogo
 
 La iteración es la otra mitad del problema. Recorrer una colección mientras la modificas con la API equivocada produce `ConcurrentModificationException` o comportamiento inesperado. La regla simple es: para eliminar durante el recorrido, usa `Iterator.remove()`, `removeIf(...)` o construye una nueva colección. No hagas `lista.remove(...)` dentro de un `for-each` sobre la misma lista. En el código de este módulo, la paginación y los reportes recorren colecciones sin modificarlas, y cuando `ColaPedidos` necesita exponer pendientes ordenados crea una copia antes de ordenar.
 
+**Regla práctica:** si el objeto solo tiene un orden razonable (como un SKU), impleméntalo con `Comparable`; en cuanto necesites más de un orden para el mismo tipo (por precio, por nombre, por prioridad), sácalo del objeto y defínelo como `Comparator` externo.
+
 ### Tema 6: Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue · Intermedio · 40 min
 
 Una cola modela espera. Una pila modela deshacer. La interfaz `Queue<E>` define operaciones de cola: `offer`/`add` para encolar, `poll`/`remove` para desencolar, `peek`/`element` para mirar el frente. La interfaz `Deque<E>` es una cola de doble extremo: permite insertar y quitar por ambos lados, así que puede comportarse como cola FIFO o como pila LIFO.

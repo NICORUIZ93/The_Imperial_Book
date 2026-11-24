@@ -298,6 +298,9 @@ flowchart LR
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Si escribes `pedido.cliente.direccion.ciudad`, estás atravesando tres objetos para leer un dato: cualquiera de esas tres clases puede cambiar su estructura interna y rompe tu código. Pídele a `Pedido` un método propio (`pedido.ciudadDestino()`) que internamente navegue esa cadena; así solo `Pedido` conoce la forma de sus colaboradores, y el llamador solo conoce `Pedido`.
+
 #### ► CUÁNDO NO USAR ESTO
 No uses objetos frente a estructuras de datos y la ley de demeter por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

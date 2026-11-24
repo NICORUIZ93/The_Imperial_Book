@@ -982,6 +982,8 @@ La decisión no es dogmática. Pregunta: “¿el llamador inmediato tiene una ac
 
 **Confusión común:** “checked es más segura”. No automáticamente. Un checked mal usada produce `catch (Exception e) {}` o `throws Exception` por todos lados, que es peor que una unchecked bien ubicada. La seguridad viene de decidir bien el punto de manejo.
 
+**Regla práctica:** usa checked solo en la frontera donde el fallo es externo y el llamador inmediato tiene una recuperación razonable (reintentar, fallback, pedir otro input); si el fallo es un contrato violado o un bug, unchecked es más clara.
+
 ### Tema 2: try-with-resources · Básico · 40 min
 
 `try-with-resources` es la forma segura de manejar recursos que deben cerrarse: archivos, streams, conexiones JDBC, sockets, locks con `AutoCloseable`. Un recurso que implementa `AutoCloseable` o `Closeable` se declara en la cabecera del `try`; Java llama a `close()` al salir del bloque, tanto si termina normal como si lanza excepción.

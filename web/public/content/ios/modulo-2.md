@@ -249,6 +249,9 @@ flowchart TD
     C -.->|sin reenviar manualmente| D["DetalleEnvio\n@Environment(ServicioAPI.self)"]
 ```
 
+#### ► REGLA PRÁCTICA
+Usa `@Environment` para inyectar una dependencia que vistas intermedias no usan directamente y no deberían reenviar manualmente por cada inicializador; si solo una o dos vistas cercanas la necesitan, pasarla explícitamente por el inicializador sigue siendo más claro.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

@@ -199,6 +199,9 @@ flowchart TD
     A -->|No, solo guardar/leer objetos| C["Hive (NoSQL embebido)"]
 ```
 
+#### ► REGLA PRÁCTICA
+Elige `sqflite` cuando necesites consultas relacionales (joins, `GROUP BY`) entre entidades; elige `Hive` cuando solo necesites guardar y leer objetos directamente, sin relaciones que consultar.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

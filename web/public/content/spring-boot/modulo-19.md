@@ -25,6 +25,10 @@ Un **fat/uber JAR** de Spring Boot contiene la aplicación y sus dependencias en
 
 **Úsalo** cuando despliegas frecuentemente en contenedores. **No lo sobreoptimices** si el despliegue es esporádico o el tiempo dominante está en tests/CI externos.
 
+#### Regla práctica
+
+Ordena las capas del Dockerfile de la más estable a la menos estable: dependencias primero (cambian poco), código de aplicación al final (cambia en cada commit). Un `COPY target/app.jar` monolítico invalida toda la imagen con cualquier cambio de una línea; las capas solo ayudan si el Dockerfile realmente las copia por separado y en ese orden.
+
 #### Ejemplo mínimo ejecutable
 
 Crea el archivo `App.java`:

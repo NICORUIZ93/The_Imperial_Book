@@ -200,6 +200,9 @@ Piensa en comparativa aws vs azure vs gcp por categoría de servicio como una he
 3. Aplica la opción más simple que funcione.
 4. Verifica el resultado y los límites.
 
+#### ► REGLA PRÁCTICA
+No asumas que un servicio "equivalente" en otra nube se comporta igual: S3/Blob Storage/Cloud Storage son casi intercambiables, pero SQS es una cola simple mientras que Pub/Sub hace fan-out nativo a varios suscriptores — verifica siempre el comportamiento real, no solo el nombre de la categoría.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

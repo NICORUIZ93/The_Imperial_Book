@@ -288,6 +288,8 @@ La decisión entre FIFO y Standard depende enteramente de si tu caso de uso requ
 
 **¿Por qué es importante?** Elegir el tipo de cola equivocado tiene consecuencias distintas según el error: usar Standard cuando se necesitaba orden estricto puede introducir bugs sutiles y difíciles de reproducir (que dependen del orden de llegada, algo que rara vez se prueba explícitamente); usar FIFO cuando no se necesitaba puede introducir un cuello de botella de rendimiento innecesario. Entender esta disyuntiva desde el diseño inicial evita ambos problemas.
 
+**Regla práctica:** si procesar un mensaje antes que otro del mismo grupo cambiaría el resultado correcto (cargos de una misma cuenta, estados de un mismo pedido), usa FIFO; si los mensajes son independientes entre sí, usa Standard y gana rendimiento prácticamente ilimitado.
+
 **Diagrama:**
 
 ```mermaid

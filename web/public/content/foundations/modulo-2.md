@@ -394,19 +394,32 @@ mkdir src
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a medir con time.perf_counter() cuánto tarda ordenar una lista de tareas con sorted() comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece. Prerre…
+Al finalizar vas a contar pasos reales —no segundos— para cuatro formas distintas de resolver un problema sobre la misma lista pequeña, vas a duplicar su tamaño dos veces para ver cómo diverge cada una, y vas a medir con `time.perf_counter()` por qué O(n²) deja de ser aceptable mucho antes de lo que parece.
 
 #### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a medir con time.perf_counter() cuánto tarda ordenar una lista de tareas con sorted() comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece.**
+**Contar pasos en vez de segundos revela cómo escala un algoritmo; los segundos dependen de la máquina, los pasos dependen solo de n.**
 
 #### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Con una lista de 2 o 3 tareas, casi cualquier código se siente instantáneo — buscar linealmente o mantener la lista ordenada para buscar por mitades tardan lo mismo a simple vista. Las diferencias de complejidad son invisibles con datos pequeños y se vuelven decisivas en cuanto n crece; sin medir pasos, un código que "funciona bien" en desarrollo puede volverse inviable en producción con más datos.
 
 #### ► LA ANALOGÍA
-Piensa en complejidad, medición, ordenamiento y recursión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+Cuatro corredores en una carrera que se ve pareja en la salida: uno siempre da un paso sin importar la distancia (O(1)), otro avanza a la mitad del tramo que queda (O(log n)), otro recorre cada metro (O(n)) y el último recorre cada metro contra cada metro de un segundo circuito (O(n²)). A 2 metros nadie nota la diferencia. A 1000 metros, el cuarto corredor sigue corriendo cuando los otros tres ya terminaron.
+**Dónde se rompe la analogía:** una carrera tiene una sola distancia fija; un programa real procesa entradas de tamaño variable y n cambia con el tiempo —el algoritmo que elegiste hoy sigue corriendo mañana con el doble de datos.
 
 #### ► CÓMO FUNCIONA
+Mismo problema —localizar un elemento o recorrer una lista— resuelto de cuatro formas, contando pasos reales (no estimados) para el mismo n pequeño, y viendo qué pasa al duplicarlo dos veces:
+
+| n | O(1) | O(log n) | O(n) | O(n²) |
+|---|---|---|---|---|
+| 2 | 1 | 1 | 2 | 4 |
+| 4 | 1 | 2 | 4 | 16 |
+| 8 | 1 | 3 | 8 | 64 |
+
+Verificado contando pasos reales con Python 3.14 (no estimados): acceso por índice para O(1), búsqueda binaria en el peor caso para O(log n), recorrido completo para O(n), bucle anidado completo para O(n²).
+
+#### ► REGLA PRÁCTICA
+Con n=2, la diferencia entre el mejor y el peor caso de esta tabla es 4 pasos contra 1. Con n=8 ya es 64 contra 1. Esa brecha, no el tiempo en una máquina concreta, es lo que `O(...)` describe: cuánto crece el trabajo cuando crece la entrada, no cuánto tarda hoy con pocos datos.
+
 ```mermaid
 xychart-beta
     title "Crecimiento aproximado de operaciones"
@@ -419,33 +432,33 @@ xychart-beta
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|
-| Complejidad, medición, ordenamiento y recursión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| El código es "rápido" en desarrollo pero se vuelve inviable en producción | Se probó solo con pocos datos y nadie contó cómo crecen los pasos con n | Mide con `time.perf_counter()` en al menos dos tamaños que difieran 10x, no solo uno |
+| Un bucle anidado se agrega "para simplificar" sin notar que ya hay otro bucle alrededor | Nadie contó cuántos bucles anidados hay sobre la misma colección | Cuenta los bucles anidados sobre el mismo n: dos anidados ya es candidato a O(n²) |
+| Búsqueda binaria no encuentra un elemento que sí está | La lista no estaba ordenada antes de buscar | Confirma `lista == sorted(lista)` antes de aplicar búsqueda binaria |
 
 #### ► TRADE-OFFS
 | Opción | Cuándo usarla | Cuándo NO usarla |
 |---|---|---|
-| Usar Complejidad, medición, ordenamiento y recursión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+| `sorted()` (Timsort, O(n log n)) | Para ordenar cualquier lista de tamaño real; es la opción por defecto en Python | Casi nunca — una implementación propia de orden O(n²) rara vez la supera |
+| Bubble sort propio (O(n²)) | Solo con fines didácticos, para ver la diferencia de complejidad en código propio | En cualquier código que procese más de unos pocos cientos de elementos |
+| Búsqueda binaria (O(log n)) | Cuando la lista ya está ordenada y se buscará muchas veces | Cuando la lista cambia constantemente y el costo de mantenerla ordenada supera el ahorro en la búsqueda |
 
 #### ► CUÁNDO NO USAR ESTO
-No uses complejidad, medición, ordenamiento y recursión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+No optimices la complejidad de un código que corre una sola vez sobre datos pequeños y fijos: medir y reescribir tiene un costo, y ese costo solo se paga solo cuando n puede crecer de verdad.
 
 #### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: complejidad, medición, ordenamiento y recursión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+Volviendo a la carrera: elegir el algoritmo correcto es elegir qué corredor corre por ti antes de saber qué tan larga será la pista. Con 2 elementos cualquiera gana; la pregunta real es qué corredor sigue corriendo cuando la pista se multiplica por mil.
 
 #### ► LO QUE DEBES RECORDAR
-- Complejidad, medición, ordenamiento y recursión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+- Cuenta pasos, no segundos: los pasos dependen solo de n, los segundos dependen de la máquina.
+- Con n pequeño, O(1), O(log n), O(n) y O(n²) casi no se distinguen; la diferencia aparece al duplicar n varias veces.
+- Dos bucles anidados sobre la misma colección son la señal más común de O(n²) accidental.
+- `sorted()` ya es O(n log n); reescribir tu propio ordenamiento casi nunca mejora eso.
 
 #### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve complejidad, medición, ordenamiento y recursión en tu contexto?
-2. ¿Cómo sabrías que complejidad, medición, ordenamiento y recursión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar complejidad, medición, ordenamiento y recursión?
+1. Si duplicas n una tercera vez (de 8 a 16), ¿qué valor esperas para cada columna de la tabla, y por qué el de O(n²) crece tanto más rápido?
+2. ¿En qué parte de tu propio código hay dos bucles anidados sobre la misma colección, y realmente necesitas ambos?
+3. ¿Qué tamaño de entrada haría que la diferencia entre O(n) y O(n²) deje de ser teórica y se vuelva un problema real de rendimiento?
 
 </details>
 
@@ -453,6 +466,42 @@ Volviendo a la analogía: complejidad, medición, ordenamiento y recursión func
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```python
+def contar_constante(lista):
+    pasos = 0
+    pasos += 1  # acceso por índice: siempre 1 paso, sin importar len(lista)
+    return lista[0], pasos
+
+def contar_binaria(lista, objetivo):
+    pasos = 0
+    lo, hi = 0, len(lista) - 1
+    while lo <= hi:
+        pasos += 1
+        mid = (lo + hi) // 2
+        if lista[mid] == objetivo:
+            return mid, pasos
+        elif lista[mid] < objetivo:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1, pasos  # peor caso: objetivo ausente, recorre todo el camino
+
+def contar_lineal(lista, objetivo):
+    pasos = 0
+    for x in lista:
+        pasos += 1
+        if x == objetivo:
+            return pasos
+    return pasos  # peor caso: objetivo ausente, recorre toda la lista
+
+def contar_cuadratica(lista):
+    pasos = 0
+    for i in range(len(lista)):
+        for j in range(len(lista)):
+            pasos += 1
+    return pasos
+```
+
 ```python
 def tiene_duplicados_lento(valores):
     for i in range(len(valores)):
@@ -484,6 +533,14 @@ xychart-beta
 ```
 
 ```
+Para n=2, 4 y 8, corre contar_constante/contar_binaria/contar_lineal/contar_cuadratica
+sobre list(range(n)) buscando un valor ausente (peor caso) y completa:
+
+n=2: O(1)=___ O(log n)=___ O(n)=___ O(n²)=___
+n=4: O(1)=___ O(log n)=___ O(n)=___ O(n²)=___
+n=8: O(1)=___ O(log n)=___ O(n)=___ O(n²)=___
+n=16 (predicho antes de correrlo): O(1)=___ O(log n)=___ O(n)=___ O(n²)=___
+
 10M con O(n): _________ operaciones, ~_________ segundos
 10M con O(n²): _________ operaciones, ~_________ segundos (¿viable?)
 Punto de inflexión (timeout 10s): N máximo = _________

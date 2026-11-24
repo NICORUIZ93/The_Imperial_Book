@@ -291,6 +291,9 @@ flowchart TD
     A -->|Resultado único| C["async/await\n(confirmarEntrega)"]
 ```
 
+#### ► REGLA PRÁCTICA
+Usa Combine cuando la operación produce un flujo continuo de valores a lo largo del tiempo (texto que cambia, ubicación que se actualiza); usa async/await cuando esperas un único resultado para una operación puntual.
+
 #### ► LO QUE PUEDE SALIR MAL
 | Síntoma | Causa probable | Arreglo |
 |---|---|---|

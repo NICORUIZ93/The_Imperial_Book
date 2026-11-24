@@ -374,6 +374,8 @@ dependencies {
 
 Maven es más verboso y explicita la coordenada completa; Gradle es compacto. Ninguno garantiza corrección por sí mismo: lo importante es que la versión esté declarada y sea la misma en todos los entornos.
 
+**Regla práctica.** Elige Maven si el equipo valora convención fija y builds predecibles sin programar nada; elige Gradle si necesitas lógica de build personalizada o cálculo incremental — y en cualquier caso, fija la versión de la herramienta con el wrapper (`mvnw`/`gradlew`), no con lo que haya instalado cada máquina.
+
 ### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
 **Mecanismo.** El ciclo default de Maven encadena fases: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. `mvn package` ejecuta las fases previas. Gradle no tiene fases: tiene tareas (`compileJava`, `test`, `jar`, `build`, `run`) con relaciones definidas por plugins. Los scopes son conjuntos de classpath: Maven usa `<scope>test</scope>`, `<scope>runtime</scope>`, etc.; Gradle usa configuraciones como `implementation`, `runtimeOnly`, `testImplementation` y `testRuntimeOnly`.

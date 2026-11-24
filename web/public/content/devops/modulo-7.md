@@ -733,6 +733,9 @@ Piensa en estrategias de despliegue — recreate vs rollingupdate como una herra
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Usa `RollingUpdate` (el default) cuando el servicio debe seguir respondiendo durante el despliegue y puede tolerar que versiones vieja y nueva convivan unos segundos; usa `Recreate` solo cuando esa convivencia es inaceptable (por ejemplo, un cambio de esquema incompatible que la versión vieja no puede leer) y el downtime del despliegue es un costo aceptado.
+
 #### ► CUÁNDO NO USAR ESTO
 No uses estrategias de despliegue — recreate vs rollingupdate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 

@@ -371,6 +371,8 @@ El sufijo `[AOP 42us]` no lo produce `RepoMem`: lo añade el aspecto del Tema 5.
 
 **Confusión común.** Creer que `@Autowired` en un campo es “más corto” sin costo. El ahorro de líneas se paga con un objeto que no es válido hasta que Spring interviene.
 
+**Regla práctica.** Usa inyección por constructor por defecto: hace la dependencia obligatoria en la firma, permite `final` y el objeto es válido en el instante en que `new` termina de ejecutarse, sin necesitar un contenedor ni reflexión para probarlo.
+
 #### `src/main/java/com/aurora/sb0/servicio/CampoInyectado.java`
 
 ```java

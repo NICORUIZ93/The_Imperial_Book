@@ -202,6 +202,8 @@ spring.application.name=aurora-sb1
 
 **Confusión común.** Creer que escribir `server.port` en ambos ficheros es equivalente a escribirlo uno solo. La unificación de fuentes ocurre y puede enmascarar diferencias.
 
+**Regla práctica.** Usa `.properties` para un puñado de claves planas; cambia a `.yml` en cuanto necesites jerarquía, listas o mapas — no mantengas ambos formatos para la misma clave, porque la fuente con mayor prioridad gana en silencio y el otro fichero queda como ruido que confunde a quien lo lea después.
+
 #### `src/main/resources/application.properties`
 
 ```properties

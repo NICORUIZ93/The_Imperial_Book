@@ -139,6 +139,8 @@ case-2=modular-monolith
 
 El primer caso tiene límites claros, equipos listos y alto dolor de coordinación: candidato a microservicio. El segundo tiene buen límite pero sin despliegue independiente ni escalado distinto: monolito modular. Tienda Aurora mantiene catálogo y pedidos en un monolito modular. Extrae billing cuando el dominio regula facturación, tiene otro ritmo de cambio y necesita escalado independiente.
 
+**Regla práctica:** empieza siempre con un monolito modular. Extrae un microservicio solo cuando puedas señalar evidencia concreta en al menos 4 de las 5 señales (límite claro, despliegue independiente, equipo con ownership end-to-end, escalado distinto, dolor de coordinación medido), no porque "microservicios es lo moderno". Si no puedes nombrar la evidencia, no has justificado la extracción.
+
 El error más común es extraer microservicios prematuramente. El síntoma es más incidentes y despliegues coordinados. La causa es límites inmaduros y costo distribuido subestimado. La corrección es empezar modular, medir coordinación y extraer por evidencia.
 
 ### Tema 2: DDD: bounded contexts, aggregates y domain events · Avanzado · 180 min

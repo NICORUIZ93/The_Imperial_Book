@@ -44,6 +44,9 @@ Piensa en compose multiplatform vs jetpack compose como una herramienta de talle
 | Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
 | Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
 
+#### ► REGLA PRÁCTICA
+Compose Multiplatform es Jetpack Compose extendido: la misma anotación `@Composable` y la misma API declarativa funcionan en `commonMain`, pero el motor de renderizado que dibuja esa UI cambia según la plataforma (nativo en Android, Skia embebido en iOS/desktop). Por eso una dependencia exclusiva de Android dentro de una función compartida no es un error de Compose: es una dependencia de plataforma colada en código que debería compilar para todas.
+
 #### ► CUÁNDO NO USAR ESTO
 No uses compose multiplatform vs jetpack compose por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
 
