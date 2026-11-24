@@ -73,7 +73,7 @@ Orden por prioridad. Cada módulo se entrega en su propio commit, pasa el valida
 
 | Orden | Curso | Temas aprox. | Nota |
 |---|---|---|---|
-| 1 | Fundamentos (resto) | 88 | Completa el glosario base |
+| 1 | Fundamentos | 88 | ✅ Completo (2026-11-24); validador bloqueante |
 | 2 | Java | ~130 | Ya tiene el estilo «Mecanismo / Regla práctica»: se adapta, no se reescribe de cero |
 | 3 | Spring Boot | ~80 | Antes: decidir Maven o Gradle y reescribir M3–M20 |
 | 4 | Microservicios con Spring Boot | ~150 | Debe ser el curso más completo |

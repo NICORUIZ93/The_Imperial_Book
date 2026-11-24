@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web" / "public" / "content"
-BLOQUEANTES: set[str] = set()
+BLOQUEANTES: set[str] = {"foundations"}
 
 BLOQUES = [
     ("objetivos", r"^#### Objetivos\s*$"),
