@@ -31,8 +31,6 @@
 > ```
 >
 > Pulsa **Sync Now**. Desde Room 2.7, `room-ktx` está integrado en `room-runtime` y no hace falta declararlo.
->
-> **Los scripts `python3` con `sqlite3` de este módulo son modelos del SQL, no pruebas de Room.** Demuestran qué hace la sentencia SQL, pero no que tu `@Entity`, tu DAO o tu `Migration` compilen y se apliquen. La evidencia real es la **Verificación real en Android** de cada tema: la compilación con KSP, el esquema exportado y la app en el emulador.
 
 
 ### Tema 1: Entities, DAOs y Database · Avanzado · 45 min
@@ -62,7 +60,6 @@ Al finalizar podrás declarar una @Entity, un @Dao y una @Database de Room, y ex
 ```
 
 ```bash
-# Este script python3 (vía sqlite3) es un modelo del esquema SQL equivalente; la prueba real es compilar con Room
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -101,35 +98,8 @@ abstract class AppDatabase : RoomDatabase() {
 ```
 
 ```bash
-python3 -c "
-import sqlite3
-# el esquema equivalente que Room generaría a partir de la @Entity Tarea
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY NOT NULL, titulo TEXT NOT NULL, completada INTEGER NOT NULL)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
-filas = con.execute('SELECT * FROM Tarea').fetchall()
-print('esquema válido, filas:', filas)
-con.close()
-"
-```
-
-```bash
 ./gradlew assembleDebug
 ./gradlew test
-```
-
-```bash
-python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-try:
-    con.execute('SELECT columnaInexistente FROM Tarea').fetchall()
-    print('la query se ejecutó sin error (INESPERADO)')
-except sqlite3.OperationalError as e:
-    print('SQLite rechazó la query:', e)
-con.close()
-"
 ```
 
 </details>
@@ -162,7 +132,6 @@ Al finalizar podrás explicar por qué un DAO que devuelve Flow mantiene la UI s
 ```
 
 ```bash
-# Este script python3 (vía sqlite3) modela el SQL de la migración; la prueba real se hace en el emulador
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -183,42 +152,8 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 ```
 
 ```bash
-python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-# versión 1 del esquema, con datos ya existentes del usuario
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
-con.execute(\"INSERT INTO Tarea VALUES ('2', 'Pagar alquiler', 1)\")
-print('antes de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
-
-# la migración real (idéntica a MIGRATION_1_2 en SQL)
-con.execute('ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0')
-print('después de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
-con.close()
-"
-```
-
-```bash
 ./gradlew assembleDebug
 ./gradlew test
-```
-
-```bash
-python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
-
-# la app AHORA espera la columna 'prioridad' (versión 2), pero la migración nunca se aplicó
-try:
-    con.execute('SELECT prioridad FROM Tarea').fetchall()
-    print('INESPERADO: la columna existe sin migración')
-except sqlite3.OperationalError as e:
-    print('Discrepancia de esquema detectada:', e)
-con.close()
-"
 ```
 
 </details>
@@ -251,7 +186,6 @@ Al finalizar podrás implementar un repositorio donde la UI siempre lee del cach
 ```
 
 ```bash
-# Este script python3 simula, con sqlite3 real, que la UI sigue funcionando sin red
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -276,35 +210,6 @@ class TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService
         remotas.forEach { dao.insertar(Tarea(it.id, it.titulo, false)) } // sincroniza en background
     }
 }
-```
-
-```bash
-python3 -c "
-import sqlite3
-
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-
-def sincronizar_desde_api_simulada(conexion_disponible):
-    if not conexion_disponible:
-        print('sin conexión: la sincronización no ocurre, pero la UI sigue leyendo del caché existente')
-        return
-    con.execute(\"INSERT OR REPLACE INTO Tarea VALUES ('1', 'Comprar leche (actualizado de la API)', 0)\")
-    print('sincronización exitosa: caché actualizado con datos frescos')
-
-def ui_lee_siempre_de_room():
-    return con.execute('SELECT * FROM Tarea').fetchall()
-
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche (versión local)', 0)\")
-print('UI muestra (antes de cualquier sincronización):', ui_lee_siempre_de_room())
-
-sincronizar_desde_api_simulada(conexion_disponible=False)  # simula estar sin conexión
-print('UI sigue mostrando (sin conexión, offline-first):', ui_lee_siempre_de_room())
-
-sincronizar_desde_api_simulada(conexion_disponible=True)  # la conexión vuelve
-print('UI muestra (tras sincronizar con éxito):', ui_lee_siempre_de_room())
-con.close()
-"
 ```
 
 ```bash

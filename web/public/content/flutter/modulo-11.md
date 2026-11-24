@@ -35,33 +35,28 @@ cd flujo_release
 flutter build appbundle --release
 ```
 
-```python
-import re
-import zipfile
-from pathlib import Path
+Crea `tool/verificar_release.sh`. Usa solo herramientas que ya tienes en macOS y Linux (`sed`, `unzip`, `grep`):
 
-aab = Path("build/app/outputs/bundle/release/app-release.aab")
-pubspec = Path("pubspec.yaml").read_text(encoding="utf-8")
-version = re.search(r"^version:\s*(\S+)", pubspec, re.MULTILINE).group(1)
-if "+" not in version:
-    raise SystemExit("fallo: pubspec.yaml sin build number (usa 1.0.0+1)")
-if not aab.is_file():
-    raise SystemExit(f"fallo: no existe {aab}; ejecuta flutter build appbundle --release")
-
-with zipfile.ZipFile(aab) as paquete:
-    nombres = paquete.namelist()
-if "BundleConfig.pb" not in nombres or "base/manifest/AndroidManifest.xml" not in nombres:
-    raise SystemExit("fallo: el .aab no tiene la estructura esperada")
-
-ios = Path("ios/Flutter/Release.xcconfig").is_file()
-print(f"aab: {aab} ({aab.stat().st_size} bytes)")
-print(f"version: {version}")
-print("estructura: BundleConfig.pb y manifest presentes")
-print(f"ios: Release.xcconfig {'presente' if ios else 'ausente'}")
+```bash
+#!/usr/bin/env bash
+# tool/verificar_release.sh — comprueba versión y estructura del .aab antes de subirlo
+set -euo pipefail
+aab=build/app/outputs/bundle/release/app-release.aab
+version=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml)
+[[ "$version" == *+* ]] || { echo "fallo: pubspec.yaml sin build number (usa 1.0.0+1)"; exit 1; }
+[[ -f "$aab" ]] || { echo "fallo: no existe $aab; ejecuta flutter build appbundle --release"; exit 1; }
+contenido=$(unzip -Z1 "$aab")
+grep -qx 'BundleConfig.pb' <<<"$contenido" && grep -qx 'base/manifest/AndroidManifest.xml' <<<"$contenido" \
+  || { echo "fallo: el .aab no tiene la estructura esperada"; exit 1; }
+echo "aab: $aab ($(wc -c < "$aab" | tr -d ' ') bytes)"
+echo "version: $version"
+echo "estructura: BundleConfig.pb y manifest presentes"
+[[ -f ios/Flutter/Release.xcconfig ]] && echo "ios: Release.xcconfig presente" || echo "ios: Release.xcconfig ausente"
 ```
 
 ```bash
-python3 verificar_release.py
+chmod +x tool/verificar_release.sh
+./tool/verificar_release.sh
 ```
 
 ```text
@@ -79,7 +74,7 @@ ios: Release.xcconfig presente
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a validar, antes de generar variantes, que la imagen fuente de RutaFlow tiene la resolución mínima y que la configuración de íconos apunta a ella. Prerrequisitos: Python 3 con PyYAML y el Tema 1 de este módulo.
+Al finalizar vas a validar, antes de generar variantes, que la imagen fuente de RutaFlow tiene la resolución mínima y que la configuración de íconos apunta a ella. Prerrequisitos: el proyecto `flujo_release` del Tema 1.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -106,29 +101,17 @@ flowchart LR
     SRC -. "si mide menos de 1024, las variantes grandes se pixelan" .-> GEN
 ```
 
+No hace falta diseñar un ícono para practicar: `flutter create` ya dejó uno de 1024×1024 en el proyecto iOS y uno
+de 192×192 en `web/icons`. Copia los dos a `assets/`:
+
 ```bash
-mkdir ejemplo && cd ejemplo
+cd flujo_release
+mkdir -p assets tool
+cp ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png assets/icon_1024.png
+cp web/icons/Icon-192.png assets/icon_192.png
 ```
 
-```python
-import struct
-import zlib
-from pathlib import Path
-
-
-def png(path, tamano, color=(28, 110, 164)):
-    def bloque(tipo, datos):
-        return struct.pack(">I", len(datos)) + tipo + datos + struct.pack(">I", zlib.crc32(tipo + datos) & 0xFFFFFFFF)
-
-    fila = b"\x00" + bytes(color) * tamano
-    contenido = b"\x89PNG\r\n\x1a\n" + bloque(b"IHDR", struct.pack(">IIBBBBB", tamano, tamano, 8, 2, 0, 0, 0)) + bloque(b"IDAT", zlib.compress(fila * tamano)) + bloque(b"IEND", b"")
-    Path(path).write_bytes(contenido)
-
-
-Path("assets").mkdir(exist_ok=True)
-png("assets/icon_1024.png", 1024)
-png("assets/icon_48.png", 48)
-```
+Crea `flutter_launcher_icons.yaml`:
 
 ```yaml
 flutter_launcher_icons:
@@ -137,36 +120,40 @@ flutter_launcher_icons:
   ios: true
 ```
 
-```python
-import struct
-from pathlib import Path
+Crea `tool/verificar_iconos.sh`. `file` lee el encabezado del PNG y devuelve el ancho y el alto:
 
-import yaml
-
-
-def dimensiones(path):
-    datos = path.read_bytes()
-    if datos[:8] != b"\x89PNG\r\n\x1a\n":
-        raise SystemExit(f"fallo: {path} no es un PNG válido")
-    ancho, alto = struct.unpack(">II", datos[16:24])
-    return ancho, alto
-
-
-config = yaml.safe_load(Path("flutter_launcher_icons.yaml").read_text(encoding="utf-8"))["flutter_launcher_icons"]
-origen = Path(config["image_path"])
-ancho, alto = dimensiones(origen)
-if min(ancho, alto) < 1024:
-    raise SystemExit(f"fallo: {origen} mide {ancho}x{alto}; la fuente debe ser al menos 1024x1024")
-
-print(f"fuente: {origen} ({ancho}x{alto})")
-print(f"android: {config['android']}")
-print(f"ios: {config['ios']}")
-print("destinos esperados: mipmap-* e ios/Runner/Assets.xcassets/AppIcon.appiconset")
+```bash
+#!/usr/bin/env bash
+# tool/verificar_iconos.sh — la fuente del ícono existe, es PNG y mide al menos 1024x1024
+set -euo pipefail
+origen=$(sed -n 's/^[[:space:]]*image_path:[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\}[[:space:]]*$/\1/p' flutter_launcher_icons.yaml)
+[[ -f "$origen" ]] || { echo "fallo: no existe $origen"; exit 1; }
+tipo=$(file -b "$origen")
+[[ "$tipo" == PNG* ]] || { echo "fallo: $origen no es un PNG válido"; exit 1; }
+read -r ancho alto < <(sed -E 's/.*, ([0-9]+) x ([0-9]+),.*/\1 \2/' <<<"$tipo")
+(( ancho >= 1024 && alto >= 1024 )) || { echo "fallo: $origen mide ${ancho}x${alto}; la fuente debe ser al menos 1024x1024"; exit 1; }
+echo "fuente: $origen (${ancho}x${alto})"
+grep -E '^[[:space:]]*(android|ios):' flutter_launcher_icons.yaml | sed 's/^[[:space:]]*//'
+echo "destinos esperados: mipmap-* e ios/Runner/Assets.xcassets/AppIcon.appiconset"
 ```
 
 ```bash
-python3 generar_png.py
-python3 verificar_iconos.py
+chmod +x tool/verificar_iconos.sh
+./tool/verificar_iconos.sh
+```
+
+```text
+fuente: assets/icon_1024.png (1024x1024)
+android: true
+ios: true
+destinos esperados: mipmap-* e ios/Runner/Assets.xcassets/AppIcon.appiconset
+```
+
+Cambia `image_path` a `assets/icon_192.png` y vuelve a ejecutar. El script se detiene antes de generar variantes
+pixeladas:
+
+```text
+fallo: assets/icon_192.png mide 192x192; la fuente debe ser al menos 1024x1024
 ```
 
 </details>

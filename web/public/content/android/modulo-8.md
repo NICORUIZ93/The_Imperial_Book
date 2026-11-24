@@ -14,8 +14,6 @@
 > ```
 >
 > Los nombres de las líneas «de la plantilla» pueden variar ligeramente según tu versión de Android Studio; si falta alguna, añádela con el nombre que aparezca en tu `gradle/libs.versions.toml`.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas de tu app.** La evidencia real son las pruebas Kotlin de cada tema ejecutadas con Gradle y su informe en `app/build/reports/tests/`.
 
 
 ### Tema 1: Testing de ViewModels con fakes y runTest · Avanzado · 45 min
@@ -161,32 +159,6 @@ class TarjetaTareaUiTest {
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.TarjetaTareaUiTest"
 ```
 
-```bash
-python3 -c "
-def renderizar_tarjeta_correcta(titulo, completada):
-    return {'texto_mostrado': titulo, 'tachado': completada}
-
-def renderizar_tarjeta_con_bug(titulo, completada):
-    return {'texto_mostrado': titulo, 'tachado': not completada}  # bug: condición invertida
-
-def estado_del_viewmodel_es_correcto(completada_real):
-    return completada_real == True  # el ViewModel calculó bien 'completada = True'
-
-def ui_muestra_correctamente(render, completada_real):
-    return render['tachado'] == completada_real
-
-completada_real = True
-
-print('estado del ViewModel correcto:', estado_del_viewmodel_es_correcto(completada_real))
-
-render_correcto = renderizar_tarjeta_correcta('Comprar leche', completada_real)
-print('con render correcto, UI coincide con el estado:', ui_muestra_correctamente(render_correcto, completada_real))
-
-render_con_bug = renderizar_tarjeta_con_bug('Comprar leche', completada_real)
-print('con render CON BUG, UI coincide con el estado:', ui_muestra_correctamente(render_con_bug, completada_real))
-"
-```
-
 </details>
 
 ### Tema 3: Testing end-to-end con Activity real, y fakes vs mocks · Avanzado · 45 min
@@ -268,36 +240,6 @@ class FlujoCrearTareaTest {
 
 ```bash
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.FlujoCrearTareaTest"
-```
-
-```bash
-python3 -c "
-class TareaRepositoryFake:  # código ordinario, reutilizable entre tests
-    def __init__(self):
-        self.tareas_guardadas = []
-    def guardar(self, titulo):
-        self.tareas_guardadas.append(titulo)
-        return True
-
-class MockConVerificacionDeLlamadas:  # equivalente simplificado a un mock de Mockito
-    def __init__(self):
-        self.llamadas = []
-    def guardar(self, titulo):
-        self.llamadas.append(('guardar', titulo))
-        return True
-    def fue_llamado_exactamente_una_vez_con(self, metodo, argumento):
-        return self.llamadas.count((metodo, argumento)) == 1
-
-# uso típico de un FAKE: comportamiento reutilizable, se verifica el estado resultante
-fake = TareaRepositoryFake()
-fake.guardar('Nueva tarea')
-print('fake, estado resultante reutilizable:', fake.tareas_guardadas)
-
-# uso típico de un MOCK: verificación puntual de que una interacción específica ocurrió
-mock = MockConVerificacionDeLlamadas()
-mock.guardar('Nueva tarea')
-print('mock, verificación puntual de la llamada:', mock.fue_llamado_exactamente_una_vez_con('guardar', 'Nueva tarea'))
-"
 ```
 
 </details>

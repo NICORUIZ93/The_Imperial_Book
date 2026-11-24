@@ -12,8 +12,6 @@
 > ```
 >
 > Pulsa **Sync Now**. Sin `work-runtime-ktx`, `import androidx.work.CoroutineWorker` no compila.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas de WorkManager.** Escribir un JSON en `/tmp` ilustra la idea de «persistir la solicitud», pero no demuestra que WorkManager lo haga. La evidencia real es la **Verificación real en Android** del Tema 1: una prueba instrumentada del `Worker` y la consulta del planificador del sistema con `adb`.
 
 
 ### Tema 1: CoroutineWorker y garantía de ejecución · Avanzado · 40 min
@@ -42,7 +40,6 @@ Al finalizar podrás escribir un CoroutineWorker y explicar por qué WorkManager
 ```
 
 ```bash
-# Este script python3 modela la persistencia de la solicitud de trabajo en un archivo real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -76,32 +73,6 @@ class SincronizarWorker(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import json
-
-ARCHIVO_COLA_PERSISTENTE = '/tmp/work_manager_cola.json'
-
-def encolar_trabajo_persistente(nombre_trabajo):
-    with open(ARCHIVO_COLA_PERSISTENTE, 'w') as f:
-        json.dump({'trabajo_pendiente': nombre_trabajo}, f)
-
-def proceso_termina_abruptamente(cola_en_memoria):
-    cola_en_memoria.clear()  # simula que el proceso muere: la memoria se pierde por completo
-
-def nuevo_proceso_verifica_trabajo_pendiente():
-    with open(ARCHIVO_COLA_PERSISTENTE) as f:
-        return json.load(f).get('trabajo_pendiente')
-
-cola_en_memoria = ['SincronizarWorker']  # equivalente a un coroutine en viewModelScope
-encolar_trabajo_persistente('SincronizarWorker')  # equivalente a WorkManager.enqueue(...)
-
-proceso_termina_abruptamente(cola_en_memoria)
-print('cola en memoria tras terminar el proceso:', cola_en_memoria)
-print('trabajo recuperado por un NUEVO proceso desde almacenamiento persistente:', nuevo_proceso_verifica_trabajo_pendiente())
-"
 ```
 
 ```kotlin
@@ -192,7 +163,6 @@ Las constraints declaran condiciones del sistema que deben cumplirse antes de ej
 ```
 
 ```bash
-# Este script python3 valida el intervalo mínimo permitido y modela las constraints
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -221,26 +191,6 @@ fun crearSolicitudPeriodica(): androidx.work.PeriodicWorkRequest {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-def constraints_se_cumplen(hay_red, bateria_porcentaje):
-    red_conectada = hay_red
-    bateria_no_baja = bateria_porcentaje > 15  # 'batería baja' según umbral típico del sistema
-    return red_conectada and bateria_no_baja
-
-escenarios = [
-    ('con red y batería alta', True, 80),
-    ('sin red, batería alta', False, 80),
-    ('con red, batería crítica', True, 5),
-    ('sin red, batería crítica', False, 5),
-]
-
-for descripcion, hay_red, bateria in escenarios:
-    puede_ejecutar = constraints_se_cumplen(hay_red, bateria)
-    print(f'{descripcion}: {\"EJECUTA\" if puede_ejecutar else \"ESPERA\"}')
-"
 ```
 
 </details>
@@ -289,7 +239,6 @@ Disparar una notificación local desde dentro de `doWork()` al completar la sinc
 ```
 
 ```bash
-# Este script python3 modela el envío de la notificación tras completar el trabajo
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -329,26 +278,6 @@ class SincronizarWorkerConNotificacion(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-eventos = []
-
-def completar_trabajo_en_background():
-    eventos.append('doWork() ejecuta la sincronización')
-    eventos.append('sincronización exitosa')
-    eventos.append('NotificationManagerCompat.notify() dispara la notificación')
-
-def usuario_ve_notificacion_sin_abrir_la_app():
-    eventos.append('usuario ve la notificación en la barra de estado (app NO está en primer plano)')
-
-completar_trabajo_en_background()
-usuario_ve_notificacion_sin_abrir_la_app()
-
-for i, evento in enumerate(eventos, 1):
-    print(f'{i}. {evento}')
-"
 ```
 
 </details>

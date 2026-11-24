@@ -135,29 +135,29 @@ sleep 1
 ```
 
 ```bash
-python3 -c "
-import json
-d = json.load(open('collection.json'))
-d['item'].append({
-  'name': 'Crear envio',
-  'request': {
-    'method': 'POST',
-    'header': [{'key': 'content-type', 'value': 'application/json'}],
-    'url': '{{baseUrl}}/envios',
-    'body': {'mode': 'raw', 'raw': '{\"guia\": \"RF-4471\"}'}
+node -e '
+const fs = require("fs");
+const d = JSON.parse(fs.readFileSync("collection.json", "utf8"));
+d.item.push({
+  name: "Crear envio",
+  request: {
+    method: "POST",
+    header: [{ key: "content-type", value: "application/json" }],
+    url: "{{baseUrl}}/envios",
+    body: { mode: "raw", raw: JSON.stringify({ guia: "RF-4471" }) }
   },
-  'event': [{
-    'listen': 'test',
-    'script': {'exec': [
-      \"pm.test('responde 201', () => pm.response.to.have.status(201));\",
-      \"const cuerpo = pm.response.json();\",
-      \"pm.test('la guia coincide con la enviada', () => pm.expect(cuerpo.guia).to.eql('RF-4471'));\",
-      \"pm.test('el estado inicial es creado', () => pm.expect(cuerpo.estado).to.eql('creado'));\"
-    ]}
+  event: [{
+    listen: "test",
+    script: { exec: [
+      "pm.test(\"responde 201\", () => pm.response.to.have.status(201));",
+      "const cuerpo = pm.response.json();",
+      "pm.test(\"la guia coincide con la enviada\", () => pm.expect(cuerpo.guia).to.eql(\"RF-4471\"));",
+      "pm.test(\"el estado inicial es creado\", () => pm.expect(cuerpo.estado).to.eql(\"creado\"));"
+    ] }
   }]
-})
-json.dump(d, open('collection.json', 'w'), indent=2)
-"
+});
+fs.writeFileSync("collection.json", JSON.stringify(d, null, 2));
+'
 npx newman run collection.json -e environment.json
 ```
 
@@ -185,14 +185,13 @@ ls -la reporte.html
 ```
 
 ```bash
-python3 -c "
-import json
-d = json.load(open('collection.json'))
-for script in d['item'][1]['event'][0]['script']['exec']:
-    pass
-d['item'][1]['event'][0]['script']['exec'][-1] = d['item'][1]['event'][0]['script']['exec'][-1].replace(\"eql('creado')\", \"eql('entregado')\")
-json.dump(d, open('collection-fallo.json', 'w'), indent=2)
-"
+node -e '
+const fs = require("fs");
+const d = JSON.parse(fs.readFileSync("collection.json", "utf8"));
+const exec = d.item[1].event[0].script.exec;
+exec[exec.length - 1] = exec.at(-1).replace("eql(\"creado\")", "eql(\"entregado\")");
+fs.writeFileSync("collection-fallo.json", JSON.stringify(d, null, 2));
+'
 npx newman run collection-fallo.json -e environment.json | tail -5
 echo "codigo de salida visto por el script: $?"
 ```
@@ -244,14 +243,14 @@ docker run -d --name academia-jenkins -p 8080:8080 \
   -e JAVA_OPTS="-Djenkins.install.runSetupWizard=false" \
   jenkins/jenkins:lts-jdk21
 sleep 20
-curl -s http://localhost:8080/api/json | python3 -c "import json,sys; d=json.load(sys.stdin); print('useSecurity:', d['useSecurity'])"
+curl -s http://localhost:8080/api/json | jq -r '"useSecurity: \(.useSecurity)"'
 ```
 
 ```bash
-curl -s "http://localhost:8080/pluginManager/api/json?depth=1" | python3 -c "import json,sys; print('plugins instalados:', len(json.load(sys.stdin).get('plugins', [])))"
+curl -s "http://localhost:8080/pluginManager/api/json?depth=1" | jq -r '"plugins instalados: \(.plugins // [] | length)"'
 
 curl -s -c cookies.txt "http://localhost:8080/crumbIssuer/api/json" -o crumb.json
-CRUMB=$(python3 -c "import json; print(json.load(open('crumb.json'))['crumb'])")
+CRUMB=$(jq -r .crumb crumb.json)
 curl -s -b cookies.txt -H "Jenkins-Crumb: $CRUMB" \
   -d '<jenkins><install plugin="workflow-aggregator@latest" /></jenkins>' \
   -H "Content-Type: text/xml" \
@@ -282,7 +281,7 @@ pipeline {
 
 ```bash
 curl -s -c cookies2.txt "http://localhost:8080/crumbIssuer/api/json" -o crumb2.json
-CRUMB2=$(python3 -c "import json; print(json.load(open('crumb2.json'))['crumb'])")
+CRUMB2=$(jq -r .crumb crumb2.json)
 curl -s -b cookies2.txt -H "Jenkins-Crumb: $CRUMB2" -F "jenkinsfile=<Jenkinsfile" http://localhost:8080/pipeline-model-converter/validate
 ```
 
@@ -334,12 +333,12 @@ Crea el archivo `job-config.xml`:
 
 ```bash
 curl -s -c cookies3.txt "http://localhost:8080/crumbIssuer/api/json" -o crumb3.json
-CRUMB3=$(python3 -c "import json; print(json.load(open('crumb3.json'))['crumb'])")
+CRUMB3=$(jq -r .crumb crumb3.json)
 curl -s -b cookies3.txt -H "Jenkins-Crumb: $CRUMB3" -H "Content-Type: application/xml" \
   --data-binary @job-config.xml "http://localhost:8080/createItem?name=qa-pipeline"
 curl -s -b cookies3.txt -H "Jenkins-Crumb: $CRUMB3" -X POST "http://localhost:8080/job/qa-pipeline/build"
 sleep 8
-curl -s -b cookies3.txt "http://localhost:8080/job/qa-pipeline/1/api/json" | python3 -c "import json,sys; print('resultado:', json.load(sys.stdin)['result'])"
+curl -s -b cookies3.txt "http://localhost:8080/job/qa-pipeline/1/api/json" | jq -r '"resultado: \(.result)"'
 ```
 
 </details>
@@ -360,7 +359,7 @@ Al finalizar podrás comparar dos clientes de API por resultados verificables. P
 #### Código y verificación
 ```bash
 mkdir -p practica-clientes
-python3 -m http.server 8091 --bind 127.0.0.1 --directory practica-clientes
+npx --yes http-server practica-clientes -p 8091 -a 127.0.0.1
 ```
 
 ```json

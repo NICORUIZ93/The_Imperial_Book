@@ -69,7 +69,13 @@ visudo -c
 # PubkeyAuthentication yes
 # MaxAuthTries 3
 install -d -m 755 /etc/ssh/sshd_config.d
-python3 -c "import pathlib; pathlib.Path("/tmp/99-endurecer.conf").write_text("PermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nPubkeyAuthentication yes\nMaxAuthTries 3\n")"
+cat > /tmp/99-endurecer.conf <<'EOF'
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+MaxAuthTries 3
+EOF
 install -m 644 /tmp/99-endurecer.conf /etc/ssh/sshd_config.d/99-endurecer.conf
 sshd -t
 
@@ -86,9 +92,19 @@ ufw --force enable
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq fail2ban unattended-upgrades
-python3 -c "import pathlib; pathlib.Path("/etc/fail2ban/jail.local").write_text("[sshd]\nenabled = true\nbackend = systemd\nmaxretry = 4\nfindtime = 10m\nbantime = 1h\n")"
+cat > /etc/fail2ban/jail.local <<'EOF'
+[sshd]
+enabled = true
+backend = systemd
+maxretry = 4
+findtime = 10m
+bantime = 1h
+EOF
 systemctl enable --now fail2ban
-python3 -c "import pathlib; pathlib.Path("/etc/apt/apt.conf.d/20auto-upgrades").write_text("APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n")"
+cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+EOF
 systemctl restart unattended-upgrades
 ```
 
@@ -181,8 +197,18 @@ apt-get update -qq
 apt-get install -y -qq nginx dnsutils certbot python3-certbot-nginx
 
 install -d -m 755 /var/www/rutaflow
-python3 -c "import pathlib; pathlib.Path("/var/www/rutaflow/index.html").write_text("<!doctype html><html lang=\"es\"><title>RutaFlow</title><h1>RutaFlow en produccion</h1></html>\n")"
-python3 -c "import pathlib; pathlib.Path("/etc/nginx/sites-available/rutaflow").write_text("server {\n    listen 80;\n    listen [::]:80;\n    server_name app.tudominio.com;\n    root /var/www/rutaflow;\n    index index.html;\n}\n")"
+cat > /var/www/rutaflow/index.html <<'EOF'
+<!doctype html><html lang="es"><title>RutaFlow</title><h1>RutaFlow en produccion</h1></html>
+EOF
+cat > /etc/nginx/sites-available/rutaflow <<'EOF'
+server {
+    listen 80;
+    listen [::]:80;
+    server_name app.tudominio.com;
+    root /var/www/rutaflow;
+    index index.html;
+}
+EOF
 ln -sfn /etc/nginx/sites-available/rutaflow /etc/nginx/sites-enabled/rutaflow
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
@@ -296,8 +322,40 @@ RELEASE="/srv/rutaflow/releases/$(date +%Y%m%d-%H%M%S)"
 install -d -o rutaflow -g rutaflow -m 755 "$RELEASE"
 install -o rutaflow -g rutaflow -m 644 /root/app/server.js /root/app/VERSION "$RELEASE"/
 ln -sfn "$RELEASE" /srv/rutaflow/current
-python3 -c "import pathlib; pathlib.Path("/etc/systemd/system/rutaflow.service").write_text("[Unit]\nDescription=RutaFlow (servidor propio)\nAfter=network.target\n\n[Service]\nType=simple\nUser=rutaflow\nGroup=rutaflow\nWorkingDirectory=/srv/rutaflow/current\nEnvironment=PORT=3000\nExecStart=/usr/bin/node server.js\nRestart=on-failure\nRestartSec=2\nNoNewPrivileges=true\nPrivateTmp=true\n\n[Install]\nWantedBy=multi-user.target\n")"
-python3 -c "import pathlib; pathlib.Path("/etc/nginx/sites-available/rutaflow").write_text("server {\n    listen 80;\n    listen [::]:80;\n    server_name app.tudominio.com;\n\n    location / {\n        proxy_pass http://127.0.0.1:3000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\n")"
+cat > /etc/systemd/system/rutaflow.service <<'EOF'
+[Unit]
+Description=RutaFlow (servidor propio)
+After=network.target
+
+[Service]
+Type=simple
+User=rutaflow
+Group=rutaflow
+WorkingDirectory=/srv/rutaflow/current
+Environment=PORT=3000
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+cat > /etc/nginx/sites-available/rutaflow <<'EOF'
+server {
+    listen 80;
+    listen [::]:80;
+    server_name app.tudominio.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EOF
 nginx -t
 systemctl daemon-reload
 systemd-analyze verify /etc/systemd/system/rutaflow.service

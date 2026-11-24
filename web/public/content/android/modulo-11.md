@@ -3,8 +3,6 @@
 
 ## Aprende construyendo
 
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist de la terminal solo comprueba que existan archivos; no demuestra que funcionen.
-
 
 ### Tema 1: Arquitectura MVVM completa con UDF · Avanzado · 45 min
 
@@ -62,7 +60,6 @@ Este proyecto integra cada módulo anterior: la UI declarativa con state hoistin
 ```
 
 ```bash
-# Este script python3 verifica que la integración conecta las capas en el orden correcto
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -94,28 +91,6 @@ class TareasViewModelIntegrado @Inject constructor(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-capas = {
-    'UI':          {'conoce_directamente': ['ViewModel']},
-    'ViewModel':   {'conoce_directamente': ['Repositorio']},
-    'Repositorio': {'conoce_directamente': ['Room', 'Retrofit']},
-    'Room':        {'conoce_directamente': []},
-    'Retrofit':     {'conoce_directamente': []},
-}
-
-def viola_udf(capas):
-    violaciones = []
-    if 'Room' in capas['UI']['conoce_directamente'] or 'Retrofit' in capas['UI']['conoce_directamente']:
-        violaciones.append('UI conoce Room/Retrofit directamente, saltándose ViewModel y Repositorio')
-    if 'Room' in capas['ViewModel']['conoce_directamente'] or 'Retrofit' in capas['ViewModel']['conoce_directamente']:
-        violaciones.append('ViewModel conoce Room/Retrofit directamente, saltándose el Repositorio')
-    return violaciones
-
-print('violaciones de capas encontradas:', viola_udf(capas))
-"
 ```
 
 </details>

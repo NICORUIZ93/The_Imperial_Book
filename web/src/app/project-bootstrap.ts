@@ -209,7 +209,7 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
   },
   cicd: {
     workspace: 'academia-labs/cicd',
-    prerequisites: ['Git', 'Cuenta de GitHub o GitLab', 'Docker'],
+    prerequisites: ['Git', 'Cuenta de GitHub o GitLab', 'Docker', 'jq'],
     createCommands: ['mkdir -p academia-labs/cicd/.github/workflows', 'cd academia-labs/cicd', 'git init', 'touch .github/workflows/ci.yml'],
     structure: ['.github/workflows/ci.yml', 'api/', 'k8s/', 'README.md'],
     runCommand: 'git push  # dispara el pipeline',
@@ -227,7 +227,7 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
   },
   observabilidad: {
     workspace: 'academia-labs/observabilidad',
-    prerequisites: ['Docker', 'JDK 21+ y una API Spring', 'Git'],
+    prerequisites: ['Docker', 'JDK 21+ y una API Spring', 'Git', 'jq'],
     createCommands: ['mkdir -p academia-labs/observabilidad', 'cd academia-labs/observabilidad', 'git init', 'touch compose.yaml prometheus.yml'],
     structure: ['compose.yaml', 'prometheus.yml', 'grafana/', 'api/'],
     runCommand: 'docker compose up -d',

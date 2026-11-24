@@ -4,8 +4,6 @@
 ## Aprende construyendo
 
 > **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`, `implementation(libs.androidx.navigation.compose)` y `implementation(libs.kotlinx.serialization.json)`; dentro de `plugins { }`, `alias(libs.plugins.kotlin.serialization)`; y en el `build.gradle.kts` de la raíz, `alias(libs.plugins.kotlin.serialization) apply false`. Pulsa **Sync Now**. Sin `navigation-compose`, `import androidx.navigation.compose.NavHost` no compila; el plugin de serialización hace falta para las rutas tipadas con `@Serializable`.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la que aparece como **Verificación real en Android**: la app en el emulador y comandos `adb` con salida esperada.
 
 
 ### Tema 1: NavHost y NavController · Intermedio · 40 min
@@ -69,29 +67,6 @@ fun GrafoNavegacion(navController: NavHostController = rememberNavController()) 
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-class BackStackSimulado:
-    def __init__(self, inicio):
-        self.pila = [inicio]
-    def navigate(self, ruta):
-        self.pila.append(ruta)
-    def atras(self):
-        if len(self.pila) > 1:
-            return self.pila.pop()
-        return None
-    def pantalla_actual(self):
-        return self.pila[-1]
-
-nav = BackStackSimulado('lista')
-nav.navigate('detalle/42')
-print('pantalla actual tras navegar:', nav.pantalla_actual())
-print('pila completa:', nav.pila)
-nav.atras()
-print('pantalla actual tras \"atrás\":', nav.pantalla_actual())
-"
-```
-
 </details>
 
 ### Tema 2: Argumentos tipados y deep links · Intermedio · 40 min
@@ -148,23 +123,6 @@ fun NavGraphBuilder.rutaDetalleConArgumentoYDeepLink() {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import re
-
-def resolver_deep_link(uri, patron_uri, ruta_interna):
-    # convierte 'miapp://tarea/{id}' en una regex que captura 'id'
-    patron_regex = '^' + re.escape(patron_uri).replace(r'\{id\}', '(?P<id>[^/]+)') + '$'
-    match = re.match(patron_regex, uri)
-    if not match:
-        return None
-    return ruta_interna.replace('{id}', match.group('id'))
-
-resultado = resolver_deep_link('miapp://tarea/42', 'miapp://tarea/{id}', 'detalle/{id}')
-print('URI externa: miapp://tarea/42  ->  ruta interna resuelta:', resultado)
-"
 ```
 
 ```xml
@@ -224,37 +182,8 @@ Al finalizar podrás estructurar una app con bottom navigation donde cada secci�
 ```
 
 ```bash
-# Verificación en python3 del modelo de stacks independientes antes de escribir el Compose real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-python3 -c "
-class NavegacionMultiSeccion:
-    def __init__(self, secciones):
-        self.stacks = {s: [s] for s in secciones}  # cada sección arranca con su propia raíz
-        self.seccion_activa = secciones[0]
-
-    def navigate_en_seccion_activa(self, ruta):
-        self.stacks[self.seccion_activa].append(ruta)
-
-    def cambiar_seccion(self, seccion):
-        self.seccion_activa = seccion  # NO toca el stack de ninguna sección
-
-    def pantalla_actual(self):
-        return self.stacks[self.seccion_activa][-1]
-
-nav = NavegacionMultiSeccion(['Inicio', 'Tareas', 'Perfil'])
-nav.cambiar_seccion('Tareas')
-nav.navigate_en_seccion_activa('Detalle')
-nav.navigate_en_seccion_activa('Edicion')
-print('stack de Tareas antes de cambiar:', nav.stacks['Tareas'])
-
-nav.cambiar_seccion('Perfil')
-print('pantalla actual en Perfil:', nav.pantalla_actual())
-
-nav.cambiar_seccion('Tareas')
-print('pantalla actual al volver a Tareas:', nav.pantalla_actual())
-print('stack de Tareas preservado:', nav.stacks['Tareas'])
-"
 ```
 
 Crea el archivo `app/src/main/kotlin/com/academia/android/NavegacionInferior.kt`:

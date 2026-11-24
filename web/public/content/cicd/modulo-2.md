@@ -10,7 +10,7 @@
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos y Python 3 con PyYAML (python3 -m pip install pyyaml); no necesitas un clúster real…
+Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos, Docker (para ejecutar `yq` sin instalarlo) y `jq` (`brew install jq` o `apt install jq`); no necesitas un clúster real…
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -78,55 +78,47 @@ jobs:
       - run: helm upgrade --install api ./chart --set image.tag=${{ github.sha }}
 ```
 
-```python
-import re
-import sys
-from pathlib import Path
+Crea `verificar_pipeline.sh`. `yq` convierte el YAML a JSON y `jq` hace las comprobaciones:
 
-import yaml
+```bash
+#!/usr/bin/env bash
+# verificar_pipeline.sh — el pipeline encadena sus etapas, bloquea ante CRITICAL y etiqueta con github.sha
+set -euo pipefail
+flujo=$(docker run --rm -v "$PWD":/workdir mikefarah/yq -o=json .github/workflows/pipeline.yml)
+falla() { echo "fallo: $1"; exit 1; }
+q() { jq -r "$1" <<<"$flujo"; }
+TAG='${{ github.sha }}'
+IMAGEN="registry.rutaflow.app/api:$TAG"
 
-flujo = yaml.safe_load(Path(".github/workflows/pipeline.yml").read_text(encoding="utf-8"))
-jobs = flujo["jobs"]
-orden = ["test", "build", "scan", "deploy"]
-TAG = "${{ github.sha }}"
+for par in test:build build:scan scan:deploy; do
+  anterior=${par%%:*}; siguiente=${par#*:}
+  [[ $(q ".jobs.$siguiente.needs") == "$anterior" ]] || falla "$siguiente no depende de $anterior"
+done
 
+escaneo=$(q '[.jobs.scan.steps[] | select((.uses // "") | startswith("aquasecurity/trivy-action@"))][0].with // empty')
+[[ -n "$escaneo" ]] || falla "el job scan no ejecuta Trivy"
+[[ $(jq -r '."exit-code" | tostring' <<<"$escaneo") == 1 && $(jq -r .severity <<<"$escaneo") == CRITICAL ]] \
+  || falla "el escaneo no bloquea ante una vulnerabilidad CRITICAL"
 
-def comandos(job):
-    return "\n".join(paso.get("run", "") for paso in jobs[job]["steps"])
+comandos() { q "[.jobs.$1.steps[].run // empty] | join(\"\n\")"; }
+grep -qF "docker build -t $IMAGEN" <<<"$(comandos build)" && grep -qF "docker push $IMAGEN" <<<"$(comandos build)" \
+  || falla "build no construye y publica la imagen etiquetada con github.sha"
+[[ $(jq -r '."image-ref"' <<<"$escaneo") == "$IMAGEN" ]] || falla "scan no revisa la imagen etiquetada con github.sha"
+grep -qF "image.tag=$TAG" <<<"$(comandos deploy)" || falla "deploy no despliega la imagen etiquetada con github.sha"
 
+sin_sha=$(q '[.jobs | to_entries[] | .key as $job | .value.steps[] | select(.uses != null)
+              | select(.uses | test("@[0-9a-f]{40}$") | not) | "\($job) usa \(.uses)"][0] // empty')
+[[ -z "$sin_sha" ]] || falla "$sin_sha sin fijarla por SHA"
 
-for anterior, siguiente in zip(orden, orden[1:]):
-    if jobs[siguiente].get("needs") != anterior:
-        sys.exit(f"fallo: {siguiente} no depende de {anterior}")
-
-pasos_trivy = [p for p in jobs["scan"]["steps"] if p.get("uses", "").startswith("aquasecurity/trivy-action@")]
-if not pasos_trivy:
-    sys.exit("fallo: el job scan no ejecuta Trivy")
-escaneo = pasos_trivy[0]["with"]
-if str(escaneo.get("exit-code")) != "1" or escaneo.get("severity") != "CRITICAL":
-    sys.exit("fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL")
-
-imagen = f"registry.rutaflow.app/api:{TAG}"
-if f"docker build -t {imagen}" not in comandos("build") or f"docker push {imagen}" not in comandos("build"):
-    sys.exit("fallo: build no construye y publica la imagen etiquetada con github.sha")
-if escaneo.get("image-ref") != imagen:
-    sys.exit("fallo: scan no revisa la imagen etiquetada con github.sha")
-if f"image.tag={TAG}" not in comandos("deploy"):
-    sys.exit("fallo: deploy no despliega la imagen etiquetada con github.sha")
-
-for nombre, job in jobs.items():
-    for paso in job["steps"]:
-        if "uses" in paso and not re.search(r"@[0-9a-f]{40}$", paso["uses"]):
-            sys.exit(f"fallo: {nombre} usa {paso['uses']} sin fijarla por SHA")
-
-print("jobs:", " -> ".join(orden))
-print("gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)")
-print("imagen etiquetada con el hash del commit en build, scan y deploy")
-print("acciones fijadas por SHA de commit")
+echo "jobs: test -> build -> scan -> deploy"
+echo "gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)"
+echo "imagen etiquetada con el hash del commit en build, scan y deploy"
+echo "acciones fijadas por SHA de commit"
 ```
 
 ```bash
-python3 verificar_pipeline.py
+chmod +x verificar_pipeline.sh
+./verificar_pipeline.sh
 ```
 
 ```text
@@ -144,7 +136,7 @@ acciones fijadas por SHA de commit
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a reconstruir la cadena commit → imagen → escaneo → despliegue a partir de eventos trazables y a detectar cuándo un pipeline perdió esa trazabilidad. Prerrequisitos: Tema 1 de este módulo y Python 3.
+Al finalizar vas a reconstruir la cadena commit → imagen → escaneo → despliegue a partir de eventos trazables y a detectar cuándo un pipeline perdió esa trazabilidad. Prerrequisitos: Tema 1 de este módulo y `jq`.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -182,46 +174,39 @@ mkdir ejemplo && cd ejemplo
 {"etapa":"deploy","commit":"4f2c1ab","imagen":"registry.rutaflow.app/api@sha256:9a1","correlation_id":"c-77"}
 ```
 
-```python
-import json
-import sys
-from pathlib import Path
+Crea `trazabilidad.sh`:
 
-eventos = [
-    json.loads(linea)
-    for linea in Path("eventos.jsonl").read_text(encoding="utf-8").splitlines()
-    if linea.strip()
-]
-if len({e.get("correlation_id") for e in eventos}) != 1:
-    sys.exit("fallo: la cadena no comparte correlation_id")
+```bash
+#!/usr/bin/env bash
+# trazabilidad.sh — reconstruye commit -> imagen -> escaneo -> despliegue desde eventos.jsonl
+set -euo pipefail
+falla() { echo "fallo: $1"; exit 1; }
+q() { jq -rs "$@" eventos.jsonl; }   # -s junta todas las líneas en un solo arreglo
 
-commit = eventos[0]["commit"]
-if any(e.get("commit") != commit for e in eventos):
-    sys.exit("fallo: hay etapas de otro commit")
+[[ $(q '[.[].correlation_id] | unique | length') == 1 ]] || falla "la cadena no comparte correlation_id"
+commit=$(q '.[0].commit')
+[[ $(q --arg c "$commit" 'all(.commit == $c)') == true ]] || falla "hay etapas de otro commit"
+imagenes=$(q '[.[].imagen // empty] | unique')
+[[ $(jq 'length' <<<"$imagenes") == 1 && $(jq 'any(contains(":latest"))' <<<"$imagenes") == false ]] \
+  || falla "la imagen no es trazable por digest"
+[[ $(q 'map(select(.etapa == "scan"))[0].resultado') == aprobado ]] || falla "se desplegó sin un escaneo aprobado"
 
-imagenes = {e["imagen"] for e in eventos if "imagen" in e}
-if len(imagenes) != 1 or any(":latest" in imagen for imagen in imagenes):
-    sys.exit("fallo: la imagen no es trazable por digest")
-
-escaneo = next(e for e in eventos if e["etapa"] == "scan")
-if escaneo["resultado"] != "aprobado":
-    sys.exit("fallo: se desplegó sin un escaneo aprobado")
-
-print(f"commit: {commit}")
-print(f"imagen: {imagenes.pop()}")
-print("etapas:", " -> ".join(e["etapa"] for e in eventos))
-print("cadena completa: True")
+echo "commit: $commit"
+echo "imagen: $(jq -r '.[0]' <<<"$imagenes")"
+echo "etapas: $(q 'map(.etapa) | join(" -> ")')"
+echo "cadena completa: true"
 ```
 
 ```bash
-python3 trazabilidad.py
+chmod +x trazabilidad.sh
+./trazabilidad.sh
 ```
 
 ```text
 commit: 4f2c1ab
 imagen: registry.rutaflow.app/api@sha256:9a1
 etapas: commit -> build -> scan -> deploy
-cadena completa: True
+cadena completa: true
 ```
 
 </details>
@@ -232,7 +217,7 @@ cadena completa: True
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a responder un checklist de decisiones reales del pipeline de RutaFlow y a comprobar, con un evaluador, si tus respuestas están ancladas en artefactos concretos. Prerrequisitos: Temas 1-2 de este módulo y Python 3.
+Al finalizar vas a responder un checklist de decisiones reales del pipeline de RutaFlow y a comprobar, con un evaluador, si tus respuestas están ancladas en artefactos concretos. Prerrequisitos: Temas 1-2 de este módulo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -272,40 +257,36 @@ El operador dentro del clúster lee del repositorio y no guarda credenciales de 
 Desplegamos el 10 % con Helm y revertimos con rollback si la tasa de error supera el 1 % durante 5 minutos.
 ```
 
-```python
-import re
-import sys
-from pathlib import Path
+Crea `evaluar_checklist.sh`. `awk` recorre el archivo sección por sección:
 
-texto = Path("checklist.md").read_text(encoding="utf-8")
-bloques = re.split(r"^##\s+", texto, flags=re.MULTILINE)[1:]
-genericas = ("es usar git como fuente de verdad", "es una buena práctica")
-fallos = []
-
-for bloque in bloques:
-    titulo, _, respuesta = bloque.partition("\n")
-    respuesta = respuesta.strip()
-    if len(re.findall(r"\w+", respuesta)) < 12:
-        fallos.append(f"{titulo}: respuesta demasiado corta")
-    if any(generica in respuesta.lower() for generica in genericas):
-        fallos.append(f"{titulo}: respuesta genérica sin artefacto")
-    if not re.search(r"(Deployment|StatefulSet|Helm|Postgres|operador|runner|canary|rollback)", respuesta, re.IGNORECASE):
-        fallos.append(f"{titulo}: sin decisión técnica nombrada")
-
-if fallos:
-    sys.exit("fallo: " + "; ".join(fallos))
-
-print(f"preguntas respondidas: {len(bloques)}")
-print("respuestas ancladas a una decisión: True")
+```bash
+#!/usr/bin/env bash
+# evaluar_checklist.sh — cada respuesta del checklist debe nombrar una decisión técnica concreta
+set -euo pipefail
+awk '
+  /^## / { if (titulo) evaluar(); titulo = substr($0, 4); respuesta = ""; n++; next }
+  { respuesta = respuesta " " $0 }
+  END { if (titulo) evaluar(); if (fallos) { print "fallo:" fallos; exit 1 }
+        print "preguntas respondidas: " n; print "respuestas ancladas a una decisión: true" }
+  function evaluar(   palabras, r) {
+    r = tolower(respuesta)
+    palabras = split(respuesta, _, /[[:space:]]+/) - 1
+    if (palabras < 12) fallos = fallos " " titulo ": respuesta demasiado corta;"
+    if (r ~ /es usar git como fuente de verdad|es una buena práctica/) fallos = fallos " " titulo ": respuesta genérica sin artefacto;"
+    if (r !~ /deployment|statefulset|helm|postgres|operador|runner|canary|rollback/)
+      fallos = fallos " " titulo ": sin decisión técnica nombrada;"
+  }
+' checklist.md
 ```
 
 ```bash
-python3 evaluar_checklist.py
+chmod +x evaluar_checklist.sh
+./evaluar_checklist.sh
 ```
 
 ```text
 preguntas respondidas: 3
-respuestas ancladas a una decisión: True
+respuestas ancladas a una decisión: true
 ```
 
 </details>

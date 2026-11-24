@@ -113,7 +113,7 @@ curl -s 'http://localhost:9090/api/v1/query?query=up' | grep -o '"value":\[[^]]*
 ```bash
 for i in $(seq 30); do curl -s http://localhost:3010/ >/dev/null & done; wait
 sleep 10
-curl -sS -G 'http://localhost:9090/api/v1/query' --data-urlencode 'query=rate(http_requests_total[1m])' | python3 -m json.tool
+curl -sS -G 'http://localhost:9090/api/v1/query' --data-urlencode 'query=rate(http_requests_total[1m])' | jq .
 ```
 
 </details>
@@ -164,7 +164,7 @@ docker run -d --name grafana-demo -p 3300:3000 \
   -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin \
   grafana/grafana
 sleep 6
-curl -s -u admin:admin http://localhost:3300/api/datasources | python3 -m json.tool | grep -A2 '"name": "Prometheus"'
+curl -s -u admin:admin http://localhost:3300/api/datasources | jq . | grep -A2 '"name": "Prometheus"'
 ```
 
 Crea el archivo `dashboard.json`:
@@ -174,7 +174,7 @@ Crea el archivo `dashboard.json`:
 ```
 
 ```bash
-curl -s -u admin:admin -X POST -H "Content-Type: application/json" -d @dashboard.json http://localhost:3300/api/dashboards/db | python3 -m json.tool
+curl -s -u admin:admin -X POST -H "Content-Type: application/json" -d @dashboard.json http://localhost:3300/api/dashboards/db | jq .
 ```
 
 </details>
@@ -234,12 +234,12 @@ docker run -d --name prometheus-alertas -p 9091:9090 \
   -v "$(pwd)/reglas.yml:/etc/prometheus/reglas.yml:ro" \
   --add-host=host.docker.internal:host-gateway prom/prometheus
 sleep 5
-curl -s http://localhost:9091/api/v1/rules | python3 -m json.tool | grep -E "name|state"
+curl -s http://localhost:9091/api/v1/rules | jq . | grep -E "name|state"
 ```
 
 ```bash
 sleep 35
-curl -s http://localhost:9091/api/v1/alerts | python3 -m json.tool | grep -E "alertname|state" | head -6
+curl -s http://localhost:9091/api/v1/alerts | jq . | grep -E "alertname|state" | head -6
 ```
 
 </details>
@@ -273,7 +273,7 @@ for i in $(seq 40); do curl -s http://localhost:3010/ >/dev/null & done; wait
 sleep 5
 curl -sS -G 'http://localhost:9090/api/v1/query' \
   --data-urlencode 'query=sum(rate(latencia_segundos_bucket{le="0.5"}[5m]))/sum(rate(latencia_segundos_count[5m]))' \
-  | python3 -m json.tool | grep -A1 '"value"'
+  | jq . | grep -A1 '"value"'
 ```
 
 Crea el archivo `slo.md`:
@@ -392,14 +392,9 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint s
   git log --format="%H %ad %s" --date=iso'
 ```
 
-```bash
-python3 -c "
-from datetime import datetime
-commit = datetime.fromisoformat('2026-01-02T09:00:00')
-deploy = datetime.fromisoformat('2026-01-03T09:00:00')
-print(f'Lead Time: {(deploy - commit).total_seconds() / 3600} horas')
-"
-```
+El commit de la función es del 2026-01-02 a las 09:00 y el tag `v1.1`, que marca su despliegue, del 2026-01-03 a
+las 09:00. **Lead Time: 24 horas.** Con más commits, la métrica es la mediana de esas diferencias en la ventana
+que mides.
 
 </details>
 

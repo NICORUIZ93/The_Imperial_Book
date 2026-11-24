@@ -4,8 +4,6 @@
 ## Aprende construyendo
 
 > **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`, `implementation(libs.androidx.lifecycle.viewmodel.compose)` (si no lo hiciste en el Módulo 1) e `implementation(libs.androidx.lifecycle.runtime.compose)`; esta última trae `collectAsStateWithLifecycle`, que el Tema 2 importa. Pulsa **Sync Now**.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la app en el emulador: rotar, enviar a segundo plano y observar qué se muestra.
 
 
 ### Tema 1: StateFlow en el ViewModel · Intermedio · 40 min
@@ -83,24 +81,6 @@ class TareasViewModelConEstado(private val repo: FuenteDeTareas) : ViewModel() {
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-class StateFlowSimulado:
-    def __init__(self, valor_inicial):
-        self.valor_actual = valor_inicial  # SIEMPRE hay un valor
-
-    def actualizar(self, nuevo_valor):
-        self.valor_actual = nuevo_valor
-
-    def nuevo_observador_recibe(self):
-        return self.valor_actual  # inmediato, sin importar cuándo se suscribe
-
-estado = StateFlowSimulado('Cargando')
-estado.actualizar('Exito: [tarea1, tarea2]')
-print('observador que llega tarde recibe de inmediato:', estado.nuevo_observador_recibe())
-"
-```
-
 </details>
 
 ### Tema 2: collectAsStateWithLifecycle y UDF · Intermedio · 40 min
@@ -165,20 +145,6 @@ fun PantallaTareasUDF(viewModel: TareasViewModelConEstado) {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-eventos = ['foreground', 'foreground', 'background', 'background', 'background', 'foreground']
-
-recolecciones_simple = sum(1 for e in eventos)  # collectAsState: recolecta siempre, sin importar el estado
-recolecciones_consciente = sum(1 for e in eventos if e == 'foreground')  # pausa en background
-
-print('eventos totales:', len(eventos))
-print('recolecciones con collectAsState (simple):', recolecciones_simple)
-print('recolecciones con collectAsStateWithLifecycle:', recolecciones_consciente)
-print('ahorro:', recolecciones_simple - recolecciones_consciente, 'recolecciones evitadas en background')
-"
 ```
 
 </details>
@@ -264,37 +230,6 @@ estado.mensajeUsuario?.let { mensaje ->
         viewModel.mensajeMostrado()
     }
 }
-```
-
-```bash
-python3 -c "
-class StateFlowSimulado:
-    def __init__(self, valor_inicial):
-        self.valor_actual = valor_inicial
-    def actualizar(self, valor):
-        self.valor_actual = valor
-    def nuevo_observador_recibe(self):
-        return self.valor_actual  # SIEMPRE recibe el último valor
-
-class SharedFlowSimulado:
-    def __init__(self):
-        self.observadores_activos_en_el_momento_de_emitir = []
-    def emitir(self, evento):
-        for callback in self.observadores_activos_en_el_momento_de_emitir:
-            callback(evento)
-        # el evento NO queda retenido para nadie que se suscriba después
-
-estado = StateFlowSimulado('lista_vacia')
-estado.actualizar('lista_cargada')
-# un observador que llega DESPUÉS de la actualización de StateFlow:
-print('StateFlow -> observador tardío recibe:', estado.nuevo_observador_recibe())
-
-eventos = SharedFlowSimulado()
-eventos.emitir('TareaGuardada')  # nadie estaba escuchando todavía
-# un observador que llega DESPUÉS de la emisión de SharedFlow:
-observador_tardio_vio_algo = len(eventos.observadores_activos_en_el_momento_de_emitir) > 0
-print('SharedFlow -> observador tardío vio el evento:', observador_tardio_vio_algo)
-"
 ```
 
 </details>

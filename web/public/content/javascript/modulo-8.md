@@ -265,8 +265,10 @@ form.addEventListener('submit', event => {
 ```
 
 ```bash
-python3 -m http.server 8000
+npx --yes http-server -p 8000 -c-1
 ```
+
+Abre `http://localhost:8000`. `-c-1` desactiva la caché para que cada recarga traiga tus cambios.
 
 </details>
 

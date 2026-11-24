@@ -4,8 +4,6 @@
 ## Aprende construyendo
 
 > **Antes de empezar este módulo.** Trabajas en el proyecto `academia-android` del Módulo 0, creado con el paquete `com.academia.android`. En `app/build.gradle.kts`, dentro de `dependencies { }`, añade `implementation(libs.androidx.lifecycle.viewmodel.compose)` (catálogo del Módulo 0, Tema 3) y pulsa **Sync Now**: trae `ViewModel`, `viewModelScope` y `SavedStateHandle` de forma explícita en lugar de depender de lo que llegue de forma transitiva.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas.** Sirven para razonar sobre qué sobrevive y qué se pierde, pero no ejecutan Android. La evidencia real de cada tema es la que aparece como **Verificación real en Android**: logs de `adb logcat` en el emulador con una salida esperada concreta.
 
 
 ### Tema 1: Ciclo de vida de una Activity · Básico · 45 min
@@ -126,31 +124,6 @@ class TareasViewModel : ViewModel() {
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-class ActivitySimulada:
-    def __init__(self):
-        self.contador = 0  # se reinicia en cada recreación
-    def recrear(self):
-        return ActivitySimulada()  # instancia nueva: estado perdido
-
-class ViewModelStoreSimulado:
-    def __init__(self):
-        self.view_models = {}
-    def obtener_o_crear(self, clave, fabrica):
-        if clave not in self.view_models:
-            self.view_models[clave] = fabrica()
-        return self.view_models[clave]  # misma instancia: estado preservado
-
-store = ViewModelStoreSimulado()
-vm = store.obtener_o_crear('TareasViewModel', lambda: {'contador': 0})
-vm['contador'] += 1
-print('contador en ViewModel antes de rotar:', vm['contador'])
-vm_tras_rotar = store.obtener_o_crear('TareasViewModel', lambda: {'contador': 0})
-print('contador en ViewModel tras rotar (misma instancia):', vm_tras_rotar['contador'])
-"
-```
-
 ```kotlin
 val vm = androidx.lifecycle.ViewModelProvider(this)[TareasViewModel::class.java]
 vm.incrementar()
@@ -210,28 +183,6 @@ class TareasConFiltroViewModel(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class ProcesoAndroid:
-    def __init__(self):
-        self.view_model_store = {}       # se pierde por completo en muerte de proceso
-        self.bundle_persistido = {}      # sobrevive a la muerte de proceso (SavedStateHandle)
-
-    def matar_proceso(self):
-        self.view_model_store = {}       # todo el ViewModelStore desaparece
-        # el bundle_persistido NO se toca: representa el mecanismo del sistema que sí sobrevive
-
-proceso = ProcesoAndroid()
-proceso.view_model_store['contador'] = 5           # como el Tema 2, solo en memoria
-proceso.bundle_persistido['filtro'] = 'pendientes' # como SavedStateHandle
-
-proceso.matar_proceso()
-
-print('contador tras muerte de proceso (ViewModel normal):', proceso.view_model_store.get('contador', 'PERDIDO'))
-print('filtro tras muerte de proceso (SavedStateHandle):', proceso.bundle_persistido.get('filtro', 'PERDIDO'))
-"
 ```
 
 ```bash

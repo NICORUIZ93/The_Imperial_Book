@@ -58,15 +58,8 @@ docker run -d --name logging-app -p 3020:3000 -v "$(pwd)":/app -w /app node:22-a
 curl -s http://localhost:3020/ >/dev/null
 curl -s http://localhost:3020/error >/dev/null
 docker logs logging-app 2>&1 | grep "level.*error"
-docker logs logging-app 2>&1 | python3 -c "
-import sys, json
-for line in sys.stdin:
-    try:
-        data = json.loads(line)
-        if data.get('level') == 'error':
-            print(data['componente'], '->', data['msg'])
-    except (json.JSONDecodeError, KeyError): pass
-"
+# -R lee cada línea como texto; fromjson? descarta las que no son JSON
+docker logs logging-app 2>&1 | jq -rR 'fromjson? | select(.level == "error") | "\(.componente) -> \(.msg)"'
 ```
 
 </details>
@@ -109,14 +102,14 @@ docker run -d --name elasticsearch-demo -p 9200:9200 \
   -e "discovery.type=single-node" -e "xpack.security.enabled=false" \
   elasticsearch:8.15.0
 sleep 25
-curl -s http://localhost:9200/_cluster/health | python3 -m json.tool | grep status
+curl -s http://localhost:9200/_cluster/health | jq . | grep status
 curl -s -X POST http://localhost:9200/logs-app/_doc -H "Content-Type: application/json" \
   -d '{"level":"error","service":"api","msg":"timeout conectando a db","timestamp":"2026-01-01T14:32:00Z"}'
 ```
 
 ```bash
 sleep 2
-curl -s -X GET "http://localhost:9200/logs-app/_search?q=timeout" | python3 -m json.tool | grep -A2 '"_source"'
+curl -s -X GET "http://localhost:9200/logs-app/_search?q=timeout" | jq . | grep -A2 '"_source"'
 ```
 
 </details>
@@ -158,8 +151,8 @@ curl -s -X POST http://localhost:3100/loki/api/v1/push -H "Content-Type: applica
 
 ```bash
 sleep 2
-curl -s -G "http://localhost:3100/loki/api/v1/query" --data-urlencode 'query={service="api",level="error"}' | python3 -m json.tool | grep -A1 '"values"'
-curl -s -G "http://localhost:3100/loki/api/v1/query" --data-urlencode 'query={service="api"} |= "timeout"' | python3 -m json.tool | grep result
+curl -s -G "http://localhost:3100/loki/api/v1/query" --data-urlencode 'query={service="api",level="error"}' | jq . | grep -A1 '"values"'
+curl -s -G "http://localhost:3100/loki/api/v1/query" --data-urlencode 'query={service="api"} |= "timeout"' | jq . | grep result
 ```
 
 </details>

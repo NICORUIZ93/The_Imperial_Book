@@ -26,8 +26,6 @@
 > ```
 >
 > En `app/src/main/AndroidManifest.xml`, añade `android:name=".MiApp"` a la etiqueta `<application>`; sin él, Android crea un `Application` genérico y Hilt nunca se inicializa. Pulsa **Sync Now**.
->
-> **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
 
 
 ### Tema 1: Configuración básica de Hilt · Avanzado · 40 min
@@ -58,7 +56,6 @@ Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar 
 ```
 
 ```bash
-# Este script python3 modela el mismo grafo de dependencias para verificar el principio
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -85,31 +82,6 @@ class TareasViewModelInyectado @Inject constructor(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class TareaRepository:
-    def obtener(self):
-        return ['Comprar leche', 'Pagar alquiler']
-
-class TareasViewModel:
-    def __init__(self, repo):  # recibe la dependencia YA CONSTRUIDA, no la construye
-        self.repo = repo
-
-class ContenedorDeDependencias:
-    def __init__(self):
-        self._instancias = {}
-    def resolver(self, tipo, fabrica):
-        if tipo not in self._instancias:
-            self._instancias[tipo] = fabrica()
-        return self._instancias[tipo]
-
-contenedor = ContenedorDeDependencias()
-repo = contenedor.resolver('TareaRepository', lambda: TareaRepository())
-view_model = TareasViewModel(repo)  # nunca construye TareaRepository() directamente
-print('ViewModel obtuvo sus tareas vía la dependencia inyectada:', view_model.repo.obtener())
-"
 ```
 
 </details>
@@ -140,7 +112,6 @@ Al finalizar podrás decidir entre @Provides y @Binds según si una dependencia 
 ```
 
 ```bash
-# Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -191,39 +162,6 @@ abstract class RepositoryModule {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class Retrofit:
-    def __init__(self, base_url):
-        self.base_url = base_url
-
-class TareaRepository:  # interfaz/contrato
-    def obtener(self):
-        raise NotImplementedError
-
-class TareaRepositoryImpl(TareaRepository):  # implementación concreta
-    def obtener(self):
-        return ['Comprar leche']
-
-class Modulo:
-    # equivalente a @Provides: describe explícitamente CÓMO construir una clase externa
-    def provide_retrofit(self):
-        return Retrofit(base_url='https://api.miapp.com/')
-
-    # equivalente a @Binds: solo MAPEA la interfaz a la implementación, sin lógica de construcción
-    def bind_tarea_repository(self, impl: TareaRepositoryImpl) -> TareaRepository:
-        return impl
-
-modulo = Modulo()
-retrofit = modulo.provide_retrofit()
-print('Retrofit construido explícitamente con @Provides, base_url:', retrofit.base_url)
-
-repo_concreto = TareaRepositoryImpl()
-repo: TareaRepository = modulo.bind_tarea_repository(repo_concreto)
-print('TareaRepository resuelto vía @Binds:', repo.obtener())
-"
 ```
 
 </details>
@@ -324,39 +262,6 @@ class TareasFlowTest {
 
 ```bash
 ./gradlew :app:connectedDebugAndroidTest
-```
-
-```bash
-python3 -c "
-class ObjetoCostoso:
-    contador_de_construcciones = 0
-    def __init__(self):
-        ObjetoCostoso.contador_de_construcciones += 1
-
-class ContenedorSingleton:
-    def __init__(self):
-        self._instancia = None
-    def obtener(self):
-        if self._instancia is None:
-            self._instancia = ObjetoCostoso()
-        return self._instancia
-
-class ContenedorSinCache:  # equivalente a un scope corto sin reutilización
-    def obtener(self):
-        return ObjetoCostoso()
-
-ObjetoCostoso.contador_de_construcciones = 0
-singleton = ContenedorSingleton()
-for _ in range(5):
-    singleton.obtener()
-print('con @Singleton, construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
-
-ObjetoCostoso.contador_de_construcciones = 0
-sin_cache = ContenedorSinCache()
-for _ in range(5):
-    sin_cache.obtener()
-print('SIN singleton (scope corto), construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
-"
 ```
 
 </details>

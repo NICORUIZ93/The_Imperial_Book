@@ -49,22 +49,32 @@ flowchart LR
 mkdir -p ejemplo-slo && cd ejemplo-slo
 ```
 
-```python
-validos = 1_000_000
-buenos = 999_450
-slo = 0.999
-sli = buenos / validos
-presupuesto = validos * (1 - slo)
-consumido = validos - buenos
-print(f"SLI: {sli:.4%}")
-print(f"Presupuesto: {presupuesto:.0f} eventos")
-if consumido > presupuesto:
-    raise SystemExit("presupuesto de error agotado: congelar cambios riesgosos")
-print(f"Consumido: {consumido:.0f} ({consumido / presupuesto:.1%} del presupuesto)")
+Crea `sli.sh`. `awk` hace las cuentas con decimales:
+
+```bash
+#!/usr/bin/env bash
+# sli.sh — SLI, presupuesto de error y cuánto se ha consumido
+validos=1000000
+buenos=999450
+slo=0.999
+awk -v v="$validos" -v b="$buenos" -v slo="$slo" 'BEGIN {
+  presupuesto = v * (1 - slo); consumido = v - b
+  printf "SLI: %.4f%%\n", b / v * 100
+  printf "Presupuesto: %.0f eventos\n", presupuesto
+  if (consumido > presupuesto) { print "presupuesto de error agotado: congelar cambios riesgosos"; exit 1 }
+  printf "Consumido: %.0f (%.1f%% del presupuesto)\n", consumido, consumido / presupuesto * 100
+}'
 ```
 
 ```bash
-python3 sli.py
+chmod +x sli.sh
+./sli.sh
+```
+
+```text
+SLI: 99.9450%
+Presupuesto: 1000 eventos
+Consumido: 550 (55.0% del presupuesto)
 ```
 
 </details>
@@ -125,42 +135,42 @@ groups:
           runbook: "https://runbooks.rutaflow.app/envios-api/high-burn"
 ```
 
-```python
-import sys
-from pathlib import Path
+Crea `verificar_alerta.sh`. `yq` (en un contenedor, sin instalarlo) convierte el YAML a JSON y `jq` revisa cada regla:
 
-import yaml
-
-PERMITIDOS = {"severity", "service", "team"}
-documento = yaml.safe_load(Path("alerta.yaml").read_text(encoding="utf-8"))
-reglas = [regla for grupo in documento["groups"] for regla in grupo["rules"]]
-fallos = []
-for regla in reglas:
-    for campo in ("alert", "expr", "for"):
-        if campo not in regla:
-            fallos.append(f"{regla.get('alert', '?')}: falta {campo}")
-    labels = regla.get("labels", {})
-    extra = set(labels) - PERMITIDOS
-    if extra:
-        fallos.append(f"{regla['alert']}: labels de alta cardinalidad {sorted(extra)}")
-    if "severity" not in labels:
-        fallos.append(f"{regla['alert']}: falta labels.severity")
-    annotations = regla.get("annotations", {})
-    if not annotations.get("runbook"):
-        fallos.append(f"{regla['alert']}: falta annotations.runbook")
-    if "ratio_rate5m" not in regla.get("expr", ""):
-        fallos.append(f"{regla['alert']}: la expresión no mide consumo de presupuesto")
-print(f"alertas: {len(reglas)}")
-print("labels:", ", ".join(sorted(set().union(*(r.get('labels', {}) for r in reglas)))))
-print("annotations:", ", ".join(sorted(set().union(*(r.get('annotations', {}) for r in reglas)))))
-for fallo in fallos:
-    print("fallo:", fallo)
-sys.exit(1 if fallos else 0)
+```bash
+#!/usr/bin/env bash
+# verificar_alerta.sh — cada alerta tiene expr, for, severity y runbook, sin labels de alta cardinalidad
+set -uo pipefail
+doc=$(docker run --rm -v "$PWD":/workdir mikefarah/yq -o=json alerta.yaml)
+salida=$(jq -r '
+  [.groups[].rules[]] as $reglas
+  | "alertas: \($reglas | length)",
+    "labels: \([$reglas[].labels // {} | keys[]] | unique | join(", "))",
+    "annotations: \([$reglas[].annotations // {} | keys[]] | unique | join(", "))",
+    ($reglas[] as $r | ($r.alert // "?") as $n
+      | (["alert", "expr", "for"][] | select($r[.] == null) | "fallo: \($n): falta \(.)"),
+        (($r.labels // {} | keys) - ["severity", "service", "team"]
+          | select(length > 0) | "fallo: \($n): labels de alta cardinalidad \(.)"),
+        (select($r.labels.severity == null) | "fallo: \($n): falta labels.severity"),
+        (select(($r.annotations.runbook // "") == "") | "fallo: \($n): falta annotations.runbook"),
+        (select(($r.expr // "") | contains("ratio_rate5m") | not) | "fallo: \($n): la expresión no mide consumo de presupuesto"))
+' <<<"$doc")
+echo "$salida"
+! grep -q '^fallo:' <<<"$salida"
 ```
 
 ```bash
-python3 verificar_alerta.py
+chmod +x verificar_alerta.sh
+./verificar_alerta.sh
 ```
+
+```text
+alertas: 1
+labels: service, severity
+annotations: runbook, summary
+```
+
+Agrega a `labels` un `user_id: "42"` y vuelve a ejecutar: `fallo: FastErrorBudgetBurnEnvios: labels de alta cardinalidad ["user_id"]`.
 
 </details>
 
@@ -225,38 +235,44 @@ spec:
             subject: https://github.com/rutaflow/api/.github/workflows/release.yml@refs/heads/main
 ```
 
-```python
-import sys
-from pathlib import Path
+Crea `verificar_politica.sh`:
 
-import yaml
-
-documento = yaml.safe_load(Path("politica.yaml").read_text(encoding="utf-8"))
-autoridades = documento.get("spec", {}).get("authorities", [])
-identidades = [ident for autoridad in autoridades for ident in autoridad.get("keyless", {}).get("identities", [])]
-fallos = []
-if not documento.get("spec", {}).get("images"):
-    fallos.append("la política no limita ninguna imagen")
-for identidad in identidades:
-    if identidad.get("issuer") != "https://token.actions.githubusercontent.com":
-        fallos.append("emisor OIDC no es el builder autorizado")
-    if "/rutaflow/api/" not in identidad.get("subject", ""):
-        fallos.append("sin subject que limite el repositorio firmante")
-if not identidades:
-    fallos.append("no exige identidad keyless")
-print(f"imágenes limitadas: {len(documento['spec']['images'])}")
-print(f"identidades verificadas: {len(identidades)}")
-for identidad in identidades:
-    print("issuer:", identidad.get("issuer"))
-    print("subject:", identidad.get("subject", "<sin restricción>"))
-for fallo in fallos:
-    print("fallo:", fallo)
-sys.exit(1 if fallos else 0)
+```bash
+#!/usr/bin/env bash
+# verificar_politica.sh — la política limita imágenes y exige identidad keyless del builder autorizado
+set -uo pipefail
+doc=$(docker run --rm -v "$PWD":/workdir mikefarah/yq -o=json politica.yaml)
+salida=$(jq -r '
+  (.spec.images // []) as $imagenes
+  | [.spec.authorities[]?.keyless.identities[]?] as $ids
+  | "imágenes limitadas: \($imagenes | length)",
+    "identidades verificadas: \($ids | length)",
+    ($ids[] | "issuer: \(.issuer)", "subject: \(.subject // "<sin restricción>")"),
+    (select($imagenes | length == 0) | "fallo: la política no limita ninguna imagen"),
+    ($ids[] | select(.issuer != "https://token.actions.githubusercontent.com")
+      | "fallo: emisor OIDC no es el builder autorizado"),
+    ($ids[] | select((.subject // "") | contains("/rutaflow/api/") | not)
+      | "fallo: sin subject que limite el repositorio firmante"),
+    (select($ids | length == 0) | "fallo: no exige identidad keyless")
+' <<<"$doc")
+echo "$salida"
+! grep -q '^fallo:' <<<"$salida"
 ```
 
 ```bash
-python3 verificar_politica.py
+chmod +x verificar_politica.sh
+./verificar_politica.sh
 ```
+
+```text
+imágenes limitadas: 1
+identidades verificadas: 1
+issuer: https://token.actions.githubusercontent.com
+subject: https://github.com/rutaflow/api/.github/workflows/release.yml@refs/heads/main
+```
+
+Borra la línea `subject:` y vuelve a ejecutar: la política aceptaría firmas de cualquier repositorio y el script
+termina con `fallo: sin subject que limite el repositorio firmante`.
 
 </details>
 

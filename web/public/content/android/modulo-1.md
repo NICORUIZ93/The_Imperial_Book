@@ -4,8 +4,6 @@
 ## Aprende construyendo
 
 > **Antes de empezar este módulo.** No necesitas dependencias nuevas: la plantilla Empty Activity ya declara el BOM de Compose, `ui`, `material3` y `activity-compose`.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: para ver la recomposición de verdad, muestra el composable con `setContent { … }` desde `MainActivity`, ejecuta la app y abre **Layout Inspector** con el contador de recomposiciones activado; el número de `TarjetaTarea` solo sube cuando cambia un parámetro que lee.
 
 
 ### Tema 1: Composables y recomposición · Básico · 45 min
@@ -60,23 +58,6 @@ fun TarjetaTarea(titulo: String, completada: Boolean) {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-def recomponer_si_cambia(historial_completada):
-    recomposiciones = 0
-    anterior = None
-    for valor in historial_completada:
-        if valor != anterior:
-            recomposiciones += 1
-            anterior = valor
-    return recomposiciones
-
-secuencia = [False, False, True, True, True, False]
-print('cambios de estado:', secuencia)
-print('recomposiciones necesarias:', recomponer_si_cambia(secuencia))
-"
 ```
 
 </details>
@@ -139,25 +120,6 @@ fun PantallaCrearTarea() {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-def campo_titulo(valor, on_cambia):
-    return {'texto_mostrado': valor, 'notificar': on_cambia}
-
-# contexto 1: formulario de creación, empieza vacío
-estado_creacion = {'titulo': ''}
-campo_1 = campo_titulo(estado_creacion['titulo'], lambda v: estado_creacion.__setitem__('titulo', v))
-campo_1['notificar']('Comprar leche')
-print('creación tras escribir:', estado_creacion['titulo'])
-
-# contexto 2: formulario de edición, empieza con un valor existente
-estado_edicion = {'titulo': 'Tarea existente'}
-campo_2 = campo_titulo(estado_edicion['titulo'], lambda v: estado_edicion.__setitem__('titulo', v))
-campo_2['notificar']('Tarea existente editada')
-print('edición tras escribir:', estado_edicion['titulo'])
-"
 ```
 
 </details>
@@ -227,28 +189,6 @@ fun PantallaContador() {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class InstanciaActivity:
-    def __init__(self, memoria_volatil=0, bundle_guardado=None):
-        self.memoria_volatil = memoria_volatil          # como remember: no persiste
-        self.bundle_guardado = bundle_guardado or {}      # como rememberSaveable: sí persiste
-
-def rotar(instancia):
-    # una rotación real destruye la instancia y crea una nueva,
-    # pero el Bundle de estado SÍ se transfiere a la nueva instancia
-    return InstanciaActivity(memoria_volatil=0, bundle_guardado=instancia.bundle_guardado)
-
-actividad = InstanciaActivity()
-actividad.memoria_volatil = 7
-actividad.bundle_guardado['contador_persistente'] = 7
-print('antes de rotar -> volatil:', actividad.memoria_volatil, '| persistente:', actividad.bundle_guardado['contador_persistente'])
-
-nueva_actividad = rotar(actividad)
-print('tras rotar      -> volatil:', nueva_actividad.memoria_volatil, '| persistente:', nueva_actividad.bundle_guardado.get('contador_persistente'))
-"
 ```
 
 </details>

@@ -513,7 +513,7 @@ código de salida: 1
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior para el script. Para probar un motor alternativo instala uno: brew install podman o brew install colima docker en macOS, o Rancher Desktop desde su página. Crea la carpeta academia-labs/devops/motor-local.
+Para probar un motor alternativo instala uno: brew install podman o brew install colima docker en macOS, o Rancher Desktop desde su página. Crea la carpeta academia-labs/devops/motor-local.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -544,72 +544,20 @@ flowchart TB
     D -->|"Linux"| G["Docker Engine o Podman nativo"]
 ```
 
-```python
-"""Recomienda un motor de contenedores local según el equipo y la empresa.
+La licencia de Docker Desktop (revisada en las páginas oficiales el 2026-11-18) es gratis para empresas con
+**menos de 250 empleados y menos de 10 M USD al año**. Con esa regla y el sistema operativo, la decisión queda así:
 
-Los datos de licencia vienen de las páginas oficiales (revisadas el 2026-11-18).
-"""
-from dataclasses import dataclass
+| Equipo | Sistema | Motores posibles | Nota |
+|---|---|---|---|
+| Estudiante | macOS | Docker Desktop, Podman, Colima, Rancher Desktop | Docker Desktop gratis |
+| Startup de 40 personas, 3 M USD | Windows | Docker Desktop, Podman, Rancher Desktop | Colima no corre en Windows |
+| Empresa de 900 personas | macOS | Podman, Colima, Rancher Desktop | Docker Desktop exige suscripción |
 
-# Docker Desktop es gratis para empresas con menos de 250 empleados Y menos de 10 M USD al año.
-LIMITE_EMPLEADOS = 250
-LIMITE_INGRESOS_MUSD = 10
-
-# Sistemas donde corre cada motor.
-MOTORES = {
-    "Docker Desktop": {"macos", "windows", "linux"},
-    "Podman": {"macos", "windows", "linux"},
-    "Colima": {"macos", "linux"},
-    "Rancher Desktop": {"macos", "windows", "linux"},
-}
-
-
-@dataclass
-class Equipo:
-    nombre: str
-    so: str
-    empleados: int
-    ingresos_musd: float
-
-
-def docker_desktop_gratis(equipo: Equipo) -> bool:
-    return equipo.empleados < LIMITE_EMPLEADOS and equipo.ingresos_musd < LIMITE_INGRESOS_MUSD
-
-
-def opciones(equipo: Equipo) -> list[str]:
-    elegibles = []
-    for nombre, sistemas in MOTORES.items():
-        if equipo.so not in sistemas:
-            continue
-        if nombre == "Docker Desktop" and not docker_desktop_gratis(equipo):
-            continue  # se puede usar, pero exige pagar una suscripción
-        elegibles.append(nombre)
-    return elegibles
-
-
-EQUIPOS = [
-    Equipo("estudiante", "macos", 1, 0),
-    Equipo("RutaFlow (40 personas)", "windows", 40, 3),
-    Equipo("empresa de 900 personas", "macos", 900, 120),
-]
-
-for equipo in EQUIPOS:
-    lista = ", ".join(opciones(equipo))
-    pago = "" if docker_desktop_gratis(equipo) else "  (Docker Desktop exige suscripción)"
-    print(f"{equipo.nombre:<26} {equipo.so:<8} -> {lista}{pago}")
-```
+Con el motor elegido instalado, comprueba que tu Compose funciona igual:
 
 ```bash
 cd academia-labs/devops/motor-local
-python3 elegir_runtime.py
-# con el motor elegido instalado, comprueba que tu Compose funciona igual:
 docker compose up -d && docker compose ps
-```
-
-```text
-estudiante                 macos    -> Docker Desktop, Podman, Colima, Rancher Desktop
-RutaFlow (40 personas)     windows  -> Docker Desktop, Podman, Rancher Desktop
-empresa de 900 personas    macos    -> Podman, Colima, Rancher Desktop  (Docker Desktop exige suscripción)
 ```
 
 </details>

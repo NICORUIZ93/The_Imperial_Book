@@ -5,8 +5,6 @@ Una app móvil se ejecuta en un dispositivo que puede perderse, restaurarse, que
 
 ## Aprende construyendo
 
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En el Tema 2, la criptografía en Python no usa `AndroidKeyStore`: para probar tu `CifradoSensible.kt` de verdad, escribe una prueba instrumentada en `app/src/androidTest` que cifre y descifre un texto y ejecútala con `./gradlew :app:connectedDebugAndroidTest` (el almacén de claves de Android solo existe en el dispositivo o emulador).
-
 
 ### Tema 1: El sistema operativo conecta tu app con entradas externas · Avanzado · 45 min
 
@@ -65,44 +63,6 @@ fun parseTaskLink(uri: Uri, sesionPuedeLeer: (String) -> Boolean): String {
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-from urllib.parse import urlparse
-
-class SesionInvalida(Exception): pass
-
-def parse_task_link(uri_str, sesion_puede_leer):
-    uri = urlparse(uri_str)
-    if uri.scheme != 'https':
-        raise ValueError(f'scheme inválido: {uri.scheme}')
-    if uri.hostname != 'tasks.example.com':
-        raise ValueError(f'host inválido: {uri.hostname}')
-    partes = [p for p in uri.path.split('/') if p]
-    if len(partes) != 2 or partes[0] != 'tasks':
-        raise ValueError('path inválido')
-    id_tarea = partes[1]
-    if not sesion_puede_leer(id_tarea):
-        raise SesionInvalida(f'sesión no autorizada para leer {id_tarea}')
-    return id_tarea
-
-tareas_del_usuario_actual = {'42'}
-sesion_puede_leer = lambda id_tarea: id_tarea in tareas_del_usuario_actual
-
-casos = [
-    ('https://tasks.example.com/tasks/42', 'válido, tarea propia'),
-    ('https://tasks.evil.com/tasks/42', 'host falso'),
-    ('http://tasks.example.com/tasks/42', 'scheme inseguro'),
-    ('https://tasks.example.com/tasks/99', 'ID de tarea AJENA'),
-]
-for uri_str, descripcion in casos:
-    try:
-        id_tarea = parse_task_link(uri_str, sesion_puede_leer)
-        print(f'{descripcion}: ACEPTADO, id={id_tarea}')
-    except (ValueError, SesionInvalida) as e:
-        print(f'{descripcion}: RECHAZADO ({e})')
-"
-```
-
 </details>
 
 ### Tema 2: Proteger datos exige conocer copias y ciclo de vida · Avanzado · 45 min
@@ -127,7 +87,6 @@ Al finalizar podrás cifrar un dato sensible con una construcción autenticada (
 ```
 
 ```bash
-# Este script python3 es un MODELO de AES-GCM; no usa AndroidKeyStore (la prueba real es instrumentada)
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -158,33 +117,6 @@ fun generarClaveEnKeystore() {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import os
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
-clave = AESGCM.generate_key(bit_length=256)  # equivalente a la clave generada en el Keystore
-aesgcm = AESGCM(clave)
-nonce = os.urandom(12)  # NUNCA reutilizar este nonce con la misma clave
-
-dato_sensible = b'numero-de-tarjeta-de-prueba-4242'
-ciphertext = aesgcm.encrypt(nonce, dato_sensible, None)
-print('cifrado exitoso, longitud del ciphertext:', len(ciphertext))
-
-descifrado = aesgcm.decrypt(nonce, ciphertext, None)
-print('descifrado exitoso, coincide con el original:', descifrado == dato_sensible)
-
-# manipulación deliberada del ciphertext (como un atacante alterando el archivo cifrado)
-ciphertext_manipulado = bytearray(ciphertext)
-ciphertext_manipulado[0] ^= 0xFF
-try:
-    aesgcm.decrypt(nonce, bytes(ciphertext_manipulado), None)
-    print('INESPERADO: el ciphertext manipulado se descifró sin error')
-except Exception as e:
-    print('ciphertext manipulado RECHAZADO:', type(e).__name__)
-"
 ```
 
 </details>
@@ -254,46 +186,6 @@ class OutboxRepository {
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-import sqlite3, uuid
-
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE tareas (id TEXT PRIMARY KEY, titulo TEXT, version INTEGER, sync_state TEXT)')
-con.execute('CREATE TABLE outbox (operation_id TEXT PRIMARY KEY, entity_id TEXT, base_version INTEGER, payload TEXT)')
-con.execute(\"INSERT INTO tareas VALUES ('t1', 'Comprar leche', 1, 'synced')\")
-
-def rename_offline(con, entity_id, nuevo_titulo, base_version):
-    op_id = str(uuid.uuid4())
-    with con:  # UNA transacción real para ambas escrituras
-        con.execute('UPDATE tareas SET titulo=?, sync_state=? WHERE id=?', (nuevo_titulo, 'pending', entity_id))
-        con.execute('INSERT INTO outbox VALUES (?,?,?,?)', (op_id, entity_id, base_version, nuevo_titulo))
-    return op_id
-
-servidor_version_actual = {'t1': 1}
-operaciones_ya_procesadas_por_servidor = set()
-
-def drenar_outbox(con, servidor_version_actual, operaciones_procesadas):
-    for op_id, entity_id, base_version, payload in con.execute('SELECT * FROM outbox').fetchall():
-        if op_id in operaciones_procesadas:
-            continue  # idempotencia: reintento del mismo operation ID, no duplicar efecto
-        if base_version < servidor_version_actual[entity_id]:
-            print(f'op {op_id[:8]}: CONFLICTO (base_version={base_version} < servidor={servidor_version_actual[entity_id]})')
-            con.execute('UPDATE tareas SET sync_state=? WHERE id=?', ('conflict', entity_id))
-        else:
-            servidor_version_actual[entity_id] += 1
-            operaciones_procesadas.add(op_id)
-            con.execute('UPDATE tareas SET sync_state=?, version=? WHERE id=?', ('synced', servidor_version_actual[entity_id], entity_id))
-            con.execute('DELETE FROM outbox WHERE operation_id=?', (op_id,))
-            print(f'op {op_id[:8]}: ACEPTADA, nueva versión={servidor_version_actual[entity_id]}')
-
-op1 = rename_offline(con, 't1', 'Comprar leche y pan', 1)
-drenar_outbox(con, servidor_version_actual, operaciones_ya_procesadas_por_servidor)
-print('estado final:', con.execute('SELECT * FROM tareas').fetchall())
-print('outbox restante:', con.execute('SELECT * FROM outbox').fetchall())
-"
-```
-
 </details>
 
 ### Tema 4: La calidad se opera por dispositivo y versión · Avanzado · 45 min
@@ -347,42 +239,6 @@ class FileRepository(
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import threading
-import time
-
-def trabajo_de_io_lento():
-    time.sleep(0.2)  # simula una lectura de archivo/red lenta
-    return 'datos cargados'
-
-resultados = {}
-
-def bloquea_hilo_principal():
-    inicio = time.time()
-    resultados['dato'] = trabajo_de_io_lento()  # ejecutado DIRECTAMENTE en este hilo
-    resultados['hilo_principal_bloqueado_por'] = time.time() - inicio
-
-def main_safe_con_hilo_io():
-    contenedor = {}
-    def en_hilo_io():
-        contenedor['dato'] = trabajo_de_io_lento()
-    hilo_io = threading.Thread(target=en_hilo_io)
-    inicio = time.time()
-    hilo_io.start()
-    # el 'hilo principal' queda libre para hacer otra cosa mientras tanto
-    tiempo_libre_hilo_principal = time.time() - inicio
-    hilo_io.join()
-    return tiempo_libre_hilo_principal, contenedor['dato']
-
-bloquea_hilo_principal()
-print(f'BLOQUEANDO el hilo principal: bloqueado por {resultados[\"hilo_principal_bloqueado_por\"]:.3f}s')
-
-tiempo_libre, dato = main_safe_con_hilo_io()
-print(f'MAIN-SAFE (hilo de I/O separado): hilo principal libre en {tiempo_libre:.4f}s (dato: {dato})')
-"
 ```
 
 </details>

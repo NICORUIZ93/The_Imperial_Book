@@ -142,18 +142,18 @@ mkdir -p academia-devops/src/modulo1/bisect
 cd academia-devops/src/modulo1/bisect
 docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
-  echo "def suma(a,b): return a+b" > operacion.py && git add . && git commit -qm v1
-  echo "def resta(a,b): return a-b" >> operacion.py && git commit -qam v2
-  echo "def bug(a,b): return a-b  # BUG: debería sumar" >> operacion.py && git commit -qam v3-bug
-  echo "def multiplica(a,b): return a*b" >> operacion.py && git commit -qam v4
-  echo "def divide(a,b): return a/b" >> operacion.py && git commit -qam v5
+  echo "int suma(int a, int b) { return a + b; }" > Operacion.java && git add . && git commit -qm v1
+  echo "int resta(int a, int b) { return a - b; }" >> Operacion.java && git commit -qam v2
+  echo "int total(int a, int b) { return a - b; } // BUG: debería sumar" >> Operacion.java && git commit -qam v3-bug
+  echo "int multiplica(int a, int b) { return a * b; }" >> Operacion.java && git commit -qam v4
+  echo "int divide(int a, int b) { return a / b; }" >> Operacion.java && git commit -qam v5
   git log --oneline'
 ```
 
 ```bash
 docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   echo "#!/bin/sh
-  grep -q BUG operacion.py && exit 1 || exit 0" > /repo/test-bug.sh && chmod +x /repo/test-bug.sh
+  grep -q BUG Operacion.java && exit 1 || exit 0" > /repo/test-bug.sh && chmod +x /repo/test-bug.sh
   git bisect start HEAD HEAD~4
   git bisect run ./test-bug.sh'
 ```

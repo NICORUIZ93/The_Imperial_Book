@@ -183,16 +183,13 @@ flowchart TD
 ```bash
 test -f settings.gradle.kts || cd academia-android   # entra solo si aún no estás en la raíz
 mkdir -p app/src/main/res/values-en
-# inserta el string dentro de <resources> (no después de </resources>) y no lo duplica si ya existe
-python3 - <<'PY'
-from pathlib import Path
-ruta = Path('app/src/main/res/values/strings.xml')
-xml = ruta.read_text(encoding='utf-8')
-if 'name="titulo_bienvenida"' not in xml:
-    xml = xml.replace('</resources>', '    <string name="titulo_bienvenida">Bienvenido</string>\n</resources>', 1)
-    ruta.write_text(xml, encoding='utf-8')
-print('values/strings.xml contiene titulo_bienvenida')
-PY
+```
+
+Abre `app/src/main/res/values/strings.xml` y agrega esta línea **dentro** de `<resources>`, antes de
+`</resources>` (si ya existe, no la dupliques):
+
+```xml
+    <string name="titulo_bienvenida">Bienvenido</string>
 ```
 
 Crea el archivo `app/src/main/res/values-en/strings.xml`:
@@ -205,12 +202,8 @@ Crea el archivo `app/src/main/res/values-en/strings.xml`:
 ```
 
 ```bash
-# python3 valida que el XML generado es válido antes de continuar
-python3 -c "
-import xml.etree.ElementTree as ET
-ET.parse('app/src/main/res/values-en/strings.xml')
-print('values-en/strings.xml es XML bien formado')
-"
+# xmllint (incluido en macOS y en la mayoría de Linux) valida el XML antes de continuar
+xmllint --noout app/src/main/res/values-en/strings.xml && echo "values-en/strings.xml es XML bien formado"
 ```
 
 ```bash
@@ -219,15 +212,15 @@ print('values-en/strings.xml es XML bien formado')
 ```
 
 ```bash
-python3 -c "
-import xml.etree.ElementTree as ET
-es = {s.get('name') for s in ET.parse('app/src/main/res/values/strings.xml').getroot()}
-en = {s.get('name') for s in ET.parse('app/src/main/res/values-en/strings.xml').getroot()}
-print('claves solo en español:', es - en)
-print('claves solo en inglés:', en - es)
-print('claves compartidas:', es & en)
-"
+claves() { grep -o 'name="[^"]*"' "$1" | sort; }
+es=app/src/main/res/values/strings.xml; en=app/src/main/res/values-en/strings.xml
+echo "claves solo en español:"; comm -23 <(claves $es) <(claves $en)
+echo "claves solo en inglés:";  comm -13 <(claves $es) <(claves $en)
+echo "claves compartidas:";     comm -12 <(claves $es) <(claves $en)
 ```
+
+Una clave que aparece en «solo en español» se mostrará en español aunque el teléfono esté en inglés: Android
+recurre a `values/` cuando no encuentra la traducción.
 
 </details>
 
@@ -313,8 +306,8 @@ grep -q 'include(":core")' settings.gradle.kts || echo 'include(":core")' >> set
 ```
 
 ```toml
-   kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-   ```
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+```
 
 ```bash
 grep -n 'include(":core")' settings.gradle.kts

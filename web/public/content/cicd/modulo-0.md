@@ -61,7 +61,7 @@ echo '{"scripts":{"test":"node -e \"console.log(process.version)\""}}' > package
 ```
 
 ```bash
-docker run --rm -v "$(pwd)":/w -w /w python:3.12-alpine sh -c "pip install --no-cache-dir pyyaml -q && python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/ci.yml')); print('YAML valido')\""
+docker run --rm -v "$(pwd)":/workdir mikefarah/yq '.' .github/workflows/ci.yml > /dev/null && echo "YAML valido"
 for version in 22 24; do
   echo "--- instancia matriz node-version=$version ---"
   docker run --rm -v "$(pwd)":/app -w /app "node:$version-alpine" npm test

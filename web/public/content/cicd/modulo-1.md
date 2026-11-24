@@ -330,7 +330,7 @@ docker run --rm --network host -v "$(pwd)":/w -w /w alpine sh -c "apk add --no-c
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. Prerrequisitos: procesos, códigos de salida, archivos y Python 3. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
+Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. Prerrequisitos: procesos, códigos de salida y archivos en la terminal. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
 
 </details>
 
@@ -343,31 +343,41 @@ mkdir ensayo-release
 cd ensayo-release
 ```
 
-```python
-from pathlib import Path
-import subprocess
-import sys
+Crea `release.sh`:
 
-Path('v1.py').write_text('print("ENV-42 listo")\n', encoding='utf-8')
-Path('v2.py').write_text('raise RuntimeError("configuración inválida")\n', encoding='utf-8')
-active = Path('active.txt')
-active.write_text('v1.py', encoding='utf-8')
-previous = active.read_text(encoding='utf-8')
-candidate = 'v2.py'
-# La verificación observa salida, código y tiempo límite.
-probe = subprocess.run([sys.executable, candidate], capture_output=True,
-                       text=True, timeout=5)
-healthy = probe.returncode == 0 and 'ENV-42 listo' in probe.stdout
-active.write_text(candidate if healthy else previous, encoding='utf-8')
-result = subprocess.run([sys.executable, active.read_text(encoding='utf-8')],
-                        capture_output=True, text=True, timeout=5, check=True)
-assert result.stdout.strip() == 'ENV-42 listo'
-print('Candidato rechazado; activa:', active.read_text(encoding='utf-8'))
+```bash
+#!/usr/bin/env bash
+# release.sh — promueve un candidato solo si pasa la verificación; si no, se queda el artefacto conocido
+set -uo pipefail
+printf '#!/bin/sh\necho "ENV-42 listo"\n' > v1.sh
+printf '#!/bin/sh\necho "configuración inválida" >&2\nexit 1\n' > v2.sh
+chmod +x v1.sh v2.sh
+echo v1.sh > active.txt
+anterior=$(cat active.txt)
+candidato=v2.sh
+
+# La verificación observa salida y código de salida antes de cambiar el puntero.
+salida=$(./"$candidato" 2>/dev/null); codigo=$?
+if [[ $codigo -eq 0 && "$salida" == *"ENV-42 listo"* ]]; then
+  echo "$candidato" > active.txt; resultado="Candidato promovido"
+else
+  echo "$anterior" > active.txt; resultado="Candidato rechazado (código $codigo)"
+fi
+
+[[ $(./"$(cat active.txt)") == "ENV-42 listo" ]] || { echo "fallo: la versión activa no responde"; exit 1; }
+echo "$resultado; activa: $(cat active.txt)"
 ```
 
 ```bash
-python3 release.py
+chmod +x release.sh
+./release.sh
 ```
+
+```text
+Candidato rechazado (código 1); activa: v1.sh
+```
+
+Cambia `candidato=v2.sh` por `candidato=v1.sh` y vuelve a ejecutar: `Candidato promovido; activa: v1.sh`.
 
 </details>
 

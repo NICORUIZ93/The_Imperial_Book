@@ -63,35 +63,47 @@ framework module Shared {
 @end
 ```
 
-```python
-import plistlib
-from pathlib import Path
+Crea `verificar_framework.sh`. `plutil` viene con macOS y lee el `Info.plist` sin importar si está en XML o
+en binario:
 
-framework = Path("Shared.framework")
-plist = plistlib.loads((framework / "Info.plist").read_bytes())
-if plist.get("CFBundlePackageType") != "FMWK":
-    raise SystemExit("fallo: Info.plist no declara un framework (FMWK)")
-
-modulemap = (framework / "Modules/module.modulemap").read_text(encoding="utf-8")
-if 'umbrella header "Shared.h"' not in modulemap:
-    raise SystemExit("fallo: module.modulemap sin umbrella header")
-
-cabeceras = sorted((framework / "Headers").glob("*.h"))
-exportadas = {ruta.name for ruta in cabeceras if ruta.name in modulemap}
-no_exportadas = [ruta.name for ruta in cabeceras if ruta.name not in exportadas]
-if no_exportadas:
-    raise SystemExit(f"fallo: cabeceras no exportadas: {', '.join(no_exportadas)}")
-
-header = (framework / "Headers/Shared.h").read_text(encoding="utf-8")
-if "@interface SharedTarea" not in header:
-    raise SystemExit("fallo: falta la clase pública SharedTarea")
-
-print(f"framework: {framework.name}")
-print(f"paquete: {plist['CFBundlePackageType']}")
-print('modulemap: umbrella header "Shared.h"')
-print("clase pública: SharedTarea")
-print(f"cabeceras exportadas: {len(exportadas)}")
+```bash
+#!/usr/bin/env bash
+# verificar_framework.sh — lo mínimo que Xcode necesita para importar Shared.framework
+set -euo pipefail
+fw=Shared.framework
+tipo=$(plutil -extract CFBundlePackageType raw -o - "$fw/Info.plist")
+[[ "$tipo" == FMWK ]] || { echo "fallo: Info.plist no declara un framework (FMWK)"; exit 1; }
+grep -q 'umbrella header "Shared.h"' "$fw/Modules/module.modulemap" \
+  || { echo "fallo: module.modulemap sin umbrella header"; exit 1; }
+exportadas=0
+for h in "$fw"/Headers/*.h; do
+  nombre=$(basename "$h")
+  grep -q "\"$nombre\"" "$fw/Modules/module.modulemap" || { echo "fallo: cabecera no exportada: $nombre"; exit 1; }
+  exportadas=$((exportadas + 1))
+done
+grep -q '@interface SharedTarea' "$fw/Headers/Shared.h" || { echo "fallo: falta la clase pública SharedTarea"; exit 1; }
+echo "framework: $fw"
+echo "paquete: $tipo"
+echo 'modulemap: umbrella header "Shared.h"'
+echo "clase pública: SharedTarea"
+echo "cabeceras exportadas: $exportadas"
 ```
+
+```bash
+chmod +x verificar_framework.sh
+./verificar_framework.sh
+```
+
+```text
+framework: Shared.framework
+paquete: FMWK
+modulemap: umbrella header "Shared.h"
+clase pública: SharedTarea
+cabeceras exportadas: 1
+```
+
+Agrega una cabecera que el `module.modulemap` no nombra (`echo '@interface Extra' > Shared.framework/Headers/Extra.h`)
+y vuelve a ejecutar: `fallo: cabecera no exportada: Extra.h`. Swift no vería esa clase.
 
 </details>
 

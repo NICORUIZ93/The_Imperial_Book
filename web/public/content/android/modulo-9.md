@@ -4,8 +4,6 @@
 ## Aprende construyendo
 
 > **Antes de empezar este módulo.** El Tema 3 importa `androidx.compose.material.icons`; añade `implementation(libs.androidx.compose.material.icons.core)` (catálogo del Módulo 0, versión fijada por el BOM de Compose) dentro de `dependencies { }` y pulsa **Sync Now**.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En particular, la «medición» de Baseline Profiles con Python es solo un modelo del concepto: la generación real de un perfil con el plugin `androidx.baselineprofile` y su medición con Macrobenchmark están en el Módulo 18; hasta entonces no presentes la cifra del script como resultado de tu app.
 
 
 ### Tema 1: Detectar y corregir recomposición innecesaria · Avanzado · 45 min
@@ -37,8 +35,7 @@ Al finalizar podrás identificar por qué una lambda recreada en cada recomposic
 ```
 
 ```bash
-# Crea el MaterialTheme 3 de la app y los dos botones comparados; el script python3 más abajo
-# confirma en ejecución real la diferencia de identidad entre lambdas
+# Crea el MaterialTheme 3 de la app y los dos botones comparados
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -116,24 +113,6 @@ fun BotonEstable(viewModel: TareasViewModelConEstado) {
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 -c "
-class ViewModel:
-    def cargar(self):
-        return 'cargando'
-
-vm = ViewModel()
-
-lambda_1 = lambda: vm.cargar()
-lambda_2 = lambda: vm.cargar()
-print('dos lambdas nuevas, misma lógica, ¿son la MISMA referencia?:', lambda_1 is lambda_2)
-
-referencia_1 = vm.cargar
-referencia_2 = vm.cargar
-print('dos referencias al mismo método bound, ¿son iguales por valor?:', referencia_1 == referencia_2)
-"
-```
-
 </details>
 
 ### Tema 2: Baseline Profiles y ciclo de efectos · Avanzado · 45 min
@@ -199,7 +178,6 @@ Al finalizar podrás agregar contentDescription a elementos interactivos sin tex
 ```
 
 ```bash
-# Este script python3 audita programáticamente qué íconos carecen de contentDescription
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
@@ -222,28 +200,6 @@ fun IconoEliminarTarea() {
 
 ```bash
 ./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-iconos_de_la_pantalla = [
-    {'nombre': 'Delete', 'accion': 'eliminar tarea', 'content_description': 'Eliminar tarea'},
-    {'nombre': 'Edit', 'accion': 'editar tarea', 'content_description': None},  # falta
-    {'nombre': 'Share', 'accion': 'compartir tarea', 'content_description': 'Compartir tarea'},
-    {'nombre': 'MoreVert', 'accion': 'decorativo, sin acción propia', 'content_description': None},  # OK: decorativo
-]
-
-def auditar_accesibilidad(iconos):
-    problemas = []
-    for icono in iconos:
-        es_decorativo = 'decorativo' in icono['accion']
-        if icono['content_description'] is None and not es_decorativo:
-            problemas.append(icono['nombre'])
-    return problemas
-
-problemas = auditar_accesibilidad(iconos_de_la_pantalla)
-print('íconos interactivos SIN contentDescription (requieren corrección):', problemas)
-"
 ```
 
 </details>
