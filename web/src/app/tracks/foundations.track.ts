@@ -21,7 +21,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Por qué una ruta relativa depende de la carpeta actual?',
       '¿Qué información aporta el código de salida de un comando?',
     ],
-    ['Sistema operativo', 'Terminal', 'Python 3.14', 'Visual Studio Code'],
+    ['Sistema operativo', 'Terminal', 'JDK 25', 'Visual Studio Code'],
     'Carpeta de trabajo creada desde terminal con primer programa ejecutado, error diagnosticado y README de evidencia.'),
   m(1, 'Pensamiento computacional y programación', 'Lógica y programación', 'Fundamentos', '7 h 15 min', '#6d5dfc',
     'Aprende a convertir un problema cotidiano en datos, decisiones, repeticiones y funciones verificables, y da el primer paso en programación orientada a objetos con clases, herencia, composición y clases abstractas.',[

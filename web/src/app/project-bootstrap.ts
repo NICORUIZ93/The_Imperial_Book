@@ -20,12 +20,12 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
   },
   foundations: {
     workspace: 'academia-labs/foundations',
-    prerequisites: ['Python 3', 'Git', 'Visual Studio Code'],
-    createCommands: ['mkdir -p academia-labs/foundations', 'cd academia-labs/foundations', 'git init', 'python3 -m venv .venv', 'source .venv/bin/activate  # Windows: .venv\\Scripts\\Activate.ps1'],
-    structure: ['README.md', 'src/', 'tests/', 'evidence/'],
-    runCommand: 'python3 -m unittest discover -s tests -v',
-    expected: 'La prueba mínima termina en OK y README registra el comando usado.',
-    recovery: ['Si python3 no existe, prueba python o py en Windows.', 'Si no activa el entorno, confirma tu shell y la ruta de .venv.'],
+    prerequisites: ['JDK 25 (Eclipse Temurin)', 'Git', 'Visual Studio Code con Extension Pack for Java'],
+    createCommands: ['mkdir -p academia-labs/foundations/{src,evidence}', 'cd academia-labs/foundations', 'git init', 'java --version'],
+    structure: ['README.md', 'src/', 'src/Saludo.java', 'evidence/'],
+    runCommand: 'java src/Saludo.java',
+    expected: 'El programa imprime su mensaje y README registra el comando y la salida copiada de la terminal.',
+    recovery: ['Si java no existe, reinstala el JDK y abre una terminal nueva.', 'Si aparece Could not find or load main class, revisa el nombre del archivo y la carpeta con pwd y ls.'],
   },
   cloud: {
     workspace: 'academia-labs/cloud',

@@ -270,6 +270,7 @@ main { max-width:1240px; padding:clamp(36px,5vw,72px) clamp(22px,5vw,70px) 0; }
 .first-session p,.session-label { color:#a9b4c5; }
 .session-example { border-color:#263247; border-radius:12px; background:#182235; }
 .session-example pre,.session-example > span,.session-example small { color:#dce7f5; }
+.session-example .code-fn { color:#7dd3fc; }
 .first-session > a { color:#fff; text-decoration:none; }
 .hero-stats { grid-column:1/-1; gap:0; margin:0; padding:0 28px 26px; border:0; }
 .hero-stats div { min-width:170px; padding:12px 22px; border-left:1px solid $bd; }
