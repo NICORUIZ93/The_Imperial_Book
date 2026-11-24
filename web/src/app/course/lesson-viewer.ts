@@ -450,7 +450,12 @@ export class LessonViewerComponent implements OnDestroy {
       if (request === this.lessonRequest) this.lessonHtml.set(html);
     } catch (error) {
       if (request === this.lessonRequest) {
-        this.lessonError.set(error instanceof Error ? error.message : 'No pudimos cargar la lección.');
+        // Sin conexión, «Failed to fetch» no dice nada útil: la causa real es que
+        // esta página aún no está guardada en el dispositivo.
+        const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+        this.lessonError.set(offline
+          ? 'Estás sin conexión y esta lección todavía no está guardada en este dispositivo. Cuando vuelvas a tener internet, usa «Guardar para leer sin conexión» en el índice del curso.'
+          : `${error instanceof Error ? error.message : 'No pudimos cargar la lección.'} Comprueba la conexión y vuelve a intentarlo.`);
       }
     } finally {
       if (request === this.lessonRequest) this.lessonLoading.set(false);

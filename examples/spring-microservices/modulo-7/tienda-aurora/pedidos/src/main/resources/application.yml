@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+inventario:
+  url: ${INVENTARIO_URL:http://localhost:8081}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventario:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,circuitbreakers

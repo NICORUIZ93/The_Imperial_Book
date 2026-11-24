@@ -125,3 +125,13 @@
   .search-trigger { width:34px; justify-content:center; padding:0; border-bottom:0; }
   .search-trigger kbd { display:none; }
 }
+
+// ── Lectura sin conexión ─────────────────────────────────────────────────
+.offline-save { margin:0 8px 18px; }
+.offline-button {
+  width:100%; min-height:40px; padding:8px 12px; border:1px solid $bd; border-radius:10px;
+  background:$bg2; color:$ink; font:600 12px/1.3 $sans; text-align:left; cursor:pointer;
+}
+.offline-button:disabled { cursor:progress; color:$mu; }
+.offline-button.saved { border-style:dashed; }
+.offline-save p { margin:6px 2px 0; color:$mu; font:400 11px/1.5 $sans; }

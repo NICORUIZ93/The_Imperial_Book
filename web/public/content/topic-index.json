@@ -7586,32 +7586,8 @@
     ],
     "7": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "Código completo",
-        "fragment": "codigo-completo"
-      },
-      {
-        "title": "Circuit breaker, retry, rate limiter, bulkhead, time limiter",
-        "fragment": "tema-1-circuit-breaker-retry-rate-limiter-bulkhead-time-limiter"
+        "title": "Circuit breaker — dos microservicios conectados y protegidos",
+        "fragment": "tema-1-circuit-breaker-dos-microservicios-conectados-y-protegidos"
       },
       {
         "title": "Timeouts en cascada",

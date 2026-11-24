@@ -124,7 +124,7 @@
         <div *ngIf="!lessonLoading() && lessonHtml() as html" #lessonContent class="lesson-markdown" [innerHTML]="html" (click)="copyCode($event)"></div>
         <div *ngIf="!lessonLoading() && lessonError() as error" class="lesson-error" role="alert">
           <strong>No pudimos abrir esta lección</strong>
-          <p>{{ error }} Comprueba la conexión y vuelve a intentarlo. Tu progreso está seguro.</p>
+          <p>{{ error }} Tu progreso está seguro.</p>
           <button type="button" (click)="retryLesson()">Volver a intentar</button>
         </div>
         <p *ngIf="diagramError() as error" class="lesson-error" role="alert">{{ error }}</p>

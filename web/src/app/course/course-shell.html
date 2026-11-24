@@ -24,6 +24,10 @@
       <p class="official-source" *ngIf="officialPath() as path">
         Guía oficial: <a [href]="path.sourceUrl" target="_blank" rel="noopener noreferrer">{{ path.source }} ↗</a>
       </p>
+      <div class="offline-save" *ngIf="offline.available">
+        <button type="button" class="offline-button" [disabled]="offlineStatus().state === 'saving'" [class.saved]="offlineStatus().state === 'saved'" (click)="saveOffline()">{{ offlineLabel() }}</button>
+        <p *ngIf="offlineStatus().state === 'saved'">Las páginas del curso quedan guardadas en este navegador. Pulsa de nuevo para actualizarlas.</p>
+      </div>
       <app-lesson-index [trackId]="t.id" />
     </aside>
     <div class="shell-scrim mobile-only" *ngIf="sidebarOpen()" (click)="closeSidebar()"></div>

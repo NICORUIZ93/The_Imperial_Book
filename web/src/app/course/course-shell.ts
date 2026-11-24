@@ -11,6 +11,7 @@ import { ThemeService } from '../theme.service';
 import { BookModeService } from './book-mode.service';
 import { LessonIndexComponent } from './lesson-index';
 import { findOfficialLearningPath } from '../official-learning-paths';
+import { OfflineLibraryService } from '../offline-library.service';
 
 @Component({
   selector: 'app-course-shell',
@@ -23,6 +24,7 @@ export class CourseShellComponent {
   readonly progressService = inject(ProgressService);
   readonly paletteService = inject(CommandPaletteService);
   readonly themeService = inject(ThemeService);
+  readonly offline = inject(OfflineLibraryService);
   private readonly bookModeService = inject(BookModeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -73,6 +75,23 @@ export class CourseShellComponent {
     if (event.key !== 'Escape' || !this.sidebarOpen()) return;
     event.preventDefault();
     this.closeSidebar();
+  }
+
+  readonly offlineStatus = computed(() => this.offline.status(this.trackId()));
+
+  offlineLabel(): string {
+    const s = this.offlineStatus();
+    switch (s.state) {
+      case 'saving': return `Guardando… ${s.done} de ${s.total}`;
+      case 'saved': return 'Disponible sin conexión';
+      case 'error': return 'No se pudo guardar. Reintentar';
+      default: return 'Guardar para leer sin conexión';
+    }
+  }
+
+  saveOffline(): void {
+    const track = this.track();
+    if (track) void this.offline.saveTrack(track.id, track.modules);
   }
 
   closeSidebar(): void {
