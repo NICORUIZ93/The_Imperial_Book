@@ -98,46 +98,9 @@ class TareasViewModelTest {
 ./gradlew :app:testDebugUnitTest --tests "com.academia.android.TareasViewModelTest"
 ```
 
-Crea el archivo `test_viewmodel_fake.py`:
-
-```python
-import time
-import unittest
-
-class TareaRepositorioFake:
-    def __init__(self, datos):
-        self.datos = datos
-    def obtener_tareas(self):
-        return self.datos  # instantáneo, sin latencia de red
-
-class TareaRepositorioRealSimulado:
-    def obtener_tareas(self):
-        time.sleep(0.3)  # simula latencia de red real
-        return ["Comprar leche"]
-
-class ViewModel:
-    def __init__(self, repo):
-        self.repo = repo
-        self.estado = None
-    def cargar(self):
-        self.estado = ("Exito", self.repo.obtener_tareas())
-
-class TestViewModelConFake(unittest.TestCase):
-    def test_carga_tareas_correctamente(self):
-        inicio = time.time()
-        vm = ViewModel(TareaRepositorioFake(["Comprar leche"]))
-        vm.cargar()
-        duracion = time.time() - inicio
-        self.assertEqual(vm.estado, ("Exito", ["Comprar leche"]))
-        self.assertLess(duracion, 0.05, "el test con fake debe ser prácticamente instantáneo")
-
-if __name__ == "__main__":
-    unittest.main()
-```
-
-```bash
-python3 -m unittest test_viewmodel_fake.py -v
-```
+La prueba termina en milisegundos porque `TareaRepositoryFake` responde en memoria, sin red ni base de datos. El
+informe de Gradle lo muestra: abre `app/build/reports/tests/testDebugUnitTest/index.html` y mira la columna de
+duración de `cargaTareasCorrectamente`.
 
 </details>
 

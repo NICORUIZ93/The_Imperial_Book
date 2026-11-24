@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist en Python solo comprueba que existan archivos; no demuestra que funcionen.
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist de la terminal solo comprueba que existan archivos; no demuestra que funcionen.
 
 
 ### Tema 1: Arquitectura MVVM completa con UDF · Avanzado · 45 min
@@ -209,37 +209,19 @@ Al finalizar podrás articular, con una checklist verificable, qué hace a una a
 └───────────────────────────────────────────────┘
 ```
 
+Comprueba desde la terminal que el proyecto tiene las cinco piezas. Cada línea busca el archivo que la demuestra:
+
 ```bash
-# Este script python3 ejecuta la checklist ejecutable definida a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app
-```
-
-Crea el archivo `app/checklist-cierre-track.py`:
-
-```python
-import os
-
-archivos_del_proyecto = os.popen("find app/src/main/kotlin -name '*.kt' 2>/dev/null").read()
-
-criterios = {
-    "ui_compose": "@Composable" in archivos_del_proyecto or os.path.exists("app/src/main/kotlin/com/academia/android/TarjetaTarea.kt"),
-    "udf_stateflow": os.path.exists("app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt"),
-    "offline_first_room": os.path.exists("app/src/main/kotlin/com/academia/android/AppDatabase.kt"),
-    "dependencias_hilt": os.path.exists("app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt"),
-    "tests_existen": os.path.exists("app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt"),  # src/test, nunca src/main
-}
-
-for nombre, cumplido in criterios.items():
-    print(f"[{'CUMPLE' if cumplido else 'NO CUMPLE'}] {nombre}")
-
-total = len(criterios)
-cumplidos = sum(criterios.values())
-print(f"Resumen: {cumplidos}/{total} dimensiones de una app Android completa presentes")
-```
-
-```bash
-python3 app/checklist-cierre-track.py
+base=app/src/main/kotlin/com/academia/android
+for pieza in "ui_compose:$base/TarjetaTarea.kt" \
+             "udf_stateflow:$base/TareasViewModelIntegrado.kt" \
+             "offline_first_room:$base/AppDatabase.kt" \
+             "dependencias_hilt:$base/ViewModelBienInyectado.kt" \
+             "tests_existen:app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt"; do
+  nombre=${pieza%%:*}; archivo=${pieza#*:}
+  if test -f "$archivo"; then echo "[CUMPLE] $nombre"; else echo "[NO CUMPLE] $nombre ($archivo)"; fi
+done
 ```
 
 ```bash

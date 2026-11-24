@@ -23,10 +23,18 @@ parametrizada*, *inyección SQL* y *cursor* (Fundamentos, Módulo 4, Tema 2); *t
 Módulo 9, Tema 1); *ORM*, *JPA*, *Hibernate*, *JDBC*, *H2* y *entidad JPA* (Java, Módulo 16, Tema 1); *EntityManager*
 y *JPQL* (Java, Módulo 16, Tema 3); *bloqueo pesimista* (Java, Módulo 16, Tema 7).
 
-**Entorno de los programas de un solo archivo (2026-11-24):** Linux x86_64, OpenJDK 25.0.5.1 (`java Archivo.java`) y
-Python 3.13.18 con SQLite 3.53.1 (módulo `sqlite3`). En ese entorno no había H2 ni ningún driver JDBC. Los
-programas Java nuevos usan solo `java.sql` y la biblioteca estándar; los scripts de Python ejecutan con SQLite el
-mismo SQL que el DAO envía por JDBC. Sus transcripciones son literales. Las salidas del proyecto Gradle son las
+**Entorno de los programas de un solo archivo (2026-11-24):** Linux x86_64, OpenJDK 25.0.5.1 (`java Archivo.java`)
+y H2 2.3.232, el mismo driver del proyecto. Los programas usan solo `java.sql` y la biblioteca estándar; los que
+hablan con una base ejecutan contra H2 en memoria el mismo SQL que el DAO envía por JDBC. Sus transcripciones son
+literales.
+
+**Cómo ejecutar los programas con H2.** Después del primer `./gradlew build`, el JAR de H2 está en la caché de
+Gradle. Guarda su ruta una vez por terminal y pásala con `-cp`:
+
+```bash
+export H2="$(find ~/.gradle/caches -name 'h2-2.3.232.jar' | head -1)"
+java -cp "$H2" Inyeccion.java
+``` Las salidas del proyecto Gradle son las
 capturadas en el Mac del entorno de referencia; no se cambiaron.
 
 ## Visual del módulo
@@ -354,52 +362,78 @@ Muestra qué hace la base con un dato malicioso cuando lo concatenas y cuando lo
 
 **Razonamiento:**
 1. `Statement` con concatenación envía el texto del usuario como parte del SQL.
-2. `PreparedStatement` envía la plantilla con `?` y el valor aparte; SQLite en Python funciona igual con `?`.
+2. `PreparedStatement` envía la plantilla con `?` y el valor aparte con `setString`.
 3. Un apellido con apóstrofo legítimo (`D'Angelo`) también rompe la versión concatenada.
 
-```python
-# inyeccion.py — lo que hace Statement con texto concatenado frente a PreparedStatement con ? (SQLite)
-import sqlite3
+```java
+// Inyeccion.java — lo que hace Statement con texto concatenado frente a PreparedStatement con ? (H2 en memoria)
+import java.sql.*;
+import java.util.*;
 
-con = sqlite3.connect(":memory:")
-con.execute("CREATE TABLE guias (id INTEGER PRIMARY KEY, remitente TEXT, destino TEXT, peso_kg NUMERIC)")
-con.executemany("INSERT INTO guias VALUES (?, ?, ?, ?)",
-                [(1, "Ana", "BOG", 2.5), (2, "Luis", "MED", 1.2), (3, "Marta", "BOG", 3.0)])
+public class Inyeccion {
+    public static void main(String[] args) throws SQLException {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:mem:guias")) {
+            con.createStatement().execute("""
+                CREATE TABLE guias (id BIGINT PRIMARY KEY, remitente VARCHAR(60), destino VARCHAR(3), peso_kg NUMERIC(6, 2));
+                INSERT INTO guias VALUES (1, 'Ana', 'BOG', 2.5), (2, 'Luis', 'MED', 1.2), (3, 'Marta', 'BOG', 3.0);
+                """);
 
-entrada = "CAL' OR '1'='1"                     # lo que escribe un usuario en el buscador de destino
-sql = "SELECT id, remitente FROM guias WHERE destino = '" + entrada + "' ORDER BY id"
-print("SQL concatenado :", sql)
-print("filas           :", con.execute(sql).fetchall())
+            String entrada = "CAL' OR '1'='1";                  // lo que escribe un usuario en el buscador de destino
+            String sql = "SELECT id, remitente FROM guias WHERE destino = '" + entrada + "' ORDER BY id";
+            System.out.println("SQL concatenado : " + sql);
+            System.out.println("filas           : " + filas(con.createStatement().executeQuery(sql)));
 
-plantilla = "SELECT id, remitente FROM guias WHERE destino = ? ORDER BY id"
-print("SQL con ?       :", plantilla, "| parámetro:", repr(entrada))
-print("filas           :", con.execute(plantilla, (entrada,)).fetchall())
+            String plantilla = "SELECT id, remitente FROM guias WHERE destino = ? ORDER BY id";
+            System.out.println("SQL con ?       : " + plantilla + " | parámetro: \"" + entrada + "\"");
+            try (PreparedStatement ps = con.prepareStatement(plantilla)) {
+                ps.setString(1, entrada);
+                System.out.println("filas           : " + filas(ps.executeQuery()));
+            }
 
-try:
-    con.execute("SELECT id FROM guias WHERE remitente = '" + "D'Angelo" + "'")
-except sqlite3.OperationalError as error:
-    print("apellido D'Angelo concatenado ->", type(error).__name__ + ":", error)
-print("apellido D'Angelo con ?       ->", con.execute("SELECT id FROM guias WHERE remitente = ?", ("D'Angelo",)).fetchall())
+            try {
+                con.createStatement().executeQuery("SELECT id FROM guias WHERE remitente = '" + "D'Angelo" + "'");
+            } catch (SQLException error) {
+                System.out.println("apellido D'Angelo concatenado -> SQLState " + error.getSQLState() + ": "
+                        + error.getMessage().lines().findFirst().orElse("").replaceAll("; (expected|SQL statement).*", ""));
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT id FROM guias WHERE remitente = ?")) {
+                ps.setString(1, "D'Angelo");
+                System.out.println("apellido D'Angelo con ?       -> " + filas(ps.executeQuery()));
+            }
+        }
+    }
+
+    static List<String> filas(ResultSet rs) throws SQLException {
+        List<String> salida = new ArrayList<>();
+        int columnas = rs.getMetaData().getColumnCount();
+        while (rs.next()) {
+            StringJoiner fila = new StringJoiner(", ", "(", ")");
+            for (int c = 1; c <= columnas; c++) fila.add(String.valueOf(rs.getObject(c)));
+            salida.add(fila.toString());
+        }
+        rs.close();
+        return salida;
+    }
+}
 ```
 
 ```text
-$ python3 inyeccion.py
+$ java -cp "$H2" Inyeccion.java
 SQL concatenado : SELECT id, remitente FROM guias WHERE destino = 'CAL' OR '1'='1' ORDER BY id
-filas           : [(1, 'Ana'), (2, 'Luis'), (3, 'Marta')]
+filas           : [(1, Ana), (2, Luis), (3, Marta)]
 SQL con ?       : SELECT id, remitente FROM guias WHERE destino = ? ORDER BY id | parámetro: "CAL' OR '1'='1"
 filas           : []
-apellido D'Angelo concatenado -> OperationalError: near "Angelo": syntax error
+apellido D'Angelo concatenado -> SQLState 42000: Syntax error in SQL statement "SELECT id FROM guias WHERE remitente = 'D'Angelo[*]'"
 apellido D'Angelo con ?       -> []
 ```
 
 **Explicación por partes.**
-- Línea 10: la comilla de la entrada cierra el texto y `OR '1'='1'` se vuelve condición. Salen las tres guías.
-- Líneas 14–16: con `?`, la base busca un destino llamado literalmente `CAL' OR '1'='1`. No hay ninguno.
-- Líneas 18–21: un dato honesto con apóstrofo rompe la sintaxis concatenada.
-- Línea 22: con `?`, el mismo apellido es solo un valor.
+- Línea 14: la comilla de la entrada cierra el texto y `OR '1'='1'` se vuelve condición. Salen las tres guías.
+- Líneas 18–23: con `?` y `setString`, la base busca un destino llamado literalmente `CAL' OR '1'='1`. No hay ninguno.
+- Líneas 25–30: un dato honesto con apóstrofo rompe la sintaxis concatenada; `[*]` marca dónde se perdió el analizador.
+- Líneas 31–34: con `?`, el mismo apellido es solo un valor.
 
-El script usa la API de Python con SQLite; en Java, lo concatenado corresponde a `Statement` y lo parametrizado a
-`PreparedStatement` con `setString`.
+Es el mismo `Statement` y el mismo `PreparedStatement` que usará el DAO del proyecto; solo cambia la base.
 
 #### Problema resuelto 1.3
 Construye el modelo, la fábrica de `DataSource`, el esquema y el DAO de guías del proyecto.
@@ -892,7 +926,7 @@ consulta. `PreparedStatement` envía la plantilla con `?` y los valores aparte, 
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Ejecuta los programas de un solo archivo
-Ejecuta `java SinDriver.java`, `python3 inyeccion.py` y `java MiniPool.java`. Relaciona cada línea de salida con
+Ejecuta `java SinDriver.java`, `java -cp "$H2" Inyeccion.java` y `java MiniPool.java`. Relaciona cada línea de salida con
 la línea del programa que la produce.
 
 #### Paso 2 · Crea el proyecto
@@ -916,9 +950,9 @@ Crea `persistence.xml`, `GuiaEntity`, `GuiaJpaDao` y `ConteoJpaVsJdbcTest`. Ejec
 - Un **DAO** encapsula el SQL de una tabla y su **mapeo de filas** a objetos.
 
 #### Ejercicio verificable 1
-Básico. En `inyeccion.py`, cambia `entrada` por `"BOG"`. ¿Qué filas devuelven las dos consultas?
+Básico. En `Inyeccion.java`, cambia `entrada` por `"BOG"`. ¿Qué filas devuelven las dos consultas?
 
-Respuesta esperada: las dos devuelven `[(1, 'Ana'), (3, 'Marta')]`. Con datos honestos son iguales; la diferencia
+Respuesta esperada: las dos devuelven `[(1, Ana), (3, Marta)]`. Con datos honestos son iguales; la diferencia
 aparece con datos maliciosos o con apóstrofos.
 
 #### Ejercicio verificable 2
@@ -994,14 +1028,14 @@ tanto, otro proceso puede estar leyendo ese saldo a medias. ¿Cómo agrupas las 
 - **Definición técnica:** anomalía en que una transacción lee datos escritos por otra que todavía no confirmó.
 - **En palabras sencillas:** leer el borrador de otro, que quizá nunca se publique.
 - **Dónde se rompe la comparación:** si el otro hace `rollback`, leíste un dato que nunca existió.
-- **Ejemplo:** en `aislamiento.py`, paso 1, A ve `90` y B sigue viendo `100`: no hay lectura sucia.
+- **Ejemplo:** en `Aislamiento.java`, paso 1, A ve `90` y B sigue viendo `100`: no hay lectura sucia.
 - **Error típico:** usar READ UNCOMMITTED para reportes «rápidos» de dinero.
 
 **lectura no repetible**
 - **Definición técnica:** anomalía en que una transacción lee la misma fila dos veces y obtiene valores distintos porque otra confirmó un cambio entre ambas lecturas.
 - **En palabras sencillas:** mirar el saldo, voltear la cabeza y encontrar otro número.
 - **Dónde se rompe la comparación:** no hay error: los dos valores eran correctos en su momento.
-- **Ejemplo:** paso 2 de `aislamiento.py`: B lee `100` y luego `90`.
+- **Ejemplo:** paso 2 de `Aislamiento.java`: B lee `100` y luego `90`.
 - **Error típico:** calcular con la primera lectura y escribir después, suponiendo que el dato no cambió.
 
 **lectura fantasma**
@@ -1022,7 +1056,7 @@ tanto, otro proceso puede estar leyendo ese saldo a medias. ¿Cómo agrupas las 
 - **Definición técnica:** REPEATABLE READ garantiza que las filas ya leídas no cambian dentro de la transacción; SERIALIZABLE garantiza un resultado equivalente a ejecutar las transacciones una tras otra.
 - **En palabras sencillas:** REPEATABLE READ te da una foto fija; SERIALIZABLE además impide que la foto choque con la de otros.
 - **Dónde se rompe la comparación:** más aislamiento cuesta más esperas, bloqueos o reintentos.
-- **Ejemplo:** paso 3 de `aislamiento.py`: dentro de su transacción, B sigue leyendo `90` aunque A confirmó `80`.
+- **Ejemplo:** paso 3 de `Aislamiento.java`: dentro de su transacción, B sigue leyendo `90` aunque A confirmó `80`.
 - **Error típico:** no programar el reintento: en SERIALIZABLE, PostgreSQL aborta transacciones con conflicto y espera que repitas.
 
 **SELECT FOR UPDATE**
@@ -1071,108 +1105,146 @@ Ejecuta la misma transferencia fallida con confirmación automática y con trans
 2. En autocommit, el primer `UPDATE` ya se confirmó. Con transacción, `ROLLBACK` lo deshace.
 3. La prueba es el total: antes de transferir, 150.
 
-```python
-# transferencia.py — la misma transferencia con autocommit y con transacción explícita (SQLite)
-import sqlite3
+```java
+// Transferencia.java — la misma transferencia con autocommit y con transacción explícita (H2 en memoria)
+import java.sql.*;
+import java.util.*;
 
-def nueva_base():
-    con = sqlite3.connect(":memory:", isolation_level=None)   # autocommit, como JDBC por defecto
-    con.execute("CREATE TABLE cuentas (id INTEGER PRIMARY KEY, titular TEXT, saldo NUMERIC NOT NULL)")
-    con.executemany("INSERT INTO cuentas VALUES (?, ?, ?)", [(10, "Ana", 100), (20, "Luis", 50)])
-    return con
+public class Transferencia {
+    static Connection nuevaBase(String nombre) throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:h2:mem:" + nombre);  // autocommit: así abre JDBC
+        con.createStatement().execute("""
+            CREATE TABLE cuentas (id BIGINT PRIMARY KEY, titular VARCHAR(60), saldo NUMERIC(12, 2) NOT NULL);
+            INSERT INTO cuentas VALUES (10, 'Ana', 100), (20, 'Luis', 50);
+            """);
+        return con;
+    }
 
-def transferir(con, desde, hacia, monto):
-    con.execute("UPDATE cuentas SET saldo = saldo - ? WHERE id = ?", (monto, desde))
-    if con.execute("UPDATE cuentas SET saldo = saldo + ? WHERE id = ?", (monto, hacia)).rowcount != 1:
-        raise LookupError(f"cuenta no existe: {hacia}")
+    static void transferir(Connection con, long desde, long hacia, int monto) throws SQLException {
+        try (var debito = con.prepareStatement("UPDATE cuentas SET saldo = saldo - ? WHERE id = ?");
+             var credito = con.prepareStatement("UPDATE cuentas SET saldo = saldo + ? WHERE id = ?")) {
+            debito.setInt(1, monto); debito.setLong(2, desde); debito.executeUpdate();
+            credito.setInt(1, monto); credito.setLong(2, hacia);
+            if (credito.executeUpdate() != 1) throw new SQLException("cuenta no existe: " + hacia);
+        }
+    }
 
-def saldos(con):
-    filas = con.execute("SELECT id, saldo FROM cuentas ORDER BY id").fetchall()
-    return filas, "total =", sum(s for _, s in filas)
+    static String saldos(Connection con) throws SQLException {
+        List<String> filas = new ArrayList<>();
+        int total = 0;
+        try (ResultSet rs = con.createStatement().executeQuery("SELECT id, saldo FROM cuentas ORDER BY id")) {
+            while (rs.next()) {
+                filas.add("(" + rs.getLong(1) + ", " + rs.getInt(2) + ")");
+                total += rs.getInt(2);
+            }
+        }
+        return filas + " total = " + total;
+    }
 
-sin_tx = nueva_base()
-try:
-    transferir(sin_tx, 10, 99, 30)
-except LookupError as error:
-    print("autocommit  ->", error, "|", *saldos(sin_tx))
+    public static void main(String[] args) throws SQLException {
+        try (Connection sinTx = nuevaBase("sin_tx")) {
+            try {
+                transferir(sinTx, 10, 99, 30);
+            } catch (SQLException error) {
+                System.out.println("autocommit  -> " + error.getMessage() + " | " + saldos(sinTx));
+            }
+        }
 
-con_tx = nueva_base()
-con_tx.execute("BEGIN")                                           # equivale a setAutoCommit(false)
-try:
-    transferir(con_tx, 10, 99, 30)
-    con_tx.execute("COMMIT")
-except LookupError as error:
-    con_tx.execute("ROLLBACK")
-    print("transacción ->", error, "|", *saldos(con_tx))
+        try (Connection conTx = nuevaBase("con_tx")) {
+            conTx.setAutoCommit(false);                          // a partir de aquí, nada se confirma solo
+            try {
+                transferir(conTx, 10, 99, 30);
+                conTx.commit();
+            } catch (SQLException error) {
+                conTx.rollback();
+                System.out.println("transacción -> " + error.getMessage() + " | " + saldos(conTx));
+            }
+        }
+    }
+}
 ```
 
 ```text
-$ python3 transferencia.py
+$ java -cp "$H2" Transferencia.java
 autocommit  -> cuenta no existe: 99 | [(10, 70), (20, 50)] total = 120
 transacción -> cuenta no existe: 99 | [(10, 100), (20, 50)] total = 150
 ```
 
 **Explicación por partes.**
-- Línea 5: `isolation_level=None` deja a SQLite en autocommit, igual que una `Connection` JDBC recién abierta.
-- Líneas 11–13: el débito ocurre; el crédito a la cuenta 99 afecta 0 filas y lanza el error.
+- Línea 7: una `Connection` JDBC recién abierta está en autocommit: cada sentencia se confirma sola.
+- Líneas 15–21: el débito ocurre; el crédito a la cuenta 99 afecta 0 filas y lanza el error.
 - Primera salida: en autocommit, la cuenta 10 quedó en 70 y el total bajó a 120. Se perdieron 30.
-- Línea 26 y segunda salida: con `BEGIN` (en JDBC, `setAutoCommit(false)`) y `ROLLBACK`, el total sigue en 150.
+- Líneas 46–52 y segunda salida: con `setAutoCommit(false)` y `rollback`, el total sigue en 150.
 
 #### Problema resuelto 2.2
 Observa qué ve una conexión mientras otra escribe: sin confirmar, confirmando entre dos lecturas y dentro de una
 transacción de lectura.
 
 **Razonamiento:**
-1. Dos conexiones a la misma base en modo WAL: A escribe y B lee.
+1. Dos conexiones a la misma base en memoria: A escribe y B lee.
 2. Si B ve el `90` de A antes del `COMMIT`, hay lectura sucia.
 3. Si B lee dos valores distintos de la misma fila, hay lectura no repetible.
 
-```python
-# aislamiento.py — lectura sucia, lectura no repetible y foto estable de una transacción (SQLite en WAL)
-import os
-import sqlite3
-import tempfile
+```java
+// Aislamiento.java — lectura sucia, lectura no repetible y foto estable de una transacción (H2 en memoria)
+import java.sql.*;
 
-ruta = os.path.join(tempfile.mkdtemp(), "cuentas.db")
-a = sqlite3.connect(ruta, isolation_level=None)      # A escribe
-b = sqlite3.connect(ruta, isolation_level=None)      # B lee
-a.execute("PRAGMA journal_mode=WAL")
-a.execute("CREATE TABLE cuentas (id INTEGER PRIMARY KEY, saldo NUMERIC NOT NULL)")
-a.execute("INSERT INTO cuentas VALUES (1, 100)")
-LEER = "SELECT saldo FROM cuentas WHERE id = 1"
+public class Aislamiento {
+    static final String URL = "jdbc:h2:mem:cuentas;DB_CLOSE_DELAY=-1";
+    static final String LEER = "SELECT saldo FROM cuentas WHERE id = 1";
 
-a.execute("BEGIN")
-a.execute("UPDATE cuentas SET saldo = saldo - 10 WHERE id = 1")
-print("1. A restó 10 sin confirmar; A ve", a.execute(LEER).fetchone()[0], "y B ve", b.execute(LEER).fetchone()[0])
-a.execute("ROLLBACK")
+    public static void main(String[] args) throws SQLException {
+        try (Connection a = DriverManager.getConnection(URL);    // A escribe
+             Connection b = DriverManager.getConnection(URL)) {  // B lee
+            a.createStatement().execute("""
+                CREATE TABLE cuentas (id BIGINT PRIMARY KEY, saldo INT NOT NULL);
+                INSERT INTO cuentas VALUES (1, 100);
+                """);
 
-print("2. B sin transacción lee", b.execute(LEER).fetchone()[0], end="; ")
-a.execute("UPDATE cuentas SET saldo = 90 WHERE id = 1")       # A confirma (autocommit)
-print("A confirma 90; B vuelve a leer", b.execute(LEER).fetchone()[0])
+            a.setAutoCommit(false);
+            a.createStatement().executeUpdate("UPDATE cuentas SET saldo = saldo - 10 WHERE id = 1");
+            System.out.println("1. A restó 10 sin confirmar; A ve " + leer(a) + " y B ve " + leer(b));
+            a.rollback();
+            a.setAutoCommit(true);
 
-b.execute("BEGIN")
-print("3. B dentro de BEGIN lee", b.execute(LEER).fetchone()[0], end="; ")
-a.execute("UPDATE cuentas SET saldo = 80 WHERE id = 1")
-print("A confirma 80; B vuelve a leer", b.execute(LEER).fetchone()[0], end="; ")
-b.execute("COMMIT")
-print("tras COMMIT de B lee", b.execute(LEER).fetchone()[0])
+            System.out.print("2. B sin transacción lee " + leer(b) + "; ");
+            a.createStatement().executeUpdate("UPDATE cuentas SET saldo = 90 WHERE id = 1");   // A confirma (autocommit)
+            System.out.println("A confirma 90; B vuelve a leer " + leer(b));
+
+            b.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            b.setAutoCommit(false);
+            System.out.print("3. B dentro de su transacción lee " + leer(b) + "; ");
+            a.createStatement().executeUpdate("UPDATE cuentas SET saldo = 80 WHERE id = 1");
+            System.out.print("A confirma 80; B vuelve a leer " + leer(b) + "; ");
+            b.commit();
+            System.out.println("tras commit de B lee " + leer(b));
+        }
+    }
+
+    static int leer(Connection c) throws SQLException {
+        try (ResultSet rs = c.createStatement().executeQuery(LEER)) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+}
 ```
 
 ```text
-$ python3 aislamiento.py
+$ java -cp "$H2" Aislamiento.java
 1. A restó 10 sin confirmar; A ve 90 y B ve 100
 2. B sin transacción lee 100; A confirma 90; B vuelve a leer 90
-3. B dentro de BEGIN lee 90; A confirma 80; B vuelve a leer 90; tras COMMIT de B lee 80
+3. B dentro de su transacción lee 90; A confirma 80; B vuelve a leer 90; tras commit de B lee 80
 ```
 
 **Explicación por partes.**
-- Líneas 14–17 y paso 1: A ve su propio cambio; B no lo ve. SQLite no permite lectura sucia.
-- Líneas 19–21 y paso 2: sin transacción, cada lectura de B ve lo último confirmado: `100` y luego `90`.
-- Líneas 23–27 y paso 3: dentro de `BEGIN`, B mantiene su foto: lee `90` aunque A confirmó `80`.
+- Líneas 16–20 y paso 1: A ve su propio cambio; B no lo ve. H2, como PostgreSQL, no permite lectura sucia.
+- Líneas 22–24 y paso 2: sin transacción, cada lectura de B ve lo último confirmado: `100` y luego `90`.
+- Líneas 26–31 y paso 3: en `REPEATABLE READ`, B mantiene su foto: lee `90` aunque A confirmó `80`.
 - Al terminar su transacción, B ve `80`.
 
-SQLite en modo WAL da a cada transacción de lectura una foto fija; equivale a la garantía de REPEATABLE READ para
-esta fila. En PostgreSQL con READ COMMITTED, el paso 3 leería `80` en la segunda lectura.
+El nivel por defecto de H2 y de PostgreSQL es READ COMMITTED: sin la línea 26, el paso 3 leería `80` en la segunda
+lectura. `REPEATABLE READ` le da a la transacción una foto fija.
 
 #### Problema resuelto 2.3
 Implementa la transferencia del proyecto con JDBC: bloqueo de filas, validación de saldo, `commit` o `rollback`.
@@ -1429,7 +1501,7 @@ SALDO_20_POST=80.00
 - `JdbcTest`, líneas 57–75: c1 resta sin confirmar; c2, en READ COMMITTED, lee `100.00`; c1 hace `rollback`.
 
 > **Error común.** Olvidar `setAutoCommit(false)`. El `rollback` no deshace nada porque cada `UPDATE` ya se
-> confirmó. En el modelo SQLite se ve en los números: `[(10, 70), (20, 50)] total = 120`. Faltan 30 y no hubo
+> confirmó. En `Transferencia.java` se ve en los números: `[(10, 70), (20, 50)] total = 120`. Faltan 30 y no hubo
 > ninguna excepción de la base.
 
 > **Error común.** Leer el saldo sin `FOR UPDATE` y restar después. Dos transferencias leen `100`, las dos
@@ -1453,8 +1525,8 @@ juntas; si cualquiera falla, `rollback` descarta las dos. Nadie ve un estado int
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Ejecuta los modelos SQLite
-Ejecuta `python3 transferencia.py` y `python3 aislamiento.py`. Anota qué anomalía aparece en cada paso.
+#### Paso 1 · Ejecuta los programas con H2
+Ejecuta `java -cp "$H2" Transferencia.java` y `java -cp "$H2" Aislamiento.java`. Anota qué anomalía aparece en cada paso.
 
 #### Paso 2 · Crea el servicio de transferencias
 Crea `TransferenciaService.java` y `App.java` en `src/main/java/com/aurora/jdbc`.
@@ -1477,18 +1549,18 @@ ejecútala otra vez: el débito ya quedó confirmado antes del fallo y la prueba
 - **SELECT FOR UPDATE** bloquea las filas leídas hasta el fin de la transacción.
 
 #### Ejercicio verificable 1
-Básico. En `transferencia.py`, haz con autocommit una transferencia válida de 30 de la cuenta 10 a la 20 e imprime
+Básico. En `Transferencia.java`, haz con autocommit una transferencia válida de 30 de la cuenta 10 a la 20 e imprime
 `saldos`. ¿Qué obtienes?
 
 Respuesta esperada: `[(10, 70), (20, 80)] total = 150`. Si nada falla, autocommit y transacción dan lo mismo; la
 diferencia aparece solo con fallos.
 
 #### Ejercicio verificable 2
-Intermedio. En `aislamiento.py`, quita `b.execute("BEGIN")` (línea 23) y `b.execute("COMMIT")` (línea 27). ¿Qué
-imprime el paso 3 y qué anomalía aparece?
+Intermedio. En `Aislamiento.java`, quita `b.setTransactionIsolation(...)` (línea 26). B queda en READ COMMITTED, el
+nivel por defecto. ¿Qué imprime el paso 3 y qué anomalía aparece?
 
-Respuesta esperada: `3. B dentro de BEGIN lee 90; A confirma 80; B vuelve a leer 80; tras COMMIT de B lee 80`.
-Sin transacción de lectura, B ve dos valores distintos: lectura no repetible.
+Respuesta esperada: `3. B dentro de su transacción lee 90; A confirma 80; B vuelve a leer 80; tras commit de B lee 80`.
+Dentro de la misma transacción, B ve dos valores distintos: lectura no repetible.
 
 #### Ejercicio verificable 3
 Reto. Diseña la compra de Tienda Aurora en una transacción JDBC: descontar `stock` en `productos` e insertar una

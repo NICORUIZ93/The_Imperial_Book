@@ -29,7 +29,7 @@
 >
 > Pulsa **Sync Now**. Sin estas dependencias, `import retrofit2.http.GET` no compila.
 >
-> **Los scripts `python3` y `curl` de este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
+> **`jwebserver` y `curl` en este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
 
 
 ### Tema 1: Retrofit con coroutines · Intermedio · 45 min
@@ -58,40 +58,15 @@ Al finalizar podrás declarar un endpoint HTTP con Retrofit como una función su
 └───────────────────────────────────────┘
 ```
 
+Para probar sin backend real, sirve un archivo JSON con `jwebserver`, el servidor de archivos que trae el JDK desde
+la versión 18 (el JDK de Android Studio también lo incluye). Cada archivo de la carpeta es una ruta: `api/tareas`
+responde en `/tareas`.
+
 ```bash
-# Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `servidor_prueba.py`:
-
-```python
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class ManejadorTareas(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/tareas":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps([
-                {"id": "1", "titulo": "Comprar leche"},
-                {"id": "2", "titulo": "Pagar el alquiler"},
-            ]).encode())
-        else:
-            self.send_response(404)
-            self.end_headers()
-    def log_message(self, *args):
-        pass
-
-if __name__ == "__main__":
-    HTTPServer(("localhost", 8000), ManejadorTareas).serve_forever()
-```
-
-```bash
-python3 servidor_prueba.py &
+mkdir -p app/src/main/kotlin/com/academia/android api
+printf '[{"id":"1","titulo":"Comprar leche"},{"id":"2","titulo":"Pagar el alquiler"}]\n' > api/tareas
+jwebserver -p 8000 -d "$PWD/api" &
 sleep 1
 ```
 
@@ -117,9 +92,16 @@ interface ApiService {
 ```
 
 ```bash
-curl -s http://localhost:8000/tareas | python3 -m json.tool
+curl -s http://localhost:8000/tareas
 kill %1 2>/dev/null || true
 ```
+
+```text
+[{"id":"1","titulo":"Comprar leche"},{"id":"2","titulo":"Pagar el alquiler"}]
+```
+
+`jwebserver` responde con `Content-type: application/octet-stream` porque el archivo no tiene extensión. El
+convertidor de kotlinx.serialization lee el cuerpo sin mirar ese encabezado, así que Retrofit lo decodifica igual.
 
 ```kotlin
 package com.academia.android
@@ -168,10 +150,10 @@ Al finalizar podrás distinguir HttpException de IOException en un ViewModel, da
 ```
 
 ```bash
-# Script en python3 que levanta de nuevo el servidor de prueba con una ruta que falla
+# Levanta de nuevo el servidor de prueba: /tareas responde y cualquier otra ruta da 404
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-python3 servidor_prueba.py &
+jwebserver -p 8000 -d "$PWD/api" &
 sleep 1
 ```
 
@@ -242,35 +224,18 @@ Al finalizar podrás configurar interceptores de OkHttp para logging y autentica
 └─────────────────────────────────────────┘
 ```
 
+Antes de escribir el interceptor, comprueba con `curl -v` cómo viaja el encabezado. Las líneas que empiezan con
+`>` son lo que el cliente envía:
+
 ```bash
-# Script en python3 que confirma el comportamiento antes de escribir el Kotlin real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `servidor_prueba_headers.py`:
-
-```python
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class ManejadorHeaders(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps({"authorization_recibido": self.headers.get("Authorization")}).encode())
-    def log_message(self, *args):
-        pass
-
-if __name__ == "__main__":
-    HTTPServer(("localhost", 8001), ManejadorHeaders).serve_forever()
-```
-
-```bash
-python3 servidor_prueba_headers.py &
+jwebserver -p 8000 -d "$PWD/api" &
 sleep 1
-curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
+curl -s -v -H "Authorization: Bearer token-123" http://localhost:8000/tareas 2>&1 | grep -i "^> authorization"
+```
+
+```text
+> Authorization: Bearer token-123
 ```
 
 Crea el archivo `app/src/main/kotlin/com/academia/android/ClienteHttpConInterceptores.kt`:
@@ -298,14 +263,8 @@ kill %1 2>/dev/null || true
 ./gradlew :app:compileDebugKotlin
 ```
 
-```bash
-python3 servidor_prueba_headers.py &
-sleep 1
-echo "--- con header Authorization (como haría authInterceptor) ---"
-curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
-echo "--- sin header Authorization (como sería si el orden estuviera invertido y el logging ocurriera antes) ---"
-curl -s http://localhost:8001/ | python3 -m json.tool
-kill %1 2>/dev/null || true
-```
+Con la app apuntando al servidor, `logcat` muestra en la línea `--> GET` el encabezado `Authorization`. Si inviertes
+el orden de los dos `addInterceptor`, la petición sigue llevando el token, pero el log ya no lo muestra: el logging
+corrió antes de que se agregara.
 
 </details>

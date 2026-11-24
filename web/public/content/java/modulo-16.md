@@ -28,11 +28,18 @@ Módulo 4, Tema 2); *restricción*, *UNIQUE* e *índice* (Fundamentos, Módulo 4
 Tema 1); *Proxy* (Java, Módulo 12, Tema 4); `Optional` (Java, Módulo 4, Tema 2); try-with-resources (Java, Módulo 3,
 Tema 2); Gradle y dependencias (Java, Módulo 8, Tema 1); JUnit (Java, Módulo 9, Tema 1).
 
-**Entorno de los programas de un solo archivo (2026-11-24):** Linux x86_64, OpenJDK 25.0.5.1 (`java Archivo.java`) y
-Python 3.13.18 con SQLite 3.53.1 (módulo `sqlite3`). En ese entorno no había Hibernate, H2 ni drivers JDBC. Por eso
-los programas nuevos de la Capa 1 son de dos clases: modelos en Java puro que muestran el mecanismo (se declaran
-«modelo didáctico, no es Hibernate») y scripts de Python con SQLite que ejecutan el mismo SQL que Hibernate genera.
-Sus transcripciones son literales. Las salidas de Hibernate, H2 y PostgreSQL son las capturadas en el Mac del
+**Entorno de los programas de un solo archivo (2026-11-24):** Linux x86_64, OpenJDK 25.0.5.1 (`java Archivo.java`)
+y H2 2.3.232, el mismo driver que usa el proyecto. Los programas nuevos de la Capa 1 son de dos clases: modelos en Java
+puro que muestran el mecanismo (se declaran «modelo didáctico, no es Hibernate») y programas JDBC contra H2 en memoria
+que ejecutan el mismo SQL que Hibernate genera. Sus transcripciones son literales.
+
+**Cómo ejecutar los programas JDBC.** Después del primer `./gradlew build` del proyecto, el JAR de H2 está en la caché
+de Gradle. Guarda su ruta una vez por terminal y pásala con `-cp`:
+
+```bash
+export H2="$(find ~/.gradle/caches -name 'h2-2.3.232.jar' | head -1)"
+java -cp "$H2" Relaciones.java
+``` Las salidas de Hibernate, H2 y PostgreSQL son las capturadas en el Mac del
 entorno de referencia, más abajo; no se cambiaron.
 
 ## Visual del módulo
@@ -808,62 +815,96 @@ erDiagram
 **Regla práctica.** Primero dibuja las tablas que quieres; después elige la anotación que las produce. No al revés.
 
 #### Problema resuelto 2.1
-Crea en SQLite las tablas que esperan los mapeos del proyecto. Comprueba la tabla intermedia N:M, la tabla única
+Crea en H2, con JDBC directo, las tablas que esperan los mapeos del proyecto. Comprueba la tabla intermedia N:M, la tabla única
 de pagos y la restricción 1:1.
 
 **Razonamiento:**
-1. Las tablas copian `V1__aurora.sql` con los tipos de SQLite.
+1. Las tablas copian `V1__aurora.sql` con los mismos tipos de H2 que usa el proyecto.
 2. Para N:M, la consulta debe pasar por `pedido_etiqueta` con dos `JOIN`.
 3. Para 1:1, insertar otro cliente con la misma `direccion_id` debe fallar.
 
-```python
-# relaciones.py — las tablas que JPA espera para 1:1, N:M y herencia SINGLE_TABLE (SQLite)
-import sqlite3
+```java
+// Relaciones.java — las tablas que JPA espera para 1:1, N:M y herencia SINGLE_TABLE (H2 en memoria)
+import java.sql.*;
 
-con = sqlite3.connect(":memory:")
-con.execute("PRAGMA foreign_keys = ON")
-con.executescript("""
-CREATE TABLE direcciones (id INTEGER PRIMARY KEY, ciudad TEXT NOT NULL, linea1 TEXT NOT NULL);
-CREATE TABLE clientes (id INTEGER PRIMARY KEY, email TEXT NOT NULL UNIQUE, nombre TEXT NOT NULL,
-    direccion_id INTEGER NOT NULL UNIQUE REFERENCES direcciones (id));
-CREATE TABLE pedidos (id INTEGER PRIMARY KEY, cliente_id INTEGER NOT NULL REFERENCES clientes (id));
-CREATE TABLE etiquetas (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL UNIQUE);
-CREATE TABLE pedido_etiqueta (pedido_id INTEGER NOT NULL REFERENCES pedidos (id),
-    etiqueta_id INTEGER NOT NULL REFERENCES etiquetas (id), PRIMARY KEY (pedido_id, etiqueta_id));
-CREATE TABLE pagos (id INTEGER PRIMARY KEY, tipo_pago TEXT NOT NULL, monto NUMERIC NOT NULL,
-    ultimos4 TEXT, banco TEXT);
-""")
-con.execute("INSERT INTO direcciones VALUES (1, 'Lima', 'Av. 1')")
-con.execute("INSERT INTO clientes VALUES (1, 'ana@aurora.test', 'Ana', 1)")
-con.executemany("INSERT INTO pedidos VALUES (?, 1)", [(1,), (2,)])
-con.executemany("INSERT INTO etiquetas VALUES (?, ?)", [(1, "urgente"), (2, "web")])
-con.executemany("INSERT INTO pedido_etiqueta VALUES (?, ?)", [(1, 1), (1, 2), (2, 2)])
-con.execute("INSERT INTO pagos VALUES (1, 'TARJETA', 39.90, '4242', NULL)")
-con.execute("INSERT INTO pagos VALUES (2, 'TRANSFERENCIA', 79.90, NULL, 'Banco Aurora')")
+public class Relaciones {
+    public static void main(String[] args) throws SQLException {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:mem:relaciones");
+             Statement st = con.createStatement()) {
+            st.execute("""
+                CREATE TABLE direcciones (id BIGINT PRIMARY KEY, ciudad VARCHAR(80) NOT NULL, linea1 VARCHAR(120) NOT NULL);
+                CREATE TABLE clientes (id BIGINT PRIMARY KEY, email VARCHAR(120) NOT NULL UNIQUE, nombre VARCHAR(80) NOT NULL,
+                    direccion_id BIGINT NOT NULL REFERENCES direcciones (id),
+                    CONSTRAINT uk_cliente_direccion UNIQUE (direccion_id));
+                CREATE TABLE pedidos (id BIGINT PRIMARY KEY, cliente_id BIGINT NOT NULL REFERENCES clientes (id));
+                CREATE TABLE etiquetas (id BIGINT PRIMARY KEY, nombre VARCHAR(40) NOT NULL UNIQUE);
+                CREATE TABLE pedido_etiqueta (pedido_id BIGINT NOT NULL REFERENCES pedidos (id),
+                    etiqueta_id BIGINT NOT NULL REFERENCES etiquetas (id), PRIMARY KEY (pedido_id, etiqueta_id));
+                CREATE TABLE pagos (id BIGINT PRIMARY KEY, tipo_pago VARCHAR(20) NOT NULL, monto NUMERIC(10, 2) NOT NULL,
+                    ultimos4 VARCHAR(4), banco VARCHAR(60));
+                """);
+            st.execute("""
+                INSERT INTO direcciones VALUES (1, 'Lima', 'Av. 1');
+                INSERT INTO clientes VALUES (1, 'ana@aurora.test', 'Ana', 1);
+                INSERT INTO pedidos VALUES (1, 1), (2, 1);
+                INSERT INTO etiquetas VALUES (1, 'urgente'), (2, 'web');
+                INSERT INTO pedido_etiqueta VALUES (1, 1), (1, 2), (2, 2);
+                INSERT INTO pagos VALUES (1, 'TARJETA', 39.90, '4242', NULL), (2, 'TRANSFERENCIA', 79.90, NULL, 'Banco Aurora');
+                """);
 
-print("N:M ->", con.execute("""SELECT p.id, e.nombre FROM pedidos p
-    JOIN pedido_etiqueta pe ON pe.pedido_id = p.id
-    JOIN etiquetas e ON e.id = pe.etiqueta_id ORDER BY p.id, e.id""").fetchall())
-print("SINGLE_TABLE ->", con.execute("SELECT * FROM pagos ORDER BY id").fetchall())
-try:
-    con.execute("INSERT INTO clientes VALUES (2, 'otro@aurora.test', 'Otro', 1)")  # misma dirección
-except sqlite3.IntegrityError as error:
-    print("1:1 ->", type(error).__name__ + ":", error)
+            System.out.println("N:M -> " + Filas.de(st, """
+                SELECT p.id, e.nombre FROM pedidos p
+                JOIN pedido_etiqueta pe ON pe.pedido_id = p.id
+                JOIN etiquetas e ON e.id = pe.etiqueta_id ORDER BY p.id, e.id"""));
+            System.out.println("SINGLE_TABLE -> " + Filas.de(st, "SELECT * FROM pagos ORDER BY id"));
+            try {
+                st.execute("INSERT INTO clientes VALUES (2, 'otro@aurora.test', 'Otro', 1)"); // misma dirección
+            } catch (SQLIntegrityConstraintViolationException error) {
+                System.out.println("1:1 -> " + Filas.error(error));
+            }
+        }
+    }
+}
+
+/** Ayudas de impresión: filas como [(1, urgente), (1, web)] y errores en una sola línea. */
+class Filas {
+    static String de(Statement st, String sql) throws SQLException {
+        var texto = new StringBuilder("[");
+        try (ResultSet rs = st.executeQuery(sql)) {
+            int columnas = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                if (texto.length() > 1) texto.append(", ");
+                texto.append('(');
+                for (int c = 1; c <= columnas; c++) texto.append(c > 1 ? ", " : "").append(rs.getObject(c));
+                texto.append(')');
+            }
+        }
+        return texto.append(']').toString();
+    }
+
+    static String error(SQLException error) {
+        String mensaje = error.getMessage().lines().findFirst().orElse("");
+        int corte = mensaje.indexOf(" ON PUBLIC.");
+        if (corte > 0) mensaje = mensaje.substring(0, corte) + "\"";
+        return "SQLState " + error.getSQLState() + ": " + mensaje.replace("; SQL statement:", "");
+    }
+}
 ```
 
 ```text
-$ python3 relaciones.py
-N:M -> [(1, 'urgente'), (1, 'web'), (2, 'web')]
-SINGLE_TABLE -> [(1, 'TARJETA', 39.9, '4242', None), (2, 'TRANSFERENCIA', 79.9, None, 'Banco Aurora')]
-1:1 -> IntegrityError: UNIQUE constraint failed: clientes.direccion_id
+$ java -cp "$H2" Relaciones.java
+N:M -> [(1, urgente), (1, web), (2, web)]
+SINGLE_TABLE -> [(1, TARJETA, 39.90, 4242, null), (2, TRANSFERENCIA, 79.90, null, Banco Aurora)]
+1:1 -> SQLState 23505: Unique index or primary key violation: "PUBLIC.UK_CLIENTE_DIRECCION_INDEX_6"
 ```
 
 **Explicación por partes.**
-- Línea 9: `direccion_id ... UNIQUE` convierte la clave foránea en 1:1.
-- Líneas 12–13: la tabla intermedia tiene clave primaria compuesta: una pareja no se repite.
-- Líneas 22–23: cada pago llena solo sus columnas; la otra queda en `NULL` (`None` en Python).
-- Líneas 25–27: el pedido 1 aparece dos veces porque tiene dos etiquetas.
-- Línea 30: la segunda fila con `direccion_id = 1` choca con el `UNIQUE`.
+- Líneas 11–12: `uk_cliente_direccion` vuelve única la clave foránea: eso convierte la relación en 1:1.
+- Líneas 15–16: la tabla intermedia tiene clave primaria compuesta: una pareja no se repite.
+- Línea 26: cada pago llena solo sus columnas; la otra queda en `NULL` (`null` en Java).
+- Líneas 29–32 y primera salida: el pedido 1 aparece dos veces porque tiene dos etiquetas.
+- Líneas 34–37: la segunda fila con `direccion_id = 1` choca con la restricción. `SQLState 23505` es el mismo
+  código que devuelve PostgreSQL; Hibernate lo traduce a `ConstraintViolationException`.
 
 #### Problema resuelto 2.2
 Mapea en el proyecto la jerarquía de pagos, las etiquetas, las líneas y el agregado `Pedido`.
@@ -1145,9 +1186,9 @@ JpaAuroraTest > oneToOneYRestriccionUnica() PASSED
 - `@Version` (líneas 51–52) y `@PrePersist` (líneas 70–75) se estudian en los Temas 7 y 3.
 - `herenciaSingleTable` comprueba que `select p from Pago p` devuelve un `TARJETA` y un `TRANSFERENCIA`. `oneToOneYRestriccionUnica` espera la excepción del `UNIQUE`.
 
-> **Error común.** Repetir una pareja en la tabla intermedia. Si agregas `(2, 2)` otra vez en la línea 21, la
-> clave primaria compuesta lo rechaza:
-> `sqlite3.IntegrityError: UNIQUE constraint failed: pedido_etiqueta.pedido_id, pedido_etiqueta.etiqueta_id`.
+> **Error común.** Repetir una pareja en la tabla intermedia. Si agregas `(2, 2)` otra vez en la línea 25, la
+> clave primaria compuesta lo rechaza con `JdbcSQLIntegrityConstraintViolationException: Unique index or primary key
+> violation: "PUBLIC.PRIMARY_KEY_5 ON PUBLIC.PEDIDO_ETIQUETA(PEDIDO_ID, ETIQUETA_ID) ..."`.
 > En JPA pasa lo mismo si agregas la misma `Etiqueta` dos veces a la `List` de `Pedido`. Revisa antes con `contains`.
 
 > **Buena práctica.** Si la pareja necesita datos propios (fecha, usuario, prioridad), crea una entidad intermedia
@@ -1157,7 +1198,7 @@ JpaAuroraTest > oneToOneYRestriccionUnica() PASSED
 > `NOT NULL` en columnas de subclase. Si la integridad de esas columnas importa más, usa `JOINED`.
 
 #### Checkpoint 2.1
-En `relaciones.py`, ¿qué pasa si quitas `UNIQUE` de `direccion_id` (línea 9)?
+En `Relaciones.java`, ¿qué pasa si quitas la restricción `uk_cliente_direccion` (línea 12)?
 
 Respuesta: el segundo `INSERT` funciona y la línea `1:1 -> ...` no aparece. Ahora dos clientes comparten
 dirección: la relación ya es N:1, aunque Java siga diciendo `@OneToOne`.
@@ -1167,8 +1208,8 @@ dirección: la relación ya es N:1, aunque Java siga diciendo `@OneToOne`.
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Ejecuta el modelo en SQLite
-Ejecuta `python3 relaciones.py`. Luego agrega un tercer pago `('EFECTIVO', 10.00, NULL, NULL)` y observa que las
+#### Paso 1 · Ejecuta el modelo en H2
+Ejecuta `java -cp "$H2" Relaciones.java`. Luego agrega un tercer pago `('EFECTIVO', 10.00, NULL, NULL)` y observa que las
 dos columnas de subclase quedan vacías.
 
 #### Paso 2 · Crea las entidades del proyecto
@@ -1192,10 +1233,10 @@ Escribe en papel la entidad `PedidoEtiqueta` con `@ManyToOne` a `Pedido`, `@Many
 - La **herencia JPA** tiene tres estrategias: **SINGLE_TABLE** (una tabla y **discriminador**), **JOINED** y **TABLE_PER_CLASS**.
 
 #### Ejercicio verificable 1
-Básico. En `relaciones.py`, agrega la pareja `(2, 2)` otra vez a la lista de la línea 21. ¿Qué ocurre?
+Básico. En `Relaciones.java`, agrega la pareja `(2, 2)` otra vez al `INSERT` de la línea 25. ¿Qué ocurre?
 
-Respuesta esperada: el programa termina con
-`sqlite3.IntegrityError: UNIQUE constraint failed: pedido_etiqueta.pedido_id, pedido_etiqueta.etiqueta_id`.
+Respuesta esperada: el programa termina con `JdbcSQLIntegrityConstraintViolationException: Unique index or primary
+key violation: "PUBLIC.PRIMARY_KEY_5 ON PUBLIC.PEDIDO_ETIQUETA(PEDIDO_ID, ETIQUETA_ID) ..."` (código `23505`).
 La clave primaria compuesta impide parejas repetidas.
 
 #### Ejercicio verificable 2
@@ -1779,7 +1820,7 @@ dos, uno o ninguno. Con texto concatenado, cada combinación es un caso especial
 - **Definición técnica:** consulta cuya forma (condiciones, uniones, orden) se decide en tiempo de ejecución según los datos de entrada.
 - **En palabras sencillas:** un formulario de búsqueda donde cada casilla vacía desaparece de la pregunta.
 - **Dónde se rompe la comparación:** que la forma cambie no autoriza a meter los valores en el texto; siguen yendo como parámetros.
-- **Ejemplo:** `compuesto(None, "CAF-100")` en `filtros.py` arma solo la condición del SKU.
+- **Ejemplo:** `compuesto(null, "CAF-100")` en `Filtros.java` arma solo la condición del SKU.
 - **Error típico:** escribir un `if` por cada combinación de filtros: con tres filtros ya son ocho casos.
 
 **Criteria API**
@@ -1860,60 +1901,79 @@ Compara, en SQL directo, la búsqueda concatenada con una búsqueda compuesta po
 2. La versión compuesta junta condiciones en una lista y los valores en otra.
 3. El `JOIN` con las líneas solo se agrega si hay filtro de SKU, como hace `buscarDinamico`.
 
-```python
-# filtros.py — filtros opcionales: concatenar texto frente a componer predicados (SQLite)
-import sqlite3
+```java
+// Filtros.java — filtros opcionales: concatenar texto frente a componer predicados (H2 en memoria)
+import java.sql.*;
+import java.util.*;
 
-con = sqlite3.connect(":memory:")
-con.executescript("""
-CREATE TABLE pedidos (id INTEGER PRIMARY KEY, fecha TEXT NOT NULL);
-CREATE TABLE lineas_pedido (id INTEGER PRIMARY KEY, pedido_id INTEGER NOT NULL, sku TEXT NOT NULL);
-INSERT INTO pedidos VALUES (1, '2026-11-20'), (2, '2026-11-20'), (3, '2026-11-21');
-INSERT INTO lineas_pedido VALUES (1, 1, 'CAF-100'), (2, 2, 'MOL-200'), (3, 3, 'CAF-100');
-""")
+public class Filtros {
+    record Consulta(String sql, List<Object> parametros) {}
 
-def concatenado(fecha, sku):
-    sql = "SELECT DISTINCT p.id FROM pedidos p JOIN lineas_pedido l ON l.pedido_id = p.id WHERE"
-    if fecha:
-        sql += " p.fecha = '" + fecha + "'"
-    if sku:
-        sql += " AND l.sku = '" + sku + "'"
-    return sql + " ORDER BY p.id"
+    static String concatenado(String fecha, String sku) {
+        String sql = "SELECT DISTINCT p.id FROM pedidos p JOIN lineas_pedido l ON l.pedido_id = p.id WHERE";
+        if (fecha != null) sql += " p.fecha = '" + fecha + "'";
+        if (sku != null) sql += " AND l.sku = '" + sku + "'";
+        return sql + " ORDER BY p.id";
+    }
 
-def compuesto(fecha, sku):
-    desde, predicados, parametros = "pedidos p", [], []
-    if fecha:
-        predicados.append("p.fecha = ?"); parametros.append(fecha)
-    if sku:                                     # el JOIN solo aparece si hace falta
-        desde += " JOIN lineas_pedido l ON l.pedido_id = p.id"
-        predicados.append("l.sku = ?"); parametros.append(sku)
-    where = " WHERE " + " AND ".join(predicados) if predicados else ""
-    return "SELECT DISTINCT p.id FROM " + desde + where + " ORDER BY p.id", parametros
+    static Consulta compuesto(String fecha, String sku) {
+        String desde = "pedidos p";
+        List<String> predicados = new ArrayList<>();
+        List<Object> parametros = new ArrayList<>();
+        if (fecha != null) { predicados.add("p.fecha = ?"); parametros.add(fecha); }
+        if (sku != null) {                                       // el JOIN solo aparece si hace falta
+            desde += " JOIN lineas_pedido l ON l.pedido_id = p.id";
+            predicados.add("l.sku = ?"); parametros.add(sku);
+        }
+        String where = predicados.isEmpty() ? "" : " WHERE " + String.join(" AND ", predicados);
+        return new Consulta("SELECT DISTINCT p.id FROM " + desde + where + " ORDER BY p.id", parametros);
+    }
 
-for fecha, sku in [("2026-11-20", "CAF-100"), (None, "CAF-100"), (None, None)]:
-    sql, params = compuesto(fecha, sku)
-    print(f"compuesto  fecha={fecha} sku={sku} -> {[f[0] for f in con.execute(sql, params)]}  params={params}")
+    public static void main(String[] args) throws SQLException {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:mem:filtros")) {
+            con.createStatement().execute("""
+                CREATE TABLE pedidos (id BIGINT PRIMARY KEY, fecha DATE NOT NULL);
+                CREATE TABLE lineas_pedido (id BIGINT PRIMARY KEY, pedido_id BIGINT NOT NULL, sku VARCHAR(20) NOT NULL);
+                INSERT INTO pedidos VALUES (1, DATE '2026-11-20'), (2, DATE '2026-11-20'), (3, DATE '2026-11-21');
+                INSERT INTO lineas_pedido VALUES (1, 1, 'CAF-100'), (2, 2, 'MOL-200'), (3, 3, 'CAF-100');
+                """);
 
-try:
-    con.execute(concatenado(None, "CAF-100"))
-except sqlite3.OperationalError as error:
-    print("concatenado fecha=None sku=CAF-100 ->", type(error).__name__ + ":", error)
+            String[][] casos = {{"2026-11-20", "CAF-100"}, {null, "CAF-100"}, {null, null}};
+            for (String[] caso : casos) {
+                Consulta c = compuesto(caso[0], caso[1]);
+                try (PreparedStatement ps = con.prepareStatement(c.sql())) {
+                    for (int i = 0; i < c.parametros().size(); i++) ps.setObject(i + 1, c.parametros().get(i));
+                    List<Long> ids = new ArrayList<>();
+                    try (ResultSet rs = ps.executeQuery()) { while (rs.next()) ids.add(rs.getLong(1)); }
+                    System.out.printf("compuesto  fecha=%s sku=%s -> %s  params=%s%n", caso[0], caso[1], ids, c.parametros());
+                }
+            }
+
+            try {
+                con.createStatement().executeQuery(concatenado(null, "CAF-100"));
+            } catch (SQLSyntaxErrorException error) {
+                System.out.println("concatenado fecha=null sku=CAF-100 -> SQLState " + error.getSQLState() + ": "
+                        + error.getMessage().lines().findFirst().orElse("").replaceAll("; expected .*", ""));
+            }
+        }
+    }
+}
 ```
 
 ```text
-$ python3 filtros.py
-compuesto  fecha=2026-11-20 sku=CAF-100 -> [1]  params=['2026-11-20', 'CAF-100']
-compuesto  fecha=None sku=CAF-100 -> [1, 3]  params=['CAF-100']
-compuesto  fecha=None sku=None -> [1, 2, 3]  params=[]
-concatenado fecha=None sku=CAF-100 -> OperationalError: near "AND": syntax error
+$ java -cp "$H2" Filtros.java
+compuesto  fecha=2026-11-20 sku=CAF-100 -> [1]  params=[2026-11-20, CAF-100]
+compuesto  fecha=null sku=CAF-100 -> [1, 3]  params=[CAF-100]
+compuesto  fecha=null sku=null -> [1, 2, 3]  params=[]
+concatenado fecha=null sku=CAF-100 -> SQLState 42001: Syntax error in SQL statement "SELECT DISTINCT p.id FROM pedidos p JOIN lineas_pedido l ON l.pedido_id = p.id WHERE [*]AND l.sku = 'CAF-100' ORDER BY p.id"
 ```
 
 **Explicación por partes.**
-- Líneas 13–17: el texto supone que la fecha llega; sin ella queda `WHERE AND l.sku = ...`.
-- Líneas 22–26: cada filtro presente agrega su condición y su parámetro por separado.
-- Línea 27: `" AND ".join(...)` solo pone `AND` entre condiciones existentes. Sin filtros no hay `WHERE`.
+- Líneas 10–11: el texto supone que la fecha llega; sin ella queda `WHERE AND l.sku = ...`.
+- Líneas 19–23: cada filtro presente agrega su condición y su parámetro por separado.
+- Línea 24: `String.join(" AND ", ...)` solo pone `AND` entre condiciones existentes. Sin filtros no hay `WHERE`.
 - Primera línea de salida: con los dos filtros, solo el pedido 1. Tercera: sin filtros, todos.
-- Última línea: la versión concatenada falla en cuanto falta la fecha.
+- Última línea: la versión concatenada falla en cuanto falta la fecha; `[*]` marca dónde se perdió el analizador.
 
 #### Problema resuelto 4.2
 Escribe el repositorio del proyecto con la consulta fija, sus dos correcciones de carga (Temas 5 y 6) y la
@@ -2037,8 +2097,8 @@ POSTGRES_QUERYDSL=1
 - Líneas 77–90: Querydsl. `QPedido.pedido` es la variable `p` y cada campo es un objeto con métodos (`eq`, `any`).
 - `criteriaDinamica` y `querydslDinamica` comprueban que ambas devuelven el mismo pedido. En PostgreSQL también fue uno.
 
-> **Error común.** Construir los filtros con texto. Sin fecha, el SQL queda con `WHERE AND` y SQLite responde
-> `OperationalError: near "AND": syntax error`. Además, si el usuario escribe `x' OR '1'='1` en el SKU, la versión
+> **Error común.** Construir los filtros con texto. Sin fecha, el SQL queda con `WHERE AND` y H2 responde
+> `Syntax error in SQL statement` con `SQLState 42001`. Además, si el usuario escribe `x' OR '1'='1` en el SKU, la versión
 > concatenada devuelve los tres pedidos. La versión con predicados y parámetros devuelve una lista vacía.
 
 > **Error común.** Compilar sin el procesador de Querydsl. `PedidoRepositorio` importa `com.aurora.jpa.dominio.QPedido`
@@ -2060,7 +2120,7 @@ predicados queda vacía y `where()` sin argumentos no filtra.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Rompe la versión concatenada
-Ejecuta `python3 filtros.py`. Luego llama a `concatenado("2026-11-20", "x' OR '1'='1")` y observa que devuelve
+Ejecuta `java -cp "$H2" Filtros.java`. Luego ejecuta `concatenado("2026-11-20", "x' OR '1'='1")` y observa que devuelve
 `[1, 2, 3]`.
 
 #### Paso 2 · Crea el repositorio
@@ -2081,9 +2141,9 @@ Ejecuta `./gradlew test --tests "com.aurora.jpa.JpaAuroraTest.criteriaDinamica"`
 - Las clases `Q*` las genera un **procesador de anotaciones** durante `compileJava`.
 
 #### Ejercicio verificable 1
-Básico. ¿Qué devuelve `compuesto("2026-11-21", None)` en `filtros.py`?
+Básico. ¿Qué imprime `System.out.println(compuesto("2026-11-21", null))` en `Filtros.java`?
 
-Respuesta esperada: `('SELECT DISTINCT p.id FROM pedidos p WHERE p.fecha = ? ORDER BY p.id', ['2026-11-21'])`.
+Respuesta esperada: `Consulta[sql=SELECT DISTINCT p.id FROM pedidos p WHERE p.fecha = ? ORDER BY p.id, parametros=[2026-11-21]]`.
 No hay `JOIN` porque no se filtró por SKU.
 
 #### Ejercicio verificable 2
@@ -2231,44 +2291,73 @@ Reproduce el N+1 en SQL directo y cuenta cada sentencia que llega al motor, con 
 **Razonamiento:**
 1. La versión perezosa hace lo que hace el proxy: una consulta de pedidos y una por cliente.
 2. La versión con `JOIN` trae pedido y nombre del cliente en una sola consulta.
-3. `set_trace_callback` registra cada sentencia, como `StatementInspector` en Hibernate.
+3. Un `Proxy` sobre la `Connection` cuenta cada sentencia, como `StatementInspector` en Hibernate.
 
-```python
-# n_mas_uno.py — cuenta las sentencias SQL de una carga perezosa en bucle frente a un JOIN (SQLite)
-import sqlite3
+```java
+// NMasUno.java — cuenta las sentencias SQL de una carga perezosa en bucle frente a un JOIN (H2 en memoria)
+import java.lang.reflect.Proxy;
+import java.sql.*;
 
-con = sqlite3.connect(":memory:")
-con.executescript("""
-CREATE TABLE clientes (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL);
-CREATE TABLE pedidos (id INTEGER PRIMARY KEY, fecha TEXT NOT NULL, cliente_id INTEGER NOT NULL REFERENCES clientes (id));
-""")
-for i in range(1, 101):
-    con.execute("INSERT INTO clientes VALUES (?, ?)", (i, f"Cliente {i}"))
-    con.execute("INSERT INTO pedidos VALUES (?, '2026-11-20', ?)", (i, i))
-con.commit()
+public class NMasUno {
+    static int sentencias = 0;
+    static Connection con;
 
-sentencias = []
-con.set_trace_callback(sentencias.append)       # registra cada SQL que llega al motor
+    /** Envuelve la conexión y cuenta cada sentencia preparada, como hace un StatementInspector. */
+    static Connection contando(Connection real) {
+        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[]{Connection.class},
+                (proxy, metodo, argumentos) -> {
+                    if (metodo.getName().equals("prepareStatement")) sentencias++;
+                    return metodo.invoke(real, argumentos);
+                });
+    }
 
-def perezoso(limite):
-    pedidos = con.execute("SELECT id, cliente_id FROM pedidos WHERE fecha = ? ORDER BY id LIMIT ?",
-                          ("2026-11-20", limite)).fetchall()
-    for pedido_id, cliente_id in pedidos:       # cada acceso a p.getCliente() dispara una consulta
-        con.execute("SELECT nombre FROM clientes WHERE id = ?", (cliente_id,)).fetchone()
+    static void perezoso(int limite) throws SQLException {
+        try (var ps = con.prepareStatement("SELECT id, cliente_id FROM pedidos WHERE fecha = ? ORDER BY id LIMIT ?")) {
+            ps.setDate(1, Date.valueOf("2026-11-20"));
+            ps.setInt(2, limite);
+            try (ResultSet pedidos = ps.executeQuery()) {
+                while (pedidos.next()) {                        // cada p.getCliente() dispara una consulta
+                    try (var cliente = con.prepareStatement("SELECT nombre FROM clientes WHERE id = ?")) {
+                        cliente.setLong(1, pedidos.getLong("cliente_id"));
+                        cliente.executeQuery().next();
+                    }
+                }
+            }
+        }
+    }
 
-def con_join(limite):
-    con.execute("""SELECT p.id, c.nombre FROM pedidos p JOIN clientes c ON c.id = p.cliente_id
-                   WHERE p.fecha = ? ORDER BY p.id LIMIT ?""", ("2026-11-20", limite)).fetchall()
+    static void conJoin(int limite) throws SQLException {
+        try (var ps = con.prepareStatement("""
+                SELECT p.id, c.nombre FROM pedidos p JOIN clientes c ON c.id = p.cliente_id
+                WHERE p.fecha = ? ORDER BY p.id LIMIT ?""")) {
+            ps.setDate(1, Date.valueOf("2026-11-20"));
+            ps.setInt(2, limite);
+            try (ResultSet rs = ps.executeQuery()) { while (rs.next()) { } }
+        }
+    }
 
-for limite in (3, 100):
-    for estrategia in (perezoso, con_join):
-        sentencias.clear()
-        estrategia(limite)
-        print(f"{estrategia.__name__:9} pedidos={limite:3} SQL_COUNT={len(sentencias)}")
+    public static void main(String[] args) throws SQLException {
+        try (Connection real = DriverManager.getConnection("jdbc:h2:mem:n1")) {
+            real.createStatement().execute("""
+                CREATE TABLE clientes (id BIGINT PRIMARY KEY, nombre VARCHAR(80) NOT NULL);
+                CREATE TABLE pedidos (id BIGINT PRIMARY KEY, fecha DATE NOT NULL, cliente_id BIGINT NOT NULL REFERENCES clientes (id));
+                INSERT INTO clientes SELECT x, 'Cliente ' || x FROM SYSTEM_RANGE(1, 100);
+                INSERT INTO pedidos SELECT x, DATE '2026-11-20', x FROM SYSTEM_RANGE(1, 100);
+                """);
+            con = contando(real);
+            for (int limite : new int[]{3, 100}) {
+                sentencias = 0; perezoso(limite);
+                System.out.printf("perezoso  pedidos=%3d SQL_COUNT=%d%n", limite, sentencias);
+                sentencias = 0; conJoin(limite);
+                System.out.printf("con_join  pedidos=%3d SQL_COUNT=%d%n", limite, sentencias);
+            }
+        }
+    }
+}
 ```
 
 ```text
-$ python3 n_mas_uno.py
+$ java -cp "$H2" NMasUno.java
 perezoso  pedidos=  3 SQL_COUNT=4
 con_join  pedidos=  3 SQL_COUNT=1
 perezoso  pedidos=100 SQL_COUNT=101
@@ -2276,9 +2365,10 @@ con_join  pedidos=100 SQL_COUNT=1
 ```
 
 **Explicación por partes.**
-- Línea 15: cada sentencia ejecutada se agrega a la lista `sentencias`.
-- Líneas 18–21: una consulta de pedidos y, dentro del `for`, una por cliente. Es el acceso perezoso.
-- Líneas 24–25: un solo `SELECT` con `JOIN`.
+- Líneas 10–16: un `Proxy` envuelve la conexión y cuenta cada `prepareStatement`. Así trabajan herramientas como
+  datasource-proxy; Hibernate ofrece lo mismo con `StatementInspector`.
+- Líneas 19–29: una consulta de pedidos y, dentro del `while`, una por cliente. Es el acceso perezoso.
+- Líneas 33–40: un solo `SELECT` con `JOIN`.
 - Salida: con 3 pedidos, 4 contra 1. Con 100, 101 contra 1. El N+1 crece con los datos; el `JOIN` no.
 
 #### Problema resuelto 5.2
@@ -2440,7 +2530,7 @@ conGraph=1
 - `sinGraph=4` y `conGraph=1` confirman lo mismo con otro programa.
 
 > **Error común.** El N+1 no lanza ninguna excepción. Su único mensaje es el contador: `SQL_COUNT=4` para 3
-> pedidos, y `SQL_COUNT=101` para 100 en la versión SQLite. Si una prueba no mide sentencias, el N+1 pasa
+> pedidos, y `SQL_COUNT=101` para 100 en la versión JDBC. Si una prueba no mide sentencias, el N+1 pasa
 > desapercibido hasta producción.
 
 > **Error común.** Cambiar a `FetchType.EAGER` para «arreglarlo». En una consulta JPQL, Hibernate carga los
@@ -2463,8 +2553,8 @@ Respuesta: 51. Una para la lista de pedidos y una por cada cliente distinto.
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Mide en SQLite
-Ejecuta `python3 n_mas_uno.py`. Cambia `(3, 100)` por `(3, 10, 100)` y comprueba que la versión perezosa da
+#### Paso 1 · Mide con JDBC
+Ejecuta `java -cp "$H2" NMasUno.java`. Cambia `{3, 100}` por `{3, 10, 100}` y comprueba que la versión perezosa da
 `N + 1` en cada caso.
 
 #### Paso 2 · Crea las demos del proyecto
@@ -2492,15 +2582,15 @@ sin consultar `clientes`?
 Respuesta esperada: `p1_0.cliente_id`. Con el id basta para crear el proxy; el nombre exige otra consulta.
 
 #### Ejercicio verificable 2
-Intermedio. En `n_mas_uno.py`, ¿qué imprime la versión perezosa con 10 pedidos? ¿Y la versión con `JOIN`?
+Intermedio. En `NMasUno.java`, ¿qué imprime la versión perezosa con 10 pedidos? ¿Y la versión con `JOIN`?
 
 Respuesta esperada: `perezoso  pedidos= 10 SQL_COUNT=11` y `con_join  pedidos= 10 SQL_COUNT=1`.
 
 #### Ejercicio verificable 3
-Reto. Cambia `n_mas_uno.py` para que los pedidos se repartan entre 3 clientes (`(i - 1) % 3 + 1`) y la versión
-perezosa guarde en un diccionario los clientes ya leídos. ¿Cuántas sentencias hay con 100 pedidos?
+Reto. Cambia `NMasUno.java` para que los pedidos se repartan entre 3 clientes (`MOD(x - 1, 3) + 1` en el `INSERT`)
+y la versión perezosa guarde en un `HashMap` los clientes ya leídos. ¿Cuántas sentencias hay con 100 pedidos?
 
-Respuesta esperada: `perezoso  pedidos=100 SQL_COUNT=4`: 1 de pedidos y 3 de clientes. El diccionario imita el
+Respuesta esperada: `perezoso  pedidos=100 SQL_COUNT=4`: 1 de pedidos y 3 de clientes. El `HashMap` imita el
 contexto de persistencia: Hibernate tampoco repite la consulta de un cliente que ya cargó en la misma sesión.
 
 #### En el trabajo
@@ -2551,7 +2641,7 @@ qué cargar por caso de uso, y qué riesgo trae una caché compartida?
 - **Definición técnica:** el propio contexto de persistencia: dentro de un `EntityManager`, una entidad ya cargada se devuelve sin SQL y siempre es la misma instancia.
 - **En palabras sencillas:** la memoria de corto plazo de la sesión.
 - **Dónde se rompe la comparación:** no se puede apagar y muere con el `EntityManager`; no acelera otras peticiones.
-- **Ejemplo:** `L1: misma instancia en la sesión -> True consultas = 1` en `cache_l2.py`; en JPA, `em.find` dos veces da un solo `SELECT`.
+- **Ejemplo:** `L1: misma instancia en la sesión -> true consultas = 1` en `CacheL2.java`; en JPA, `em.find` dos veces da un solo `SELECT`.
 - **Error típico:** procesar 100 000 entidades en un solo `EntityManager`: la caché crece hasta agotar memoria. Usa `flush` y `clear` por lotes.
 
 **caché de segundo nivel**
@@ -2565,7 +2655,7 @@ qué cargar por caso de uso, y qué riesgo trae una caché compartida?
 - **Definición técnica:** acción de quitar o marcar como vencida una entrada de caché cuando su dato de origen cambia, o al pasar su tiempo de vida.
 - **En palabras sencillas:** borrar el aviso del tablero cuando deja de ser cierto.
 - **Dónde se rompe la comparación:** saber *cuándo* cambió el dato es la parte difícil; la caché no lo adivina.
-- **Ejemplo:** con `cache_l2.pop(1, None)` tras el `UPDATE` externo, la siguiente sesión lee `Ana María`.
+- **Ejemplo:** con `cacheL2.remove(1L)` tras el `UPDATE` externo, la siguiente sesión lee `Ana María`.
 - **Error típico:** confiar solo en el tiempo de vida para datos de dinero o inventario.
 
 #### ► CÓMO FUNCIONA
@@ -2619,59 +2709,79 @@ SQL: select p1_0.id,p1_0.cliente_id,c1_0.id,c1_0.direccion_id,c1_0.email,c1_0.no
 Compara una caché por sesión con una compartida cuando otro sistema actualiza la base.
 
 **Razonamiento:**
-1. Cada sesión tiene su diccionario L1; todas comparten un diccionario L2.
+1. Cada sesión tiene su mapa L1; todas comparten un mapa L2.
 2. `find` busca en L1, luego en L2 y solo al final consulta la base, contando consultas.
 3. Otra conexión cambia el nombre directo en la base, sin pasar por la aplicación.
 
-```python
-# cache_l2.py — caché por sesión (L1) frente a caché compartida (L2) y el dato viejo (SQLite)
-import sqlite3
+```java
+// CacheL2.java — caché por sesión (L1) frente a caché compartida (L2) y el dato viejo (H2 en memoria)
+import java.sql.*;
+import java.util.*;
 
-URI = "file:aurora?mode=memory&cache=shared"
-app = sqlite3.connect(URI, uri=True)
-otro_sistema = sqlite3.connect(URI, uri=True)       # otro proceso que escribe en la misma base
-app.execute("CREATE TABLE clientes (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL)")
-app.execute("INSERT INTO clientes VALUES (1, 'Ana')")
-app.commit()
+public class CacheL2 {
+    static final String URL = "jdbc:h2:mem:aurora;DB_CLOSE_DELAY=-1";  // una base, varias conexiones
+    static int consultas = 0;
+    static final Map<Long, String> cacheL2 = new HashMap<>();          // compartida por todas las sesiones
+    static Connection app;
 
-consultas = 0
-cache_l2 = {}                                        # compartida por todas las sesiones
+    static class Cliente {
+        final long id; final String nombre;
+        Cliente(long id, String nombre) { this.id = id; this.nombre = nombre; }
+    }
 
-class Sesion:
-    def __init__(self, usar_l2):
-        self.l1 = {}                                 # vive y muere con la sesión
-        self.usar_l2 = usar_l2
+    static class Sesion {
+        private final Map<Long, Cliente> l1 = new HashMap<>();          // vive y muere con la sesión
+        private final boolean usarL2;
+        Sesion(boolean usarL2) { this.usarL2 = usarL2; }
 
-    def find(self, id_):
-        global consultas
-        if id_ in self.l1:
-            return self.l1[id_]
-        if self.usar_l2 and id_ in cache_l2:
-            fila = cache_l2[id_]
-        else:
-            consultas += 1
-            fila = app.execute("SELECT id, nombre FROM clientes WHERE id = ?", (id_,)).fetchone()
-            if self.usar_l2:
-                cache_l2[id_] = fila
-        objeto = {"id": fila[0], "nombre": fila[1]}
-        self.l1[id_] = objeto
-        return objeto
+        Cliente find(long id) throws SQLException {
+            if (l1.containsKey(id)) return l1.get(id);
+            String nombre;
+            if (usarL2 && cacheL2.containsKey(id)) {
+                nombre = cacheL2.get(id);
+            } else {
+                consultas++;
+                try (var ps = app.prepareStatement("SELECT nombre FROM clientes WHERE id = ?")) {
+                    ps.setLong(1, id);
+                    try (ResultSet rs = ps.executeQuery()) { rs.next(); nombre = rs.getString(1); }
+                }
+                if (usarL2) cacheL2.put(id, nombre);
+            }
+            Cliente objeto = new Cliente(id, nombre);
+            l1.put(id, objeto);
+            return objeto;
+        }
+    }
 
-s1 = Sesion(usar_l2=True)
-print("L1: misma instancia en la sesión ->", s1.find(1) is s1.find(1), "consultas =", consultas)
-s2 = Sesion(usar_l2=True)
-print("L2: otra sesión ->", s2.find(1)["nombre"], "consultas =", consultas)
+    public static void main(String[] args) throws SQLException {
+        app = DriverManager.getConnection(URL);
+        Connection otroSistema = DriverManager.getConnection(URL);      // otro proceso que escribe en la misma base
+        app.createStatement().execute("""
+            CREATE TABLE clientes (id BIGINT PRIMARY KEY, nombre VARCHAR(80) NOT NULL);
+            INSERT INTO clientes VALUES (1, 'Ana');
+            """);
 
-otro_sistema.execute("UPDATE clientes SET nombre = 'Ana María' WHERE id = 1")
-otro_sistema.commit()
-print("BD real ->", app.execute("SELECT nombre FROM clientes WHERE id = 1").fetchone()[0])
-print("L2 tras el UPDATE externo ->", Sesion(usar_l2=True).find(1)["nombre"], "consultas =", consultas)
-print("sin L2 ->", Sesion(usar_l2=False).find(1)["nombre"], "consultas =", consultas)
+        Sesion s1 = new Sesion(true);
+        System.out.println("L1: misma instancia en la sesión -> " + (s1.find(1) == s1.find(1)) + " consultas = " + consultas);
+        Sesion s2 = new Sesion(true);
+        System.out.println("L2: otra sesión -> " + s2.find(1).nombre + " consultas = " + consultas);
+
+        otroSistema.createStatement().executeUpdate("UPDATE clientes SET nombre = 'Ana María' WHERE id = 1");
+        try (ResultSet rs = app.createStatement().executeQuery("SELECT nombre FROM clientes WHERE id = 1")) {
+            rs.next();
+            System.out.println("BD real -> " + rs.getString(1));
+        }
+        System.out.println("L2 tras el UPDATE externo -> " + new Sesion(true).find(1).nombre + " consultas = " + consultas);
+        System.out.println("sin L2 -> " + new Sesion(false).find(1).nombre + " consultas = " + consultas);
+        otroSistema.close();
+        app.close();
+    }
+}
 ```
 
 ```text
-$ python3 cache_l2.py
-L1: misma instancia en la sesión -> True consultas = 1
+$ java -cp "$H2" CacheL2.java
+L1: misma instancia en la sesión -> true consultas = 1
 L2: otra sesión -> Ana consultas = 1
 BD real -> Ana María
 L2 tras el UPDATE externo -> Ana consultas = 1
@@ -2679,13 +2789,13 @@ sin L2 -> Ana María consultas = 2
 ```
 
 **Explicación por partes.**
-- Líneas 21–22 y primera salida: en la misma sesión, el segundo `find` devuelve el mismo objeto sin consultar.
-- Líneas 23–24 y segunda salida: otra sesión encuentra a Ana en L2; el contador sigue en 1.
-- Líneas 39–41: otro sistema cambia el nombre y la base ya dice `Ana María`.
-- Línea 42 y cuarta salida: una sesión nueva lee de L2 y recibe `Ana`, un dato viejo.
-- Línea 43: sin L2, la sesión consulta y obtiene el dato correcto; el contador sube a 2.
+- Línea 49 y primera salida: en la misma sesión, el segundo `find` devuelve el mismo objeto (`==` da `true`) sin consultar.
+- Líneas 50–51 y segunda salida: otra sesión encuentra a Ana en L2; el contador sigue en 1.
+- Líneas 53–57: otro sistema cambia el nombre y la base ya dice `Ana María`.
+- Línea 58 y cuarta salida: una sesión nueva lee de L2 y recibe `Ana`, un dato viejo.
+- Línea 59: sin L2, la sesión consulta y obtiene el dato correcto; el contador sube a 2.
 
-Este script es un modelo: Hibernate guarda en L2 el estado desarmado de la entidad, no el objeto, y usa un
+Este programa es un modelo: Hibernate guarda en L2 el estado desarmado de la entidad, no el objeto, y usa un
 proveedor externo (por ejemplo, Ehcache o Infinispan). El riesgo del dato viejo es el mismo.
 
 > **Error común.** Activar la caché de segundo nivel en una tabla que otro sistema actualiza. La salida lo muestra
@@ -2701,7 +2811,7 @@ proveedor externo (por ejemplo, Ehcache o Infinispan). El riesgo del dato viejo 
 > consultas entre peticiones a cambio de memoria compartida e invalidación. Mide la tasa de aciertos antes de decidir.
 
 #### Checkpoint 6.1
-En `cache_l2.py`, si después del `UPDATE` externo vuelves a llamar `s1.find(1)`, ¿qué nombre obtienes?
+En `CacheL2.java`, si después del `UPDATE` externo vuelves a llamar `s1.find(1)`, ¿qué nombre obtienes?
 
 Respuesta: `Ana`, sin consulta nueva. La sesión `s1` ya tiene el objeto en su L1. También la caché de primer nivel
 puede quedar vieja, pero solo dura lo que dura la sesión.
@@ -2712,10 +2822,10 @@ puede quedar vieja, pero solo dura lo que dura la sesión.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Ejecuta el modelo de cachés
-Ejecuta `python3 cache_l2.py` y compara la cuarta y la quinta línea.
+Ejecuta `java -cp "$H2" CacheL2.java` y compara la cuarta y la quinta línea.
 
 #### Paso 2 · Invalida la entrada
-Agrega `cache_l2.pop(1, None)` después de `otro_sistema.commit()` y vuelve a ejecutar.
+Agrega `cacheL2.remove(1L);` después del `UPDATE` de `otroSistema` y vuelve a ejecutar.
 
 #### Paso 3 · Compara grafo y `join fetch`
 Ejecuta `./gradlew -q demoN1` con `pedidosConClientePorFecha` y luego con `pedidosConClienteJoinFetch`. Las dos
@@ -2733,7 +2843,7 @@ aserciones: `4L` sin grafo y `1L` con grafo.
 - Sin **invalidación de caché**, una caché compartida sirve datos viejos cuando otro sistema escribe.
 
 #### Ejercicio verificable 1
-Básico. Agrega `cache_l2.pop(1, None)` después de `otro_sistema.commit()`. ¿Qué imprimen las dos últimas líneas?
+Básico. Agrega `cacheL2.remove(1L);` después del `UPDATE` de `otroSistema`. ¿Qué imprimen las dos últimas líneas?
 
 Respuesta esperada: `L2 tras el UPDATE externo -> Ana María consultas = 2` y `sin L2 -> Ana María consultas = 3`.
 Al invalidar, la sesión nueva tuvo que consultar la base.
@@ -2794,7 +2904,7 @@ detectas el choque?
 - **Definición técnica:** control de concurrencia que no reserva filas al leer; al escribir, verifica que la versión leída siga vigente y falla si otra transacción la cambió.
 - **En palabras sencillas:** confiar en que nadie más va a editar, pero revisar antes de guardar.
 - **Dónde se rompe la comparación:** no evita el choque; lo detecta. El usuario debe reintentar o resolver.
-- **Ejemplo:** `UPDATE ... WHERE id = 1 AND version = ?` en `bloqueos.py`, línea 20.
+- **Ejemplo:** `UPDATE ... WHERE id = 1 AND version = ?` en `Bloqueos.java`, línea 17.
 - **Error típico:** atrapar la excepción y reintentar a ciegas, sobrescribiendo el cambio ajeno de todos modos.
 
 **`@Version`**
@@ -2815,7 +2925,7 @@ detectas el choque?
 - **Definición técnica:** control de concurrencia que reserva la fila al leerla (`SELECT ... FOR UPDATE`) hasta el fin de la transacción; otras transacciones que la quieran escribir esperan o fallan.
 - **En palabras sencillas:** sacar la hoja del archivador y llevártela mientras la editas.
 - **Dónde se rompe la comparación:** los demás esperan aunque solo quieran leer con `FOR UPDATE`; con mucho tráfico, se forman colas y deadlocks.
-- **Ejemplo:** en `bloqueos.py`, B no puede reservar mientras A tiene la transacción: `database is locked`.
+- **Ejemplo:** en `Bloqueos.java`, B no obtiene la fila mientras A tiene la transacción: `Timeout trying to lock table "PEDIDOS"`.
 - **Error típico:** tomar el bloqueo y luego esperar una respuesta del usuario; todos los demás se quedan esperando.
 
 **LockModeType**
@@ -2864,65 +2974,92 @@ Reproduce en SQL directo el bloqueo optimista con columna de versión y luego un
 **Razonamiento:**
 1. A y B leen la misma versión. Cada uno actualiza con `WHERE ... AND version = ?`.
 2. El que llega segundo afecta cero filas: ese número es la señal de conflicto.
-3. Para el pesimista, A reserva la base antes de leer (`BEGIN IMMEDIATE`); B no puede reservar.
+3. Para el pesimista, A bloquea la fila al leerla (`SELECT ... FOR UPDATE`); B tiene que esperar.
 
-```python
-# bloqueos.py — bloqueo optimista con columna version y bloqueo pesimista (SQLite)
-import os
-import sqlite3
-import tempfile
+```java
+// Bloqueos.java — bloqueo optimista con columna version y bloqueo pesimista con FOR UPDATE (H2 en memoria)
+import java.sql.*;
 
-ruta = os.path.join(tempfile.mkdtemp(), "aurora.db")
-setup = sqlite3.connect(ruta)
-setup.execute("CREATE TABLE pedidos (id INTEGER PRIMARY KEY, fecha TEXT NOT NULL, version INTEGER NOT NULL)")
-setup.execute("INSERT INTO pedidos VALUES (1, '2026-11-21', 0)")
-setup.commit()
-setup.close()
+public class Bloqueos {
+    static final String URL = "jdbc:h2:mem:bloqueos;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=200";
 
-# --- Optimista: nadie espera; el conflicto se detecta al escribir ---
-a = sqlite3.connect(ruta, isolation_level=None, timeout=0)
-b = sqlite3.connect(ruta, isolation_level=None, timeout=0)
-version_a = a.execute("SELECT version FROM pedidos WHERE id = 1").fetchone()[0]
-version_b = b.execute("SELECT version FROM pedidos WHERE id = 1").fetchone()[0]
-print("A y B leen version =", version_a, version_b)
+    public static void main(String[] args) throws SQLException {
+        try (Connection a = DriverManager.getConnection(URL); Connection b = DriverManager.getConnection(URL)) {
+            a.createStatement().execute("""
+                CREATE TABLE pedidos (id BIGINT PRIMARY KEY, fecha DATE NOT NULL, version BIGINT NOT NULL);
+                INSERT INTO pedidos VALUES (1, DATE '2026-11-21', 0);
+                """);
 
-UPDATE = "UPDATE pedidos SET fecha = ?, version = version + 1 WHERE id = 1 AND version = ?"
-filas_a = a.execute(UPDATE, ("2026-11-22", version_a)).rowcount
-print("A actualiza -> filas =", filas_a)
-filas_b = b.execute(UPDATE, ("2026-11-23", version_b)).rowcount
-print("B actualiza -> filas =", filas_b, "(conflicto)" if filas_b == 0 else "")
-print("estado final ->", a.execute("SELECT fecha, version FROM pedidos WHERE id = 1").fetchone())
+            // --- Optimista: nadie espera; el conflicto se detecta al escribir ---
+            long versionA = version(a), versionB = version(b);
+            System.out.println("A y B leen version = " + versionA + " " + versionB);
+            String update = "UPDATE pedidos SET fecha = ?, version = version + 1 WHERE id = 1 AND version = ?";
+            int filasA = actualizar(a, update, "2026-11-22", versionA);
+            System.out.println("A actualiza -> filas = " + filasA);
+            int filasB = actualizar(b, update, "2026-11-23", versionB);
+            System.out.println("B actualiza -> filas = " + filasB + (filasB == 0 ? " (conflicto)" : ""));
+            System.out.println("estado final -> " + estado(a));
 
-# --- Pesimista: A reserva antes de leer; B no puede escribir hasta que A termine ---
-a.execute("BEGIN IMMEDIATE")
-a.execute("SELECT fecha FROM pedidos WHERE id = 1").fetchone()
-try:
-    b.execute("BEGIN IMMEDIATE")
-except sqlite3.OperationalError as error:
-    print("B intenta reservar ->", type(error).__name__ + ":", error)
-a.execute("UPDATE pedidos SET fecha = '2026-11-24', version = version + 1 WHERE id = 1")
-a.execute("COMMIT")
-b.execute("BEGIN IMMEDIATE")
-print("B tras el COMMIT de A ->", b.execute("SELECT fecha, version FROM pedidos WHERE id = 1").fetchone())
-b.execute("COMMIT")
+            // --- Pesimista: A bloquea la fila al leer; B espera y se rinde al vencer LOCK_TIMEOUT ---
+            a.setAutoCommit(false);
+            b.setAutoCommit(false);
+            a.createStatement().executeQuery("SELECT fecha FROM pedidos WHERE id = 1 FOR UPDATE").next();
+            try {
+                b.createStatement().executeQuery("SELECT fecha FROM pedidos WHERE id = 1 FOR UPDATE");
+            } catch (SQLException error) {
+                System.out.println("B intenta bloquear -> SQLState " + error.getSQLState() + ": "
+                        + error.getMessage().lines().findFirst().orElse("").replaceAll("; SQL statement:.*", ""));
+                b.rollback();
+            }
+            a.createStatement().executeUpdate("UPDATE pedidos SET fecha = DATE '2026-11-24', version = version + 1 WHERE id = 1");
+            a.commit();
+            b.createStatement().executeQuery("SELECT fecha FROM pedidos WHERE id = 1 FOR UPDATE").next();
+            System.out.println("B tras el COMMIT de A -> " + estado(b));
+            b.commit();
+        }
+    }
+
+    static long version(Connection c) throws SQLException {
+        try (ResultSet rs = c.createStatement().executeQuery("SELECT version FROM pedidos WHERE id = 1")) {
+            rs.next();
+            return rs.getLong(1);
+        }
+    }
+
+    static int actualizar(Connection c, String sql, String fecha, long version) throws SQLException {
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(fecha));
+            ps.setLong(2, version);
+            return ps.executeUpdate();
+        }
+    }
+
+    static String estado(Connection c) throws SQLException {
+        try (ResultSet rs = c.createStatement().executeQuery("SELECT fecha, version FROM pedidos WHERE id = 1")) {
+            rs.next();
+            return "(" + rs.getDate(1) + ", " + rs.getLong(2) + ")";
+        }
+    }
+}
 ```
 
 ```text
-$ python3 bloqueos.py
+$ java -cp "$H2" Bloqueos.java
 A y B leen version = 0 0
 A actualiza -> filas = 1
 B actualiza -> filas = 0 (conflicto)
-estado final -> ('2026-11-22', 1)
-B intenta reservar -> OperationalError: database is locked
-B tras el COMMIT de A -> ('2026-11-24', 2)
+estado final -> (2026-11-22, 1)
+B intenta bloquear -> SQLState HYT00: Timeout trying to lock table "PEDIDOS"
+B tras el COMMIT de A -> (2026-11-24, 2)
 ```
 
 **Explicación por partes.**
-- Línea 20: el mismo `UPDATE` que genera Hibernate con `@Version`: cambia el dato, suma 1 y exige la versión leída.
-- Líneas 21–24: A afecta 1 fila; B, 0. Hibernate convierte ese 0 en `OptimisticLockException`.
-- Línea 25: queda el cambio de A (`2026-11-22`) con versión 1. Nada se sobrescribió en silencio.
-- Líneas 28–33: A reserva; B no puede. SQLite bloquea toda la base; PostgreSQL con `FOR UPDATE` bloquea solo la fila.
-- Líneas 34–37: cuando A confirma, B reserva y ve el dato nuevo con versión 2.
+- Línea 17: el mismo `UPDATE` que genera Hibernate con `@Version`: cambia el dato, suma 1 y exige la versión leída.
+- Líneas 18–21: A afecta 1 fila; B, 0. Hibernate convierte ese 0 en `OptimisticLockException`.
+- Línea 22: queda el cambio de A (`2026-11-22`) con versión 1. Nada se sobrescribió en silencio.
+- Líneas 27–33: A bloquea la fila con `FOR UPDATE`; B espera hasta `LOCK_TIMEOUT=200` (línea 5) y se rinde.
+  Es lo que hace JPA con `LockModeType.PESSIMISTIC_WRITE`.
+- Líneas 34–38: cuando A confirma, B obtiene el bloqueo y ve el dato nuevo con versión 2.
 
 #### Problema resuelto 7.2
 Comprueba en el proyecto que `@Version` detecta dos transacciones concurrentes sobre el mismo pedido.
@@ -2946,11 +3083,11 @@ JpaAuroraTest > optimisticLock() PASSED
   `rollback` y busca `OptimisticLockException` en la cadena de causas.
 - La prueba `optimisticLock` exige el texto `"OptimisticLockException"`.
 
-> **Error común.** Quitar la condición de versión «porque molesta». En `bloqueos.py`, sin `AND version = ?`, B
-> obtiene `filas = 1` y el estado final es `('2026-11-23', 2)`. El cambio de A desapareció sin ningún error.
+> **Error común.** Quitar la condición de versión «porque molesta». En `Bloqueos.java`, sin `AND version = ?`, B
+> obtiene `filas = 1` y el estado final es `(2026-11-23, 2)`. El cambio de A desapareció sin ningún error.
 
-> **Error común.** Esperar un bloqueo cuando otro ya lo tiene, sin límite de tiempo. Con `timeout=0`, SQLite
-> responde de inmediato `OperationalError: database is locked`. En producción, configura un tiempo de espera y
+> **Error común.** Esperar un bloqueo cuando otro ya lo tiene, sin límite de tiempo. Con `LOCK_TIMEOUT=200`, H2
+> responde a los 200 ms con `SQLState HYT00: Timeout trying to lock table`. En producción, configura un tiempo de espera y
 > trata el fallo como reintentable.
 
 > **Buena práctica.** Ante `OptimisticLockException`, recarga la entidad, muestra al usuario la versión nueva y
@@ -2971,10 +3108,10 @@ fila al leer y hace esperar a los demás hasta el `commit`.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Ejecuta los dos bloqueos
-Ejecuta `python3 bloqueos.py` y relaciona cada línea de salida con la línea del programa que la produce.
+Ejecuta `java -cp "$H2" Bloqueos.java` y relaciona cada línea de salida con la línea del programa que la produce.
 
 #### Paso 2 · Provoca la actualización perdida
-Quita `AND version = ?` de la línea 20 y pasa solo la fecha en las líneas 21 y 23. Ejecuta y observa el estado final.
+Quita `AND version = ?` de la línea 17 y borra `ps.setLong(2, version);` en `actualizar`. Ejecuta y observa el estado final.
 
 #### Paso 3 · Ejecuta la prueba de `@Version`
 Ejecuta `./gradlew test --tests "com.aurora.jpa.JpaAuroraTest.optimisticLock"`.
@@ -2991,7 +3128,7 @@ LockModeType.PESSIMISTIC_WRITE)`. Ejecuta contra PostgreSQL (Tema 8) y observa q
 - La **propagación de transacciones** (`REQUIRED`, `REQUIRES_NEW`) la ofrecen Spring y JTA, no `EntityTransaction`.
 
 #### Ejercicio verificable 1
-Básico. En `bloqueos.py`, ¿qué valor tiene `version` al final y por qué?
+Básico. En `Bloqueos.java`, ¿qué valor tiene `version` al final y por qué?
 
 Respuesta esperada: `2`. A la subió a 1 en el optimista y la subió a 2 en el pesimista. El `UPDATE` de B no se
 aplicó.
@@ -3111,71 +3248,92 @@ sequenceDiagram
 corren contra el mismo motor y la misma versión que producción.
 
 #### Problema resuelto 8.1
-Modela en Python lo que hacen Flyway y `validate`: aplicar solo migraciones nuevas y comparar columnas esperadas
+Modela en Java lo que hacen Flyway y `validate`: aplicar solo migraciones nuevas y comparar columnas esperadas
 con columnas reales.
 
 **Razonamiento:**
 1. Una tabla `schema_history` guarda qué versiones se aplicaron; `migrar` aplica las que faltan.
-2. `validar` lee las columnas reales con `PRAGMA table_info` y las compara con las del mapeo de `Pedido`.
+2. `validar` lee las columnas reales con `DatabaseMetaData.getColumns` y las compara con las del mapeo de `Pedido`.
 3. Falta `creado_en`: la validación falla hasta que una `V2` la agrega.
 
-```python
-# migraciones.py — qué hacen Flyway (historial de versiones) y hbm2ddl=validate (SQLite)
-import sqlite3
+```java
+// Migraciones.java — qué hacen Flyway (historial de versiones) y hbm2ddl=validate (H2 en memoria)
+import java.sql.*;
+import java.util.*;
 
-MIGRACIONES = {
-    "V1__aurora.sql": "CREATE TABLE pedidos (id INTEGER PRIMARY KEY, fecha DATE NOT NULL, version BIGINT NOT NULL);",
+public class Migraciones {
+    static final SortedMap<String, String> MIGRACIONES = new TreeMap<>(Map.of(
+            "V1__aurora.sql", "CREATE TABLE pedidos (id BIGINT PRIMARY KEY, fecha DATE NOT NULL, version BIGINT NOT NULL)"));
+    static final Set<String> ENTIDAD_PEDIDO = Set.of("id", "fecha", "version", "creado_en"); // columnas del mapeo de Pedido
+
+    static int migrar(Connection con) throws SQLException {
+        con.createStatement().execute(
+                "CREATE TABLE IF NOT EXISTS schema_history (version VARCHAR(100) PRIMARY KEY, success BOOLEAN)");
+        Set<String> aplicadas = new HashSet<>();
+        try (ResultSet rs = con.createStatement().executeQuery("SELECT version FROM schema_history")) {
+            while (rs.next()) aplicadas.add(rs.getString(1));
+        }
+        List<String> nuevas = MIGRACIONES.keySet().stream().filter(nombre -> !aplicadas.contains(nombre)).toList();
+        for (String nombre : nuevas) {
+            con.createStatement().execute(MIGRACIONES.get(nombre));
+            try (var ps = con.prepareStatement("INSERT INTO schema_history VALUES (?, TRUE)")) {
+                ps.setString(1, nombre);
+                ps.executeUpdate();
+            }
+        }
+        return nuevas.size();
+    }
+
+    static String validar(Connection con, String tabla, Set<String> esperadas) throws SQLException {
+        Set<String> reales = new HashSet<>();
+        try (ResultSet rs = con.getMetaData().getColumns(null, null, tabla.toUpperCase(), null)) {
+            while (rs.next()) reales.add(rs.getString("COLUMN_NAME").toLowerCase());
+        }
+        List<String> faltan = esperadas.stream().filter(c -> !reales.contains(c)).sorted().toList();
+        if (!faltan.isEmpty()) throw new IllegalStateException("validación: faltan columnas " + faltan + " en la tabla " + tabla);
+        return "esquema válido";
+    }
+
+    public static void main(String[] args) throws SQLException {
+        try (Connection con = DriverManager.getConnection("jdbc:h2:mem:migraciones")) {
+            System.out.println("primera corrida  -> migraciones aplicadas = " + migrar(con));
+            System.out.println("segunda corrida  -> migraciones aplicadas = " + migrar(con));
+            try (ResultSet rs = con.createStatement().executeQuery("SELECT * FROM schema_history")) {
+                rs.next();
+                System.out.println("historial        -> [(" + rs.getString(1) + ", " + rs.getBoolean(2) + ")]");
+            }
+            try {
+                System.out.println(validar(con, "pedidos", ENTIDAD_PEDIDO));
+            } catch (IllegalStateException error) {
+                System.out.println("validate         -> " + error.getMessage());
+            }
+
+            MIGRACIONES.put("V2__creado_en.sql", "ALTER TABLE pedidos ADD COLUMN creado_en TIMESTAMP");
+            System.out.println("con V2           -> migraciones aplicadas = " + migrar(con));
+            System.out.println("validate         -> " + validar(con, "pedidos", ENTIDAD_PEDIDO));
+        }
+    }
 }
-ENTIDAD_PEDIDO = {"id", "fecha", "version", "creado_en"}   # columnas que espera el mapeo de Pedido
-
-def migrar(con):
-    con.execute("CREATE TABLE IF NOT EXISTS schema_history (version TEXT PRIMARY KEY, success INTEGER)")
-    aplicadas = {fila[0] for fila in con.execute("SELECT version FROM schema_history")}
-    nuevas = [nombre for nombre in sorted(MIGRACIONES) if nombre not in aplicadas]
-    for nombre in nuevas:
-        con.executescript(MIGRACIONES[nombre])
-        con.execute("INSERT INTO schema_history VALUES (?, 1)", (nombre,))
-    con.commit()
-    return len(nuevas)
-
-def validar(con, tabla, esperadas):
-    reales = {fila[1] for fila in con.execute(f"PRAGMA table_info({tabla})")}
-    faltan = sorted(esperadas - reales)
-    if faltan:
-        raise RuntimeError(f"validación: faltan columnas {faltan} en la tabla {tabla}")
-    return "esquema válido"
-
-con = sqlite3.connect(":memory:")
-print("primera corrida  -> migraciones aplicadas =", migrar(con))
-print("segunda corrida  -> migraciones aplicadas =", migrar(con))
-print("historial        ->", con.execute("SELECT * FROM schema_history").fetchall())
-try:
-    print(validar(con, "pedidos", ENTIDAD_PEDIDO))
-except RuntimeError as error:
-    print("validate         ->", error)
-
-MIGRACIONES["V2__creado_en.sql"] = "ALTER TABLE pedidos ADD COLUMN creado_en TIMESTAMP;"
-print("con V2           -> migraciones aplicadas =", migrar(con))
-print("validate         ->", validar(con, "pedidos", ENTIDAD_PEDIDO))
 ```
 
 ```text
-$ python3 migraciones.py
+$ java -cp "$H2" Migraciones.java
 primera corrida  -> migraciones aplicadas = 1
 segunda corrida  -> migraciones aplicadas = 0
-historial        -> [('V1__aurora.sql', 1)]
-validate         -> validación: faltan columnas ['creado_en'] en la tabla pedidos
+historial        -> [(V1__aurora.sql, true)]
+validate         -> validación: faltan columnas [creado_en] en la tabla pedidos
 con V2           -> migraciones aplicadas = 1
 validate         -> esquema válido
 ```
 
 **Explicación por partes.**
-- Líneas 10–12: lee el historial y calcula las migraciones pendientes.
-- Línea 28: la segunda corrida no aplica nada; las migraciones son idempotentes por historial.
-- Líneas 19–23: la comparación de `validate`. Una columna mapeada que no existe es un error de arranque.
-- Líneas 35–37: la corrección es una migración nueva, no editar `V1`.
+- Líneas 14–17: lee el historial y calcula las migraciones pendientes.
+- Línea 41: la segunda corrida no aplica nada; las migraciones son idempotentes por historial.
+- Líneas 28–35: la comparación de `validate`, con los metadatos de JDBC (`getColumns`). Una columna mapeada que no
+  existe es un error de arranque.
+- Líneas 52–54: la corrección es una migración nueva, no editar `V1`.
 
-Este script es un modelo: Flyway guarda además descripción, suma de verificación y fecha. Hibernate compara
+Este programa es un modelo: Flyway guarda además descripción, suma de verificación y fecha. Hibernate compara
 también tipos de columna.
 
 #### Problema resuelto 8.2
@@ -3300,10 +3458,10 @@ POSTGRES_CLIENTES=[Ana, Bruno, Carla]
 
 > **Error común.** Agregar un campo a una entidad sin su migración. Con `create-drop` en H2 no pasa nada, porque
 > Hibernate crea la columna. Con `validate`, el arranque falla. El modelo lo muestra:
-> `validate         -> validación: faltan columnas ['creado_en'] en la tabla pedidos`. Corrígelo con `V2`, nunca editando `V1`.
+> `validate         -> validación: faltan columnas [creado_en] en la tabla pedidos`. Corrígelo con `V2`, nunca editando `V1`.
 
 > **Error común.** Nombrar `V10` sin pensar en el orden. Si tu herramienta ordena como texto, `V10__indice.sql` va
-> antes que `V1__aurora.sql`, y el índice falla con `sqlite3.OperationalError: no such table: main.pedidos`. Flyway
+> antes que `V1__aurora.sql`, y el índice falla con `Table "PEDIDOS" not found`. Flyway
 > compara versiones como números, pero tus scripts propios no siempre.
 
 > **Buena práctica.** Fija la imagen con versión (`postgres:16-alpine`) y usa la misma versión mayor que
@@ -3324,7 +3482,7 @@ generado funciona en el mismo motor y versión de producción, con sus tipos y s
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Ejecuta el modelo de migraciones
-Ejecuta `python3 migraciones.py`. Luego comenta la línea 35 y comprueba que la última línea falla con la misma
+Ejecuta `java -cp "$H2" Migraciones.java`. Luego comenta la línea 52 y comprueba que la última línea falla con la misma
 validación.
 
 #### Paso 2 · Crea la prueba con PostgreSQL
@@ -3348,24 +3506,24 @@ Agrega a `Pedido` un campo `@Column(nullable = false) private String canal;` sin
 - La prueba contra el motor real detecta diferencias de esquema y de dialecto que H2 oculta.
 
 #### Ejercicio verificable 1
-Básico. En `migraciones.py`, ¿cuántas migraciones aplicaría una tercera llamada a `migrar(con)` al final?
+Básico. En `Migraciones.java`, ¿cuántas migraciones aplicaría una tercera llamada a `migrar(con)` al final?
 
 Respuesta esperada: `0`. `V1` y `V2` ya están en `schema_history`.
 
 #### Ejercicio verificable 2
 Intermedio. En una base recién migrada con `V1`, renombra `version` a `revision` con
-`ALTER TABLE pedidos RENAME COLUMN version TO revision` y valida contra `{"id", "fecha", "version"}`. ¿Qué mensaje obtienes?
+`ALTER TABLE pedidos RENAME COLUMN version TO revision` y valida contra `Set.of("id", "fecha", "version")`. ¿Qué mensaje obtienes?
 
-Respuesta esperada: `validación: faltan columnas ['version'] en la tabla pedidos`. En el proyecto, `@Version` se
+Respuesta esperada: `validación: faltan columnas [version] en la tabla pedidos`. En el proyecto, `@Version` se
 quedaría sin columna y `validate` detendría el arranque.
 
 #### Ejercicio verificable 3
 Reto. Antes de la primera llamada a `migrar`, agrega `V2__creado_en.sql` y
 `V10__indice.sql` (`CREATE INDEX idx_pedidos_creado_en ON pedidos (creado_en);`). ¿En qué orden se aplican y qué pasa?
 
-Respuesta esperada: `sorted` da `['V10__indice.sql', 'V1__aurora.sql', 'V2__creado_en.sql']` y la primera falla con
-`sqlite3.OperationalError: no such table: main.pedidos`. La corrección es ordenar por el número de versión
-(`int(nombre[1:].split("__")[0])`), como hace Flyway.
+Respuesta esperada: el `TreeMap` da `[V10__indice.sql, V1__aurora.sql, V2__creado_en.sql]` y la primera falla con
+`JdbcSQLSyntaxErrorException: Table "PEDIDOS" not found`. La corrección es ordenar por el número de versión
+(`Comparator.comparingInt(n -> Integer.parseInt(n.substring(1, n.indexOf("__"))))`), como hace Flyway.
 
 #### En el trabajo
 Flyway y Liquibase son el estándar para versionar esquemas en Spring Boot; se ejecutan solos al arrancar la
