@@ -3700,6 +3700,10 @@
       {
         "title": "Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
         "fragment": "tema-5-ingenieria-social-phishing-y-respuesta-analizar-el-correo-no-solo-mirarlo"
+      },
+      {
+        "title": "Proyecto 6: inventario endurecido",
+        "fragment": "proyecto-6-inventario-endurecido"
       }
     ],
     "7": [
@@ -3720,18 +3724,6 @@
         "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
       },
       {
-        "title": "Contexto",
-        "fragment": "contexto"
-      },
-      {
-        "title": "Decisión",
-        "fragment": "decision"
-      },
-      {
-        "title": "Consecuencias",
-        "fragment": "consecuencias"
-      },
-      {
         "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
         "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
       },
@@ -3742,6 +3734,10 @@
       {
         "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
         "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
+      },
+      {
+        "title": "Proyecto 7: inventario modular con especificación, ADR y plan de mantenimiento",
+        "fragment": "proyecto-7-inventario-modular-con-especificacion-adr-y-plan-de-mantenimiento"
       }
     ],
     "8": [
