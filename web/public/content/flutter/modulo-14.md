@@ -429,3 +429,57 @@ flutter analyze
 ```
 
 </details>
+
+### Tema 7: Cálculo de rutas propio con OSRM en Docker · Avanzado · 40 min
+
+## Motivación
+
+La app de entregas pide una ruta a la API de Google cada vez que un repartidor cambia de destino. Con miles de peticiones al día, la factura crece, y sin conexión a esa API no hay rutas. **OSRM** (*Open Source Routing Machine*) calcula rutas en tu propio servidor con los mapas libres de OpenStreetMap.
+
+## Concepto
+
+OSRM trabaja en dos fases:
+1. **Preparación (una vez):** convierte un mapa de OpenStreetMap (`.osm.pbf`) en un grafo de calles listo para consultas, según un **perfil**: coche, bicicleta o a pie.
+2. **Servicio:** un servidor HTTP responde en milisegundos a «ruta de A a B» con distancia, duración y la geometría para dibujarla.
+
+Los mapas por país se descargan de Geofabrik. Si solo necesitas una región, recorta el mapa a su polígono para que la preparación tarde y pese menos.
+
+## Ejemplo mínimo
+
+```bash
+# 1. Mapa de Colombia (Geofabrik) y recorte opcional a una región con osmium
+wget https://download.geofabrik.de/south-america/colombia-latest.osm.pbf
+osmium extract -p region.geojson colombia-latest.osm.pbf -o region.osm.pbf   # opcional
+
+# 2. Preparación con el perfil de coche (algoritmo MLD)
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
+  osrm-extract -p /opt/car.lua /data/colombia-latest.osm.pbf
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
+  osrm-partition /data/colombia-latest.osrm
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
+  osrm-customize /data/colombia-latest.osrm
+
+# 3. Servidor en el puerto 5000
+docker run -t -i -p 5000:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
+  osrm-routed --algorithm mld /data/colombia-latest.osrm
+
+# 4. Ruta en Bogotá: coordenadas en orden LONGITUD,LATITUD
+curl "http://localhost:5000/route/v1/driving/-74.0817,4.6097;-74.0480,4.6760?overview=full&geometries=geojson"
+```
+
+La respuesta JSON trae `routes[0].distance` (metros), `routes[0].duration` (segundos) y `routes[0].geometry`, la lista de puntos que la app dibuja como polilínea en el mapa (Tema 2).
+
+> **Nota de verificación.** Los comandos siguen el README oficial de OSRM, pero no se ejecutaron al escribir el tema porque el entorno de verificación no tiene Docker. Preparar un país entero puede necesitar varios GB de RAM: empieza con el recorte de una ciudad.
+
+## Reglas y casos límite
+
+- **Longitud primero.** OSRM usa `lon,lat`, al revés que Google Maps. Invertirlas da rutas en otro continente o errores `NoRoute`.
+- **El mapa no se actualiza solo.** Calles nuevas o sentidos cambiados exigen descargar el mapa y repetir la preparación, por ejemplo con una tarea semanal.
+- **OSRM calcula rutas, no geocodifica.** Convertir «Calle 26 #59-41» en coordenadas lo hace otro servicio, como Nominatim.
+- **Tráfico en tiempo real no incluido.** Los tiempos salen de velocidades típicas por tipo de vía.
+
+## Compruébalo
+
+1. ¿Qué pasa si envías las coordenadas como `4.6097,-74.0817`? Predícelo antes de probar.
+2. ¿Qué perfil (`car.lua`, `bicycle.lua` o `foot.lua`) usarías para repartidores en bicicleta, y qué cambiaría en las rutas?
+

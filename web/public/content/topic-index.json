@@ -2158,6 +2158,10 @@
       {
         "title": "El op-amp inversor",
         "fragment": "tema-3-el-op-amp-inversor"
+      },
+      {
+        "title": "El op-amp no inversor y el regulador de tensión en serie",
+        "fragment": "tema-4-el-op-amp-no-inversor-y-el-regulador-de-tension-en-serie"
       }
     ],
     "8": [
@@ -2180,6 +2184,10 @@
       {
         "title": "Analogías entre sistemas eléctricos, mecánicos y térmicos",
         "fragment": "tema-5-analogias-entre-sistemas-electricos-mecanicos-y-termicos"
+      },
+      {
+        "title": "Ejercicio resuelto: circuito RLC con dos fuentes",
+        "fragment": "tema-6-ejercicio-resuelto-circuito-rlc-con-dos-fuentes"
       }
     ],
     "9": [
@@ -2276,6 +2284,10 @@
       {
         "title": "git reflog, git worktree y git submodule",
         "fragment": "tema-7-git-reflog-git-worktree-y-git-submodule"
+      },
+      {
+        "title": "Referencia rápida de Git: los tres árboles y los comandos por intención",
+        "fragment": "tema-8-referencia-rapida-de-git-los-tres-arboles-y-los-comandos-por-intencion"
       }
     ],
     "10": [
@@ -2538,6 +2550,14 @@
       {
         "title": "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop",
         "fragment": "tema-9-elegir-el-motor-de-contenedores-local-docker-desktop-podman-colima-y-rancher-desktop"
+      },
+      {
+        "title": "BuildKit y Buildx: builds más rápidos, secretos seguros y varias arquitecturas",
+        "fragment": "tema-10-buildkit-y-buildx-builds-mas-rapidos-secretos-seguros-y-varias-arquitecturas"
+      },
+      {
+        "title": "Seguridad de la cadena de contenedores: Docker Scout, Trivy y Falco",
+        "fragment": "tema-11-seguridad-de-la-cadena-de-contenedores-docker-scout-trivy-y-falco"
       }
     ],
     "20": [
@@ -2662,6 +2682,10 @@
       {
         "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
         "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
+      },
+      {
+        "title": "Mapa de decisión: las siete estrategias de despliegue",
+        "fragment": "tema-8-mapa-de-decision-las-siete-estrategias-de-despliegue"
       }
     ],
     "6": [
@@ -2970,6 +2994,10 @@
       {
         "title": "Dio y notificaciones push",
         "fragment": "tema-6-dio-y-notificaciones-push"
+      },
+      {
+        "title": "Cálculo de rutas propio con OSRM en Docker",
+        "fragment": "tema-7-calculo-de-rutas-propio-con-osrm-en-docker"
       }
     ],
     "15": [
@@ -4536,6 +4564,10 @@
       {
         "title": "Streams paralelos y referencias a métodos",
         "fragment": "tema-4-streams-paralelos-y-referencias-a-metodos"
+      },
+      {
+        "title": "Las cuatro interfaces funcionales que hay detrás de Streams",
+        "fragment": "tema-5-las-cuatro-interfaces-funcionales-que-hay-detras-de-streams"
       }
     ],
     "5": [
@@ -6766,12 +6798,12 @@
     ],
     "15": [
       {
-        "title": "Hexagonal y puertos/adaptadores",
-        "fragment": "tema-1-hexagonal-y-puertos-adaptadores"
+        "title": "Arquitectura hexagonal: puertos con tipos del dominio",
+        "fragment": "tema-1-arquitectura-hexagonal-puertos-con-tipos-del-dominio"
       },
       {
-        "title": "Clean Architecture, C4 y ADR",
-        "fragment": "tema-2-clean-architecture-c4-y-adr"
+        "title": "C4 y ADR: documentar el sistema y sus decisiones",
+        "fragment": "tema-2-c4-y-adr-documentar-el-sistema-y-sus-decisiones"
       },
       {
         "title": "Spring Modulith y fronteras de módulos",
@@ -6826,6 +6858,10 @@
       {
         "title": "Hardening y secretos",
         "fragment": "tema-4-hardening-y-secretos"
+      },
+      {
+        "title": "Tokenización de datos de tarjeta",
+        "fragment": "tema-5-tokenizacion-de-datos-de-tarjeta"
       }
     ],
     "19": [
@@ -7250,8 +7286,8 @@
         "fragment": "tema-1-outbox-y-cdc-con-debezium"
       },
       {
-        "title": "Sagas orquestadas/coreografiadas",
-        "fragment": "tema-2-sagas-orquestadas-coreografiadas"
+        "title": "Sagas orquestadas y coreografiadas",
+        "fragment": "tema-2-sagas-orquestadas-y-coreografiadas"
       },
       {
         "title": "Idempotencia real y exactly-once práctico",
@@ -7530,6 +7566,10 @@
       {
         "title": "Database-per-service",
         "fragment": "tema-5-database-per-service"
+      },
+      {
+        "title": "Mapa del diseño de sistemas: latencia, throughput, CAP y elección de líder",
+        "fragment": "tema-6-mapa-del-diseno-de-sistemas-latencia-throughput-cap-y-eleccion-de-lider"
       }
     ],
     "5": [

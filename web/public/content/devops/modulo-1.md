@@ -370,3 +370,64 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint s
 ```
 
 </details>
+
+### Tema 8: Referencia rápida de Git: los tres árboles y los comandos por intención · Básico · 30 min
+
+## Motivación
+
+Las chuletas de Git que circulan en redes suelen listar 80 comandos sin decir para qué sirve cada uno, y a menudo con errores: «git bratus», «git cherry-pirk», `git rebase --shert`. Este tema ordena los comandos por **lo que quieres conseguir** y los explica con el modelo que hay debajo: los tres árboles.
+
+## Concepto
+
+Git maneja tus archivos en tres lugares, y casi todos los comandos mueven cambios entre ellos:
+
+```mermaid
+flowchart LR
+  W["Directorio de trabajo<br/>(tus archivos)"] -- "git add" --> S["Área de preparación<br/>(staging / index)"]
+  S -- "git commit" --> R["Repositorio<br/>(HEAD, historial)"]
+  S -- "git restore --staged" --> W
+  R -- "git restore / git switch" --> W
+```
+
+- **Directorio de trabajo:** los archivos que editas.
+- **Área de preparación (*staging*):** lo que entrará en el próximo commit.
+- **Repositorio:** los commits confirmados; `HEAD` apunta al actual.
+
+## Comandos por intención
+
+| Quiero… | Comando |
+|---|---|
+| Identificarme (una vez por máquina) | `git config --global user.name "Tu Nombre"` · `git config --global user.email "tu@correo.com"` |
+| Empezar o copiar un repositorio | `git init` · `git clone <url> [carpeta]` |
+| Ver qué cambió | `git status` · `git diff` (sin preparar) · `git diff --staged` (preparado) |
+| Preparar y confirmar | `git add <archivo>` o `git add .` · `git commit -m "mensaje"` · `git commit -am "mensaje"` (solo archivos ya rastreados) |
+| Sacar algo del staging | `git restore --staged <archivo>` |
+| Descartar cambios locales de un archivo | `git restore <archivo>` (**se pierden**) |
+| Renombrar o borrar rastreando el cambio | `git mv <viejo> <nuevo>` · `git rm <archivo>` |
+| Trabajar en una rama | `git switch -c <rama>` (crear) · `git switch <rama>` · `git branch` (listar) · `git branch -d <rama>` |
+| Integrar una rama | `git merge <rama>` · `git merge --no-ff <rama>` (siempre crea commit de fusión) · `git rebase <rama>` (Tema 2) |
+| Sincronizar con el remoto | `git remote -v` · `git fetch` · `git pull` · `git push -u origin <rama>` (la primera vez) · `git push --force-with-lease` (tras un rebase) |
+| Leer el historial | `git log --oneline --graph --all` · `git show <commit>` · `git blame <archivo>` · `git shortlog -sn` (commits por autor) |
+| Guardar cambios a medias | `git stash` · `git stash list` · `git stash pop` (aplica y borra) · `git stash apply` (aplica y conserva) (Tema 6) |
+| Deshacer un commit ya publicado | `git revert <commit>`: crea un commit inverso sin reescribir el historial |
+| Deshacer commits locales | `git reset --soft <commit>` (conserva staging) · `--mixed` (conserva archivos) · `--hard` (**borra todo**) (Tema 6) |
+| Corregir el último commit | `git commit --amend` · `git commit --amend --no-edit` |
+| Traer un commit concreto | `git cherry-pick <commit>` |
+| Encontrar qué commit rompió algo | `git bisect start` · `git bisect bad` · `git bisect good <commit>` · `git bisect reset` (Tema 3) |
+| Recuperar algo «perdido» | `git reflog` (Tema 7) |
+| Limpiar archivos no rastreados | `git clean -n` (simula) · `git clean -fd` (**borra**) |
+| Marcar versiones | `git tag v1.2.0` · `git push origin v1.2.0` |
+| Empaquetar el código de una rama | `git archive --format=zip -o codigo.zip main` |
+
+## Reglas y casos límite
+
+- **Antes de `reset --hard`, `clean -fd` o `restore`, mira `git status`.** Son los tres comandos que borran trabajo sin confirmación.
+- **`--force-with-lease` y no `--force`.** Si alguien subió commits a la rama mientras tanto, `--force-with-lease` se niega a sobrescribirlos.
+- **`revert` para lo publicado, `reset` para lo local.** Reescribir commits que otros ya descargaron les rompe sus copias.
+- **Fusión *fast-forward* o de tres vías.** Si tu rama no se movió desde que creaste la otra, `merge` solo avanza el puntero (*fast-forward*). Si ambas avanzaron, crea un commit de fusión (*three-way*).
+
+## Compruébalo
+
+1. Modificas `a.txt`, haces `git add a.txt` y te arrepientes. ¿Qué comando lo saca del staging sin perder la edición?
+2. ¿Qué diferencia hay entre `git stash pop` y `git stash apply` si hay un conflicto al aplicar?
+

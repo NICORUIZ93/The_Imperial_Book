@@ -472,67 +472,115 @@ curl -s -H "Host: mi-api.local" http://127.0.0.1/ | head -4
 
 ### Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+## Motivación
 
-#### ► DE QUÉ TRATA
-Usa Minikube o kind con kubectl. Crea un clúster con minikube start (o kind create cluster).
+Escribes `kubectl apply -f api.yaml` y, segundos después, hay tres pods corriendo en máquinas que no elegiste. Si un pod muere, aparece otro sin que hagas nada. Para diagnosticar un pod que no arranca o un Service que no responde, tienes que saber qué componente hace cada parte de ese trabajo.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    U["kubectl apply"] --> A["kube-apiserver"]
-    A <--> E[("etcd")]
-    C["controller-manager<br/>Deployment → ReplicaSet → Pods"] <--> A
-    S["scheduler<br/>asigna nodo"] <--> A
-    A <--> K["kubelet del nodo<br/>arranca contenedores"]
-```
+## Concepto
 
-</details>
+Un clúster tiene dos zonas:
 
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
+- **Plano de control (*control plane*):** decide qué debe pasar.
+- **Nodos (*workers*):** ejecutan los contenedores.
 
-#### Código y verificación
-```mermaid
-flowchart LR
-    U["kubectl apply"] --> A["kube-apiserver"]
-    A <--> E[("etcd")]
-    C["controller-manager<br/>Deployment → ReplicaSet → Pods"] <--> A
-    S["scheduler<br/>asigna nodo"] <--> A
-    A <--> K["kubelet del nodo<br/>arranca contenedores"]
-```
+Todo gira alrededor de una idea: tú declaras el **estado deseado** («quiero 3 réplicas de `api-pedidos`») y unos procesos llamados **controladores** comparan sin parar ese estado con el **estado actual** y actúan para igualarlos. Es el **ciclo de reconciliación**.
+
+**Componentes del plano de control**
+
+| Componente | Qué hace |
+|---|---|
+| `kube-apiserver` | La única puerta de entrada. `kubectl`, los controladores y los nodos hablan solo con él. Valida, autentica y guarda en etcd. |
+| `etcd` | Base de datos clave-valor distribuida con todo el estado del clúster. Si se pierde sin copia, se pierde el clúster. |
+| `kube-scheduler` | Elige en qué nodo corre cada pod nuevo según CPU y memoria pedidas, afinidades y *taints*. |
+| `kube-controller-manager` | Ejecuta los controladores integrados: Deployment, ReplicaSet, Node, Job, EndpointSlice, etc. |
+| `cloud-controller-manager` | Solo en la nube: crea balanceadores para Services `LoadBalancer`, registra nodos y discos del proveedor. |
+| *Admission controllers* | Filtros dentro del apiserver que validan o modifican cada objeto antes de guardarlo (cuotas, Pod Security, webhooks). |
+
+**Componentes de cada nodo**
+
+| Componente | Qué hace |
+|---|---|
+| `kubelet` | Agente del nodo: recibe los pods asignados y pide al runtime que arranque sus contenedores; reporta su estado. |
+| *Container runtime* | containerd o CRI-O: descarga imágenes y ejecuta contenedores. |
+| `kube-proxy` | Programa las reglas de red (iptables o IPVS) para que la IP de un Service llegue a sus pods. |
+
+**Complementos (*add-ons*) imprescindibles**
+
+| Complemento | Qué hace |
+|---|---|
+| CoreDNS | Resuelve nombres como `inventario.default.svc.cluster.local` a la IP del Service. |
+| CNI (Calico, Cilium, Flannel) | Da IP a cada pod y conecta pods entre nodos. |
+| CSI (*Container Storage Interface*) | Drivers que crean y montan discos para los PersistentVolumes. |
+| Metrics Server | Recoge CPU y memoria de los pods; lo necesitan `kubectl top` y el HPA. |
+
+## Ejemplo mínimo
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-rutaflow
+  name: api-pedidos
 spec:
   replicas: 3
-  selector: { matchLabels: { app: api-rutaflow } }
+  selector:
+    matchLabels: { app: api-pedidos }
   template:
-    metadata: { labels: { app: api-rutaflow } }
+    metadata:
+      labels: { app: api-pedidos }
     spec:
       containers:
         - name: api
-          image: nginx:1.30
+          image: nginx:1.27
           resources:
             requests: { cpu: 100m, memory: 64Mi }
 ```
 
 ```bash
-kubectl get pods -n kube-system           # componentes del plano de control (en Minikube/kind)
-kubectl apply -f academia-labs/devops/arquitectura/api.yaml
+kubectl get pods -n kube-system        # componentes del plano de control en minikube o kind
+kubectl apply -f api-pedidos.yaml
 kubectl get events --sort-by=.lastTimestamp | tail -12
 ```
 
-```text
-kube-system muestra etcd-minikube, kube-apiserver-minikube, kube-controller-manager-minikube, kube-scheduler-minikube y kube-proxy-xxxxx.
-Eventos (en orden): ScalingReplicaSet (deployment-controller), SuccessfulCreate (replicaset-controller), Scheduled (default-scheduler), Pulling / Pulled / Created / Started (kubelet).
+En los eventos aparece cada componente, en este orden:
+1. `ScalingReplicaSet`: el controlador de Deployment crea el ReplicaSet.
+2. `SuccessfulCreate`: el controlador de ReplicaSet crea los pods.
+3. `Scheduled`: el scheduler les asigna nodo.
+4. `Pulling`, `Pulled`, `Created`, `Started`: el kubelet arranca los contenedores.
+
+## Cómo funciona por dentro
+
+```mermaid
+sequenceDiagram
+  participant U as kubectl
+  participant A as kube-apiserver
+  participant E as etcd
+  participant D as Controlador Deployment
+  participant R as Controlador ReplicaSet
+  participant S as Scheduler
+  participant K as kubelet
+  U->>A: apply Deployment (replicas: 3)
+  A->>E: guarda el estado deseado
+  D->>A: ve el Deployment nuevo → crea ReplicaSet
+  R->>A: ve el ReplicaSet con 0 pods → crea 3 pods
+  S->>A: ve 3 pods sin nodo → asigna nodos
+  K->>A: ve pods asignados a su nodo → arranca contenedores
+  K->>A: reporta estado Running
 ```
 
-</details>
+Ningún componente llama a otro directamente: todos **observan** el apiserver (*watch*) y escriben en él. Por eso el sistema se autorrepara. Si borras un pod, el controlador de ReplicaSet ve 2 en lugar de 3 y crea otro; no hay un «script» que lo haga, sino un ciclo que nunca termina.
+
+## Reglas y casos límite
+
+- **Un pod en `Pending` es casi siempre un problema del scheduler:** no hay nodo con los recursos pedidos o ninguno tolera sus *taints*. Mira `kubectl describe pod`, sección *Events*.
+- **`ImagePullBackOff` es del kubelet y el runtime**, no del plano de control: nombre de imagen mal escrito o registro privado sin credenciales.
+- **Un Service sin respuesta suele ser de selectores:** `kubectl get endpointslices -l kubernetes.io/service-name=<servicio>` muestra si tiene pods detrás.
+- **En la nube, el plano de control lo gestiona el proveedor** (EKS, AKS, GKE): no ves etcd, pero los mismos conceptos explican cada error.
+
+## Compruébalo
+
+1. Borra uno de los tres pods con `kubectl delete pod`. ¿Qué controlador crea el reemplazo y en qué evento lo ves?
+2. Pide `cpu: 64` en `requests` y aplica. ¿En qué estado queda el pod y qué componente lo explica?
+3. ¿Qué componente falla si `nslookup inventario` no resuelve desde un pod?
 
 ### Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min
 

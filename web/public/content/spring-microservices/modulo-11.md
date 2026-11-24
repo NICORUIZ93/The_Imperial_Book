@@ -157,50 +157,198 @@ published=[OrderCreated:o1]
 
 El error más común es dual write sin outbox. El síntoma es pedido creado pero evento no publicado. La causa es dos sistemas sin transacción compartida. La corrección es outbox transaccional + relay/CDC.
 
-### Tema 2: Sagas orquestadas/coreografiadas · Avanzado · 180 min
+### Tema 2: Sagas orquestadas y coreografiadas · Avanzado · 120 min
 
-## Sagas: coordinar pedidos entre servicios
+## Motivación
 
-Crear un pedido en Tienda Aurora implica reservar inventario y cobrar pago. Si el pago falla después de reservar, la reserva queda tomada y el stock se pierde. No hay transacción ACID global; el equipo no sabe cómo compensar.
+Comprar en Tienda Aurora toca tres servicios: pedidos crea el pedido, inventario reserva la unidad y pagos cobra la tarjeta. Cada uno tiene su propia base de datos, así que no existe una transacción que abarque los tres. Si la tarjeta se rechaza después de reservar, la unidad queda apartada para un pedido que nunca se pagará, y el cliente siguiente ve «agotado» aunque hay stock.
 
-Una saga es como un viaje con escalas: cada escala (transacción local) se confirma por separado, y si una falla, tomas el vuelo de regreso (compensación). No es un rollback de base de datos; es una acción de negocio que deshace el efecto. La orquestación es como un director de orquesta que indica quién toca; la coreografía es como músicos que escuchan al anterior y saben cuándo entrar.
+## Concepto
+
+Una **saga** es una secuencia de **transacciones locales**, una por servicio, que juntas forman una sola operación de negocio. Cada paso confirma su cambio en su propia base de datos y tiene definida una **compensación**: una acción de negocio que contrarresta su efecto. Si un paso falla y no puede recuperarse, la saga ejecuta las compensaciones de los pasos ya hechos **en orden inverso**.
+
+Compensar no es retroceder el tiempo. Cancelar un pedido no lo borra: lo deja en estado `CANCELADO`, y durante la saga otros pueden ver estados intermedios (un pedido `PENDIENTE` con stock reservado). Por eso una saga ofrece **consistencia eventual**, no la atomicidad de una transacción ACID.
+
+Hay dos formas de coordinar los pasos:
+
+| | Orquestación | Coreografía |
+|---|---|---|
+| Quién decide el siguiente paso | Un orquestador central que guarda el estado de la saga | Cada servicio, al escuchar el evento del anterior |
+| Dónde se ve el flujo | En un solo lugar (el orquestador) | Repartido entre los servicios |
+| Ventaja | Fácil de seguir, probar y cambiar | Sin punto central; servicios más desacoplados |
+| Riesgo | El orquestador concentra lógica | Con muchos pasos, nadie ve el flujo completo y aparecen ciclos de eventos |
+| Cuándo | Flujos de 3+ pasos con compensaciones | Flujos cortos, de 2–3 pasos |
+
+## Ejemplo mínimo
+
+Un orquestador en Java puro: cada `Paso` une una acción con su compensación, y el orquestador apila los pasos completados para deshacerlos en orden inverso si alguno falla.
+
+**Archivo:** `SagaPedido.java`
 
 ```java
-public class SagaExample {
-    static String run(boolean paymentOk, boolean inventoryReserved) {
-        if (!inventoryReserved) return "fail: no inventory";
-        if (!paymentOk) return "compensate: release inventory";
-        return "ok: order confirmed";
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SagaPedido {
+
+    /** Un paso de la saga: una transacción local y la acción que la compensa. */
+    record Paso(String nombre, Runnable accion, Runnable compensacion) {}
+
+    static class Pedidos {
+        final Map<String, String> estado = new HashMap<>();
+        void crear(String id)    { estado.put(id, "PENDIENTE"); }
+        void confirmar(String id) { estado.put(id, "CONFIRMADO"); }
+        void cancelar(String id)  { estado.put(id, "CANCELADO"); }
     }
 
-    static boolean compensationIdempotent(int attempts) {
-        return attempts >= 1;
+    static class Inventario {
+        private final Map<String, Integer> stock = new HashMap<>(Map.of("TEC-1042", 5));
+        private final Map<String, String> reservas = new HashMap<>();
+
+        void reservar(String pedido, String sku) {
+            int disponible = stock.get(sku);
+            if (disponible == 0) throw new IllegalStateException("sin stock de " + sku);
+            stock.put(sku, disponible - 1);
+            reservas.put(pedido, sku);
+        }
+
+        /** Idempotente: liberar dos veces la misma reserva devuelve una sola unidad. */
+        void liberar(String pedido) {
+            String sku = reservas.remove(pedido);
+            if (sku != null) stock.merge(sku, 1, Integer::sum);
+        }
+
+        int disponible(String sku) { return stock.get(sku); }
+    }
+
+    static class Pagos {
+        private final boolean tarjetaRechazada;
+        Pagos(boolean tarjetaRechazada) { this.tarjetaRechazada = tarjetaRechazada; }
+        void cobrar(String pedido) {
+            if (tarjetaRechazada) throw new IllegalStateException("pago rechazado");
+        }
+        void reembolsar(String pedido) { }
+    }
+
+    static class Orquestador {
+        final List<String> registro = new ArrayList<>();
+
+        boolean ejecutar(List<Paso> pasos) {
+            Deque<Paso> hechos = new ArrayDeque<>();
+            for (Paso paso : pasos) {
+                try {
+                    paso.accion().run();
+                    hechos.push(paso);
+                    registro.add("ok          " + paso.nombre());
+                } catch (RuntimeException e) {
+                    registro.add("falla       " + paso.nombre() + " (" + e.getMessage() + ")");
+                    while (!hechos.isEmpty()) {           // orden inverso
+                        Paso hecho = hechos.pop();
+                        hecho.compensacion().run();
+                        registro.add("compensado  " + hecho.nombre());
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    static void comprar(String pedido, boolean tarjetaRechazada) {
+        var pedidos = new Pedidos();
+        var inventario = new Inventario();
+        var pagos = new Pagos(tarjetaRechazada);
+        var saga = new Orquestador();
+
+        boolean exito = saga.ejecutar(List.of(
+            new Paso("crear pedido",   () -> pedidos.crear(pedido),                  () -> pedidos.cancelar(pedido)),
+            new Paso("reservar stock", () -> inventario.reservar(pedido, "TEC-1042"), () -> inventario.liberar(pedido)),
+            new Paso("cobrar pago",    () -> pagos.cobrar(pedido),                   () -> pagos.reembolsar(pedido))
+        ));
+        if (exito) pedidos.confirmar(pedido);
+
+        System.out.println("== " + pedido + (tarjetaRechazada ? " (tarjeta rechazada)" : ""));
+        saga.registro.forEach(linea -> System.out.println("  " + linea));
+        System.out.println("  pedido: " + pedidos.estado.get(pedido)
+                + " | stock TEC-1042: " + inventario.disponible("TEC-1042"));
+
+        if (!exito) {
+            inventario.liberar(pedido);   // llega un reintento duplicado de la compensación
+            System.out.println("  compensación repetida, stock: " + inventario.disponible("TEC-1042"));
+        }
     }
 
     public static void main(String[] args) {
-        System.out.println("payment-fail=" + run(false, true));
-        System.out.println("all-ok=" + run(true, true));
-        System.out.println("no-inventory=" + run(true, false));
-        System.out.println("compensation-idempotent=" + compensationIdempotent(3));
+        comprar("P-1", false);
+        comprar("P-2", true);
     }
 }
 ```
 
-```bash
-javac SagaExample.java
-java SagaExample
-```
-
-Salida esperada:
-
 ```text
-payment-fail=compensate: release inventory
-all-ok=ok: order confirmed
-no-inventory=fail: no inventory
-compensation-idempotent=true
+$ java SagaPedido.java
+== P-1
+  ok          crear pedido
+  ok          reservar stock
+  ok          cobrar pago
+  pedido: CONFIRMADO | stock TEC-1042: 4
+== P-2 (tarjeta rechazada)
+  ok          crear pedido
+  ok          reservar stock
+  falla       cobrar pago (pago rechazado)
+  compensado  reservar stock
+  compensado  crear pedido
+  pedido: CANCELADO | stock TEC-1042: 5
+  compensación repetida, stock: 5
 ```
 
-La compensación debe ser idempotente porque puede ejecutarse más de una vez. El error más común es falta de compensación o no idempotente: la reserva queda tomada sin pago.
+En P-2 el pago falla. El orquestador compensa primero la reserva y después el pedido, en orden inverso, y el stock vuelve a 5. La última línea simula que la compensación llega dos veces: el stock sigue en 5 porque `liberar` es idempotente.
+
+## Cómo funciona por dentro
+
+En producción el orquestador no llama métodos: publica **comandos** y escucha **eventos** en un broker como Kafka, y guarda el estado de cada saga en su propia tabla para retomarla si se reinicia. Una transferencia bancaria con orquestador se ve así:
+
+```mermaid
+sequenceDiagram
+  participant C as Cliente
+  participant O as Orquestador
+  participant K as Kafka
+  participant Cu as Cuentas
+  participant Op as Operaciones
+  C->>O: transferir 200 €
+  O->>O: guarda saga (INICIADA)
+  O->>K: transferencia.iniciada
+  K->>Cu: debitar origen
+  Cu->>K: cuenta.origen.debitada
+  K->>Op: acreditar destino
+  Op--xK: transferencia.fallida
+  K->>O: fallo en acreditación
+  O->>K: compensar: devolver importe
+  K->>Cu: reembolsar origen
+  Cu->>K: compensacion.ejecutada
+  O->>C: transferencia fallida, dinero devuelto
+```
+
+La tabla de la saga es lo que permite sobrevivir a caídas: si el orquestador se reinicia a mitad, lee el último estado guardado y continúa o compensa.
+
+## Reglas y casos límite
+
+- **Toda compensación debe ser idempotente.** Con mensajería «al menos una vez», el mismo comando puede llegar dos veces. Usa el id del pedido como clave, como hace `liberar`.
+- **Una compensación también puede fallar.** Se reintenta con backoff; si se agotan los reintentos, la saga queda en un estado que requiere intervención humana, con alerta. Nunca se ignora en silencio.
+- **Hay pasos que no se compensan.** Un correo enviado no se «des-envía». Esos pasos van al final, después del último que puede fallar; en el ejemplo, la confirmación al cliente se envía solo si el pago pasó.
+- **Publica eventos con Outbox (Tema 1).** Si el servicio guarda en su base de datos y luego cae antes de publicar el evento, la saga se queda colgada.
+
+> **Advertencia.** Una saga no aísla: entre la reserva y el pago, otro proceso puede leer el stock ya descontado. Si eso importa al negocio, se añade un estado explícito (`RESERVADO_PENDIENTE_PAGO`) que los demás procesos sepan interpretar.
+
+## Compruébalo
+
+1. En `SagaPedido`, haz que falle la reserva de stock en lugar del pago. ¿Qué pasos se compensan? Predícelo y ejecútalo.
+2. Quita la comprobación `if (sku != null)` de `liberar` y repite la compensación duplicada. ¿Qué número muestra el stock y por qué es un error de negocio?
+3. ¿Coreografía u orquestación para una transferencia con débito, crédito, antifraude y notificación? Justifícalo con la tabla del Concepto.
 
 ### Tema 3: Idempotencia real y exactly-once práctico · Avanzado · 120 min
 

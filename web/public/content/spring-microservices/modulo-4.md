@@ -356,6 +356,62 @@ billing-reads-orders=API_OR_EVENT_PROJECTION
 
 Escribir directo en tablas ajenas rompe autonomía. Leer datos ajenos se hace por API o proyección alimentada por eventos, aceptando consistencia eventual. El costo de database-per-service es complejidad: ya no hay joins cross-service ni transacciones ACID simples entre servicios.
 
+### Tema 6: Mapa del diseño de sistemas: latencia, throughput, CAP y elección de líder · Intermedio · 60 min
+
+## Motivación
+
+Las preguntas de arquitectura en una entrevista o en un diseño real suelen ser de este tipo: «¿cuántas instancias de `pedidos` necesitamos para el Black Friday?» o «¿qué pasa si se corta la red entre dos zonas?». Para responderlas hacen falta cuatro ideas que atraviesan todos los módulos del curso.
+
+## Concepto
+
+**Latencia y throughput**
+- La **latencia** es cuánto tarda **una** petición: por ejemplo, 250 ms.
+- El **throughput** es cuántas peticiones se completan **por segundo**: por ejemplo, 200 req/s.
+
+No son lo mismo. Una autopista ancha tiene mucho throughput aunque cada coche tarde lo mismo en recorrerla.
+
+La **ley de Little** las une con la concurrencia, es decir, cuántas peticiones están en curso a la vez:
+
+\[ \text{concurrencia} = \text{throughput} \times \text{latencia} \]
+
+**Teorema CAP.** Cuando la red se parte (*partition*) entre nodos de un sistema distribuido, hay que elegir entre:
+- **consistencia:** todos ven el último dato, aunque alguno deba rechazar peticiones;
+- **disponibilidad:** todos responden, aunque algunos con datos viejos.
+
+Sin partición se pueden tener ambas. CAP habla solo de qué sacrificas durante el corte.
+
+**Elección de líder.** Cuando varias réplicas deben ponerse de acuerdo (quién escribe, quién ejecuta una tarea programada), eligen a un **líder** con un algoritmo de consenso como Raft. Si el líder cae, eligen otro. etcd (Kubernetes), ZooKeeper y Consul lo implementan para que tú no tengas que hacerlo.
+
+## Ejemplo mínimo
+
+Tienda Aurora espera 200 peticiones por segundo al checkout, y cada una tarda 250 ms:
+
+\[ 200\ \tfrac{\text{req}}{\text{s}} \times 0{,}25\ \text{s} = 50\ \text{peticiones en curso} \]
+
+Si cada instancia de `pedidos` atiende bien 20 peticiones simultáneas, se necesitan al menos 3 instancias (50 / 20 = 2,5). Si la latencia sube a 1 s porque inventario se vuelve lento, la concurrencia pasa a 200 y harían falta 10. Por eso una dependencia lenta agota los hilos (circuit breaker, módulo 7).
+
+## Cómo encaja con el resto del curso
+
+| Área | Conceptos | Dónde se estudia |
+|---|---|---|
+| Fundamentos | Cliente-servidor, HTTP, DNS, latencia y throughput | Este tema |
+| Arquitectura base | Balanceador, proxy inverso, caché, *rate limiting*, API Gateway | Módulos 3 (Redis) y 6 (gateway) |
+| Datos | SQL/NoSQL, índices, replicación, *sharding* | Módulo 1; Tema 5 de este módulo |
+| Comunicación | REST, gRPC, WebSockets, colas, pub/sub | Módulos 5 y 10 |
+| Distribuidos | Límites de servicio, Saga, idempotencia, circuit breaker, CAP, elección de líder | Este módulo; módulos 7 y 11 |
+| Operación | Contenedores, Kubernetes, CI/CD, secretos, monitoreo, trazas | Módulos 9 y 12; curso de DevOps |
+
+## Reglas y casos límite
+
+- **Mide percentiles, no promedios.** Una latencia media de 100 ms puede esconder que el 1 % de los usuarios espera 3 s (p99). En la ley de Little se usa la latencia media, pero para dimensionar la experiencia del usuario cuenta la cola.
+- **CAP no es «elige 2 de 3» siempre.** Es una decisión solo durante particiones. Fuera de ellas, el compromiso real es latencia frente a consistencia.
+- **No implementes tu propio consenso.** Usa etcd, ZooKeeper o el `LeaderElection` de Kubernetes; los algoritmos caseros fallan justo en los casos raros.
+
+## Compruébalo
+
+1. Con 500 req/s y 80 ms de latencia, ¿cuántas peticiones hay en curso? ¿Cuántas instancias necesitas si cada una aguanta 15?
+2. El carrito de compras, ¿debe preferir consistencia o disponibilidad durante una partición? ¿Y el saldo de una cuenta bancaria?
+
 ## Cierre
 
 Los límites correctos son la decisión arquitectónica más cara de revertir. Monolito modular cuando no hay evidencia; DDD para dominios complejos; Spring Modulith para validar fronteras antes de extraer; Strangler Fig para migrar sin big bang; database-per-service para proteger la autonomía una vez que la división es real. Microservicios no son un objetivo; son un trade-off que se justifica con evidencia. Tienda Aurora se diseña con bounded contexts, se implementa con contratos y idempotencia, y se defiende con métricas y ADRs.

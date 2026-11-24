@@ -611,3 +611,126 @@ empresa de 900 personas    macos    -> Podman, Colima, Rancher Desktop  (Docker 
 ```
 
 </details>
+
+### Tema 10: BuildKit y Buildx: builds más rápidos, secretos seguros y varias arquitecturas · Avanzado · 40 min
+
+## Motivación
+
+Cada cambio en el código de `api-pedidos` hace que Maven vuelva a descargar todas las dependencias dentro de `docker build`, y el build tarda cinco minutos. Además, el equipo trabaja con Mac de chip ARM y el servidor es x86: una imagen construida en el portátil no arranca en producción.
+
+## Concepto
+
+**BuildKit** es el motor de construcción de imágenes de Docker; viene activado por defecto desde Docker 23. Frente al motor antiguo:
+- construye en paralelo las etapas independientes de un multi-stage;
+- añade **montajes de caché** que sobreviven entre builds;
+- permite pasar **secretos** al build sin que queden guardados en ninguna capa.
+
+**Buildx** es el comando (`docker buildx`) para usar todas las funciones de BuildKit. La más importante: construir **imágenes multiplataforma**. Una sola etiqueta (`api-pedidos:1.0`) contiene variantes para `linux/amd64` y `linux/arm64`, y cada máquina descarga la suya.
+
+## Ejemplo mínimo
+
+**Archivo:** `Dockerfile`
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+# La carpeta .m2 se guarda entre builds: las dependencias se descargan una sola vez
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=secret,id=maven_settings,target=/root/.m2/settings.xml \
+    mvn -B -q package -DskipTests
+
+FROM eclipse-temurin:21-jre
+COPY --from=build /app/target/*.jar /app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
+
+```bash
+# Build normal, pasando el settings.xml con credenciales del registro Maven privado
+docker build --secret id=maven_settings,src=$HOME/.m2/settings.xml -t api-pedidos:1.0 .
+
+# Build multiplataforma con Buildx (crea una vez un builder que lo soporte)
+docker buildx create --name multi --use
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t registro.ejemplo.com/api-pedidos:1.0 --push .
+docker buildx imagetools inspect registro.ejemplo.com/api-pedidos:1.0
+```
+
+El último comando lista las dos plataformas que contiene la etiqueta.
+
+> **Nota de verificación.** Estos comandos siguen la documentación oficial de cada herramienta, pero no se ejecutaron al escribir el tema, porque el entorno de verificación no tiene Docker. Si alguno falla en tu versión, la salida del error te dirá qué opción cambió.
+
+## Cómo funciona por dentro
+
+- **`--mount=type=cache`:** monta una carpeta que BuildKit guarda fuera de la imagen. La capa sigue invalidándose cuando cambia `src`, pero Maven encuentra las dependencias ya descargadas en `/root/.m2`.
+- **`--mount=type=secret`:** el archivo existe solo durante ese `RUN`. Un `COPY settings.xml` o un `ARG PASSWORD`, en cambio, quedan grabados en el historial de la imagen y cualquiera que la descargue puede leerlos con `docker history`.
+- **Imágenes multiplataforma:** Buildx compila cada arquitectura (con emulación QEMU o con nodos nativos) y publica un **índice de imágenes** (*manifest list*) que apunta a cada variante. Por eso necesita `--push` o una salida a registro: el almacén local clásico de Docker no guarda índices multiplataforma.
+
+## Reglas y casos límite
+
+- **La línea `# syntax=docker/dockerfile:1`** fija la versión de la sintaxis del Dockerfile y habilita `--mount` en cualquier versión de Docker con BuildKit.
+- **La emulación es lenta.** Compilar `arm64` en un x86 con QEMU puede tardar 5–10 veces más. En CI conviene usar runners nativos de cada arquitectura.
+- **La caché de montaje es local al builder.** En CI efímera se pierde entre ejecuciones. Para conservarla se exporta con `--cache-to` y `--cache-from` (por ejemplo, `type=registry`).
+
+## Compruébalo
+
+1. Ejecuta `docker history api-pedidos:1.0` y busca el `settings.xml`. ¿Aparece? Repite con un `COPY settings.xml` y compara.
+2. ¿Por qué `docker buildx build --platform linux/amd64,linux/arm64 -t api:1.0 --load .` falla con el almacén clásico de Docker?
+
+### Tema 11: Seguridad de la cadena de contenedores: Docker Scout, Trivy y Falco · Avanzado · 40 min
+
+## Motivación
+
+La imagen de `api-pedidos` pasa las pruebas, pero se construyó sobre una base con una librería vulnerable publicada hace meses. Además, nadie se enteraría si alguien abriera una terminal dentro de un contenedor en producción. Hacen falta dos controles distintos: revisar la imagen **antes** de desplegarla y vigilar el contenedor **mientras corre**.
+
+## Concepto
+
+| Momento | Herramienta | Qué hace |
+|---|---|---|
+| Antes (build y CI) | **Trivy** (Aqua, código abierto) | Escanea la imagen, el sistema de archivos o un repositorio buscando vulnerabilidades conocidas (CVE), secretos y malas configuraciones. Puede romper el pipeline. |
+| Antes (build y registro) | **Docker Scout** (Docker) | Analiza las CVE de la imagen y sus capas, y recomienda una imagen base mejor. Integrado en Docker Desktop y Docker Hub. |
+| Durante (ejecución) | **Falco** (CNCF) | Observa las llamadas al sistema del kernel y alerta cuando un contenedor hace algo anómalo según sus reglas: abrir una shell, escribir en `/etc`, leer `/etc/shadow`. |
+
+Una **CVE** es una vulnerabilidad registrada públicamente con un identificador (p. ej. `CVE-2024-XXXXX`) y una severidad: baja, media, alta o crítica. Los escáneres comparan las versiones de los paquetes de tu imagen con esas bases de datos.
+
+## Ejemplo mínimo
+
+```bash
+# Trivy: falla (código de salida 1) si hay vulnerabilidades críticas
+trivy image --severity HIGH,CRITICAL --exit-code 1 api-pedidos:1.0
+
+# Docker Scout: resumen y recomendación de imagen base
+docker scout quickview api-pedidos:1.0
+docker scout cves --only-severity critical,high api-pedidos:1.0
+docker scout recommendations api-pedidos:1.0
+```
+
+En el pipeline (módulo 4), el paso de Trivy va justo después del build y antes del push. Si encuentra una crítica, la imagen no llega al registro.
+
+Falco se instala en el clúster con Helm y queda corriendo en cada nodo:
+
+```bash
+helm repo add falcosecurity https://falcosecurity.github.io/charts
+helm install falco falcosecurity/falco --namespace falco --create-namespace
+kubectl exec -it deploy/api-pedidos -- sh          # simula el ataque
+kubectl logs -n falco -l app.kubernetes.io/name=falco | grep -i shell
+```
+
+El log muestra una alerta de la regla incluida *Terminal shell in container*, con el pod, la imagen y el comando.
+
+> **Nota de verificación.** Estos comandos siguen la documentación oficial de cada herramienta, pero no se ejecutaron al escribir el tema, porque el entorno de verificación no tiene Docker. Si alguno falla en tu versión, la salida del error te dirá qué opción cambió.
+
+## Reglas y casos límite
+
+- **No todas las CVE son explotables.** Una vulnerabilidad en una librería que tu código nunca carga sigue saliendo en el informe. Se documenta la excepción (p. ej., en un archivo `.trivyignore` con el motivo) en lugar de ignorar el escáner.
+- **La base de la imagen es la mayor fuente de CVE.** Cambiar a una base mínima (distroless o slim, Tema 3) suele eliminar más vulnerabilidades que cualquier parche.
+- **Escanear una vez no basta.** Aparecen CVE nuevas cada día sobre imágenes que ya están desplegadas: programa escaneos periódicos del registro.
+- **Falco detecta, no bloquea.** Sus alertas deben ir a un canal que alguien vigile (Slack, correo o un SIEM); si nadie las lee, no protegen.
+
+## Compruébalo
+
+1. Escanea con Trivy `eclipse-temurin:21-jre` y `gcr.io/distroless/java21-debian12`. ¿Cuál tiene menos CVE altas y por qué?
+2. ¿En qué paso del pipeline pondrías Trivy para no gastar tiempo subiendo imágenes que luego se rechazan?
+

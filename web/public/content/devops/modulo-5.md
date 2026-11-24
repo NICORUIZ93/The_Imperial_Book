@@ -481,3 +481,71 @@ npm test
 ```
 
 </details>
+
+### Tema 8: Mapa de decisión: las siete estrategias de despliegue · Intermedio · 30 min
+
+## Motivación
+
+Ya viste cada estrategia por separado en este módulo y en el 7. Ahora toca elegir la adecuada para cada servicio de Tienda Aurora. Usar la equivocada sale caro: un canary en un servicio con 50 visitas al día nunca junta datos suficientes, y un recreate en el checkout deja la tienda caída en plena venta.
+
+## Concepto
+
+Las estrategias se dividen en dos grupos:
+- **Integradas en Kubernetes** (rolling update, ramped y recreate): se configuran en el propio Deployment.
+- **Con herramientas adicionales** (blue/green, canary, A/B y shadow): necesitan un balanceador, una malla de servicios (Istio, Linkerd) o una herramienta de entrega progresiva (Argo Rollouts, Flagger).
+
+| Estrategia | Cómo funciona | ¿Caída de servicio? | ¿Versiones mezcladas? | Costo extra | Rollback | Úsala cuando… |
+|---|---|---|---|---|---|---|
+| Rolling update | Reemplaza pods por lotes (`maxSurge`, `maxUnavailable`) | No | Sí, durante el despliegue | Bajo | Otro rolling update | Valor por defecto para servicios sin estado |
+| Ramped | Rolling update de uno en uno, verificando cada paso | No | Sí, más tiempo | Bajo | Detener y revertir | Quieres observar cada pod nuevo antes de seguir |
+| Recreate | Borra todos los v1 y luego crea los v2 | **Sí** | No | Ninguno | Redesplegar v1 | v1 y v2 no pueden convivir (p. ej., migración de esquema incompatible) |
+| Blue/Green | Dos entornos completos; el Service cambia de uno a otro | No | No | **2× pods** | Instantáneo: volver a apuntar | Necesitas rollback inmediato y puedes pagar el doble |
+| Canary | Un % pequeño del tráfico va a v2 y se amplía si va bien | No | Sí, controlado | Bajo | Mandar el 0 % a v2 | Hay tráfico real suficiente para medir errores |
+| A/B testing | Divide por usuario o cabecera para comparar métricas de negocio | No | Sí, por diseño | Medio | Terminar el experimento | Decides por conversión, no solo por errores técnicos |
+| Shadow | Copia el tráfico real a v2 y descarta sus respuestas | No | No (el usuario solo ve v1) | **2× carga** | No aplica | Probar v2 con carga de producción sin riesgo |
+
+Atención con shadow: si v2 escribe en la base de datos o llama a pagos, el tráfico copiado ejecuta esas acciones de verdad. Solo es seguro con operaciones de lectura o con efectos aislados.
+
+## Ejemplo mínimo
+
+**Ramped** es un rolling update configurado para ir de uno en uno sin perder capacidad:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-pedidos
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # como mucho 1 pod extra durante el cambio
+      maxUnavailable: 0    # nunca menos de 4 pods listos
+  minReadySeconds: 30      # un pod nuevo debe estar 30 s listo antes de seguir
+  selector:
+    matchLabels: { app: api-pedidos }
+  template:
+    metadata:
+      labels: { app: api-pedidos }
+    spec:
+      containers:
+        - name: api
+          image: registro.local/api-pedidos:2.0.0
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8080 }
+```
+
+Con `maxUnavailable: 0` y `maxSurge: 1`, Kubernetes crea un pod v2, espera a que pase la readiness probe y 30 segundos más, y solo entonces retira un v1. `kubectl rollout pause deployment/api-pedidos` congela el avance si ves algo raro.
+
+## Reglas y casos límite
+
+- **Sin readiness probe, ninguna estrategia es segura:** Kubernetes daría por listo un pod que todavía no atiende.
+- **Las versiones mezcladas exigen compatibilidad.** Durante un rolling update, v1 y v2 leen la misma base de datos y reciben los mismos mensajes; los cambios de esquema se hacen en pasos compatibles hacia atrás.
+- **Blue/Green duplica también los recursos externos** que cada entorno use (colas, cachés); planifica la capacidad.
+
+## Compruébalo
+
+1. Para el checkout (mucho tráfico, error caro), el panel de administración (5 usuarios) y un servicio de recomendaciones nuevo, ¿qué estrategia eliges en cada caso y por qué?
+2. Con `replicas: 6`, `maxSurge: 2` y `maxUnavailable: 2`, ¿cuántos pods como mínimo y como máximo existen durante el despliegue?
+
