@@ -11,6 +11,7 @@ La plantilla v1/v2 falló en tres cosas que el usuario señaló:
 | Mucho ruido visual | Capas desplegables, marcadores «►», etiquetas de bloque, fichas de 5 puntos, 5 colores de recuadro, chips, números «§» |
 | Explicación poco profesional | Fragmentada en fichas y casillas («Dónde se rompe la comparación»); la teoría quedaba en 80–250 palabras |
 | Ejemplos muy básicos | Un ejemplo de juguete por concepto, sin validación, pruebas ni condiciones reales |
+| Dependencia de RutaFlow | Los cursos dependían de un proyecto externo que no se va a usar |
 
 ## Referencias
 
@@ -20,7 +21,7 @@ La v3 combina cuatro referencias, cada una por lo que hace mejor:
 |---|---|
 | Libro técnico (O'Reilly, Manning, *The Rust Programming Language*, Deitel) | Prosa continua y rigurosa; listados numerados y comentados; pocos recuadros |
 | Documentación oficial (dev.java, Spring, Flutter, Kotlin) | Diseño sobrio, una sola columna, precisión terminológica, enlaces a la fuente oficial |
-| Curso premium (Educative, Frontend Masters, JetBrains Academy) | Lecciones con ritmo, proyecto que crece, comprobación inmediata |
+| Curso premium (Educative, Frontend Masters, JetBrains Academy) | Lecciones con ritmo, casos prácticos, comprobación inmediata |
 | Material universitario (MIT OCW, Stanford) | Profundidad: cómo funciona por dentro, casos límite, problemas graduados |
 
 ## Principios
@@ -29,8 +30,11 @@ La v3 combina cuatro referencias, cada una por lo que hace mejor:
    definen dentro del texto la primera vez que aparecen (en negrita), no en casillas aparte.
 2. **Una voz técnica y sencilla a la vez.** Se explica con el vocabulario profesional correcto y, en la misma frase o
    la siguiente, con una explicación directa. Sin infantilizar: nada de «hacer de computador» ni metáforas largas.
-3. **Dos ejemplos por concepto.** Primero un **ejemplo mínimo** que aísla el concepto. Después la **aplicación en el
-   proyecto** con calidad de producción: validación, errores reales, pruebas y decisiones de diseño.
+3. **Dos ejemplos por concepto.** Primero un **ejemplo mínimo** que aísla el concepto. Después un **caso aplicado**
+   realista y profesional (tienda, pagos, inventario, banca, reservas…) con calidad de producción: validación, errores
+   reales, pruebas y decisiones de diseño. Cada caso es autónomo: no depende de un proyecto externo.
+6. **Conciso.** Cada párrafo aporta algo nuevo. Se va al punto: sin introducciones largas, sin repetir la misma idea
+   con otras palabras, sin escenarios narrados de más.
 4. **Todo listado es real.** Numerado, con nombre de archivo, ejecutado y con su salida. Código solo en el lenguaje del
    curso.
 5. **Ruido visual mínimo.** Un solo estilo de recuadro con tres variantes (Nota, Advertencia, En producción), usado
@@ -40,7 +44,7 @@ La v3 combina cuatro referencias, cada una por lo que hace mejor:
 
 ```text
 Apertura del capítulo
-  · Qué vas a construir (resultado concreto del proyecto al terminar)
+  · Qué vas a poder hacer al terminar (resultado concreto)
   · Requisitos previos (enlaces)
   · Objetivos de aprendizaje (4–6, verbos medibles)
 
@@ -50,7 +54,7 @@ Cierre del capítulo
   · Resumen (6–10 ideas, una frase cada una)
   · Glosario del capítulo (término → definición, con enlace a la sección)
   · Ejercicios: Fundamentales · Aplicados · Desafío (con soluciones desplegables)
-  · Hito del proyecto (qué debe funcionar y cómo se comprueba)
+  · Práctica integradora del capítulo (un programa completo que combina las secciones, con criterios de aceptación)
   · Para profundizar (documentación oficial y especificación)
 ```
 
@@ -58,15 +62,15 @@ Cierre del capítulo
 
 | Parte | Contenido | Extensión orientativa |
 |---|---|---|
-| **Motivación** | El problema real que este concepto resuelve; qué falla sin él | 1–2 párrafos |
+| **Motivación** | El problema real que este concepto resuelve; qué falla sin él | 1 párrafo corto |
 | **Concepto** | Definición formal (como la especificación) y explicación clara; términos en negrita definidos en el texto | 300–600 palabras |
 | **Ejemplo mínimo** | Listado N.M aislado, ejecutable, con salida y explicación de las líneas que importan | 1 listado |
 | **Cómo funciona por dentro** | Mecanismo: qué hace el compilador, la JVM, el framework o la máquina; diagrama cuando ayuda | 300–700 palabras |
 | **Reglas y casos límite** | Lo que dice la especificación; qué cambia entre versiones; errores reales con su mensaje literal | 150–400 palabras |
-| **En el proyecto** | La misma idea aplicada en RutaFlow con calidad profesional: validación, pruebas, decisiones | 1–2 listados |
+| **Caso aplicado** | La idea en un escenario profesional realista con calidad de producción: validación, pruebas, decisiones | 1–2 listados |
 | **Compruébalo** | 2–3 preguntas cortas con respuesta oculta | — |
 
-Total orientativo: 1.500–3.000 palabras por sección, sin contar código.
+Total orientativo: 1.200–2.500 palabras por sección, sin contar código. La extensión la marca el tema, no una cuota: mejor corto y preciso que largo y repetido.
 
 ## Recuadros permitidos (solo tres)
 
@@ -94,8 +98,8 @@ Cada sección sigue el mismo ciclo, que el diseño hace visible:
 1. **Leer** la motivación y el concepto.
 2. **Ejecutar** el ejemplo mínimo y comparar con la salida mostrada.
 3. **Modificar** el ejemplo según las preguntas de «Compruébalo» (predecir antes de ejecutar).
-4. **Aplicar** en el proyecto.
-5. **Repasar** al cierre del capítulo: resumen, glosario y ejercicios; el hito del proyecto confirma que se domina.
+4. **Aplicar** con el caso aplicado y luego en los ejercicios.
+5. **Repasar** al cierre del capítulo: resumen, glosario, ejercicios y práctica integradora.
 
 ## Plan si se aprueba
 
@@ -103,4 +107,5 @@ Cada sección sigue el mismo ciclo, que el diseño hace visible:
 2. Ajustar el lector de la app: quitar capas y marcadores, estilos nuevos de listados y recuadros.
 3. Reescribir una sección real en la app y revisarla en local antes de migrar nada más.
 4. Actualizar `PLANTILLA_CURSO.md`, `INSTRUCCIONES_AGENTE.md` y el validador a la v3.
-5. Migrar por prioridad: Java, Spring Boot, Microservicios, Flutter, iOS, Angular, Fundamentos y el resto.
+5. Quitar RutaFlow de todos los cursos (menciones, ejemplos y enlaces).
+6. Migrar por prioridad: Java, Spring Boot, Microservicios, Flutter, iOS, Angular, Fundamentos y el resto.
