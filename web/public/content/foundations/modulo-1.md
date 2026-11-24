@@ -466,76 +466,242 @@ celda vacía son de los fallos más comunes al leer formularios y archivos CSV.
 
 </details>
 
-### Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 35 min
+### Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 50 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a recorrer una lista de tareas con un bucle y una condición para detectar cuáles están vencidas, y vas a trazar a mano la ejecución para encontrar un error de "uno de más, uno de menos" que deja afuera la última tarea sin que se note a simple vista. Prerrequisito…
+#### Objetivos
+Al terminar este tema podrás:
+- escribir condiciones con operadores de comparación y decidir con `if`, `elif` y `else`;
+- repetir instrucciones con `for` sobre una lista y con `while` mientras se cumpla una condición;
+- trazar a mano la ejecución de un programa en una tabla y predecir su salida;
+- reconocer y corregir un bucle infinito, un `IndexError` y los errores de sintaxis más comunes.
+
+**Conceptos clave:** condición, operador de comparación, if, elif, else, bucle, for, while, iteración, trazado de ejecución
+
+#### El problema
+La tarifa de RutaFlow cambia según el peso: hasta 1 kg cuesta 8000; hasta 5 kg, 12000; y por encima de 5 kg se
+cobran 1500 por cada kilo adicional. Además, el conductor avanza parada por parada hasta llegar a un destino. El
+programa tiene que **elegir** entre caminos y **repetir** pasos. Hasta ahora los programas iban en línea recta, de
+arriba abajo. ¿Cómo hace un programa para decidir y para repetir?
+
+#### Glosario del tema
+
+**condición**
+- **Definición técnica:** expresión que se evalúa a un valor booleano, `True` o `False`, y que decide qué instrucciones se ejecutan.
+- **En palabras sencillas:** una pregunta de sí o no que el programa se hace, como «¿el peso es menor o igual a 1?».
+- **Dónde se rompe la comparación:** en Python casi cualquier valor puede usarse como condición: una lista vacía o el `0` cuentan como «no».
+- **Ejemplo:** `peso_kg <= 1` vale `True` si el peso es 0.5.
+- **Error típico:** escribir la condición al revés (`>` en vez de `<`) y obtener justo el resultado contrario.
+
+**operador de comparación**
+- **Definición técnica:** operador que compara dos valores y devuelve un booleano: `==` igual, `!=` distinto, `<`, `<=`, `>`, `>=`.
+- **En palabras sencillas:** los signos que preguntan si algo es igual, distinto, mayor o menor que otra cosa.
+- **Dónde se rompe la comparación:** `==` compara; `=` asigna. Se parecen, pero hacen cosas totalmente distintas.
+- **Ejemplo:** `estado == "pendiente"`.
+- **Error típico:** escribir `if x = 5:`, que produce `SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?`.
+
+**if, elif y else**
+- **Definición técnica:** instrucciones de selección; `if` ejecuta su bloque si la condición es verdadera, cada `elif` prueba otra condición solo si las anteriores fueron falsas, y `else` se ejecuta si ninguna lo fue.
+- **En palabras sencillas:** «si pasa esto, haz aquello; si no, prueba esto otro; y si nada se cumple, haz lo último».
+- **Dónde se rompe la comparación:** solo se ejecuta **un** camino: el primero cuya condición se cumple, aunque las siguientes también fueran ciertas.
+- **Ejemplo:** `if peso_kg <= 1: return 8000`.
+- **Error típico:** olvidar los dos puntos `:` al final: `SyntaxError: expected ':'`.
+
+**bloque e indentación**
+- **Definición técnica:** grupo de instrucciones que pertenece a un `if`, un bucle o una función; en Python se marca con la indentación (los espacios al inicio de la línea), por convención 4 espacios.
+- **En palabras sencillas:** las líneas corridas hacia la derecha «viven dentro» de la instrucción que está encima.
+- **Dónde se rompe la comparación:** la indentación no es decoración: cambiarla cambia lo que hace el programa.
+- **Ejemplo:** el `return 8000` va corrido 4 espacios más que su `elif`.
+- **Error típico:** mezclar tabuladores y espacios, o correr mal una línea, que produce `IndentationError`.
+
+**bucle e iteración**
+- **Definición técnica:** un bucle es una instrucción que repite un bloque; cada repetición se llama iteración.
+- **En palabras sencillas:** una vuelta que se repite; cada vuelta es una iteración.
+- **Dónde se rompe la comparación:** un bucle mal hecho no se cansa: puede repetirse para siempre.
+- **Ejemplo:** recorrer 4 pesos son 4 iteraciones.
+- **Error típico:** cambiar dentro del bucle la variable equivocada y nunca avanzar.
+
+**for**
+- **Definición técnica:** bucle que toma, uno a uno, cada elemento de una secuencia (lista, texto, `range`) y ejecuta el bloque para cada uno.
+- **En palabras sencillas:** «para cada cosa de esta lista, haz esto».
+- **Dónde se rompe la comparación:** si la lista está vacía, el bloque se ejecuta **cero** veces y no hay error.
+- **Ejemplo:** `for peso in [0.5, 1, 3, 8]:`.
+- **Error típico:** modificar la lista mientras la recorres; el resultado es difícil de predecir.
+
+**while**
+- **Definición técnica:** bucle que repite su bloque mientras una condición sea verdadera; la condición se revisa antes de cada iteración.
+- **En palabras sencillas:** «sigue haciendo esto mientras pase aquello».
+- **Dónde se rompe la comparación:** si nada dentro del bloque hace que la condición deje de cumplirse, el bucle no termina nunca (**bucle infinito**).
+- **Ejemplo:** `while paradas[indice] != destino:`.
+- **Error típico:** olvidar avanzar el índice: el programa se queda «pegado». Se detiene con Ctrl + C.
+
+**trazado de ejecución**
+- **Definición técnica:** técnica de seguir a mano, instrucción por instrucción, los valores de las variables en una tabla para predecir qué hará un programa.
+- **En palabras sencillas:** hacer de computador con lápiz y papel, anotando cómo cambia cada variable en cada vuelta.
+- **Dónde se rompe la comparación:** el computador no se equivoca al trazar; tú sí, y por eso sirve: muestra dónde tu idea del programa no coincide con lo que hace.
+- **Ejemplo:** la tabla del Problema resuelto 3.2.
+- **Error típico:** saltarse una iteración y concluir que el programa «está mal» cuando el error estaba en el trazado.
 
 #### ► CÓMO FUNCIONA
+Un `if` divide el camino en ramas y Python sigue solo una. Un bucle hace que el camino vuelva hacia atrás y repita un
+bloque. Combinando ambas cosas se puede describir casi cualquier algoritmo.
+
 ```mermaid
 flowchart TD
-    VALUE["subtotal"] --> INVALID{"¿negativo?"}
-    INVALID -->|"sí"| ERROR["error"]
-    INVALID -->|"no"| LIMIT{"¿>= 100?"}
-    LIMIT -->|"sí"| DISCOUNT["aplicar descuento"]
-    LIMIT -->|"no"| ORIGINAL["conservar subtotal"]
+    P["peso_kg"] --> C0{"¿peso <= 0?"}
+    C0 -->|sí| E["ValueError"]
+    C0 -->|no| C1{"¿peso <= 1?"}
+    C1 -->|sí| T1["8000"]
+    C1 -->|no| C5{"¿peso <= 5?"}
+    C5 -->|sí| T5["12000"]
+    C5 -->|no| TX["12000 + (peso - 5) × 1500"]
 ```
+
+#### Problema resuelto 3.1
+Escribe una función que devuelva la tarifa de un envío según su peso y muéstrala para 0.5, 1, 3 y 8 kg.
+
+**Razonamiento:**
+1. Primero se descarta el dato inválido (peso 0 o negativo): así las demás reglas no tienen que preocuparse por él.
+2. Las reglas se escriben de la más pequeña a la más grande, porque `elif` solo se prueba si la anterior falló.
+3. Un `for` recorre los pesos de prueba y llama a la función en cada iteración.
+
+```python
+# tarifa.py — decide la tarifa de un envío según su peso
+def tarifa(peso_kg):
+    if peso_kg <= 0:
+        raise ValueError("el peso debe ser mayor que 0")
+    elif peso_kg <= 1:
+        return 8000
+    elif peso_kg <= 5:
+        return 12000
+    else:
+        return 12000 + (peso_kg - 5) * 1500
+
+
+for peso in [0.5, 1, 3, 8]:
+    print(peso, "kg ->", tarifa(peso))
+```
+
+```text
+$ python3 tarifa.py
+0.5 kg -> 8000
+1 kg -> 8000
+3 kg -> 12000
+8 kg -> 16500
+```
+
+**Explicación por partes.**
+- Líneas 3–4: la primera condición rechaza pesos inválidos con una excepción (Tema 1).
+- Línea 5: `elif peso_kg <= 1` solo se evalúa si el peso es mayor que 0. Con `1`, la condición se cumple: el límite está incluido.
+- Línea 7: con `3`, falla `<= 1` y se cumple `<= 5`.
+- Línea 10: con `8`, se cobran 3 kg adicionales: `12000 + 3 × 1500 = 16500`.
+- Líneas 13–14: el `for` da 4 iteraciones, una por peso.
+
+> **Error común.** Ordenar mal las condiciones. Si pones `elif peso_kg <= 5` antes que `elif peso_kg <= 1`, un envío
+> de 0.5 kg cae en la regla de 5 kg y cobra 12000: no hay error, solo un resultado equivocado. Por eso se prueban los
+> límites (1 y 5) como casos de prueba.
+
+> **Buena práctica.** Pon primero las validaciones que rechazan datos inválidos («cláusulas de guarda»). El resto de
+> la función puede suponer que el dato ya es válido.
+
+#### Problema resuelto 3.2
+El conductor recorre las paradas en orden hasta llegar a Chapinero. Muestra cada parada por la que pasa y en qué
+posición está el destino. Traza la ejecución a mano antes de correrlo.
+
+**Razonamiento:**
+1. No sabemos de antemano cuántas paradas faltan: eso pide `while`, que repite mientras no lleguemos.
+2. Un índice indica la parada actual; hay que avanzarlo en cada iteración o el bucle no termina.
+3. La tabla de trazado anota el valor de `indice` y la condición en cada vuelta.
+
+```python
+# recorrido.py — avanza parada por parada hasta llegar al destino
+paradas = ["Bodega", "Calle 26", "Chapinero", "Usaquén"]
+destino = "Chapinero"
+indice = 0
+while paradas[indice] != destino:
+    print("paso por", paradas[indice])
+    indice = indice + 1
+print("llegué a", paradas[indice], "en la parada", indice)
+```
+
+Trazado a mano:
+
+| Iteración | `indice` | `paradas[indice]` | ¿`!= destino`? | Acción |
+|---|---|---|---|---|
+| 1 | 0 | Bodega | sí | imprime «paso por Bodega», `indice` → 1 |
+| 2 | 1 | Calle 26 | sí | imprime «paso por Calle 26», `indice` → 2 |
+| — | 2 | Chapinero | no | sale del bucle e imprime «llegué a…» |
+
+```text
+$ python3 recorrido.py
+paso por Bodega
+paso por Calle 26
+llegué a Chapinero en la parada 2
+```
+
+**Explicación por partes.**
+- Línea 5: la condición se revisa antes de cada vuelta; cuando deja de cumplirse, el bucle termina.
+- Línea 7: avanzar `indice` es lo que garantiza que el bucle termine.
+- Línea 8: ya fuera del bucle (sin indentación), se muestra el resultado. Las posiciones empiezan en 0, por eso Chapinero es la parada `2`.
+
+> **Error común.** Si el destino no está en la lista (por ejemplo `"Suba"`), el índice sigue creciendo hasta pasarse
+> del final y el programa termina con `IndexError: list index out of range`: pediste una posición que no existe.
+
+> **Prevenir errores.** Antes de escribir un `while`, responde dos preguntas: ¿qué hace que la condición deje de
+> cumplirse? y ¿qué pasa si eso nunca ocurre? Si no tienes respuesta, usa `for` o agrega un límite.
+
+#### Checkpoint 3.1
+¿Cuántas veces se ejecuta el bloque de `for tarea in []:`? ¿Y el de `while False:`?
+
+Respuesta: cero veces en ambos casos. El `for` no tiene elementos que recorrer y el `while` revisa la condición antes de entrar, y ya es falsa. Ninguno produce error.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```python
-total = 0
-for numero in [12, 8, 5]:
-    total = total + numero
-print(total)
-```
+#### Paso 1 · Prepara la carpeta
+Crea `~/labs/control` y entra con `cd ~/labs/control`.
 
-```python
-subtotal = 100
-if subtotal < 0:
-    print("El subtotal no puede ser negativo")
-elif subtotal >= 100:
-    print(subtotal * 0.90)
-else:
-    print(subtotal)
-```
+#### Paso 2 · Decide con if
+Escribe `tarifa.py` y ejecútalo. Agrega `tarifa(5)` y `tarifa(5.5)` al `for` y explica cada resultado antes de correrlo.
 
-```mermaid
-flowchart TD
-    VALUE["subtotal"] --> INVALID{"¿negativo?"}
-    INVALID -->|"sí"| ERROR["error"]
-    INVALID -->|"no"| LIMIT{"¿>= 100?"}
-    LIMIT -->|"sí"| DISCOUNT["aplicar descuento"]
-    LIMIT -->|"no"| ORIGINAL["conservar subtotal"]
-```
+#### Paso 3 · Traza y repite con while
+Copia la tabla de trazado en papel, complétala para `destino = "Usaquén"` y luego ejecuta `recorrido.py` con ese destino para comprobarla.
 
-```
-for tarea in []: cuerpo ejecuta _________ vez(ces)
-Si lista vacía: if _________ (not tareas vs len(tareas)==0)
-Mejor opción: _________ (¿por qué?)
-for i in range(0): entra _________ vez(ces)
-```
+#### Paso 4 · Provoca los errores
+Cambia el destino a `"Suba"` y observa el `IndexError`. Luego borra los `:` de un `if` y observa el `SyntaxError`.
 
-```python
-> if tareas:
->     for tarea in tareas:
->         print(tarea)
-> else:
->     print("Sin tareas pendientes")
-> ```
+#### Resumen
+- Una **condición** se evalúa a `True` o `False`; se construye con **operadores de comparación** (`==`, `!=`, `<`, `<=`, `>`, `>=`).
+- `if`, `elif` y `else` eligen **un solo** camino: el primero cuya condición se cumple.
+- La **indentación** define qué líneas pertenecen a cada bloque.
+- `for` recorre cada elemento de una secuencia; `while` repite mientras una condición sea verdadera.
+- Cada repetición es una **iteración**; un `while` sin avance es un **bucle infinito**.
+- El **trazado de ejecución** en una tabla permite predecir la salida y encontrar errores de lógica.
 
-```bash
-mkdir ejemplo-control-flujo
-cd ejemplo-control-flujo
-mkdir src
-```
+#### Ejercicio verificable 1
+Básico. Escribe un `if` que muestre `"urgente"` si `horas_restantes` es menor que 4 y `"normal"` en otro caso. ¿Qué muestra con `horas_restantes = 4`?
+
+Respuesta esperada: `"normal"`, porque `4 < 4` es falso. Si quisieras incluir el 4, la condición sería `horas_restantes <= 4`.
+
+#### Ejercicio verificable 2
+Intermedio. Con un `for`, suma los pesos `[2.5, 1, 3.5]` en una variable `total` que empieza en 0. Traza las tres iteraciones.
+
+Respuesta esperada: `total` pasa por `2.5`, `3.5` y `7.0`; se imprime `7.0`.
+
+#### Ejercicio verificable 3
+Reto. Modifica `recorrido.py` para que, si el destino no existe, muestre `"destino no encontrado"` en vez de fallar.
+
+Respuesta esperada: agregar a la condición del `while` que el índice siga dentro de la lista (`indice < len(paradas) and paradas[indice] != destino`) y, después del bucle, usar `if indice == len(paradas):` para mostrar el mensaje.
+
+#### En el trabajo
+Las reglas de tarifas, descuentos y permisos de cualquier empresa son cadenas de `if` como la de este tema, y sus
+errores más caros no lanzan excepciones: cobran mal en silencio porque una condición quedó en el orden equivocado.
+Por eso los equipos prueban siempre los **límites** de cada regla, y los procesos que esperan algo (una respuesta,
+un archivo) llevan un límite de tiempo o de intentos para no convertirse en un bucle infinito en producción.
 
 </details>
 

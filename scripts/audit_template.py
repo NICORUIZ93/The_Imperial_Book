@@ -55,8 +55,9 @@ def revisar(tema: str) -> list[str]:
     definidas = fichas(tema)
     if conceptos:
         for termino in [t for t in (normalizar(x) for x in conceptos.group(1).split(",")) if t]:
-            ficha = next((campos for nombre, campos in definidas.items() if termino == nombre or termino in nombre.split(" y ")
-                          or nombre.startswith(termino + " ") or termino in re.split(r"\s+e\s+|\s+y\s+", nombre)), None)
+            ficha = next((campos for nombre, campos in definidas.items() if termino == nombre
+                          or nombre.startswith(termino + " ")
+                          or termino in [p.strip() for p in re.split(r",|\s+e\s+|\s+y\s+", nombre)]), None)
             if ficha is None:
                 faltas.append(f"sin ficha: {termino}")
             elif any(c not in ficha for c in CAMPOS_FICHA):
