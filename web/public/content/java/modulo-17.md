@@ -4,6 +4,31 @@ Una aplicación de envíos puede validar objetos en memoria, pero si no persiste
 
 En este módulo se construye `tienda-aurora-java-m17` desde cero. La primera parte resuelve persistencia con JDBC y el patrón DAO usando H2 en memoria para que sea ejecutable localmente. La segunda modela transacciones con commit/rollback y verifica aislamiento `READ COMMITTED`. La comparación final ejecuta un `count`/`insert` con JDBC y con JPA sobre la misma tabla y documento cuándo conviene cada abstracción. PostgreSQL/MySQL comparten el contrato JDBC; los cambios de motor se enumeran al cierre.
 
+## Apertura del módulo
+
+Al terminar este módulo podrás:
+- conectarte a una base con JDBC a través de un `DataSource` y cerrar cada recurso con try-with-resources;
+- consultar y escribir con `PreparedStatement` y explicar por qué evita la inyección SQL;
+- convertir filas de `ResultSet` en objetos dentro de un DAO;
+- agrupar varias escrituras en una transacción JDBC con `commit` y `rollback`;
+- elegir un nivel de aislamiento según la anomalía que el negocio no tolera;
+- comparar el mismo `count`/`insert` en JDBC y en JPA y decidir cuándo conviene cada uno.
+
+**Esquema del módulo:** JDBC, `PreparedStatement` y DAO (Tema 1); transacciones, ACID y aislamiento (Tema 2).
+
+**Qué necesitas saber antes:** *conexión*, *tabla* y *clave primaria* (Fundamentos, Módulo 4, Tema 1); *consulta
+parametrizada*, *inyección SQL* y *cursor* (Fundamentos, Módulo 4, Tema 2); *transacción*, `BEGIN`, `COMMIT`,
+`ROLLBACK`, *ACID*, *modo autocommit*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4); try-with-resources
+(Java, Módulo 3, Tema 2); `Optional` (Java, Módulo 4, Tema 2); `record` (Java, Módulo 1, Tema 5); JUnit (Java,
+Módulo 9, Tema 1); *ORM*, *JPA*, *Hibernate*, *JDBC*, *H2* y *entidad JPA* (Java, Módulo 16, Tema 1); *EntityManager*
+y *JPQL* (Java, Módulo 16, Tema 3); *bloqueo pesimista* (Java, Módulo 16, Tema 7).
+
+**Entorno de los programas de un solo archivo (2026-11-24):** Linux x86_64, OpenJDK 25.0.5.1 (`java Archivo.java`) y
+Python 3.13.18 con SQLite 3.53.1 (módulo `sqlite3`). En ese entorno no había H2 ni ningún driver JDBC. Los
+programas Java nuevos usan solo `java.sql` y la biblioteca estándar; los scripts de Python ejecutan con SQLite el
+mismo SQL que el DAO envía por JDBC. Sus transcripciones son literales. Las salidas del proyecto Gradle son las
+capturadas en el Mac del entorno de referencia; no se cambiaron.
+
 ## Visual del módulo
 
 **Visual:** [Servicio, DAO con PreparedStatement y transacción con commit o rollback](/visuals/temas/java/modulo-17-jdbc-transaccion.html)
@@ -60,7 +85,7 @@ rootProject.name = "tienda-aurora-java-m17"
 
 #### `build.gradle.kts`
 
-H2 es la BD embebida para ejecución local verificable. Hibernate y la API Jakarta Persistence entran solo para la comparación JDBC/JPA de la última sección. JUnit 5 cubre las pruebas.
+H2 es la BD embebida para ejecución local verificable. Hibernate y la API Jakarta Persistence entran solo para la comparación JDBC/JPA del Tema 1 (Problema resuelto 1.5). JUnit 5 cubre las pruebas.
 
 ```kotlin
 plugins {
@@ -122,7 +147,267 @@ org.slf4j.simpleLogger.defaultLogLevel=error
 org.slf4j.simpleLogger.showDateTime=false
 ```
 
-## Modelo y esquema
+### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 75 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- explicar qué parte de JDBC pone Java y qué parte pone el driver de cada base;
+- obtener una `Connection` desde un `DataSource`, ejecutar un `PreparedStatement` y recorrer un `ResultSet`;
+- demostrar con una entrada maliciosa la diferencia entre `Statement` concatenado y `PreparedStatement`;
+- encapsular SQL y mapeo de filas en un DAO, y explicar por qué un pool reutiliza conexiones;
+- comparar el mismo `count` e `insert` en JDBC y en JPA.
+
+**Conceptos clave:** driver JDBC, URL JDBC, DriverManager, DataSource, Connection, Statement, PreparedStatement, ResultSet, executeQuery, executeUpdate, SQLException, DAO, mapeo de filas, pool de conexiones
+
+Ya los conoces y no se repiten: *JDBC* y *H2* (Java, Módulo 16, Tema 1); *conexión* (Fundamentos, Módulo 4,
+Tema 1); *consulta parametrizada* e *inyección SQL* (Fundamentos, Módulo 4, Tema 2); try-with-resources y
+*AutoCloseable* (Java, Módulo 3, Tema 2); *excepción checked* (Java, Módulo 3, Tema 1); *puerto* (Java, Módulo 9,
+Tema 2).
+
+#### El problema
+Tienda Aurora registra guías de envío con remitente, destino y peso. El buscador por destino recibe texto del
+usuario. Si ese texto se pega dentro del SQL, un usuario puede listar todas las guías escribiendo
+`CAL' OR '1'='1`. Además, el servicio no debería saber de conexiones ni de columnas. ¿Cómo hablas con la base desde
+Java de forma segura y ordenada?
+
+#### Glosario del tema
+
+**driver JDBC**
+- **Definición técnica:** librería de un fabricante que implementa las interfaces de `java.sql` y traduce cada llamada al protocolo de red de su base.
+- **En palabras sencillas:** el adaptador de enchufe: Java define la forma y cada base trae el suyo.
+- **Dónde se rompe la comparación:** el driver no traduce el SQL; si usas una función propia de PostgreSQL, en H2 falla igual.
+- **Ejemplo:** `implementation("com.h2database:h2:2.3.232")` trae el driver de H2; para PostgreSQL, `org.postgresql:postgresql`.
+- **Error típico:** olvidar la dependencia del driver: `No suitable driver found for jdbc:h2:mem:aurora-m17`.
+
+**URL JDBC**
+- **Definición técnica:** texto `jdbc:<subprotocolo>:<datos>` que identifica el driver y la base; cada driver define el resto del formato.
+- **En palabras sencillas:** la dirección de la base, con el nombre del adaptador al principio.
+- **Dónde se rompe la comparación:** las opciones van en la misma URL (`;DB_CLOSE_DELAY=-1` en H2, `?sslmode=require` en PostgreSQL) y cambian por motor.
+- **Ejemplo:** `jdbc:h2:mem:aurora-m17;DB_CLOSE_DELAY=-1` y `jdbc:postgresql://localhost:5432/aurora`.
+- **Error típico:** escribir `jdbc:postgres://...`: el subprotocolo correcto es `postgresql` y ningún driver acepta la URL.
+
+**DriverManager**
+- **Definición técnica:** clase de `java.sql` que busca, entre los drivers registrados, uno que acepte la URL y le pide una conexión nueva.
+- **En palabras sencillas:** la recepcionista que mira la dirección y llama al adaptador correcto.
+- **Dónde se rompe la comparación:** abre una conexión física cada vez; no reutiliza nada.
+- **Ejemplo:** `DriverManager.getConnection("jdbc:h2:mem:aurora-m17", "sa", "")` en `SinDriver.java`, línea 14.
+- **Error típico:** usarlo en un servidor con tráfico: cada petición paga abrir y cerrar una conexión.
+
+**DataSource**
+- **Definición técnica:** interfaz `javax.sql.DataSource` con `getConnection()`; oculta cómo se obtienen las conexiones (directas o de un pool) y es lo que se inyecta en el código.
+- **En palabras sencillas:** un grifo de conexiones: abres y sale una, sin saber de qué tanque viene.
+- **Dónde se rompe la comparación:** cerrar la conexión obtenida puede devolverla al pool en vez de cerrarla de verdad.
+- **Ejemplo:** `DataSourceFactory.h2Mem("aurora-m17")` devuelve un `JdbcDataSource` de H2.
+- **Error típico:** pasar URL, usuario y contraseña a cada DAO en lugar de un solo `DataSource`.
+
+**Connection**
+- **Definición técnica:** interfaz de `java.sql` que representa una sesión con la base; crea sentencias y controla la transacción (`setAutoCommit`, `commit`, `rollback`).
+- **En palabras sencillas:** la llamada telefónica abierta con la base.
+- **Dónde se rompe la comparación:** colgar es obligatorio: una conexión sin cerrar ocupa un lugar del servidor o del pool.
+- **Ejemplo:** `try (Connection c = ds.getConnection(); ...)` en `GuiaDao`, línea 21.
+- **Error típico:** guardar una `Connection` en un campo compartido entre hilos.
+
+**Statement**
+- **Definición técnica:** interfaz que envía a la base un texto SQL completo, sin parámetros, con `execute`, `executeQuery` o `executeUpdate`.
+- **En palabras sencillas:** mandar la pregunta ya escrita, tal cual.
+- **Dónde se rompe la comparación:** sirve para SQL fijo, como el `CREATE TABLE` de `Schema`; con datos del usuario es peligroso.
+- **Ejemplo:** `st.execute("CREATE TABLE guias (...)")` en `Schema.init`, línea 13.
+- **Error típico:** concatenar datos del usuario en el texto: abre la puerta a la inyección SQL.
+
+**PreparedStatement**
+- **Definición técnica:** sentencia precompilada con marcadores `?`; los valores se asignan con `setInt`, `setString`, `setBigDecimal` y viajan aparte del texto SQL.
+- **En palabras sencillas:** un formulario con casillas: el texto del usuario va dentro de la casilla y nunca cambia la pregunta.
+- **Dónde se rompe la comparación:** solo los valores pueden ser `?`; nombres de tabla o columna no se parametrizan.
+- **Ejemplo:** `"... WHERE destino = ? ORDER BY id"` y `ps.setString(1, destino)` en `listarPorDestino`.
+- **Error típico:** contar los parámetros desde 0: el primer `?` es el índice 1.
+
+**ResultSet**
+- **Definición técnica:** cursor sobre las filas de un `SELECT`; `next()` avanza a la siguiente y devuelve `false` al terminar; `getString("columna")` lee un valor.
+- **En palabras sencillas:** un lector de filas que avanza de una en una.
+- **Dónde se rompe la comparación:** empieza antes de la primera fila: sin `next()`, no hay nada que leer.
+- **Ejemplo:** `while (rs.next()) out.add(map(rs));` en `GuiaDao`, línea 50.
+- **Error típico:** leer `rs.getInt(1)` sin llamar antes a `next()`: el driver lanza `SQLException`.
+
+**executeQuery**
+- **Definición técnica:** método de `Statement` y `PreparedStatement` para sentencias que devuelven filas (`SELECT`); retorna un `ResultSet`.
+- **En palabras sencillas:** «pregunta y dame la tabla de respuesta».
+- **Dónde se rompe la comparación:** el `ResultSet` también hay que cerrarlo; va en el try-with-resources.
+- **Ejemplo:** `try (ResultSet rs = ps.executeQuery())` en `buscarPorId`, línea 36.
+- **Error típico:** usarlo con un `INSERT`: el driver lo rechaza porque no hay filas que devolver.
+
+**executeUpdate**
+- **Definición técnica:** método para `INSERT`, `UPDATE`, `DELETE` y DDL; devuelve el número de filas afectadas.
+- **En palabras sencillas:** «haz este cambio y dime a cuántas filas tocó».
+- **Dónde se rompe la comparación:** `0` no es un error para JDBC; si esperabas 1, debes comprobarlo tú.
+- **Ejemplo:** `ps.executeUpdate();` en `insertar`, línea 27.
+- **Error típico:** ignorar el número: un `UPDATE` con un id inexistente «funciona» y no cambia nada.
+
+**SQLException**
+- **Definición técnica:** excepción checked de JDBC con mensaje, código del fabricante (`getErrorCode`) y estado estándar (`getSQLState`, cinco caracteres).
+- **En palabras sencillas:** el aviso de que la base o el driver no pudieron hacer lo pedido, con un código para clasificarlo.
+- **Dónde se rompe la comparación:** el mensaje cambia por motor; el `SQLState` es más estable para decidir qué hacer.
+- **Ejemplo:** sin driver, `SQLState: 08001`; la clase `08` agrupa los errores de conexión.
+- **Error típico:** atraparla y devolver `null`: el servicio sigue como si la guía existiera.
+
+**DAO**
+- **Definición técnica:** *Data Access Object*; clase que encapsula el acceso a una tabla o agregado: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
+- **En palabras sencillas:** el empleado del archivo: tú le pides una guía y él sabe en qué cajón está.
+- **Dónde se rompe la comparación:** no decide reglas de negocio; si el DAO valida saldos, ya no es solo acceso a datos.
+- **Ejemplo:** `GuiaDao` con `insertar`, `buscarPorId`, `listarPorDestino` y `contar`.
+- **Error típico:** escribir SQL en el servicio «solo esta vez»: el SQL queda repartido y no se puede probar aparte.
+
+**mapeo de filas**
+- **Definición técnica:** conversión de la fila actual de un `ResultSet` en un objeto del dominio, columna por columna.
+- **En palabras sencillas:** pasar los datos de la planilla a una ficha con nombre.
+- **Dónde se rompe la comparación:** es lo que un ORM hace solo; aquí lo escribes y lo controlas tú.
+- **Ejemplo:** `map(ResultSet rs)` en `GuiaDao`, líneas 66–72, crea un `Guia`.
+- **Error típico:** repetir el mapeo en cada consulta: un cambio de columna obliga a corregir varios sitios.
+
+**pool de conexiones**
+- **Definición técnica:** conjunto de conexiones abiertas de antemano que un `DataSource` presta y recupera; limita cuántas hay y cuánto espera un pedido.
+- **En palabras sencillas:** una fila de taxis esperando: tomas uno, lo usas y vuelve a la fila.
+- **Dónde se rompe la comparación:** si no devuelves el taxi (no cierras), la fila se vacía y los demás esperan hasta fallar.
+- **Ejemplo:** en `MiniPool.java`, cinco consultas usan solo 2 conexiones físicas.
+- **Error típico:** obtener conexiones sin try-with-resources: `pool agotado: 0 libres tras 200 ms`.
+
+#### ► CÓMO FUNCIONA
+JDBC es la API estándar de Java para hablar con bases de datos relacionales. El código Java usa interfaces como `Connection`, `PreparedStatement` y `ResultSet`; el driver JDBC traduce esas llamadas al protocolo de la BD concreta. Esto permite cambiar de H2 a PostgreSQL o MySQL sin reescribir la lógica, aunque SQL y detalles de tipos sí pueden variar.
+
+El problema que resuelve un DAO es separar persistencia de negocio. Si el servicio arma SQL, abre conexiones, mapea `ResultSet` y además aplica reglas, termina con una clase imposible de probar. El DAO encapsula el acceso a datos: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
+
+`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados.
+
+```mermaid
+flowchart LR
+  S["Servicio"] --> D["GuiaDao<br/>SQL + mapeo"]
+  D -->|"ds.getConnection()"| P["DataSource<br/>(pool)"]
+  P --> C["Connection"]
+  C -->|"prepareStatement(sql con ?)"| PS["PreparedStatement<br/>setString(1, destino)"]
+  PS -->|"driver JDBC"| B[("Base")]
+  B -->|"filas"| RS["ResultSet"]
+  RS -->|"map(rs)"| G["List&lt;Guia&gt;"]
+```
+
+**Mecanismo.** `java.sql` solo trae interfaces. Al pedir una conexión, `DriverManager` o el `DataSource` usan un
+driver concreto. El `PreparedStatement` envía el SQL con `?` y, por separado, los valores. El `ResultSet` entrega
+las filas y el DAO las convierte en objetos.
+
+**Por qué existe.** El contrato común permite cambiar de H2 a PostgreSQL cambiando dependencia y URL. Los
+parámetros separados hacen que un dato nunca pueda convertirse en instrucción.
+
+**Regla práctica.** Todo recurso JDBC va en try-with-resources; todo valor variable va en un `?`; todo SQL de una
+tabla vive en su DAO.
+
+#### Problema resuelto 1.1
+Comprueba que JDBC es un contrato de interfaces y observa qué pasa cuando no hay driver en el classpath.
+
+**Razonamiento:**
+1. Si `Connection`, `PreparedStatement` y `ResultSet` son interfaces, alguien debe implementarlas: el driver.
+2. `DriverManager.drivers()` lista los drivers registrados.
+3. Sin driver, pedir una conexión debe fallar con una `SQLException` y un `SQLState`.
+
+```java
+// SinDriver.java — JDBC es un contrato de interfaces; sin driver en el classpath no hay conexión
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class SinDriver {
+    public static void main(String[] args) {
+        System.out.println("Connection es interfaz: " + Connection.class.isInterface());
+        System.out.println("PreparedStatement es interfaz: " + PreparedStatement.class.isInterface());
+        System.out.println("ResultSet es interfaz: " + ResultSet.class.isInterface());
+        System.out.println("drivers registrados: " + DriverManager.drivers().count());
+        try (Connection c = DriverManager.getConnection("jdbc:h2:mem:aurora-m17", "sa", "")) {
+            System.out.println("conectado a " + c.getMetaData().getDatabaseProductName());
+        } catch (SQLException e) {
+            System.out.println(e.getClass().getName() + ": " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+        }
+    }
+}
+```
+
+```text
+$ java SinDriver.java
+Connection es interfaz: true
+PreparedStatement es interfaz: true
+ResultSet es interfaz: true
+drivers registrados: 0
+java.sql.SQLException: No suitable driver found for jdbc:h2:mem:aurora-m17
+SQLState: 08001
+```
+
+**Explicación por partes.**
+- Líneas 10–12: las tres son interfaces. El JDK no sabe hablar con ninguna base concreta.
+- Línea 13: el JDK no trae drivers; el contador da 0.
+- Línea 14: ningún driver acepta `jdbc:h2:...`, así que no hay conexión.
+- Líneas 17–18: el mensaje nombra la URL y el `SQLState` `08001` indica «no se pudo establecer la conexión».
+
+#### Problema resuelto 1.2
+Muestra qué hace la base con un dato malicioso cuando lo concatenas y cuando lo pasas como parámetro.
+
+**Razonamiento:**
+1. `Statement` con concatenación envía el texto del usuario como parte del SQL.
+2. `PreparedStatement` envía la plantilla con `?` y el valor aparte; SQLite en Python funciona igual con `?`.
+3. Un apellido con apóstrofo legítimo (`D'Angelo`) también rompe la versión concatenada.
+
+```python
+# inyeccion.py — lo que hace Statement con texto concatenado frente a PreparedStatement con ? (SQLite)
+import sqlite3
+
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE guias (id INTEGER PRIMARY KEY, remitente TEXT, destino TEXT, peso_kg NUMERIC)")
+con.executemany("INSERT INTO guias VALUES (?, ?, ?, ?)",
+                [(1, "Ana", "BOG", 2.5), (2, "Luis", "MED", 1.2), (3, "Marta", "BOG", 3.0)])
+
+entrada = "CAL' OR '1'='1"                     # lo que escribe un usuario en el buscador de destino
+sql = "SELECT id, remitente FROM guias WHERE destino = '" + entrada + "' ORDER BY id"
+print("SQL concatenado :", sql)
+print("filas           :", con.execute(sql).fetchall())
+
+plantilla = "SELECT id, remitente FROM guias WHERE destino = ? ORDER BY id"
+print("SQL con ?       :", plantilla, "| parámetro:", repr(entrada))
+print("filas           :", con.execute(plantilla, (entrada,)).fetchall())
+
+try:
+    con.execute("SELECT id FROM guias WHERE remitente = '" + "D'Angelo" + "'")
+except sqlite3.OperationalError as error:
+    print("apellido D'Angelo concatenado ->", type(error).__name__ + ":", error)
+print("apellido D'Angelo con ?       ->", con.execute("SELECT id FROM guias WHERE remitente = ?", ("D'Angelo",)).fetchall())
+```
+
+```text
+$ python3 inyeccion.py
+SQL concatenado : SELECT id, remitente FROM guias WHERE destino = 'CAL' OR '1'='1' ORDER BY id
+filas           : [(1, 'Ana'), (2, 'Luis'), (3, 'Marta')]
+SQL con ?       : SELECT id, remitente FROM guias WHERE destino = ? ORDER BY id | parámetro: "CAL' OR '1'='1"
+filas           : []
+apellido D'Angelo concatenado -> OperationalError: near "Angelo": syntax error
+apellido D'Angelo con ?       -> []
+```
+
+**Explicación por partes.**
+- Línea 10: la comilla de la entrada cierra el texto y `OR '1'='1'` se vuelve condición. Salen las tres guías.
+- Líneas 14–16: con `?`, la base busca un destino llamado literalmente `CAL' OR '1'='1`. No hay ninguno.
+- Líneas 18–21: un dato honesto con apóstrofo rompe la sintaxis concatenada.
+- Línea 22: con `?`, el mismo apellido es solo un valor.
+
+El script usa la API de Python con SQLite; en Java, lo concatenado corresponde a `Statement` y lo parametrizado a
+`PreparedStatement` con `setString`.
+
+#### Problema resuelto 1.3
+Construye el modelo, la fábrica de `DataSource`, el esquema y el DAO de guías del proyecto.
+
+**Razonamiento:**
+1. `Guia` valida sus datos antes de llegar al DAO.
+2. Un único `DataSource` se crea en un sitio y se pasa a quien lo necesita.
+3. Cada método del DAO abre conexión y sentencia en try-with-resources, usa `?` y mapea con `map`.
 
 #### `src/main/java/com/aurora/jdbc/Guia.java`
 
@@ -208,14 +493,6 @@ public final class Schema {
     }
 }
 ```
-
-### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
-
-JDBC es la API estándar de Java para hablar con bases de datos relacionales. El código Java usa interfaces como `Connection`, `PreparedStatement` y `ResultSet`; el driver JDBC traduce esas llamadas al protocolo de la BD concreta. Esto permite cambiar de H2 a PostgreSQL o MySQL sin reescribir la lógica, aunque SQL y detalles de tipos sí pueden variar.
-
-El problema que resuelve un DAO es separar persistencia de negocio. Si el servicio arma SQL, abre conexiones, mapea `ResultSet` y además aplica reglas, termina con una clase imposible de probar. El DAO encapsula el acceso a datos: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
-
-`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados.
 
 #### `src/main/java/com/aurora/jdbc/GuiaDao.java`
 
@@ -305,7 +582,105 @@ Puntos que vale leer con calma:
 - `executeUpdate()` devuelve filas afectadas; en inserts críticos conviene inspeccionarlo. Aquí el id es PK y un duplicado lanza excepción SQL.
 - Crear una `Connection` por consulta funciona en demos; en producción se usa un `DataSource` con pool (HikariCP).
 
-#### JDBC frente a JPA: comparación verificada
+Resultado real (`./gradlew test` y `./gradlew -q run`, entorno de referencia):
+
+```text
+JdbcTest > preparedStatementInsertaYConsulta() PASSED
+G1=Ana
+BOG=2
+```
+
+**Explicación por partes.**
+- `GuiaDao`, líneas 20–27: `INSERT` con cuatro `?`, un `set` por columna y `executeUpdate`.
+- Líneas 36–38: `executeQuery`, un `next()` y `Optional.empty()` si no hay fila.
+- Línea 50: el bucle típico de JDBC; cada vuelta mapea una fila.
+- Líneas 66–72: el único lugar donde se nombran las columnas al leer.
+- `G1=Ana`: `buscarPorId(1)` encontró la guía. `BOG=2`: `listarPorDestino("BOG")` devolvió dos.
+
+#### Problema resuelto 1.4
+Explica con un modelo por qué un pool necesita que cada conexión se devuelva.
+
+**Razonamiento:**
+1. Un pool de 2 conexiones es una cola con 2 objetos creados al inicio.
+2. `close()` no cierra: devuelve la conexión a la cola.
+3. Si se toma sin devolver, la cola se vacía y el siguiente pedido espera hasta su límite.
+
+```java
+// MiniPool.java — modelo didáctico de un pool de conexiones: reutilizar y no filtrar (no es HikariCP)
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+public class MiniPool {
+    static int aperturasFisicas = 0;
+
+    final class Conexion implements AutoCloseable {
+        final int numero = ++aperturasFisicas;               // abrir una conexión real es caro
+        @Override public void close() { libres.add(this); }  // "cerrar" = devolver al pool
+    }
+
+    private final BlockingQueue<Conexion> libres;
+
+    MiniPool(int tamano) {
+        libres = new ArrayBlockingQueue<>(tamano);
+        for (int i = 0; i < tamano; i++) libres.add(new Conexion());
+    }
+
+    Conexion obtener() throws InterruptedException {
+        Conexion c = libres.poll(200, TimeUnit.MILLISECONDS);  // como connectionTimeout
+        if (c == null) throw new IllegalStateException("pool agotado: 0 libres tras 200 ms");
+        return c;
+    }
+
+    public static void main(String[] args) throws Exception {
+        MiniPool pool = new MiniPool(2);
+        for (int consulta = 1; consulta <= 5; consulta++) {
+            try (Conexion c = pool.obtener()) {
+                System.out.println("consulta " + consulta + " usa la conexión " + c.numero);
+            }
+        }
+        System.out.println("aperturas físicas = " + aperturasFisicas);
+
+        for (int consulta = 6; consulta <= 8; consulta++) {
+            try {
+                Conexion c = pool.obtener();                  // sin try-with-resources: nunca vuelve
+                System.out.println("consulta " + consulta + " toma la conexión " + c.numero + " y no la devuelve");
+            } catch (IllegalStateException e) {
+                System.out.println("consulta " + consulta + " -> " + e.getMessage());
+            }
+        }
+    }
+}
+```
+
+```text
+$ java MiniPool.java
+consulta 1 usa la conexión 1
+consulta 2 usa la conexión 2
+consulta 3 usa la conexión 1
+consulta 4 usa la conexión 2
+consulta 5 usa la conexión 1
+aperturas físicas = 2
+consulta 6 toma la conexión 2 y no la devuelve
+consulta 7 toma la conexión 1 y no la devuelve
+consulta 8 -> pool agotado: 0 libres tras 200 ms
+```
+
+**Explicación por partes.**
+- Línea 11: `close` devuelve la conexión al pool. Es lo que hace HikariCP con sus conexiones prestadas.
+- Líneas 29–34: cinco consultas con try-with-resources reutilizan las mismas 2 conexiones físicas.
+- Línea 22: el pedido espera como máximo 200 ms, como `connectionTimeout`.
+- Líneas 36–42: las consultas 6 y 7 se llevan las conexiones; la 8 encuentra el pool vacío.
+
+Este programa es un modelo didáctico; no es HikariCP. HikariCP agrega validación, tiempos de vida y métricas.
+
+#### Problema resuelto 1.5
+Compara un `count` y un `insert` hechos con JDBC y con JPA sobre la misma tabla.
+
+**Razonamiento:**
+1. Las dos capas deben apuntar a la misma base H2 y a la misma tabla `guias`.
+2. JPA no debe crear tablas: `Schema.init` ya lo hizo, así que `hbm2ddl.auto` va en `none`.
+3. Si lo insertado por una capa es visible para la otra, la comparación es justa.
 
 El track propone comparar un `count`/`insert` en JDBC con su versión JPA. Para que la comparación no sea conceptual, ambos accesos apuntan a la misma tabla H2, en el mismo proceso y con datos compartidos. JPA usa `hibernate.hbm2ddl.auto=none` porque `Schema.init` ya creó la tabla.
 
@@ -473,8 +848,191 @@ class ConteoJpaVsJdbcTest {
 }
 ```
 
-### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
+Resultado real (`./gradlew test` y `./gradlew -q run`, entorno de referencia):
 
+```text
+ConteoJpaVsJdbcTest > conteoEInsercionCoincidenEntreJdbcYJpa() PASSED
+CONTEO_JDBC=3
+CONTEO_JPA=3
+```
+
+**Explicación por partes.**
+- `GuiaEntity` mapea la misma tabla con `@Entity`, `@Id` y `@Column` (Java, Módulo 16, Tema 1).
+- `GuiaJpaDao.contar` usa JPQL `select count(g) from GuiaEntity g`; `GuiaDao.contar` usa `SELECT COUNT(*) FROM guias`.
+- La prueba inserta dos guías con JDBC, comprueba que JPA las ve y luego inserta una tercera con JPA.
+- `CONTEO_JDBC=3` y `CONTEO_JPA=3`: las dos capas ven las mismas filas.
+
+> **Error común.** Olvidar la dependencia del driver. Compila, porque `java.sql` está en el JDK, pero al conectar
+> falla: `java.sql.SQLException: No suitable driver found for jdbc:h2:mem:aurora-m17`. Revisa la dependencia
+> `com.h2database:h2` y que la URL empiece con el subprotocolo que el driver acepta.
+
+> **Error común.** Concatenar datos del usuario. Con la entrada `CAL' OR '1'='1`, la consulta devuelve las tres
+> guías. Con un apellido como `D'Angelo`, falla con `OperationalError: near "Angelo": syntax error`. Usa
+> `PreparedStatement` y `setString`.
+
+> **Error común.** Obtener conexiones sin try-with-resources. En el modelo, la tercera consulta sin cierre recibe
+> `pool agotado: 0 libres tras 200 ms`. En producción, HikariCP lanza una `SQLTransientConnectionException` por
+> tiempo de espera y la aplicación deja de responder.
+
+> **Buena práctica.** Un DAO por agregado, con SQL constante y un único método `map`. Así un cambio de columna se
+> corrige en un solo lugar.
+
+> **Ingeniería de software.** Usa JDBC cuando necesites SQL exacto del motor, cargas masivas con `addBatch` o
+> control fino de bloqueos. Usa JPA cuando dominan el modelo y sus relaciones. Pueden convivir en el mismo proyecto.
+
+#### Checkpoint 1.1
+¿Qué diferencia hay entre usar `Statement` y `PreparedStatement`?
+
+Respuesta: `Statement` envía un texto SQL completo; si contiene datos del usuario, esos datos pueden cambiar la
+consulta. `PreparedStatement` envía la plantilla con `?` y los valores aparte, tipados; un valor nunca se vuelve SQL.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Ejecuta los programas de un solo archivo
+Ejecuta `java SinDriver.java`, `python3 inyeccion.py` y `java MiniPool.java`. Relaciona cada línea de salida con
+la línea del programa que la produce.
+
+#### Paso 2 · Crea el proyecto
+Ejecuta «Prerrequisitos y bootstrap» y copia `settings.gradle.kts`, `build.gradle.kts` y `simplelogger.properties`.
+
+#### Paso 3 · Escribe el modelo y el DAO
+Crea `Guia`, `DataSourceFactory`, `Schema` y `GuiaDao` en `src/main/java/com/aurora/jdbc`. Compila con
+`./gradlew compileJava`.
+
+#### Paso 4 · Agrega la comparación con JPA
+Crea `persistence.xml`, `GuiaEntity`, `GuiaJpaDao` y `ConteoJpaVsJdbcTest`. Ejecuta
+`./gradlew test --tests "com.aurora.jdbc.ConteoJpaVsJdbcTest"`.
+
+#### Resumen
+- JDBC es un contrato de interfaces; el **driver JDBC** lo implementa y la **URL JDBC** elige cuál.
+- **DriverManager** abre conexiones nuevas; un **DataSource** las entrega, normalmente desde un **pool de conexiones**.
+- **Connection**, **PreparedStatement** y **ResultSet** se cierran siempre con try-with-resources.
+- **Statement** sirve para SQL fijo; con datos del usuario, usa **PreparedStatement** y `?`.
+- **executeQuery** devuelve filas; **executeUpdate** devuelve cuántas filas cambió.
+- **SQLException** trae mensaje y `SQLState` para clasificar el fallo.
+- Un **DAO** encapsula el SQL de una tabla y su **mapeo de filas** a objetos.
+
+#### Ejercicio verificable 1
+Básico. En `inyeccion.py`, cambia `entrada` por `"BOG"`. ¿Qué filas devuelven las dos consultas?
+
+Respuesta esperada: las dos devuelven `[(1, 'Ana'), (3, 'Marta')]`. Con datos honestos son iguales; la diferencia
+aparece con datos maliciosos o con apóstrofos.
+
+#### Ejercicio verificable 2
+Intermedio. En `MiniPool.java`, crea el pool con 3 conexiones. ¿Cuántas aperturas físicas hay y qué pasa con la
+consulta 8?
+
+Respuesta esperada: `aperturas físicas = 3` y `consulta 8 toma la conexión 2 y no la devuelve`. Con 3 conexiones
+caben las tres fugas; la cuarta consulta sin cierre recibiría el error.
+
+#### Ejercicio verificable 3
+Reto. Escribe un `UsuarioDao` con `insertar`, `buscarPorEmail`, `actualizarNombre` y `eliminar` sobre
+`usuarios (id INT PRIMARY KEY, email VARCHAR(255) UNIQUE NOT NULL, nombre VARCHAR(100) NOT NULL)`.
+
+Respuesta esperada: misma forma que `GuiaDao`. `buscarPorEmail` devuelve `Optional<Usuario>`. `actualizarNombre`
+y `eliminar` devuelven `boolean` con `executeUpdate() == 1`, para que el servicio sepa si el usuario existía. Un
+`map(ResultSet)` privado concentra la lectura de columnas.
+
+#### En el trabajo
+En Spring Boot, el `DataSource` es HikariCP por defecto y `JdbcTemplate` o `JdbcClient` ocultan el
+try-with-resources. Por debajo siguen `Connection`, `PreparedStatement` y `ResultSet`. Los informes, las cargas
+masivas y las consultas muy afinadas suelen escribirse con JDBC aunque el resto del proyecto use JPA.
+
+</details>
+
+### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- abrir una transacción JDBC con `setAutoCommit(false)` y cerrarla con `commit` o `rollback`;
+- demostrar que una transferencia fallida a mitad de camino no deja saldos inconsistentes;
+- reconocer lectura sucia, lectura no repetible y lectura fantasma, y el nivel de aislamiento que evita cada una;
+- bloquear una fila con `SELECT ... FOR UPDATE` para que dos transferencias no lean el mismo saldo.
+
+**Conceptos clave:** setAutoCommit, commit y rollback en JDBC, nivel de aislamiento, lectura sucia, lectura no repetible, lectura fantasma, READ COMMITTED, REPEATABLE READ y SERIALIZABLE, SELECT FOR UPDATE
+
+Ya los conoces y no se repiten: *transacción*, `BEGIN`, `COMMIT`, `ROLLBACK`, *atomicidad*, *ACID*, *modo
+autocommit*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4); *Connection* y *PreparedStatement*
+(Tema 1); *bloqueo pesimista* y *actualización perdida* (Java, Módulo 16, Tema 7); *deadlock* (Java, Módulo 5,
+Tema 4).
+
+#### El problema
+Una transferencia de Tienda Aurora son dos `UPDATE`: restar en una cuenta y sumar en otra. JDBC confirma cada
+sentencia apenas se ejecuta. Si la segunda falla, la primera ya quedó guardada y el dinero desapareció. Y mientras
+tanto, otro proceso puede estar leyendo ese saldo a medias. ¿Cómo agrupas las dos escrituras y qué puede ver el resto?
+
+#### Glosario del tema
+
+**setAutoCommit**
+- **Definición técnica:** método de `Connection` que activa o desactiva la confirmación automática; con `false`, las sentencias quedan en una transacción hasta `commit` o `rollback`.
+- **En palabras sencillas:** el interruptor entre «guarda cada cosa al momento» y «espera a que yo diga».
+- **Dónde se rompe la comparación:** en JDBC no hay `BEGIN` explícito; la transacción empieza sola con la primera sentencia.
+- **Ejemplo:** `c.setAutoCommit(false);` en `transferir`, línea 41 de `TransferenciaService`.
+- **Error típico:** olvidarlo: cada `UPDATE` se confirma solo y el `rollback` no tiene nada que deshacer.
+
+**commit y rollback en JDBC**
+- **Definición técnica:** `Connection.commit()` confirma la transacción en curso; `Connection.rollback()` descarta todos sus cambios. Ambos exigen `autoCommit` en `false`.
+- **En palabras sencillas:** firmar el paquete de cambios o romperlo sin abrirlo, desde Java.
+- **Dónde se rompe la comparación:** se aplican a la conexión, no a un `PreparedStatement`: todo lo hecho con esa conexión entra.
+- **Ejemplo:** `c.commit()` en la línea 45 y `c.rollback()` en la línea 47.
+- **Error típico:** no restaurar `setAutoCommit(true)` antes de devolver la conexión al pool; el siguiente usuario hereda el modo.
+
+**nivel de aislamiento**
+- **Definición técnica:** grado en que una transacción ve los cambios de otras concurrentes; JDBC lo fija con `setTransactionIsolation` y los niveles estándar son READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ y SERIALIZABLE.
+- **En palabras sencillas:** qué tan gruesa es la pared entre dos transacciones que trabajan a la vez.
+- **Dónde se rompe la comparación:** cada motor implementa los niveles a su manera; PostgreSQL trata READ UNCOMMITTED como READ COMMITTED.
+- **Ejemplo:** `c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED)` en `JdbcTest`, línea 59.
+- **Error típico:** subir todo a SERIALIZABLE «por seguridad»: aparecen esperas y transacciones abortadas que hay que reintentar.
+
+**lectura sucia**
+- **Definición técnica:** anomalía en que una transacción lee datos escritos por otra que todavía no confirmó.
+- **En palabras sencillas:** leer el borrador de otro, que quizá nunca se publique.
+- **Dónde se rompe la comparación:** si el otro hace `rollback`, leíste un dato que nunca existió.
+- **Ejemplo:** en `aislamiento.py`, paso 1, A ve `90` y B sigue viendo `100`: no hay lectura sucia.
+- **Error típico:** usar READ UNCOMMITTED para reportes «rápidos» de dinero.
+
+**lectura no repetible**
+- **Definición técnica:** anomalía en que una transacción lee la misma fila dos veces y obtiene valores distintos porque otra confirmó un cambio entre ambas lecturas.
+- **En palabras sencillas:** mirar el saldo, voltear la cabeza y encontrar otro número.
+- **Dónde se rompe la comparación:** no hay error: los dos valores eran correctos en su momento.
+- **Ejemplo:** paso 2 de `aislamiento.py`: B lee `100` y luego `90`.
+- **Error típico:** calcular con la primera lectura y escribir después, suponiendo que el dato no cambió.
+
+**lectura fantasma**
+- **Definición técnica:** anomalía en que una transacción repite una consulta con condición y aparecen o desaparecen filas porque otra insertó o borró y confirmó.
+- **En palabras sencillas:** contar las guías a Bogotá dos veces y que aparezca una nueva en medio.
+- **Dónde se rompe la comparación:** afecta conjuntos de filas, no el valor de una fila conocida.
+- **Ejemplo:** `SELECT COUNT(*) FROM guias WHERE destino = 'BOG'` da `2` y luego `3` en la misma transacción.
+- **Error típico:** validar «no hay más de 10 pedidos» con un `COUNT` y luego insertar, sin bloqueo ni SERIALIZABLE.
+
+**READ COMMITTED**
+- **Definición técnica:** nivel en que cada sentencia ve solo datos confirmados antes de empezar; evita la lectura sucia, pero permite lecturas no repetibles y fantasmas.
+- **En palabras sencillas:** solo lees lo publicado, aunque lo publicado cambie entre una mirada y otra.
+- **Dónde se rompe la comparación:** es el nivel por defecto de PostgreSQL y de H2, no de todos los motores; MySQL InnoDB usa REPEATABLE READ.
+- **Ejemplo:** la prueba `aislamientoReadCommittedNoVeDirtyRead` exige que B vea `100.00` mientras A no confirma.
+- **Error típico:** creer que evita la actualización perdida; no la evita.
+
+**REPEATABLE READ y SERIALIZABLE**
+- **Definición técnica:** REPEATABLE READ garantiza que las filas ya leídas no cambian dentro de la transacción; SERIALIZABLE garantiza un resultado equivalente a ejecutar las transacciones una tras otra.
+- **En palabras sencillas:** REPEATABLE READ te da una foto fija; SERIALIZABLE además impide que la foto choque con la de otros.
+- **Dónde se rompe la comparación:** más aislamiento cuesta más esperas, bloqueos o reintentos.
+- **Ejemplo:** paso 3 de `aislamiento.py`: dentro de su transacción, B sigue leyendo `90` aunque A confirmó `80`.
+- **Error típico:** no programar el reintento: en SERIALIZABLE, PostgreSQL aborta transacciones con conflicto y espera que repitas.
+
+**SELECT FOR UPDATE**
+- **Definición técnica:** `SELECT ... FOR UPDATE` lee filas y las bloquea para escritura hasta el fin de la transacción; otra transacción que quiera bloquearlas o modificarlas espera.
+- **En palabras sencillas:** leer el saldo y quedarse con la llave hasta terminar.
+- **Dónde se rompe la comparación:** solo protege dentro de una transacción; con `autoCommit` en `true`, el bloqueo dura una sentencia.
+- **Ejemplo:** `saldoForUpdate` en `TransferenciaService`, líneas 74–75.
+- **Error típico:** bloquear las cuentas en orden distinto en dos transferencias (A→B y B→A): se produce un deadlock.
+
+#### ► CÓMO FUNCIONA
 Una transacción agrupa operaciones que deben comportarse como unidad. El caso clásico es una transferencia: debitar una cuenta y acreditar otra. Si el débito se confirma y el crédito falla, el dinero desaparece del sistema. Ese es el tipo de bug que ACID busca evitar.
 
 - **Atomicidad**: todo o nada. Commit confirma; rollback revierte.
@@ -483,6 +1041,146 @@ Una transacción agrupa operaciones que deben comportarse como unidad. El caso c
 - **Durabilidad**: una vez confirmado, el cambio debe sobrevivir a fallas.
 
 `READ COMMITTED` evita leer cambios no confirmados (dirty reads); `REPEATABLE_READ` y `SERIALIZABLE` dan garantías más fuertes con mayor costo. La elección depende de la anomalía que el negocio no puede tolerar.
+
+```mermaid
+sequenceDiagram
+  participant S as TransferenciaService
+  participant C as Connection
+  participant B as Base
+  S->>C: setAutoCommit(false)
+  S->>B: SELECT saldo ... FOR UPDATE (cuenta 10)
+  S->>B: UPDATE saldo = saldo - 30 (cuenta 10)
+  S->>B: SELECT saldo ... FOR UPDATE (cuenta 20)
+  alt todo bien
+    S->>C: commit() — los dos cambios a la vez
+  else excepción (saldo insuficiente, cuenta no existe)
+    S->>C: rollback() — ninguno de los dos
+  end
+  S->>C: setAutoCommit(true) en finally
+```
+
+**Mecanismo.** Con `autoCommit` en `false`, la base guarda los cambios de la conexión como pendientes. Otras
+conexiones, según su aislamiento, siguen viendo los datos confirmados. `commit` los publica todos; `rollback` los
+descarta todos.
+
+#### Problema resuelto 2.1
+Ejecuta la misma transferencia fallida con confirmación automática y con transacción explícita.
+
+**Razonamiento:**
+1. La cuenta 99 no existe: el segundo `UPDATE` afecta 0 filas y se lanza un error.
+2. En autocommit, el primer `UPDATE` ya se confirmó. Con transacción, `ROLLBACK` lo deshace.
+3. La prueba es el total: antes de transferir, 150.
+
+```python
+# transferencia.py — la misma transferencia con autocommit y con transacción explícita (SQLite)
+import sqlite3
+
+def nueva_base():
+    con = sqlite3.connect(":memory:", isolation_level=None)   # autocommit, como JDBC por defecto
+    con.execute("CREATE TABLE cuentas (id INTEGER PRIMARY KEY, titular TEXT, saldo NUMERIC NOT NULL)")
+    con.executemany("INSERT INTO cuentas VALUES (?, ?, ?)", [(10, "Ana", 100), (20, "Luis", 50)])
+    return con
+
+def transferir(con, desde, hacia, monto):
+    con.execute("UPDATE cuentas SET saldo = saldo - ? WHERE id = ?", (monto, desde))
+    if con.execute("UPDATE cuentas SET saldo = saldo + ? WHERE id = ?", (monto, hacia)).rowcount != 1:
+        raise LookupError(f"cuenta no existe: {hacia}")
+
+def saldos(con):
+    filas = con.execute("SELECT id, saldo FROM cuentas ORDER BY id").fetchall()
+    return filas, "total =", sum(s for _, s in filas)
+
+sin_tx = nueva_base()
+try:
+    transferir(sin_tx, 10, 99, 30)
+except LookupError as error:
+    print("autocommit  ->", error, "|", *saldos(sin_tx))
+
+con_tx = nueva_base()
+con_tx.execute("BEGIN")                                           # equivale a setAutoCommit(false)
+try:
+    transferir(con_tx, 10, 99, 30)
+    con_tx.execute("COMMIT")
+except LookupError as error:
+    con_tx.execute("ROLLBACK")
+    print("transacción ->", error, "|", *saldos(con_tx))
+```
+
+```text
+$ python3 transferencia.py
+autocommit  -> cuenta no existe: 99 | [(10, 70), (20, 50)] total = 120
+transacción -> cuenta no existe: 99 | [(10, 100), (20, 50)] total = 150
+```
+
+**Explicación por partes.**
+- Línea 5: `isolation_level=None` deja a SQLite en autocommit, igual que una `Connection` JDBC recién abierta.
+- Líneas 11–13: el débito ocurre; el crédito a la cuenta 99 afecta 0 filas y lanza el error.
+- Primera salida: en autocommit, la cuenta 10 quedó en 70 y el total bajó a 120. Se perdieron 30.
+- Línea 26 y segunda salida: con `BEGIN` (en JDBC, `setAutoCommit(false)`) y `ROLLBACK`, el total sigue en 150.
+
+#### Problema resuelto 2.2
+Observa qué ve una conexión mientras otra escribe: sin confirmar, confirmando entre dos lecturas y dentro de una
+transacción de lectura.
+
+**Razonamiento:**
+1. Dos conexiones a la misma base en modo WAL: A escribe y B lee.
+2. Si B ve el `90` de A antes del `COMMIT`, hay lectura sucia.
+3. Si B lee dos valores distintos de la misma fila, hay lectura no repetible.
+
+```python
+# aislamiento.py — lectura sucia, lectura no repetible y foto estable de una transacción (SQLite en WAL)
+import os
+import sqlite3
+import tempfile
+
+ruta = os.path.join(tempfile.mkdtemp(), "cuentas.db")
+a = sqlite3.connect(ruta, isolation_level=None)      # A escribe
+b = sqlite3.connect(ruta, isolation_level=None)      # B lee
+a.execute("PRAGMA journal_mode=WAL")
+a.execute("CREATE TABLE cuentas (id INTEGER PRIMARY KEY, saldo NUMERIC NOT NULL)")
+a.execute("INSERT INTO cuentas VALUES (1, 100)")
+LEER = "SELECT saldo FROM cuentas WHERE id = 1"
+
+a.execute("BEGIN")
+a.execute("UPDATE cuentas SET saldo = saldo - 10 WHERE id = 1")
+print("1. A restó 10 sin confirmar; A ve", a.execute(LEER).fetchone()[0], "y B ve", b.execute(LEER).fetchone()[0])
+a.execute("ROLLBACK")
+
+print("2. B sin transacción lee", b.execute(LEER).fetchone()[0], end="; ")
+a.execute("UPDATE cuentas SET saldo = 90 WHERE id = 1")       # A confirma (autocommit)
+print("A confirma 90; B vuelve a leer", b.execute(LEER).fetchone()[0])
+
+b.execute("BEGIN")
+print("3. B dentro de BEGIN lee", b.execute(LEER).fetchone()[0], end="; ")
+a.execute("UPDATE cuentas SET saldo = 80 WHERE id = 1")
+print("A confirma 80; B vuelve a leer", b.execute(LEER).fetchone()[0], end="; ")
+b.execute("COMMIT")
+print("tras COMMIT de B lee", b.execute(LEER).fetchone()[0])
+```
+
+```text
+$ python3 aislamiento.py
+1. A restó 10 sin confirmar; A ve 90 y B ve 100
+2. B sin transacción lee 100; A confirma 90; B vuelve a leer 90
+3. B dentro de BEGIN lee 90; A confirma 80; B vuelve a leer 90; tras COMMIT de B lee 80
+```
+
+**Explicación por partes.**
+- Líneas 14–17 y paso 1: A ve su propio cambio; B no lo ve. SQLite no permite lectura sucia.
+- Líneas 19–21 y paso 2: sin transacción, cada lectura de B ve lo último confirmado: `100` y luego `90`.
+- Líneas 23–27 y paso 3: dentro de `BEGIN`, B mantiene su foto: lee `90` aunque A confirmó `80`.
+- Al terminar su transacción, B ve `80`.
+
+SQLite en modo WAL da a cada transacción de lectura una foto fija; equivale a la garantía de REPEATABLE READ para
+esta fila. En PostgreSQL con READ COMMITTED, el paso 3 leería `80` en la segunda lectura.
+
+#### Problema resuelto 2.3
+Implementa la transferencia del proyecto con JDBC: bloqueo de filas, validación de saldo, `commit` o `rollback`.
+
+**Razonamiento:**
+1. Una sola `Connection` para todo el caso de uso, con `autoCommit` en `false`.
+2. Cada cuenta se lee con `FOR UPDATE` antes de modificarla; si no hay saldo, se lanza excepción.
+3. `catch` hace `rollback` y relanza; `finally` restaura `autoCommit`.
 
 #### `src/main/java/com/aurora/jdbc/TransferenciaService.java`
 
@@ -706,6 +1404,107 @@ class JdbcTest {
     }
 }
 ```
+
+Resultado real (`./gradlew test --rerun-tasks --console=plain` y `./gradlew -q run`, entorno de referencia):
+
+```text
+JdbcTest > transaccionHaceCommit() PASSED
+JdbcTest > transaccionHaceRollback() PASSED
+JdbcTest > aislamientoReadCommittedNoVeDirtyRead() PASSED
+SALDO_10=70.00
+SALDO_20=80.00
+ROLLBACK=IllegalStateException
+SALDO_10_POST=70.00
+SALDO_20_POST=80.00
+```
+
+**Explicación por partes.**
+- `TransferenciaService`, línea 41: empieza la transacción. Líneas 43–45: débito, crédito y `commit`.
+- Líneas 46–47: cualquier excepción provoca `rollback`; luego se relanza para que el llamador se entere.
+- Línea 50: `finally` deja la conexión como la encontró.
+- Línea 57: «saldo insuficiente» se lanza antes de tocar la cuenta; igual queda cubierto por el `rollback`.
+- Líneas 74–75: `FOR UPDATE` reserva la fila mientras dura la transacción.
+- `SALDO_10=70.00` y `SALDO_20=80.00`: la primera transferencia se confirmó.
+- `ROLLBACK=IllegalStateException` y los saldos `_POST` iguales: la transferencia de 1000 no dejó rastro.
+- `JdbcTest`, líneas 57–75: c1 resta sin confirmar; c2, en READ COMMITTED, lee `100.00`; c1 hace `rollback`.
+
+> **Error común.** Olvidar `setAutoCommit(false)`. El `rollback` no deshace nada porque cada `UPDATE` ya se
+> confirmó. En el modelo SQLite se ve en los números: `[(10, 70), (20, 50)] total = 120`. Faltan 30 y no hubo
+> ninguna excepción de la base.
+
+> **Error común.** Leer el saldo sin `FOR UPDATE` y restar después. Dos transferencias leen `100`, las dos
+> validan y las dos restan: es la actualización perdida del Módulo 16, Tema 7. El bloqueo hace esperar a la
+> segunda hasta que la primera confirme.
+
+> **Buena práctica.** Una transacción por caso de uso, con una sola conexión, lo más corta posible. Nada de
+> llamadas HTTP ni esperas de usuario entre `setAutoCommit(false)` y `commit`.
+
+> **Prevenir errores.** Bloquea siempre las cuentas en el mismo orden (por ejemplo, por id ascendente). Así dos
+> transferencias cruzadas no se esperan una a la otra en círculo.
+
+#### Checkpoint 2.1
+¿Cómo garantiza una transacción que las dos escrituras de la transferencia queden consistentes?
+
+Respuesta: ambas usan la misma `Connection` con `autoCommit` en `false`. Si las dos terminan, `commit` las publica
+juntas; si cualquiera falla, `rollback` descarta las dos. Nadie ve un estado intermedio confirmado.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Ejecuta los modelos SQLite
+Ejecuta `python3 transferencia.py` y `python3 aislamiento.py`. Anota qué anomalía aparece en cada paso.
+
+#### Paso 2 · Crea el servicio de transferencias
+Crea `TransferenciaService.java` y `App.java` en `src/main/java/com/aurora/jdbc`.
+
+#### Paso 3 · Ejecuta las pruebas
+Crea `JdbcTest.java` y ejecuta `./gradlew test --rerun-tasks --console=plain`. Debes ver las cinco pruebas en
+`PASSED`, como en «Verificación real».
+
+#### Paso 4 · Rompe y repara la transacción
+Agrega a `JdbcTest` una prueba que transfiera 30 de la cuenta 1 (saldo 100) a la cuenta 99, que no existe. Debe
+esperar `SQLException` y comprobar que la cuenta 1 sigue en `100.00`. Luego comenta `c.setAutoCommit(false);` y
+ejecútala otra vez: el débito ya quedó confirmado antes del fallo y la prueba deja de pasar. Restaura la línea.
+
+#### Resumen
+- **setAutoCommit(false)** abre la transacción en JDBC; sin ella, cada sentencia se confirma sola.
+- **commit y rollback en JDBC** actúan sobre todo lo hecho con esa `Connection`.
+- El **nivel de aislamiento** decide qué ve una transacción de las demás.
+- **Lectura sucia**, **lectura no repetible** y **lectura fantasma** son las tres anomalías clásicas.
+- **READ COMMITTED** evita la lectura sucia; **REPEATABLE READ y SERIALIZABLE** evitan más a mayor costo.
+- **SELECT FOR UPDATE** bloquea las filas leídas hasta el fin de la transacción.
+
+#### Ejercicio verificable 1
+Básico. En `transferencia.py`, haz con autocommit una transferencia válida de 30 de la cuenta 10 a la 20 e imprime
+`saldos`. ¿Qué obtienes?
+
+Respuesta esperada: `[(10, 70), (20, 80)] total = 150`. Si nada falla, autocommit y transacción dan lo mismo; la
+diferencia aparece solo con fallos.
+
+#### Ejercicio verificable 2
+Intermedio. En `aislamiento.py`, quita `b.execute("BEGIN")` (línea 23) y `b.execute("COMMIT")` (línea 27). ¿Qué
+imprime el paso 3 y qué anomalía aparece?
+
+Respuesta esperada: `3. B dentro de BEGIN lee 90; A confirma 80; B vuelve a leer 80; tras COMMIT de B lee 80`.
+Sin transacción de lectura, B ve dos valores distintos: lectura no repetible.
+
+#### Ejercicio verificable 3
+Reto. Diseña la compra de Tienda Aurora en una transacción JDBC: descontar `stock` en `productos` e insertar una
+fila en `pedidos`. Si no hay stock, nada debe quedar guardado.
+
+Respuesta esperada: una `Connection` con `setAutoCommit(false)`; `SELECT stock FROM productos WHERE id = ? FOR UPDATE`;
+si `stock < cantidad`, `IllegalStateException`; si no, `UPDATE productos SET stock = stock - ?` e
+`INSERT INTO pedidos ...`; `commit`. En el `catch`, `rollback` y relanzar; en `finally`, `setAutoCommit(true)`. Una
+prueba con stock insuficiente comprueba que `stock` y el número de pedidos no cambian.
+
+#### En el trabajo
+En Spring, `@Transactional` hace `setAutoCommit(false)`, `commit` y `rollback` por ti sobre la conexión del pool.
+Conocer el mecanismo explica sus límites: una excepción atrapada sin relanzar no provoca `rollback`. Los sistemas de
+pagos e inventario combinan transacciones cortas, `FOR UPDATE` en orden fijo y reintentos ante conflictos.
+
+</details>
 
 ## Verificación real
 
