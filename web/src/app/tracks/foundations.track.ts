@@ -50,7 +50,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Java 25', 'Pseudocódigo', 'Clases abstractas'],
     'Calculadora de presupuesto por consola, dividida en funciones, validada con una tabla de casos y documentada.'),
   m(2, 'Estructuras de datos, algoritmos y complejidad', 'Datos y algoritmos', 'Fundamentos', '8 h', '#6d5dfc',
-    'Organiza información con listas, diccionarios, pilas y colas; implementa búsquedas y ordenamientos; y compara soluciones usando corrección, tiempo y memoria.',[
+    'Organiza información con listas, mapas, pilas y colas; implementa búsquedas y ordenamientos; y compara soluciones usando corrección, tiempo y memoria.',[
       'Elegir estructuras según las operaciones',
       'Pilas, colas y abstracciones de comportamiento',
       'Búsqueda, precondiciones y demostración de corrección',
@@ -62,17 +62,17 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ],
     [
       'Modela un inventario y justifica la estructura elegida para cada operación',
-      'Implementa búsqueda lineal y binaria sin usar funciones de biblioteca',
+      'Implementa búsqueda lineal y binaria sin usar métodos de biblioteca',
       'Mide experimentalmente el crecimiento con diferentes tamaños de entrada',
-      'Construye un gestor de inventario con persistencia JSON y reporte de rendimiento',
+      'Construye un gestor de inventario con persistencia en archivo y reporte de rendimiento',
     ],
     [
       '¿Por qué una estructura adecuada puede mejorar más que una microoptimización?',
       '¿Qué precondición exige la búsqueda binaria?',
       '¿Qué diferencia hay entre complejidad temporal y tiempo medido?',
     ],
-    ['Python', 'JSON'],
-    'Gestor de inventario con estructuras justificadas, búsquedas comparadas, persistencia JSON y análisis reproducible.'),
+    ['Java 25', 'Colecciones', 'CSV'],
+    'Gestor de inventario con estructuras justificadas, búsquedas comparadas, persistencia en CSV y análisis reproducible.'),
   m(3, 'Fundamentos de web, redes y accesibilidad', 'Web y redes', 'Fundamentos', '8 h', '#6d5dfc',
     'Comprende qué ocurre al abrir una URL y construye una web semántica, responsive y accesible antes de utilizar frameworks de frontend o backend.',[
       'De una URL al servidor: red, DNS, IP y puertos',
