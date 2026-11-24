@@ -26,4 +26,7 @@ python3 scripts/build_web_topic_index.py --check
 echo "== Recursos enlazados por las lecciones y conteos declarados"
 python3 scripts/audit_lesson_assets.py
 
+echo "== Cumplimiento de la plantilla académica (informe)"
+python3 scripts/audit_template.py | tail -1
+
 echo "validate.sh: ok"

@@ -63,14 +63,14 @@ Cada `### Tema N: Título · Nivel · Duración` lleva estos bloques, en este or
 | # | Bloque | Qué contiene | Marca en Markdown |
 |---|---|---|---|
 | 1 | **Objetivos** | 2–4 verbos medibles: «podrás declarar…, distinguir…, corregir…» | `#### Objetivos` |
-| 2 | **Conceptos clave** | Lista de términos nuevos del tema | Párrafo `Conceptos clave: a, b, c` |
+| 2 | **Conceptos clave** | Lista de términos nuevos del tema | Párrafo `**Conceptos clave:** a, b, c` |
 | 3 | **El problema** | Una situación concreta de RutaFlow que todavía no sabes resolver | `#### El problema` |
 | 4 | **Glosario del tema** | Una ficha por término nuevo (formato abajo) | `#### Glosario del tema` |
 | 5 | **Cómo funciona** | Teoría paso a paso, de lo simple a lo completo, con un diagrama | `#### ► CÓMO FUNCIONA` |
 | 6 | **Ejemplo resuelto** | Pseudocódigo o plan → código completo → salida real → explicación por partes | `#### Problema resuelto N.M` + `**Razonamiento:**` |
 | 7 | **Recuadros** | Error común (con el mensaje real), buena práctica, prevenir errores; rendimiento o ingeniería cuando aplique | `> **Error común.** …` |
 | 8 | **Checkpoint** | 1–2 preguntas cortas en mitad de la lectura, respuesta oculta | `#### Checkpoint N.M` + `Respuesta:` |
-| 9 | **Laboratorio** | Pasos para construirlo tú, con salida esperada y comandos | `Paso 1 · …` |
+| 9 | **Laboratorio** | Pasos para construirlo tú, con salida esperada y comandos | `#### Paso 1 · Título` + instrucciones |
 | 10 | **Resumen** | 4–8 viñetas, términos en negrita | `#### Resumen` |
 | 11 | **Ejercicios verificables** | 3 graduados, con respuesta esperada | `#### Ejercicio verificable N` + `Respuesta esperada:` |
 | 12 | **En el trabajo** | Dónde aparece esto en una empresa o en un proyecto real | `#### En el trabajo` |
@@ -121,7 +121,7 @@ Cada término nuevo lleva estos cinco puntos. Ninguno se omite.
 Al terminar este tema podrás:
 - …
 
-Conceptos clave: término 1, término 2, término 3
+**Conceptos clave:** término 1, término 2, término 3
 
 #### El problema
 …
@@ -172,8 +172,11 @@ Respuesta: …
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-Paso 1 · …
-Paso 2 · …
+#### Paso 1 · Título
+Instrucción…
+
+#### Paso 2 · Título
+Instrucción…
 
 #### Resumen
 - …
@@ -204,7 +207,7 @@ Al terminar este tema podrás:
 - cambiar el valor de una variable y predecir lo que imprime el programa;
 - leer los errores `NameError` y `TypeError` y corregirlos.
 
-Conceptos clave: variable, valor, tipo de dato, asignación, reasignación, `print`, `type`
+**Conceptos clave:** variable, valor, tipo de dato, asignación, reasignación, `print`, `type`
 
 #### El problema
 RutaFlow registra cada envío con su número de guía, su peso, cuántos paquetes lleva y si ya se entregó. El

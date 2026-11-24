@@ -19,21 +19,21 @@ ejercicios con respuesta y aplicación en el trabajo.
 
 ## Fase 0 · Aprobar el estándar (1 sesión)
 
-- [ ] Nicolás revisa `PLANTILLA_CURSO.md` y el tema modelo (Fundamentos M1, Tema 2).
-- [ ] Se ajusta lo que pida y se marca la versión como aprobada.
+- [x] Nicolás revisa `PLANTILLA_CURSO.md` y el tema modelo (Fundamentos M1, Tema 2).
+- [x] Aprobada el 2026-11-24 (vista previa visual).
 
 **Listo cuando:** la plantilla está aprobada y ya no cambia sin una nueva versión.
 
 ## Fase 1 · Herramientas que hacen cumplir la plantilla (1–2 sesiones)
 
-- [ ] **Validador** `scripts/audit_template.py`, llamado desde `validate.sh`. Por tema comprueba: los 12 bloques en
+- [x] **Validador** `scripts/audit_template.py`, llamado desde `validate.sh`. Por tema comprueba: los 12 bloques en
       orden, una ficha completa (5 puntos) por cada término de «Conceptos clave», respuesta en checkpoints y
       ejercicios, ausencia de frases de plantilla y de rutas internas. Arranca en modo informe (no bloquea) y pasa
       a bloquear curso por curso a medida que se migra.
 - [ ] **Glosario central por curso** `web/public/content/<curso>/glosario.json`, generado desde las fichas:
       término, definición técnica, definición sencilla, tema donde se define por primera vez. El validador lo usa
       para detectar **términos usados antes de explicarse**.
-- [ ] **Lector de la app:**
+- [x] **Lector de la app:** (fichas, recuadros y bloques listos; falta enlazar términos del texto a su ficha)
   - fichas de término como tarjetas;
   - cada término del texto enlazado a su ficha (al pasar el cursor o al tocar);
   - estilo propio para los recuadros (error común, buena práctica, prevenir errores);

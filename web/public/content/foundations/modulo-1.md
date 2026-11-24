@@ -75,68 +75,223 @@ mkdir src
 
 </details>
 
-### Tema 2: Variables, tipos, expresiones y cambios de estado · Básico · 30 min
+### Tema 2: Variables, tipos, expresiones y cambios de estado · Básico · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a ver cómo Python distingue tipos en tiempo de ejecución, y vas a reproducir un bug silencioso —sin ningún error ni traceback— que aparece al comparar dos textos como si fueran números. Prerrequisitos: el Tema 1 de este módulo y el Tema 2 de Fundamentos módulo 0…
+#### Objetivos
+Al terminar este tema podrás:
+- crear variables y explicar qué guarda cada una;
+- reconocer los tipos `str`, `int`, `float` y `bool` y comprobarlos con `type()`;
+- cambiar el valor de una variable y predecir lo que imprime el programa;
+- convertir texto escrito por una persona en un número con `int()` y `float()`;
+- leer los errores `NameError`, `TypeError` y `ValueError` y corregirlos.
+
+**Conceptos clave:** valor, variable, asignación, tipo de dato, print, type, reasignación, estado, conversión de tipo, input
+
+#### El problema
+RutaFlow registra cada envío con su número de guía, su peso, cuántos paquetes lleva y si ya se entregó. El programa
+necesita **recordar** esos datos mientras trabaja y **cambiarlos** cuando algo pasa: por ejemplo, cuando el cliente
+agrega un paquete. Además, cuando una persona escribe la cantidad en el teclado, el programa recibe **texto**, no un
+número. ¿Cómo guarda un programa un dato, cómo lo cambia y cómo convierte lo que escribe una persona?
+
+#### Glosario del tema
+
+**valor**
+- **Definición técnica:** dato concreto que el programa manipula, como `3`, `2.5` o `"RF-4471"`.
+- **En palabras sencillas:** la información en sí: un número, un texto, un sí o un no.
+- **Dónde se rompe la comparación:** para el computador `3` y `"3"` son valores distintos: uno es número y el otro es texto.
+- **Ejemplo:** en `paquetes = 3`, el valor es `3`.
+- **Error típico:** escribir texto sin comillas (`guia = RF-4471`): Python lo lee como una resta entre dos nombres.
+
+**variable**
+- **Definición técnica:** nombre asociado a un valor guardado en la memoria del programa; al usar el nombre, el intérprete obtiene ese valor.
+- **En palabras sencillas:** una etiqueta pegada a una caja: la etiqueta es el nombre y lo que hay adentro es el valor.
+- **Dónde se rompe la comparación:** en Python la etiqueta apunta al valor; dos nombres pueden apuntar al mismo valor.
+- **Ejemplo:** `peso_kg = 2.5` crea el nombre `peso_kg` y lo asocia a `2.5`.
+- **Error típico:** usar el nombre con otra mayúscula: `Peso_kg` no es `peso_kg`.
+
+**asignación (`=`)**
+- **Definición técnica:** instrucción que evalúa la expresión de la derecha y asocia el resultado al nombre de la izquierda.
+- **En palabras sencillas:** «guarda esto con este nombre». No es el «igual» de matemáticas.
+- **Dónde se rompe la comparación:** `paquetes = paquetes + 1` es imposible en matemáticas y normal al programar.
+- **Ejemplo:** `entregado = False`.
+- **Error típico:** escribirla al revés: `2.5 = peso_kg` produce `SyntaxError`.
+
+**tipo de dato**
+- **Definición técnica:** categoría de un valor que define qué operaciones admite: `str` (texto), `int` (número entero), `float` (número con decimales) y `bool` (`True` o `False`).
+- **En palabras sencillas:** la clase de dato; dice qué puedes hacer con él, como sumar números o unir textos.
+- **Dónde se rompe la comparación:** Python decide el tipo por el valor que escribes, no porque tú lo declares.
+- **Ejemplo:** `type(2.5)` devuelve `<class 'float'>`.
+- **Error típico:** mezclar tipos: `"Paquetes: " + 3` produce `TypeError`.
+
+**print y type**
+- **Definición técnica:** funciones integradas de Python; `print` escribe valores en la salida estándar y `type` devuelve el tipo de un valor.
+- **En palabras sencillas:** `print` muestra algo en la terminal; `type` te dice qué clase de dato tienes.
+- **Dónde se rompe la comparación:** `print` no devuelve el valor que muestra: solo lo escribe.
+- **Ejemplo:** `print(type(3))` muestra `<class 'int'>`.
+- **Error típico:** olvidar los paréntesis: `print "hola"` produce `SyntaxError` en Python 3.
+
+**reasignación y estado**
+- **Definición técnica:** reasignar es asociar un nombre existente a un valor nuevo; el **estado** del programa es el conjunto de valores de todas sus variables en un instante.
+- **En palabras sencillas:** cambiar lo que hay en la caja; el estado es la foto de todas las cajas en un momento.
+- **Dónde se rompe la comparación:** el valor viejo no se guarda en ningún lado: si lo necesitas, guárdalo antes con otro nombre.
+- **Ejemplo:** después de `paquetes = paquetes + 1`, el estado tiene `paquetes` en `4`.
+- **Error típico:** creer que el valor anterior sigue disponible con el mismo nombre.
+
+**conversión de tipo e input**
+- **Definición técnica:** `input()` lee una línea del teclado y siempre devuelve un `str`; `int()` y `float()` crean un número a partir de ese texto, o lanzan `ValueError` si el texto no representa un número.
+- **En palabras sencillas:** lo que escribe una persona llega como letras; para hacer cuentas hay que traducirlo a número.
+- **Dónde se rompe la comparación:** la traducción puede fallar: `int("dos")` no sabe leer palabras.
+- **Ejemplo:** `int("3")` devuelve el número `3`.
+- **Error típico:** sumar sin convertir: `input() + 1` produce `TypeError`.
 
 #### ► CÓMO FUNCIONA
+Python ejecuta el archivo de arriba abajo, una línea a la vez. En cada asignación, primero calcula el lado derecho y
+después pega el nombre del lado izquierdo al resultado. Cuando un nombre se usa más adelante, Python busca a qué
+valor está pegado **en ese momento**.
+
 ```mermaid
 flowchart LR
-    TEXT["entrada: '3'"] --> CONVERT["int('3')"] --> VALUE["cantidad = 3"]
-    VALUE --> CALC["precio × cantidad"] --> TOTAL["subtotal"]
+  L1["paquetes = 3"] --> S1["estado: paquetes → 3"]
+  S1 --> L2["paquetes = paquetes + 1"]
+  L2 --> C["calcula 3 + 1 = 4"]
+  C --> S2["estado: paquetes → 4"]
 ```
+
+#### Problema resuelto 2.1
+Registra un envío con sus cuatro datos, muéstralos con su tipo y agrega un paquete.
+
+**Razonamiento:**
+1. Cada dato necesita un nombre y un tipo: la guía es texto, el peso lleva decimales, los paquetes se cuentan y la entrega es sí o no.
+2. Para mostrar valores se usa `print`; para comprobar el tipo, `type`.
+3. Agregar un paquete es reasignar: calcular `paquetes + 1` y guardar el resultado con el mismo nombre.
+
+```python
+# variables.py — registra un envío de RutaFlow
+guia = "RF-4471"      # str: texto, siempre entre comillas
+peso_kg = 2.5         # float: número con parte decimal
+paquetes = 3          # int: número entero
+entregado = False     # bool: solo puede ser True o False
+
+print(guia, peso_kg, paquetes, entregado)
+print(type(guia), type(peso_kg), type(paquetes), type(entregado))
+
+paquetes = paquetes + 1   # reasignación: el estado cambia
+print("paquetes ahora:", paquetes)
+```
+
+```text
+$ python3 variables.py
+RF-4471 2.5 3 False
+<class 'str'> <class 'float'> <class 'int'> <class 'bool'>
+paquetes ahora: 4
+```
+
+**Explicación por partes.**
+- Líneas 2–5: cuatro asignaciones. Cada una crea un nombre y le pega un valor de distinto tipo.
+- Línea 7: `print` recibe cuatro valores separados por comas y los muestra separados por espacios.
+- Línea 8: `type` confirma los tipos que dedujimos en el razonamiento.
+- Línea 10: Python calcula primero `paquetes + 1` (da `4`) y luego reasigna `paquetes`.
+
+> **Error común.** Escribir el nombre con otra mayúscula. `print(Guia)` termina el programa con
+> `NameError: name 'Guia' is not defined. Did you mean: 'guia'?`. Lee el mensaje de derecha a izquierda: Python no
+> encontró `Guia` y te sugiere el nombre que sí existe.
+
+> **Error común.** Unir texto y número con `+`. `print("Paquetes: " + 3)` produce
+> `TypeError: can only concatenate str (not "int") to str`. Usa una coma: `print("Paquetes:", 3)`.
+
+> **Buena práctica.** Los nombres dicen qué guardan y en qué unidad: `peso_kg` en vez de `p` o `dato1`. Se escriben
+> en minúscula con guion bajo (*snake_case*), la convención oficial de Python (PEP 8).
+
+#### Problema resuelto 2.2
+El cliente escribe en el teclado cuántos paquetes trae. Suma uno más y muestra el total.
+
+**Razonamiento:**
+1. `input` devuelve siempre texto, aunque la persona escriba un número.
+2. Para sumar hay que convertir ese texto a `int` con `int()`.
+3. Si el texto no es un número, `int()` falla: hay que saber leer ese error.
+
+```python
+# cantidad.py — lee cuántos paquetes trae el cliente
+texto = input("Paquetes: ")
+print(type(texto))
+cantidad = int(texto)
+print(type(cantidad))
+print("total de paquetes:", cantidad + 1)
+```
+
+```text
+$ echo 3 | python3 cantidad.py
+Paquetes: <class 'str'>
+<class 'int'>
+total de paquetes: 4
+```
+
+**Explicación por partes.**
+- Línea 2: `input` muestra `Paquetes: ` y espera una línea. Aquí `echo 3 |` escribe `3` por ti, así la salida no depende de teclear a tiempo.
+- Línea 3: confirma que lo leído es `str`, aunque parezca un número.
+- Línea 4: `int(texto)` convierte `"3"` en `3`.
+- Línea 6: ahora sí se puede sumar.
+
+> **Error común.** Escribir una palabra donde se espera un número. Con `echo dos | python3 cantidad.py` el
+> programa termina con `ValueError: invalid literal for int() with base 10: 'dos'`. Significa: «el texto `'dos'` no
+> se puede leer como entero en base 10».
+
+> **Prevenir errores.** Antes de convertir, decide qué hará el programa con una entrada inválida. En el Tema 3
+> aprenderás a comprobarla con `if` y a pedirla de nuevo.
+
+#### Checkpoint 2.1
+Si después del Problema resuelto 2.1 escribes `paquetes = paquetes * 2`, ¿qué valor queda en `paquetes`?
+
+Respuesta: `8`. Antes de esa línea `paquetes` vale `4` por la reasignación anterior, y `4 * 2 = 8`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```python
-precio = 25.50
-cantidad = 3
-subtotal = precio * cantidad
-print(subtotal)
-```
+#### Paso 1 · Prepara la carpeta
+Crea la carpeta `~/labs/variables` y entra con `cd ~/labs/variables`.
 
-```python
-texto = input("Cantidad: ")
-cantidad = int(texto)
-print("cantidad leida:", cantidad)
-```
+#### Paso 2 · Registra el envío
+Escribe `variables.py` (Problema resuelto 2.1) y ejecútalo con `python3 variables.py`. Compara tu salida con la del tema.
 
-```mermaid
-flowchart LR
-    TEXT["entrada: '3'"] --> CONVERT["int('3')"] --> VALUE["cantidad = 3"]
-    VALUE --> CALC["precio × cantidad"] --> TOTAL["subtotal"]
-```
+#### Paso 3 · Lee datos del teclado
+Escribe `cantidad.py` (Problema resuelto 2.2) y pruébalo con `echo 3 | python3 cantidad.py` y con `echo dos | python3 cantidad.py`.
 
-```
-int("1e10") → _________
-Rango válido: 1 a 1000. Si entra 10000: _________
-Ruta segura: float() o Decimal() antes de int()? _________
-"3,14" vs "3.14": El mismo número? _________ (¿por qué?)
-```
+#### Paso 4 · Provoca y corrige los errores
+Provoca a propósito el `NameError` y el `TypeError` del tema, lee cada mensaje y corrígelo.
 
-```python
-> texto = "1e10"           # lo que escribió la persona
-> numero = float(texto)    # "1e10" → 10000000000.0
-> if numero.is_integer() and 1 <= numero <= 1000:
->     cantidad = int(numero)
->     print("cantidad válida:", cantidad)
-> else:
->     print("cantidad rechazada:", texto)
-> ```
+#### Resumen
+- Una **variable** es un nombre asociado a un **valor**.
+- La **asignación** `=` calcula la derecha y guarda el resultado con el nombre de la izquierda.
+- Cada valor tiene un **tipo de dato** (`str`, `int`, `float`, `bool`) que define qué operaciones admite.
+- **Reasignar** cambia el **estado** del programa; el valor anterior deja de estar disponible con ese nombre.
+- `input` siempre devuelve texto; **convertir** con `int()` o `float()` permite hacer cuentas.
+- `NameError`: ese nombre no existe. `TypeError`: esa operación no sirve para esos tipos. `ValueError`: ese texto no se puede convertir.
 
-```bash
-mkdir ejemplo-variables
-cd ejemplo-variables
-mkdir src
-```
+#### Ejercicio verificable 1
+Básico. Calcula el costo de un envío: tarifa de 4200 por kg, peso de 2.5 kg y recargo urgente de 3000. Guarda cada
+dato en una variable y muestra el total.
+
+Respuesta esperada: `13500.0`. Es `float` porque multiplicar un `int` por un `float` da `float`; con `int(total)` se muestra `13500`.
+
+#### Ejercicio verificable 2
+Intermedio. Sin ejecutarlo, escribe qué muestran `print("3" * 2)` y `print(3 * 2)`. Luego compruébalo.
+
+Respuesta esperada: `33` y `6`. Con texto, `*` repite el texto; con números, multiplica.
+
+#### Ejercicio verificable 3
+Reto. Lee el peso con `input` (por ejemplo `echo 2.5 | python3 costo.py`) y calcula el costo del Ejercicio 1.
+
+Respuesta esperada: `13500.0`. El peso tiene decimales, así que se convierte con `float()`, no con `int()`: `int("2.5")` lanza `ValueError`.
+
+#### En el trabajo
+En un backend real, estos datos llegan en una petición o en un archivo y terminan en una base de datos. Los mismos
+errores aparecen a otra escala: un `TypeError` por recibir el peso como texto (`"2.5"`) o un `ValueError` por una
+celda vacía son de los fallos más comunes al leer formularios y archivos CSV.
 
 </details>
 

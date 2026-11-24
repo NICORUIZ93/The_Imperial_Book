@@ -516,6 +516,7 @@ export class LessonViewerComponent implements OnDestroy {
     const hasPractice = this.markChapterPractice(container);
     this.applyTopicFocus(container);
     this.enhanceVerifiableExercises(container);
+    this.enhanceTemplateBlocks(container);
     this.addTopicNavigation(Array.from(container.querySelectorAll<HTMLHeadingElement>('h3.topic-heading')), hasPractice);
     this.numberBookExhibits(container);
     this.refreshBookStructure(container);
@@ -1037,6 +1038,111 @@ export class LessonViewerComponent implements OnDestroy {
    * sección de libro de texto (OpenStax, Halliday), en vez de texto corrido
    * fácil de saltarse al leer.
    */
+  /**
+   * Plantilla académica única (docs/PLANTILLA_CURSO.md): convierte el Markdown
+   * del tema en las piezas del libro de texto sin escribir HTML a mano.
+   * - Ficha de término: párrafo con solo el término en negrita + lista cuyo
+   *   primer punto es «Definición técnica:» → tarjeta con técnico y sencillo
+   *   lado a lado y el resto (comparación, ejemplo, error típico) debajo.
+   * - Recuadros: cita que empieza por «Error común.», «Buena práctica.»,
+   *   «Prevenir errores.», «Rendimiento.» o «Ingeniería de software.».
+   * - Bloques: «Objetivos», «El problema», «Glosario del tema», «Resumen» y
+   *   «En el trabajo» reciben su estilo de libro.
+   * Solo se mueven nodos ya renderizados; no se interpreta texto como HTML.
+   */
+  private enhanceTemplateBlocks(container: HTMLElement): void {
+    container.querySelectorAll<HTMLParagraphElement>('p').forEach(paragraph => {
+      const strong = paragraph.querySelector(':scope > strong:only-child');
+      const list = paragraph.nextElementSibling;
+      if (!strong || paragraph.textContent?.trim() !== strong.textContent?.trim()) return;
+      if (!(list instanceof HTMLUListElement)) return;
+      const items = Array.from(list.children).filter((li): li is HTMLLIElement => li instanceof HTMLLIElement);
+      const label = (li: HTMLLIElement) => li.querySelector(':scope > strong:first-child')?.textContent?.trim().replace(/:$/, '') ?? '';
+      if (!items.length || label(items[0]) !== 'Definición técnica') return;
+
+      const card = document.createElement('div');
+      card.className = 'term-card';
+      const name = document.createElement('div');
+      name.className = 'term-card-name';
+      name.append(...Array.from(strong.childNodes));
+      card.append(name);
+
+      const pair = document.createElement('div');
+      pair.className = 'term-card-pair';
+      const extra = document.createElement('div');
+      extra.className = 'term-card-extra';
+      items.forEach(item => {
+        const key = label(item);
+        item.querySelector(':scope > strong:first-child')?.remove();
+        const body = document.createElement('p');
+        body.append(...Array.from(item.childNodes));
+        if (body.firstChild?.nodeType === Node.TEXT_NODE) {
+          const text = (body.firstChild.textContent ?? '').replace(/^\s+/, '');
+          body.firstChild.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+        }
+        if (key === 'Definición técnica' || key === 'En palabras sencillas') {
+          const col = document.createElement('div');
+          col.className = key === 'Definición técnica' ? 'term-card-col term-card-tech' : 'term-card-col term-card-plain';
+          const small = document.createElement('small');
+          small.textContent = key;
+          col.append(small, body);
+          pair.append(col);
+        } else {
+          const row = document.createElement('div');
+          const b = document.createElement('b');
+          b.textContent = `${key}: `;
+          body.prepend(b);
+          row.append(body);
+          extra.append(row);
+        }
+      });
+      card.append(pair);
+      if (extra.childElementCount) card.append(extra);
+      list.remove();
+      paragraph.replaceWith(card);
+    });
+
+    const callouts: Record<string, string> = {
+      'Error común.': 'error', 'Buena práctica.': 'good', 'Prevenir errores.': 'prevent',
+      'Rendimiento.': 'performance', 'Ingeniería de software.': 'engineering',
+    };
+    container.querySelectorAll<HTMLQuoteElement>('blockquote').forEach(quote => {
+      const strong = quote.querySelector(':scope > p:first-child > strong:first-child');
+      const key = strong?.textContent?.trim() ?? '';
+      const kind = callouts[key];
+      if (!kind || !strong) return;
+      quote.classList.add('callout', `callout-${kind}`);
+      const head = document.createElement('div');
+      head.className = 'callout-label';
+      head.textContent = key.replace(/\.$/, '');
+      strong.remove();
+      const first = quote.querySelector(':scope > p:first-child');
+      if (first?.firstChild?.nodeType === Node.TEXT_NODE) first.firstChild.textContent = (first.firstChild.textContent ?? '').replace(/^\s+/, '');
+      quote.prepend(head);
+    });
+
+    const blocks: Record<string, string> = {
+      'Objetivos': 'block-objectives', 'El problema': 'block-problem', 'Glosario del tema': 'block-glossary',
+      'Resumen': 'block-summary', 'En el trabajo': 'block-work',
+    };
+    container.querySelectorAll<HTMLHeadingElement>('h4').forEach(heading => {
+      const cls = blocks[heading.textContent?.trim() ?? ''];
+      if (!cls) return;
+      heading.classList.add('block-heading', cls);
+      if (cls !== 'block-summary') return;
+      const box = document.createElement('div');
+      box.className = 'summary-box';
+      heading.before(box);
+      box.append(heading);
+      let next = box.nextElementSibling;
+      while (next && !/^H[1-4]$/.test(next.tagName) && next.tagName !== 'DETAILS') {
+        const move = next;
+        next = next.nextElementSibling;
+        box.append(move);
+      }
+    });
+  }
+
   private renderKeyTerms(paragraph: HTMLElement, label: string): void {
     const rest = paragraph.textContent?.slice(label.length).replace(/^:/, '').trim() ?? '';
     const terms = rest.split(/,(?![^(]*\))/).map(term => term.trim()).filter(Boolean);
