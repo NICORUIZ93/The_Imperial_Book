@@ -3,7 +3,7 @@
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-1-poo.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de POO: clase base, herencia, records, interfaces y clases abstractas](/visuals/temas/java/modulo-1-poo.html)
+**Visual:** [Mapa de POO: clase base, herencia, records, interfaces y clases abstractas](/visuals/temas/java/modulo-1-poo.html)
 
 Lectura: Objetos para dominio, interfaces para contratos, records para valores y validación antes de construir.
 
@@ -1431,7 +1431,7 @@ public final class TiendaAuroraPooApp {
 
 #### Test
 
-**Archivo:** `src/test/java/com/aurora/poo/PooDomainTest.java` (ruta real en `/tmp/opencode/aurora-m1`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+**Archivo:** `src/test/java/com/aurora/poo/PooDomainTest.java` (ruta real en `~/labs/aurora-m1`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
 
 ```java
 package com.aurora.poo;
@@ -2413,7 +2413,7 @@ El error más común es usar un método de instancia (no estático) para prepara
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m1` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q clean test

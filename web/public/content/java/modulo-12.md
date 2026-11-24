@@ -6,7 +6,7 @@ En este módulo construyes `tienda-aurora-java-m12`, un proyecto donde cada patr
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-12-patrones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de patrones por intención: creación, comportamiento y estructura](/visuals/temas/java/modulo-12-patrones.html)
+**Visual:** [Mapa de patrones por intención: creación, comportamiento y estructura](/visuals/temas/java/modulo-12-patrones.html)
 
 Lectura: Patrones organizados por intención. El criterio es: problema real, presión de cambio y prueba que lo justifique.
 
@@ -1208,7 +1208,7 @@ class PatronesTest {
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m12` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). Comandos: `./gradlew -q test` y `./gradlew -q run`. Con `-q`, Gradle no imprime las pruebas que pasan: el conteo se lee del XML de resultados. La salida observada fue:
+Ejecutado el 2026-11-23 en `~/labs/aurora-m12` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). Comandos: `./gradlew -q test` y `./gradlew -q run`. Con `-q`, Gradle no imprime las pruebas que pasan: el conteo se lee del XML de resultados. La salida observada fue:
 
 ```text
 $ ./gradlew -q test

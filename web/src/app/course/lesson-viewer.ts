@@ -505,10 +505,12 @@ export class LessonViewerComponent implements OnDestroy {
         this.diagramError.set(`No se pudo renderizar un diagrama: ${detail}`);
       }
       this.attachDiagramZoom(container);
+      this.animateFlowDiagrams(container);
     }
 
     await this.renderMath(container);
     this.prepareAnatomyFigures(container);
+    this.prepareAnimatedFigures(container);
     this.prepareArchifyVisuals(container);
     this.enhanceEducationalContent(container);
     const hasPractice = this.markChapterPractice(container);
@@ -591,6 +593,62 @@ export class LessonViewerComponent implements OnDestroy {
     });
   }
 
+  /**
+   * Flechas animadas (técnica de Dashmotion, https://github.com/csthink/dashmotion):
+   * en diagramas de flujo y de estados, el trazo discontinuo avanza en el sentido
+   * de la ejecución y un punto recorre cada conexión como una petición en vuelo.
+   * Con «reducir movimiento» activo no se anima nada y queda el diagrama estático.
+   */
+  private animateFlowDiagrams(container: HTMLElement): void {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const svgNs = 'http://www.w3.org/2000/svg';
+    container.querySelectorAll<HTMLElement>('.visual-diagram').forEach((figure, figureIndex) => {
+      const svg = figure.querySelector<SVGSVGElement>('pre.mermaid svg');
+      if (!svg || svg.dataset['flowAnimated'] === 'true') return;
+      const edges = Array.from(svg.querySelectorAll<SVGPathElement>('path.flowchart-link, g.edgePaths path, path.transition'))
+        .filter((edge, index, all) => all.indexOf(edge) === index);
+      if (!edges.length) return;
+      svg.dataset['flowAnimated'] = 'true';
+      svg.classList.add('flow-animated');
+      edges.forEach((edge, edgeIndex) => {
+        edge.classList.add('flow-edge');
+        const length = typeof edge.getTotalLength === 'function' ? edge.getTotalLength() : 0;
+        if (!length || !edge.parentNode) return;
+        if (!edge.id) edge.id = `flow-edge-${figureIndex}-${edgeIndex}`;
+        const dot = document.createElementNS(svgNs, 'circle');
+        dot.setAttribute('r', '3');
+        dot.setAttribute('class', 'flow-dot');
+        const motion = document.createElementNS(svgNs, 'animateMotion');
+        motion.setAttribute('dur', `${Math.min(4, Math.max(1.4, length / 70)).toFixed(2)}s`);
+        motion.setAttribute('begin', `${((edgeIndex % 6) * 0.25).toFixed(2)}s`);
+        motion.setAttribute('repeatCount', 'indefinite');
+        const path = document.createElementNS(svgNs, 'mpath');
+        path.setAttribute('href', `#${edge.id}`);
+        motion.append(path);
+        dot.append(motion);
+        edge.parentNode.insertBefore(dot, edge.nextSibling);
+      });
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'diagram-motion-toggle';
+      const sync = (paused: boolean) => {
+        toggle.textContent = paused ? 'Animar' : 'Pausar';
+        toggle.setAttribute('aria-pressed', String(paused));
+        toggle.setAttribute('aria-label', paused ? 'Reanudar la animación del diagrama' : 'Pausar la animación del diagrama');
+      };
+      sync(false);
+      toggle.addEventListener('click', event => {
+        event.stopPropagation();
+        const paused = !svg.classList.contains('flow-paused');
+        svg.classList.toggle('flow-paused', paused);
+        if (paused) svg.pauseAnimations?.(); else svg.unpauseAnimations?.();
+        sync(paused);
+      });
+      const zoom = figure.querySelector('.diagram-zoom-open');
+      (zoom?.parentElement ?? figure.querySelector('figcaption') ?? figure).insertBefore(toggle, zoom ?? null);
+    });
+  }
+
   private openDiagram(figure: HTMLElement, title: string, trigger: HTMLElement): void {
     const svg = figure.querySelector<SVGSVGElement>('pre.mermaid svg');
     const dialog = this.diagramDialog()?.nativeElement;
@@ -661,6 +719,21 @@ export class LessonViewerComponent implements OnDestroy {
   // inyectarlo aquí (fuera del binding) es lo que permite que la figura
   // interactiva (skill Anatomy) conserve su JS en vivo, en vez de quedar
   // reducida a una imagen estática.
+  /**
+   * Figuras animadas (SVG en bucle hechos con animdiagram,
+   * https://github.com/praveenvijayan/animdiagram): cada una tiene variante
+   * oscura (`x.svg`) y clara (`x-light.svg`); se elige según el tema activo.
+   */
+  private prepareAnimatedFigures(container: HTMLElement): void {
+    const light = !this.themeService.isDark();
+    container.querySelectorAll<HTMLImageElement>('img[src*="figures/animados/"]').forEach(img => {
+      img.classList.add('animated-figure');
+      img.loading = 'lazy';
+      const src = img.getAttribute('src') ?? '';
+      if (light && !src.endsWith('-light.svg')) img.setAttribute('src', src.replace(/\.svg$/, '-light.svg'));
+    });
+  }
+
   private prepareAnatomyFigures(container: HTMLElement): void {
     container.querySelectorAll<HTMLElement>('.anatomy-figure').forEach(marker => {
       if (marker.childElementCount > 0) return;

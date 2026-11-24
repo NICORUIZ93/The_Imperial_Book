@@ -4,7 +4,7 @@ El runtime de Java no es un detalle invisible: decide cómo se ve la memoria ent
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-14-jvm-runtime.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de runtime JVM: visibilidad, JIT, deserialización y ciclo de vida](/visuals/temas/java/modulo-14-jvm-runtime.html)
+**Visual:** [Mapa de runtime JVM: visibilidad, JIT, deserialización y ciclo de vida](/visuals/temas/java/modulo-14-jvm-runtime.html)
 
 Lectura: Visibilidad, JIT, deserialización y ciclo de vida son comportamientos de runtime que se diseñan y verifican.
 
@@ -378,7 +378,7 @@ La corrección fue usar el JAR como classpath. CDS depende de JDK, flags y class
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `JH=$(/usr/libexec/java_home)` apunta al JDK 27. Salida observada:
+Ejecutado el 2026-11-23 en `~/labs/aurora-m14` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `JH=$(/usr/libexec/java_home)` apunta al JDK 27. Salida observada:
 
 ```text
 $ ./gradlew -q test
@@ -419,7 +419,7 @@ jdk.jfr@27.0.1.0.2
 $ build/runtime-aurora/bin/java -Xmx64m -XX:MaxMetaspaceSize=64m -XX:StartFlightRecording:filename=build/recording.jfr,duration=2s --module com.aurora.jvm/com.aurora.jvm.App
 [0.194s][info][jfr,startup] Started recording 1. The result will be written to:
 [0.194s][info][jfr,startup] 
-[0.194s][info][jfr,startup] /private/tmp/opencode/aurora-m14/build/recording.jfr
+[0.194s][info][jfr,startup] /Users/tu-usuario/labs/aurora-m14/build/recording.jfr
 visible=42
 ns=true
 Mensaje[texto=hola]
@@ -467,7 +467,7 @@ $ ./gradlew -q dependencies --configuration testRuntimeClasspath | grep -iE "jmh
 $ for t in jmh jcstress; do command -v "$t" || echo "$t: no instalado"; done
 jmh: no instalado
 jcstress: no instalado
-$ cd /tmp/opencode/aurora-m13 && git remote -v
+$ cd ~/labs/aurora-m13 && git remote -v
 fatal: not a git repository (or any of the parent directories): .git
 $ command -v jaotc || echo "jaotc: no disponible en el JDK 27 instalado"
 jaotc: no disponible en el JDK 27 instalado

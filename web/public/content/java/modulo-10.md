@@ -4,18 +4,18 @@ JPMS añade una capa de límites al classpath. El mecanismo es un descriptor, `m
 
 Este mecanismo existe porque en un classpath plano cualquier clase pública puede ser importada por cualquier otra clase, y las dependencias reales quedan implícitas. JPMS convierte esas relaciones en declaraciones verificables y permite además construir una imagen de ejecución reducida con `jlink`. La implicación es doble: ganas encapsulación fuerte y una forma de empaquetado que solo incluye los módulos necesarios, a cambio de tener que mantener los descriptores y lidiar con dependencias no modularizadas. La confusión frecuente es creer que JPMS sustituye a `public`/`private`: no los sustituye, los complementa con un límite entre módulos.
 
-El proyecto verificado es `tienda-aurora-jpms` en `/tmp/opencode/aurora-m10`, con módulos `core` y `app`. Además se compilaron módulos pequeños con `javac` para demostrar `requires transitive`, `ServiceLoader` y automatic modules; ese código se muestra por separado y no forma parte del build Gradle.
+El proyecto verificado es `tienda-aurora-jpms` en `~/labs/aurora-m10`, con módulos `core` y `app`. Además se compilaron módulos pequeños con `javac` para demostrar `requires transitive`, `ServiceLoader` y automatic modules; ese código se muestra por separado y no forma parte del build Gradle.
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-10-jpms.html`; regeneración: editar el HTML/SVG en esa ruta):** [JPMS con exports, opens y paquete interno no exportado](/visuals/temas/java/modulo-10-jpms.html)
+**Visual:** [JPMS con exports, opens y paquete interno no exportado](/visuals/temas/java/modulo-10-jpms.html)
 
 Lectura: exports publica API, opens habilita reflexión controlada, y lo no exportado queda encapsulado.
 
 ## Proyecto verificado
 
 ```text
-/tmp/opencode/aurora-m10/
+~/labs/aurora-m10/
 ├── settings.gradle.kts
 ├── build.gradle.kts
 ├── core/
@@ -52,7 +52,7 @@ gradle wrapper --gradle-version 9.9.1
 
 ## Código completo del proyecto Gradle
 
-Ruta base: `/tmp/opencode/aurora-m10/`.
+Ruta base: `~/labs/aurora-m10/`.
 
 **`settings.gradle.kts`**
 
@@ -189,7 +189,7 @@ public final class TiendaAuroraJpmsApp {
 
 ## Código de la verificación aislada con javac
 
-Estos archivos se crearon solo bajo `/tmp/opencode/aurora-m10/build/jpms-demo/` para ejecutar las demostraciones de `requires transitive` y `ServiceLoader`. No se añadieron al build Gradle del proyecto.
+Estos archivos se crearon solo bajo `~/labs/aurora-m10/build/jpms-demo/` para ejecutar las demostraciones de `requires transitive` y `ServiceLoader`. No se añadieron al build Gradle del proyecto.
 
 **`src/demo.api/module-info.java`**
 
@@ -277,7 +277,7 @@ public final class App {
 #### Ejecución de la aplicación modular
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 ./gradlew -q :app:run
 ```
 
@@ -290,12 +290,12 @@ reflexion=CAF-100:Cafe Aurora
 El descriptor del jar de `core` muestra exactamente qué se exporta y qué se abre:
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 jar --describe-module --file core/build/libs/core-1.0.0.jar
 ```
 
 ```text
-com.aurora.jpms.core jar:file:///private/tmp/opencode/aurora-m10/core/build/libs/core-1.0.0.jar!/module-info.class
+com.aurora.jpms.core jar:file:///Users/tu-usuario/labs/aurora-m10/core/build/libs/core-1.0.0.jar!/module-info.class
 exports com.aurora.jpms.core
 requires java.base mandated
 opens com.aurora.jpms.core
@@ -303,7 +303,7 @@ opens com.aurora.jpms.core
 
 #### Paquete no exportado: acceso denegado
 
-Se creó `/tmp/opencode/aurora-m10/build/intruder-src/Intruder.java`:
+Se creó `~/labs/aurora-m10/build/intruder-src/Intruder.java`:
 
 ```java
 import com.aurora.jpms.internal.TokenInterno;
@@ -316,7 +316,7 @@ public class Intruder {
 ```
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 javac --module-path core/build/libs/core-1.0.0.jar \
   --add-modules com.aurora.jpms.core \
   -d build/intruder-out build/intruder-src/Intruder.java
@@ -335,7 +335,7 @@ Sin `--add-modules` el error previo es distinto —`which is not in the module g
 #### Empaquetado con jlink
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 JH=/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin
 $JH/jlink \
   --module-path "core/build/libs/core-1.0.0.jar:app/build/classes/java/main" \
@@ -369,7 +369,7 @@ java.base@27.0.1.0.2
 #### requires transitive y ServiceLoader
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 D=build/jpms-demo
 JH=/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin
 MP=$D/out/demo.api:$D/out/demo.impl:$D/out/demo.fachada:$D/out/demo.app
@@ -400,7 +400,7 @@ import demo.api.Saludo;
 Se compiló una clase en un jar sin descriptor y se describió con `jar`:
 
 ```bash
-cd /tmp/opencode/aurora-m10
+cd ~/labs/aurora-m10
 JH=/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin
 $JH/jar --describe-module --file build/jpms-demo/auto/aurora-util-1.2.3.jar
 ```
@@ -449,7 +449,7 @@ El nombre deriva del nombre del archivo (`aurora-util-1.2.3.jar` → `aurora.uti
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m10` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `jlink`, `javac`, `jar` y `java` se invocaron desde el JDK de Temurin indicado en Prerrequisitos.
+Ejecutado el 2026-11-23 en `~/labs/aurora-m10` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `jlink`, `javac`, `jar` y `java` se invocaron desde el JDK de Temurin indicado en Prerrequisitos.
 
 | Comando | Resultado observado |
 |---|---|

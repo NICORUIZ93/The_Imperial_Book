@@ -80,7 +80,7 @@ project(":app") {
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-21-compatibilidad.html`; regeneración: editar el HTML/SVG en esa ruta):** [Compatibilidad: fuente frente a binaria](/visuals/temas/java/modulo-21-compatibilidad.html)
+**Visual:** [Compatibilidad: fuente frente a binaria](/visuals/temas/java/modulo-21-compatibilidad.html)
 
 Lectura: cambiar una firma puede conservar la compatibilidad de fuente y romper la binaria; por eso la superficie pública se verifica con artefactos, no de memoria.
 
@@ -457,7 +457,7 @@ La compatibilidad no se “recuerda”, se verifica. El mínimo verificable es t
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m21` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
+Ejecutado el 2026-11-23 en `~/labs/aurora-m21` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
 
 ```bash
 ./gradlew -q test

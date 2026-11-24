@@ -6,7 +6,7 @@ Java no te obliga a elegir entre objetos y funciones. La opción útil es combin
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-20-interfaces-funcionales.html`; regeneración: editar el HTML/SVG en esa ruta):** [Interfaces funcionales: rol de cada una y composición en Flow](/visuals/temas/java/modulo-20-interfaces-funcionales.html)
+**Visual:** [Interfaces funcionales: rol de cada una y composición en Flow](/visuals/temas/java/modulo-20-interfaces-funcionales.html)
 
 Lectura: Cada interfaz funcional expresa una forma de entrada/salida; el flujo compone reglas y efectos.
 
@@ -739,7 +739,7 @@ Flow es la base estándar. Para pipelines reactivos reales con operadores ricos,
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m20` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
+Ejecutado el 2026-11-23 en `~/labs/aurora-m20` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
 
 ```bash
 ./gradlew -q test

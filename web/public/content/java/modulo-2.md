@@ -3,7 +3,7 @@
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-2-colecciones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de colecciones: List, Set, Map, Queue/Deque, contratos y genéricos](/visuals/temas/java/modulo-2-colecciones.html)
+**Visual:** [Mapa de colecciones: List, Set, Map, Queue/Deque, contratos y genéricos](/visuals/temas/java/modulo-2-colecciones.html)
 
 Lectura: La estructura correcta expresa el contrato: orden, unicidad, clave o espera.
 
@@ -1325,7 +1325,7 @@ Los tiempos son ilustrativos de **esa** ejecución: correr dos veces seguidas di
 
 #### Test
 
-**Archivo:** `src/test/java/com/aurora/colecciones/ColeccionesTest.java` (ruta real en `/tmp/opencode/aurora-m2`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+**Archivo:** `src/test/java/com/aurora/colecciones/ColeccionesTest.java` (ruta real en `~/labs/aurora-m2`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
 
 ```java
 package com.aurora.colecciones;
@@ -1656,7 +1656,7 @@ Los avisos usan la misma clase `ArrayDeque`, pero con disciplina FIFO. `addLast`
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m2` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q clean test

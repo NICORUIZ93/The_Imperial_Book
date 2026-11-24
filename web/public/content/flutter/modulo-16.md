@@ -250,6 +250,30 @@ cargo build --release
 
 </details>
 
+#### Caso real: AppFlowy, Flutter con núcleo en Rust
+
+[AppFlowy](https://github.com/appflowy-io/appflowy) es una alternativa open source a Notion. La interfaz está hecha en Flutter y toda la lógica de negocio vive en Rust: el mismo reparto que acabas de construir, llevado a una app completa.
+
+**Cómo hablan los dos lados.** En vez de exponer muchas funciones sueltas, AppFlowy pasa mensajes asíncronos serializados con Protobuf:
+
+- **Eventos (Flutter → Rust):** la interfaz emite un evento con un payload Protobuf; Rust tiene un handler por evento, deserializa el payload y puede descartar peticiones inválidas sin ejecutar nada.
+- **Notificaciones (Rust → Flutter):** mensajes de una sola vía para avisar cambios de estado; la interfaz los escucha y deserializa.
+- El backend define todos los eventos y **genera** la interfaz FFI, así que Dart nunca escribe bindings a mano.
+
+```mermaid
+flowchart LR
+  UI[Flutter · widgets y BLoC] -->|evento + payload Protobuf| FFI[capa FFI generada]
+  FFI --> CORE[Núcleo Rust · handlers por evento]
+  CORE -->|notificación Protobuf| FFI
+  FFI --> UI
+```
+
+**Por qué importa.** Con un solo punto de entrada (evento + bytes) la ABI C se mantiene mínima y estable, y la propiedad de memoria queda clara: cada lado libera lo que reservó (Tema 6).
+
+**Ejercicio.** Compara este diseño con tu biblioteca del tema: ¿cuántas funciones `extern "C"` expones tú? ¿Cómo cambiaría si todo pasara por una sola función `dispatch(bytes)`?
+
+Fuente: [comunicación entre procesos en AppFlowy](https://docs.appflowy.io/docs/documentation/software-contributions/architecture/frontend/inter-process-communication).
+
 ### Tema 4: compilar y empaquetar bibliotecas por plataforma · Avanzado · 30 min
 
 <details open>

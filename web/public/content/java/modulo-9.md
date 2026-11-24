@@ -2,20 +2,20 @@
 
 Una prueba unitaria es una ejecución pequeña y aislada que compara el comportamiento observable de una unidad con un resultado esperado. Su mecanismo es una aserción: si la condición no se cumple, el test falla. Existe porque el cambio de código tiene un costo que crece con la incertidumbre; una suite rápida convierte esa incertidumbre en feedback inmediato sobre el diseño. Si un servicio necesita cinco dobles complicados, el problema suele ser el acoplamiento, no la falta de mocks.
 
-La implicación es que las pruebas son código de proyecto: hay que elegir qué se aísla, qué se ejecuta realmente y qué se mide. La confusión habitual es confundir “se ejecutó código” con “se verificó comportamiento”, o confundir cobertura de líneas con cobertura de decisiones. En este módulo se construye `tienda-aurora-testing` en `/tmp/opencode/aurora-m9` y se usa JUnit Jupiter 5.13.4 (el BOM declarado en el build), Mockito 5.17.0, jqwik 1.9.2 y JaCoCo.
+La implicación es que las pruebas son código de proyecto: hay que elegir qué se aísla, qué se ejecuta realmente y qué se mide. La confusión habitual es confundir “se ejecutó código” con “se verificó comportamiento”, o confundir cobertura de líneas con cobertura de decisiones. En este módulo se construye `tienda-aurora-testing` en `~/labs/aurora-m9` y se usa JUnit Jupiter 5.13.4 (el BOM declarado en el build), Mockito 5.17.0, jqwik 1.9.2 y JaCoCo.
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-9-testing.html`; regeneración: editar el HTML/SVG en esa ruta):** [JUnit, Mockito, tests parametrizados y propiedades](/visuals/temas/java/modulo-9-testing.html)
+**Visual:** [JUnit, Mockito, tests parametrizados y propiedades](/visuals/temas/java/modulo-9-testing.html)
 
 Lectura: Reglas unitarias, dobles para dependencias, tablas de casos y propiedades para invariantes.
 
 ## Proyecto verificado
 
-Directorio: `/tmp/opencode/aurora-m9`. El build declara JUnit con `org.junit:junit-bom:5.13.4`; no hay JUnit 6 en este proyecto.
+Directorio: `~/labs/aurora-m9`. El build declara JUnit con `org.junit:junit-bom:5.13.4`; no hay JUnit 6 en este proyecto.
 
 ```text
-/tmp/opencode/aurora-m9/
+~/labs/aurora-m9/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 ├── src/main/java/com/aurora/testing/
@@ -47,7 +47,7 @@ gradle wrapper --gradle-version 9.9.1
 
 ## Código completo, archivo por archivo
 
-Ruta base para este bloque: `/tmp/opencode/aurora-m9/`.
+Ruta base para este bloque: `~/labs/aurora-m9/`.
 
 **`settings.gradle.kts`**
 
@@ -360,7 +360,7 @@ class DescuentoPropertyTest {
 ## Comandos ejecutados y salida observada
 
 ```bash
-cd /tmp/opencode/aurora-m9
+cd ~/labs/aurora-m9
 ./gradlew -q test --rerun-tasks
 ```
 
@@ -452,9 +452,9 @@ El build usa JUnit Jupiter **5.13.4** mediante `org.junit:junit-bom`. Jupiter es
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m9` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit Jupiter 5.13.4, Mockito 5.17.0, jqwik 1.9.2, JaCoCo incluido en Gradle).
+Ejecutado el 2026-11-23 en `~/labs/aurora-m9` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit Jupiter 5.13.4, Mockito 5.17.0, jqwik 1.9.2, JaCoCo incluido en Gradle).
 
-| Comando (desde `/tmp/opencode/aurora-m9`) | Resultado observado |
+| Comando (desde `~/labs/aurora-m9`) | Resultado observado |
 |---|---|
 | `./gradlew -q test --rerun-tasks` | exit 0; 3 suites, 11 tests, 0 fallas, 0 errores, 0 omitidos |
 | Lectura de `build/test-results/test/TEST-*.xml` | `DescuentoServiceTest` 8, `PedidoServiceTest` 2, `DescuentoPropertyTest` 1 |

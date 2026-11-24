@@ -473,6 +473,28 @@ ssh root@203.0.113.10 'desplegar-rutaflow /root/app && curl -s http://127.0.0.1:
 
 </details>
 
+#### Alternativa: Coolify, un PaaS sobre tu propio VPS
+
+Lo que montaste a mano en este tema (servicio, proxy inverso, TLS, versiones y rollback) es lo que automatiza [Coolify](https://github.com/coollabsio/coolify): una plataforma open source (Apache-2.0) para desplegar apps, bases de datos y servicios en tus servidores, al estilo de Heroku o Vercel.
+
+**Qué hace por ti.** Despliega desde GitHub, GitLab o imágenes Docker; pone un proxy inverso con HTTPS automático; guarda variables y secretos; programa backups; y permite volver a una versión anterior.
+
+**Requisitos.** Linux (Debian, Ubuntu, RHEL y derivados, entre otros) con mínimo 2 núcleos, 2 GB de RAM y 10 GB libres, en amd64 o arm64, y acceso SSH como root o con sudo. La instalación oficial:
+
+```bash
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+```
+
+Luego abres `http://<ip-del-servidor>:8000` y creas la cuenta de administrador en los primeros 10 minutos.
+
+**Cuidado.** Ese comando ejecuta un script remoto como root: córrelo solo en un servidor dedicado y recién endurecido (Tema 1), nunca en tu equipo personal. Respalda `/data/coolify/source/.env`, que guarda secretos como `APP_KEY`.
+
+**Cuándo elegirlo.** Coolify ahorra trabajo cuando tienes varias apps en uno o pocos servidores. Hacerlo a mano, como en este tema, te enseña qué pasa debajo y te deja depurar cuando la plataforma falla.
+
+**Ejercicio.** Haz una tabla con cada paso de este tema (systemd, nginx, certificados, releases, rollback) y escribe qué componente de Coolify lo reemplaza.
+
+Fuente: [instalación de Coolify](https://coolify.io/docs/get-started/installation).
+
 ### Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro · Avanzado · 45 min
 
 <details open>

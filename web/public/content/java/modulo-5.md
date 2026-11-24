@@ -6,7 +6,7 @@ Este módulo construye un `CheckoutService` que consulta catálogo e inventario 
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-5-concurrencia.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de concurrencia Java: ExecutorService, CompletableFuture, virtual threads, structured concurrency, ScopedValue y race condition](/visuals/temas/java/modulo-5-concurrencia.html)
+**Visual:** [Mapa de concurrencia Java: ExecutorService, CompletableFuture, virtual threads, structured concurrency, ScopedValue y race condition](/visuals/temas/java/modulo-5-concurrencia.html)
 
 Lectura: La concurrencia exige coordinar ejecución, cancelación, visibilidad y ciclo de vida, no solo lanzar hilos.
 
@@ -555,12 +555,12 @@ La cancelación cooperativa significa que la tarea revisa si debe parar. `Thread
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, `--enable-preview`).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m5` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, `--enable-preview`).
 
 Desde la raíz del proyecto:
 
 ```bash
-cd /tmp/opencode/aurora-m5
+cd ~/labs/aurora-m5
 ./gradlew -q test
 ./gradlew -q run
 ./gradlew -q run --args="race"

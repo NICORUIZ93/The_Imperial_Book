@@ -57,13 +57,13 @@ Reduce la ceremonia inicial: el proyecto arranca con componentes que declaran su
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-ng-new`
+Carpeta: `/tmp/ng-new`
 
 Archivos/comandos:
 
 ```bash
-mkdir -p /tmp/floci-ng-new
-cd /tmp/floci-ng-new
+mkdir -p /tmp/ng-new
+cd /tmp/ng-new
 ng new demo-m0 --standalone --style=css --routing=false --skip-git --defaults --skip-install
 find demo-m0/src -maxdepth 3 -type f | sort
 ```
@@ -143,12 +143,12 @@ Hace explícita la dependencia del componente: si la plantilla usa otro componen
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-ng-m0/demo-m0` (proyecto creado en el concepto anterior).
+Carpeta: `/tmp/ng-m0/demo-m0` (proyecto creado en el concepto anterior).
 
 Comando:
 
 ```bash
-cd /tmp/floci-ng-m0/demo-m0
+cd /tmp/ng-m0/demo-m0
 ng generate component tarjeta --skip-tests
 cat src/app/tarjeta/tarjeta.ts
 ```
@@ -276,7 +276,7 @@ Permite mostrar estado del componente en la vista de forma declarativa. Cuando c
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-m0-interpolacion`
+Carpeta: `/tmp/ng-m0-interpolacion`
 
 Archivo `interpolacion.mjs`:
 
@@ -291,7 +291,7 @@ console.log(render('Angular'));
 Comando:
 
 ```bash
-node /tmp/floci-m0-interpolacion/interpolacion.mjs
+node /tmp/ng-m0-interpolacion/interpolacion.mjs
 ```
 
 **Caso de uso real**
@@ -392,7 +392,7 @@ Nota honesta: la verificación completa de property binding requiere ejecutar An
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-m0-verify`
+Carpeta: `/tmp/ng-m0-verify`
 
 Archivo `unknown-any.ts`:
 
@@ -409,7 +409,7 @@ function procesarConUnknown(valor: unknown) {
 Comando:
 
 ```bash
-npx -p typescript tsc --noEmit --strict --target ES2022 --module nodenext --moduleResolution nodenext /tmp/floci-m0-verify/unknown-any.ts
+npx -p typescript tsc --noEmit --strict --target ES2022 --module nodenext --moduleResolution nodenext /tmp/ng-m0-verify/unknown-any.ts
 ```
 
 **Caso de uso real**
@@ -427,7 +427,7 @@ Al consumir una respuesta HTTP, el cuerpo puede llegar como desconocido. Usar `u
 Salida observada con TypeScript 7.0.2:
 
 ```text
-../../../../../tmp/floci-m0-verify/unknown-any.ts(6,10): error TS18046: 'valor' is of type 'unknown'.
+../../../../../tmp/ng-m0-verify/unknown-any.ts(6,10): error TS18046: 'valor' is of type 'unknown'.
 ```
 
 Observación: `procesarConAny` no generó error de compilación, aunque la operación es insegura si el valor no es string. `procesarConUnknown` fue rechazado por el compilador.
@@ -449,7 +449,7 @@ Permite que el compilador avise cuando se agrega un nuevo caso a una unión y fa
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-m0-never`
+Carpeta: `/tmp/ng-m0-never`
 
 Archivo `never.ts`:
 
@@ -475,8 +475,8 @@ console.log(etiqueta("pendiente"));
 Comandos:
 
 ```bash
-npx -p typescript tsc --strict --target ES2022 --module nodenext --moduleResolution nodenext --outDir /tmp/floci-m0-never/out /tmp/floci-m0-never/never.ts
-node /tmp/floci-m0-never/out/never.js
+npx -p typescript tsc --strict --target ES2022 --module nodenext --moduleResolution nodenext --outDir /tmp/ng-m0-never/out /tmp/ng-m0-never/never.ts
+node /tmp/ng-m0-never/out/never.js
 ```
 
 **Caso de uso real**
@@ -516,7 +516,7 @@ Permiten modelar variantes de un tipo sin duplicar interfaces: borradores, parch
 
 **Ejemplo mínimo enfocado (ejecutable)**
 
-Carpeta: `/tmp/floci-m0-util`
+Carpeta: `/tmp/ng-m0-util`
 
 Archivo `util.ts`:
 
@@ -536,8 +536,8 @@ console.log(JSON.stringify({ parcial, pick, contador }));
 Comandos:
 
 ```bash
-npx -p typescript tsc --strict --target ES2022 --module nodenext --moduleResolution nodenext --outDir /tmp/floci-m0-util/out /tmp/floci-m0-util/util.ts
-node /tmp/floci-m0-util/out/util.js
+npx -p typescript tsc --strict --target ES2022 --module nodenext --moduleResolution nodenext --outDir /tmp/ng-m0-util/out /tmp/ng-m0-util/util.ts
+node /tmp/ng-m0-util/out/util.js
 ```
 
 **Caso de uso real**

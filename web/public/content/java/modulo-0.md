@@ -3,7 +3,7 @@
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-0-jvm-pipeline.html`; regeneración: editar el HTML/SVG en esa ruta):** [De .java a ejecución en JVM: compilación a bytecode, carga, verificación y ejecución](/visuals/temas/java/modulo-0-jvm-pipeline.html)
+**Visual:** [De .java a ejecución en JVM: compilación a bytecode, carga, verificación y ejecución](/visuals/temas/java/modulo-0-jvm-pipeline.html)
 
 Lectura: El bytecode es el puente portable entre el código fuente y la JVM.
 
@@ -1066,7 +1066,7 @@ record Producto(String sku, String nombre, long centavos, int stock) {
 
 #### Test
 
-**Archivo:** `src/test/java/com/aurora/fundamentos/FundamentosTest.java` (ruta real en `/tmp/opencode/aurora-m0`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+**Archivo:** `src/test/java/com/aurora/fundamentos/FundamentosTest.java` (ruta real en `~/labs/aurora-m0`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
 
 ```java
 package com.aurora.fundamentos;
@@ -1919,7 +1919,7 @@ El error más común es ejecutar un archivo compacto con un JDK anterior a 25. L
 
 `IO` también lee. Este segundo archivo compacto usa `IO.readln` con mensaje y pertenece al proyecto verificable; cada bloque siguiente es el contenido completo del archivo.
 
-**Archivo:** `scripts/LeerNombre.java` en `/tmp/opencode/aurora-m0`.
+**Archivo:** `scripts/LeerNombre.java` en `~/labs/aurora-m0`.
 
 ```java
 import module java.base;
@@ -1966,7 +1966,7 @@ El compilador no llega a quejarse de `IO.readln`: se detiene antes, en las dos c
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m0` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 ```bash
 ./gradlew -q clean test

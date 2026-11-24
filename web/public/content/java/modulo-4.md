@@ -6,7 +6,7 @@ Un stream no es una colección. Es una secuencia de elementos que se consume una
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-4-streams.html`; regeneración: editar el HTML/SVG en esa ruta):** [Pipeline de Java Streams con fuente, operaciones intermedias, gather, terminal y Optional](/visuals/temas/java/modulo-4-streams.html)
+**Visual:** [Pipeline de Java Streams con fuente, operaciones intermedias, gather, terminal y Optional](/visuals/temas/java/modulo-4-streams.html)
 
 Lectura: Fuente → operaciones intermedias perezosas → terminal. Optional hace explícita la ausencia.
 
@@ -762,12 +762,12 @@ El número relevante no es `2ms`: los tiempos dependen del equipo, la carga y la
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m4` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m4` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 Desde la raíz del proyecto:
 
 ```bash
-cd /tmp/opencode/aurora-m4
+cd ~/labs/aurora-m4
 ./gradlew -q test
 ./gradlew -q run
 ./gradlew -q run --args="auditoria"

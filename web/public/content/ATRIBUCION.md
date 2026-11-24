@@ -31,6 +31,16 @@ Los modulos 19 a 22 de la ruta DevOps se apoyan en estas obras y documentacion:
   Los textos de esta academia son redaccion original en espanol: no se
   reproducen parrafos ni se traduce la obra, y las practicas se adaptaron al
   proyecto RutaFlow y al laboratorio local.
+- **animdiagram** — Praveen Vijayan, licencia MIT.
+  <https://github.com/praveenvijayan/animdiagram>
+  Las figuras de `figures/animados/` son adaptaciones al español de sus
+  diagramas de ejemplo (async jobs, serverless, rate limiter y PKCE), con la
+  variante clara generada por su script `skin.py`.
+- **Dashmotion** — csthink, licencia MIT.
+  <https://github.com/csthink/dashmotion>
+  El lector de lecciones aplica su técnica de conectores animados (trazo
+  discontinuo que avanza y punto que recorre la conexión) a los diagramas
+  Mermaid; no se copia código del proyecto.
 - **Floci** — emulador cloud local bajo licencia MIT, ya atribuido arriba.
   <https://floci.io/>
 

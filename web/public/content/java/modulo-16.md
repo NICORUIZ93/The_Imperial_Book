@@ -6,7 +6,7 @@ Este módulo construye `tienda-aurora-jpa` con H2 para el día a día, Hibernate
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-16-jpa.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa JPA: entidades, EntityManager, consultas, SQL real, N+1 y EntityGraph](/visuals/temas/java/modulo-16-jpa.html)
+**Visual:** [Mapa JPA: entidades, EntityManager, consultas, SQL real, N+1 y EntityGraph](/visuals/temas/java/modulo-16-jpa.html)
 
 Lectura: JPA abstrae el mapeo, no el costo. El SQL generado y la estrategia de carga deben ser visibles.
 
@@ -1251,10 +1251,10 @@ class JpaAuroraTest {
 
 ## Verificación real
 
-Ejecutado nuevamente el 2026-11-23 en `/tmp/opencode/aurora-m16` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, Docker Desktop 29.9.3 con imagen `postgres:16-alpine` disponible).
+Ejecutado nuevamente el 2026-11-23 en `~/labs/aurora-m16` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, Docker Desktop 29.9.3 con imagen `postgres:16-alpine` disponible).
 
 ```bash
-cd /tmp/opencode/aurora-m16
+cd ~/labs/aurora-m16
 ./gradlew test --rerun-tasks --console=plain
 ./gradlew -q demoN1
 ./gradlew -q run

@@ -4,18 +4,18 @@ Cuando una aplicación Java se vuelve lenta o consume demasiada memoria, el cód
 
 Estas herramientas existen porque el comportamiento de la JVM —cuándo recolecta, qué método compila el JIT, qué objeto mantiene vivo otro— no está determinado únicamente por el código fuente: depende del heap, del recolector, de la carga y de la versión de JDK. La implicación es que toda afirmación de rendimiento necesita evidencia obtenida en el entorno y con el workload que se quiere explicar. La confusión habitual es tunear flags sin medir, o extraer de una microcarga una conclusión válida para producción.
 
-El proyecto verificado es `tienda-aurora-jvm` en `/tmp/opencode/aurora-m11`. Todos los comandos y salidas de este módulo se ejecutaron allí el 2026-11-23.
+El proyecto verificado es `tienda-aurora-jvm` en `~/labs/aurora-m11`. Todos los comandos y salidas de este módulo se ejecutaron allí el 2026-11-23.
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-11-jvm.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa visual de JVM: heap y GC, JFR/JIT, referencias y heap dump, FFM y memoria nativa](/visuals/temas/java/modulo-11-jvm.html)
+**Visual:** [Mapa visual de JVM: heap y GC, JFR/JIT, referencias y heap dump, FFM y memoria nativa](/visuals/temas/java/modulo-11-jvm.html)
 
 Lectura: Mapa visual: cada herramienta de diagnóstico responde una pregunta distinta. La evidencia debe tomarse en tu workload y entorno.
 
 ## Proyecto verificado
 
 ```text
-/tmp/opencode/aurora-m11/
+~/labs/aurora-m11/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── src/main/java/com/aurora/jvm/
@@ -44,7 +44,7 @@ gradle wrapper --gradle-version 9.9.1
 
 ## Código completo, archivo por archivo
 
-Ruta base: `/tmp/opencode/aurora-m11/`.
+Ruta base: `~/labs/aurora-m11/`.
 
 **`settings.gradle.kts`**
 
@@ -277,7 +277,7 @@ public final class TiendaAuroraJvmApp {
 #### Build y CLI
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 ./gradlew -q build
 ./gradlew -q run --args="demo"
 ```
@@ -292,7 +292,7 @@ softPresente=true
 phantomEncolada=true
 == ffm ==
 WARNING: A restricted method in java.lang.foreign.Linker has been called
-WARNING: java.lang.foreign.Linker::downcallHandle has been called by com.aurora.jvm.TiendaAuroraJvmApp in an unnamed module (file:/private/tmp/opencode/aurora-m11/build/classes/java/main/)
+WARNING: java.lang.foreign.Linker::downcallHandle has been called by com.aurora.jvm.TiendaAuroraJvmApp in an unnamed module (file:/Users/tu-usuario/labs/aurora-m11/build/classes/java/main/)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
@@ -302,7 +302,7 @@ strlen=6
 La tarea `test` se ejecutó para comprobar el estado del proyecto:
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 ./gradlew test
 ```
 
@@ -318,7 +318,7 @@ No hay tests en `src/test`; no se reporta “0 fallas en tests” porque no se e
 #### GC logs: G1 por defecto
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 java -Xms32m -Xmx32m -Xlog:gc -cp build/classes/java/main \
   com.aurora.jvm.TiendaAuroraJvmApp alloc 200000
 ```
@@ -344,7 +344,7 @@ Las líneas de GC van a stderr y las del programa a stdout; por eso aparecen int
 Mismo comando lógico, mismo heap de 32 MB y misma carga de 300000 asignaciones:
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 java -Xms32m -Xmx32m -XX:+UseG1GC -Xlog:gc -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp alloc 300000
 java -Xms32m -Xmx32m -XX:+UseZGC -Xlog:gc -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp alloc 300000
 ```
@@ -407,7 +407,7 @@ Ambas corridas producen el mismo `checksum`, así que el trabajo realizado coinc
 La grabación se hizo con una ejecución suficientemente larga para que el archivo tenga duración y muestras. La salida del programa se redirigió a `build/jfr/programa-largo.txt`; a continuación se muestran las primeras y últimas líneas leídas de ese archivo.
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 JFR=/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin/jfr
 java -XX:StartFlightRecording=filename=build/jfr/m11-largo.jfr,dumponexit=true,settings=profile \
   -cp build/classes/java/main com.aurora.jvm.TrabajoCpu 3000000 12000 \
@@ -485,7 +485,7 @@ El hotspot observado es `TrabajoCpu.carga(int)` en la línea 10 del bucle, llama
 #### Referencias especiales
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 ./gradlew -q run --args="refs"
 ```
 
@@ -499,7 +499,7 @@ phantomEncolada=true
 #### Heap dump ante OutOfMemoryError
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 java -Xms64m -Xmx64m -XX:+HeapDumpOnOutOfMemoryError \
   -XX:HeapDumpPath=build/m11-oom.hprof \
   -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp leak 120
@@ -526,7 +526,7 @@ Los números de línea del stack trace coinciden con el código transcrito: la l
 #### FFM con y sin native access
 
 ```bash
-cd /tmp/opencode/aurora-m11
+cd ~/labs/aurora-m11
 java -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp ffm
 java --enable-native-access=ALL-UNNAMED -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp ffm
 java --enable-native-access=ALL-UNNAMED -cp build/classes/java/main com.aurora.jvm.TiendaAuroraJvmApp ffm-closed
@@ -536,7 +536,7 @@ Sin la flag, la llamada restringida emite advertencias y termina correctamente:
 
 ```text
 WARNING: A restricted method in java.lang.foreign.Linker has been called
-WARNING: java.lang.foreign.Linker::downcallHandle has been called by com.aurora.jvm.TiendaAuroraJvmApp in an unnamed module (file:/private/tmp/opencode/aurora-m11/build/classes/java/main/)
+WARNING: java.lang.foreign.Linker::downcallHandle has been called by com.aurora.jvm.TiendaAuroraJvmApp in an unnamed module (file:/Users/tu-usuario/labs/aurora-m11/build/classes/java/main/)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
@@ -599,9 +599,9 @@ error=IllegalStateException
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m11` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `jfr` se invocó desde `/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin/jfr`.
+Ejecutado el 2026-11-23 en `~/labs/aurora-m11` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25). `jfr` se invocó desde `/Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home/bin/jfr`.
 
-| Comando (desde `/tmp/opencode/aurora-m11`) | Resultado observado |
+| Comando (desde `~/labs/aurora-m11`) | Resultado observado |
 |---|---|
 | `./gradlew -q build` | exit 0 |
 | `./gradlew -q run --args="demo"` | referencias y `strlen=6`, con warnings FFM esperados |

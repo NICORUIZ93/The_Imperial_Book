@@ -4,16 +4,16 @@ Spring Framework es un contenedor que crea objetos, resuelve sus dependencias, e
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html`; regeneración: editar el HTML/SVG en esa ruta):** [Spring crea y conecta los beans](/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html)
+**Visual:** [Spring crea y conecta los beans](/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html)
 
 Lectura: el código declara dependencias y el contenedor decide cuándo instanciar, inyectar, envolver y destruir.
 
 ## Proyecto verificado
 
-Directorio: `/tmp/opencode/aurora-sb0/aurora-sb0`. El código se ejecutó completo en ese directorio; las salidas transcritas son las de esa corrida, no valores esperados calculados a mano.
+Directorio: `~/labs/aurora-sb0/aurora-sb0`. El código se ejecutó completo en ese directorio; las salidas transcritas son las de esa corrida, no valores esperados calculados a mano.
 
 ```text
-/tmp/opencode/aurora-sb0/aurora-sb0/
+~/labs/aurora-sb0/aurora-sb0/
 ├── pom.xml
 ├── mvnw
 ├── src/main/java/com/aurora/sb0/
@@ -67,7 +67,7 @@ $ javap -verbose target/classes/com/aurora/sb0/AuroraSb0Application.class | grep
 
 ```bash
 curl -sS 'https://start.spring.io/metadata/client' | jq -r '.bootVersion | "default=\(.default)", (.values[] | select(.id=="4.2.0.RELEASE") | "id=\(.id) name=\(.name)")'
-curl -sS 'https://start.spring.io/pom.xml?type=maven-project&bootVersion=4.2.0.RELEASE&javaVersion=25&groupId=com.aurora&artifactId=aurora-sb0&name=aurora-sb0&packageName=com.aurora.sb0' -o /tmp/opencode/aurora-sb0/aurora-sb0/target/pom-initializr.xml
+curl -sS 'https://start.spring.io/pom.xml?type=maven-project&bootVersion=4.2.0.RELEASE&javaVersion=25&groupId=com.aurora&artifactId=aurora-sb0&name=aurora-sb0&packageName=com.aurora.sb0' -o ~/labs/aurora-sb0/aurora-sb0/target/pom-initializr.xml
 ```
 
 ```text
@@ -1153,9 +1153,9 @@ No se ejecutó GraalVM Native Image ni se compiló un ejecutable nativo: el ento
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 desde `/tmp/opencode/aurora-sb0/aurora-sb0` (macOS arm64, JDK 27.0.1.0.2, wrapper Maven 3.10.1, Spring Boot 4.2.0, target Java 25).
+Ejecutado el 2026-11-23 desde `~/labs/aurora-sb0/aurora-sb0` (macOS arm64, JDK 27.0.1.0.2, wrapper Maven 3.10.1, Spring Boot 4.2.0, target Java 25).
 
-| Comando (desde `/tmp/opencode/aurora-sb0/aurora-sb0`) | Resultado observado |
+| Comando (desde `~/labs/aurora-sb0/aurora-sb0`) | Resultado observado |
 |---|---|
 | `java -version` | `openjdk version "27.0.1.0.2"`, Temurin 27.0.1.0.2+1 |
 | `./mvnw -version` | `Apache Maven 3.10.1`, Java 27.0.1.0.2 |
@@ -1183,7 +1183,7 @@ Ejecutado el 2026-11-23 desde `/tmp/opencode/aurora-sb0/aurora-sb0` (macOS arm64
 Salida literal del JAR filtrada con `grep -E 'Starting|INIT |BPP |START |STOP |DESTROY |^(consultar|campo|spel|propiedades|primary=|singleton=|prototype=|aopProxy=|aopJdk=|AOP JDK:|jdk\.|spring\.|pattern=|scoped=|sinReenlace=)'`:
 
 ```text
-2026-11-23T03:35:24.165-05:00  INFO 43223 --- [aurora-sb0] [           main] com.aurora.sb0.AuroraSb0Application      : Starting AuroraSb0Application v0.0.1-SNAPSHOT using Java 27.0.1.0.2 with PID 43223 (/private/tmp/opencode/aurora-sb0/aurora-sb0/target/aurora-sb0-0.0.1-SNAPSHOT.jar started by nicolasruiz in /private/tmp/opencode/aurora-sb0/aurora-sb0)
+2026-11-23T03:35:24.165-05:00  INFO 43223 --- [aurora-sb0] [           main] com.aurora.sb0.AuroraSb0Application      : Starting AuroraSb0Application v0.0.1-SNAPSHOT using Java 27.0.1.0.2 with PID 43223 (/Users/tu-usuario/labs/aurora-sb0/aurora-sb0/target/aurora-sb0-0.0.1-SNAPSHOT.jar started by nicolasruiz in /Users/tu-usuario/labs/aurora-sb0/aurora-sb0)
 INIT ServicioEnvios etiqueta=aurora-verificacion
 BPP detectado: servicioEnvios
 INIT @PostConstruct CicloVidaAuditoria

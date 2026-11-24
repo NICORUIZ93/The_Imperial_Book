@@ -8,7 +8,7 @@ En este módulo construimos `tienda-aurora-excepciones`, una pequeña app de lí
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-3-excepciones.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de excepciones Java: checked, unchecked, try-with-resources y preservación de causa](/visuals/temas/java/modulo-3-excepciones.html)
+**Visual:** [Mapa de excepciones Java: checked, unchecked, try-with-resources y preservación de causa](/visuals/temas/java/modulo-3-excepciones.html)
 
 Lectura: El tipo define el contrato, el mensaje da contexto, la causa preserva el origen y try-with-resources garantiza el cierre.
 
@@ -805,7 +805,7 @@ public final class TiendaAuroraExcepcionesApp {
 
 #### Test
 
-**Archivo:** `src/test/java/com/aurora/excepciones/ExcepcionesTest.java` (ruta real en `/tmp/opencode/aurora-m3`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
+**Archivo:** `src/test/java/com/aurora/excepciones/ExcepcionesTest.java` (ruta real en `~/labs/aurora-m3`). Dependencias JUnit 5 en `build.gradle.kts` (`junit-bom:5.13.4`, `junit-jupiter` y `junit-platform-launcher`) y `tasks.test { useJUnitPlatform() }`. Siete casos sobre el dominio real del módulo.
 
 ```java
 package com.aurora.excepciones;
@@ -1027,12 +1027,12 @@ Desde la raíz de `tienda-aurora-excepciones`:
 
 ## Verificación real
 
-Re-verificado el 2026-11-23 en `/tmp/opencode/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
+Re-verificado el 2026-11-23 en `~/labs/aurora-m3` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25).
 
 Desde la raíz del proyecto:
 
 ```bash
-cd /tmp/opencode/aurora-m3
+cd ~/labs/aurora-m3
 ./gradlew -q clean test
 ./gradlew -q run --args="importar --archivo productos.csv"
 ./gradlew -q run --args="auditoria"

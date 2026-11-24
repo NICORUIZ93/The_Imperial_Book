@@ -91,6 +91,10 @@ node bff.mjs
 
 Caso guía: bloquear requests inválidas antes de llegar a servicios.
 
+![Rate limiter en el borde: Redis cuenta las peticiones por ventana y el limitador responde 429 sin tocar la API](content/figures/animados/limitador-de-peticiones.svg)
+
+*Figura animada. La segunda petición desborda la ventana y se rechaza antes de llegar a los servidores.*
+
 #### Políticas de edge
 
 **Definición formal.** Auth en edge valida identidad/token en el punto de entrada; rate limiting controla cuota; request shaping transforma/limita tamaño, headers o forma de la request.

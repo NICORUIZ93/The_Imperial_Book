@@ -43,6 +43,8 @@ Validación del repositorio desde la raíz:
 | `web/public/content/<curso>/modulo-N.md` | lecciones en Markdown |
 | `web/src/app/tracks/*.track.ts` | definición de módulos por curso |
 | `scripts/` | validación de contenido e índice |
+| `docs/PENDIENTES.md` | lista de arreglos pendientes |
+| `docs/referencias/` | libros, repos y herramientas de referencia |
 
 ## Licencia
 

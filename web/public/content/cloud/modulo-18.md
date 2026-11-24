@@ -186,6 +186,10 @@ aws cognito-idp initiate-auth --client-id "$CLIENT_ID" --auth-flow USER_PASSWORD
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
+![Flujo OAuth 2.0 con PKCE: la app genera verifier y challenge, el usuario se autentica y la app cambia código más verifier por tokens](content/figures/animados/oauth2-pkce.svg)
+
+*Figura animada. El código de autorización solo sirve junto al verifier que nunca salió de la app.*
+
 #### ► DE QUÉ TRATA
 Al finalizar vas a armar el flujo OAuth 2.0 con PKCE que la app móvil del conductor necesita, porque esa app no puede guardar ningún secreto de cliente de forma segura. Prerrequisitos: Temas 1-2 de este módulo.
 

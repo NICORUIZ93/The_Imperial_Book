@@ -4,20 +4,20 @@ Un build tool responde a una pregunta concreta: cómo transformar código fuente
 
 La implicación práctica es que el build pasa a ser código de proyecto: cambia el resultado, tiene versiones y requiere revisión. La confusión frecuente es tratar al build tool como un detalle de entorno (“el IDE ya compila”). Cuando el build cambia la salida de negocio, o cuando un artefacto arrastra dependencias de test, el problema está en la declaración del build, no en Java.
 
-En este módulo el mismo código Java se construye con las dos herramientas dentro de un único árbol, `tienda-aurora-build-tools`. La verificación se ejecutó en `/tmp/opencode/aurora-m8` el 2026-11-23.
+En este módulo el mismo código Java se construye con las dos herramientas dentro de un único árbol, `tienda-aurora-build-tools`. La verificación se ejecutó en `~/labs/aurora-m8` el 2026-11-23.
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-8-build-tools.html`; regeneración: editar el HTML/SVG en esa ruta):** [Maven y Gradle construyen el mismo proyecto multi-módulo con fases/tareas y salida de negocio idéntica](/visuals/temas/java/modulo-8-build-tools.html)
+**Visual:** [Maven y Gradle construyen el mismo proyecto multi-módulo con fases/tareas y salida de negocio idéntica](/visuals/temas/java/modulo-8-build-tools.html)
 
 Lectura: Maven y Gradle son dos modelos de build; el comportamiento de negocio debe permanecer igual.
 
 ## Proyecto verificado
 
-Directorio de trabajo: `/tmp/opencode/aurora-m8`. Nombre declarado en ambos builds: `tienda-aurora-build-tools`.
+Directorio de trabajo: `~/labs/aurora-m8`. Nombre declarado en ambos builds: `tienda-aurora-build-tools`.
 
 ```text
-/tmp/opencode/aurora-m8/
+~/labs/aurora-m8/
 ├── settings.gradle.kts
 ├── build.gradle.kts
 ├── pom.xml
@@ -59,7 +59,7 @@ El nombre del directorio y el `rootProject.name`/`artifactId` coinciden: `tienda
 
 #### Fuentes Java compartidas
 
-**`/tmp/opencode/aurora-m8/core/src/main/java/com/aurora/build/core/Producto.java`**
+**`~/labs/aurora-m8/core/src/main/java/com/aurora/build/core/Producto.java`**
 
 ```java
 package com.aurora.build.core;
@@ -69,7 +69,7 @@ public record Producto(String sku, String nombre, BigDecimal precio) {}
 
 `Producto` es el dato de dominio que se serializa.
 
-**`/tmp/opencode/aurora-m8/core/src/main/java/com/aurora/build/core/Catalogo.java`**
+**`~/labs/aurora-m8/core/src/main/java/com/aurora/build/core/Catalogo.java`**
 
 ```java
 package com.aurora.build.core;
@@ -97,7 +97,7 @@ public final class Catalogo {
 
 La excepción checked de Jackson se traduce a `IllegalStateException`: `api` no necesita conocer la librería que usa `core`.
 
-**`/tmp/opencode/aurora-m8/core/src/test/java/com/aurora/build/core/CatalogoTest.java`**
+**`~/labs/aurora-m8/core/src/test/java/com/aurora/build/core/CatalogoTest.java`**
 
 ```java
 package com.aurora.build.core;
@@ -110,7 +110,7 @@ class CatalogoTest {
 }
 ```
 
-**`/tmp/opencode/aurora-m8/api/src/main/java/com/aurora/build/api/TiendaAuroraApiApp.java`**
+**`~/labs/aurora-m8/api/src/main/java/com/aurora/build/api/TiendaAuroraApiApp.java`**
 
 ```java
 package com.aurora.build.api;
@@ -126,14 +126,14 @@ public final class TiendaAuroraApiApp {
 
 #### Build Gradle
 
-**`/tmp/opencode/aurora-m8/settings.gradle.kts`**
+**`~/labs/aurora-m8/settings.gradle.kts`**
 
 ```kotlin
 rootProject.name = "tienda-aurora-build-tools"
 include("core", "api")
 ```
 
-**`/tmp/opencode/aurora-m8/build.gradle.kts`**
+**`~/labs/aurora-m8/build.gradle.kts`**
 
 ```kotlin
 plugins {
@@ -159,7 +159,7 @@ subprojects {
 }
 ```
 
-**`/tmp/opencode/aurora-m8/core/build.gradle.kts`**
+**`~/labs/aurora-m8/core/build.gradle.kts`**
 
 ```kotlin
 dependencies {
@@ -170,7 +170,7 @@ dependencies {
 }
 ```
 
-**`/tmp/opencode/aurora-m8/api/build.gradle.kts`**
+**`~/labs/aurora-m8/api/build.gradle.kts`**
 
 ```kotlin
 plugins { application }
@@ -180,7 +180,7 @@ application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
 
 #### Build Maven
 
-**`/tmp/opencode/aurora-m8/pom.xml`**
+**`~/labs/aurora-m8/pom.xml`**
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -226,7 +226,7 @@ application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
 </project>
 ```
 
-**`/tmp/opencode/aurora-m8/core/pom.xml`**
+**`~/labs/aurora-m8/core/pom.xml`**
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -254,7 +254,7 @@ application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
 </project>
 ```
 
-**`/tmp/opencode/aurora-m8/api/pom.xml`**
+**`~/labs/aurora-m8/api/pom.xml`**
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -279,12 +279,12 @@ application { mainClass = "com.aurora.build.api.TiendaAuroraApiApp" }
 
 ## Comandos ejecutados y salida observada
 
-Todos se ejecutaron desde `/tmp/opencode/aurora-m8`.
+Todos se ejecutaron desde `~/labs/aurora-m8`.
 
 #### Gradle
 
 ```bash
-cd /tmp/opencode/aurora-m8
+cd ~/labs/aurora-m8
 ./gradlew test --rerun-tasks
 ./gradlew -q :api:run
 ```
@@ -314,7 +314,7 @@ productos=2
 #### Maven
 
 ```bash
-cd /tmp/opencode/aurora-m8
+cd ~/labs/aurora-m8
 mvn test
 mvn -q -DskipTests package
 mvn -q -pl core dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=target/deps
@@ -385,7 +385,7 @@ Maven es más verboso y explicita la coordenada completa; Gradle es compacto. Ni
 **Implicaciones observables en este proyecto.** `junit-platform-launcher` está declarado con `testRuntimeOnly`. Se ejecutaron los reportes de dependencias y se filtraron las líneas JUnit:
 
 ```bash
-cd /tmp/opencode/aurora-m8
+cd ~/labs/aurora-m8
 ./gradlew -q :core:dependencies --configuration testCompileClasspath | grep -E 'junit|platform|opentest|apiguardian'
 ./gradlew -q :core:dependencies --configuration testRuntimeClasspath | grep -E 'junit|platform|opentest|apiguardian'
 ```
@@ -403,7 +403,7 @@ La consecuencia es concreta: el launcher está en el classpath de ejecución de 
 En Maven se ejecutó:
 
 ```bash
-cd /tmp/opencode/aurora-m8
+cd ~/labs/aurora-m8
 mvn -pl core dependency:tree -Dscope=test
 ```
 
@@ -468,9 +468,9 @@ La elección de herramienta es una decisión de mantenimiento: convención y XML
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m8` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1 con toolchain Java 25, Maven 3.10.0).
+Ejecutado el 2026-11-23 en `~/labs/aurora-m8` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1 con toolchain Java 25, Maven 3.10.0).
 
-| Comando (desde `/tmp/opencode/aurora-m8`) | Resultado observado |
+| Comando (desde `~/labs/aurora-m8`) | Resultado observado |
 |---|---|
 | `./gradlew test --rerun-tasks` | `BUILD SUCCESSFUL`; `core` 1 test, 0 fallas; `api:test NO-SOURCE` |
 | `./gradlew -q :api:run` | `productos=2` y el JSON de los dos productos |

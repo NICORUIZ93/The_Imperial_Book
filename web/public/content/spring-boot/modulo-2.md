@@ -2,16 +2,12 @@
 
 Una API REST no es solo “poner @RestController”. Es un contrato: recursos, métodos HTTP, códigos de estado, validación, errores consistentes, DTOs, paginación y documentación.
 
-## Visual del módulo
-
-No hay visual aprobado para M2 todavía. El único visual existente del track está en `web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html`; no se creó uno nuevo para M2.
-
 ## Proyecto verificado
 
-Directorio: `/tmp/opencode/aurora-sb2`.
+Directorio: `~/labs/aurora-sb2`.
 
 ```text
-/tmp/opencode/aurora-sb2/
+~/labs/aurora-sb2/
 ├── pom.xml
 ├── mvnw
 ├── src/main/java/com/aurora/aurora_sb2/
@@ -54,8 +50,8 @@ El proyecto declara `java.version=25`, usa Spring Boot 4.2.0 y `spring-boot-star
 curl -fsSL -o /tmp/aurora-sb2.zip -G 'https://start.spring.io/starter.zip' \
   -d type=maven-project -d language=java -d javaVersion=25 -d bootVersion=4.2.0 \
   -d groupId=com.aurora -d artifactId=aurora-sb2 -d dependencies=web,validation
-unzip -q /tmp/aurora-sb2.zip -d /tmp/opencode/aurora-sb2
-cd /tmp/opencode/aurora-sb2
+unzip -q /tmp/aurora-sb2.zip -d ~/labs/aurora-sb2
+cd ~/labs/aurora-sb2
 ./mvnw test
 ```
 
@@ -260,10 +256,10 @@ int from = Math.max(pageable.getPageNumber(), 0) * size;
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 desde `/tmp/opencode/aurora-sb2`.
+Ejecutado el 2026-11-23 desde `~/labs/aurora-sb2`.
 
 ```bash
-cd /tmp/opencode/aurora-sb2
+cd ~/labs/aurora-sb2
 ./mvnw test
 ./mvnw -q spring-boot:run
 ```

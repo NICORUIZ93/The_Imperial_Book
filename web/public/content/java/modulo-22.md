@@ -47,11 +47,11 @@ tasks.withType<JavaCompile>().configureEach {
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-22-copia-defensiva.html`; regeneración: editar el HTML/SVG en esa ruta):** [Copia defensiva: proteger el estado interno](/visuals/temas/java/modulo-22-copia-defensiva.html)
+**Visual:** [Copia defensiva: proteger el estado interno](/visuals/temas/java/modulo-22-copia-defensiva.html)
 
 Lectura: devolver la referencia interna permite que el llamador rompa el invariante; copiar al entrar y al salir lo conserva.
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-22-clases-anidadas.html`; regeneración: editar el HTML/SVG en esa ruta):** [Clases anidadas: quién captura `this$0`](/visuals/temas/java/modulo-22-clases-anidadas.html)
+**Visual:** [Clases anidadas: quién captura `this$0`](/visuals/temas/java/modulo-22-clases-anidadas.html)
 
 Lectura: una inner no estática conserva la referencia a la instancia exterior; eso explica fugas de memoria y errores de creación sin instancia.
 
@@ -538,7 +538,7 @@ Consecuencias prácticas: una inner class mantiene viva la instancia exterior mi
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m22` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
+Ejecutado el 2026-11-23 en `~/labs/aurora-m22` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
 
 ```bash
 ./gradlew -q test

@@ -521,6 +521,38 @@ docker rm -f redis-practica-bullmq
 
 </details>
 
+#### Caso real: Immich, colas BullMQ en producción
+
+[Immich](https://github.com/immich-app/immich) es un gestor de fotos y videos que se instala en un servidor propio. Su backend es Node.js con NestJS y usa exactamente el patrón de este tema: Redis con BullMQ para las colas de trabajo.
+
+**Cómo lo organiza.** El backend corre en dos contenedores con el mismo código. `immich-server` atiende la API REST y programa tareas; `immich-microservices` solo consume trabajos de Redis y nunca atiende peticiones HTTP. Así, generar miniaturas o transcodificar un video no frena la API.
+
+**Trabajos encadenados.** Algunos trabajos disparan otros: la búsqueda inteligente y el reconocimiento facial se encolan cuando termina la miniatura. Es la misma idea de `job.data` → siguiente cola que construiste aquí, a escala real.
+
+**Servicio aparte para lo pesado.** El reconocimiento de imágenes no corre en Node: vive en `immich-machine-learning`, un servicio Python con FastAPI que ejecuta modelos ONNX. Node encola y orquesta; el trabajo de CPU intensivo va a otro proceso, igual que con Worker Threads en el Tema 1 pero separado por red.
+
+```mermaid
+flowchart LR
+  APP[App móvil / web] -->|REST| API[immich-server · NestJS]
+  API -->|encola| R[(Redis · BullMQ)]
+  R --> W[immich-microservices · worker]
+  W -->|miniatura lista| R
+  W -->|inferencia| ML[immich-machine-learning · Python]
+  W --> DB[(PostgreSQL)]
+```
+
+**Explóralo tú.** Clona el repo y busca dónde se declaran las colas y sus trabajos:
+
+```bash
+git clone --depth 1 https://github.com/immich-app/immich
+cd immich/server
+grep -rn "QueueName\." src --include=*.ts | head -20
+```
+
+**Ejercicio.** Ubica una cola que dispare otra al terminar y dibuja la cadena completa. ¿Qué pasa con los trabajos pendientes si se reinicia solo `immich-microservices`?
+
+Fuente: [arquitectura de Immich](https://docs.immich.app/developer/architecture).
+
 ### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 45 min
 
 <details open>

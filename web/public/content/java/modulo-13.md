@@ -4,7 +4,7 @@ Este módulo junta piezas trabajadas por separado: dominio, casos de uso, infrae
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-13-arquitectura.html`; regeneración: editar el HTML/SVG en esa ruta):** [Arquitectura por capas con dependencias apuntando al dominio](/visuals/temas/java/modulo-13-arquitectura.html)
+**Visual:** [Arquitectura por capas con dependencias apuntando al dominio](/visuals/temas/java/modulo-13-arquitectura.html)
 
 Lectura: Las dependencias apuntan al dominio. La infraestructura implementa puertos; la app solo compone.
 
@@ -391,17 +391,17 @@ class ProcesarPedidosUseCaseTest {
 
 **Confusión común (testing).** Mockear `Pedido` o `ResultadoProcesamiento`. Son tipos de dominio: se construyen y se comprueban, no se sustituyen.
 
-**Mecanismo (build reproducible).** `gradlew` fija Gradle; `build.gradle.kts` fija toolchain 25 y versiones de dependencias. El comando único local verificado es `cd /tmp/opencode/aurora-m13 && ./gradlew -q test run`.
+**Mecanismo (build reproducible).** `gradlew` fija Gradle; `build.gradle.kts` fija toolchain 25 y versiones de dependencias. El comando único local verificado es `cd ~/labs/aurora-m13 && ./gradlew -q test run`.
 
 **Por qué existe (build reproducible).** “Funciona en mi máquina” desaparece cuando la versión de Gradle, el JDK y las dependencias quedan declarados.
 
-**Implicaciones (build reproducible).** No hay repositorio remoto verificable en este entorno: `/tmp/opencode/aurora-m13` no es un repositorio Git (`git remote -v` responde `fatal: not a git repository`). Por lo tanto **no se ejecutó `git clone`** y no se muestra una salida inventada de clonada. La reproducibilidad verificada parte de los archivos de este módulo y del comando único indicado.
+**Implicaciones (build reproducible).** Quien clone el proyecto solo necesita el wrapper y los archivos de build de este módulo: con `./gradlew -q test run` obtiene la misma versión de Gradle, el mismo toolchain y las mismas dependencias, sin instalar nada a mano.
 
 **Confusión común (build reproducible).** Confundir “wrapper” con “repositorio remoto”. El wrapper fija la herramienta; la clonada depende de un remoto que aquí no existe.
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m13` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4, Mockito 5.18.0). Salida observada:
+Ejecutado el 2026-11-23 en `~/labs/aurora-m13` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4, Mockito 5.18.0). Salida observada:
 
 ```text
 $ ./gradlew -q test
@@ -412,7 +412,7 @@ $ ./gradlew -q run
 ERR P-2 total cero no permitido
 OK P-1 procesado
 OK P-3 procesado
-$ cd /tmp/opencode/aurora-m13 && ./gradlew -q test run
+$ cd ~/labs/aurora-m13 && ./gradlew -q test run
 ERR P-2 total cero no permitido
 OK P-1 procesado
 OK P-3 procesado

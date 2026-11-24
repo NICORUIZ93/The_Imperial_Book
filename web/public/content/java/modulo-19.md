@@ -117,7 +117,7 @@ tasks.named<Test>("test") {
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-19-dia-a-dia.html`; regeneración: editar el HTML/SVG en esa ruta):** [Mapa de utilidades del día a día](/visuals/temas/java/modulo-19-dia-a-dia.html)
+**Visual:** [Mapa de utilidades del día a día](/visuals/temas/java/modulo-19-dia-a-dia.html)
 
 Lectura: cada mecanismo cubre un borde distinto; la herramienta correcta hace explícito el contrato y falla de forma comprobable.
 
@@ -785,7 +785,7 @@ class StdlibTest {
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m19` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
+Ejecutado el 2026-11-23 en `~/labs/aurora-m19` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25):
 
 ```bash
 ./gradlew -q test
@@ -819,7 +819,7 @@ PLUGIN=COMPLEMENTO:v2:urlLoader=true:distinto=true
 Salida real de `unzip -l build/plugin/complemento-plugin.jar`:
 
 ```text
-Archive:  /tmp/opencode/aurora-m19/build/plugin/complemento-plugin.jar
+Archive:  ~/labs/aurora-m19/build/plugin/complemento-plugin.jar
   Length      Date    Time    Name
 ---------  ---------- -----   ----
         0  02-01-1980 00:00   META-INF/

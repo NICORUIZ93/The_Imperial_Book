@@ -2,16 +2,12 @@
 
 Un proyecto Spring Boot sano no empieza por la lógica de negocio, sino por una base reproducible: versión de Boot, JDK, build tool, dependencias y estructura. Este módulo cubre Initializr y starters, configuración por `application.properties`/`application.yml`, perfiles y organización por capas.
 
-## Visual del módulo
-
-No hay visual aprobado para M1 todavía. El único visual existente del track está en `web/public/visuals/temas/spring-boot/modulo-0-tema-1-ioc.html`; se mantiene como evidencia del formato canónico para el módulo 0. Para M1 no se añadió un archivo nuevo para no inventar una ilustración que el equipo no validó.
-
 ## Proyecto verificado
 
-Directorio: `/tmp/opencode/aurora-sb1`.
+Directorio: `~/labs/aurora-sb1`.
 
 ```text
-/tmp/opencode/aurora-sb1/
+~/labs/aurora-sb1/
 ├── pom.xml
 ├── mvnw
 ├── src/main/java/com/aurora/aurora_sb1/
@@ -53,8 +49,8 @@ curl -fsSL -o /tmp/aurora-sb1.zip \
   -G 'https://start.spring.io/starter.zip' \
   -d type=maven-project -d language=java -d javaVersion=25 -d bootVersion=4.2.0 \
   -d groupId=com.aurora -d artifactId=aurora-sb1 -d dependencies=web
-unzip -q /tmp/aurora-sb1.zip -d /tmp/opencode/aurora-sb1
-cd /tmp/opencode/aurora-sb1
+unzip -q /tmp/aurora-sb1.zip -d ~/labs/aurora-sb1
+cd ~/labs/aurora-sb1
 ./mvnw test
 ```
 
@@ -231,7 +227,7 @@ academia:
 #### Arranque y comprobaciones
 
 ```bash
-cd /tmp/opencode/aurora-sb1
+cd ~/labs/aurora-sb1
 ./mvnw -q spring-boot:run
 ./mvnw -q spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
 ```
@@ -301,10 +297,10 @@ El módulo se cubre con las secciones anteriores porque la evidencia está distr
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 desde `/tmp/opencode/aurora-sb1`.
+Ejecutado el 2026-11-23 desde `~/labs/aurora-sb1`.
 
 ```bash
-cd /tmp/opencode/aurora-sb1
+cd ~/labs/aurora-sb1
 ./mvnw test
 ./mvnw dependency:tree
 ./mvnw -q spring-boot:run

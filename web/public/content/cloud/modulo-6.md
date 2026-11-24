@@ -197,6 +197,10 @@ aws apigateway put-method --rest-api-id "$API_ID" --resource-id "$ENTREGAS_ID" -
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
+![App serverless: API Gateway invoca Lambda, que escribe en DynamoDB, mientras los estáticos salen de la CDN](content/figures/animados/serverless-aws.svg)
+
+*Figura animada. La función solo existe, y se cobra, mientras atiende la petición.*
+
 #### ► DE QUÉ TRATA
 Al finalizar vas a conectar POST /entregas con la función confirmar-entrega del Módulo 5 mediante integración proxy, y a otorgar el permiso que esa conexión necesita de verdad. Prerrequisitos: Tema 2 de este módulo, Módulo 5 completo.
 

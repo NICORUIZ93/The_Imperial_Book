@@ -213,6 +213,10 @@ El valor `42` se decodifica sin error. Ese es el peligro: corrupción silenciosa
 
 ## Mensajería asíncrona para desacoplar tiempo
 
+![Procesamiento asíncrono: la API encola el trabajo y responde 202; un worker lo procesa después y confirma en la base de datos](content/figures/animados/procesamiento-asincrono.svg)
+
+*Figura animada. La respuesta al cliente no depende de cuánto tarde el worker.*
+
 Cuando un pedido se confirma en Tienda Aurora, `orders-service` llama sincrónicamente a email, analytics, inventario y facturación. Si analytics está caído, la confirmación de pedido falla. El usuario no recibe su pedido por culpa de un servicio secundario.
 
 La mensajería asíncrona es como dejar un mensaje en un buzón. El remitente no necesita que el destinatario esté despierto en ese instante. El costo: debes manejar duplicados, orden y fallos diferidos.

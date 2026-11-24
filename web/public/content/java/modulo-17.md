@@ -6,7 +6,7 @@ En este módulo se construye `tienda-aurora-java-m17` desde cero. La primera par
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-17-jdbc-transaccion.html`; regeneración: editar el HTML/SVG en esa ruta):** [Servicio, DAO con PreparedStatement y transacción con commit o rollback](/visuals/temas/java/modulo-17-jdbc-transaccion.html)
+**Visual:** [Servicio, DAO con PreparedStatement y transacción con commit o rollback](/visuals/temas/java/modulo-17-jdbc-transaccion.html)
 
 Lectura: El servicio llama al DAO; el DAO usa `PreparedStatement`; la transacción confirma todas las operaciones o ninguna.
 
@@ -709,10 +709,10 @@ class JdbcTest {
 
 ## Verificación real
 
-Ejecutado nuevamente el 2026-11-23 en `/tmp/opencode/aurora-m17` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232).
+Ejecutado nuevamente el 2026-11-23 en `~/labs/aurora-m17` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, H2 2.3.232).
 
 ```bash
-cd /tmp/opencode/aurora-m17
+cd ~/labs/aurora-m17
 ./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
 ```

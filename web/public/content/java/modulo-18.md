@@ -272,7 +272,7 @@ Salida verificada: `SOCKETS=TCP=p->P/server=P,UDP=q`.
 
 Un token es una credencial: no se loguea completo, se valida antes de usarse y se envía solo al destino esperado. Aquí el flujo es completo y local: `POST /login` devuelve un JWT HS256 firmado con HMAC-SHA256 de la JCA; `GET /guias/G1` exige token válido; `GET /admin/guias` exige rol `ADMIN` y responde `403` a un usuario con rol `LECTOR`.
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-18-seguridad-http.html`; regeneración: editar el HTML/SVG en esa ruta):** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
+**Visual:** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
 
 Lectura: valida input y allowlist antes de llamar; aplica timeout; maneja status; reintenta solo si la operación es idempotente.
 
@@ -728,7 +728,7 @@ class HttpSecTest {
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m18` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
+Ejecutado el 2026-11-23 en `~/labs/aurora-m18` (macOS arm64, JDK 27.0.1.0.2 con toolchain Java 25, Gradle 9.9.1):
 
 ```bash
 ./gradlew -q test

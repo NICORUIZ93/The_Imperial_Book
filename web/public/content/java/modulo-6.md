@@ -6,7 +6,7 @@ Este módulo construye utilidades de Tienda Aurora: escribe y lee un catálogo J
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-6-io.html`; regeneración: editar el HTML/SVG en esa ruta):** [NIO.2, Jackson, streaming de archivos grandes y recursos classpath](/visuals/temas/java/modulo-6-io.html)
+**Visual:** [NIO.2, Jackson, streaming de archivos grandes y recursos classpath](/visuals/temas/java/modulo-6-io.html)
 
 Lectura: Path/Files para archivos, Jackson para JSON, Buffered/streams para volumen, classpath para recursos empaquetados.
 
@@ -470,10 +470,10 @@ Comprobación concreta: `./gradlew -q run --args="texto"` imprime `bufferedReade
 
 ## Verificación real
 
-Ejecutado el 2026-11-23 en `/tmp/opencode/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0, JUnit 5.13.4).
+Ejecutado el 2026-11-23 en `~/labs/aurora-m6` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, Jackson 2.19.0, JUnit 5.13.4).
 
 ```bash
-cd /tmp/opencode/aurora-m6
+cd ~/labs/aurora-m6
 ./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
 ./gradlew -q run --args="texto"
@@ -501,7 +501,7 @@ CatalogoArchivosTest > archivoInexistenteLanzaNoSuchFileException() PASSED
 
 CatalogoArchivosTest > textoSeEscribeYSeLeeConUtf8() PASSED
 
-[Incubating] Problems report is available at: file:///private/tmp/opencode/aurora-m6/build/reports/problems/problems-report.html
+[Incubating] Problems report is available at: file:///Users/tu-usuario/labs/aurora-m6/build/reports/problems/problems-report.html
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
 
@@ -531,7 +531,7 @@ bufferedReader=Tienda Aurora / I/O con UTF-8
 noExiste=NoSuchFileException:build/aurora-io/data/inexistente.txt
 ```
 
-Archivo de test completo: `/tmp/opencode/aurora-m6/src/test/java/com/aurora/io/CatalogoArchivosTest.java`
+Archivo de test completo: `~/labs/aurora-m6/src/test/java/com/aurora/io/CatalogoArchivosTest.java`
 
 ```java
 package com.aurora.io;
@@ -611,7 +611,7 @@ class CatalogoArchivosTest {
 }
 ```
 
-**Nota sobre rutas:** `build/aurora-io` es una ruta **relativa al directorio de trabajo actual**, no una ruta `/tmp`. En esta verificación el proyecto estaba en `/tmp/opencode/aurora-m6`, por eso los archivos generados aparecieron allí; ejecutando desde otra raíz, los archivos se crearán bajo esa otra raíz. Para controlar la ubicación, pasa una base explícita, por ejemplo `./gradlew -q run --args="preparar /ruta/absoluta"`. Los archivos generados son de demo y no forman parte del código fuente.
+**Nota sobre rutas:** `build/aurora-io` es una ruta **relativa al directorio de trabajo actual**, no una ruta fija. Si el proyecto está en `~/labs/aurora-m6`, los archivos generados aparecen allí; ejecutando desde otra raíz, los archivos se crearán bajo esa otra raíz. Para controlar la ubicación, pasa una base explícita, por ejemplo `./gradlew -q run --args="preparar /ruta/absoluta"`. Los archivos generados son de demo y no forman parte del código fuente.
 
 ## Errores comunes y diagnóstico
 

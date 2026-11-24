@@ -443,6 +443,20 @@ flowchart LR
 
 </details>
 
+#### Caso real: la app móvil de Immich
+
+La app de [Immich](https://github.com/immich-app/immich) está hecha en Flutter y es un buen ejemplo de capas sustituibles en una app grande:
+
+- **Estado:** Riverpod.
+- **Base local:** Drift (SQLite) en el dispositivo, para trabajar sin conexión.
+- **Red:** el cliente REST **se genera** desde la especificación OpenAPI del servidor, igual que los clientes web y CLI. Si cambia la API, se regenera el cliente en vez de editarlo a mano.
+
+La propia documentación del proyecto reconoce que el código aún no sigue del todo la arquitectura objetivo: en una app real la arquitectura se migra por partes, no de golpe.
+
+**Ejercicio.** Clona el repo, abre `mobile/` y localiza el cliente OpenAPI generado. Propón dónde pondrías una interfaz de repositorio para poder sustituir ese cliente en las pruebas.
+
+Fuente: [arquitectura de Immich](https://docs.immich.app/developer/architecture).
+
 ### Tema 6: builds por plataforma, firma y entrega · Avanzado · 35 min
 
 <details open>

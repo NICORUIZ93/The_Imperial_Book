@@ -4,7 +4,7 @@ Un proyecto Java profesional no se define solo por compilar. Se define por poder
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-15-build-testing.html`; regeneración: editar el HTML/SVG en esa ruta):** [Build reproducible, módulos domain/app, tests JUnit y logging estructurado](/visuals/temas/java/modulo-15-build-testing.html)
+**Visual:** [Build reproducible, módulos domain/app, tests JUnit y logging estructurado](/visuals/temas/java/modulo-15-build-testing.html)
 
 Lectura: Dominio aislado, app como adaptador, wrapper/build reproducible y tests como feedback rápido.
 
@@ -770,13 +770,13 @@ SLF4J es la fachada; Logback es la implementación; el dominio no importa ningun
 
 ## Verificación real
 
-Ejecutado nuevamente el 2026-11-23 en `/tmp/opencode/aurora-m15` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25) y en `/tmp/opencode/aurora-m15/maven-demo` (Maven 3.10.0, JDK 27.0.1.0.3).
+Ejecutado nuevamente el 2026-11-23 en `~/labs/aurora-m15` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25) y en `~/labs/aurora-m15/maven-demo` (Maven 3.10.0, JDK 27.0.1.0.3).
 
 ```bash
-cd /tmp/opencode/aurora-m15
+cd ~/labs/aurora-m15
 ./gradlew test --rerun-tasks --console=plain
 ./gradlew -q :app:run --args="PED-100 CAF-001 2"
-cd /tmp/opencode/aurora-m15/maven-demo
+cd ~/labs/aurora-m15/maven-demo
 mvn -B verify
 ```
 

@@ -4,7 +4,7 @@ El modelado de dominio mejora cuando el tipo expresa las posibilidades reales. U
 
 ## Visual del módulo
 
-**Visual (diagram-design, estático; fuente `visuals/temas/java/modulo-7-patterns.html`; regeneración: editar el HTML/SVG en esa ruta):** [Jerarquía sealed Pago con record patterns y switch exhaustivo](/visuals/temas/java/modulo-7-patterns.html)
+**Visual:** [Jerarquía sealed Pago con record patterns y switch exhaustivo](/visuals/temas/java/modulo-7-patterns.html)
 
 Lectura: Sealed limita subtipos permitidos; el switch exhaustivo obliga a cubrir cada variante.
 
@@ -397,10 +397,10 @@ El test `textBlockFormateaComprobante` compara la cadena completa, incluido el s
 
 ## Verificación real
 
-Verificado el 2026-11-23 en `/tmp/opencode/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4).
+Verificado el 2026-11-23 en `~/labs/aurora-m7` (macOS arm64, JDK 27.0.1.0.2, Gradle 9.9.1, toolchain Java 25, JUnit 5.13.4).
 
 ```bash
-cd /tmp/opencode/aurora-m7
+cd ~/labs/aurora-m7
 ./gradlew test --rerun-tasks --console=plain
 ./gradlew -q run
 ./gradlew -q run --args="recibo"
@@ -428,7 +428,7 @@ ProcesadorPagosTest > textBlockFormateaComprobante() PASSED
 
 ProcesadorPagosTest > resumenEsExhaustivoSobreResultadoPago() PASSED
 
-[Incubating] Problems report is available at: file:///private/tmp/opencode/aurora-m7/build/reports/problems/problems-report.html
+[Incubating] Problems report is available at: file:///Users/tu-usuario/labs/aurora-m7/build/reports/problems/problems-report.html
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
 
@@ -464,7 +464,7 @@ Pedido: PED-100
 Resultado: Aprobado por tarjeta
 ```
 
-Archivo de test completo: `/tmp/opencode/aurora-m7/src/test/java/com/aurora/patterns/ProcesadorPagosTest.java`
+Archivo de test completo: `~/labs/aurora-m7/src/test/java/com/aurora/patterns/ProcesadorPagosTest.java`
 
 ```java
 package com.aurora.patterns;
