@@ -1,6 +1,6 @@
 # Módulo 3: Fundamentos de web, redes y accesibilidad
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18, curl 8.5.0 y Node.js 22.23.5 en Linux x86_64.
+**Entorno comprobado para esta edición (2026-11-24):** OpenJDK 25.0.5.1 (con `java` y `jwebserver`), curl 8.5.0 y Node.js 22.23.5 en Linux x86_64.
 Todas las salidas de este módulo se obtuvieron ejecutando el código mostrado ese día. En las capturas de `curl` se
 omite la barra de progreso, que no aparece cuando la salida va a la terminal. Las fechas de las cabeceras `Date`
 cambiarán en tu equipo. Los comandos para Windows y macOS se contrastaron solo con la documentación: **no se
@@ -16,8 +16,9 @@ ejecutaron en esos sistemas**.
 **Esquema del módulo:** Tema 1 (de la URL al servidor) → Tema 2 (HTTP) → Tema 3 (HTML, formularios y DOM) →
 Tema 4 (CSS y accesibilidad) → Proyecto 3 → Tema 5 (proyecto integrador).
 
-**Qué necesitas saber antes:** usar la terminal y ejecutar un archivo Python (Módulo 0); variables, condiciones,
-bucles, funciones y diccionarios (Módulo 1). Comprueba `python3 --version` y `curl --version` antes de empezar.
+**Qué necesitas saber antes:** usar la terminal y ejecutar un archivo Java con `java Archivo.java` (Módulo 0);
+variables, condiciones, bucles, métodos y mapas (Módulo 1). Comprueba `java --version`, `jwebserver --version` y
+`curl --version` antes de empezar. `jwebserver` viene con el JDK: si `java` funciona, ya lo tienes.
 
 
 ## Aprende construyendo
@@ -55,7 +56,7 @@ y ver la página, y en qué paso se rompió para él?
 - **Definición técnica:** el cliente es el programa que inicia una comunicación y pide algo; el servidor es el programa que espera peticiones y responde.
 - **En palabras sencillas:** el cliente es quien pregunta en la ventanilla; el servidor es quien atiende detrás.
 - **Dónde se rompe la comparación:** «servidor» es un papel, no una máquina: tu portátil puede ser cliente y servidor a la vez.
-- **Ejemplo:** `curl` (cliente) pide `/` y `python3 -m http.server` (servidor) devuelve `index.html`.
+- **Ejemplo:** `curl` (cliente) pide `/` y `jwebserver` (servidor) devuelve `index.html`.
 - **Error típico:** cerrar la terminal del servidor y seguir probando desde el cliente: sin servidor no hay quien responda.
 
 **URL**
@@ -83,15 +84,15 @@ y ver la página, y en qué paso se rompió para él?
 - **Definición técnica:** sistema de nombres de dominio; servicio distribuido que traduce nombres como `ejemplo.com` a direcciones IP.
 - **En palabras sencillas:** la agenda de contactos de Internet: buscas el nombre y obtienes el número.
 - **Dónde se rompe la comparación:** la agenda no está en un solo lugar: tu equipo pregunta a varios servidores y guarda respuestas un tiempo.
-- **Ejemplo:** `socket.gethostbyname("localhost")` devuelve `127.0.0.1`; con un nombre inexistente lanza `socket.gaierror`.
+- **Ejemplo:** `InetAddress.getByName("localhost")` devuelve `127.0.0.1`; con un nombre inexistente lanza `UnknownHostException`.
 - **Error típico:** escribir mal el dominio y pensar que «el servidor está caído», cuando el nombre ni siquiera se resolvió.
 
 **puerto**
 - **Definición técnica:** número de 0 a 65535 que identifica a qué programa entregar los datos dentro de un equipo; un servidor «escucha» en un puerto.
 - **En palabras sencillas:** si la IP es el edificio, el puerto es el número de apartamento.
 - **Dónde se rompe la comparación:** dos programas no pueden escuchar en el mismo puerto e IP a la vez; el segundo falla al arrancar.
-- **Ejemplo:** `python3 -m http.server 8000` escucha en el puerto 8000; HTTP usa el 80 por defecto y HTTPS el 443.
-- **Error típico:** arrancar dos servidores en el 8000: el segundo termina con `OSError: [Errno 98] Address already in use`.
+- **Ejemplo:** `jwebserver -p 8000` escucha en el puerto 8000; HTTP usa el 80 por defecto y HTTPS el 443.
+- **Error típico:** arrancar dos servidores en el 8000: el segundo termina con `java.net.BindException: Address already in use`.
 
 **protocolo**
 - **Definición técnica:** conjunto de reglas que fija el formato y el orden de los mensajes entre dos programas.
@@ -116,7 +117,7 @@ la respuesta. Cada paso puede fallar con un mensaje distinto, y ese mensaje te d
 flowchart LR
     URL["URL<br/>http://host:8000/ruta"] --> PARTES["1. separar partes"]
     PARTES --> DNS{"2. ¿el nombre<br/>tiene IP?"}
-    DNS -->|no| E1["gaierror:<br/>nombre desconocido"]
+    DNS -->|no| E1["UnknownHostException:<br/>nombre desconocido"]
     DNS -->|sí| CONN{"3. ¿alguien escucha<br/>en IP:puerto?"}
     CONN -->|no| E2["curl: (7)<br/>conexión rechazada"]
     CONN -->|sí| PET["4. petición y respuesta"]
@@ -127,25 +128,24 @@ Descompón la URL de un envío de RutaFlow y averigua a qué IP apunta cada nomb
 
 **Razonamiento:**
 1. La URL ya trae el protocolo, el host, el puerto y la ruta; solo hay que separarlos.
-2. `urllib.parse.urlsplit` de Python hace esa separación sin que escribas reglas a mano.
-3. Para pasar de nombre a IP se pregunta al sistema con `socket.gethostbyname`; si el nombre no existe, falla.
+2. La clase `URI` de Java hace esa separación sin que escribas reglas a mano.
+3. Para pasar de nombre a IP se pregunta al sistema con `InetAddress.getByName`; si el nombre no existe, falla.
 
-```python
-# partes_url.py — separa una URL en sus partes
-from urllib.parse import urlsplit
+```java
+// PartesUrl.java — separa una URL en sus partes
+void main() {
+    URI url = URI.create("http://127.0.0.1:8000/envios/RF-4471?formato=json");
 
-url = "http://127.0.0.1:8000/envios/RF-4471?formato=json"
-partes = urlsplit(url)
-
-print("protocolo:", partes.scheme)
-print("host:     ", partes.hostname)
-print("puerto:   ", partes.port)
-print("ruta:     ", partes.path)
-print("consulta: ", partes.query)
+    IO.println("protocolo: " + url.getScheme());
+    IO.println("host:      " + url.getHost());
+    IO.println("puerto:    " + url.getPort());
+    IO.println("ruta:      " + url.getPath());
+    IO.println("consulta:  " + url.getQuery());
+}
 ```
 
 ```text
-$ python3 partes_url.py
+$ java PartesUrl.java
 protocolo: http
 host:      127.0.0.1
 puerto:    8000
@@ -153,29 +153,35 @@ ruta:      /envios/RF-4471
 consulta:  formato=json
 ```
 
-```python
-# resolver.py — pregunta al sistema qué IP corresponde a un nombre
-import socket
+```java
+// Resolver.java — pregunta al sistema qué IP corresponde a un nombre
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-for nombre in ["localhost", "rutaflow.invalid"]:
-    try:
-        ip = socket.gethostbyname(nombre)
-        print(f"{nombre} -> {ip}")
-    except socket.gaierror as error:
-        print(f"{nombre} -> sin respuesta: {error}")
+void main() {
+    for (String nombre : List.of("localhost", "rutaflow.invalid")) {
+        try {
+            InetAddress ip = InetAddress.getByName(nombre);
+            IO.println(nombre + " -> " + ip.getHostAddress());
+        } catch (UnknownHostException error) {
+            IO.println(nombre + " -> sin respuesta: " + error.getMessage());
+        }
+    }
+}
 ```
 
 ```text
-$ python3 resolver.py
+$ java Resolver.java
 localhost -> 127.0.0.1
-rutaflow.invalid -> sin respuesta: [Errno -2] Name or service not known
+rutaflow.invalid -> sin respuesta: rutaflow.invalid: Name or service not known
 ```
 
 **Explicación por partes.**
-- `partes_url.py`, línea 5: `urlsplit` devuelve un objeto con un atributo por parte de la URL.
-- `partes_url.py`, líneas 7–11: `scheme` es el protocolo, `hostname` el host y `port` el puerto ya convertido a número.
-- `resolver.py`, línea 6: `gethostbyname` pide al sistema la IP del nombre; el sistema consulta su archivo de hosts y el DNS.
-- `resolver.py`, líneas 8–9: `.invalid` es un dominio reservado que nunca existe; la excepción `gaierror` lo confirma.
+- `PartesUrl.java`, línea 3: `URI.create` analiza el texto y devuelve un objeto con un método por cada parte de la URL. `URI` está en `java.net`, que los archivos compactos importan solos.
+- `PartesUrl.java`, líneas 5–9: `getScheme` es el protocolo, `getHost` el host y `getPort` el puerto ya convertido a número.
+- `Resolver.java`, líneas 2–3: `InetAddress` y `UnknownHostException` se importan a mano para que se vea de dónde vienen.
+- `Resolver.java`, línea 8: `getByName` pide al sistema la IP del nombre; el sistema consulta su archivo de hosts y el DNS.
+- `Resolver.java`, líneas 10–11: `.invalid` es un dominio reservado que nunca existe; la excepción `UnknownHostException` lo confirma. El texto del mensaje lo pone tu sistema operativo y puede cambiar en Windows o macOS.
 
 La misma consulta existe como comando. `getent hosts localhost` imprime `127.0.0.1       localhost` en Linux.
 Con un nombre inexistente no imprime nada y termina con código de salida `2`. En Windows y macOS el comando
@@ -192,8 +198,8 @@ curl: (6) Could not resolve host: rutaflow.invalid
 Levanta un servidor local en el puerto 8000, pídele la página con `curl` y provoca a propósito una conexión rechazada.
 
 **Razonamiento:**
-1. Python trae un servidor de archivos: `python3 -m http.server` sirve la carpeta actual.
-2. `--bind 127.0.0.1` lo limita a tu equipo; así nadie de la red puede entrar mientras practicas.
+1. El JDK trae un servidor de archivos: `jwebserver` sirve la carpeta actual. `-p 8000` elige el puerto.
+2. `-b 127.0.0.1` lo limita a tu equipo; así nadie de la red puede entrar mientras practicas.
 3. Un puerto sin programa escuchando (el 8001) muestra cómo se ve el fallo del paso 3.
 
 Crea la carpeta `ejemplo-url-servidor` con este `index.html`:
@@ -209,20 +215,20 @@ Crea la carpeta `ejemplo-url-servidor` con este `index.html`:
 En una terminal, dentro de la carpeta, arranca el servidor:
 
 ```text
-$ python3 -m http.server 8000 --bind 127.0.0.1
-Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
+$ jwebserver -p 8000 -b 127.0.0.1
+Serving /root/ejemplo-url-servidor and subdirectories on 127.0.0.1 port 8000
+URL http://127.0.0.1:8000/
 ```
 
 En **otra** terminal, haz de cliente:
 
 ```text
 $ curl -i http://127.0.0.1:8000/
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:39 GMT
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 22:58:39 GMT
+Last-modified: Tue, 24 Nov 2026 22:58:37 GMT
 Content-type: text/html
-Content-Length: 173
-Last-Modified: Tue, 24 Nov 2026 07:16:25 GMT
+Content-length: 173
 
 <!doctype html>
 <html lang="es">
@@ -242,16 +248,14 @@ $ curl -sv -o /dev/null http://127.0.0.1:8000/
 > User-Agent: curl/8.5.0
 > Accept: */*
 > 
-* HTTP 1.0, assume close after body
-< HTTP/1.0 200 OK
-< Server: SimpleHTTP/0.6 Python/3.13.18
-< Date: Tue, 24 Nov 2026 07:18:39 GMT
+< HTTP/1.1 200 OK
+< Date: Tue, 24 Nov 2026 22:58:39 GMT
+< Last-modified: Tue, 24 Nov 2026 22:58:37 GMT
 < Content-type: text/html
-< Content-Length: 173
-< Last-Modified: Tue, 24 Nov 2026 07:16:25 GMT
+< Content-length: 173
 < 
 { [173 bytes data]
-* Closing connection
+* Connection #0 to host 127.0.0.1 left intact
 ```
 
 Ahora pide un puerto donde no escucha nadie:
@@ -262,21 +266,21 @@ curl: (7) Failed to connect to 127.0.0.1 port 8001 after 0 ms: Couldn't connect 
 ```
 
 **Explicación por partes.**
-- La línea `Serving HTTP on 127.0.0.1 port 8000` confirma IP y puerto. El servidor queda esperando: no devuelve el prompt.
+- La línea `Serving ... on 127.0.0.1 port 8000` confirma la carpeta servida, la IP y el puerto; en tu equipo verás la ruta de tu carpeta. El servidor queda esperando: no devuelve el prompt. Cada petición que reciba aparecerá ahí como una línea de registro, por ejemplo `"GET / HTTP/1.1" 200 -`.
 - `Trying 127.0.0.1:8000...` y `Connected to` son el paso 3: la conexión al puerto funcionó.
 - Las líneas con `>` son lo que envió el cliente; las líneas con `<`, lo que respondió el servidor. Las leerás en el Tema 2.
-- `HTTP/1.0 200 OK` significa «encontré lo que pediste». El `Content-Length: 173` coincide con el tamaño de `index.html`.
+- `HTTP/1.1 200 OK` significa «encontré lo que pediste». El `Content-length: 173` coincide con el tamaño de `index.html`. Los nombres de cabecera no distinguen mayúsculas: `Content-length` y `Content-Length` son la misma.
 - En el puerto 8001 no hubo respuesta de ningún servidor: el fallo ocurrió antes, en el paso 3.
 
 > **Error común.** Arrancar el servidor dos veces en el mismo puerto. El segundo intento termina con
-> `OSError: [Errno 98] Address already in use` (el número de error puede variar según el sistema). Busca la terminal
-> donde ya corre el primero o usa otro puerto: `python3 -m http.server 8080 --bind 127.0.0.1`.
+> `Error: server config failed: java.net.BindException: Address already in use`. Busca la terminal donde ya corre
+> el primero o usa otro puerto: `jwebserver -p 8080 -b 127.0.0.1`.
 
 > **Error común.** Confundir `curl: (7) Failed to connect ... Couldn't connect to server` con una página no
 > encontrada. El código 7 dice que nadie respondió en ese puerto. Revisa que el servidor esté corriendo y el puerto
 > de la URL.
 
-> **Buena práctica.** Usa `--bind 127.0.0.1` mientras practicas. Sin esa opción el servidor acepta conexiones de toda
+> **Buena práctica.** Escribe `-b 127.0.0.1` mientras practicas, aunque hoy `jwebserver` ya use esa dirección por defecto. Con `-b 0.0.0.0` el servidor acepta conexiones de toda
 > tu red y expone los archivos de la carpeta a cualquiera conectado.
 
 > **Prevenir errores.** Ante un fallo, recorre los pasos en orden: ¿el nombre resuelve?, ¿el puerto responde?, ¿qué
@@ -305,17 +309,17 @@ cd ejemplo-url-servidor
 Guarda dentro el `index.html` del Problema resuelto 1.2.
 
 #### Paso 2 · Arranca el servidor
-Ejecuta `python3 -m http.server 8000 --bind 127.0.0.1`. Deja esa terminal abierta: es tu servidor.
+Ejecuta `jwebserver -p 8000 -b 127.0.0.1`. Deja esa terminal abierta: es tu servidor.
 
 #### Paso 3 · Pide la página como cliente
-En otra terminal ejecuta `curl -i http://127.0.0.1:8000/`. Debes ver `HTTP/1.0 200 OK` y el HTML de tu archivo.
+En otra terminal ejecuta `curl -i http://127.0.0.1:8000/`. Debes ver `HTTP/1.1 200 OK` y el HTML de tu archivo.
 
 #### Paso 4 · Rompe y diagnostica
 Pide `http://127.0.0.1:8001/` y anota el código de `curl`. Luego detén el servidor con Ctrl + C y repite el Paso 3.
 Las dos veces debes ver `curl: (7)`.
 
 #### Paso 5 · Resuelve nombres
-Ejecuta `resolver.py` y cambia la lista para probar `localhost` y un nombre inventado terminado en `.invalid`.
+Ejecuta `java Resolver.java` y cambia la lista para probar `localhost` y un nombre inventado terminado en `.invalid`.
 
 #### Resumen
 - Una **URL** reúne **protocolo**, host, **puerto**, ruta y consulta: dice a quién preguntar, por dónde y qué pedir.
@@ -326,10 +330,11 @@ Ejecuta `resolver.py` y cambia la lista para probar `localhost` y un nombre inve
 - **curl** muestra la conversación completa con `-i` (cabeceras) y `-v` (detalle de la conexión).
 
 #### Ejercicio verificable 1
-Básico. Cambia la URL de `partes_url.py` por `https://rutaflow.test/envios?pagina=2` y predice la salida antes de ejecutar.
+Básico. Cambia la URL de `PartesUrl.java` por `https://rutaflow.test/envios?pagina=2` y predice la salida antes de ejecutar.
 
-Respuesta esperada: protocolo `https`, host `rutaflow.test`, puerto `None`, ruta `/envios`, consulta `pagina=2`.
-El puerto sale `None` porque la URL no lo escribe; el cliente usará el 443, el de HTTPS por defecto.
+Respuesta esperada: protocolo `https`, host `rutaflow.test`, puerto `-1`, ruta `/envios`, consulta `pagina=2`.
+El puerto sale `-1` porque la URL no lo escribe; `-1` es la forma de `URI` de decir «sin puerto». El cliente usará
+el 443, el de HTTPS por defecto.
 
 #### Ejercicio verificable 2
 Intermedio. Arranca el servidor en el puerto 8080. ¿Qué URL debes pedir con `curl` y qué pasa si pides la del 8000?
@@ -338,10 +343,10 @@ Respuesta esperada: `curl -i http://127.0.0.1:8080/` devuelve `200 OK`. La del 8
 `curl: (7) Failed to connect to 127.0.0.1 port 8000 ...`, porque ya nadie escucha ahí.
 
 #### Ejercicio verificable 3
-Reto. Agrega a `resolver.py` un tercer nombre, `127.0.0.1`. ¿Falla o devuelve algo? Explica por qué.
+Reto. Agrega a `Resolver.java` un tercer nombre, `127.0.0.1`. ¿Falla o devuelve algo? Explica por qué.
 
-Respuesta esperada: devuelve `127.0.0.1 -> 127.0.0.1`. Si el texto ya es una IP, no hace falta resolver nada y la
-función la devuelve tal cual.
+Respuesta esperada: devuelve `127.0.0.1 -> 127.0.0.1`. Si el texto ya es una IP, no hace falta resolver nada y el
+método la devuelve tal cual.
 
 #### En el trabajo
 Cuando un servicio «no carga», el primer diagnóstico en un equipo de soporte sigue este mismo orden. Primero se
@@ -359,7 +364,7 @@ resolve host` y `Couldn't connect to server` de `curl` aparecen a diario en tick
 Al terminar este tema podrás:
 - leer línea por línea una petición y una respuesta HTTP capturadas con `curl -v`;
 - elegir el método HTTP correcto para listar, consultar y crear un recurso;
-- interpretar los códigos de estado 200, 201, 400, 404, 500 y 501;
+- interpretar los códigos de estado 200, 201, 400, 404, 405 y 500;
 - explicar por qué un 404 es una respuesta válida y un `curl: (52)` no lo es.
 
 **Conceptos clave:** HTTP, petición, método HTTP, cabecera, cuerpo, respuesta, código de estado, JSON, API, idempotencia
@@ -390,7 +395,7 @@ responde. Ahora necesitas un **acuerdo escrito** sobre qué se pide y qué se re
 - **En palabras sencillas:** el verbo de la frase: «dame», «crea», «cambia», «borra».
 - **Dónde se rompe la comparación:** el verbo es una promesa, no una garantía: el servidor decide qué hace con cada método.
 - **Ejemplo:** `curl -X POST ... /envios` crea un envío; `curl /envios` usa `GET` por defecto.
-- **Error típico:** usar un método que el servidor no implementa: `DELETE` en la API del tema devuelve `501`.
+- **Error típico:** usar un método que el servidor no acepta: `DELETE` en la API del tema devuelve `405 Method Not Allowed`.
 
 **cabecera**
 - **Definición técnica:** línea `Nombre: valor` de una petición o respuesta que aporta metadatos sobre el mensaje.
@@ -410,22 +415,22 @@ responde. Ahora necesitas un **acuerdo escrito** sobre qué se pide y qué se re
 - **Definición técnica:** mensaje del servidor: línea de estado (versión, código, frase), cabeceras, línea vacía y cuerpo opcional.
 - **En palabras sencillas:** el sobre que te devuelven en la ventanilla con el resultado del trámite.
 - **Dónde se rompe la comparación:** siempre hay una por petición; no existe «no contestar» en HTTP, salvo que la conexión se corte.
-- **Ejemplo:** `HTTP/1.0 404 Not Found` con el cuerpo `{"error": "Envío no encontrado", "code": 404}`.
+- **Ejemplo:** `HTTP/1.1 404 Not Found` con el cuerpo `{"error": "Envío no encontrado", "code": 404}`.
 - **Error típico:** mirar solo el cuerpo y no la línea de estado; un cuerpo bonito puede venir con un código de error.
 
 **código de estado**
 - **Definición técnica:** número de tres cifras en la línea de estado; la primera cifra da la clase: 2xx éxito, 3xx redirección, 4xx error del cliente, 5xx error del servidor.
 - **En palabras sencillas:** el sello del trámite: aprobado, mal diligenciado o «se nos cayó el sistema».
 - **Dónde se rompe la comparación:** un 404 no es un fallo de la comunicación: es una respuesta correcta que informa que el recurso no existe.
-- **Ejemplo:** `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error`, `501 Not Implemented`.
+- **Ejemplo:** `200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`, `405 Method Not Allowed`, `500 Internal Server Error`.
 - **Error típico:** devolver `200` con un mensaje de error en el cuerpo; los clientes y monitores creen que todo salió bien.
 
 **JSON**
 - **Definición técnica:** notación de objetos de JavaScript; formato de texto para datos con objetos `{}`, listas `[]`, textos, números, booleanos y `null`.
-- **En palabras sencillas:** una forma estándar de escribir datos como texto, parecida a un diccionario de Python.
-- **Dónde se rompe la comparación:** JSON exige comillas dobles y no admite `True`: se escribe `true`; un diccionario de Python no es JSON.
-- **Ejemplo:** `json.dumps({"guia": "RF-101"})` produce el texto `{"guia": "RF-101"}`.
-- **Error típico:** enviar `guia=RF-103` creyendo que es JSON; `json.loads` lanza `JSONDecodeError` y la API responde `400`.
+- **En palabras sencillas:** una forma estándar de escribir datos como texto, parecida a un `Map` escrito con llaves.
+- **Dónde se rompe la comparación:** JSON exige comillas dobles en claves y textos; imprimir un `Map` de Java da `{guia=RF-101}`, que no es JSON.
+- **Ejemplo:** el texto `{"guia": "RF-101"}` es un objeto JSON con un campo `guia`.
+- **Error típico:** enviar `guia=RF-103` creyendo que es JSON; la API del tema lo rechaza con `400`.
 
 **API**
 - **Definición técnica:** interfaz de programación de aplicaciones; conjunto de operaciones que un programa ofrece a otros, con sus entradas, salidas y errores.
@@ -463,90 +468,128 @@ Escribe una API mínima de envíos que liste, consulte y cree envíos, y que res
 
 **Razonamiento:**
 1. El contrato, antes del código: `GET /envios` → 200 con la lista; `GET /envios/{guia}` → 200 o 404; `POST /envios` → 201 o 400.
-2. Todas las respuestas son JSON; una función `responder` arma siempre las mismas cabeceras para no repetirlas.
-3. Python trae `http.server`: una clase con un método `do_GET` por cada `GET` y `do_POST` por cada `POST`.
+2. Todas las respuestas son JSON; un método `responder` arma siempre las mismas cabeceras para no repetirlas.
+3. El JDK trae un servidor HTTP en el paquete `com.sun.net.httpserver`: le registras un método que recibe cada
+   petición (un `HttpExchange`) y decide según el método HTTP y la ruta.
 4. Si el cuerpo del `POST` no es JSON, se responde 400 en lugar de dejar que el programa falle.
+5. Java no trae un lector de JSON en su biblioteca estándar. Aquí el JSON se escribe como texto y la guía se
+   extrae con una expresión regular; es suficiente para este contrato pequeño. En el curso de Java usarás Jackson.
 
-```python
-# api_envios.py — API mínima de envíos de RutaFlow
-import json
-from http.server import BaseHTTPRequestHandler, HTTPServer
+```java
+// ApiEnvios.java — API mínima de envíos de RutaFlow
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-ENVIOS = {"RF-101": {"guia": "RF-101", "estado": "pendiente"}}
+final Map<String, String> ENVIOS = new LinkedHashMap<>(Map.of("RF-101", "pendiente"));
+final Pattern CAMPO_GUIA = Pattern.compile("\"guia\"\\s*:\\s*\"([^\"]+)\"");
 
+String envioJson(String guia) {
+    return "{\"guia\": \"" + guia + "\", \"estado\": \"" + ENVIOS.get(guia) + "\"}";
+}
 
-class Manejador(BaseHTTPRequestHandler):
-    server_version = "RutaFlowAPI/0.1"
+String errorJson(String mensaje, int codigo) {
+    return "{\"error\": \"" + mensaje + "\", \"code\": " + codigo + "}";
+}
 
-    def responder(self, codigo, datos, extra=None):
-        cuerpo = json.dumps(datos, ensure_ascii=False).encode("utf-8")
-        self.send_response(codigo)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(cuerpo)))
-        for nombre, valor in (extra or {}).items():
-            self.send_header(nombre, valor)
-        self.end_headers()
-        self.wfile.write(cuerpo)
+void responder(HttpExchange intercambio, int codigo, String json) throws IOException {
+    byte[] cuerpo = json.getBytes(StandardCharsets.UTF_8);
+    intercambio.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+    intercambio.sendResponseHeaders(codigo, cuerpo.length);   // línea de estado + cabeceras
+    try (var salida = intercambio.getResponseBody()) {
+        salida.write(cuerpo);
+    }
+    IO.println("\"" + intercambio.getRequestMethod() + " " + intercambio.getRequestURI() + "\" " + codigo);
+}
 
-    def do_GET(self):
-        if self.path == "/envios":
-            self.responder(200, list(ENVIOS.values()))
-        elif self.path.startswith("/envios/"):
-            guia = self.path.removeprefix("/envios/")
-            if guia in ENVIOS:
-                self.responder(200, ENVIOS[guia])
-            else:
-                self.responder(404, {"error": "Envío no encontrado", "code": 404})
-        else:
-            self.responder(404, {"error": "Ruta no existe", "code": 404})
+void atenderGet(HttpExchange intercambio, String ruta) throws IOException {
+    if (ruta.equals("/envios")) {
+        List<String> lista = new ArrayList<>();
+        for (String guia : ENVIOS.keySet()) lista.add(envioJson(guia));
+        responder(intercambio, 200, "[" + String.join(", ", lista) + "]");
+    } else if (ruta.startsWith("/envios/")) {
+        String guia = ruta.substring("/envios/".length());
+        if (ENVIOS.containsKey(guia)) {
+            responder(intercambio, 200, envioJson(guia));
+        } else {
+            responder(intercambio, 404, errorJson("Envío no encontrado", 404));
+        }
+    } else {
+        responder(intercambio, 404, errorJson("Ruta no existe", 404));
+    }
+}
 
-    def do_POST(self):
-        largo = int(self.headers.get("Content-Length", 0))
-        try:
-            datos = json.loads(self.rfile.read(largo))
-        except json.JSONDecodeError:
-            self.responder(400, {"error": "JSON inválido", "code": 400})
-            return
-        guia = datos["guia"]
-        ENVIOS[guia] = {"guia": guia, "estado": "pendiente"}
-        self.responder(201, ENVIOS[guia], {"Location": f"/envios/{guia}"})
+void atenderPost(HttpExchange intercambio) throws IOException {
+    String cuerpo = new String(intercambio.getRequestBody().readAllBytes(), StandardCharsets.UTF_8).strip();
+    if (!cuerpo.startsWith("{") || !cuerpo.endsWith("}")) {
+        responder(intercambio, 400, errorJson("JSON inválido", 400));
+        return;
+    }
+    Matcher coincidencia = CAMPO_GUIA.matcher(cuerpo);
+    coincidencia.find();
+    String guia = coincidencia.group(1);
+    ENVIOS.put(guia, "pendiente");
+    intercambio.getResponseHeaders().set("Location", "/envios/" + guia);
+    responder(intercambio, 201, envioJson(guia));
+}
 
+void atender(HttpExchange intercambio) throws IOException {
+    try {
+        String ruta = intercambio.getRequestURI().getPath();
+        switch (intercambio.getRequestMethod()) {
+            case "GET" -> atenderGet(intercambio, ruta);
+            case "POST" -> atenderPost(intercambio);
+            default -> {
+                intercambio.getResponseHeaders().set("Allow", "GET, POST");
+                responder(intercambio, 405, errorJson("Método no permitido", 405));
+            }
+        }
+    } catch (RuntimeException error) {
+        IO.println("error atendiendo la petición: " + error);
+        intercambio.close();                                  // corta sin responder
+    }
+}
 
-HTTPServer(("127.0.0.1", 8000), Manejador).serve_forever()
+void main() throws IOException {
+    HttpServer servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8000), 0);
+    servidor.createContext("/", this::atender);
+    servidor.start();
+    IO.println("API de envíos en http://127.0.0.1:8000/envios");
+}
 ```
 
-Ejecuta `python3 api_envios.py` en una terminal. No imprime nada al arrancar: queda escuchando en el puerto 8000.
-En otra terminal, prueba el contrato:
+Ejecuta `java ApiEnvios.java` en una terminal. Imprime `API de envíos en http://127.0.0.1:8000/envios` y queda
+escuchando en el puerto 8000. En otra terminal, prueba el contrato:
 
 ```text
 $ curl -i http://127.0.0.1:8000/envios
-HTTP/1.0 200 OK
-Server: RutaFlowAPI/0.1 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:40 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 43
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 22:59:44 GMT
+Content-type: application/json; charset=utf-8
+Content-length: 43
 
 [{"guia": "RF-101", "estado": "pendiente"}]
 ```
 
 ```text
 $ curl -i http://127.0.0.1:8000/envios/RF-999
-HTTP/1.0 404 Not Found
-Server: RutaFlowAPI/0.1 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:40 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 46
+HTTP/1.1 404 Not Found
+Date: Tue, 24 Nov 2026 22:59:44 GMT
+Content-type: application/json; charset=utf-8
+Content-length: 46
 
 {"error": "Envío no encontrado", "code": 404}
 ```
 
 ```text
 $ curl -i -X POST -H 'Content-Type: application/json' -d '{"guia": "RF-102"}' http://127.0.0.1:8000/envios
-HTTP/1.0 201 Created
-Server: RutaFlowAPI/0.1 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:40 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 41
+HTTP/1.1 201 Created
+Date: Tue, 24 Nov 2026 22:59:44 GMT
+Content-type: application/json; charset=utf-8
+Content-length: 41
 Location: /envios/RF-102
 
 {"guia": "RF-102", "estado": "pendiente"}
@@ -554,41 +597,42 @@ Location: /envios/RF-102
 
 ```text
 $ curl -i -X POST -d 'guia=RF-103' http://127.0.0.1:8000/envios
-HTTP/1.0 400 Bad Request
-Server: RutaFlowAPI/0.1 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:40 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 40
+HTTP/1.1 400 Bad Request
+Date: Tue, 24 Nov 2026 22:59:44 GMT
+Content-type: application/json; charset=utf-8
+Content-length: 40
 
 {"error": "JSON inválido", "code": 400}
 ```
 
 ```text
 $ curl -s -o /dev/null -w '%{http_code}\n' -X DELETE http://127.0.0.1:8000/envios/RF-101
-501
+405
 ```
 
 Mientras tanto, la terminal del servidor registra cada petición con su código:
 
 ```text
-127.0.0.1 - - [24/Nov/2026 02:18:40] "GET /envios HTTP/1.1" 200 -
-127.0.0.1 - - [24/Nov/2026 02:18:40] "GET /envios/RF-999 HTTP/1.1" 404 -
-127.0.0.1 - - [24/Nov/2026 02:18:40] "POST /envios HTTP/1.1" 201 -
-127.0.0.1 - - [24/Nov/2026 02:18:40] "POST /envios HTTP/1.1" 400 -
-127.0.0.1 - - [24/Nov/2026 02:18:40] code 501, message Unsupported method ('DELETE')
-127.0.0.1 - - [24/Nov/2026 02:18:40] "DELETE /envios/RF-101 HTTP/1.1" 501 -
+$ java ApiEnvios.java
+API de envíos en http://127.0.0.1:8000/envios
+"GET /envios" 200
+"GET /envios/RF-999" 404
+"POST /envios" 201
+"POST /envios" 400
+"DELETE /envios/RF-101" 405
 ```
 
 **Explicación por partes.**
-- Línea 5: `ENVIOS` es un diccionario en memoria. Si detienes el servidor, los envíos creados se pierden.
-- Línea 9: `server_version` es el valor de la cabecera `Server` que ves en cada respuesta.
-- Líneas 11–19: `responder` convierte los datos a JSON (línea 12), escribe la línea de estado (13), las cabeceras (14–17), la línea vacía (18) y el cuerpo (19).
-- Líneas 21–31: `do_GET` decide por la ruta. Una guía desconocida recibe 404 con un cuerpo JSON que explica el error.
-- Líneas 34–36: el servidor lee exactamente `Content-Length` bytes del cuerpo y los interpreta como JSON.
-- Líneas 37–39: `guia=RF-103` no es JSON; la excepción se atrapa y se responde 400.
-- Línea 42: el 201 trae la cabecera `Location` con la ruta del recurso nuevo.
-- No existe `do_DELETE`; `http.server` responde por su cuenta `501 Unsupported method ('DELETE')`.
-- Las fechas del registro del servidor están en hora local; la cabecera `Date` siempre va en GMT.
+- Líneas 2–7: las clases del servidor viven en `com.sun.net.httpserver`; ese paquete no entra en la importación automática de los archivos compactos, así que se importa a mano.
+- Línea 9: `ENVIOS` es un mapa en memoria de guía a estado. Si detienes el servidor, los envíos creados se pierden.
+- Línea 10: la expresión regular busca `"guia"`, dos puntos y un texto entre comillas; el paréntesis captura ese texto.
+- Líneas 20–28: `responder` convierte el texto a bytes UTF-8 (línea 21), pone `Content-Type` (22), escribe la línea de estado y las cabeceras con el tamaño exacto del cuerpo (23) y luego el cuerpo (24–26). La línea 27 escribe el registro.
+- Líneas 30–45: `atenderGet` decide por la ruta. Una guía desconocida recibe 404 con un cuerpo JSON que explica el error.
+- Líneas 48–52: lee todo el cuerpo; si no parece un objeto JSON, responde 400.
+- Línea 57: el 201 trae la cabecera `Location` con la ruta del recurso nuevo.
+- Líneas 64–71: el `switch` reparte por método. Cualquier otro método recibe `405` y la cabecera `Allow`, que dice cuáles sí se aceptan.
+- Líneas 72–75: si algo falla dentro, el error se imprime en el servidor y la conexión se cierra sin respuesta.
+- Líneas 79–81: el servidor escucha en `127.0.0.1:8000`, envía todas las rutas a `atender` y arranca. `this::atender` pasa el método como valor.
 
 #### Problema resuelto 2.2
 Observa la petición real que escribe `curl` y comprueba que `GET` es idempotente.
@@ -606,15 +650,13 @@ $ curl -sv -o /dev/null http://127.0.0.1:8000/envios/RF-101
 > User-Agent: curl/8.5.0
 > Accept: */*
 > 
-* HTTP 1.0, assume close after body
-< HTTP/1.0 200 OK
-< Server: RutaFlowAPI/0.1 Python/3.13.18
-< Date: Tue, 24 Nov 2026 07:18:40 GMT
-< Content-Type: application/json; charset=utf-8
-< Content-Length: 41
+< HTTP/1.1 200 OK
+< Date: Tue, 24 Nov 2026 22:59:44 GMT
+< Content-type: application/json; charset=utf-8
+< Content-length: 41
 < 
 { [41 bytes data]
-* Closing connection
+* Connection #0 to host 127.0.0.1 left intact
 ```
 
 ```text
@@ -627,11 +669,12 @@ $ curl -s http://127.0.0.1:8000/envios
 **Explicación por partes.**
 - `> GET /envios/RF-101 HTTP/1.1` es la línea de inicio: método, ruta y versión.
 - `> Host`, `> User-Agent` y `> Accept` son cabeceras que `curl` agrega solo. La línea `> ` vacía cierra la petición.
-- El cliente pide HTTP/1.1 y el servidor contesta con HTTP/1.0: por eso `curl` avisa que cerrará al terminar.
+- Cliente y servidor hablan HTTP/1.1: `left intact` indica que la conexión quedó abierta para reutilizarla en otra petición.
 - Las dos consultas a `/envios` dejan el servidor igual: dos `GET` no crean ni borran nada.
 
-> **Error común.** Olvidar un campo obligatorio del cuerpo. `-d '{"codigo": "RF-104"}'` hace que la línea 40 falle
-> con `KeyError: 'guia'` en la terminal del servidor. El cliente no recibe respuesta y ve
+> **Error común.** Olvidar un campo obligatorio del cuerpo. Con `-d '{"codigo": "RF-104"}'` la expresión regular no
+> encuentra la guía y la línea 55 falla: la terminal del servidor muestra
+> `error atendiendo la petición: java.lang.IllegalStateException: No match found`. El cliente no recibe respuesta y ve
 > `curl: (52) Empty reply from server`. Ese mensaje significa «la conexión se cortó sin respuesta»: revisa el registro
 > del servidor, no el cliente.
 
@@ -657,7 +700,7 @@ En un archivo `contrato.md`, anota en una tabla: método, ruta, cuerpo de entrad
 consultar y crear envíos.
 
 #### Paso 2 · Levanta la API
-Copia `api_envios.py` en una carpeta nueva y ejecútalo. Si el puerto 8000 sigue ocupado por el Tema 1, detén ese servidor con Ctrl + C.
+Copia `ApiEnvios.java` en una carpeta nueva y ejecútalo con `java ApiEnvios.java`. Si el puerto 8000 sigue ocupado por el Tema 1, detén ese servidor con Ctrl + C.
 
 #### Paso 3 · Prueba cada fila del contrato
 Ejecuta los cinco comandos `curl` del Problema resuelto 2.1. Marca en `contrato.md` si el código coincide.
@@ -666,7 +709,7 @@ Ejecuta los cinco comandos `curl` del Problema resuelto 2.1. Marca en `contrato.
 Ejecuta `curl -sv -o /dev/null http://127.0.0.1:8000/envios/RF-101` y señala la línea de inicio, las cabeceras y la línea vacía.
 
 #### Paso 5 · Provoca el corte
-Envía `-d '{"codigo": "RF-104"}'` y lee el `KeyError` en la terminal del servidor.
+Envía `-d '{"codigo": "RF-104"}'` y lee la `IllegalStateException` en la terminal del servidor.
 
 #### Resumen
 - **HTTP** es un protocolo de texto: una **petición** del cliente y una **respuesta** del servidor.
@@ -679,20 +722,20 @@ Envía `-d '{"codigo": "RF-104"}'` y lee el `KeyError` en la terminal del servid
 #### Ejercicio verificable 1
 Básico. Sin ejecutar, di qué código devuelve `curl -i http://127.0.0.1:8000/clientes` contra la API del tema.
 
-Respuesta esperada: `404 Not Found` con el cuerpo `{"error": "Ruta no existe", "code": 404}`, por la rama `else` de las líneas 30–31.
+Respuesta esperada: `404 Not Found` con el cuerpo `{"error": "Ruta no existe", "code": 404}`, por la rama `else` de las líneas 42–43.
 
 #### Ejercicio verificable 2
 Intermedio. Escribe la tabla del contrato para listar, crear, editar y borrar envíos, indicando qué métodos son idempotentes.
 
 Respuesta esperada: listar `GET /envios` (sí); crear `POST /envios` (no); editar `PUT /envios/RF-101` (sí);
-borrar `DELETE /envios/RF-101` (sí). En la API del tema, `PUT` y `DELETE` responden `501` porque no están implementados.
+borrar `DELETE /envios/RF-101` (sí). En la API del tema, `PUT` y `DELETE` responden `405` porque no están implementados.
 
 #### Ejercicio verificable 3
-Reto. Cambia `do_POST` para que un cuerpo sin `"guia"` responda 400 en lugar de cortar la conexión.
+Reto. Cambia `atenderPost` para que un cuerpo sin `"guia"` responda 400 en lugar de cortar la conexión.
 
-Respuesta esperada: antes de la línea 40, agrega `if "guia" not in datos:` con
-`self.responder(400, {"error": "Falta la guía", "code": 400})` y `return`. La misma petición del error común devuelve
-`HTTP/1.0 400 Bad Request` y el cuerpo `{"error": "Falta la guía", "code": 400}`.
+Respuesta esperada: cambia la línea 54 por `if (!coincidencia.find()) {` con
+`responder(intercambio, 400, errorJson("Falta la guía", 400));` y `return;` dentro. La misma petición del error común
+devuelve `HTTP/1.1 400 Bad Request` y el cuerpo `{"error": "Falta la guía", "code": 400}`.
 
 #### En el trabajo
 En una empresa, el contrato de una API se escribe en un documento OpenAPI antes de programar. El equipo móvil y el de
@@ -812,7 +855,9 @@ Escribe el formulario de registro de envíos con HTML semántico y comprueba su 
 **Razonamiento:**
 1. La página tiene cabecera, contenido principal y una sección con el formulario: `header`, `main` y `section`.
 2. Cada campo necesita `id` (para su `label`) y `name` (para enviarse). La casilla de urgente puede ir envuelta en su `label`.
-3. Python trae `html.parser`, que recorre las etiquetas en orden. Con él se dibuja el árbol y se buscan campos sin `label`.
+3. Un archivo `Html.java` encuentra las etiquetas en orden con una expresión regular. Dos programas lo usan: uno
+   dibuja el árbol y otro busca campos sin `label`. Es un lector mínimo, suficiente para páginas bien escritas como
+   las de este módulo; en proyectos reales se usa una biblioteca como jsoup, que entiende HTML con errores.
 
 ```html
 <!doctype html>
@@ -847,35 +892,62 @@ Escribe el formulario de registro de envíos con HTML semántico y comprueba su 
 </html>
 ```
 
-```python
-# arbol_dom.py — dibuja el árbol de elementos de un archivo HTML
-import sys
-from html.parser import HTMLParser
+Guarda los tres archivos Java siguientes juntos, en la carpeta que contiene a `formulario`:
 
-VACIOS = {"meta", "input", "br", "img", "link"}  # etiquetas sin cierre
+```java
+// Html.java — lector mínimo de etiquetas HTML para los scripts del módulo
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+class Html {
+    record Etiqueta(String nombre, boolean esCierre, Map<String, String> atributos) {}
 
-class Arbol(HTMLParser):
-    nivel = 0
+    static final Set<String> VACIOS = Set.of("meta", "input", "br", "img", "link");   // etiquetas sin cierre
+    private static final Pattern ETIQUETA = Pattern.compile("<(/?)([a-zA-Z][a-zA-Z0-9]*)([^>]*)>");
+    private static final Pattern ATRIBUTO = Pattern.compile("([a-zA-Z-]+)(?:=\"([^\"]*)\")?");
 
-    def handle_starttag(self, etiqueta, atributos):
-        datos = dict(atributos)
-        marca = f"#{datos['id']}" if "id" in datos else ""
-        print("  " * self.nivel + etiqueta + marca)
-        if etiqueta not in VACIOS:
-            self.nivel += 1
+    static List<Etiqueta> etiquetas(String html) {
+        List<Etiqueta> resultado = new ArrayList<>();
+        Matcher m = ETIQUETA.matcher(html);
+        while (m.find()) {
+            Map<String, String> atributos = new LinkedHashMap<>();
+            Matcher a = ATRIBUTO.matcher(m.group(3));
+            while (a.find()) {
+                atributos.put(a.group(1), a.group(2) == null ? "" : a.group(2));
+            }
+            resultado.add(new Etiqueta(m.group(2).toLowerCase(), m.group(1).equals("/"), atributos));
+        }
+        return resultado;
+    }
+}
+```
 
-    def handle_endtag(self, etiqueta):
-        if etiqueta not in VACIOS:
-            self.nivel -= 1
-
-
-with open(sys.argv[1], encoding="utf-8") as archivo:
-    Arbol().feed(archivo.read())
+```java
+// ArbolDom.java — dibuja el árbol de elementos de un archivo HTML
+void main(String[] args) throws IOException {
+    String html = Files.readString(Path.of(args[0]));
+    int nivel = 0;
+    for (Html.Etiqueta etiqueta : Html.etiquetas(html)) {
+        if (etiqueta.esCierre()) {
+            nivel--;
+            continue;
+        }
+        String id = etiqueta.atributos().get("id");
+        IO.println("  ".repeat(nivel) + etiqueta.nombre() + (id != null ? "#" + id : ""));
+        if (!Html.VACIOS.contains(etiqueta.nombre())) {
+            nivel++;
+        }
+    }
+}
 ```
 
 ```text
-$ python3 arbol_dom.py formulario/index.html
+$ java ArbolDom.java formulario/index.html
 html
   head
     meta
@@ -902,48 +974,41 @@ html
     script
 ```
 
-```python
-# revisar_labels.py — avisa qué campos de un formulario no tienen etiqueta
-import sys
-from html.parser import HTMLParser
+```java
+// RevisarLabels.java — avisa qué campos de un formulario no tienen etiqueta
+final Set<String> CAMPOS = Set.of("input", "select", "textarea");
 
-CAMPOS = {"input", "select", "textarea"}
+record Campo(String id, boolean envuelto) {}
 
+void main(String[] args) throws IOException {
+    String html = Files.readString(Path.of(args[0]));
+    boolean dentroDeLabel = false;
+    Set<String> nombrados = new HashSet<>();      // ids con <label for="...">
+    List<Campo> campos = new ArrayList<>();
+    for (Html.Etiqueta etiqueta : Html.etiquetas(html)) {
+        Map<String, String> datos = etiqueta.atributos();
+        if (etiqueta.nombre().equals("label")) {
+            dentroDeLabel = !etiqueta.esCierre();
+            if (datos.containsKey("for")) nombrados.add(datos.get("for"));
+        } else if (!etiqueta.esCierre() && CAMPOS.contains(etiqueta.nombre()) && !"hidden".equals(datos.get("type"))) {
+            campos.add(new Campo(datos.getOrDefault("id", "(sin id)"), dentroDeLabel));
+        }
+    }
 
-class Revisor(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.dentro_de_label = False
-        self.nombrados = set()   # ids con <label for="...">
-        self.campos = []         # (id, tiene label que lo envuelve)
-
-    def handle_starttag(self, etiqueta, atributos):
-        datos = dict(atributos)
-        if etiqueta == "label":
-            self.dentro_de_label = True
-            if "for" in datos:
-                self.nombrados.add(datos["for"])
-        elif etiqueta in CAMPOS and datos.get("type") != "hidden":
-            self.campos.append((datos.get("id", "(sin id)"), self.dentro_de_label))
-
-    def handle_endtag(self, etiqueta):
-        if etiqueta == "label":
-            self.dentro_de_label = False
-
-
-revisor = Revisor()
-with open(sys.argv[1], encoding="utf-8") as archivo:
-    revisor.feed(archivo.read())
-
-sin_nombre = [i for i, envuelto in revisor.campos if not envuelto and i not in revisor.nombrados]
-print(f"campos revisados: {len(revisor.campos)}")
-for campo in sin_nombre:
-    print(f"FALTA label: {campo}")
-print("resultado:", "OK" if not sin_nombre else f"{len(sin_nombre)} sin nombre")
+    List<String> sinNombre = new ArrayList<>();
+    for (Campo campo : campos) {
+        if (!campo.envuelto() && !nombrados.contains(campo.id())) sinNombre.add(campo.id());
+    }
+    IO.println("campos revisados: " + campos.size());
+    for (String id : sinNombre) {
+        IO.println("FALTA label: " + id);
+    }
+    IO.println("resultado: " + (sinNombre.isEmpty() ? "OK" : sinNombre.size() + " sin nombre"));
+}
 ```
 
 ```text
-$ python3 revisar_labels.py formulario/index.html
+$ java RevisarLabels.java formulario/index.html
 campos revisados: 3
 resultado: OK
 ```
@@ -952,7 +1017,7 @@ Ahora reproduce el problema del repartidor. Copia la página como `sin_label.htm
 `<p>Número de guía</p>`:
 
 ```text
-$ python3 revisar_labels.py sin_label.html
+$ java RevisarLabels.java sin_label.html
 campos revisados: 3
 FALTA label: guia
 resultado: 1 sin nombre
@@ -963,9 +1028,13 @@ resultado: 1 sin nombre
 - HTML, líneas 14–15: `for="guia"` une el rótulo con el campo de `id="guia"`; `required` impide enviar el campo vacío.
 - HTML, línea 22: la casilla va envuelta en su `label`, la otra forma válida de unirlos.
 - HTML, línea 24: `role="alert"` hace que el lector de pantalla lea en voz alta el texto que aparezca ahí.
-- `arbol_dom.py`, líneas 11–16: cada apertura imprime la etiqueta con su sangría y baja un nivel, salvo las etiquetas sin cierre de la línea 5.
-- `revisar_labels.py`, líneas 17–22: anota los `for` de cada `label` y si el campo está dentro de uno.
-- `revisar_labels.py`, línea 33: un campo sin `label` envolvente y sin `for` que lo nombre es un campo sin nombre.
+- `Html.java`, línea 11: cada etiqueta encontrada es un record con su nombre, si es de cierre (`</...>`) y sus atributos.
+- `Html.java`, líneas 14–15: la primera expresión regular reconoce `<nombre ...>` y `</nombre>`; la segunda, cada `atributo="valor"` o atributo suelto como `required`.
+- `Html.java`, línea 26: guarda el nombre en minúsculas; `<!doctype html>` no coincide porque empieza con `!`.
+- `ArbolDom.java`, línea 2: `main(String[] args)` recibe los argumentos de la terminal; `args[0]` es la ruta del HTML.
+- `ArbolDom.java`, líneas 6–14: un cierre sube un nivel; una apertura imprime la etiqueta con su sangría y baja un nivel, salvo las etiquetas sin cierre de `Html.VACIOS`.
+- `RevisarLabels.java`, líneas 13–18: anota los `for` de cada `label` y si cada campo está dentro de uno.
+- `RevisarLabels.java`, líneas 21–24: un campo sin `label` envolvente y sin `for` que lo nombre es un campo sin nombre.
 
 #### Problema resuelto 3.2
 Valida el número de guía antes de enviar: debe tener la forma `RF-` seguida de dígitos. Prueba la regla sin abrir el navegador.
@@ -1020,16 +1089,15 @@ $ node prueba_validacion.js
 "RF-" -> La guía debe tener la forma RF-123.
 ```
 
-Sirve la carpeta con `python3 -m http.server 8000 --bind 127.0.0.1` y simula el envío del formulario con `curl`:
+Sirve la carpeta `formulario` con `jwebserver -p 8000 -b 127.0.0.1` y simula el envío del formulario con `curl`:
 
 ```text
 $ curl -I 'http://127.0.0.1:8000/?guia=RF-4471&prioridad=alta&urgente=si'
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:42 GMT
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 23:00:58 GMT
+Last-modified: Tue, 24 Nov 2026 23:00:47 GMT
 Content-type: text/html
-Content-Length: 1056
-Last-Modified: Tue, 24 Nov 2026 07:17:14 GMT
+Content-length: 1056
 
 ```
 
@@ -1055,11 +1123,11 @@ tener la forma RF-123.». Este comportamiento se describe, no se capturó con un
 > **Buena práctica.** Primero HTML semántico y `label`, después JavaScript. Un formulario bien marcado funciona y se
 > entiende aunque el script no cargue.
 
-> **Prevenir errores.** Ejecuta `revisar_labels.py` cada vez que agregues un campo. Detecta el campo sin nombre antes
+> **Prevenir errores.** Ejecuta `RevisarLabels.java` cada vez que agregues un campo. Detecta el campo sin nombre antes
 > de que lo descubra un usuario.
 
 #### Checkpoint 3.1
-En el árbol de `arbol_dom.py`, ¿quién es el padre de `input#urgente` y por qué no aparece al mismo nivel que `input#guia`?
+En el árbol de `ArbolDom.java`, ¿quién es el padre de `input#urgente` y por qué no aparece al mismo nivel que `input#guia`?
 
 Respuesta: su padre es un `label`. La casilla está escrita **dentro** del `label` (línea 22 del HTML), mientras que
 `input#guia` es hermano de su `label` y se une a él con `for`.
@@ -1070,19 +1138,19 @@ Respuesta: su padre es un `label`. La casilla está escrita **dentro** del `labe
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Crea la página
-En una carpeta `formulario`, guarda `index.html` y `validacion.js` del tema.
+En una carpeta `formulario`, guarda `index.html` y `validacion.js` del tema. En la carpeta de arriba, guarda `Html.java`, `ArbolDom.java` y `RevisarLabels.java`.
 
 #### Paso 2 · Dibuja el árbol
-Ejecuta `python3 arbol_dom.py formulario/index.html` desde la carpeta superior y compara el árbol con el HTML.
+Ejecuta `java ArbolDom.java formulario/index.html` desde la carpeta superior y compara el árbol con el HTML.
 
 #### Paso 3 · Audita las etiquetas
-Ejecuta `revisar_labels.py` sobre la página buena y sobre `sin_label.html`. Debes ver `resultado: OK` y luego `FALTA label: guia`.
+Ejecuta `RevisarLabels.java` sobre la página buena y sobre `sin_label.html`. Debes ver `resultado: OK` y luego `FALTA label: guia`.
 
 #### Paso 4 · Prueba la regla
 Ejecuta `node prueba_validacion.js` (comprueba antes `node --version`). Agrega el caso `"RF-12a"` y predice su resultado.
 
 #### Paso 5 · Prueba en el navegador
-Sirve la carpeta en el puerto 8000, abre `http://127.0.0.1:8000/` y envía `rf-4471`. Navega con Tab y comprueba que llegas a los cuatro controles.
+Sirve la carpeta `formulario` con `jwebserver -p 8000 -b 127.0.0.1`, abre `http://127.0.0.1:8000/` y envía `rf-4471`. Navega con Tab y comprueba que llegas a los cuatro controles.
 
 #### Resumen
 - **HTML** describe estructura y significado; cada **elemento** se configura con **atributos**.
@@ -1098,7 +1166,7 @@ Básico. ¿Qué imprime `node prueba_validacion.js` si agregas la entrada `"RF-1
 Respuesta esperada: `"RF-12a" -> La guía debe tener la forma RF-123.`, porque `$` exige que después de los dígitos termine el texto.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega un campo `<input id="peso" name="peso" type="number">` sin `label` y ejecuta `revisar_labels.py`.
+Intermedio. Agrega un campo `<input id="peso" name="peso" type="number">` sin `label` y ejecuta `RevisarLabels.java`.
 
 Respuesta esperada: `campos revisados: 4`, `FALTA label: peso` y `resultado: 1 sin nombre`. Se corrige con
 `<label for="peso">Peso (kg)</label>` antes del campo.
@@ -1107,8 +1175,17 @@ Respuesta esperada: `campos revisados: 4`, `FALTA label: peso` y `resultado: 1 s
 Reto. Con el formulario servido, escribe la URL que pediría el navegador con guía `RF 44/71` y prioridad alta, sin marcar urgente.
 
 Respuesta esperada: `/?guia=RF+44%2F71&prioridad=alta`. El espacio se codifica como `+` y la barra como `%2F`. Lo
-confirma `python3 -c "from urllib.parse import urlencode; print(urlencode({'guia': 'RF 44/71', 'prioridad': 'alta'}))"`,
-que imprime `guia=RF+44%2F71&prioridad=alta`. La casilla sin marcar no se envía.
+confirma este archivo, que usa la misma codificación de los formularios:
+
+```java
+// Codificar.java — codifica campos como los envía un formulario con method="get"
+void main() {
+    String guia = URLEncoder.encode("RF 44/71", StandardCharsets.UTF_8);
+    IO.println("guia=" + guia + "&prioridad=alta");
+}
+```
+
+`java Codificar.java` imprime `guia=RF+44%2F71&prioridad=alta`. La casilla sin marcar no se envía.
 
 #### En el trabajo
 Muchas empresas y entidades públicas deben cumplir normas de accesibilidad web. Las auditorías revisan primero lo de
@@ -1234,39 +1311,50 @@ Mide el contraste de tres grises sobre blanco y decide cuáles cumplen WCAG AA p
 2. El contraste es `(claro + 0.05) / (oscuro + 0.05)`; AA exige al menos 4.5 para texto normal y 3 para texto grande.
 3. Se programa la fórmula una vez y se aplica a cada par de colores.
 
-```python
-# contraste.py — calcula el contraste WCAG entre dos colores
-def luminancia(hex_color):
-    r, g, b = (int(hex_color[i:i + 2], 16) / 255 for i in (1, 3, 5))
-    def canal(c):
-        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-    return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b)
+```java
+// Contraste.java — calcula el contraste WCAG entre dos colores
+double canal(int valor) {
+    double c = valor / 255.0;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
 
+double luminancia(String hexColor) {
+    int r = Integer.parseInt(hexColor.substring(1, 3), 16);
+    int g = Integer.parseInt(hexColor.substring(3, 5), 16);
+    int b = Integer.parseInt(hexColor.substring(5, 7), 16);
+    return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b);
+}
 
-def contraste(color_a, color_b):
-    claro, oscuro = sorted((luminancia(color_a), luminancia(color_b)), reverse=True)
-    return (claro + 0.05) / (oscuro + 0.05)
+double contraste(String colorA, String colorB) {
+    double claro = Math.max(luminancia(colorA), luminancia(colorB));
+    double oscuro = Math.min(luminancia(colorA), luminancia(colorB));
+    return (claro + 0.05) / (oscuro + 0.05);
+}
 
-
-for texto, fondo in [("#CCCCCC", "#FFFFFF"), ("#767676", "#FFFFFF"), ("#333333", "#FFFFFF")]:
-    razon = contraste(texto, fondo)
-    veredicto = "cumple AA" if razon >= 4.5 else "NO cumple AA"
-    print(f"{texto} sobre {fondo}: {razon:.2f}:1 -> {veredicto}")
+void main() {
+    String[][] pares = {{"#CCCCCC", "#FFFFFF"}, {"#767676", "#FFFFFF"}, {"#333333", "#FFFFFF"}};
+    for (String[] par : pares) {
+        double razon = contraste(par[0], par[1]);
+        String veredicto = razon >= 4.5 ? "cumple AA" : "NO cumple AA";
+        IO.println(String.format(Locale.ROOT, "%s sobre %s: %.2f:1 -> %s", par[0], par[1], razon, veredicto));
+    }
+}
 ```
 
 ```text
-$ python3 contraste.py
+$ java Contraste.java
 #CCCCCC sobre #FFFFFF: 1.61:1 -> NO cumple AA
 #767676 sobre #FFFFFF: 4.54:1 -> cumple AA
 #333333 sobre #FFFFFF: 12.63:1 -> cumple AA
 ```
 
 **Explicación por partes.**
-- Línea 3: `#CCCCCC` se corta en `CC`, `CC`, `CC`; `int(..., 16)` lee cada par en base 16 y `/ 255` lo lleva a un número entre 0 y 1.
-- Líneas 4–5: `canal` deshace la curva de brillo de la pantalla, como indica WCAG.
-- Línea 6: el ojo es más sensible al verde; por eso pesa 0.7152.
-- Líneas 9–11: `sorted(..., reverse=True)` pone primero el más claro, así el resultado siempre es mayor o igual a 1.
-- Línea 16: el umbral 4.5 es el de AA para texto normal. `#767676` es casi el gris más claro que lo cumple.
+- Líneas 8–10: `#CCCCCC` se corta en `CC`, `CC`, `CC` con `substring`; `Integer.parseInt(..., 16)` lee cada par en base 16.
+- Línea 3: `/ 255.0` lleva el canal a un número entre 0 y 1; el `.0` obliga a dividir con decimales.
+- Línea 4: `canal` deshace la curva de brillo de la pantalla, como indica WCAG; `Math.pow` eleva a 2.4.
+- Línea 11: el ojo es más sensible al verde; por eso pesa 0.7152.
+- Líneas 15–16: `Math.max` y `Math.min` separan el más claro del más oscuro, así el resultado siempre es mayor o igual a 1.
+- Línea 24: el umbral 4.5 es el de AA para texto normal. `#767676` es casi el gris más claro que lo cumple.
 
 #### Problema resuelto 4.2
 Da estilo a la página de tarifas: tres tarjetas que se reacomodan según el ancho, colores que cumplen AA y foco visible. Comprueba cuál regla gana.
@@ -1322,25 +1410,33 @@ button:focus-visible { outline: 3px solid #6d5dfc; outline-offset: 3px; }
 }
 ```
 
-```python
-# especificidad.py — cuenta ids, clases y etiquetas de un selector simple
-import re
+```java
+// Especificidad.java — cuenta ids, clases y etiquetas de un selector simple
+final Pattern ID = Pattern.compile("#[\\w-]+");
+final Pattern CLASE = Pattern.compile("\\.[\\w-]+|:[\\w-]+");
+final Pattern ETIQUETA = Pattern.compile("\\b[a-z][\\w-]*");
 
+long contar(Pattern patron, String texto) {
+    return patron.matcher(texto).results().count();
+}
 
-def especificidad(selector):
-    ids = len(re.findall(r"#[\w-]+", selector))
-    clases = len(re.findall(r"\.[\w-]+|:[\w-]+", selector))
-    sin_ids_ni_clases = re.sub(r"[#.:][\w-]+", " ", selector)
-    etiquetas = len(re.findall(r"\b[a-z][\w-]*", sin_ids_ni_clases))
-    return (ids, clases, etiquetas)
+String especificidad(String selector) {
+    long ids = contar(ID, selector);
+    long clases = contar(CLASE, selector);
+    String sinIdsNiClases = selector.replaceAll("[#.:][\\w-]+", " ");
+    long etiquetas = contar(ETIQUETA, sinIdsNiClases);
+    return "(" + ids + ", " + clases + ", " + etiquetas + ")";
+}
 
-
-for selector in ["button", ".boton", "main .productos button", "#enviar", "button:focus-visible"]:
-    print(f"{selector:24} -> {especificidad(selector)}")
+void main() {
+    for (String selector : List.of("button", ".boton", "main .productos button", "#enviar", "button:focus-visible")) {
+        IO.println(String.format("%-24s -> %s", selector, especificidad(selector)));
+    }
+}
 ```
 
 ```text
-$ python3 especificidad.py
+$ java Especificidad.java
 button                   -> (0, 0, 1)
 .boton                   -> (0, 1, 0)
 main .productos button   -> (0, 1, 2)
@@ -1348,16 +1444,15 @@ main .productos button   -> (0, 1, 2)
 button:focus-visible     -> (0, 1, 1)
 ```
 
-Sirve la carpeta `sitio` en el puerto 8000 y confirma que la hoja de estilos llega con su tipo correcto:
+Sirve la carpeta `sitio` con `jwebserver -p 8000 -b 127.0.0.1` y confirma que la hoja de estilos llega con su tipo correcto:
 
 ```text
 $ curl -I http://127.0.0.1:8000/estilos.css
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:44 GMT
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 23:01:46 GMT
+Last-modified: Tue, 24 Nov 2026 23:01:37 GMT
 Content-type: text/css
-Content-Length: 528
-Last-Modified: Tue, 24 Nov 2026 07:18:08 GMT
+Content-length: 528
 
 ```
 
@@ -1369,14 +1464,14 @@ Last-Modified: Tue, 24 Nov 2026 07:18:08 GMT
 - CSS, líneas 8–12: la cuadrícula crea las columnas de al menos 15rem que quepan; en un celular queda una sola.
 - CSS, línea 16: `button:focus-visible` pesa `(0, 1, 1)` y gana a cualquier regla de solo `button`.
 - CSS, líneas 18–20: la media query agranda la letra en ventanas de menos de 40rem.
-- `especificidad.py`, líneas 6–9: cuenta ids (`#`), clases y pseudoclases (`.` y `:`) y etiquetas. Solo sirve para selectores simples como estos.
+- `Especificidad.java`, líneas 2–4 y 10–15: cuenta ids (`#`), clases y pseudoclases (`.` y `:`) y etiquetas con tres expresiones regulares; `results().count()` cuenta las coincidencias. Solo sirve para selectores simples como estos.
 
 En el navegador se observa: con la ventana ancha, tres tarjetas en fila. Al angostarla pasan a dos columnas y luego
 a una; por debajo de 40rem, además, la letra crece. Al pulsar Tab, cada botón muestra un borde morado. Esto se describe; no es una
 captura de herramienta.
 
 > **Error común.** Escribir mal el nombre de la hoja: `href="estilo.css"`. La página carga sin estilos y no aparece
-> ningún mensaje en pantalla. `curl -I http://127.0.0.1:8000/estilo.css` revela la causa: `HTTP/1.0 404 File not found`.
+> ningún mensaje en pantalla. `curl -I http://127.0.0.1:8000/estilo.css` revela la causa: `HTTP/1.1 404 Not Found`.
 
 > **Error común.** Quitar el contorno con `:focus { outline: none; }`. No hay mensaje de error: el síntoma es que al
 > pulsar Tab no ves dónde estás. Prueba siempre la página solo con teclado.
@@ -1384,7 +1479,7 @@ captura de herramienta.
 > **Buena práctica.** Guarda los colores medidos en un solo lugar y anota su contraste junto a cada uno. Así nadie
 > cambia un color sin volver a medirlo.
 
-> **Prevenir errores.** Antes de aprobar un color, ejecuta `contraste.py` con el par texto y fondo. Si da menos de 4.5:1 para texto normal, no se usa.
+> **Prevenir errores.** Antes de aprobar un color, ejecuta `Contraste.java` con el par texto y fondo. Si da menos de 4.5:1 para texto normal, no se usa.
 
 #### Checkpoint 4.1
 Un enlace tiene dos reglas: `.productos a { color: #767676; }` y `a { color: #333333; }`, esta última escrita después. ¿De qué color se ve?
@@ -1401,10 +1496,10 @@ orden, así que la segunda pierde aunque esté después.
 Guarda `index.html` y `estilos.css` del Problema resuelto 4.2.
 
 #### Paso 2 · Sirve y verifica
-Ejecuta `python3 -m http.server 8000 --bind 127.0.0.1` dentro de `sitio` y comprueba con `curl -I` que `estilos.css` responde `200` con `Content-type: text/css`.
+Ejecuta `jwebserver -p 8000 -b 127.0.0.1` dentro de `sitio` y comprueba con `curl -I` que `estilos.css` responde `200` con `Content-type: text/css`.
 
 #### Paso 3 · Mide los colores
-Ejecuta `contraste.py`. Agrega el par `("#999999", "#FFFFFF")` y anota si cumple.
+Ejecuta `Contraste.java`. Agrega el par `{"#999999", "#FFFFFF"}` y anota si cumple.
 
 #### Paso 4 · Prueba el layout
 Abre `http://127.0.0.1:8000/` en el navegador y angosta la ventana. Anota en qué momentos cambia el número de columnas.
@@ -1421,12 +1516,12 @@ Recorre la página solo con Tab y Shift + Tab. Cada botón debe mostrar el conto
 - El **foco visible** con `:focus-visible` es obligatorio para quien navega con teclado.
 
 #### Ejercicio verificable 1
-Básico. Calcula con `contraste.py` el contraste de `#999999` sobre `#FFFFFF`. ¿Cumple AA para texto normal?
+Básico. Calcula con `Contraste.java` el contraste de `#999999` sobre `#FFFFFF`. ¿Cumple AA para texto normal?
 
 Respuesta esperada: `2.85:1`, no cumple. Tampoco cumple el 3:1 de texto grande.
 
 #### Ejercicio verificable 2
-Intermedio. Predice con `especificidad.py` el peso de `#enviar:focus-visible` y di si gana a `main .productos button`.
+Intermedio. Predice con `Especificidad.java` el peso de `#enviar:focus-visible` y di si gana a `main .productos button`.
 
 Respuesta esperada: `(1, 1, 0)`. Gana, porque tiene un id y `main .productos button` tiene cero `(0, 1, 2)`.
 
@@ -1450,10 +1545,10 @@ las DevTools del navegador, calculan el mismo contraste de este tema en cada pá
 El proyecto del módulo une los cuatro temas en un sitio pequeño de RutaFlow, construido desde una carpeta vacía y sin
 frameworks. La construcción guiada está en el Tema 5. Al terminar debes entregar:
 
-- el sitio servido localmente con `python3 -m http.server`, con HTML semántico y formulario etiquetado;
+- el sitio servido localmente con `jwebserver`, con HTML semántico y formulario etiquetado;
 - un layout que pase de dos columnas a una en pantallas angostas;
 - un informe de red con la salida de `curl -I` de cada archivo del sitio y su código de estado;
-- una auditoría de teclado: orden de foco, foco visible y resultado de `auditar.py`.
+- una auditoría de teclado: orden de foco, foco visible y resultado de `Auditar.java`.
 
 </details>
 
@@ -1496,7 +1591,7 @@ código del envío y consulten. Debe servir en celular, con lector de pantalla y
 - **Definición técnica:** servidor HTTP que responde cada ruta con el archivo correspondiente del disco, sin ejecutar lógica propia.
 - **En palabras sencillas:** un archivador: le pides un archivo por su nombre y te lo entrega tal cual.
 - **Dónde se rompe la comparación:** no «entiende» el formulario: ignora la cadena de consulta y devuelve la misma página.
-- **Ejemplo:** `python3 -m http.server` responde `/?codigo=ENV-42` con el mismo `index.html` que `/`.
+- **Ejemplo:** `jwebserver` responde `/?codigo=ENV-42` con el mismo `index.html` que `/`.
 - **Error típico:** esperar que el servidor estático busque el envío; para eso hace falta una API como la del Tema 2.
 
 **orden de foco**
@@ -1510,21 +1605,21 @@ código del envío y consulten. Debe servir en celular, con lector de pantalla y
 - **Definición técnica:** revisión sistemática de una página contra criterios verificables (por ejemplo, de WCAG) que produce una lista de hallazgos.
 - **En palabras sencillas:** una lista de chequeo que se pasa a la página, punto por punto, con resultado OK o FALLA.
 - **Dónde se rompe la comparación:** un script automático solo revisa lo que se puede contar; la prueba con teclado y lector de pantalla sigue siendo manual.
-- **Ejemplo:** `python3 auditar.py seguimiento-html/index.html` termina con `resultado: 6/6 revisiones superadas`.
+- **Ejemplo:** `java Auditar.java seguimiento-html/index.html` termina con `resultado: 6/6 revisiones superadas`.
 - **Error típico:** creer que 6/6 significa «totalmente accesible»; significa que pasó esas seis revisiones.
 
 **código de salida**
 - **Definición técnica:** número entero que un programa entrega al sistema operativo al terminar; `0` significa éxito y cualquier otro valor, fallo.
 - **En palabras sencillas:** el pulgar arriba o abajo que deja un programa al cerrar.
 - **Dónde se rompe la comparación:** no se ve en pantalla; hay que pedirlo con `echo $?` justo después del comando.
-- **Ejemplo:** `auditar.py` termina con `sys.exit(1)` si alguna revisión falla.
+- **Ejemplo:** `Auditar.java` termina con `System.exit(1)` si alguna revisión falla.
 - **Error típico:** mirar solo el texto impreso; las herramientas automáticas deciden por el código de salida.
 
 **evidencia**
 - **Definición técnica:** registro reproducible (comando, salida, fecha y versión) que demuestra que un sistema cumple un requisito.
 - **En palabras sencillas:** la prueba guardada que cualquiera puede repetir y obtener lo mismo.
 - **Dónde se rompe la comparación:** una captura de pantalla muestra, pero no se puede repetir; un comando con su salida sí.
-- **Ejemplo:** `evidencia.txt` con las cabeceras de `curl -sI` y el resultado de `auditar.py`.
+- **Ejemplo:** `evidencia.txt` con las cabeceras de `curl -sI` y el resultado de `Auditar.java`.
 - **Error típico:** guardar la salida sin el comando que la produjo; nadie sabe cómo repetirla.
 
 #### ► CÓMO FUNCIONA
@@ -1537,7 +1632,7 @@ flowchart LR
     VACIA["carpeta vacía"] --> PAGINA["index.html<br/>HTML + CSS"]
     PAGINA --> SERVIR["http.server<br/>puerto 8000"]
     SERVIR --> CURL["curl -I<br/>200 text/html"]
-    PAGINA --> AUDIT["auditar.py<br/>6 revisiones"]
+    PAGINA --> AUDIT["Auditar.java<br/>6 revisiones"]
     CURL --> EVID["evidencia.txt"]
     AUDIT --> EVID
     AUDIT -->|exit 1| CORREGIR["corregir y repetir"]
@@ -1597,16 +1692,15 @@ cd seguimiento-html
 </html>
 ```
 
-Sirve la carpeta con `python3 -m http.server 8000 --bind 127.0.0.1` y simula una consulta como lo haría el formulario:
+Sirve la carpeta con `jwebserver -p 8000 -b 127.0.0.1` y simula una consulta como lo haría el formulario:
 
 ```text
 $ curl -I 'http://127.0.0.1:8000/?codigo=ENV-42'
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:18:45 GMT
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 23:02:34 GMT
+Last-modified: Tue, 24 Nov 2026 23:02:21 GMT
 Content-type: text/html
-Content-Length: 1261
-Last-Modified: Tue, 24 Nov 2026 07:18:08 GMT
+Content-length: 1261
 
 ```
 
@@ -1629,81 +1723,81 @@ Audita la página con un script, provoca tres fallos a propósito y guarda la ev
 
 **Razonamiento:**
 1. Elige revisiones que se puedan comprobar leyendo el HTML: `lang`, título, viewport, un solo `h1`, campos con `label` y foco visible.
-2. Recorre el HTML con `html.parser`, como en el Tema 3, y anota lo que encuentras.
+2. Recorre las etiquetas con `Html.java`, el lector del Tema 3, y anota lo que encuentras. El texto de `title` y de `style` se toma con una expresión regular aparte.
 3. Imprime OK o FALLA por revisión, el orden de foco y termina con código de salida 1 si algo falla.
 4. Para comprobar que el auditor detecta fallos, crea `roto.html` sin `lang`, sin `label` y con `outline: none`.
 
-```python
-# auditar.py — revisión automática de accesibilidad básica de una página
-import sys
-from html.parser import HTMLParser
+```java
+// Auditar.java — revisión automática de accesibilidad básica de una página
+final Set<String> ENFOCABLES = Set.of("a", "button", "input", "select", "textarea");
+final Set<String> CAMPOS = Set.of("input", "select", "textarea");
 
-ENFOCABLES = {"a", "button", "input", "select", "textarea"}
+String textoDentroDe(String html, String etiqueta) {
+    Matcher m = Pattern.compile("<" + etiqueta + "[^>]*>(.*?)</" + etiqueta + ">", Pattern.DOTALL).matcher(html);
+    StringBuilder texto = new StringBuilder();
+    while (m.find()) texto.append(m.group(1));
+    return texto.toString().strip();
+}
 
+void main(String[] args) throws IOException {
+    String html = Files.readString(Path.of(args[0]));
+    String lang = null;
+    boolean viewport = false, dentroDeLabel = false;
+    int h1 = 0;
+    Set<String> conLabel = new HashSet<>();
+    List<String> campos = new ArrayList<>(), foco = new ArrayList<>();
 
-class Auditor(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.datos = {"lang": None, "viewport": False, "h1": 0, "titulo": ""}
-        self.etiqueta_actual, self.dentro_de_label = None, False
-        self.con_label, self.campos, self.foco, self.css = set(), [], [], ""
+    for (Html.Etiqueta e : Html.etiquetas(html)) {
+        Map<String, String> a = e.atributos();
+        if (e.esCierre()) {
+            if (e.nombre().equals("label")) dentroDeLabel = false;
+            continue;
+        }
+        switch (e.nombre()) {
+            case "html" -> lang = a.get("lang");
+            case "meta" -> viewport |= "viewport".equals(a.get("name"));
+            case "h1" -> h1++;
+            case "label" -> {
+                dentroDeLabel = true;
+                conLabel.add(a.get("for"));
+            }
+            default -> { }
+        }
+        if (CAMPOS.contains(e.nombre())) {
+            String campo = a.getOrDefault("id", "(sin id)");
+            campos.add(campo);
+            if (dentroDeLabel) conLabel.add(campo);
+        }
+        if (ENFOCABLES.contains(e.nombre())) {
+            foco.add(a.containsKey("id") ? e.nombre() + "#" + a.get("id") : e.nombre());
+        }
+    }
 
-    def handle_starttag(self, etiqueta, atributos):
-        a = dict(atributos)
-        self.etiqueta_actual = etiqueta
-        if etiqueta == "html":
-            self.datos["lang"] = a.get("lang")
-        elif etiqueta == "meta" and a.get("name") == "viewport":
-            self.datos["viewport"] = True
-        elif etiqueta == "h1":
-            self.datos["h1"] += 1
-        elif etiqueta == "label":
-            self.dentro_de_label = True
-            self.con_label.add(a.get("for"))
-        if etiqueta in {"input", "select", "textarea"}:
-            campo = a.get("id", "(sin id)")
-            self.campos.append(campo)
-            if self.dentro_de_label:
-                self.con_label.add(campo)
-        if etiqueta in ENFOCABLES:
-            self.foco.append(f"{etiqueta}#{a['id']}" if "id" in a else etiqueta)
+    String titulo = textoDentroDe(html, "title");
+    String css = textoDentroDe(html, "style");
+    Map<String, Boolean> revisiones = new LinkedHashMap<>();
+    revisiones.put("idioma declarado (lang)", lang != null && !lang.isBlank());
+    revisiones.put("título no vacío", !titulo.isEmpty());
+    revisiones.put("meta viewport", viewport);
+    revisiones.put("exactamente un h1", h1 == 1);
+    revisiones.put("todos los campos con label", conLabel.containsAll(campos));
+    revisiones.put("foco visible en CSS", css.contains(":focus-visible") && !css.contains("outline: none"));
 
-    def handle_endtag(self, etiqueta):
-        self.etiqueta_actual = None
-        if etiqueta == "label":
-            self.dentro_de_label = False
-
-    def handle_data(self, texto):
-        if self.etiqueta_actual == "title":
-            self.datos["titulo"] += texto.strip()
-        elif self.etiqueta_actual == "style":
-            self.css += texto
-
-
-auditor = Auditor()
-with open(sys.argv[1], encoding="utf-8") as archivo:
-    auditor.feed(archivo.read())
-d = auditor.datos
-revisiones = [
-    ("idioma declarado (lang)", bool(d["lang"])),
-    ("título no vacío", bool(d["titulo"])),
-    ("meta viewport", d["viewport"]),
-    ("exactamente un h1", d["h1"] == 1),
-    ("todos los campos con label", all(c in auditor.con_label for c in auditor.campos)),
-    ("foco visible en CSS", ":focus-visible" in auditor.css and "outline: none" not in auditor.css),
-]
-for nombre, ok in revisiones:
-    print(f"[{'OK' if ok else 'FALLA'}] {nombre}")
-print("orden de foco:", " -> ".join(auditor.foco))
-fallas = sum(not ok for _, ok in revisiones)
-print(f"resultado: {len(revisiones) - fallas}/{len(revisiones)} revisiones superadas")
-sys.exit(1 if fallas else 0)
+    int fallas = 0;
+    for (var revision : revisiones.entrySet()) {
+        IO.println("[" + (revision.getValue() ? "OK" : "FALLA") + "] " + revision.getKey());
+        if (!revision.getValue()) fallas++;
+    }
+    IO.println("orden de foco: " + String.join(" -> ", foco));
+    IO.println("resultado: " + (revisiones.size() - fallas) + "/" + revisiones.size() + " revisiones superadas");
+    System.exit(fallas > 0 ? 1 : 0);
+}
 ```
 
-Desde la carpeta superior:
+Guarda `Auditar.java` y `Html.java` (el del Tema 3) en la carpeta superior. Desde la carpeta superior:
 
 ```text
-$ python3 auditar.py seguimiento-html/index.html
+$ java Auditar.java seguimiento-html/index.html
 [OK] idioma declarado (lang)
 [OK] título no vacío
 [OK] meta viewport
@@ -1720,7 +1814,7 @@ $ echo $?
 `:focus-visible { outline: none; }`.
 
 ```text
-$ python3 auditar.py roto.html
+$ java Auditar.java roto.html
 [FALLA] idioma declarado (lang)
 [OK] título no vacío
 [OK] meta viewport
@@ -1737,14 +1831,13 @@ Con la página buena servida, guarda la evidencia:
 
 ```text
 $ curl -sI http://127.0.0.1:8000/ > evidencia.txt
-$ python3 ../auditar.py index.html >> evidencia.txt
+$ java ../Auditar.java index.html >> evidencia.txt
 $ cat evidencia.txt
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.13.18
-Date: Tue, 24 Nov 2026 07:24:57 GMT
+HTTP/1.1 200 OK
+Date: Tue, 24 Nov 2026 23:02:35 GMT
+Last-modified: Tue, 24 Nov 2026 23:02:21 GMT
 Content-type: text/html
-Content-Length: 1261
-Last-Modified: Tue, 24 Nov 2026 07:18:08 GMT
+Content-length: 1261
 
 [OK] idioma declarado (lang)
 [OK] título no vacío
@@ -1757,30 +1850,32 @@ resultado: 6/6 revisiones superadas
 ```
 
 **Explicación por partes.**
-- Línea 5: los elementos que reciben foco con Tab en esta página.
-- Líneas 11–13: el estado de la auditoría: datos de la página, campos, `label` encontrados, orden de foco y CSS.
-- Líneas 18–33: cada etiqueta de apertura actualiza un dato; un campo dentro de un `label` cuenta como nombrado (líneas 30–31).
-- Líneas 35–38: al cerrar cualquier etiqueta se olvida la actual; al cerrar un `label` se sale de él.
-- Líneas 40–44: el texto se guarda solo si está dentro de `title` o de `style`.
-- Líneas 51–58: las seis revisiones, cada una con un nombre y un resultado verdadero o falso.
-- Línea 64: `sys.exit(1)` deja el código de salida en 1 si hubo al menos una falla.
+- Líneas 2–3: los elementos que reciben foco con Tab en esta página y los que son campos de formulario.
+- Líneas 5–10: `textoDentroDe` junta el texto entre `<title>` y `</title>` (o `<style>`); `Pattern.DOTALL` deja que `.` cruce saltos de línea.
+- Líneas 14–18: el estado de la auditoría: idioma, viewport, cantidad de `h1`, `label` encontrados, campos y orden de foco.
+- Líneas 22–25: al cerrar un `label` se sale de él; los demás cierres no cambian nada.
+- Líneas 26–35: cada etiqueta de apertura actualiza un dato. `viewport |= ...` lo vuelve verdadero si alguna `meta` lo declara.
+- Líneas 36–40: un campo dentro de un `label` cuenta como nombrado.
+- Líneas 48–54: las seis revisiones, cada una con un nombre y un resultado verdadero o falso. `LinkedHashMap` conserva el orden en que se agregaron.
+- Línea 63: `System.exit(1)` deja el código de salida en 1 si hubo al menos una falla.
+- `java ../Auditar.java` funciona desde dentro de la carpeta: Java busca `Html.java` junto a `Auditar.java`, no en la carpeta actual.
 - En `evidencia.txt`, `>` crea el archivo y `>>` agrega al final sin borrar lo anterior.
 
 > **Error común.** Abrir `index.html` con doble clic y probar el formulario. La barra de direcciones muestra
 > `file:///...` y no pasa por ningún servidor: no habrá cabeceras ni registro. Sirve la carpeta y entra por
 > `http://127.0.0.1:8000/`.
 
-> **Error común.** Ejecutar `python3 auditar.py index.html` desde una carpeta equivocada. Python termina con
-> `FileNotFoundError: [Errno 2] No such file or directory: 'index.html'`. Comprueba con `pwd` dónde estás o pasa la ruta completa.
+> **Error común.** Ejecutar `java Auditar.java index.html` desde una carpeta equivocada. Java termina con
+> `Exception in thread "main" java.nio.file.NoSuchFileException: index.html`. Comprueba con `pwd` dónde estás o pasa la ruta completa.
 
 > **Buena práctica.** Guarda en la evidencia el comando, la fecha y la versión además de la salida. Quien la lea
 > debe poder repetirla y obtener lo mismo.
 
-> **Prevenir errores.** Ejecuta `auditar.py` antes de cada entrega y revisa su código de salida. Si da 1, no se
+> **Prevenir errores.** Ejecuta `Auditar.java` antes de cada entrega y revisa su código de salida. Si da 1, no se
 > entrega: primero se corrige.
 
 #### Checkpoint 5.1
-`auditar.py` da 6/6 en la página del tema. ¿Significa eso que la página es accesible para cualquier persona?
+`Auditar.java` da 6/6 en la página del tema. ¿Significa eso que la página es accesible para cualquier persona?
 
 Respuesta: no. Significa que pasó esas seis revisiones automáticas. Faltan pruebas manuales: recorrerla con
 teclado, escucharla con un lector de pantalla y medir el contraste de cada color.
@@ -1794,32 +1889,32 @@ teclado, escucharla con un lector de pantalla y medir el contraste de cada color
 Crea `seguimiento-html` y guarda dentro el `index.html` del Problema resuelto 5.1. No necesitas JavaScript ni un framework.
 
 #### Paso 2 · Sirve la página
-Ejecuta `python3 -m http.server 8000 --bind 127.0.0.1` dentro de la carpeta y abre `http://127.0.0.1:8000/`.
+Ejecuta `jwebserver -p 8000 -b 127.0.0.1` dentro de la carpeta y abre `http://127.0.0.1:8000/`.
 
 #### Paso 3 · Prueba con teclado
 Pulsa Tab desde la barra de direcciones. El foco debe ir al campo y luego al botón, con el contorno azul visible.
 
 #### Paso 4 · Audita
-Guarda `auditar.py` en la carpeta superior y ejecútalo sobre `index.html` y sobre `roto.html`. Comprueba `echo $?` en los dos casos.
+Guarda `Auditar.java` y `Html.java` en la carpeta superior y ejecuta el auditor sobre `index.html` y sobre `roto.html`. Comprueba `echo $?` en los dos casos.
 
 #### Paso 5 · Guarda la evidencia
-Genera `evidencia.txt` con `curl -sI` y `auditar.py`, y agrega a mano la fecha y las versiones de `python3 --version` y `curl --version`.
+Genera `evidencia.txt` con `curl -sI` y `Auditar.java`, y agrega a mano la fecha y las versiones de `java --version` y `curl --version`.
 
 #### Resumen
 - Un **servidor de archivos estáticos** devuelve archivos tal cual e ignora la **cadena de consulta**.
 - El **orden de foco** sigue el orden del HTML; escribe el HTML en el orden en que se debe recorrer.
 - Una **auditoría de accesibilidad** automática revisa lo que se puede contar; el teclado y el lector de pantalla se prueban a mano.
-- El **código de salida** 0 o 1 de `auditar.py` permite que otros programas decidan si la página pasa.
+- El **código de salida** 0 o 1 de `Auditar.java` permite que otros programas decidan si la página pasa.
 - La **evidencia** reúne comando, salida, fecha y versión para que cualquiera la repita.
 
 #### Ejercicio verificable 1
-Básico. Ejecuta `auditar.py` sobre el formulario del Tema 3. ¿Qué revisión falla y por qué?
+Básico. Ejecuta `Auditar.java` sobre el formulario del Tema 3. ¿Qué revisión falla y por qué?
 
 Respuesta esperada: falla solo `foco visible en CSS` y el resultado es `5/6 revisiones superadas`. Esa página no tiene
 bloque `<style>` con `:focus-visible`. El orden de foco que muestra es `input#guia -> select#prioridad -> input#urgente -> button`.
 
 #### Ejercicio verificable 2
-Intermedio. Ejecuta `auditar.py` sobre la página de tarifas del Tema 4. Explica por qué falla el foco visible aunque `estilos.css` lo define.
+Intermedio. Ejecuta `Auditar.java` sobre la página de tarifas del Tema 4. Explica por qué falla el foco visible aunque `estilos.css` lo define.
 
 Respuesta esperada: da `5/6` con `[FALLA] foco visible en CSS` y orden `button -> button -> button`. El auditor solo
 lee el CSS dentro de `<style>`; no descarga hojas externas. Es un límite del script, no de la página.
@@ -1827,11 +1922,11 @@ lee el CSS dentro de `<style>`; no descarga hojas externas. Es un límite del sc
 #### Ejercicio verificable 3
 Reto. Agrega a `revisiones` una séptima comprobación: que la página tenga un elemento `main`.
 
-Respuesta esperada: en `handle_starttag`, anota `self.datos["main"] = True` cuando `etiqueta == "main"` (inicializado en
-`False`), y agrega `("tiene main", d["main"])` a la lista. La página del tema da `7/7` y la del Tema 4 también tiene `main`.
+Respuesta esperada: declara `boolean tieneMain = false;` junto a los demás datos, agrega al `switch` el caso
+`case "main" -> tieneMain = true;` y suma `revisiones.put("tiene main", tieneMain);`. La página del tema da `7/7` y la del Tema 4 también tiene `main`.
 
 #### En el trabajo
-En un equipo profesional, revisiones como las de `auditar.py` corren en la integración continua en cada cambio, con
+En un equipo profesional, revisiones como las de `Auditar.java` corren en la integración continua en cada cambio, con
 herramientas como axe o Lighthouse. Si el código de salida no es 0, el cambio no se publica. La evidencia con comandos
 y salidas es lo que se adjunta en un ticket o en una revisión de código para demostrar que algo funciona.
 
