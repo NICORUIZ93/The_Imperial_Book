@@ -75,3 +75,19 @@ salida que no pudiste verificar.
   y no inventes salidas de funciones exclusivas de Java 25.
 - Build tool del curso: **Gradle** (Kotlin DSL). Maven solo donde el tema lo compara.
 - Declara al inicio del módulo con qué entorno se capturaron las salidas nuevas, sin borrar la línea del entorno original.
+
+### Librerías Java sin internet (H2, Hibernate, JUnit, Mockito, jqwik, JaCoCo, Flyway, Spring Boot)
+- El Mac del usuario tiene las librerías ya descargadas, montadas en solo lectura en el equipo:
+  `$HOME/mnt/caches/modules-2/files-2.1/<grupo>/<artefacto>/<versión>/<hash>/<archivo>.jar` (caché de Gradle) y
+  `$HOME/mnt/.m2/repository/...` (Maven). Rutas del equipo para `device_stage_files`:
+  `/Users/nicolasruiz/.gradle/caches/modules-2/files-2.1/...` y `/Users/nicolasruiz/.m2/repository/...`.
+- El JDK 25 está en tu contenedor (el equipo solo tiene Java 11). Copia al contenedor los `.jar` que necesites con
+  `device_stage_files` (máximo 50 por llamada) y ejecuta con `java -cp` o con Gradle en modo `--offline` apuntando a
+  un repositorio local (`flatDir` o `mavenLocal` con los jars copiados).
+- No escribas nada en esas carpetas: son de solo lectura y pertenecen al usuario.
+
+## Segunda pasada: ampliar la teoría (plantilla v2)
+En módulos ya migrados con la v1, **conserva todo** (glosario, problemas resueltos, recuadros, laboratorio, cierre) y
+**reescribe solo `#### ► CÓMO FUNCIONA`** de cada tema con las 5 subsecciones y 700+ palabras de prosa. La teoría
+explica de verdad: qué es, por qué existe, cómo funciona por dentro paso a paso, qué dice la especificación, casos
+límite y relación con otros temas. Fragmentos de código cortos intercalados, en el lenguaje del curso y ejecutados.
