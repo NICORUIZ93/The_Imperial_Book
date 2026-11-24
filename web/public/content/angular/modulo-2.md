@@ -14,16 +14,6 @@ Cada tema verifica su garantía con espías reales contando invocaciones: memoiz
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con un espía real (vi.fn()) contando invocaciones exactas, que computed() memoiza genuinamente: solo recalcula cuando su dependencia real cambia, nunca en lecturas repetidas sin cambios.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con un espía real (vi.fn()) contando invocaciones exactas, que computed() memoiza genuinamente: solo recalcula cuando su dependencia real cambia, nunca en lecturas repetidas sin cambios.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en signal(), computed() y effect() como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +21,6 @@ flowchart LR
   S -->|"leido dentro de"| C["computed: contador*2 (memoizado)"]
   S -->|"leido dentro de"| E["effect: efecto secundario"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| signal(), computed() y effect() se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar signal(), computed() y effect() | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses signal(), computed() y effect() por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: signal(), computed() y effect() funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- signal(), computed() y effect() existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve signal(), computed() y effect() en tu contexto?
-2. ¿Cómo sabrías que signal(), computed() y effect() no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar signal(), computed() y effect()?
 
 </details>
 
@@ -148,55 +107,8 @@ npx ng test --watch=false --include src/app/estado-pedido.spec.ts
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con un espía real contando invocaciones, que mutar un array dentro de un signal con push() NO notifica ningún cambio (cero invocaciones adicionales), mientras update() con una nueva referencia SÍ lo notifica correctamente.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con un espía real contando invocaciones, que mutar un array dentro de un signal con push() NO notifica ningún cambio (cero invocaciones adicionales), mientras update() con una nueva referencia SÍ lo notifica correctamente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en mutación frente a actualización inmutable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que mutación frente a actualización inmutable resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
 #### ► REGLA PRÁCTICA
 Un signal detecta cambio por referencia, no por contenido: si llamas a un método que muta el array en el mismo lugar (`push`, `splice`, `sort` in-place), la referencia no cambió y nadie se entera. Siempre reemplaza con una copia nueva (`update(lista => [...lista, x])`) cuando el valor sea un array u objeto dentro de un signal.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Mutación frente a actualización inmutable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Mutación frente a actualización inmutable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mutación frente a actualización inmutable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mutación frente a actualización inmutable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Mutación frente a actualización inmutable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mutación frente a actualización inmutable en tu contexto?
-2. ¿Cómo sabrías que mutación frente a actualización inmutable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mutación frente a actualización inmutable?
 
 </details>
 
@@ -286,16 +198,6 @@ npx ng test --watch=false --include src/app/lista-paquetes.spec.ts
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con los puentes oficiales toSignal() y toObservable() reales, que un Observable puede leerse de forma síncrona como un signal, y que un signal puede exponerse como un flujo suscribible, integrando ambos modelos sin reescribir la lógica existente.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con los puentes oficiales toSignal() y toObservable() reales, que un Observable puede leerse de forma síncrona como un signal, y que un signal puede exponerse como un flujo suscribible, integrando ambos modelos sin reescribir la lógica existente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en signals frente a observables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -305,37 +207,6 @@ flowchart LR
 
 #### ► REGLA PRÁCTICA
 Usa un signal para estado síncrono simple que se lee directamente; usa un Observable/RxJS cuando necesites componer tiempo (`debounceTime`, `switchMap`, cancelación). No elijas uno "por estilo": `toSignal()`/`toObservable()` son los puentes oficiales para cruzar entre ambos sin reescribir la lógica existente.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Signals frente a Observables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Signals frente a Observables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses signals frente a observables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: signals frente a observables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Signals frente a Observables existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve signals frente a observables en tu contexto?
-2. ¿Cómo sabrías que signals frente a observables no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar signals frente a observables?
 
 </details>
 
@@ -426,50 +297,6 @@ Al finalizar podrás confirmar, con espías reales contando invocaciones sobre D
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con espías reales contando invocaciones sobre DOS signals independientes, que el grafo de dependencias de signals es preciso: un effect() solo se dispara por el signal específico del que depende, nunca por cambios en signals no relacionados — la base real que hace viable eliminar Zone.js.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en hacia zoneless change detection como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que hacia zoneless change detection resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Hacia zoneless change detection se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Hacia zoneless change detection | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses hacia zoneless change detection por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: hacia zoneless change detection funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Hacia zoneless change detection existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve hacia zoneless change detection en tu contexto?
-2. ¿Cómo sabrías que hacia zoneless change detection no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar hacia zoneless change detection?
-
 </details>
 
 <details>
@@ -555,16 +382,6 @@ TestBed.____();
 #### ► DE QUÉ TRATA
 Al finalizar podrás usar linkedSignal() para que una cantidad seleccionada por el usuario se resetee automáticamente al valor calculado cuando cambia el stock disponible, sin perder la capacidad de sobrescribirla manualmente mientras el stock no cambia.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás usar linkedSignal() para que una cantidad seleccionada por el usuario se resetee automáticamente al valor calculado cuando cambia el stock disponible, sin perder la capacidad de sobrescribirla manualmente mientras el stock no cambia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en linkedsignal — estado derivado que el usuario puede sobrescribir como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -572,37 +389,6 @@ flowchart LR
   L -->|usuario escribe 3| O["cantidad() = 3 (override)"]
   S -->|cambia a 0| R["cantidad() se recalcula = 0"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| linkedSignal — estado derivado que el usuario puede sobrescribir se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar linkedSignal — estado derivado que el usuario puede sobrescribir | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses linkedsignal — estado derivado que el usuario puede sobrescribir por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: linkedsignal — estado derivado que el usuario puede sobrescribir funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- linkedSignal — estado derivado que el usuario puede sobrescribir existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve linkedsignal — estado derivado que el usuario puede sobrescribir en tu contexto?
-2. ¿Cómo sabrías que linkedsignal — estado derivado que el usuario puede sobrescribir no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar linkedsignal — estado derivado que el usuario puede sobrescribir?
 
 </details>
 
@@ -651,13 +437,6 @@ Al finalizar podrás usar resource() y su variante httpResource() (integrada con
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás usar resource() y su variante httpResource() (integrada con HttpClient) para traer los datos de un conductor de forma reactiva ligada a un signal conductorId, con estado de carga/error automático y sin condición de carrera cuando el id cambia antes de que la petición anterior termine.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en resource() y httpresource — datos asíncronos reactivos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -670,37 +449,6 @@ sequenceDiagram
   R-->>U: value() = c-2
   Note over R: respuesta tardía de c-1 descartada
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| resource() y httpResource — datos asíncronos reactivos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar resource() y httpResource — datos asíncronos reactivos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses resource() y httpresource — datos asíncronos reactivos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: resource() y httpresource — datos asíncronos reactivos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- resource() y httpResource — datos asíncronos reactivos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve resource() y httpresource — datos asíncronos reactivos en tu contexto?
-2. ¿Cómo sabrías que resource() y httpresource — datos asíncronos reactivos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar resource() y httpresource — datos asíncronos reactivos?
 
 </details>
 

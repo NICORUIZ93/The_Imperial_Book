@@ -14,53 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a perfilar con Instruments (Time Profiler) el scroll de ListaEnvios y a medir qué función específica consume más CPU durante ese scroll. Prerrequisitos: Módulo 1 completo, Xcode con un dispositivo real o simulador.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a perfilar con Instruments (Time Profiler) el scroll de ListaEnvios y a medir qué función específica consume más CPU durante ese scroll.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en instruments como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que instruments resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Instruments se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Instruments | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses instruments por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: instruments funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Instruments existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve instruments en tu contexto?
-2. ¿Cómo sabrías que instruments no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar instruments?
-
 </details>
 
 <details>
@@ -93,53 +46,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a activar VoiceOver y navegar DetalleEnvio solo con gestos (sin mirar la pantalla), agregando .accessibilityLabel donde el lector de pantalla no describa nada útil. Prerrequisitos: Tema 1 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a activar VoiceOver y navegar DetalleEnvio solo con gestos (sin mirar la pantalla), agregando .accessibilityLabel donde el lector de pantalla no describa nada útil.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en accesibilidad con voiceover como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que accesibilidad con voiceover resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Accesibilidad con VoiceOver se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Accesibilidad con VoiceOver | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses accesibilidad con voiceover por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: accesibilidad con voiceover funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Accesibilidad con VoiceOver existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve accesibilidad con voiceover en tu contexto?
-2. ¿Cómo sabrías que accesibilidad con voiceover no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad con voiceover?
 
 </details>
 
@@ -191,12 +97,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar vas a probar DetalleEnvio con el tamaño de Dynamic Type más grande disponible, y a revisar sus botones contra la medida mínima de 44x44 puntos que exige HIG. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a probar DetalleEnvio con el tamaño de Dynamic Type más grande disponible, y a revisar sus botones contra la medida mínima de 44x44 puntos que exige HIG.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Dynamic Type escala el texto según la configuración del usuario; HIG documenta convenciones (como el área táctil mínima de 44x44 puntos) que hacen que una app se sienta nativa — un código de vestimenta esperado en un ambiente profesional.
 **Conceptos clave:** convenciones documentadas que hacen que una app se sienta nativa, más allá de usar SwiftUI.
@@ -225,45 +125,6 @@ UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de S
 **Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.
 
 **¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que human interface guidelines, dynamic type e interop con uikit resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Human Interface Guidelines, Dynamic Type e interop con UIKit se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Human Interface Guidelines, Dynamic Type e interop con UIKit | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses human interface guidelines, dynamic type e interop con uikit por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: human interface guidelines, dynamic type e interop con uikit funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Human Interface Guidelines, Dynamic Type e interop con UIKit existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve human interface guidelines, dynamic type e interop con uikit en tu contexto?
-2. ¿Cómo sabrías que human interface guidelines, dynamic type e interop con uikit no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar human interface guidelines, dynamic type e interop con uikit?
 
 </details>
 
@@ -320,16 +181,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Usa Xcode 26 o superior, la versión base del curso. En RutaFlowApp, crea File > New > File > String Catalog con el nombre Localizable. Agrega el idioma inglés en Project > Info > Localizations.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Xcode 26 o superior, la versión base del curso.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en localización con string catalogs: textos, plurales y formatos por idioma como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -337,37 +188,6 @@ flowchart LR
     X --> ES["es: 1 paquete pendiente / 3 paquetes pendientes"]
     X --> EN["en: 1 pending package / 3 pending packages"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Localización con String Catalogs: textos, plurales y formatos por idioma se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Localización con String Catalogs: textos, plurales y formatos por idioma | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses localización con string catalogs: textos, plurales y formatos por idioma por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: localización con string catalogs: textos, plurales y formatos por idioma funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Localización con String Catalogs: textos, plurales y formatos por idioma existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve localización con string catalogs: textos, plurales y formatos por idioma en tu contexto?
-2. ¿Cómo sabrías que localización con string catalogs: textos, plurales y formatos por idioma no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar localización con string catalogs: textos, plurales y formatos por idioma?
 
 </details>
 
@@ -428,12 +248,6 @@ Vista previa en inglés con 3: «3 pending packages» y la fecha en formato ingl
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir en UIKit la lista de paradas de RutaFlow (StopsViewController), entendiendo quién crea la vista, cuándo se carga, y por qué una referencia fuerte puede impedir que salga de memoria. Prerrequisitos: módulos 0-9, un proyecto iOS existente.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir en UIKit la lista de paradas de RutaFlow (StopsViewController), entendiendo quién crea la vista, cuándo se carga, y por qué una referencia fuerte puede impedir que salga de memoria.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 Un `UIViewController` tiene un ciclo de vida explícito (`loadView`, `viewDidLoad`, `viewWillAppear`) y Auto Layout expresa relaciones, no posiciones absolutas — el controlador es el director de una terminal, y la fuente diffable mantiene el tablero de salidas por identificadores.
@@ -571,8 +385,6 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Integra una pantalla heredada UIKit de captura en el flujo de entrega. Prueba presentación, cancelación y retorno del resultado, manteniendo explícito quién administra su ciclo de vida.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -582,37 +394,6 @@ flowchart LR
   VC --> TV[UITableView]
   TV --> DS[Diffable data source]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| UIKit desde cero para mantener aplicaciones reales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar UIKit desde cero para mantener aplicaciones reales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses uikit desde cero para mantener aplicaciones reales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: uikit desde cero para mantener aplicaciones reales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- UIKit desde cero para mantener aplicaciones reales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve uikit desde cero para mantener aplicaciones reales en tu contexto?
-2. ¿Cómo sabrías que uikit desde cero para mantener aplicaciones reales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar uikit desde cero para mantener aplicaciones reales?
 
 </details>
 

@@ -14,16 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir un contador de "intentos de confirmación" en FormularioConfirmacion que se incremente correctamente cuando un mismo manejador lo actualiza dos veces. Prerrequisitos: Módulo 0 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir un contador de "intentos de confirmación" en FormularioConfirmacion que se incremente correctamente cuando un mismo manejador lo actualiza dos veces.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en usestate y actualizaciones funcionales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -42,37 +32,6 @@ graph TD
     style E fill:#e8f5e9
 ```
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| useState y actualizaciones funcionales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar useState y actualizaciones funcionales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses usestate y actualizaciones funcionales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: usestate y actualizaciones funcionales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- useState y actualizaciones funcionales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve usestate y actualizaciones funcionales en tu contexto?
-2. ¿Cómo sabrías que usestate y actualizaciones funcionales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar usestate y actualizaciones funcionales?
-
 </details>
 
 <details>
@@ -90,16 +49,6 @@ Al finalizar vas a construir un contador de "intentos de confirmación" en `Form
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a demostrar con un console.log dentro de FormularioConfirmacion que ejecutar la función del componente (render) no siempre produce un cambio visible en el DOM (commit). Prerrequisitos: Tema 1 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a demostrar con un console.log dentro de FormularioConfirmacion que ejecutar la función del componente (render) no siempre produce un cambio visible en el DOM (commit).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en render frente a commit como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -133,37 +82,6 @@ graph TD
 #### ► REGLA PRÁCTICA
 El render puede ejecutarse (y tu `console.log` puede correr, incluso varias veces) sin que haya ningún cambio visible en el DOM: el commit solo ocurre si la reconciliación encuentra una diferencia real entre el árbol nuevo y el anterior.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Render frente a commit se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Render frente a commit | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses render frente a commit por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: render frente a commit funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Render frente a commit existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve render frente a commit en tu contexto?
-2. ¿Cómo sabrías que render frente a commit no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar render frente a commit?
-
 </details>
 
 <details>
@@ -181,16 +99,6 @@ Al finalizar vas a demostrar con un `console.log` dentro de `FormularioConfirmac
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a confirmar con un console.log que tres llamadas a setState dentro del mismo manejador de FormularioConfirmacion producen un único render, no tres. Prerrequisitos: Tema 2 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a confirmar con un console.log que tres llamadas a setState dentro del mismo manejador de FormularioConfirmacion producen un único render, no tres.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en batching de actualizaciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -212,37 +120,6 @@ graph TD
     style E fill:#c8e6c9
 ```
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Batching de actualizaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Batching de actualizaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses batching de actualizaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: batching de actualizaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Batching de actualizaciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve batching de actualizaciones en tu contexto?
-2. ¿Cómo sabrías que batching de actualizaciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar batching de actualizaciones?
-
 </details>
 
 <details>
@@ -260,16 +137,6 @@ Al finalizar vas a confirmar con un `console.log` que tres llamadas a `setState`
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a convertir el campo de PIN de FormularioConfirmacion en un componente controlado, con value y onChange gobernados completamente por useState. Prerrequisitos: Tema 1 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a convertir el campo de PIN de FormularioConfirmacion en un componente controlado, con value y onChange gobernados completamente por useState.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en componentes controlados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -296,37 +163,6 @@ graph TD
     style F fill:#e8f5e9
 ```
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Componentes controlados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Componentes controlados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses componentes controlados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: componentes controlados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Componentes controlados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve componentes controlados en tu contexto?
-2. ¿Cómo sabrías que componentes controlados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar componentes controlados?
-
 </details>
 
 <details>
@@ -345,16 +181,6 @@ Al finalizar vas a convertir el campo de PIN de `FormularioConfirmacion` en un c
 #### ► DE QUÉ TRATA
 Crea un proyecto con npm create vite@latest academia-react -- --template react y entra a la carpeta. Trabajarás en src/Contador.jsx. Deja activo <StrictMode> en src/main.jsx (Vite lo trae así).
 
-#### ► LA IDEA EN UNA FRASE
-**Crea un proyecto con npm create vite@latest academia-react -- --template react y entra a la carpeta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en componentes puros y el estado como instantánea como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -368,37 +194,6 @@ sequenceDiagram
     R->>C: pide p+1 tres veces
     C-->>R: nuevo render: paradas = 4
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Componentes puros y el estado como instantánea se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Componentes puros y el estado como instantánea | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses componentes puros y el estado como instantánea por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: componentes puros y el estado como instantánea funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Componentes puros y el estado como instantánea existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve componentes puros y el estado como instantánea en tu contexto?
-2. ¿Cómo sabrías que componentes puros y el estado como instantánea no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar componentes puros y el estado como instantánea?
 
 </details>
 
@@ -470,56 +265,6 @@ Clic en «Sumar 3 (bien)» después: la pantalla muestra «Paradas: 4».
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por compartir estado: levantar el estado al padre común con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender compartir estado: levantar el estado al padre común te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en compartir estado: levantar el estado al padre común como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que compartir estado: levantar el estado al padre común resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compartir estado: levantar el estado al padre común se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compartir estado: levantar el estado al padre común | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compartir estado: levantar el estado al padre común por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compartir estado: levantar el estado al padre común funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compartir estado: levantar el estado al padre común existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compartir estado: levantar el estado al padre común en tu contexto?
-2. ¿Cómo sabrías que compartir estado: levantar el estado al padre común no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compartir estado: levantar el estado al padre común?
 
 </details>
 

@@ -11,16 +11,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 1: Infraestructura y entrega segura dentro de RutaFlow, provisionando un namespace de Kubernetes con Terraform y bloqueando el despliegue de imágenes sin firma verificada. Conocimiento previo: terminal, Git, nociones básicas de Terra…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 1: Infraestructura y entrega segura dentro de RutaFlow, provisionando un namespace de Kubernetes con Terraform y bloqueando el despliegue de imágenes sin firma verificada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en infraestructura y entrega segura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +21,6 @@ flowchart LR
   E -->|firma valida| F[kubectl apply en rutaflow-envios]
   E -->|firma invalida o ausente| G[Deploy bloqueado]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Infraestructura y entrega segura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Infraestructura y entrega segura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses infraestructura y entrega segura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: infraestructura y entrega segura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Infraestructura y entrega segura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve infraestructura y entrega segura en tu contexto?
-2. ¿Cómo sabrías que infraestructura y entrega segura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar infraestructura y entrega segura?
 
 </details>
 
@@ -168,16 +127,6 @@ echo "Desplegado $IMAGE"
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 2: SLO y respuesta a incidentes dentro de RutaFlow, definiendo un SLO concreto para /envios/:id y configurando readinessProbe/livenessProbe con semántica distinta. Conocimiento previo: terminal, Git, YAML de Kubernetes y lectura de m…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 2: SLO y respuesta a incidentes dentro de RutaFlow, definiendo un SLO concreto para /envios/:id y configurando readinessProbe/livenessProbe con semántica distinta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en slo y respuesta a incidentes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -189,37 +138,6 @@ flowchart TD
   F --> G["pod nuevo en frío, sin caché"]
   G --> E
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SLO y respuesta a incidentes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SLO y respuesta a incidentes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses slo y respuesta a incidentes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: slo y respuesta a incidentes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SLO y respuesta a incidentes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve slo y respuesta a incidentes en tu contexto?
-2. ¿Cómo sabrías que slo y respuesta a incidentes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar slo y respuesta a incidentes?
 
 </details>
 
@@ -297,53 +215,6 @@ spec:
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir una prueba end-to-end que ejercite el flujo real cruzando la app (Flutter) y el backend (Spring Boot): login → crear entrega → asignar repartidor → confirmar, contra servicios reales levantados con Docker. Prerrequisitos: Temas 1-2 de este módulo; tes…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir una prueba end-to-end que ejercite el flujo real cruzando la app (Flutter) y el backend (Spring Boot): login → crear entrega → asignar repartidor → confirmar, contra servicios reales levantados con Docker.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pruebas end-to-end del sistema completo (app ↔ backend) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que pruebas end-to-end del sistema completo (app ↔ backend) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pruebas end-to-end del sistema completo (app ↔ backend) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pruebas end-to-end del sistema completo (app ↔ backend) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pruebas end-to-end del sistema completo (app ↔ backend) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pruebas end-to-end del sistema completo (app ↔ backend) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Pruebas end-to-end del sistema completo (app ↔ backend) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pruebas end-to-end del sistema completo (app ↔ backend) en tu contexto?
-2. ¿Cómo sabrías que pruebas end-to-end del sistema completo (app ↔ backend) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pruebas end-to-end del sistema completo (app ↔ backend)?
-
 </details>
 
 <details>
@@ -395,16 +266,6 @@ class FlujoEntregaE2ETest {
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 3: Continuidad, costes y proyecto final dentro de RutaFlow, probando un backup real de las tablas de envíos mediante una restauración completa en una base vacía. Conocimiento previo: terminal, Git, psql/pg_dump básico.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 3: Continuidad, costes y proyecto final dentro de RutaFlow, probando un backup real de las tablas de envíos mediante una restauración completa en una base vacía.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en continuidad, costes y proyecto final como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -414,37 +275,6 @@ flowchart LR
   D -->|coincide| E[Backup verificado]
   D -->|no coincide| F[Backup inutil: nadie lo habia probado]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Continuidad, costes y proyecto final se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Continuidad, costes y proyecto final | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses continuidad, costes y proyecto final por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: continuidad, costes y proyecto final funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Continuidad, costes y proyecto final existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve continuidad, costes y proyecto final en tu contexto?
-2. ¿Cómo sabrías que continuidad, costes y proyecto final no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar continuidad, costes y proyecto final?
 
 </details>
 

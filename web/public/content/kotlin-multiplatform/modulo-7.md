@@ -14,55 +14,8 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar qué significa @Composable en código compartido, qué motor gráfico usa cada plataforma, y por qué una dependencia exclusiva de Android dentro de una función compartida rompe la compilación de iOS.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar qué significa @Composable en código compartido, qué motor gráfico usa cada plataforma, y por qué una dependencia exclusiva de Android dentro de una función compartida rompe la compilación de iOS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en compose multiplatform vs jetpack compose como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que compose multiplatform vs jetpack compose resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compose Multiplatform vs Jetpack Compose se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compose Multiplatform vs Jetpack Compose | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
 #### ► REGLA PRÁCTICA
 Compose Multiplatform es Jetpack Compose extendido: la misma anotación `@Composable` y la misma API declarativa funcionan en `commonMain`, pero el motor de renderizado que dibuja esa UI cambia según la plataforma (nativo en Android, Skia embebido en iOS/desktop). Por eso una dependencia exclusiva de Android dentro de una función compartida no es un error de Compose: es una dependencia de plataforma colada en código que debería compilar para todas.
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compose multiplatform vs jetpack compose por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compose multiplatform vs jetpack compose funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compose Multiplatform vs Jetpack Compose existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compose multiplatform vs jetpack compose en tu contexto?
-2. ¿Cómo sabrías que compose multiplatform vs jetpack compose no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compose multiplatform vs jetpack compose?
 
 </details>
 
@@ -151,16 +104,6 @@ fun PantallaTareas(tareas: List<Tarea>) {
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar por qué mutableStateOf dispara recomposición y una variable plana no, y confirmar con un modelo real que Compose evita recomponer cuando el nuevo valor es idéntico al anterior.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar por qué mutableStateOf dispara recomposición y una variable plana no, y confirmar con un modelo real que Compose evita recomponer cuando el nuevo valor es idéntico al anterior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en estado y recomposición — mutablestateof y por qué la ui se redibuja como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -168,37 +111,6 @@ flowchart LR
   B -->|sí| C[notifica observadores: recomposición]
   B -->|no, mismo valor| D[no hace nada: optimización]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Estado y recomposición — mutableStateOf y por qué la UI se redibuja se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Estado y recomposición — mutableStateOf y por qué la UI se redibuja | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses estado y recomposición — mutablestateof y por qué la ui se redibuja por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: estado y recomposición — mutablestateof y por qué la ui se redibuja funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Estado y recomposición — mutableStateOf y por qué la UI se redibuja existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve estado y recomposición — mutablestateof y por qué la ui se redibuja en tu contexto?
-2. ¿Cómo sabrías que estado y recomposición — mutablestateof y por qué la ui se redibuja no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar estado y recomposición — mutablestateof y por qué la ui se redibuja?
 
 </details>
 
@@ -327,12 +239,6 @@ class OptimizacionIgualdadTest {
 #### ► DE QUÉ TRATA
 Al finalizar podrás definir un theme compartido y explicar por qué un grafo de navegación declarado una vez en código común evita mantener dos implementaciones de navegación divergentes.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás definir un theme compartido y explicar por qué un grafo de navegación declarado una vez en código común evita mantener dos implementaciones de navegación divergentes.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** un único esquema de diseño, grafo de navegación declarado una vez.
 
@@ -349,45 +255,6 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 │  MISMO resultado visual en ambos                          │
 └─────────────────────────────────────────────────┘
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que theming y navegación compartidos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Theming y navegación compartidos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Theming y navegación compartidos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses theming y navegación compartidos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: theming y navegación compartidos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Theming y navegación compartidos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve theming y navegación compartidos en tu contexto?
-2. ¿Cómo sabrías que theming y navegación compartidos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar theming y navegación compartidos?
 
 </details>
 
@@ -492,53 +359,6 @@ fun AppTheme(content: @Composable () -> Unit) {
 #### ► DE QUÉ TRATA
 Al finalizar podrás identificar qué tipo de integraciones nativas todavía requieren puentes específicos de plataforma en Compose Multiplatform para iOS, y decidir cuándo usar SwiftUI nativo en vez de UI compartida.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás identificar qué tipo de integraciones nativas todavía requieren puentes específicos de plataforma en Compose Multiplatform para iOS, y decidir cuándo usar SwiftUI nativo en vez de UI compartida.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en limitaciones en ios y otros targets como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que limitaciones en ios y otros targets resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Limitaciones en iOS y otros targets se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Limitaciones en iOS y otros targets | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses limitaciones en ios y otros targets por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: limitaciones en ios y otros targets funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Limitaciones en iOS y otros targets existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve limitaciones en ios y otros targets en tu contexto?
-2. ¿Cómo sabrías que limitaciones en ios y otros targets no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar limitaciones en ios y otros targets?
-
 </details>
 
 <details>
@@ -613,12 +433,6 @@ class MapaDecisionUITest {
 #### ► DE QUÉ TRATA
 Usa Compose Multiplatform 1.6 o superior con la dependencia compose.components.resources en commonMain. Crea composeApp/src/commonMain/composeResources/.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Compose Multiplatform 1.6 o superior con la dependencia compose.components.resources en commonMain.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `composeResources`, `values/strings.xml`, calificador de idioma (`values-en`), `Res.string`, `stringResource`, `pluralStringResource`, `painterResource`.
 
@@ -643,8 +457,6 @@ flowchart TB
     RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -654,37 +466,6 @@ flowchart TB
     V & E & D -->|"build"| RES["clase Res generada"]
     RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses recursos y localización en compose multiplatform: textos, imágenes y plurales comunes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: recursos y localización en compose multiplatform: textos, imágenes y plurales comunes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve recursos y localización en compose multiplatform: textos, imágenes y plurales comunes en tu contexto?
-2. ¿Cómo sabrías que recursos y localización en compose multiplatform: textos, imágenes y plurales comunes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar recursos y localización en compose multiplatform: textos, imágenes y plurales comunes?
 
 </details>
 
@@ -769,16 +550,6 @@ El mismo resultado en Android, iOS y escritorio.
 #### ► DE QUÉ TRATA
 Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable). Activa TalkBack en el emulador de Android y VoiceOver en el simulador de iOS (Accessibility Inspector en Xcode).
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -787,37 +558,6 @@ flowchart TB
     C --> B["clickable: onClickLabel 'marcar como entregado'"]
     C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover en tu contexto?
-2. ¿Cómo sabrías que accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad en compose multiplatform: semántica que funciona con talkback y voiceover?
 
 </details>
 
@@ -906,16 +646,6 @@ VoiceOver lee una frase equivalente en iOS.
 #### ► DE QUÉ TRATA
 Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin. Necesitas el target jvm() (escritorio): Hot Reload funciona sobre la JVM. Instala el plugin de Kotlin Multiplatform en IntelliJ IDEA o Android Studio.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en compose hot reload: ver cambios de la interfaz sin reiniciar la app como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -924,37 +654,6 @@ flowchart LR
     C --> J["JVM en ejecución: código reemplazado"]
     J --> R["Recomposición con estado preservado"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compose hot reload: ver cambios de la interfaz sin reiniciar la app por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compose hot reload: ver cambios de la interfaz sin reiniciar la app funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compose hot reload: ver cambios de la interfaz sin reiniciar la app en tu contexto?
-2. ¿Cómo sabrías que compose hot reload: ver cambios de la interfaz sin reiniciar la app no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compose hot reload: ver cambios de la interfaz sin reiniciar la app?
 
 </details>
 
@@ -1026,16 +725,6 @@ Al agregar una dependencia nueva en Gradle, la herramienta pide reiniciar.
 #### ► DE QUÉ TRATA
 Usa Compose Multiplatform 1.8 o superior con org.jetbrains.androidx.navigation:navigation-compose en commonMain. Necesitas acceso a AndroidManifest.xml y al Info.plist de la app de iOS.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Compose Multiplatform 1.8 o superior con org.jetbrains.androidx.navigation:navigation-compose en commonMain.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en deep links en compose multiplatform: abrir una pantalla desde un enlace como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -1047,37 +736,6 @@ sequenceDiagram
     P->>N: navigate(NavUri)
     N->>D: codigo = ENV-42
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Deep links en Compose Multiplatform: abrir una pantalla desde un enlace se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Deep links en Compose Multiplatform: abrir una pantalla desde un enlace | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses deep links en compose multiplatform: abrir una pantalla desde un enlace por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: deep links en compose multiplatform: abrir una pantalla desde un enlace funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Deep links en Compose Multiplatform: abrir una pantalla desde un enlace existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve deep links en compose multiplatform: abrir una pantalla desde un enlace en tu contexto?
-2. ¿Cómo sabrías que deep links en compose multiplatform: abrir una pantalla desde un enlace no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar deep links en compose multiplatform: abrir una pantalla desde un enlace?
 
 </details>
 

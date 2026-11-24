@@ -22,16 +22,6 @@ Cada ejemplo reemplaza `src/App.tsx`. `npm run dev` lo sirve en `http://localhos
 #### ► DE QUÉ TRATA
 Al finalizar vas a tipar las props de EnvioCard con una interface, incluyendo children: React.ReactNode para aceptar contenido adicional opcional dentro de la tarjeta. Prerrequisitos: Módulo 0 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a tipar las props de EnvioCard con una interface, incluyendo children: React.ReactNode para aceptar contenido adicional opcional dentro de la tarjeta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en tipado de props y children como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -52,37 +42,6 @@ graph TD
     style C fill:#ffebee
     style E fill:#e8f5e9
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tipado de props y children se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tipado de props y children | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tipado de props y children por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tipado de props y children funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tipado de props y children existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tipado de props y children en tu contexto?
-2. ¿Cómo sabrías que tipado de props y children no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tipado de props y children?
 
 </details>
 
@@ -165,53 +124,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir useLocalStorage<T> genérico y usarlo tanto para persistir el filtro de zona (string) como las columnas visibles de una tabla (un array), sin duplicar la implementación. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir useLocalStorage<T> genérico y usarlo tanto para persistir el filtro de zona (string) como las columnas visibles de una tabla (un array), sin duplicar la implementación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en hooks genéricos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que hooks genéricos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Hooks genéricos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Hooks genéricos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses hooks genéricos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: hooks genéricos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Hooks genéricos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve hooks genéricos en tu contexto?
-2. ¿Cómo sabrías que hooks genéricos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar hooks genéricos?
-
 </details>
 
 <details>
@@ -277,12 +189,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar vas a tipar el manejador de cambio del campo de búsqueda de guía con React.ChangeEvent<HTMLInputElement>, y a construir un Boton polimórfico que pueda renderizarse como <button> o como <a>. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a tipar el manejador de cambio del campo de búsqueda de guía con React.ChangeEvent<HTMLInputElement>, y a construir un Boton polimórfico que pueda renderizarse como <button> o como <a>.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Tipar un evento con el tipo específico del elemento permite que TypeScript sepa qué propiedades existen en `e.target`; un componente polimórfico renderiza distintos elementos según una prop `as`, tipado dinámicamente según cuál se indique.
 **Conceptos clave:** `React.ChangeEvent<T>`, componentes que renderizan como elemento configurable.
@@ -309,8 +215,6 @@ function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonPr
 }
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -321,37 +225,6 @@ flowchart TD
     C --> E
     D --> E
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Eventos tipados y componentes polimórficos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Eventos tipados y componentes polimórficos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses eventos tipados y componentes polimórficos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: eventos tipados y componentes polimórficos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Eventos tipados y componentes polimórficos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve eventos tipados y componentes polimórficos en tu contexto?
-2. ¿Cómo sabrías que eventos tipados y componentes polimórficos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar eventos tipados y componentes polimórficos?
 
 </details>
 

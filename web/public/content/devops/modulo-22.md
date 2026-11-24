@@ -19,16 +19,6 @@ La progresión de ejercicios se inspira en el índice público [bregman-arie/dev
 #### ► DE QUÉ TRATA
 Al finalizar podrás instalar la CLI, iniciar el emulador, comprobar su salud y ejecutar un script que rechaza cualquier endpoint que no sea local. Conocimiento previo: terminal, Docker o Podman en ejecución, Node.js 22 o superior y nociones de variables de entorno.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás instalar la CLI, iniciar el emulador, comprobar su salud y ejecutar un script que rechaza cualquier endpoint que no sea local.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en floci desde cero: instalar, aislar y verificar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -39,37 +29,6 @@ flowchart LR
   C -->|"HTTP local"| E
   E -->|"health"| H["/_localstack/health"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Floci desde cero: instalar, aislar y verificar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Floci desde cero: instalar, aislar y verificar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses floci desde cero: instalar, aislar y verificar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: floci desde cero: instalar, aislar y verificar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Floci desde cero: instalar, aislar y verificar existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve floci desde cero: instalar, aislar y verificar en tu contexto?
-2. ¿Cómo sabrías que floci desde cero: instalar, aislar y verificar no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar floci desde cero: instalar, aislar y verificar?
 
 </details>
 
@@ -174,16 +133,6 @@ test('incluye el origen cuando la salud falla', async () => {
 #### ► DE QUÉ TRATA
 Al finalizar podrás crear un bucket, subir un objeto con metadatos, consultarlo y clasificar los errores más frecuentes con una función que devuelve una causa probable y una acción. Conocimiento previo: Tema 1, CLI de AWS instalada y el emulador en ejecución.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás crear un bucket, subir un objeto con metadatos, consultarlo y clasificar los errores más frecuentes con una función que devuelve una causa probable y una acción.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en s3 y diagnóstico de red: objetos, metadatos y errores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -197,37 +146,6 @@ flowchart TD
   D -->|"404 en head-object"| D1["Revisa prefijo y clave exacta"]
   D -->|"existe"| F["Revisa metadatos y contenido"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| S3 y diagnóstico de red: objetos, metadatos y errores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar S3 y diagnóstico de red: objetos, metadatos y errores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses s3 y diagnóstico de red: objetos, metadatos y errores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: s3 y diagnóstico de red: objetos, metadatos y errores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- S3 y diagnóstico de red: objetos, metadatos y errores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve s3 y diagnóstico de red: objetos, metadatos y errores en tu contexto?
-2. ¿Cómo sabrías que s3 y diagnóstico de red: objetos, metadatos y errores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar s3 y diagnóstico de red: objetos, metadatos y errores?
 
 </details>
 
@@ -336,16 +254,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir una imagen sin dependencias externas, esperar a que Floci responda desde otro contenedor y ejecutar una prueba de humo que falle con un mensaje útil si la red está mal configurada. Conocimiento previo: Temas 1 y 2, Docker y Docker Compose instalados.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir una imagen sin dependencias externas, esperar a que Floci responda desde otro contenedor y ejecutar una prueba de humo que falle con un mensaje útil si la red está mal configurada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en contenedores y ci: una imagen que se prueba contra floci como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -357,37 +265,6 @@ flowchart LR
   T -->|"rojo"| L["Logs y limpieza"]
   L --> D["docker compose down -v"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Contenedores y CI: una imagen que se prueba contra Floci se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Contenedores y CI: una imagen que se prueba contra Floci | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses contenedores y ci: una imagen que se prueba contra floci por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: contenedores y ci: una imagen que se prueba contra floci funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Contenedores y CI: una imagen que se prueba contra Floci existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve contenedores y ci: una imagen que se prueba contra floci en tu contexto?
-2. ¿Cómo sabrías que contenedores y ci: una imagen que se prueba contra floci no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar contenedores y ci: una imagen que se prueba contra floci?
 
 </details>
 
@@ -503,16 +380,6 @@ CMD ["node", "--test"]
 #### ► DE QUÉ TRATA
 Al finalizar podrás declarar una cola SQS y un bucket S3 contra Floci, leer un plan, aplicar cambios, enviar y recibir un mensaje y destruir todo sin dejar recursos. Conocimiento previo: Temas 1 a 3, Terraform instalado y el emulador en ejecución.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás declarar una cola SQS y un bucket S3 contra Floci, leer un plan, aplicar cambios, enviar y recibir un mensaje y destruir todo sin dejar recursos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en terraform, sqs y operación: infraestructura reproducible y ejercicios como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -526,37 +393,6 @@ flowchart LR
   A --> O["Outputs"]
   D["terraform destroy"] --> R
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Terraform, SQS y operación: infraestructura reproducible y ejercicios se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Terraform, SQS y operación: infraestructura reproducible y ejercicios | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses terraform, sqs y operación: infraestructura reproducible y ejercicios por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: terraform, sqs y operación: infraestructura reproducible y ejercicios funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Terraform, SQS y operación: infraestructura reproducible y ejercicios existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve terraform, sqs y operación: infraestructura reproducible y ejercicios en tu contexto?
-2. ¿Cómo sabrías que terraform, sqs y operación: infraestructura reproducible y ejercicios no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar terraform, sqs y operación: infraestructura reproducible y ejercicios?
 
 </details>
 

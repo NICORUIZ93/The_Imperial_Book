@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás diseñar un esquema envios + envio_eventos append-only en PostgreSQL y explicar, con un error real del motor, por qué el historial no se edita. Conocimiento previo: terminal, SQL básico (CREATE TABLE, INSERT) y Docker para levantar Postgres local.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás diseñar un esquema envios + envio_eventos append-only en PostgreSQL y explicar, con un error real del motor, por qué el historial no se edita.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en modelo relacional e historial como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -30,37 +20,6 @@ flowchart LR
   C --> D[(envio_eventos: append-only)]
   C -->|UPDATE o DELETE| E[Error: historial inmutable]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Modelo relacional e historial se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Modelo relacional e historial | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses modelo relacional e historial por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: modelo relacional e historial funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Modelo relacional e historial existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve modelo relacional e historial en tu contexto?
-2. ¿Cómo sabrías que modelo relacional e historial no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar modelo relacional e historial?
 
 </details>
 
@@ -133,16 +92,6 @@ psql "postgresql://postgres:rutaflow@localhost:5432/postgres" -c \
 #### ► DE QUÉ TRATA
 Al finalizar podrás modelar ubicaciones con PostGIS (geography(Point, 4326)) y calcular distancias reales con ST_DWithin, explicando por qué geometry sin castear da resultados incorrectos. Conocimiento previo: SQL básico, el esquema envios del Tema 1 y Postgres local con la exten…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás modelar ubicaciones con PostGIS (geography(Point, 4326)) y calcular distancias reales con ST_DWithin, explicando por qué geometry sin castear da resultados incorrectos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en geografía con precisión útil como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -152,37 +101,6 @@ flowchart LR
   D -->|dentro del radio| E[Conductor candidato]
   D -->|fuera del radio| F[Descartado]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Geografía con precisión útil se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Geografía con precisión útil | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses geografía con precisión útil por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: geografía con precisión útil funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Geografía con precisión útil existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve geografía con precisión útil en tu contexto?
-2. ¿Cómo sabrías que geografía con precisión útil no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar geografía con precisión útil?
 
 </details>
 
@@ -247,16 +165,6 @@ FROM conductores;
 #### ► DE QUÉ TRATA
 Al finalizar podrás modelar un ledger de doble partida en PostgreSQL y escribir la consulta que detecta un asiento desbalanceado, usando un ejemplo real de cobro y comisión. Conocimiento previo: SQL básico (GROUP BY, HAVING) y los conceptos de débito/crédito.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás modelar un ledger de doble partida en PostgreSQL y escribir la consulta que detecta un asiento desbalanceado, usando un ejemplo real de cobro y comisión.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en ledger de doble partida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -270,37 +178,6 @@ flowchart LR
   F -->|balanceado| G[Asiento válido]
   F -->|desbalanceado| H[Asiento rechazado]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ledger de doble partida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ledger de doble partida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ledger de doble partida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ledger de doble partida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ledger de doble partida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ledger de doble partida en tu contexto?
-2. ¿Cómo sabrías que ledger de doble partida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ledger de doble partida?
 
 </details>
 

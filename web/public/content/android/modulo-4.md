@@ -16,53 +16,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateFlow, garantizando que siempre haya un valor actual disponible.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateFlow, garantizando que siempre haya un valor actual disponible.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en stateflow en el viewmodel como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que stateflow en el viewmodel resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| StateFlow en el ViewModel se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar StateFlow en el ViewModel | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses stateflow en el viewmodel por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: stateflow en el viewmodel funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- StateFlow en el ViewModel existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve stateflow en el viewmodel en tu contexto?
-2. ¿Cómo sabrías que stateflow en el viewmodel no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar stateflow en el viewmodel?
-
 </details>
 
 <details>
@@ -158,12 +111,6 @@ print('observador que llega tarde recibe de inmediato:', estado.nuevo_observador
 #### ► DE QUÉ TRATA
 Al finalizar podrás observar un StateFlow desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás observar un StateFlow desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** recolección consciente del ciclo de vida, flujo de datos en una única dirección.
 
@@ -178,45 +125,6 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 │                                                                                                │
 └──────────────── la UI NUNCA modifica el estado directamente ─────────────────────┘
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que collectasstatewithlifecycle y udf resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| collectAsStateWithLifecycle y UDF se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar collectAsStateWithLifecycle y UDF | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses collectasstatewithlifecycle y udf por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: collectasstatewithlifecycle y udf funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- collectAsStateWithLifecycle y UDF existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve collectasstatewithlifecycle y udf en tu contexto?
-2. ¿Cómo sabrías que collectasstatewithlifecycle y udf no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar collectasstatewithlifecycle y udf?
 
 </details>
 
@@ -282,53 +190,6 @@ print('ahorro:', recolecciones_simple - recolecciones_consciente, 'recolecciones
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar por qué un SharedFlow puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como estado que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar por qué un SharedFlow puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como estado que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sharedflow para eventos de un solo uso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sharedflow para eventos de un solo uso resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SharedFlow para eventos de un solo uso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SharedFlow para eventos de un solo uso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sharedflow para eventos de un solo uso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sharedflow para eventos de un solo uso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SharedFlow para eventos de un solo uso existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sharedflow para eventos de un solo uso en tu contexto?
-2. ¿Cómo sabrías que sharedflow para eventos de un solo uso no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sharedflow para eventos de un solo uso?
 
 </details>
 
@@ -445,53 +306,6 @@ print('SharedFlow -> observador tardío vio el evento:', observador_tardio_vio_a
 
 #### ► DE QUÉ TRATA
 Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. Prerrequisitos: Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en restaurar un borrador tras recreación: remember no equivale a remembersaveable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que restaurar un borrador tras recreación: remember no equivale a remembersaveable resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Restaurar un borrador tras recreación: remember no equivale a rememberSaveable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Restaurar un borrador tras recreación: remember no equivale a rememberSaveable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses restaurar un borrador tras recreación: remember no equivale a remembersaveable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: restaurar un borrador tras recreación: remember no equivale a remembersaveable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Restaurar un borrador tras recreación: remember no equivale a rememberSaveable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve restaurar un borrador tras recreación: remember no equivale a remembersaveable en tu contexto?
-2. ¿Cómo sabrías que restaurar un borrador tras recreación: remember no equivale a remembersaveable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar restaurar un borrador tras recreación: remember no equivale a remembersaveable?
 
 </details>
 

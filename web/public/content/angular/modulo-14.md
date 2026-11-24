@@ -16,53 +16,12 @@ Cada tema verifica su garantía con herramientas reales del ecosistema: `vitest-
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con vitest-axe (una auditoría de accesibilidad automatizada real, no una suposición visual), que un formulario con error asociado correctamente vía aria-describedby pasa la auditoría, y que quitar esa asociación produce una violación real detectada.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con vitest-axe (una auditoría de accesibilidad automatizada real, no una suposición visual), que un formulario con error asociado correctamente vía aria-describedby pasa la auditoría, y que quitar esa asociación produce una violación real detectada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en accesibilidad es comportamiento, no una puntuación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A["input sin aria-describedby"] --> X[axe: violación real]
   B["input con aria-describedby='error-id'"] --> Y[axe: sin violaciones]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Accesibilidad es comportamiento, no una puntuación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Accesibilidad es comportamiento, no una puntuación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses accesibilidad es comportamiento, no una puntuación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: accesibilidad es comportamiento, no una puntuación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Accesibilidad es comportamiento, no una puntuación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve accesibilidad es comportamiento, no una puntuación en tu contexto?
-2. ¿Cómo sabrías que accesibilidad es comportamiento, no una puntuación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad es comportamiento, no una puntuación?
 
 </details>
 
@@ -157,12 +116,6 @@ expect(resultados.violations).toEqual([]);
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con el DomSanitizer real de Angular, que un binding [innerHTML] normal elimina contenido peligroso (como una etiqueta <script>), y contrastarlo con bypassSecurityTrustHtml, que deliberadamente desactiva esa protección.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con el DomSanitizer real de Angular, que un binding [innerHTML] normal elimina contenido peligroso (como una etiqueta <script>), y contrastarlo con bypassSecurityTrustHtml, que deliberadamente desactiva esa protección.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `SecurityContext`, sanitización automática, `bypassSecurityTrustHtml`.
 
@@ -178,45 +131,6 @@ Angular trata los valores enlazados como no confiables y sanitiza según el cont
 ┌── bypassSecurityTrustHtml ────────┐  <script> PASA sin ninguna protección
 └──────────────────────────┘
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que la seguridad automática tiene fronteras explícitas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| La seguridad automática tiene fronteras explícitas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar La seguridad automática tiene fronteras explícitas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses la seguridad automática tiene fronteras explícitas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: la seguridad automática tiene fronteras explícitas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- La seguridad automática tiene fronteras explícitas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve la seguridad automática tiene fronteras explícitas en tu contexto?
-2. ¿Cómo sabrías que la seguridad automática tiene fronteras explícitas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar la seguridad automática tiene fronteras explícitas?
 
 </details>
 
@@ -238,16 +152,6 @@ Al finalizar podrás confirmar, con el `DomSanitizer` real de Angular, que un bi
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con Intl.PluralRules real (la API estándar del navegador para reglas de pluralización), que un mensaje selecciona la forma gramatical correcta según la cantidad, en vez de concatenar un número con un texto fijo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con Intl.PluralRules real (la API estándar del navegador para reglas de pluralización), que un mensaje selecciona la forma gramatical correcta según la cantidad, en vez de concatenar un número con un texto fijo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en internacionalizar implica significado, no reemplazo de texto como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -256,37 +160,6 @@ flowchart LR
   N2[cantidad = 1] --> R2["Intl.PluralRules('es').select(1)"]
   R2 --> C2["'one' -> '1 tarea'"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Internacionalizar implica significado, no reemplazo de texto se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Internacionalizar implica significado, no reemplazo de texto | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses internacionalizar implica significado, no reemplazo de texto por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: internacionalizar implica significado, no reemplazo de texto funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Internacionalizar implica significado, no reemplazo de texto existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve internacionalizar implica significado, no reemplazo de texto en tu contexto?
-2. ¿Cómo sabrías que internacionalizar implica significado, no reemplazo de texto no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar internacionalizar implica significado, no reemplazo de texto?
 
 </details>
 
@@ -360,53 +233,6 @@ const categoria = reglasEspanol.____(cantidad);
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con la API oficial de test de bloques @defer de Angular, que el contenido diferido NO se renderiza inicialmente y SÍ se renderiza tras disparar manualmente su condición, verificando en código el beneficio real de rendimiento que @defer promete.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con la API oficial de test de bloques @defer de Angular, que el contenido diferido NO se renderiza inicialmente y SÍ se renderiza tras disparar manualmente su condición, verificando en código el beneficio real de rendimiento que @defer promete.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en rendimiento y actualización son contratos de experiencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que rendimiento y actualización son contratos de experiencia resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Rendimiento y actualización son contratos de experiencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Rendimiento y actualización son contratos de experiencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses rendimiento y actualización son contratos de experiencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: rendimiento y actualización son contratos de experiencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Rendimiento y actualización son contratos de experiencia existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve rendimiento y actualización son contratos de experiencia en tu contexto?
-2. ¿Cómo sabrías que rendimiento y actualización son contratos de experiencia no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar rendimiento y actualización son contratos de experiencia?
 
 </details>
 
@@ -498,16 +324,6 @@ await bloqueDeferido.____();
 #### ► DE QUÉ TRATA
 Instala la extensión Angular DevTools en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (ng serve): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar enableProfiling() para ver los eventos de Angular en el panel…
 
-#### ► LA IDEA EN UNA FRASE
-**Instala la extensión Angular DevTools en Chrome o Firefox.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en perfilar con angular devtools y el panel performance de chrome como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -517,37 +333,6 @@ flowchart LR
     H --> X["Cambiar a computed"]
     X --> G2["Grabar otra vez y comparar"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Perfilar con Angular DevTools y el panel Performance de Chrome se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Perfilar con Angular DevTools y el panel Performance de Chrome | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses perfilar con angular devtools y el panel performance de chrome por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: perfilar con angular devtools y el panel performance de chrome funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Perfilar con Angular DevTools y el panel Performance de Chrome existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve perfilar con angular devtools y el panel performance de chrome en tu contexto?
-2. ¿Cómo sabrías que perfilar con angular devtools y el panel performance de chrome no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar perfilar con angular devtools y el panel performance de chrome?
 
 </details>
 
@@ -625,16 +410,6 @@ Después: el ciclo al escribir baja de forma visible y ListaEnvios deja de ser e
 #### ► DE QUÉ TRATA
 Usa Angular 19 o superior. Para la parte con SSR necesitas un proyecto creado con --ssr. Probarás las cabeceras con las DevTools del navegador (pestañas Network y Console).
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Angular 19 o superior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en csp con nonce y trusted types en angular como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -645,37 +420,6 @@ flowchart LR
     N --> T{"¿innerHTML con TrustedHTML?"}
     T -->|no| B
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CSP con nonce y Trusted Types en Angular se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CSP con nonce y Trusted Types en Angular | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses csp con nonce y trusted types en angular por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: csp con nonce y trusted types en angular funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CSP con nonce y Trusted Types en Angular existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve csp con nonce y trusted types en angular en tu contexto?
-2. ¿Cómo sabrías que csp con nonce y trusted types en angular no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar csp con nonce y trusted types en angular?
 
 </details>
 
@@ -756,56 +500,6 @@ Un <script> inyectado sin nonce aparece en consola como «Refused to execute inl
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por angular v22 y adopción según estabilidad con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender angular v22 y adopción según estabilidad te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en angular v22 y adopción según estabilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que angular v22 y adopción según estabilidad resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Angular v22 y adopción según estabilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Angular v22 y adopción según estabilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses angular v22 y adopción según estabilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: angular v22 y adopción según estabilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Angular v22 y adopción según estabilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve angular v22 y adopción según estabilidad en tu contexto?
-2. ¿Cómo sabrías que angular v22 y adopción según estabilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar angular v22 y adopción según estabilidad?
-
 </details>
 
 <details>
@@ -821,56 +515,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto: auditoría integral de la aplicación standalone con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto: auditoría integral de la aplicación standalone te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto: auditoría integral de la aplicación standalone como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto: auditoría integral de la aplicación standalone resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto: auditoría integral de la aplicación standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto: auditoría integral de la aplicación standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto: auditoría integral de la aplicación standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto: auditoría integral de la aplicación standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto: auditoría integral de la aplicación standalone existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto: auditoría integral de la aplicación standalone en tu contexto?
-2. ¿Cómo sabrías que proyecto: auditoría integral de la aplicación standalone no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto: auditoría integral de la aplicación standalone?
-
 </details>
 
 <details>
@@ -885,56 +529,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
-2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
 
 </details>
 

@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a usar shipmentId como correlation ID real para seguir una entrega a través de confirmar-entrega (Módulo 5), API Gateway (Módulo 6) y SQS (Módulo 5 Tema 6). Prerrequisitos: Módulo 5 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a usar shipmentId como correlation ID real para seguir una entrega a través de confirmar-entrega (Módulo 5), API Gateway (Módulo 6) y SQS (Módulo 5 Tema 6).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en log groups, log streams y correlation id como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -29,37 +19,6 @@ flowchart LR
     L --> Q["SQS DeliveryCommands\nmensaje: shipmentId=env-4471"]
     Q --> W["Worker asíncrono\nlog: shipmentId=env-4471"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Log groups, log streams y correlation ID se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Log groups, log streams y correlation ID | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses log groups, log streams y correlation id por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: log groups, log streams y correlation id funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Log groups, log streams y correlation ID existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve log groups, log streams y correlation id en tu contexto?
-2. ¿Cómo sabrías que log groups, log streams y correlation id no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar log groups, log streams y correlation id?
 
 </details>
 
@@ -108,12 +67,6 @@ aws logs filter-log-events --log-group-name /rutaflow/confirmar-entrega --filter
 #### ► DE QUÉ TRATA
 Al finalizar vas a convertir el error de validación real de confirmar-entrega (Módulo 5, "comando de entrega inválido") en una métrica con alarma. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a convertir el error de validación real de confirmar-entrega (Módulo 5, "comando de entrega inválido") en una métrica con alarma.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un metric filter transforma una marca de texto repetida en los logs en un contador numérico observable, sin que tengas que instrumentar manualmente cada punto del código.
 
@@ -144,45 +97,12 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Genera un error controlado al confirmar una entrega y haz que active el filtro y la alarma definidos. Registra la demora observada y el enlace al diagnóstico que recibirá la persona de guardia.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["Log #quot;ERROR ...#quot; emitido"] --> B["metric filter cuenta ocurrencias"] --> C["métrica #quot;Errores#quot; incrementa"]
     C --> D["métrica #quot;Errores#quot; > 5 en 60s"] --> E["alarma se dispara"] --> F["notificación automática al equipo"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Metric filters y alarmas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Metric filters y alarmas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses metric filters y alarmas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: metric filters y alarmas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Metric filters y alarmas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve metric filters y alarmas en tu contexto?
-2. ¿Cómo sabrías que metric filters y alarmas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar metric filters y alarmas?
 
 </details>
 
@@ -221,16 +141,6 @@ aws cloudwatch get-metric-statistics --namespace RutaFlow --metric-name Comandos
 #### ► DE QUÉ TRATA
 Al finalizar podrás investigar incidentes desde cero. Prerrequisitos: Node.js y Docker; verifica node --version.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás investigar incidentes desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en diagnóstico sistemático y x-ray como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -239,37 +149,6 @@ flowchart TD
     B1 --> C["3. Consultar dashboard de métricas"] --> C1["contexto general del sistema en ese momento"]
     C1 --> D["4. X-Ray trace"] --> D1["latencia exacta por segmento de la solicitud"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Diagnóstico sistemático y X-Ray se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Diagnóstico sistemático y X-Ray | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses diagnóstico sistemático y x-ray por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: diagnóstico sistemático y x-ray funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Diagnóstico sistemático y X-Ray existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve diagnóstico sistemático y x-ray en tu contexto?
-2. ¿Cómo sabrías que diagnóstico sistemático y x-ray no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar diagnóstico sistemático y x-ray?
 
 </details>
 

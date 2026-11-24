@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a reemplazar la navegación imperativa de RutaFlow (Navigator.push/pop) por go_router, donde /envios/:id sea la fuente de verdad de qué envío se muestra. Prerrequisitos: Módulo 2 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a reemplazar la navegación imperativa de RutaFlow (Navigator.push/pop) por go_router, donde /envios/:id sea la fuente de verdad de qué envío se muestra.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en go_router: navegación como función de la url como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -30,37 +20,6 @@ stateDiagram-v2
     DetalleEnvio --> ListaEnvios: context.go('/envios')
     note right of DetalleEnvio: la URL actual siempre\nrepresenta la pantalla visible
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| go_router: navegación como función de la URL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar go_router: navegación como función de la URL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses go_router: navegación como función de la url por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: go_router: navegación como función de la url funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- go_router: navegación como función de la URL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve go_router: navegación como función de la url en tu contexto?
-2. ¿Cómo sabrías que go_router: navegación como función de la url no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar go_router: navegación como función de la url?
 
 </details>
 
@@ -147,16 +106,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a proteger /admin de RutaFlow con un redirect declarativo, y a confirmar que un deep link externo a /envios/RF-4471 abre directamente ese envío sin pasos manuales. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a proteger /admin de RutaFlow con un redirect declarativo, y a confirmar que un deep link externo a /envios/RF-4471 abre directamente ese envío sin pasos manuales.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en guards y deep linking como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -164,37 +113,6 @@ flowchart TD
     B -->|Sí| C["builder: AdminScreen()"]
     B -->|No| D["redirect a /login"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Guards y deep linking se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Guards y deep linking | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses guards y deep linking por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: guards y deep linking funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Guards y deep linking existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve guards y deep linking en tu contexto?
-2. ¿Cómo sabrías que guards y deep linking no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar guards y deep linking?
 
 </details>
 
@@ -281,12 +199,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a aplicar un fundido (FadeTransition) específicamente a la transición hacia la pantalla de confirmación exitosa, comunicando "este flujo terminó" en vez del deslizamiento estándar. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a aplicar un fundido (FadeTransition) específicamente a la transición hacia la pantalla de confirmación exitosa, comunicando "este flujo terminó" en vez del deslizamiento estándar.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `pageBuilder` con `CustomTransitionPage` permite especificar explícitamente la animación de una ruta — un fundido comunica "esto reemplaza el contexto anterior" mejor que un deslizamiento lateral.
 **Conceptos clave:** control explícito sobre la animación de transición entre pantallas.
@@ -322,8 +234,6 @@ En el proyecto integrador RutaFlow, la transición de confirmación vive en `lib
 
 ---
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -331,37 +241,6 @@ flowchart TD
     B -->|Sí| C["pageBuilder + CustomTransitionPage"]
     B -->|No, es un paso más| D["builder estándar (deslizamiento)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Transiciones personalizadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Transiciones personalizadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses transiciones personalizadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: transiciones personalizadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Transiciones personalizadas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve transiciones personalizadas en tu contexto?
-2. ¿Cómo sabrías que transiciones personalizadas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar transiciones personalizadas?
 
 </details>
 

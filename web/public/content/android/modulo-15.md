@@ -14,12 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás pedir al sistema que otra app comparta, navegue o elija un contacto mediante Intents implícitos, recibir el resultado con la Activity Result API y manejar el caso en que ninguna app puede resolver el Intent. Prerrequisitos: Módulos 1 y 2 (Activities y Compose)…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás pedir al sistema que otra app comparta, navegue o elija un contacto mediante Intents implícitos, recibir el resultado con la Activity Result API y manejar el caso en que ninguna app puede resolver el Intent.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un **Intent explícito** nombra la clase destino (`Intent(context, OtraActivity::class.java)`); un **Intent implícito** describe una **acción** (`ACTION_SEND`, `ACTION_VIEW`) y unos datos o tipo MIME, y el sistema busca las apps que la declaran en su `intent-filter`. `createChooser` muestra el selector. Si nadie puede resolverlo, `startActivity` lanza `ActivityNotFoundException`. La **Activity Result API** (`rememberLauncherForActivityResult` con un contrato como `PickContact` o `TakePicture`) reemplaza a `onActivityResult` y entrega el resultado en un callback. Desde Android 11, para *consultar* qué apps existen debes declararlo en `<queries>` del manifiesto.
 
@@ -45,8 +39,6 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** lanzar un Intent implícito sin envolver `startActivity` en `try/catch`, asumiendo que siempre habrá una app que lo resuelva —en un emulador AOSP sin Google Play ese error cierra la app igual que en el Paso 4—, y usar `ACTION_CALL` en vez de `ACTION_DIAL` olvidando que el primero exige el permiso `CALL_PHONE` en tiempo de ejecución.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -56,37 +48,6 @@ flowchart LR
     A -- ACTION_VIEW geo: --> S
     S --> M[App de mapas]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Intents implícitos y Activity Result API se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Intents implícitos y Activity Result API | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses intents implícitos y activity result api por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: intents implícitos y activity result api funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Intents implícitos y Activity Result API existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve intents implícitos y activity result api en tu contexto?
-2. ¿Cómo sabrías que intents implícitos y activity result api no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar intents implícitos y activity result api?
 
 </details>
 
@@ -183,16 +144,6 @@ I RutaFlow: Contacto elegido: content://com.android.contacts/contacts/lookup/...
 #### ► DE QUÉ TRATA
 Al finalizar podrás registrar un BroadcastReceiver dinámico atado al ciclo de vida de una pantalla, declarar si recibe broadcasts de otras apps y simular eventos del sistema con adb. Prerrequisitos: Módulo 1 (ciclo de vida) y Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás registrar un BroadcastReceiver dinámico atado al ciclo de vida de una pantalla, declarar si recibe broadcasts de otras apps y simular eventos del sistema con adb.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en broadcastreceiver: reaccionar a eventos del sistema como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -204,37 +155,6 @@ sequenceDiagram
     R->>U: estado = cargando
     U->>S: unregisterReceiver al salir
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| BroadcastReceiver: reaccionar a eventos del sistema se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar BroadcastReceiver: reaccionar a eventos del sistema | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses broadcastreceiver: reaccionar a eventos del sistema por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: broadcastreceiver: reaccionar a eventos del sistema funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- BroadcastReceiver: reaccionar a eventos del sistema existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve broadcastreceiver: reaccionar a eventos del sistema en tu contexto?
-2. ¿Cómo sabrías que broadcastreceiver: reaccionar a eventos del sistema no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar broadcastreceiver: reaccionar a eventos del sistema?
 
 </details>
 
@@ -329,12 +249,6 @@ I RutaFlow: Evento de energía: sin cargador
 #### ► DE QUÉ TRATA
 Al finalizar podrás mantener un seguimiento de ubicación con la app en segundo plano usando un *foreground service* de tipo location, pedir actualizaciones al FusedLocationProvider con un intervalo que cuida la batería y simular posiciones en el emulador. Prerrequisitos: Tema 2 d…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás mantener un seguimiento de ubicación con la app en segundo plano usando un *foreground service* de tipo location, pedir actualizaciones al FusedLocationProvider con un intervalo que cuida la batería y simular posiciones en el emulador.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un **foreground service** es un servicio que el usuario sabe que está corriendo: debe mostrar una notificación persistente y, desde Android 14, declarar su **tipo** (`location`, `dataSync`, `mediaPlayback`…) en el manifiesto y al llamar `startForeground`, además del permiso específico (`FOREGROUND_SERVICE_LOCATION`). El **FusedLocationProviderClient** combina GPS, Wi-Fi y redes móviles; con `LocationRequest` eliges prioridad e intervalo para equilibrar precisión y batería. Las actualizaciones se detienen en `onDestroy`.
 
@@ -360,8 +274,6 @@ flowchart TD
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** olvidar declarar `android:foregroundServiceType="location"` en el manifiesto antes de llamar a `startForeground` en Android 14+, o subir la prioridad a `PRIORITY_HIGH_ACCURACY` con un intervalo corto sin medir antes el consumo real de batería en el emulador.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -371,37 +283,6 @@ flowchart TD
     F -- cada 15 s --> C[LocationCallback]
     C --> L[logcat o envío a la central]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Foreground Service de ubicación con FusedLocationProvider se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Foreground Service de ubicación con FusedLocationProvider | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses foreground service de ubicación con fusedlocationprovider por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: foreground service de ubicación con fusedlocationprovider funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Foreground Service de ubicación con FusedLocationProvider existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve foreground service de ubicación con fusedlocationprovider en tu contexto?
-2. ¿Cómo sabrías que foreground service de ubicación con fusedlocationprovider no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar foreground service de ubicación con fusedlocationprovider?
 
 </details>
 
@@ -420,12 +301,6 @@ Al finalizar podrás mantener un seguimiento de ubicación con la app en segundo
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás compartir un archivo privado de tu app con otra app mediante un FileProvider, conceder permiso de lectura temporal sobre una URI content:// y explicar por qué Android prohíbe las URI file://. Prerrequisito: Tema 1 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás compartir un archivo privado de tu app con otra app mediante un FileProvider, conceder permiso de lectura temporal sobre una URI content:// y explicar por qué Android prohíbe las URI file://.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 Un **ContentProvider** expone datos de una app mediante URI `content://` y controla quién accede. `FileProvider` es un ContentProvider ya hecho para archivos: en `rutas_compartidas.xml` declaras qué carpetas se pueden compartir, `getUriForFile` traduce un `File` a una URI `content://`, y `FLAG_GRANT_READ_URI_PERMISSION` da permiso **temporal** solo a la app que recibe el Intent. Desde Android 7, enviar una URI `file://` a otra app lanza `FileUriExposedException`, porque revelaría rutas internas y dependería de permisos de archivo globales.
@@ -455,8 +330,6 @@ sequenceDiagram
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** compartir una URI `file://` en vez de `content://` esperando que funcione igual en todos los Android —en Android 7+ ese error termina en `FileUriExposedException`, como en el Paso 4—, u olvidar declarar la carpeta en `rutas_compartidas.xml`, lo que hace que `getUriForFile` lance `IllegalArgumentException`.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -469,37 +342,6 @@ sequenceDiagram
     C->>F: abre la URI
     F-->>C: contenido del archivo
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compartir archivos con FileProvider y content:// se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compartir archivos con FileProvider y content:// | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compartir archivos con fileprovider y content:// por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compartir archivos con fileprovider y content:// funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compartir archivos con FileProvider y content:// existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compartir archivos con fileprovider y content:// en tu contexto?
-2. ¿Cómo sabrías que compartir archivos con fileprovider y content:// no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compartir archivos con fileprovider y content://?
 
 </details>
 
@@ -593,12 +435,6 @@ adb logcat -s RutaFlow
 #### ► DE QUÉ TRATA
 Agrega com.google.maps.android:maps-compose al módulo app y una clave de Maps SDK for Android en local.properties (MAPS_API_KEY=...), leída con el plugin Secrets Gradle. Nunca subas la clave al repositorio.
 
-#### ► LA IDEA EN UNA FRASE
-**Agrega com.google.maps.android:maps-compose al módulo app y una clave de Maps SDK for Android en local.properties (MAPS_API_KEY=...), leída con el plugin Secrets Gradle.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `GoogleMap`, `CameraPositionState`, `Marker`, `Polyline`, `LatLngBounds`, clave de API restringida.
 
@@ -620,8 +456,6 @@ flowchart LR
     S --> B["LatLngBounds"] --> C["CameraPositionState.animate"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -630,37 +464,6 @@ flowchart LR
     M --> P["Polyline de la ruta"]
     S --> B["LatLngBounds"] --> C["CameraPositionState.animate"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Mapas con Maps Compose: marcadores, cámara y ruta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Mapas con Maps Compose: marcadores, cámara y ruta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mapas con maps compose: marcadores, cámara y ruta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mapas con maps compose: marcadores, cámara y ruta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Mapas con Maps Compose: marcadores, cámara y ruta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mapas con maps compose: marcadores, cámara y ruta en tu contexto?
-2. ¿Cómo sabrías que mapas con maps compose: marcadores, cámara y ruta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mapas con maps compose: marcadores, cámara y ruta?
 
 </details>
 
@@ -734,16 +537,6 @@ Al tocar un marcador aparece su título, por ejemplo «2. Calle 26».
 #### ► DE QUÉ TRATA
 No necesitas permisos para el acelerómetro. Usa un dispositivo real o el emulador con Extended controls > Virtual sensors para mover el teléfono simulado.
 
-#### ► LA IDEA EN UNA FRASE
-**No necesitas permisos para el acelerómetro.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sensores con sensormanager: detectar caídas del paquete y orientación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -752,37 +545,6 @@ flowchart LR
     D -->|sí| G["registrar golpe"]
     D -->|no| N["ignorar"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Sensores con SensorManager: detectar caídas del paquete y orientación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Sensores con SensorManager: detectar caídas del paquete y orientación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sensores con sensormanager: detectar caídas del paquete y orientación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sensores con sensormanager: detectar caídas del paquete y orientación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Sensores con SensorManager: detectar caídas del paquete y orientación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sensores con sensormanager: detectar caídas del paquete y orientación en tu contexto?
-2. ¿Cómo sabrías que sensores con sensormanager: detectar caídas del paquete y orientación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sensores con sensormanager: detectar caídas del paquete y orientación?
 
 </details>
 
@@ -852,16 +614,6 @@ Al mover bruscamente el sensor virtual, `alGolpe` recibe un valor mayor que 25 y
 #### ► DE QUÉ TRATA
 Agrega com.google.android.gms:play-services-location. Necesitas los permisos ACCESS_FINE_LOCATION y, para recibir avisos con la app cerrada, ACCESS_BACKGROUND_LOCATION, pedido por separado después del primero.
 
-#### ► LA IDEA EN UNA FRASE
-**Agrega com.google.android.gms:play-services-location.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en geofencing: avisar al entrar en la zona de una parada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -874,37 +626,6 @@ sequenceDiagram
     S->>R: GEOFENCE_TRANSITION_ENTER
     R->>R: notifica "llegando a ENV-42"
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Geofencing: avisar al entrar en la zona de una parada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Geofencing: avisar al entrar en la zona de una parada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses geofencing: avisar al entrar en la zona de una parada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: geofencing: avisar al entrar en la zona de una parada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Geofencing: avisar al entrar en la zona de una parada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve geofencing: avisar al entrar en la zona de una parada en tu contexto?
-2. ¿Cómo sabrías que geofencing: avisar al entrar en la zona de una parada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar geofencing: avisar al entrar en la zona de una parada?
 
 </details>
 
@@ -1004,12 +725,6 @@ I Geocerca: llegando a ENV-42
 #### ► DE QUÉ TRATA
 Agrega androidx.camera:camera-camera2, camera-lifecycle, camera-view y com.google.mlkit:barcode-scanning. Declara <uses-permission android:name="android.permission.CAMERA" /> y pide el permiso en tiempo de ejecución.
 
-#### ► LA IDEA EN UNA FRASE
-**Agrega androidx.camera:camera-camera2, camera-lifecycle, camera-view y com.google.mlkit:barcode-scanning.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** CameraX, caso de uso (`Preview`, `ImageCapture`, `ImageAnalysis`), `LifecycleCameraController`, ML Kit, `BarcodeScanner`, procesamiento en el dispositivo.
 
@@ -1039,8 +754,6 @@ flowchart LR
     ML --> G["código de guía"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -1051,37 +764,6 @@ flowchart LR
     A --> ML["ML Kit BarcodeScanner"]
     ML --> G["código de guía"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CameraX y ML Kit: foto de entrega y escaneo de códigos de barras se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CameraX y ML Kit: foto de entrega y escaneo de códigos de barras | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses camerax y ml kit: foto de entrega y escaneo de códigos de barras por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: camerax y ml kit: foto de entrega y escaneo de códigos de barras funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CameraX y ML Kit: foto de entrega y escaneo de códigos de barras existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve camerax y ml kit: foto de entrega y escaneo de códigos de barras en tu contexto?
-2. ¿Cómo sabrías que camerax y ml kit: foto de entrega y escaneo de códigos de barras no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar camerax y ml kit: foto de entrega y escaneo de códigos de barras?
 
 </details>
 
@@ -1163,12 +845,6 @@ Un código QR con otro texto (por ejemplo, una URL) se ignora.
 #### ► DE QUÉ TRATA
 Necesitas un dispositivo real con Bluetooth (el emulador no lo simula bien) y un periférico BLE; puedes usar la app nRF Connect en otro teléfono como periférico de prueba. Declara BLUETOOTH_SCAN (con neverForLocation) y BLUETOOTH_CONNECT.
 
-#### ► LA IDEA EN UNA FRASE
-**Necesitas un dispositivo real con Bluetooth (el emulador no lo simula bien) y un periférico BLE; puedes usar la app nRF Connect en otro teléfono como periférico de prueba.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** Bluetooth Low Energy, periférico, escaneo, filtro por UUID de servicio, GATT, servicio, característica, `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`.
 
@@ -1201,8 +877,6 @@ sequenceDiagram
     A->>B: close()
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -1216,37 +890,6 @@ sequenceDiagram
     B-->>A: onCharacteristicRead: 12.5 kg
     A->>B: close()
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Bluetooth LE: buscar y leer una báscula del vehículo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Bluetooth LE: buscar y leer una báscula del vehículo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses bluetooth le: buscar y leer una báscula del vehículo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: bluetooth le: buscar y leer una báscula del vehículo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Bluetooth LE: buscar y leer una báscula del vehículo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve bluetooth le: buscar y leer una báscula del vehículo en tu contexto?
-2. ¿Cómo sabrías que bluetooth le: buscar y leer una báscula del vehículo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar bluetooth le: buscar y leer una báscula del vehículo?
 
 </details>
 
@@ -1343,56 +986,6 @@ I Bascula: peso 12.5 kg
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 15: la app del repartidor se integra con el sistema con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 15: la app del repartidor se integra con el sistema te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 15: la app del repartidor se integra con el sistema como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 15: la app del repartidor se integra con el sistema resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 15: la app del repartidor se integra con el sistema se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 15: la app del repartidor se integra con el sistema | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 15: la app del repartidor se integra con el sistema por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 15: la app del repartidor se integra con el sistema funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 15: la app del repartidor se integra con el sistema existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 15: la app del repartidor se integra con el sistema en tu contexto?
-2. ¿Cómo sabrías que proyecto 15: la app del repartidor se integra con el sistema no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 15: la app del repartidor se integra con el sistema?
 
 </details>
 

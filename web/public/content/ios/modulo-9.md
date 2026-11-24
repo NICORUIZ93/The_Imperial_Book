@@ -14,12 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir el mismo test para EsEnvioAtrasado (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real. Prerrequisitos: Módulo 8 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir el mismo test para EsEnvioAtrasado (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 XCTest exige heredar de `XCTestCase` y elegir la aserción específica (`XCTAssertEqual`, `XCTAssertTrue`); Swift Testing usa `struct`s comunes con `@Test` y una única macro `#expect` para cualquier expresión booleana — un formulario con una casilla por tipo de verificación frente a una sola pregunta abierta.
 
@@ -74,8 +68,6 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 #expect(Calculadora().sumar(2, 3) == 5)
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -84,37 +76,6 @@ flowchart LR
     B --> D["Misma fecha vencida\nmismo resultado esperado"]
     C --> D
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| XCTest clásico y Swift Testing se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar XCTest clásico y Swift Testing | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses xctest clásico y swift testing por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: xctest clásico y swift testing funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- XCTest clásico y Swift Testing existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve xctest clásico y swift testing en tu contexto?
-2. ¿Cómo sabrías que xctest clásico y swift testing no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar xctest clásico y swift testing?
 
 </details>
 
@@ -195,12 +156,6 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 #### ► DE QUÉ TRATA
 Al finalizar vas a testear confirmarEntrega (Módulo 5) con Swift Testing, marcando el test mismo como async en vez de usar una XCTestExpectation manual. Prerrequisitos: Módulo 5 completo, Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a testear confirmarEntrega (Módulo 5) con Swift Testing, marcando el test mismo como async en vez de usar una XCTestExpectation manual.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Marcar el test mismo como `async` permite usar `await` directamente dentro del test, exactamente como en cualquier otro contexto asíncrono — poder simplemente esperar el resultado de un trámite, en vez de configurar una alarma de tiempo límite de antemano.
 
@@ -237,8 +192,6 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 * Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -249,37 +202,6 @@ sequenceDiagram
     Test->>Test: #expect sobre resultado o throw
     Note over Test,Fake: Sin red, expectation manual ni sleeps
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Testing de código async se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Testing de código async | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses testing de código async por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: testing de código async funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Testing de código async existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve testing de código async en tu contexto?
-2. ¿Cómo sabrías que testing de código async no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar testing de código async?
 
 </details>
 
@@ -328,12 +250,6 @@ xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada". Prerrequisitos: Tema 2 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada".**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 XCUITest lanza la app compilada e instalada y simula interacciones reales (`tap`, `typeText`) contra la UI efectivamente renderizada — una inspección de calidad de punta a punta, mucho más lenta que verificar un componente aislado en un banco de pruebas.
@@ -384,8 +300,6 @@ En tu propio proyecto RutaFlow, escribe la vista bajo prueba en `DetalleEntregaV
 
 ---
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -399,37 +313,6 @@ sequenceDiagram
     API-->>App: respuesta
     App-->>Test: "Entrega confirmada" visible
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| UI Tests con XCUITest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar UI Tests con XCUITest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ui tests con xcuitest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ui tests con xcuitest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- UI Tests con XCUITest existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ui tests con xcuitest en tu contexto?
-2. ¿Cómo sabrías que ui tests con xcuitest no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ui tests con xcuitest?
 
 </details>
 

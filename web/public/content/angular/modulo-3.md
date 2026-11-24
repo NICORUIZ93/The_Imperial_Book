@@ -14,16 +14,6 @@ Cada tema verifica su garantía con comparaciones reales de identidad de objeto 
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con una comparación real de identidad de objeto (toBe), que providedIn: 'root' garantiza una única instancia singleton compartida entre cualquier número de componentes que inyecten el mismo servicio.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con una comparación real de identidad de objeto (toBe), que providedIn: 'root' garantiza una única instancia singleton compartida entre cualquier número de componentes que inyecten el mismo servicio.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en @injectable y providedin: root como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +21,6 @@ flowchart LR
   B["ComponenteB inject(TareasService)"] --> S
   C["ComponenteC inject(TareasService)"] --> S
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| @Injectable y providedIn: root se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar @Injectable y providedIn: root | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses @injectable y providedin: root por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: @injectable y providedin: root funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- @Injectable y providedIn: root existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve @injectable y providedin: root en tu contexto?
-2. ¿Cómo sabrías que @injectable y providedin: root no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar @injectable y providedin: root?
 
 </details>
 
@@ -161,52 +120,8 @@ Al finalizar podrás confirmar, con el error real NG0203 de Angular, que inject(
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con el error real NG0203 de Angular, que inject() requiere un contexto de inyección activo, mientras la inyección por constructor está limitada exclusivamente a clases con constructor — la razón real por la que inject() es la única opción viable en guards e interceptores funcionales.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en inject() frente a inyección por constructor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que inject() frente a inyección por constructor resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
 #### ► REGLA PRÁCTICA
 Usa inyección por constructor cuando ya estás dentro de una clase (es la opción más explícita); usa `inject()` cuando necesites inyectar fuera de un constructor —campo de clase, guard funcional, interceptor funcional— porque ahí la inyección por constructor simplemente no existe como opción. Fuera de un contexto de inyección válido, `inject()` falla con NG0203; no lo llames desde una función ordinaria.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| inject() frente a inyección por constructor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar inject() frente a inyección por constructor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses inject() frente a inyección por constructor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: inject() frente a inyección por constructor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- inject() frente a inyección por constructor existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve inject() frente a inyección por constructor en tu contexto?
-2. ¿Cómo sabrías que inject() frente a inyección por constructor no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar inject() frente a inyección por constructor?
 
 </details>
 
@@ -272,13 +187,6 @@ Al finalizar podrás confirmar, con una comparación real de identidad de objeto
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con una comparación real de identidad de objeto, que un provider registrado a nivel de componente produce una instancia DISTINTA de la instancia raíz, verificando en código la regla real de resolución jerárquica: el nivel más cercano al punto de inyección gana.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en jerarquía de inyectores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -286,37 +194,6 @@ flowchart TD
   Ro --> C["Inyector de Componente (providers en @Component)"]
   C -.->|"resuelve buscando desde el mas cercano"| R
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Jerarquía de inyectores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Jerarquía de inyectores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses jerarquía de inyectores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: jerarquía de inyectores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Jerarquía de inyectores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve jerarquía de inyectores en tu contexto?
-2. ¿Cómo sabrías que jerarquía de inyectores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar jerarquía de inyectores?
 
 </details>
 
@@ -405,16 +282,6 @@ npx ng test --watch=false
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con el error real NG0201 de Angular, que un InjectionToken sin ningún provider registrado produce un fallo explícito al inyectarlo, y que @Optional() cambia genuinamente ese comportamiento a null en vez de un error.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con el error real NG0201 de Angular, que un InjectionToken sin ningún provider registrado produce un fallo explícito al inyectarlo, y que @Optional() cambia genuinamente ese comportamiento a null en vez de un error.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en tokens de inyección y decoradores de resolución como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -422,37 +289,6 @@ flowchart LR
   T -->|"CON provider useValue"| V["valor inyectable real"]
   T -->|"inject(TOKEN, optional:true)"| N["null, sin error"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tokens de inyección y decoradores de resolución se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tokens de inyección y decoradores de resolución | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tokens de inyección y decoradores de resolución por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tokens de inyección y decoradores de resolución funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tokens de inyección y decoradores de resolución existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tokens de inyección y decoradores de resolución en tu contexto?
-2. ¿Cómo sabrías que tokens de inyección y decoradores de resolución no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tokens de inyección y decoradores de resolución?
 
 </details>
 

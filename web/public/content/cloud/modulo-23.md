@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a decidir, con el caso real del panel de seguimiento de RutaFlow, cuándo cachear la posición de un repartidor ayuda y cuándo no. Prerrequisitos: Módulo 17 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a decidir, con el caso real del panel de seguimiento de RutaFlow, cuándo cachear la posición de un repartidor ayuda y cuándo no.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en qué resuelve un caché en memoria — y cuándo no ayuda como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que qué resuelve un caché en memoria — y cuándo no ayuda resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Qué resuelve un caché en memoria — y cuándo no ayuda se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Qué resuelve un caché en memoria — y cuándo no ayuda | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses qué resuelve un caché en memoria — y cuándo no ayuda por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: qué resuelve un caché en memoria — y cuándo no ayuda funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Qué resuelve un caché en memoria — y cuándo no ayuda existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve qué resuelve un caché en memoria — y cuándo no ayuda en tu contexto?
-2. ¿Cómo sabrías que qué resuelve un caché en memoria — y cuándo no ayuda no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar qué resuelve un caché en memoria — y cuándo no ayuda?
-
 </details>
 
 <details>
@@ -96,12 +49,6 @@ redis-cli -h localhost -p "$PUERTO" get posicion:c-891
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear demo-cache y confirmar que es un servidor Valkey real, no una simulación del protocolo. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear demo-cache y confirmar que es un servidor Valkey real, no una simulación del protocolo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Valkey es un almacén en memoria real; el proxy TCP de Floci conecta tu cliente Redis normal con ese mismo servidor, sin ninguna traducción intermedia.
 
@@ -118,6 +65,7 @@ Esto tiene una implicación práctica directa: todo lo que sabes sobre comandos 
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-23/tema-2-contenedor-real.sh — ejecutar con: bash tema-2-contenedor-real.sh
 aws elasticache create-replication-group \
   --replication-group-id demo-cache --replication-group-description "Cache del proyecto"
@@ -136,44 +84,6 @@ docker ps | grep valkey
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Conecta el cliente de caché del proyecto al servicio local y verifica escritura, lectura y expiración. Reinicia el contenedor y registra qué persiste realmente en la configuración usada.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que arquitectura de elasticache en floci — contenedores reales, no simulación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arquitectura de ElastiCache en Floci — contenedores reales, no simulación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arquitectura de ElastiCache en Floci — contenedores reales, no simulación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arquitectura de elasticache en floci — contenedores reales, no simulación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arquitectura de elasticache en floci — contenedores reales, no simulación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arquitectura de ElastiCache en Floci — contenedores reales, no simulación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arquitectura de elasticache en floci — contenedores reales, no simulación en tu contexto?
-2. ¿Cómo sabrías que arquitectura de elasticache en floci — contenedores reales, no simulación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arquitectura de elasticache en floci — contenedores reales, no simulación?
 
 </details>
 
@@ -203,12 +113,6 @@ docker ps | grep valkey
 #### ► DE QUÉ TRATA
 Al finalizar vas a resolver dinámicamente el puerto real de demo-cache (Tema 2), en vez de asumir el 6379 de siempre. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a resolver dinámicamente el puerto real de demo-cache (Tema 2), en vez de asumir el 6379 de siempre.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Crear el clúster instala la flota; `describe-replication-groups` es preguntarle a recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma.
 
@@ -223,45 +127,6 @@ Eliminar el clúster (`DeleteReplicationGroup`) detiene y elimina el contenedor 
 **¿Por qué es importante?** Este patrón de "no hardcodees el puerto, consúltalo" es exactamente el que necesitas para escribir código de aplicación robusto que no se rompa si en algún momento cambia la configuración de rango de puertos de tu entorno de Floci.
 
 **Cuándo no usarlo:** no hardcodees `6379` en tu aplicación pensando que siempre será ese puerto; en Floci, con varios clústeres activos, ya viste que no lo es.
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que creación de clústeres y conexión con clientes estándar resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Creación de clústeres y conexión con clientes estándar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Creación de clústeres y conexión con clientes estándar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses creación de clústeres y conexión con clientes estándar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: creación de clústeres y conexión con clientes estándar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Creación de clústeres y conexión con clientes estándar existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve creación de clústeres y conexión con clientes estándar en tu contexto?
-2. ¿Cómo sabrías que creación de clústeres y conexión con clientes estándar no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar creación de clústeres y conexión con clientes estándar?
 
 </details>
 
@@ -296,12 +161,6 @@ redis-cli -h localhost -p "$PUERTO" ping
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear un usuario ElastiCache con permisos limitados solo a las claves de posición GPS, en vez de una contraseña fija compartida. Prerrequisitos: Tema 3 de este módulo, Módulo 7.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear un usuario ElastiCache con permisos limitados solo a las claves de posición GPS, en vez de una contraseña fija compartida.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 La cadena de acceso (access string) es un pase firmado con permisos y vencimiento: dice exactamente qué claves y comandos puede usar quien lo porta, nada más.
 
@@ -320,6 +179,7 @@ Este es el mismo principio de seguridad que ya viste con roles IAM para Lambda o
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-23/tema-4-usuario-iam.sh — ejecutar con: bash tema-4-usuario-iam.sh
 aws elasticache create-user --user-id alice --user-name alice --engine redis \
   --access-string "on ~* +@all" --no-no-password-required
@@ -338,44 +198,6 @@ aws elasticache describe-users --query "Users[?UserId=='alice']"
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Documenta la obtención y renovación de credenciales del cliente de caché. Prueba expiración en un entorno compatible y evita confundir permisos para crear el clúster con autorización para leer sus datos.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que autenticación iam para el plano de datos de elasticache resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Autenticación IAM para el plano de datos de ElastiCache se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Autenticación IAM para el plano de datos de ElastiCache | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses autenticación iam para el plano de datos de elasticache por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: autenticación iam para el plano de datos de elasticache funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Autenticación IAM para el plano de datos de ElastiCache existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve autenticación iam para el plano de datos de elasticache en tu contexto?
-2. ¿Cómo sabrías que autenticación iam para el plano de datos de elasticache no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar autenticación iam para el plano de datos de elasticache?
 
 </details>
 
@@ -403,56 +225,6 @@ aws elasticache describe-users --query "Users[?UserId=='lector-posiciones']"
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 23.1 — clúster elasticache con cache-aside con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 23.1 — clúster elasticache con cache-aside te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 23.1 — clúster elasticache con cache-aside como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 23.1 — clúster elasticache con cache-aside resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 23.1 — Clúster ElastiCache con cache-aside se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 23.1 — Clúster ElastiCache con cache-aside | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 23.1 — clúster elasticache con cache-aside por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 23.1 — clúster elasticache con cache-aside funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 23.1 — Clúster ElastiCache con cache-aside existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 23.1 — clúster elasticache con cache-aside en tu contexto?
-2. ¿Cómo sabrías que laboratorio 23.1 — clúster elasticache con cache-aside no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 23.1 — clúster elasticache con cache-aside?
-
 </details>
 
 <details>
@@ -467,56 +239,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 23.2 — usuario con autenticación iam con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 23.2 — usuario con autenticación iam te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 23.2 — usuario con autenticación iam como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 23.2 — usuario con autenticación iam resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 23.2 — Usuario con autenticación IAM se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 23.2 — Usuario con autenticación IAM | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 23.2 — usuario con autenticación iam por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 23.2 — usuario con autenticación iam funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 23.2 — Usuario con autenticación IAM existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 23.2 — usuario con autenticación iam en tu contexto?
-2. ¿Cómo sabrías que laboratorio 23.2 — usuario con autenticación iam no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 23.2 — usuario con autenticación iam?
 
 </details>
 

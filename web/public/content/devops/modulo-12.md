@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás identificar exactamente qué dos configuraciones cambian al migrar un proyecto Terraform de Floci (local) a un proveedor cloud real.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás identificar exactamente qué dos configuraciones cambian al migrar un proyecto Terraform de Floci (local) a un proveedor cloud real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en de cloud local a un proveedor cloud real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que de cloud local a un proveedor cloud real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| De cloud local a un proveedor cloud real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar De cloud local a un proveedor cloud real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses de cloud local a un proveedor cloud real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: de cloud local a un proveedor cloud real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- De cloud local a un proveedor cloud real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve de cloud local a un proveedor cloud real en tu contexto?
-2. ¿Cómo sabrías que de cloud local a un proveedor cloud real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar de cloud local a un proveedor cloud real?
-
 </details>
 
 <details>
@@ -132,53 +85,6 @@ cat bucket-config-floci.txt
 #### ► DE QUÉ TRATA
 Al finalizar podrás describir el flujo completo de un secreto gestionado de forma nativa por un proveedor cloud, desde su almacenamiento hasta su inyección en el pipeline de despliegue.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás describir el flujo completo de un secreto gestionado de forma nativa por un proveedor cloud, desde su almacenamiento hasta su inyección en el pipeline de despliegue.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en gestión de secretos cloud-native como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que gestión de secretos cloud-native resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gestión de secretos cloud-native se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gestión de secretos cloud-native | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gestión de secretos cloud-native por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gestión de secretos cloud-native funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gestión de secretos cloud-native existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gestión de secretos cloud-native en tu contexto?
-2. ¿Cómo sabrías que gestión de secretos cloud-native no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gestión de secretos cloud-native?
-
 </details>
 
 <details>
@@ -222,53 +128,6 @@ grep -r "sk-real-gestionado-por-secrets-manager" . 2>/dev/null || echo "no encon
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás distinguir entre "Terraform soporta múltiples proveedores" y "mi infraestructura es realmente portable entre proveedores", construyendo un módulo con la misma interfaz para dos proveedores distintos.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás distinguir entre "Terraform soporta múltiples proveedores" y "mi infraestructura es realmente portable entre proveedores", construyendo un módulo con la misma interfaz para dos proveedores distintos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en iac multi-nube como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que iac multi-nube resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| IaC multi-nube se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar IaC multi-nube | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses iac multi-nube por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: iac multi-nube funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- IaC multi-nube existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve iac multi-nube en tu contexto?
-2. ¿Cómo sabrías que iac multi-nube no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar iac multi-nube?
 
 </details>
 
@@ -353,53 +212,6 @@ docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 output 
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y ejecutar una checklist verificable de salida a producción que cubra observabilidad, seguridad, resiliencia, costos y documentación.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y ejecutar una checklist verificable de salida a producción que cubra observabilidad, seguridad, resiliencia, costos y documentación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en checklist de salida a producción como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que checklist de salida a producción resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Checklist de salida a producción se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Checklist de salida a producción | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses checklist de salida a producción por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: checklist de salida a producción funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Checklist de salida a producción existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve checklist de salida a producción en tu contexto?
-2. ¿Cómo sabrías que checklist de salida a producción no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar checklist de salida a producción?
-
 </details>
 
 <details>
@@ -463,53 +275,6 @@ echo "código de salida: $?"
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar el modelo de reconciliación pull-based de GitOps y demostrar cómo corrige automáticamente una deriva manual no autorizada.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar el modelo de reconciliación pull-based de GitOps y demostrar cómo corrige automáticamente una deriva manual no autorizada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en gitops con argocd y fluxcd como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que gitops con argocd y fluxcd resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| GitOps con ArgoCD y FluxCD se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar GitOps con ArgoCD y FluxCD | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gitops con argocd y fluxcd por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gitops con argocd y fluxcd funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- GitOps con ArgoCD y FluxCD existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gitops con argocd y fluxcd en tu contexto?
-2. ¿Cómo sabrías que gitops con argocd y fluxcd no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gitops con argocd y fluxcd?
 
 </details>
 
@@ -575,53 +340,6 @@ cat estado-real-clúster.yaml
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar el problema que resuelve una Internal Developer Platform y diseñar una interfaz mínima de autoservicio para una tarea común de despliegue.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar el problema que resuelve una Internal Developer Platform y diseñar una interfaz mínima de autoservicio para una tarea común de despliegue.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en platform engineering — internal developer platforms (idps) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que platform engineering — internal developer platforms (idps) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Platform Engineering — Internal Developer Platforms (IDPs) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Platform Engineering — Internal Developer Platforms (IDPs) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses platform engineering — internal developer platforms (idps) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: platform engineering — internal developer platforms (idps) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Platform Engineering — Internal Developer Platforms (IDPs) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve platform engineering — internal developer platforms (idps) en tu contexto?
-2. ¿Cómo sabrías que platform engineering — internal developer platforms (idps) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar platform engineering — internal developer platforms (idps)?
-
 </details>
 
 <details>
@@ -680,16 +398,6 @@ echo "diferencias fuera del nombre del servicio: (vacío si son consistentes)"
 #### ► DE QUÉ TRATA
 Usa Terraform con el proveedor AWS. Para practicar sin costo, usa el emulador local del track de cloud (que incluye un Cost Explorer simulado) o una cuenta de pruebas con créditos.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Terraform con el proveedor AWS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -698,37 +406,6 @@ flowchart LR
     C --> B["Budget por entorno"]
     B -->|"pronóstico > 80 %"| A["alerta al equipo"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas en tu contexto?
-2. ¿Cómo sabrías que finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar finops: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas?
 
 </details>
 

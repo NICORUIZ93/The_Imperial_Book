@@ -15,16 +15,6 @@ El laboratorio usa Floci para SQS y DynamoDB local. Puedes completar los temas 1
 #### ► DE QUÉ TRATA
 Al finalizar podrás definir un evento de integración con identidad, versión y campos mínimos, validarlo antes de publicarlo y distinguirlo de un comando con pruebas que fallen ante un nombre o un contrato incorrecto. Conocimiento previo: Módulo 19 y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás definir un evento de integración con identidad, versión y campos mínimos, validarlo antes de publicarlo y distinguirlo de un comando con pruebas que fallen ante un nombre o un contrato incorrecto.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en eventos de dominio e integración: hechos, no comandos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -35,37 +25,6 @@ flowchart LR
   C["Comando ConfirmarEntrega"] -.-> D
   C -. "puede rechazarse" .-> X["Error de negocio"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Eventos de dominio e integración: hechos, no comandos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Eventos de dominio e integración: hechos, no comandos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses eventos de dominio e integración: hechos, no comandos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: eventos de dominio e integración: hechos, no comandos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Eventos de dominio e integración: hechos, no comandos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve eventos de dominio e integración: hechos, no comandos en tu contexto?
-2. ¿Cómo sabrías que eventos de dominio e integración: hechos, no comandos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar eventos de dominio e integración: hechos, no comandos?
 
 </details>
 
@@ -158,16 +117,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás guardar un agregado y su evento en una transacción de DynamoDB, publicar el evento con un relay y demostrar que un fallo entre la escritura y la publicación no pierde el mensaje. Conocimiento previo: Tema 1, AWS SDK v3, Docker y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás guardar un agregado y su evento en una transacción de DynamoDB, publicar el evento con un relay y demostrar que un fallo entre la escritura y la publicación no pierde el mensaje.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en outbox transaccional: guardar el hecho y el mensaje juntos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -179,37 +128,6 @@ flowchart LR
   Q --> C["Consumidor idempotente"]
   C --> E["Efecto externo"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Outbox transaccional: guardar el hecho y el mensaje juntos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Outbox transaccional: guardar el hecho y el mensaje juntos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses outbox transaccional: guardar el hecho y el mensaje juntos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: outbox transaccional: guardar el hecho y el mensaje juntos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Outbox transaccional: guardar el hecho y el mensaje juntos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve outbox transaccional: guardar el hecho y el mensaje juntos en tu contexto?
-2. ¿Cómo sabrías que outbox transaccional: guardar el hecho y el mensaje juntos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar outbox transaccional: guardar el hecho y el mensaje juntos?
 
 </details>
 
@@ -353,16 +271,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 #### ► DE QUÉ TRATA
 Al finalizar podrás procesar un mensaje dos veces y demostrar que el efecto se aplica una sola vez, con una escritura condicional y una prueba que distinga duplicado de error real. Conocimiento previo: Tema 2, DynamoDB y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás procesar un mensaje dos veces y demostrar que el efecto se aplica una sola vez, con una escritura condicional y una prueba que distinga duplicado de error real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en idempotencia y orden: consumidores que sobreviven a reintentos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -379,37 +287,6 @@ sequenceDiagram
     C-->>Q: ack sin repetir
   end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Idempotencia y orden: consumidores que sobreviven a reintentos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Idempotencia y orden: consumidores que sobreviven a reintentos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses idempotencia y orden: consumidores que sobreviven a reintentos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: idempotencia y orden: consumidores que sobreviven a reintentos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Idempotencia y orden: consumidores que sobreviven a reintentos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve idempotencia y orden: consumidores que sobreviven a reintentos en tu contexto?
-2. ¿Cómo sabrías que idempotencia y orden: consumidores que sobreviven a reintentos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar idempotencia y orden: consumidores que sobreviven a reintentos?
 
 </details>
 
@@ -532,16 +409,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar una saga orquestada con tres pasos, ejecutar una compensación cuando el segundo falla y demostrar que la compensación es idempotente. Conocimiento previo: Temas 1 a 3, funciones asíncronas y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar una saga orquestada con tres pasos, ejecutar una compensación cuando el segundo falla y demostrar que la compensación es idempotente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sagas y compensaciones: procesos largos sin transacción distribuida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -553,37 +420,6 @@ flowchart LR
   C --> D["Notificar"]
   D --> F["Saga completada"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Sagas y compensaciones: procesos largos sin transacción distribuida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Sagas y compensaciones: procesos largos sin transacción distribuida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sagas y compensaciones: procesos largos sin transacción distribuida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sagas y compensaciones: procesos largos sin transacción distribuida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Sagas y compensaciones: procesos largos sin transacción distribuida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sagas y compensaciones: procesos largos sin transacción distribuida en tu contexto?
-2. ¿Cómo sabrías que sagas y compensaciones: procesos largos sin transacción distribuida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sagas y compensaciones: procesos largos sin transacción distribuida?
 
 </details>
 

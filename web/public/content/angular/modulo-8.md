@@ -17,9 +17,6 @@ Al finalizar podrás confirmar, con un error real de inyección de dependencias 
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con un error real de inyección de dependencias de Angular (NG0201), que bootstrapApplication y ApplicationConfig reemplazan completamente al AppModule: sin ningún módulo central que "arrastre" providers implícitamente, cada provider debe declararse explícitamente o la aplicación falla al iniciar.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `bootstrapApplication`, ausencia de `AppModule`, `ApplicationConfig`, `NG0201`.
 
@@ -52,45 +49,12 @@ flowchart LR
   C[bootstrapApplication] -->|ApplicationConfig plano| D[provide* explicitos, sin modulo]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A[AppModule tradicional] -->|declarations + imports| B[bootstrap centralizado]
   C[bootstrapApplication] -->|ApplicationConfig plano| D[provide* explicitos, sin modulo]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Bootstrap sin NgModules se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Bootstrap sin NgModules | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses bootstrap sin ngmodules por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: bootstrap sin ngmodules funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Bootstrap sin NgModules existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve bootstrap sin ngmodules en tu contexto?
-2. ¿Cómo sabrías que bootstrap sin ngmodules no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar bootstrap sin ngmodules?
 
 </details>
 
@@ -111,53 +75,6 @@ Al finalizar podrás confirmar, con un error real de inyección de dependencias 
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás auditar, con un script Node real basado en fs (sin simular su lógica con otro lenguaje), que una carpeta de feature mantiene junto todo lo que cambia junto: componente, servicio y rutas, en vez de dispersarlos por tipo de archivo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás auditar, con un script Node real basado en fs (sin simular su lógica con otro lenguaje), que una carpeta de feature mantiene junto todo lo que cambia junto: componente, servicio y rutas, en vez de dispersarlos por tipo de archivo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en organización por feature como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que organización por feature resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Organización por feature se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Organización por feature | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses organización por feature por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: organización por feature funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Organización por feature existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve organización por feature en tu contexto?
-2. ¿Cómo sabrías que organización por feature no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar organización por feature?
 
 </details>
 
@@ -242,9 +159,6 @@ Al finalizar podrás aplicar el esquema oficial ng generate @angular/core:standa
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás aplicar el esquema oficial ng generate @angular/core:standalone y confirmar, con un error real de plantilla del compilador de Angular (NG8001, "is not a known element"), por qué una migración incompleta —donde un componente se convierte a standalone pero olvida declarar una dependencia en su propio imports— produce un fallo real y diagnosticable, no un comportamiento silencioso.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** conversión gradual, `ng generate @angular/core:standalone`, compatibilidad durante la transición, `NG8001`.
 
@@ -265,8 +179,6 @@ flowchart TD
   C --> D["Automatizacion: ng generate @angular/core:standalone"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -274,37 +186,6 @@ flowchart TD
   B --> C["Paso 3: eliminar el NgModule ya vacio"]
   C --> D["Automatizacion: ng generate @angular/core:standalone"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Migración desde NgModules se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Migración desde NgModules | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses migración desde ngmodules por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: migración desde ngmodules funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Migración desde NgModules existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve migración desde ngmodules en tu contexto?
-2. ¿Cómo sabrías que migración desde ngmodules no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar migración desde ngmodules?
 
 </details>
 
@@ -377,16 +258,6 @@ describe('Migracion NgModule -> standalone', () => {
 #### ► DE QUÉ TRATA
 Usa Angular CLI 18 o superior. Trabajarás en una carpeta nueva rutaflow-ws. El workspace se crea sin aplicación inicial para agregar las piezas una por una.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Angular CLI 18 o superior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -398,37 +269,6 @@ flowchart TB
     L -->|"public-api.ts"| P
     L -->|"public-api.ts"| C
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido en tu contexto?
-2. ¿Cómo sabrías que librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar librerías y monorepos con angular cli: un workspace, varias aplicaciones y código compartido?
 
 </details>
 
@@ -504,16 +344,6 @@ ng serve panel muestra «ENV-42 · EN_RUTA» en http://localhost:4200.
 #### ► DE QUÉ TRATA
 Necesitas dos proyectos Angular 18 o superior: un host (el panel) y un remoto (la pantalla de envíos). Usarás el paquete @angular-architects/native-federation.
 
-#### ► LA IDEA EN UNA FRASE
-**Necesitas dos proyectos Angular 18 o superior: un host (el panel) y un remoto (la pantalla de envíos).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en microfrontends con criterio: native federation y cuándo no usarlos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -521,37 +351,6 @@ flowchart LR
     E --> F["FacturasPagina"]
     H -. "Angular y RxJS compartidos" .- F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Microfrontends con criterio: Native Federation y cuándo no usarlos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Microfrontends con criterio: Native Federation y cuándo no usarlos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses microfrontends con criterio: native federation y cuándo no usarlos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: microfrontends con criterio: native federation y cuándo no usarlos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Microfrontends con criterio: Native Federation y cuándo no usarlos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve microfrontends con criterio: native federation y cuándo no usarlos en tu contexto?
-2. ¿Cómo sabrías que microfrontends con criterio: native federation y cuándo no usarlos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar microfrontends con criterio: native federation y cuándo no usarlos?
 
 </details>
 

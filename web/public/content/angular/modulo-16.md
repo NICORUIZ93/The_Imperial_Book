@@ -19,13 +19,6 @@ Al finalizar vas a levantar un proyecto nuevo con el template oficial, confirmar
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a levantar un proyecto nuevo con el template oficial, confirmar en el propio dispositivo/simulador que lo que se ve es una vista nativa (no un WebView embebido), y explicar con precisión en qué se diferencia este enfoque del de Capacitor/Ionic y del de NativeScript.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en qué renderiza angular native y por qué no es un webview como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -36,37 +29,6 @@ flowchart LR
         B1[Angular] --> B2[Fabric renderer] --> B3[Vista nativa]
     end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Qué renderiza Angular Native y por qué no es un WebView se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Qué renderiza Angular Native y por qué no es un WebView | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses qué renderiza angular native y por qué no es un webview por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: qué renderiza angular native y por qué no es un webview funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Qué renderiza Angular Native y por qué no es un WebView existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve qué renderiza angular native y por qué no es un webview en tu contexto?
-2. ¿Cómo sabrías que qué renderiza angular native y por qué no es un webview no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar qué renderiza angular native y por qué no es un webview?
 
 </details>
 
@@ -140,16 +102,6 @@ export class App {
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir una lista de entregas pendientes con estado derivado por computed(), estilada con el preset de Tailwind de Angular Native, y vas a confirmar qué le ocurre a un selector ios:/android: según la plataforma donde corre.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir una lista de entregas pendientes con estado derivado por computed(), estilada con el preset de Tailwind de Angular Native, y vas a confirmar qué le ocurre a un selector ios:/android: según la plataforma donde corre.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en signals, estilos nativos compilados y el preset de tailwind como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -157,37 +109,6 @@ flowchart TD
     B --> C[Build time: resuelve variante de plataforma]
     C --> D[Estilos nativos embebidos, sin cascada CSS en runtime]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Signals, estilos nativos compilados y el preset de Tailwind se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Signals, estilos nativos compilados y el preset de Tailwind | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses signals, estilos nativos compilados y el preset de tailwind por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: signals, estilos nativos compilados y el preset de tailwind funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Signals, estilos nativos compilados y el preset de Tailwind existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve signals, estilos nativos compilados y el preset de tailwind en tu contexto?
-2. ¿Cómo sabrías que signals, estilos nativos compilados y el preset de tailwind no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar signals, estilos nativos compilados y el preset de tailwind?
 
 </details>
 
@@ -259,16 +180,6 @@ protected readonly urgentes = ____(() => this.entregas().filter(e => e.urgente).
 #### ► DE QUÉ TRATA
 Al finalizar vas a navegar entre dos pantallas con @angular/router sobre stacks nativos, e inyectar un módulo de Expo (ubicación) como un servicio Angular con inject(), confirmando que el patrón de inyección de dependencias no cambia respecto a Angular web.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a navegar entre dos pantallas con @angular/router sobre stacks nativos, e inyectar un módulo de Expo (ubicación) como un servicio Angular con inject(), confirmando que el patrón de inyección de dependencias no cambia respecto a Angular web.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en router nativo y servicios de expo inyectados como servicios angular como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -276,37 +187,6 @@ flowchart TD
     B -- "inject LocationService" --> C[Módulo de Expo: ubicación nativa]
     C --> D[Coordenadas reales del dispositivo]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Router nativo y servicios de Expo inyectados como servicios Angular se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Router nativo y servicios de Expo inyectados como servicios Angular | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses router nativo y servicios de expo inyectados como servicios angular por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: router nativo y servicios de expo inyectados como servicios angular funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Router nativo y servicios de Expo inyectados como servicios Angular existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve router nativo y servicios de expo inyectados como servicios angular en tu contexto?
-2. ¿Cómo sabrías que router nativo y servicios de expo inyectados como servicios angular no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar router nativo y servicios de expo inyectados como servicios angular?
 
 </details>
 
@@ -397,13 +277,6 @@ Al finalizar vas a producir una checklist de evaluación de madurez tecnológica
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a producir una checklist de evaluación de madurez tecnológica aplicada específicamente a Angular Native (estado 0.x, página de limitaciones conocidas, testing sin simulador), y vas a decidir, con criterio explícito y no con entusiasmo, si lo adoptarías hoy en un proyecto con usuarios reales.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en evaluar la madurez de una tecnología alpha con criterio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -417,37 +290,6 @@ flowchart TD
     G -->|No| H[No adoptar todavía en producción]
     G -->|Sí| I[Piloto interno, no cliente final]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Evaluar la madurez de una tecnología alpha con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Evaluar la madurez de una tecnología alpha con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses evaluar la madurez de una tecnología alpha con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: evaluar la madurez de una tecnología alpha con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Evaluar la madurez de una tecnología alpha con criterio existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve evaluar la madurez de una tecnología alpha con criterio en tu contexto?
-2. ¿Cómo sabrías que evaluar la madurez de una tecnología alpha con criterio no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar evaluar la madurez de una tecnología alpha con criterio?
 
 </details>
 

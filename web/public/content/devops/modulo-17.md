@@ -13,16 +13,6 @@ Cada Tema parte de una carpeta vacía y se verifica con comandos reales.
 #### ► DE QUÉ TRATA
 Al finalizar vas a poner nginx delante de dos instancias de una API, a comprobar el reparto con la respuesta de cada instancia, y a imponer un límite de tasa por IP que devuelve 429 cuando se excede.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a poner nginx delante de dos instancias de una API, a comprobar el reparto con la respuesta de cada instancia, y a imponer un límite de tasa por IP que devuelve 429 cuando se excede.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el borde: balanceo, proxy inverso, cdn y límites de tasa como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -35,37 +25,6 @@ flowchart LR
     A2 --> R
     A2 --> D
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El borde: balanceo, proxy inverso, CDN y límites de tasa se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El borde: balanceo, proxy inverso, CDN y límites de tasa | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el borde: balanceo, proxy inverso, cdn y límites de tasa por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el borde: balanceo, proxy inverso, cdn y límites de tasa funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El borde: balanceo, proxy inverso, CDN y límites de tasa existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el borde: balanceo, proxy inverso, cdn y límites de tasa en tu contexto?
-2. ¿Cómo sabrías que el borde: balanceo, proxy inverso, cdn y límites de tasa no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el borde: balanceo, proxy inverso, cdn y límites de tasa?
 
 </details>
 
@@ -196,16 +155,6 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 #### ► DE QUÉ TRATA
 Al finalizar vas a medir un plan antes y después de un índice compuesto, configurar una réplica lógica, provocar una lectura obsoleta y decidir cuándo no conviene shardear.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a medir un plan antes y después de un índice compuesto, configurar una réplica lógica, provocar una lectura obsoleta y decidir cuándo no conviene shardear.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en datos que crecen: índices, réplicas, sharding y la elección sql/nosql como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -217,37 +166,6 @@ flowchart LR
     S["Shard key"] --> S1[("Shard A")]
     S --> S2[("Shard B")]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses datos que crecen: índices, réplicas, sharding y la elección sql/nosql por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: datos que crecen: índices, réplicas, sharding y la elección sql/nosql funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve datos que crecen: índices, réplicas, sharding y la elección sql/nosql en tu contexto?
-2. ¿Cómo sabrías que datos que crecen: índices, réplicas, sharding y la elección sql/nosql no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar datos que crecen: índices, réplicas, sharding y la elección sql/nosql?
 
 </details>
 
@@ -354,16 +272,6 @@ psql "postgresql://postgres:academia@127.0.0.1:5434/rutaflow" -c "select count(*
 #### ► DE QUÉ TRATA
 Al finalizar vas a proteger un cobro contra el doble envío con una clave de idempotencia en Redis y una restricción única en PostgreSQL, y vas a explicar qué garantiza cada pieza y qué no.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a proteger un cobro contra el doble envío con una clave de idempotencia en Redis y una restricción única en PostgreSQL, y vas a explicar qué garantiza cada pieza y qué no.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en cap, consistencia e idempotencia: lo que se paga en cada decisión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -382,37 +290,6 @@ sequenceDiagram
     R-->>A: nil (ya existe)
     A-->>C: 200 con el mismo resultado
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CAP, consistencia e idempotencia: lo que se paga en cada decisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CAP, consistencia e idempotencia: lo que se paga en cada decisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cap, consistencia e idempotencia: lo que se paga en cada decisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cap, consistencia e idempotencia: lo que se paga en cada decisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CAP, consistencia e idempotencia: lo que se paga en cada decisión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cap, consistencia e idempotencia: lo que se paga en cada decisión en tu contexto?
-2. ¿Cómo sabrías que cap, consistencia e idempotencia: lo que se paga en cada decisión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cap, consistencia e idempotencia: lo que se paga en cada decisión?
 
 </details>
 
@@ -495,16 +372,6 @@ docker compose exec -T redis redis-cli EXISTS idem:pago-77
 #### ► DE QUÉ TRATA
 Al finalizar vas a medir latencia por percentiles y throughput de una API con un generador propio, y a convertir esas medidas en una decisión sobre un SLO y su presupuesto de error.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a medir latencia por percentiles y throughput de una API con un generador propio, y a convertir esas medidas en una decisión sobre un SLO y su presupuesto de error.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en capacidad y observabilidad: latencia, throughput, slo y pruebas de carga como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -515,37 +382,6 @@ flowchart LR
     Q -->|sí| Y["Se despliega"]
     Q -->|no| N["Primero se corrige"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses capacidad y observabilidad: latencia, throughput, slo y pruebas de carga por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: capacidad y observabilidad: latencia, throughput, slo y pruebas de carga funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve capacidad y observabilidad: latencia, throughput, slo y pruebas de carga en tu contexto?
-2. ¿Cómo sabrías que capacidad y observabilidad: latencia, throughput, slo y pruebas de carga no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar capacidad y observabilidad: latencia, throughput, slo y pruebas de carga?
 
 </details>
 

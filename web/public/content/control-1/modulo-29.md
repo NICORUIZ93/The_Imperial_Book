@@ -21,53 +21,6 @@ Este capítulo conecta programación con mediciones físicas. Empieza por unidad
 #### ► DE QUÉ TRATA
 Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. En una frase: Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. Prerrequisitos: Python, variables, fu…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en matemáticas aplicadas: derivada, integral y modelos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que matemáticas aplicadas: derivada, integral y modelos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Matemáticas aplicadas: derivada, integral y modelos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Matemáticas aplicadas: derivada, integral y modelos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses matemáticas aplicadas: derivada, integral y modelos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: matemáticas aplicadas: derivada, integral y modelos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Matemáticas aplicadas: derivada, integral y modelos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve matemáticas aplicadas: derivada, integral y modelos en tu contexto?
-2. ¿Cómo sabrías que matemáticas aplicadas: derivada, integral y modelos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar matemáticas aplicadas: derivada, integral y modelos?
-
 </details>
 
 <details>
@@ -100,53 +53,6 @@ Carga: 9.0 C
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. En una frase: Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. Prerrequisitos: Python, variables, funciones y…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en circuitos dc y ac: kirchhoff, thévenin y norton como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que circuitos dc y ac: kirchhoff, thévenin y norton resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Circuitos DC y AC: Kirchhoff, Thévenin y Norton se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Circuitos DC y AC: Kirchhoff, Thévenin y Norton | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses circuitos dc y ac: kirchhoff, thévenin y norton por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: circuitos dc y ac: kirchhoff, thévenin y norton funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Circuitos DC y AC: Kirchhoff, Thévenin y Norton existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve circuitos dc y ac: kirchhoff, thévenin y norton en tu contexto?
-2. ¿Cómo sabrías que circuitos dc y ac: kirchhoff, thévenin y norton no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar circuitos dc y ac: kirchhoff, thévenin y norton?
 
 </details>
 
@@ -181,53 +87,6 @@ Vth=2.500 V; Rth=500 ohm; salida=1.667 V
 #### ► DE QUÉ TRATA
 Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. En una frase: La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. Prerrequisitos: Python, variables, funciones y unidades…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en electrónica analógica: diodos, transistores y amplificadores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que electrónica analógica: diodos, transistores y amplificadores resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Electrónica analógica: diodos, transistores y amplificadores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Electrónica analógica: diodos, transistores y amplificadores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses electrónica analógica: diodos, transistores y amplificadores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: electrónica analógica: diodos, transistores y amplificadores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Electrónica analógica: diodos, transistores y amplificadores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve electrónica analógica: diodos, transistores y amplificadores en tu contexto?
-2. ¿Cómo sabrías que electrónica analógica: diodos, transistores y amplificadores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar electrónica analógica: diodos, transistores y amplificadores?
-
 </details>
 
 <details>
@@ -260,53 +119,6 @@ Ganancia=10.0; salida=2.00 V
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. En una frase: La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. Prerrequisitos: Python, variables, funciones y unidades SI; par…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en electrónica digital: lógica y máquinas de estados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que electrónica digital: lógica y máquinas de estados resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Electrónica digital: lógica y máquinas de estados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Electrónica digital: lógica y máquinas de estados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses electrónica digital: lógica y máquinas de estados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: electrónica digital: lógica y máquinas de estados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Electrónica digital: lógica y máquinas de estados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve electrónica digital: lógica y máquinas de estados en tu contexto?
-2. ¿Cómo sabrías que electrónica digital: lógica y máquinas de estados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar electrónica digital: lógica y máquinas de estados?
 
 </details>
 
@@ -343,53 +155,6 @@ python3 digital.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. En una frase: Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. Prerrequisitos: Python, variables, funciones y unidades SI; para temas d…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en microcontroladores: gpio, adc, pwm e interrupciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que microcontroladores: gpio, adc, pwm e interrupciones resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Microcontroladores: GPIO, ADC, PWM e interrupciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Microcontroladores: GPIO, ADC, PWM e interrupciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses microcontroladores: gpio, adc, pwm e interrupciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: microcontroladores: gpio, adc, pwm e interrupciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Microcontroladores: GPIO, ADC, PWM e interrupciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve microcontroladores: gpio, adc, pwm e interrupciones en tu contexto?
-2. ¿Cómo sabrías que microcontroladores: gpio, adc, pwm e interrupciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar microcontroladores: gpio, adc, pwm e interrupciones?
-
 </details>
 
 <details>
@@ -422,53 +187,6 @@ ADC=2048; reconstruido=1.6504 V
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. En una frase: Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. Prerrequisitos: Python, variables, funciones y unidades SI;…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en comunicaciones: modulación y detección de errores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que comunicaciones: modulación y detección de errores resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Comunicaciones: modulación y detección de errores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Comunicaciones: modulación y detección de errores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses comunicaciones: modulación y detección de errores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: comunicaciones: modulación y detección de errores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Comunicaciones: modulación y detección de errores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve comunicaciones: modulación y detección de errores en tu contexto?
-2. ¿Cómo sabrías que comunicaciones: modulación y detección de errores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar comunicaciones: modulación y detección de errores?
 
 </details>
 
@@ -503,53 +221,6 @@ Trama válida: False
 #### ► DE QUÉ TRATA
 Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. En una frase: Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. Prerrequisitos: Python, variables, funciones y unidades SI; para temas de señal…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en señales y sistemas: muestreo, fourier y convolución como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que señales y sistemas: muestreo, fourier y convolución resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Señales y sistemas: muestreo, Fourier y convolución se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Señales y sistemas: muestreo, Fourier y convolución | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses señales y sistemas: muestreo, fourier y convolución por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: señales y sistemas: muestreo, fourier y convolución funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Señales y sistemas: muestreo, Fourier y convolución existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve señales y sistemas: muestreo, fourier y convolución en tu contexto?
-2. ¿Cómo sabrías que señales y sistemas: muestreo, fourier y convolución no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar señales y sistemas: muestreo, fourier y convolución?
-
 </details>
 
 <details>
@@ -582,53 +253,6 @@ Diferencia máxima: 0.000000
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. En una frase: El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. Prerrequisitos: Python, variables, funciones y unidades SI; pa…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dsp: filtros digitales y compresión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que dsp: filtros digitales y compresión resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| DSP: filtros digitales y compresión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar DSP: filtros digitales y compresión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dsp: filtros digitales y compresión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dsp: filtros digitales y compresión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- DSP: filtros digitales y compresión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dsp: filtros digitales y compresión en tu contexto?
-2. ¿Cómo sabrías que dsp: filtros digitales y compresión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dsp: filtros digitales y compresión?
 
 </details>
 
@@ -663,53 +287,6 @@ python3 dsp.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. En una frase: La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. Prerrequisitos: Python, variables, funciones y unidades SI; para…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en instrumentación: calibración, daq e incertidumbre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que instrumentación: calibración, daq e incertidumbre resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Instrumentación: calibración, DAQ e incertidumbre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Instrumentación: calibración, DAQ e incertidumbre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses instrumentación: calibración, daq e incertidumbre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: instrumentación: calibración, daq e incertidumbre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Instrumentación: calibración, DAQ e incertidumbre existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve instrumentación: calibración, daq e incertidumbre en tu contexto?
-2. ¿Cómo sabrías que instrumentación: calibración, daq e incertidumbre no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar instrumentación: calibración, daq e incertidumbre?
-
 </details>
 
 <details>
@@ -742,53 +319,6 @@ Temperatura: 50.00 °C
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. En una frase: El control automático compara una medición con una referencia y ajusta una acción para reducir el error. Prerrequisitos: Python, variables, funciones y unidades SI; para temas de seña…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás simular un lazo proporcional y explicar su error estacionario.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en control automático: realimentación, pid y estabilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que control automático: realimentación, pid y estabilidad resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Control automático: realimentación, PID y estabilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Control automático: realimentación, PID y estabilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses control automático: realimentación, pid y estabilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: control automático: realimentación, pid y estabilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Control automático: realimentación, PID y estabilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve control automático: realimentación, pid y estabilidad en tu contexto?
-2. ¿Cómo sabrías que control automático: realimentación, pid y estabilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar control automático: realimentación, pid y estabilidad?
 
 </details>
 
@@ -824,53 +354,6 @@ Temperatura: 23.33 °C
 #### ► DE QUÉ TRATA
 Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. En una frase: La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. Prerrequisitos: Python, variables, funciones y unidades SI; para t…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en potencia: conversión, eficiencia y disipación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que potencia: conversión, eficiencia y disipación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Potencia: conversión, eficiencia y disipación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Potencia: conversión, eficiencia y disipación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses potencia: conversión, eficiencia y disipación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: potencia: conversión, eficiencia y disipación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Potencia: conversión, eficiencia y disipación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve potencia: conversión, eficiencia y disipación en tu contexto?
-2. ¿Cómo sabrías que potencia: conversión, eficiencia y disipación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar potencia: conversión, eficiencia y disipación?
-
 </details>
 
 <details>
@@ -904,53 +387,6 @@ Duty=0.417; pérdidas=0.556 W
 #### ► DE QUÉ TRATA
 Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. En una frase: El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. Prerrequisitos: Python, variables, funciones y unidades SI…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pcb: esquemático, erc, drc y fabricación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que pcb: esquemático, erc, drc y fabricación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| PCB: esquemático, ERC, DRC y fabricación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar PCB: esquemático, ERC, DRC y fabricación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pcb: esquemático, erc, drc y fabricación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pcb: esquemático, erc, drc y fabricación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- PCB: esquemático, ERC, DRC y fabricación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pcb: esquemático, erc, drc y fabricación en tu contexto?
-2. ¿Cómo sabrías que pcb: esquemático, erc, drc y fabricación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pcb: esquemático, erc, drc y fabricación?
-
 </details>
 
 <details>
@@ -981,53 +417,6 @@ Espacio=0.20 mm; cumple=False
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. En una frase: Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. Prerrequisitos: Python, variables, funcione…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sistemas embebidos: rtos, buses y firmware como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sistemas embebidos: rtos, buses y firmware resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Sistemas embebidos: RTOS, buses y firmware se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Sistemas embebidos: RTOS, buses y firmware | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sistemas embebidos: rtos, buses y firmware por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sistemas embebidos: rtos, buses y firmware funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Sistemas embebidos: RTOS, buses y firmware existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sistemas embebidos: rtos, buses y firmware en tu contexto?
-2. ¿Cómo sabrías que sistemas embebidos: rtos, buses y firmware no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sistemas embebidos: rtos, buses y firmware?
 
 </details>
 
@@ -1082,53 +471,6 @@ Deadlines incumplidos en 200 ms simulados: 0
 #### ► DE QUÉ TRATA
 Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. En una frase: La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. Prerrequisitos: Python, variables…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en programación de bajo nivel: c, memoria y depuración como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que programación de bajo nivel: c, memoria y depuración resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Programación de bajo nivel: C, memoria y depuración se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Programación de bajo nivel: C, memoria y depuración | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses programación de bajo nivel: c, memoria y depuración por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: programación de bajo nivel: c, memoria y depuración funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Programación de bajo nivel: C, memoria y depuración existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve programación de bajo nivel: c, memoria y depuración en tu contexto?
-2. ¿Cómo sabrías que programación de bajo nivel: c, memoria y depuración no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar programación de bajo nivel: c, memoria y depuración?
-
 </details>
 
 <details>
@@ -1161,53 +503,6 @@ python3 bajo-nivel.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. En una frase: El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. Prerrequisitos: Python, variables, funciones y unidades SI; para te…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en electromagnetismo: faraday y líneas de transmisión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que electromagnetismo: faraday y líneas de transmisión resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Electromagnetismo: Faraday y líneas de transmisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Electromagnetismo: Faraday y líneas de transmisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses electromagnetismo: faraday y líneas de transmisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: electromagnetismo: faraday y líneas de transmisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Electromagnetismo: Faraday y líneas de transmisión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve electromagnetismo: faraday y líneas de transmisión en tu contexto?
-2. ¿Cómo sabrías que electromagnetismo: faraday y líneas de transmisión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar electromagnetismo: faraday y líneas de transmisión?
-
 </details>
 
 <details>
@@ -1238,53 +533,6 @@ Tensión inducida: -0.010 V
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. En una frase: La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. Prerrequisitos: Python, variables, funciones y unid…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en gestión profesional: requisitos, riesgos y evidencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que gestión profesional: requisitos, riesgos y evidencia resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gestión profesional: requisitos, riesgos y evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gestión profesional: requisitos, riesgos y evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gestión profesional: requisitos, riesgos y evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gestión profesional: requisitos, riesgos y evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gestión profesional: requisitos, riesgos y evidencia existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gestión profesional: requisitos, riesgos y evidencia en tu contexto?
-2. ¿Cómo sabrías que gestión profesional: requisitos, riesgos y evidencia no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gestión profesional: requisitos, riesgos y evidencia?
 
 </details>
 
@@ -1317,53 +565,6 @@ Error máximo=0.40 °C; acepta=True
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. En una frase: Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. Prerrequisitos: Python, variables, funciones y unidades SI; para temas…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en plc y control industrial: ciclo de scan e iec 61131-3 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que plc y control industrial: ciclo de scan e iec 61131-3 resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| PLC y control industrial: ciclo de scan e IEC 61131-3 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar PLC y control industrial: ciclo de scan e IEC 61131-3 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses plc y control industrial: ciclo de scan e iec 61131-3 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: plc y control industrial: ciclo de scan e iec 61131-3 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- PLC y control industrial: ciclo de scan e IEC 61131-3 existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve plc y control industrial: ciclo de scan e iec 61131-3 en tu contexto?
-2. ¿Cómo sabrías que plc y control industrial: ciclo de scan e iec 61131-3 no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar plc y control industrial: ciclo de scan e iec 61131-3?
 
 </details>
 

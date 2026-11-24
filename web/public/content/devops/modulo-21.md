@@ -15,16 +15,6 @@ Cada tema se ejecuta con `node --test` y no requiere Docker; el Módulo 22 lleva
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar dos servicios HTTP mínimos, verificar su contrato con una prueba que arranca ambos en puertos efímeros y demostrar que un cambio incompatible rompe la prueba antes de llegar a producción. Conocimiento previo: node:http, fetch y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar dos servicios HTTP mínimos, verificar su contrato con una prueba que arranca ambos en puertos efímeros y demostrar que un cambio incompatible rompe la prueba antes de llegar a producción.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en descomponer por capacidad de negocio: dos servicios, un contrato como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -34,37 +24,6 @@ flowchart LR
   E --> D[("Base de envíos")]
   E -. "no comparte tablas" .- F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Descomponer por capacidad de negocio: dos servicios, un contrato se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Descomponer por capacidad de negocio: dos servicios, un contrato | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses descomponer por capacidad de negocio: dos servicios, un contrato por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: descomponer por capacidad de negocio: dos servicios, un contrato funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Descomponer por capacidad de negocio: dos servicios, un contrato existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve descomponer por capacidad de negocio: dos servicios, un contrato en tu contexto?
-2. ¿Cómo sabrías que descomponer por capacidad de negocio: dos servicios, un contrato no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar descomponer por capacidad de negocio: dos servicios, un contrato?
 
 </details>
 
@@ -155,16 +114,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar una composición que combine datos de dos servicios, devolver un resultado parcial cuando una dependencia falla y explicar por qué una réplica actualizada por eventos cambia el problema de latencia por el de consistencia. Conocimiento previo: Tema 1…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar una composición que combine datos de dos servicios, devolver un resultado parcial cuando una dependencia falla y explicar por qué una réplica actualizada por eventos cambia el problema de latencia por el de consistencia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en datos por servicio: propiedad, composición y réplicas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -174,37 +123,6 @@ flowchart LR
   E -. "evento EntregaConfirmada" .-> P["Proyección local"]
   P --> F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Datos por servicio: propiedad, composición y réplicas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Datos por servicio: propiedad, composición y réplicas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses datos por servicio: propiedad, composición y réplicas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: datos por servicio: propiedad, composición y réplicas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Datos por servicio: propiedad, composición y réplicas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve datos por servicio: propiedad, composición y réplicas en tu contexto?
-2. ¿Cómo sabrías que datos por servicio: propiedad, composición y réplicas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar datos por servicio: propiedad, composición y réplicas?
 
 </details>
 
@@ -288,16 +206,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar un cliente con timeout, reintentos con backoff y jitter, y un cortacircuitos que abra tras varios fallos, con pruebas deterministas que no dependan de esperas reales. Conocimiento previo: Temas 1 y 2, promesas y AbortSignal.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar un cliente con timeout, reintentos con backoff y jitter, y un cortacircuitos que abra tras varios fallos, con pruebas deterministas que no dependan de esperas reales.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en resiliencia: timeouts, reintentos y cortacircuitos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -308,37 +216,6 @@ stateDiagram-v2
   Semiabierto --> Cerrado: la petición de prueba funciona
   Semiabierto --> Abierto: la petición de prueba falla
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Resiliencia: timeouts, reintentos y cortacircuitos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Resiliencia: timeouts, reintentos y cortacircuitos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses resiliencia: timeouts, reintentos y cortacircuitos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: resiliencia: timeouts, reintentos y cortacircuitos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Resiliencia: timeouts, reintentos y cortacircuitos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve resiliencia: timeouts, reintentos y cortacircuitos en tu contexto?
-2. ¿Cómo sabrías que resiliencia: timeouts, reintentos y cortacircuitos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar resiliencia: timeouts, reintentos y cortacircuitos?
 
 </details>
 
@@ -452,16 +329,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás propagar un traceparent entre dos servicios, registrar logs estructurados con el mismo trace-id y calcular un SLI básico a partir de eventos de éxito y latencia. Conocimiento previo: Temas 1 a 3, HTTP y JSON.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás propagar un traceparent entre dos servicios, registrar logs estructurados con el mismo trace-id y calcular un SLI básico a partir de eventos de éxito y latencia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en observabilidad distribuida: trazas, correlación y slo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -475,37 +342,6 @@ sequenceDiagram
   E-->>C: 201
   Note over E,F: Una traza, dos spans, un mismo trace-id
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Observabilidad distribuida: trazas, correlación y SLO se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Observabilidad distribuida: trazas, correlación y SLO | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses observabilidad distribuida: trazas, correlación y slo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: observabilidad distribuida: trazas, correlación y slo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Observabilidad distribuida: trazas, correlación y SLO existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve observabilidad distribuida: trazas, correlación y slo en tu contexto?
-2. ¿Cómo sabrías que observabilidad distribuida: trazas, correlación y slo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar observabilidad distribuida: trazas, correlación y slo?
 
 </details>
 

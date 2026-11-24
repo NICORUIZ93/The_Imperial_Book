@@ -13,16 +13,6 @@ Cada Tema parte de una carpeta vacía y se verifica con comandos reales. El serv
 #### ► DE QUÉ TRATA
 Al finalizar vas a dejar un Ubuntu 24.04 LTS donde solo se entra con clave ed25519, sin login de root, con firewall que niega todo salvo 22/80/443, fail2ban y parches automáticos, demostrado con sshd -T y ufw status verbose.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a dejar un Ubuntu 24.04 LTS donde solo se entra con clave ed25519, sin login de root, con firewall que niega todo salvo 22/80/443, fail2ban y parches automáticos, demostrado con sshd -T y ufw status verbose.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en aprovisionar y endurecer: usuario, ssh, firewall y parches como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -32,37 +22,6 @@ flowchart LR
     U --> F["fail2ban sobre el journal"]
     U --> P["unattended-upgrades"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Aprovisionar y endurecer: usuario, SSH, firewall y parches se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Aprovisionar y endurecer: usuario, SSH, firewall y parches | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses aprovisionar y endurecer: usuario, ssh, firewall y parches por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: aprovisionar y endurecer: usuario, ssh, firewall y parches funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Aprovisionar y endurecer: usuario, SSH, firewall y parches existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve aprovisionar y endurecer: usuario, ssh, firewall y parches en tu contexto?
-2. ¿Cómo sabrías que aprovisionar y endurecer: usuario, ssh, firewall y parches no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar aprovisionar y endurecer: usuario, ssh, firewall y parches?
 
 </details>
 
@@ -169,16 +128,6 @@ To                         Action      From
 #### ► DE QUÉ TRATA
 Al finalizar vas a servir app.tudominio.com por HTTPS con certificado de Let's Encrypt, redirección permanente desde HTTP, HSTS y renovación automática comprobada con openssl y certbot renew --dry-run.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a servir app.tudominio.com por HTTPS con certificado de Let's Encrypt, redirección permanente desde HTTP, HSTS y renovación automática comprobada con openssl y certbot renew --dry-run.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dominio, tls y borde: dns, let's encrypt y cloudflare como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -191,37 +140,6 @@ sequenceDiagram
     L-->>N: certificado (90 días)
     N->>N: certbot.timer renueva antes de los 30 días restantes
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dominio, tls y borde: dns, let's encrypt y cloudflare por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dominio, tls y borde: dns, let's encrypt y cloudflare funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dominio, tls y borde: dns, let's encrypt y cloudflare en tu contexto?
-2. ¿Cómo sabrías que dominio, tls y borde: dns, let's encrypt y cloudflare no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dominio, tls y borde: dns, let's encrypt y cloudflare?
 
 </details>
 
@@ -312,13 +230,6 @@ Al finalizar vas a publicar releases versionados en /srv/rutaflow/releases, apun
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a publicar releases versionados en /srv/rutaflow/releases, apuntar current al que está en servicio con un cambio atómico de symlink, ejecutar la app como servicio systemd que se reinicia si falla, servirla con nginx en 127.0.0.1:3000 y volver a la release anterior en segundos.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en despliegue y rollback: systemd, nginx y artefactos versionados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -328,37 +239,6 @@ flowchart LR
     N --> H["/health"]
     R2["releases/20261031-0900"] -.->|rollback| C
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Despliegue y rollback: systemd, nginx y artefactos versionados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Despliegue y rollback: systemd, nginx y artefactos versionados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses despliegue y rollback: systemd, nginx y artefactos versionados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: despliegue y rollback: systemd, nginx y artefactos versionados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Despliegue y rollback: systemd, nginx y artefactos versionados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve despliegue y rollback: systemd, nginx y artefactos versionados en tu contexto?
-2. ¿Cómo sabrías que despliegue y rollback: systemd, nginx y artefactos versionados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar despliegue y rollback: systemd, nginx y artefactos versionados?
 
 </details>
 
@@ -503,16 +383,6 @@ Fuente: [instalación de Coolify](https://coolify.io/docs/get-started/installati
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear un repositorio restic cifrado, respaldar releases y configuración, verificar la integridad, restaurar en una carpeta limpia y medir la recuperación. El criterio no es que el respaldo diga saved, sino que el servicio arranque desde lo restaurado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear un repositorio restic cifrado, respaldar releases y configuración, verificar la integridad, restaurar en una carpeta limpia y medir la recuperación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en respaldos que se restauran: restic, rpo/rto y simulacro como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -523,37 +393,6 @@ flowchart LR
     D --> E["node server.js en :3001"]
     E --> F["curl /health"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Respaldos que se restauran: restic, RPO/RTO y simulacro se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Respaldos que se restauran: restic, RPO/RTO y simulacro | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses respaldos que se restauran: restic, rpo/rto y simulacro por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: respaldos que se restauran: restic, rpo/rto y simulacro funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Respaldos que se restauran: restic, RPO/RTO y simulacro existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve respaldos que se restauran: restic, rpo/rto y simulacro en tu contexto?
-2. ¿Cómo sabrías que respaldos que se restauran: restic, rpo/rto y simulacro no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar respaldos que se restauran: restic, rpo/rto y simulacro?
 
 </details>
 

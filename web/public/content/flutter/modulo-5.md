@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a migrar la consulta de envíos de RutaFlow de http a dio, para poder cancelar una búsqueda en curso cuando el operador escribe una guía nueva. Prerrequisitos: Módulo 4 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a migrar la consulta de envíos de RutaFlow de http a dio, para poder cancelar una búsqueda en curso cuando el operador escribe una guía nueva.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en http vs dio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -41,37 +31,6 @@ graph LR
 
 #### ► REGLA PRÁCTICA
 Usa `dio` en vez de `http` cuando necesites cancelar peticiones en curso, interceptores para agregar headers o loguear de forma centralizada, o configuración avanzada de timeouts; para una llamada simple sin esos requisitos, `http` es más liviano.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| http vs dio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar http vs dio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses http vs dio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: http vs dio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- http vs dio existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve http vs dio en tu contexto?
-2. ¿Cómo sabrías que http vs dio no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar http vs dio?
 
 </details>
 
@@ -177,16 +136,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a generar el modelo Envio con json_serializable, detectando en tiempo de deserialización si la API devuelve un campo faltante o mal tipado. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a generar el modelo Envio con json_serializable, detectando en tiempo de deserialización si la API devuelve un campo faltante o mal tipado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en json_serializable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -194,37 +143,6 @@ flowchart TD
     B -->|Sí| C["Envio.fromJson()\nretorna instancia tipada"]
     B -->|No, falta 'estado'| D["Lanza excepción explícita\nen el punto de deserialización"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| json_serializable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar json_serializable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses json_serializable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: json_serializable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- json_serializable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve json_serializable en tu contexto?
-2. ¿Cómo sabrías que json_serializable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar json_serializable?
 
 </details>
 
@@ -306,16 +224,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a agregar un interceptor de autenticación a dio que inyecte el token del conductor en cada petición, y a modelar EstadoEnvios como una sealed class con los tres estados posibles. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a agregar un interceptor de autenticación a dio que inyecte el token del conductor en cada petición, y a modelar EstadoEnvios como una sealed class con los tres estados posibles.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en interceptores y estados explícitos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -335,37 +243,6 @@ graph TD
     style E fill:#ffcccc
     style I fill:#c62828
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Interceptores y estados explícitos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Interceptores y estados explícitos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses interceptores y estados explícitos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: interceptores y estados explícitos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Interceptores y estados explícitos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve interceptores y estados explícitos en tu contexto?
-2. ¿Cómo sabrías que interceptores y estados explícitos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar interceptores y estados explícitos?
 
 </details>
 
@@ -498,16 +375,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a implementar el inicio de sesión del conductor, guardar sus tokens de forma segura, renovar el token vencido sin que el usuario lo note y cerrar la sesión limpiando todo. Prerrequisitos: Tema 3 de este módulo (interceptores de dio) y un backend con /auth/login y…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a implementar el inicio de sesión del conductor, guardar sus tokens de forma segura, renovar el token vencido sin que el usuario lo note y cerrar la sesión limpiando todo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -518,37 +385,6 @@ stateDiagram-v2
     Renovando --> SinSesion: refresh falla (borra tokens)
     ConSesion --> SinSesion: logout (borra tokens)
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión en tu contexto?
-2. ¿Cómo sabrías que flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión?
 
 </details>
 

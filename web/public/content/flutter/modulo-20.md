@@ -15,16 +15,6 @@ Este módulo convierte `rutaflow_driver` en una app que un equipo puede cambiar 
 #### ► DE QUÉ TRATA
 Al finalizar escribirás pruebas que protegen una regla de entrega y su resultado en pantalla. Prerrequisitos: Dart, widgets, callbacks y futures. Crea un proyecto nuevo con flutter create flutter_master_lab y ejecuta flutter test para confirmar la plantilla.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar escribirás pruebas que protegen una regla de entrega y su resultado en pantalla.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pruebas unitarias y de widget con flutter test como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -32,37 +22,6 @@ flowchart LR
   Rule --> Widget[Widget y gesto]
   Widget --> Expect[Resultado observable]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| pruebas unitarias y de widget con Flutter Test se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar pruebas unitarias y de widget con Flutter Test | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pruebas unitarias y de widget con flutter test por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pruebas unitarias y de widget con flutter test funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- pruebas unitarias y de widget con Flutter Test existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pruebas unitarias y de widget con flutter test en tu contexto?
-2. ¿Cómo sabrías que pruebas unitarias y de widget con flutter test no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pruebas unitarias y de widget con flutter test?
 
 </details>
 
@@ -108,16 +67,6 @@ flowchart LR
 #### ► DE QUÉ TRATA
 Al finalizar mostrarás textos y números del flujo de entrega según el idioma configurado. Prerrequisitos: MaterialApp, locale y assets. Crea un proyecto nuevo con flutter create localized_delivery_lab; configura flutter_localizations e intl desde pubspec.yaml; crea lib/l10n/app_e…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar mostrarás textos y números del flujo de entrega según el idioma configurado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en internacionalización y formatos locales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -125,37 +74,6 @@ flowchart LR
   ARB --> Gen[API tipada generada]
   Gen --> UI[Texto accesible en pantalla]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| internacionalización y formatos locales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar internacionalización y formatos locales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses internacionalización y formatos locales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: internacionalización y formatos locales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- internacionalización y formatos locales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve internacionalización y formatos locales en tu contexto?
-2. ¿Cómo sabrías que internacionalización y formatos locales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar internacionalización y formatos locales?
 
 </details>
 
@@ -196,16 +114,6 @@ flowchart LR
 #### ► DE QUÉ TRATA
 Al finalizar revisarás un cambio visual y simularás el recorrido de confirmar parada. Prerrequisitos: widget tests, themes y navegación. Crea un proyecto nuevo con flutter create delivery_integration_lab; crea test/goldens/stop_card_test.dart y integration_test/complete_delivery_…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar revisarás un cambio visual y simularás el recorrido de confirmar parada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en golden e integración de un flujo real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -214,37 +122,6 @@ flowchart LR
   Pixel --> Review[Revisión humana]
   Flow --> Reporte[Resultado de extremo a extremo]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| golden e integración de un flujo real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar golden e integración de un flujo real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses golden e integración de un flujo real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: golden e integración de un flujo real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- golden e integración de un flujo real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve golden e integración de un flujo real en tu contexto?
-2. ¿Cómo sabrías que golden e integración de un flujo real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar golden e integración de un flujo real?
 
 </details>
 
@@ -275,16 +152,6 @@ flowchart LR
 #### ► DE QUÉ TRATA
 Al finalizar medirás una interacción repetible en profile y decidirás qué corregir primero. Prerrequisitos: DevTools, ListView.builder y timing UI/raster. Crea un proyecto nuevo con flutter create performance_review_lab; agrega lib/performance/route_benchmark.dart y un recorrido…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar medirás una interacción repetible en profile y decidirás qué corregir primero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en perfilado y presupuesto de rendimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -294,37 +161,6 @@ flowchart LR
   Raster --> Metrics
   Metrics --> Fix[Corrige cuello medido]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| perfilado y presupuesto de rendimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar perfilado y presupuesto de rendimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses perfilado y presupuesto de rendimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: perfilado y presupuesto de rendimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- perfilado y presupuesto de rendimiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve perfilado y presupuesto de rendimiento en tu contexto?
-2. ¿Cómo sabrías que perfilado y presupuesto de rendimiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar perfilado y presupuesto de rendimiento?
 
 </details>
 
@@ -355,16 +191,6 @@ flowchart LR
 #### ► DE QUÉ TRATA
 Al finalizar separarás la regla de completar entrega del cliente HTTP y la pantalla. Prerrequisitos: clases, interfaces, tests y módulos Dart. Crea un proyecto nuevo con flutter create architecture_delivery_lab; en lib/features/delivery/, crea domain, data y presentation con un c…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar separarás la regla de completar entrega del cliente HTTP y la pantalla.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en clean architecture y sustitución de dependencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -372,37 +198,6 @@ flowchart LR
   UseCase --> Contract[Domain: interfaz repo]
   Adapter[Data: Dio/SQLite] --> Contract
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Clean Architecture y sustitución de dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Clean Architecture y sustitución de dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses clean architecture y sustitución de dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: clean architecture y sustitución de dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Clean Architecture y sustitución de dependencias existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve clean architecture y sustitución de dependencias en tu contexto?
-2. ¿Cómo sabrías que clean architecture y sustitución de dependencias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar clean architecture y sustitución de dependencias?
 
 </details>
 
@@ -465,16 +260,6 @@ Fuente: [arquitectura de Immich](https://docs.immich.app/developer/architecture)
 #### ► DE QUÉ TRATA
 Al finalizar generarás un artefacto de desarrollo y una release adecuada a un target disponible, identificando lo que falta para distribuir. Prerrequisitos: builds Flutter, flavors y secretos/configuración. Crea un proyecto nuevo con flutter create release_delivery_lab; crea docs…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar generarás un artefacto de desarrollo y una release adecuada a un target disponible, identificando lo que falta para distribuir.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en builds por plataforma, firma y entrega como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -483,37 +268,6 @@ flowchart LR
   Build --> Sign[Firma protegida]
   Sign --> Review[Revisión y distribución]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| builds por plataforma, firma y entrega se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar builds por plataforma, firma y entrega | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses builds por plataforma, firma y entrega por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: builds por plataforma, firma y entrega funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- builds por plataforma, firma y entrega existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve builds por plataforma, firma y entrega en tu contexto?
-2. ¿Cómo sabrías que builds por plataforma, firma y entrega no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar builds por plataforma, firma y entrega?
 
 </details>
 

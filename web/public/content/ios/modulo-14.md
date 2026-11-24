@@ -14,12 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a animar la transición de una TarjetaEnvio en ListaEnvios hacia DetalleEnvio, de forma que la tarjeta parezca expandirse en vez de cambiar de golpe. Prerrequisitos: Módulo 1 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a animar la transición de una TarjetaEnvio en ListaEnvios hacia DetalleEnvio, de forma que la tarjeta parezca expandirse en vez de cambiar de golpe.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `matchedGeometryEffect` vincula dos vistas distintas (una en cada pantalla) con un mismo `id` dentro de un mismo `namespace`, y SwiftUI anima la transición de tamaño y posición entre ambas — como si fuera literalmente la misma vista moviéndose.
 
@@ -37,8 +31,6 @@ flowchart LR
 
 En tu propio proyecto RutaFlow, crea `TransicionEnvio.swift` con **File ▸ New ▸ File ▸ Swift File** dentro del target de la app; ahí viven la lista y el detalle que comparten el namespace. Límite de la decisión: `matchedGeometryEffect` no conviene para transiciones entre vistas sin relación visual real (dos pantallas completamente distintas) — ahí una transición estándar de `NavigationStack` es más clara; reservalo específicamente cuando dos vistas distintas representan visualmente el mismo elemento de datos, como esta tarjeta que se expande.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -46,37 +38,6 @@ flowchart LR
     A --> C["SwiftUI anima tamaño/posición\nentre ambas vistas"]
     B --> C
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Animaciones y matchedGeometryEffect se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Animaciones y matchedGeometryEffect | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses animaciones y matchedgeometryeffect por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: animaciones y matchedgeometryeffect funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Animaciones y matchedGeometryEffect existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve animaciones y matchedgeometryeffect en tu contexto?
-2. ¿Cómo sabrías que animaciones y matchedgeometryeffect no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar animaciones y matchedgeometryeffect?
 
 </details>
 
@@ -144,16 +105,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Continúa RutaFlowApp. Crea FilaEntrega.swift en el grupo RutaFlowApp.
 
-#### ► LA IDEA EN UNA FRASE
-**Continúa RutaFlowApp.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en gestos en swiftui: arrastrar, mantener presionado y combinar gestos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -163,37 +114,6 @@ stateDiagram-v2
     Arrastrando --> Reposo: onEnded y desplazamiento <= 120 (animado)
     Reposo --> Detalle: LongPress 0.5 s
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gestos en swiftui: arrastrar, mantener presionado y combinar gestos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gestos en swiftui: arrastrar, mantener presionado y combinar gestos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gestos en swiftui: arrastrar, mantener presionado y combinar gestos en tu contexto?
-2. ¿Cómo sabrías que gestos en swiftui: arrastrar, mantener presionado y combinar gestos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gestos en swiftui: arrastrar, mantener presionado y combinar gestos?
 
 </details>
 
@@ -266,16 +186,6 @@ Mantener presionado medio segundo abre la hoja con «Detalle de ENV-42».
 #### ► DE QUÉ TRATA
 Al finalizar vas a testear que cancelar la carga de EnviosViewModel.cargar() a mitad de camino detiene efectivamente la tarea, en vez de dejarla sobrescribir el estado más tarde. Prerrequisitos: Módulo 9 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a testear que cancelar la carga de EnviosViewModel.cargar() a mitad de camino detiene efectivamente la tarea, en vez de dejarla sobrescribir el estado más tarde.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en swift testing y pruebas asíncronas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -290,37 +200,6 @@ sequenceDiagram
     Test->>Tarea: await tarea.value
     Test->>VM: #expect(vm.envios.isEmpty)
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Swift Testing y pruebas asíncronas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Swift Testing y pruebas asíncronas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses swift testing y pruebas asíncronas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: swift testing y pruebas asíncronas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Swift Testing y pruebas asíncronas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve swift testing y pruebas asíncronas en tu contexto?
-2. ¿Cómo sabrías que swift testing y pruebas asíncronas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar swift testing y pruebas asíncronas?
 
 </details>
 
@@ -448,16 +327,6 @@ xcodebuild test -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iP
 #### ► DE QUÉ TRATA
 Al finalizar vas a usar ViewInspector para confirmar que ListaEnvios muestra "Sin envíos" cuando vm.envios está vacío, decidiendo cuándo ese test vale más que uno de XCUITest. Prerrequisitos: Módulo 9 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a usar ViewInspector para confirmar que ListaEnvios muestra "Sin envíos" cuando vm.envios está vacío, decidiendo cuándo ese test vale más que uno de XCUITest.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en viewinspector con criterio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -465,37 +334,6 @@ flowchart TD
     A -->|Lógica condicional dentro del body| C["ViewInspector\n(estructura en memoria)"]
     A -->|Flujo completo end-to-end| D["XCUITest\n(Módulo 9)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ViewInspector con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ViewInspector con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses viewinspector con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: viewinspector con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ViewInspector con criterio existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve viewinspector con criterio en tu contexto?
-2. ¿Cómo sabrías que viewinspector con criterio no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar viewinspector con criterio?
 
 </details>
 
@@ -586,12 +424,6 @@ xcodebuild test -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iP
 #### ► DE QUÉ TRATA
 Al finalizar vas a corregir una condición de carrera en la búsqueda de guías de RutaFlow (Módulo 7), donde una respuesta vieja puede sobrescribir una más nueva, usando switchToLatest(). Prerrequisitos: Módulo 7 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a corregir una condición de carrera en la búsqueda de guías de RutaFlow (Módulo 7), donde una respuesta vieja puede sobrescribir una más nueva, usando switchToLatest().**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `.map` seguido de `.switchToLatest()` cancela automáticamente el Publisher anterior cuando llega un nuevo valor de entrada — solo el resultado de la búsqueda más reciente puede llegar a completar.
 
@@ -616,8 +448,6 @@ sequenceDiagram
 
 En tu propio proyecto RutaFlow, crea `BuscadorEnviosViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí este ViewModel (si ya tienes uno del Módulo 7, reemplázalo):
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -632,37 +462,6 @@ sequenceDiagram
     API-->>SL: resultado de B
     SL-->>SL: sink recibe solo B
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Combine avanzado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Combine avanzado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses combine avanzado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: combine avanzado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Combine avanzado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve combine avanzado en tu contexto?
-2. ¿Cómo sabrías que combine avanzado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar combine avanzado?
 
 </details>
 
@@ -728,16 +527,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar vas a envolver un MKMapView (UIKit) dentro de SwiftUI con UIViewRepresentable, mostrando la ubicación de los envíos de una ruta de RutaFlow. Prerrequisitos: Módulo 10 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a envolver un MKMapView (UIKit) dentro de SwiftUI con UIViewRepresentable, mostrando la ubicación de los envíos de una ruta de RutaFlow.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en uiviewrepresentable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -746,37 +535,6 @@ flowchart TD
     B --> E["MKMapView visible"]
     D --> E
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| UIViewRepresentable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar UIViewRepresentable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses uiviewrepresentable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: uiviewrepresentable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- UIViewRepresentable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve uiviewrepresentable en tu contexto?
-2. ¿Cómo sabrías que uiviewrepresentable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar uiviewrepresentable?
 
 </details>
 
@@ -833,12 +591,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar vas a envolver UIImagePickerController (para fotografiar la prueba de entrega) con UIViewControllerRepresentable, usando un Coordinator para recibir la foto de vuelta en SwiftUI. Prerrequisitos: Tema 5 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a envolver UIImagePickerController (para fotografiar la prueba de entrega) con UIViewControllerRepresentable, usando un Coordinator para recibir la foto de vuelta en SwiftUI.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `UIViewControllerRepresentable` envuelve el controlador completo; como el delegate de UIKit necesita un objeto que lo implemente (no una closure), un `Coordinator` actúa como ese delegate y reenvía el resultado hacia una `Binding` de SwiftUI.
 
@@ -856,8 +608,6 @@ flowchart TD
 
 En tu propio proyecto RutaFlow, crea `SelectorFotoEntrega.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí el representable y su `Coordinator`. Límite de la decisión: `UIViewControllerRepresentable` con `Coordinator` no conviene cuando SwiftUI ya expone una API nativa equivalente (como `PhotosPicker` para seleccionar de la galería) — ahí usar la API nativa es más simple; reservá este puente específicamente para controladores de UIKit sin equivalente SwiftUI directo, como `UIImagePickerController` con cámara.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -865,37 +615,6 @@ flowchart TD
     B -->|didFinishPickingMediaWithInfo| C["foto = info[.originalImage]"]
     C -->|Binding| D["Vista SwiftUI se actualiza"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| UIViewControllerRepresentable y Coordinator se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar UIViewControllerRepresentable y Coordinator | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses uiviewcontrollerrepresentable y coordinator por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: uiviewcontrollerrepresentable y coordinator funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- UIViewControllerRepresentable y Coordinator existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve uiviewcontrollerrepresentable y coordinator en tu contexto?
-2. ¿Cómo sabrías que uiviewcontrollerrepresentable y coordinator no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar uiviewcontrollerrepresentable y coordinator?
 
 </details>
 
@@ -914,12 +633,6 @@ Al finalizar vas a envolver `UIImagePickerController` (para fotografiar la prueb
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a leer el texto de una etiqueta de envío fotografiada con la cámara del Tema 7, usando Vision para el reconocimiento de texto (OCR) que ya viene integrado en el sistema, sin enviar la imagen a ningún servidor. Prerrequisitos: Tema 7 de este módulo (ya tienes la U…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a leer el texto de una etiqueta de envío fotografiada con la cámara del Tema 7, usando Vision para el reconocimiento de texto (OCR) que ya viene integrado en el sistema, sin enviar la imagen a ningún servidor.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 La inferencia en el dispositivo ejecuta un modelo ya entrenado localmente: la foto entra, el resultado sale, y nada viaja por la red. **Core ML** es el motor que corre modelos (`.mlmodel`) sobre CPU, GPU o Neural Engine; **Vision** es la capa de alto nivel para imágenes que, para tareas comunes como detección de texto, caras o rectángulos, trae sus propios modelos del sistema y no te obliga a aportar uno. Reconocer texto con Vision es como tener un lector entrenado dentro del teléfono: le muestras la foto y te devuelve las cadenas que encontró con su nivel de confianza, sin preguntar a nadie afuera.
@@ -943,8 +656,6 @@ En tu propio proyecto RutaFlow, crea `OCREntrega.swift` con **File ▸ New ▸ F
 
 ---
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -953,37 +664,6 @@ flowchart LR
     C -->|mejor candidato por región| D["Líneas de texto + confianza"]
     D -->|validar patrón| E["Número de guía confirmado"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Core ML y Vision — inferencia en el dispositivo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Core ML y Vision — inferencia en el dispositivo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses core ml y vision — inferencia en el dispositivo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: core ml y vision — inferencia en el dispositivo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Core ML y Vision — inferencia en el dispositivo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve core ml y vision — inferencia en el dispositivo en tu contexto?
-2. ¿Cómo sabrías que core ml y vision — inferencia en el dispositivo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar core ml y vision — inferencia en el dispositivo?
 
 </details>
 
@@ -1003,16 +683,6 @@ Al finalizar vas a leer el texto de una etiqueta de envío fotografiada con la c
 #### ► DE QUÉ TRATA
 En Xcode, File > New > Target > Widget Extension con el nombre PendientesWidget. Activa en la app y en la extensión la capacidad App Groups con group.co.rutaflow.app.
 
-#### ► LA IDEA EN UNA FRASE
-**En Xcode, File > New > Target > Widget Extension con el nombre PendientesWidget.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en widgetkit: un widget con las entregas pendientes del día como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -1022,37 +692,6 @@ flowchart LR
     P -->|"lee"| G
     P --> V["Vista: 3 pendientes"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| WidgetKit: un widget con las entregas pendientes del día se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar WidgetKit: un widget con las entregas pendientes del día | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses widgetkit: un widget con las entregas pendientes del día por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: widgetkit: un widget con las entregas pendientes del día funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- WidgetKit: un widget con las entregas pendientes del día existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve widgetkit: un widget con las entregas pendientes del día en tu contexto?
-2. ¿Cómo sabrías que widgetkit: un widget con las entregas pendientes del día no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar widgetkit: un widget con las entregas pendientes del día?
 
 </details>
 
@@ -1144,12 +783,6 @@ Al confirmar una entrega en la app (de 3 a 2 pendientes), el widget de la pantal
 #### ► DE QUÉ TRATA
 Continúa RutaFlowApp (iOS 17+). No necesitas una extensión: los App Intents viven en el target de la app. Usa el App Group del tema del widget para leer la cantidad.
 
-#### ► LA IDEA EN UNA FRASE
-**Continúa RutaFlowApp (iOS 17+).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `AppIntent`, `perform()`, `IntentResult`, diálogo, `AppShortcutsProvider`, frase con `\(.applicationName)`, Atajos, Spotlight.
 
@@ -1176,8 +809,6 @@ sequenceDiagram
     S-->>U: lo dice en voz alta
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -1191,37 +822,6 @@ sequenceDiagram
     I-->>S: diálogo "Te quedan 3 entregas"
     S-->>U: lo dice en voz alta
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| App Intents: acciones de la app en Siri, Atajos y Spotlight se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar App Intents: acciones de la app en Siri, Atajos y Spotlight | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses app intents: acciones de la app en siri, atajos y spotlight por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: app intents: acciones de la app en siri, atajos y spotlight funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- App Intents: acciones de la app en Siri, Atajos y Spotlight existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve app intents: acciones de la app en siri, atajos y spotlight en tu contexto?
-2. ¿Cómo sabrías que app intents: acciones de la app en siri, atajos y spotlight no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar app intents: acciones de la app en siri, atajos y spotlight?
 
 </details>
 

@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás escanear una imagen Docker propia con Trivy, leer su reporte de CVEs por severidad, y decidir con criterio cuáles atender primero.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escanear una imagen Docker propia con Trivy, leer su reporte de CVEs por severidad, y decidir con criterio cuáles atender primero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en escaneo de imágenes y dependencias (trivy, snyk) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que escaneo de imágenes y dependencias (trivy, snyk) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Escaneo de imágenes y dependencias (Trivy, Snyk) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Escaneo de imágenes y dependencias (Trivy, Snyk) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses escaneo de imágenes y dependencias (trivy, snyk) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: escaneo de imágenes y dependencias (trivy, snyk) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Escaneo de imágenes y dependencias (Trivy, Snyk) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve escaneo de imágenes y dependencias (trivy, snyk) en tu contexto?
-2. ¿Cómo sabrías que escaneo de imágenes y dependencias (trivy, snyk) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar escaneo de imágenes y dependencias (trivy, snyk)?
-
 </details>
 
 <details>
@@ -123,53 +76,6 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás integrar Trivy como un gate obligatorio del pipeline de CI que bloquea el pipeline ante vulnerabilidades críticas.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás integrar Trivy como un gate obligatorio del pipeline de CI que bloquea el pipeline ante vulnerabilidades críticas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en integración en el pipeline como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que integración en el pipeline resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Integración en el pipeline se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Integración en el pipeline | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses integración en el pipeline por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: integración en el pipeline funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Integración en el pipeline existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve integración en el pipeline en tu contexto?
-2. ¿Cómo sabrías que integración en el pipeline no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar integración en el pipeline?
 
 </details>
 
@@ -237,53 +143,6 @@ echo "código de salida: $?"
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar por qué hardcodear un secreto es un antipatrón y cómo Vault y SOPS resuelven la inyección segura de secretos en runtime.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar por qué hardcodear un secreto es un antipatrón y cómo Vault y SOPS resuelven la inyección segura de secretos en runtime.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en gestión de secretos (vault, sops) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que gestión de secretos (vault, sops) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gestión de secretos (Vault, SOPS) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gestión de secretos (Vault, SOPS) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gestión de secretos (vault, sops) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gestión de secretos (vault, sops) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gestión de secretos (Vault, SOPS) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gestión de secretos (vault, sops) en tu contexto?
-2. ¿Cómo sabrías que gestión de secretos (vault, sops) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gestión de secretos (vault, sops)?
-
 </details>
 
 <details>
@@ -324,53 +183,6 @@ grep -r "sk-real-gestionado-por-vault" . 2>/dev/null || echo "no encontrado en n
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás acotar los permisos de un token de pipeline al mínimo necesario para su tarea específica, y explicar por qué esto limita el daño ante una filtración.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás acotar los permisos de un token de pipeline al mínimo necesario para su tarea específica, y explicar por qué esto limita el daño ante una filtración.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en menor privilegio en ci/cd como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que menor privilegio en ci/cd resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Menor privilegio en CI/CD se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Menor privilegio en CI/CD | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses menor privilegio en ci/cd por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: menor privilegio en ci/cd funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Menor privilegio en CI/CD existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve menor privilegio en ci/cd en tu contexto?
-2. ¿Cómo sabrías que menor privilegio en ci/cd no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar menor privilegio en ci/cd?
 
 </details>
 
@@ -463,53 +275,6 @@ echo "-> con pipeline-acotado.yaml: no (el Role solo permite deployments especí
 #### ► DE QUÉ TRATA
 Al finalizar podrás generar un SBOM de una imagen propia y explicar cómo acelera la respuesta ante una vulnerabilidad reportada en el ecosistema.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás generar un SBOM de una imagen propia y explicar cómo acelera la respuesta ante una vulnerabilidad reportada en el ecosistema.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sbom y supply chain security como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sbom y supply chain security resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SBOM y supply chain security se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SBOM y supply chain security | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sbom y supply chain security por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sbom y supply chain security funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SBOM y supply chain security existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sbom y supply chain security en tu contexto?
-2. ¿Cómo sabrías que sbom y supply chain security no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sbom y supply chain security?
-
 </details>
 
 <details>
@@ -563,53 +328,6 @@ print('Componentes afectados por una CVE en', cve_reportada_en, ':', afectados)
 #### ► DE QUÉ TRATA
 Al finalizar podrás distinguir qué detecta cada una de SAST, DAST y SCA, y en qué punto del ciclo de desarrollo integrar cada una.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás distinguir qué detecta cada una de SAST, DAST y SCA, y en qué punto del ciclo de desarrollo integrar cada una.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sast, dast y sca — diferencias y herramientas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sast, dast y sca — diferencias y herramientas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SAST, DAST y SCA — diferencias y herramientas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SAST, DAST y SCA — diferencias y herramientas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sast, dast y sca — diferencias y herramientas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sast, dast y sca — diferencias y herramientas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SAST, DAST y SCA — diferencias y herramientas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sast, dast y sca — diferencias y herramientas en tu contexto?
-2. ¿Cómo sabrías que sast, dast y sca — diferencias y herramientas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sast, dast y sca — diferencias y herramientas?
-
 </details>
 
 <details>
@@ -662,12 +380,6 @@ docker run --rm --network host zaproxy/zap-stable zap-baseline.py -t http://loca
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar cómo un escáner descubre puertos abiertos, cerrados y filtrados, implementar uno mínimo con sockets, leer los banners de los servicios y comparar el resultado con nmap, siempre sobre equipos propios y con autorización. Prerrequisitos: Tema 7 del Módul…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar cómo un escáner descubre puertos abiertos, cerrados y filtrados, implementar uno mínimo con sockets, leer los banners de los servicios y comparar el resultado con nmap, siempre sobre equipos propios y con autorización.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un escaneo **TCP connect** intenta abrir una conexión completa en cada puerto: si el sistema acepta, el puerto está **abierto**; si responde con rechazo (RST), está **cerrado**; si no responde dentro del tiempo límite, está **filtrado** (un firewall descarta los paquetes). Muchos servicios envían un **banner** al conectar, que revela producto y versión. `nmap` hace lo mismo y mucho más (escaneo SYN, detección de versiones con `-sV`, scripts). **Escanear sistemas ajenos sin permiso es ilegal** en muchos países; en una empresa, solo con un alcance escrito.
 
@@ -692,8 +404,6 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectionRefusedError` (RST), mientras que el filtrado tarda hasta agotar el `timeout` de `create_connection` sin respuesta alguna; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -702,37 +412,6 @@ flowchart LR
     P -- rechazo RST --> C[cerrado]
     P -- sin respuesta --> F[filtrado]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Reconocimiento de tu propio laboratorio: escaneo de puertos y banners se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Reconocimiento de tu propio laboratorio: escaneo de puertos y banners | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses reconocimiento de tu propio laboratorio: escaneo de puertos y banners por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: reconocimiento de tu propio laboratorio: escaneo de puertos y banners funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Reconocimiento de tu propio laboratorio: escaneo de puertos y banners existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve reconocimiento de tu propio laboratorio: escaneo de puertos y banners en tu contexto?
-2. ¿Cómo sabrías que reconocimiento de tu propio laboratorio: escaneo de puertos y banners no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar reconocimiento de tu propio laboratorio: escaneo de puertos y banners?
 
 </details>
 

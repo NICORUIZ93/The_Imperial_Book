@@ -13,16 +13,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a comparar guardar las tareas de tu gestor en una list contra guardarlas en un dict indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea. Prerrequisitos:…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a comparar guardar las tareas de tu gestor en una list contra guardarlas en un dict indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en elegir estructuras según las operaciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -32,37 +22,6 @@ flowchart TD
     Q -->|"búsqueda por clave"| MAP["diccionario"]
     Q -->|"grupo fijo"| TUPLE["tupla"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Elegir estructuras según las operaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Elegir estructuras según las operaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses elegir estructuras según las operaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: elegir estructuras según las operaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Elegir estructuras según las operaciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve elegir estructuras según las operaciones en tu contexto?
-2. ¿Cómo sabrías que elegir estructuras según las operaciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar elegir estructuras según las operaciones?
 
 </details>
 
@@ -144,16 +103,6 @@ python3 src/tareas_estructura.py
 #### ► DE QUÉ TRATA
 Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con pop(0)) es una trampa de rendimiento que no se nota hasta que la cola crece. Prerrequisitos: Tema 1 de es…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con pop(0)) es una trampa de rendimiento que no se nota hasta que la cola crece.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pilas, colas y abstracciones de comportamiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -164,37 +113,6 @@ flowchart LR
       A2["A sale primero"] --> B2["B"] --> C2["C"]
     end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pilas, colas y abstracciones de comportamiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pilas, colas y abstracciones de comportamiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pilas, colas y abstracciones de comportamiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pilas, colas y abstracciones de comportamiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Pilas, colas y abstracciones de comportamiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pilas, colas y abstracciones de comportamiento en tu contexto?
-2. ¿Cómo sabrías que pilas, colas y abstracciones de comportamiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pilas, colas y abstracciones de comportamiento?
 
 </details>
 
@@ -283,53 +201,12 @@ print(f"list.pop(0): {tiempo_lista:.4f}s | deque.popleft(): {tiempo_deque:.4f}s"
 #### ► DE QUÉ TRATA
 Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en búsqueda, precondiciones y demostración de corrección como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     ALL[“2 · 5 · 9 · 12 · 20”] --> MID[“medio = 9”]
     MID --> RIGHT[“descartar 2 · 5 · 9”] --> FOUND[“encontrar 12”]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Búsqueda, precondiciones y demostración de corrección se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Búsqueda, precondiciones y demostración de corrección | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses búsqueda, precondiciones y demostración de corrección por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: búsqueda, precondiciones y demostración de corrección funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Búsqueda, precondiciones y demostración de corrección existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve búsqueda, precondiciones y demostración de corrección en tu contexto?
-2. ¿Cómo sabrías que búsqueda, precondiciones y demostración de corrección no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar búsqueda, precondiciones y demostración de corrección?
 
 </details>
 
@@ -405,7 +282,6 @@ Con una lista de 2 o 3 tareas, casi cualquier código se siente instantáneo —
 #### ► LA ANALOGÍA
 Cuatro corredores en una carrera que se ve pareja en la salida: uno siempre da un paso sin importar la distancia (O(1)), otro avanza a la mitad del tramo que queda (O(log n)), otro recorre cada metro (O(n)) y el último recorre cada metro contra cada metro de un segundo circuito (O(n²)). A 2 metros nadie nota la diferencia. A 1000 metros, el cuarto corredor sigue corriendo cuando los otros tres ya terminaron.
 **Dónde se rompe la analogía:** una carrera tiene una sola distancia fija; un programa real procesa entradas de tamaño variable y n cambia con el tiempo —el algoritmo que elegiste hoy sigue corriendo mañana con el doble de datos.
-
 #### ► CÓMO FUNCIONA
 Mismo problema —localizar un elemento o recorrer una lista— resuelto de cuatro formas, contando pasos reales (no estimados) para el mismo n pequeño, y viendo qué pasa al duplicarlo dos veces:
 
@@ -435,14 +311,12 @@ xychart-beta
 | El código es "rápido" en desarrollo pero se vuelve inviable en producción | Se probó solo con pocos datos y nadie contó cómo crecen los pasos con n | Mide con `time.perf_counter()` en al menos dos tamaños que difieran 10x, no solo uno |
 | Un bucle anidado se agrega "para simplificar" sin notar que ya hay otro bucle alrededor | Nadie contó cuántos bucles anidados hay sobre la misma colección | Cuenta los bucles anidados sobre el mismo n: dos anidados ya es candidato a O(n²) |
 | Búsqueda binaria no encuentra un elemento que sí está | La lista no estaba ordenada antes de buscar | Confirma `lista == sorted(lista)` antes de aplicar búsqueda binaria |
-
 #### ► TRADE-OFFS
 | Opción | Cuándo usarla | Cuándo NO usarla |
 |---|---|---|
 | `sorted()` (Timsort, O(n log n)) | Para ordenar cualquier lista de tamaño real; es la opción por defecto en Python | Casi nunca — una implementación propia de orden O(n²) rara vez la supera |
 | Bubble sort propio (O(n²)) | Solo con fines didácticos, para ver la diferencia de complejidad en código propio | En cualquier código que procese más de unos pocos cientos de elementos |
 | Búsqueda binaria (O(log n)) | Cuando la lista ya está ordenada y se buscará muchas veces | Cuando la lista cambia constantemente y el costo de mantenerla ordenada supera el ahorro en la búsqueda |
-
 #### ► CUÁNDO NO USAR ESTO
 No optimices la complejidad de un código que corre una sola vez sobre datos pequeños y fijos: medir y reescribir tiene un costo, y ese costo solo se paga solo cuando n puede crecer de verdad.
 
@@ -454,7 +328,6 @@ Volviendo a la carrera: elegir el algoritmo correcto es elegir qué corredor cor
 - Con n pequeño, O(1), O(log n), O(n) y O(n²) casi no se distinguen; la diferencia aparece al duplicar n varias veces.
 - Dos bucles anidados sobre la misma colección son la señal más común de O(n²) accidental.
 - `sorted()` ya es O(n log n); reescribir tu propio ordenamiento casi nunca mejora eso.
-
 #### ► PREGUNTAS PARA PENSAR
 1. Si duplicas n una tercera vez (de 8 a 16), ¿qué valor esperas para cada columna de la tabla, y por qué el de O(n²) crece tanto más rápido?
 2. ¿En qué parte de tu propio código hay dos bucles anidados sobre la misma colección, y realmente necesitas ambos?
@@ -585,16 +458,6 @@ mkdir src
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad) y Módulo 1, Te…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en árboles y árboles binarios de búsqueda (bst) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -605,37 +468,6 @@ graph TD
     C --> F[60]
     C --> G[80]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Árboles y árboles binarios de búsqueda (BST) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Árboles y árboles binarios de búsqueda (BST) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses árboles y árboles binarios de búsqueda (bst) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: árboles y árboles binarios de búsqueda (bst) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Árboles y árboles binarios de búsqueda (BST) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve árboles y árboles binarios de búsqueda (bst) en tu contexto?
-2. ¿Cómo sabrías que árboles y árboles binarios de búsqueda (bst) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar árboles y árboles binarios de búsqueda (bst)?
 
 </details>
 
@@ -712,53 +544,6 @@ python3 bst.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n). Prerrequisitos: Temas 1-4 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en tablas hash — búsqueda en tiempo constante como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que tablas hash — búsqueda en tiempo constante resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tablas hash — búsqueda en tiempo constante se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tablas hash — búsqueda en tiempo constante | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tablas hash — búsqueda en tiempo constante por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tablas hash — búsqueda en tiempo constante funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tablas hash — búsqueda en tiempo constante existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tablas hash — búsqueda en tiempo constante en tu contexto?
-2. ¿Cómo sabrías que tablas hash — búsqueda en tiempo constante no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tablas hash — búsqueda en tiempo constante?
-
 </details>
 
 <details>
@@ -815,16 +600,6 @@ python3 tabla_hash.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema. Prerrequisitos: Temas 2 (pilas/colas) y 5 (árboles) de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en grafos y recorridos bfs/dfs como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -834,37 +609,6 @@ graph LR
     C --- D
     D --- E[Ciudad E]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Grafos y recorridos BFS/DFS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Grafos y recorridos BFS/DFS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses grafos y recorridos bfs/dfs por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: grafos y recorridos bfs/dfs funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Grafos y recorridos BFS/DFS existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve grafos y recorridos bfs/dfs en tu contexto?
-2. ¿Cómo sabrías que grafos y recorridos bfs/dfs no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar grafos y recorridos bfs/dfs?
 
 </details>
 
@@ -936,53 +680,6 @@ python3 grafos.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal. Prerrequisitos: Tema 4 (recursión y complejidad) de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en programación dinámica — resolver una vez, recordar el resultado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que programación dinámica — resolver una vez, recordar el resultado resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Programación dinámica — resolver una vez, recordar el resultado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Programación dinámica — resolver una vez, recordar el resultado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses programación dinámica — resolver una vez, recordar el resultado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: programación dinámica — resolver una vez, recordar el resultado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Programación dinámica — resolver una vez, recordar el resultado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve programación dinámica — resolver una vez, recordar el resultado en tu contexto?
-2. ¿Cómo sabrías que programación dinámica — resolver una vez, recordar el resultado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar programación dinámica — resolver una vez, recordar el resultado?
-
 </details>
 
 <details>
@@ -1030,56 +727,6 @@ python3 dp.py
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 2: gestor de inventario con análisis de rendimiento con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 2: gestor de inventario con análisis de rendimiento te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 2: gestor de inventario con análisis de rendimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 2: gestor de inventario con análisis de rendimiento resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 2: gestor de inventario con análisis de rendimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 2: gestor de inventario con análisis de rendimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 2: gestor de inventario con análisis de rendimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 2: gestor de inventario con análisis de rendimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 2: gestor de inventario con análisis de rendimiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 2: gestor de inventario con análisis de rendimiento en tu contexto?
-2. ¿Cómo sabrías que proyecto 2: gestor de inventario con análisis de rendimiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 2: gestor de inventario con análisis de rendimiento?
 
 </details>
 

@@ -18,12 +18,6 @@ una evidencia independiente y termina integrándose en RutaFlow.
 #### ► DE QUÉ TRATA
 Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar rechazo y elegir Photo Picker cuando no necesitas acceso general. Prerrequisitos: Módulo 15 Tema 1 (Activity Result API) y AndroidManifest.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar rechazo y elegir Photo Picker cuando no necesitas acceso general.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un permiso peligroso se declara en el manifiesto y se solicita durante la acción que
 lo justifica. Antes de pedirlo, comprueba si ya fue concedido; si el sistema recomienda
@@ -35,45 +29,6 @@ elegir contenido sin permiso general. **Analogía:** un permiso amplio entrega u
 del archivo; el picker deja que el usuario entregue una sola carpeta. La analogía no
 implica propiedad permanente: la URI puede necesitar persistencia explícita según el
 contrato usado.
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que permisos en tiempo de ejecución y alternativas sin permiso resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Permisos en tiempo de ejecución y alternativas sin permiso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Permisos en tiempo de ejecución y alternativas sin permiso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses permisos en tiempo de ejecución y alternativas sin permiso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: permisos en tiempo de ejecución y alternativas sin permiso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Permisos en tiempo de ejecución y alternativas sin permiso existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve permisos en tiempo de ejecución y alternativas sin permiso en tu contexto?
-2. ¿Cómo sabrías que permisos en tiempo de ejecución y alternativas sin permiso no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar permisos en tiempo de ejecución y alternativas sin permiso?
 
 </details>
 
@@ -119,53 +74,6 @@ grep -R "READ_MEDIA_IMAGES" app/build/intermediates/merged_manifests || echo "si
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás guardar una preferencia con DataStore, observarla como Flow y decidir entre Preferences, un esquema tipado y Room. Prerrequisitos: corrutinas, Flow y Módulo 6.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás guardar una preferencia con DataStore, observarla como Flow y decidir entre Preferences, un esquema tipado y Room.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en datastore para preferencias consistentes y migrables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que datastore para preferencias consistentes y migrables resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| DataStore para preferencias consistentes y migrables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar DataStore para preferencias consistentes y migrables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses datastore para preferencias consistentes y migrables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: datastore para preferencias consistentes y migrables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- DataStore para preferencias consistentes y migrables existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve datastore para preferencias consistentes y migrables en tu contexto?
-2. ¿Cómo sabrías que datastore para preferencias consistentes y migrables no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar datastore para preferencias consistentes y migrables?
 
 </details>
 
@@ -213,57 +121,12 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar cuándo combinar red y Room con RemoteMediator. Prerrequisitos: Retrofit, Room, Flow y LazyColumn.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar cuándo combinar red y Room con RemoteMediator.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `PagingSource` carga una fuente; `Pager` expone `Flow<PagingData<T>>`; Compose consume
 con `collectAsLazyPagingItems`. `LoadState` distingue refresh y append. Cuando Room es
 la fuente de verdad, `RemoteMediator` trae páginas remotas y las escribe en una
 transacción. **Analogía:** el catálogo entrega bandejas bajo demanda; RemoteMediator
 repone el depósito local, no entrega directamente a cada pantalla.
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que paging 3, estados de carga y remotemediator resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Paging 3, estados de carga y RemoteMediator se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Paging 3, estados de carga y RemoteMediator | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses paging 3, estados de carga y remotemediator por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: paging 3, estados de carga y remotemediator funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Paging 3, estados de carga y RemoteMediator existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve paging 3, estados de carga y remotemediator en tu contexto?
-2. ¿Cómo sabrías que paging 3, estados de carga y remotemediator no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar paging 3, estados de carga y remotemediator?
 
 </details>
 
@@ -316,16 +179,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android 13+ y tratar el push como señal para sincronizar. Prerrequisitos: notificaciones locales, deep links, WorkManager y backend autenticado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android 13+ y tratar el push como señal para sincronizar.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en fcm, permiso de notificaciones y sincronización confiable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -336,37 +189,6 @@ flowchart LR
     R --> U[UI observa Flow]
     U -. no toma el push como estado final .-> F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| FCM, permiso de notificaciones y sincronización confiable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar FCM, permiso de notificaciones y sincronización confiable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses fcm, permiso de notificaciones y sincronización confiable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: fcm, permiso de notificaciones y sincronización confiable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- FCM, permiso de notificaciones y sincronización confiable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve fcm, permiso de notificaciones y sincronización confiable en tu contexto?
-2. ¿Cómo sabrías que fcm, permiso de notificaciones y sincronización confiable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar fcm, permiso de notificaciones y sincronización confiable?
 
 </details>
 
@@ -421,12 +243,6 @@ grep -R "MESSAGING_EVENT\|exported=\"false\"" app/build/intermediates/merged_man
 #### ► DE QUÉ TRATA
 Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado al redimensionar y probar teléfono, tablet, split-screen y foldable. Prerrequisitos: Compose, Navigation y pruebas UI.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado al redimensionar y probar teléfono, tablet, split-screen y foldable.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Diseño adaptativo responde al tamaño de la ventana, no al modelo del dispositivo.
 Compact suele usar una pantalla; medium/expanded puede usar lista y detalle simultáneos,
@@ -450,8 +266,6 @@ flowchart TD
     E --> S
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -463,37 +277,6 @@ flowchart TD
     M --> S
     E --> S
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Interfaces adaptativas para teléfono, tablet y foldable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Interfaces adaptativas para teléfono, tablet y foldable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses interfaces adaptativas para teléfono, tablet y foldable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: interfaces adaptativas para teléfono, tablet y foldable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Interfaces adaptativas para teléfono, tablet y foldable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve interfaces adaptativas para teléfono, tablet y foldable en tu contexto?
-2. ¿Cómo sabrías que interfaces adaptativas para teléfono, tablet y foldable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar interfaces adaptativas para teléfono, tablet y foldable?
 
 </details>
 
@@ -539,16 +322,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico de una passkey y separar autenticación local de autorización del backend. Prerrequisitos: HTTP, deep links y seguridad del Módulo 13.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico de una passkey y separar autenticación local de autorización del backend.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en credential manager, passkeys y verificación en servidor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -562,37 +335,6 @@ sequenceDiagram
     A->>S: assertion completa
     S-->>A: sesión si origen, firma y challenge son válidos
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Credential Manager, passkeys y verificación en servidor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Credential Manager, passkeys y verificación en servidor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses credential manager, passkeys y verificación en servidor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: credential manager, passkeys y verificación en servidor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Credential Manager, passkeys y verificación en servidor existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve credential manager, passkeys y verificación en servidor en tu contexto?
-2. ¿Cómo sabrías que credential manager, passkeys y verificación en servidor no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar credential manager, passkeys y verificación en servidor?
 
 </details>
 
@@ -652,12 +394,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y com.google.android.play:integrity en el módulo app. El servidor descifra el token con la API de Google.
 
-#### ► LA IDEA EN UNA FRASE
-**Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y com.google.android.play:integrity en el módulo app.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** atestación, token de integridad, nonce o `requestHash`, veredicto de app (`appRecognitionVerdict`), de dispositivo (`deviceRecognitionVerdict`) y de cuenta, decodificación en servidor.
 
@@ -694,8 +430,6 @@ sequenceDiagram
     S->>S: compara requestHash y decide
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -710,37 +444,6 @@ sequenceDiagram
     G-->>S: veredicto
     S->>S: compara requestHash y decide
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Play Integrity API: comprobar en el servidor que la petición viene de tu app real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Play Integrity API: comprobar en el servidor que la petición viene de tu app real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses play integrity api: comprobar en el servidor que la petición viene de tu app real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: play integrity api: comprobar en el servidor que la petición viene de tu app real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Play Integrity API: comprobar en el servidor que la petición viene de tu app real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve play integrity api: comprobar en el servidor que la petición viene de tu app real en tu contexto?
-2. ¿Cómo sabrías que play integrity api: comprobar en el servidor que la petición viene de tu app real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar play integrity api: comprobar en el servidor que la petición viene de tu app real?
 
 </details>
 

@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 1: Contratos HTTP y autorización dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y JavaScript con Node.js (track Node).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 1: Contratos HTTP y autorización dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en contratos http y autorización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +21,6 @@ flowchart LR
   C -->|no| E2[403 Rol insuficiente]
   C -->|si| D[Asignar conductor al envio]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Contratos HTTP y autorización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Contratos HTTP y autorización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses contratos http y autorización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: contratos http y autorización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Contratos HTTP y autorización existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve contratos http y autorización en tu contexto?
-2. ¿Cómo sabrías que contratos http y autorización no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar contratos http y autorización?
 
 </details>
 
@@ -154,16 +113,6 @@ console.log(JSON.stringify(resultado));
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 2: Casos de uso y transacciones dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y JavaScript con Node.js (track Node).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 2: Casos de uso y transacciones dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en casos de uso y transacciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -174,37 +123,6 @@ flowchart LR
   E -->|si| F[COMMIT]
   E -->|no| G[ROLLBACK: nada se guarda]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Casos de uso y transacciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Casos de uso y transacciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses casos de uso y transacciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: casos de uso y transacciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Casos de uso y transacciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve casos de uso y transacciones en tu contexto?
-2. ¿Cómo sabrías que casos de uso y transacciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar casos de uso y transacciones?
 
 </details>
 
@@ -287,16 +205,6 @@ function asignarConductorConTransaccion(envioId, conductorId, simularCaidaDeRed)
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 3: Outbox, colas y observabilidad dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y el SQL con PostgreSQL del Módulo 1 (contenedor rutaflow-pg).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 3: Outbox, colas y observabilidad dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en outbox, colas y observabilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -308,37 +216,6 @@ flowchart LR
   F --> G[Publica a la cola]
   G --> H[Marca fila como publicada]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Outbox, colas y observabilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Outbox, colas y observabilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses outbox, colas y observabilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: outbox, colas y observabilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Outbox, colas y observabilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve outbox, colas y observabilidad en tu contexto?
-2. ¿Cómo sabrías que outbox, colas y observabilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar outbox, colas y observabilidad?
 
 </details>
 
@@ -415,53 +292,6 @@ psql "$DB" -c "SELECT * FROM cola" -c "SELECT id, publicado FROM outbox"
 
 #### ► DE QUÉ TRATA
 Al finalizar definirás una frontera compatible entre dos versiones de un comando de creación de envío y rechazarás datos ambiguos. Prerrequisitos: objetos JavaScript, módulos, pruebas y el dominio de envíos. Node 24 o superior. Ejemplo independiente desde una carpeta vacía.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar definirás una frontera compatible entre dos versiones de un comando de creación de envío y rechazarás datos ambiguos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en evolución de contratos: aceptar una versión nueva sin romper clientes anteriores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que evolución de contratos: aceptar una versión nueva sin romper clientes anteriores resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses evolución de contratos: aceptar una versión nueva sin romper clientes anteriores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: evolución de contratos: aceptar una versión nueva sin romper clientes anteriores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve evolución de contratos: aceptar una versión nueva sin romper clientes anteriores en tu contexto?
-2. ¿Cómo sabrías que evolución de contratos: aceptar una versión nueva sin romper clientes anteriores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar evolución de contratos: aceptar una versión nueva sin romper clientes anteriores?
 
 </details>
 

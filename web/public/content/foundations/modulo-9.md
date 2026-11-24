@@ -14,16 +14,6 @@ Las matemáticas de este módulo no son una colección de fórmulas para memoriz
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir pre/postcondiciones formales para transition() de RutaFlow y a buscarle un contraejemplo con hypothesis. Prerrequisitos: instala la dependencia en tu entorno con python3 -m pip install hypothesis.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir pre/postcondiciones formales para transition() de RutaFlow y a buscarle un contraejemplo con hypothesis.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en lógica para especificar antes de programar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +21,6 @@ flowchart LR
     INV["invariante"] -. "antes y después" .-> PRE
     INV -. "debe conservarse" .-> POST
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Lógica para especificar antes de programar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Lógica para especificar antes de programar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses lógica para especificar antes de programar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: lógica para especificar antes de programar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Lógica para especificar antes de programar existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve lógica para especificar antes de programar en tu contexto?
-2. ¿Cómo sabrías que lógica para especificar antes de programar no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar lógica para especificar antes de programar?
 
 </details>
 
@@ -136,16 +95,6 @@ def transition(current: ShipmentStatus, requested: ShipmentStatus) -> ShipmentSt
 #### ► DE QUÉ TRATA
 Al finalizar vas a confirmar que ALLOWED_TRANSITIONS de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia. Prerrequisitos: Python 3 instalado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a confirmar que ALLOWED_TRANSITIONS de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en conjuntos, relaciones, funciones e inducción como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -155,37 +104,6 @@ flowchart TD
     CHECK -->|"no: falta un permiso"| DENY["no autorizado"]
     BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Conjuntos, relaciones, funciones e inducción se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Conjuntos, relaciones, funciones e inducción | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses conjuntos, relaciones, funciones e inducción por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: conjuntos, relaciones, funciones e inducción funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Conjuntos, relaciones, funciones e inducción existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve conjuntos, relaciones, funciones e inducción en tu contexto?
-2. ¿Cómo sabrías que conjuntos, relaciones, funciones e inducción no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar conjuntos, relaciones, funciones e inducción?
 
 </details>
 
@@ -255,16 +173,6 @@ python3 relacion.py
 #### ► DE QUÉ TRATA
 Al finalizar vas a tratar ALLOWED_TRANSITIONS como el grafo dirigido que realmente es, y a confirmar con el tiene_ciclo() de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (grafos, lista de adyacencia, BFS y DFS), que es la introducción ún…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a tratar ALLOWED_TRANSITIONS como el grafo dirigido que realmente es, y a confirmar con el tiene_ciclo() de este mismo Tema que es un DAG.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en conteo, grafos y estructuras conectadas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -273,37 +181,6 @@ flowchart LR
     APP --> TESTS
     A["A"] --> B["B"] --> C["C"] --> A
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Conteo, grafos y estructuras conectadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Conteo, grafos y estructuras conectadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses conteo, grafos y estructuras conectadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: conteo, grafos y estructuras conectadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Conteo, grafos y estructuras conectadas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve conteo, grafos y estructuras conectadas en tu contexto?
-2. ¿Cómo sabrías que conteo, grafos y estructuras conectadas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar conteo, grafos y estructuras conectadas?
 
 </details>
 
@@ -395,16 +272,6 @@ python3 grafo.py
 #### ► DE QUÉ TRATA
 Al finalizar vas a medir la distribución real de tiempos de nearest_neighbor_route de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio. Prerrequisitos: Python 3 instalado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a medir la distribución real de tiempos de nearest_neighbor_route de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en probabilidad y evidencia para decisiones técnicas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -412,37 +279,6 @@ flowchart LR
     STAT --> CONCLUSION["conclusión con incertidumbre"]
     BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Probabilidad y evidencia para decisiones técnicas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Probabilidad y evidencia para decisiones técnicas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses probabilidad y evidencia para decisiones técnicas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: probabilidad y evidencia para decisiones técnicas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Probabilidad y evidencia para decisiones técnicas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve probabilidad y evidencia para decisiones técnicas en tu contexto?
-2. ¿Cómo sabrías que probabilidad y evidencia para decisiones técnicas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar probabilidad y evidencia para decisiones técnicas?
 
 </details>
 
@@ -524,56 +360,6 @@ python3 medir.py
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 9: cuaderno de propiedades, grafos y evidencia con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 9: cuaderno de propiedades, grafos y evidencia te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 9: cuaderno de propiedades, grafos y evidencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 9: cuaderno de propiedades, grafos y evidencia resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 9: cuaderno de propiedades, grafos y evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 9: cuaderno de propiedades, grafos y evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 9: cuaderno de propiedades, grafos y evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 9: cuaderno de propiedades, grafos y evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 9: cuaderno de propiedades, grafos y evidencia existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 9: cuaderno de propiedades, grafos y evidencia en tu contexto?
-2. ¿Cómo sabrías que proyecto 9: cuaderno de propiedades, grafos y evidencia no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 9: cuaderno de propiedades, grafos y evidencia?
 
 </details>
 

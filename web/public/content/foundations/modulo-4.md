@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a modelar las tareas de Fundamentos como una tabla tareas relacionada por clave foránea con una tabla categorias, y vas a comprobar en SQLite si esa relación protege o no la integridad al borrar una categoría. Prerrequisitos: Python 3 (incluye el módulo sqlite3),…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a modelar las tareas de Fundamentos como una tabla tareas relacionada por clave foránea con una tabla categorias, y vas a comprobar en SQLite si esa relación protege o no la integridad al borrar una categoría.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en del mundo real al modelo relacional como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 erDiagram
@@ -31,37 +21,6 @@ erDiagram
     PRODUCTO { int id PK int categoria_id FK string sku UK }
     MOVIMIENTO { int id PK int producto_id FK }
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Del mundo real al modelo relacional se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Del mundo real al modelo relacional | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses del mundo real al modelo relacional por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: del mundo real al modelo relacional funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Del mundo real al modelo relacional existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve del mundo real al modelo relacional en tu contexto?
-2. ¿Cómo sabrías que del mundo real al modelo relacional no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar del mundo real al modelo relacional?
 
 </details>
 
@@ -142,53 +101,12 @@ SELECT * FROM tareas;
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir las sentencias SQL (CREATE TABLE, INSERT, SELECT con JOIN) sobre el esquema tareas/categorias del Tema 1, y vas a provocar y corregir una inyección SQL real construyendo una consulta con texto concatenado en vez de parámetros. Prerrequisitos: Tema 1 de…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir las sentencias SQL (CREATE TABLE, INSERT, SELECT con JOIN) sobre el esquema tareas/categorias del Tema 1, y vas a provocar y corregir una inyección SQL real construyendo una consulta con texto concatenado en vez de parámetros.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sql para definir, escribir, consultar y relacionar como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     FROM["FROM / JOIN"] --> WHERE["WHERE"] --> GROUP["GROUP BY"]
     GROUP --> HAVING["HAVING"] --> SELECT["SELECT"] --> ORDER["ORDER BY"] --> LIMIT["LIMIT"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SQL para definir, escribir, consultar y relacionar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SQL para definir, escribir, consultar y relacionar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sql para definir, escribir, consultar y relacionar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sql para definir, escribir, consultar y relacionar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SQL para definir, escribir, consultar y relacionar existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sql para definir, escribir, consultar y relacionar en tu contexto?
-2. ¿Cómo sabrías que sql para definir, escribir, consultar y relacionar no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sql para definir, escribir, consultar y relacionar?
 
 </details>
 
@@ -264,16 +182,6 @@ cd fundamentos-sql
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear un índice sobre la tabla tareas y vas a comparar, con EXPLAIN QUERY PLAN, el plan de consulta antes y después de crearlo — confirmando en tu propia terminal la diferencia entre un SCAN (recorre toda la tabla) y un SEARCH (usa el índice). Prerrequisitos: T…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear un índice sobre la tabla tareas y vas a comparar, con EXPLAIN QUERY PLAN, el plan de consulta antes y después de crearlo — confirmando en tu propia terminal la diferencia entre un SCAN (recorre toda la tabla) y un SEARCH (usa el índice).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en índices, restricciones y planes de consulta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -284,37 +192,6 @@ flowchart LR
       ROOT["raíz"] --> BRANCH["rama"] --> RANGE["rango de filas"]
     end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Índices, restricciones y planes de consulta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Índices, restricciones y planes de consulta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses índices, restricciones y planes de consulta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: índices, restricciones y planes de consulta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Índices, restricciones y planes de consulta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve índices, restricciones y planes de consulta en tu contexto?
-2. ¿Cómo sabrías que índices, restricciones y planes de consulta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar índices, restricciones y planes de consulta?
 
 </details>
 
@@ -403,13 +280,6 @@ Al finalizar vas a envolver dos actualizaciones relacionadas (marcar una tarea c
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a envolver dos actualizaciones relacionadas (marcar una tarea como completada y registrar ese cambio en un historial) dentro de una transacción, y vas a comprobar que un fallo simulado a mitad de camino deja la base exactamente como estaba antes — ni a medias, ni corrupta.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en transacciones, concurrencia y elección sql/nosql como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -417,37 +287,6 @@ flowchart LR
     SUB -. "fallo" .-> ROLLBACK["ROLLBACK"]
     ADD -. "fallo" .-> ROLLBACK
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Transacciones, concurrencia y elección SQL/NoSQL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Transacciones, concurrencia y elección SQL/NoSQL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses transacciones, concurrencia y elección sql/nosql por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: transacciones, concurrencia y elección sql/nosql funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Transacciones, concurrencia y elección SQL/NoSQL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve transacciones, concurrencia y elección sql/nosql en tu contexto?
-2. ¿Cómo sabrías que transacciones, concurrencia y elección sql/nosql no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar transacciones, concurrencia y elección sql/nosql?
 
 </details>
 
@@ -547,16 +386,6 @@ print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir subconsultas en WHERE, SELECT y FROM, guardar consultas como vistas, automatizar reglas con triggers y ordenar dentro de grupos con funciones de ventana. Prerrequisitos: Temas 2 y 3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir subconsultas en WHERE, SELECT y FROM, guardar consultas como vistas, automatizar reglas con triggers y ordenar dentro de grupos con funciones de ventana.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sql avanzado: subconsultas, vistas, triggers y funciones de ventana como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -566,37 +395,6 @@ flowchart LR
     W --> A[trigger AFTER auditar_estado]
     A --> T[(auditoria)]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SQL avanzado: subconsultas, vistas, triggers y funciones de ventana se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SQL avanzado: subconsultas, vistas, triggers y funciones de ventana | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sql avanzado: subconsultas, vistas, triggers y funciones de ventana por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sql avanzado: subconsultas, vistas, triggers y funciones de ventana funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SQL avanzado: subconsultas, vistas, triggers y funciones de ventana existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sql avanzado: subconsultas, vistas, triggers y funciones de ventana en tu contexto?
-2. ¿Cómo sabrías que sql avanzado: subconsultas, vistas, triggers y funciones de ventana no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sql avanzado: subconsultas, vistas, triggers y funciones de ventana?
 
 </details>
 
@@ -719,16 +517,6 @@ Rechazado por trigger: una entrega entregada no puede cambiar de estado
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir funciones y procedimientos almacenados en PL/pgSQL, recorrer resultados con un cursor, lanzar y capturar excepciones, y distinguir cuándo usar SELECT (funciones) y CALL (procedimientos). Prerrequisito: Tema 5 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir funciones y procedimientos almacenados en PL/pgSQL, recorrer resultados con un cursor, lanzar y capturar excepciones, y distinguir cuándo usar SELECT (funciones) y CALL (procedimientos).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en procedimientos almacenados, funciones y cursores con pl/pgsql como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -737,37 +525,6 @@ flowchart LR
     P --> K[cursor por mensajero]
     K --> I[INSERT en cierre_diario]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Procedimientos almacenados, funciones y cursores con PL/pgSQL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Procedimientos almacenados, funciones y cursores con PL/pgSQL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses procedimientos almacenados, funciones y cursores con pl/pgsql por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: procedimientos almacenados, funciones y cursores con pl/pgsql funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Procedimientos almacenados, funciones y cursores con PL/pgSQL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve procedimientos almacenados, funciones y cursores con pl/pgsql en tu contexto?
-2. ¿Cómo sabrías que procedimientos almacenados, funciones y cursores con pl/pgsql no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar procedimientos almacenados, funciones y cursores con pl/pgsql?
 
 </details>
 
@@ -880,16 +637,6 @@ psql:plpgsql.sql:51: NOTICE:  error controlado: kilos debe ser positivo: 0
 #### ► DE QUÉ TRATA
 Al finalizar podrás generar desde una consulta SQL un archivo Excel con encabezados, una tabla con filtros, fórmulas que Excel recalcula y formato de porcentaje, y verificar el archivo leyéndolo de nuevo. Prerrequisitos: Temas 2 y 5 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás generar desde una consulta SQL un archivo Excel con encabezados, una tabla con filtros, fórmulas que Excel recalcula y formato de porcentaje, y verificar el archivo leyéndolo de nuevo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en de sql a excel: reportes con tablas y fórmulas vivas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -898,37 +645,6 @@ flowchart LR
     W --> X[reporte-entregas.xlsx]
     X --> F[fórmulas y filtros en Excel]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| De SQL a Excel: reportes con tablas y fórmulas vivas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar De SQL a Excel: reportes con tablas y fórmulas vivas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses de sql a excel: reportes con tablas y fórmulas vivas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: de sql a excel: reportes con tablas y fórmulas vivas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- De SQL a Excel: reportes con tablas y fórmulas vivas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve de sql a excel: reportes con tablas y fórmulas vivas en tu contexto?
-2. ¿Cómo sabrías que de sql a excel: reportes con tablas y fórmulas vivas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar de sql a excel: reportes con tablas y fórmulas vivas?
 
 </details>
 
@@ -1015,56 +731,6 @@ python3 reporte_excel.py
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 4: migrar el inventario json a sqlite con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 4: migrar el inventario json a sqlite te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 4: migrar el inventario json a sqlite como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 4: migrar el inventario json a sqlite resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 4: migrar el inventario JSON a SQLite se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 4: migrar el inventario JSON a SQLite | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 4: migrar el inventario json a sqlite por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 4: migrar el inventario json a sqlite funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 4: migrar el inventario JSON a SQLite existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 4: migrar el inventario json a sqlite en tu contexto?
-2. ¿Cómo sabrías que proyecto 4: migrar el inventario json a sqlite no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 4: migrar el inventario json a sqlite?
 
 </details>
 

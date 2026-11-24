@@ -12,12 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a declarar demo-alb para repartir tráfico entre los nodos de reparto de demo-asg (Módulo 21). Prerrequisitos: Módulo 21 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a declarar demo-alb para repartir tráfico entre los nodos de reparto de demo-asg (Módulo 21).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un ALB es una central que escucha, decide según reglas (ruta, host) y envía al grupo objetivo correspondiente, retirando de la rotación cualquier objetivo que falle el healthcheck.
 
@@ -34,6 +28,7 @@ Esto significa que en este módulo vas a practicar el ciclo de vida completo del
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-22/tema-1-alb.sh — ejecutar con: bash tema-1-alb.sh
 LB_ARN=$(aws elbv2 create-load-balancer --name demo-alb --type application --scheme internet-facing \
   --query 'LoadBalancers[0].LoadBalancerArn' --output text)
@@ -57,44 +52,6 @@ aws elbv2 create-rule --listener-arn "$LISTENER_ARN" --priority 10 \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Enruta seguimiento y operaciones a grupos objetivo distintos. Retira una instancia del grupo de prueba y confirma mediante peticiones que el tráfico se dirige únicamente a destinos saludables.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que elb v2 — balanceadores, grupos objetivo y reglas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ELB v2 — balanceadores, grupos objetivo y reglas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ELB v2 — balanceadores, grupos objetivo y reglas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses elb v2 — balanceadores, grupos objetivo y reglas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: elb v2 — balanceadores, grupos objetivo y reglas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ELB v2 — balanceadores, grupos objetivo y reglas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve elb v2 — balanceadores, grupos objetivo y reglas en tu contexto?
-2. ¿Cómo sabrías que elb v2 — balanceadores, grupos objetivo y reglas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar elb v2 — balanceadores, grupos objetivo y reglas?
 
 </details>
 
@@ -133,53 +90,6 @@ LISTENER_ARN=$(aws elbv2 create-listener --load-balancer-arn "$LB_ARN" --protoco
 #### ► DE QUÉ TRATA
 Al finalizar vas a emitir el certificado TLS que demo-alb (Tema 1) va a necesitar para su listener HTTPS. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a emitir el certificado TLS que demo-alb (Tema 1) va a necesitar para su listener HTTPS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en acm — certificados tls con criptografía real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que acm — certificados tls con criptografía real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ACM — certificados TLS con criptografía real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ACM — certificados TLS con criptografía real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses acm — certificados tls con criptografía real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: acm — certificados tls con criptografía real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ACM — certificados TLS con criptografía real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve acm — certificados tls con criptografía real en tu contexto?
-2. ¿Cómo sabrías que acm — certificados tls con criptografía real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar acm — certificados tls con criptografía real?
-
 </details>
 
 <details>
@@ -214,12 +124,6 @@ aws acm describe-certificate --certificate-arn "$CERT_ARN" --query 'Certificate.
 #### ► DE QUÉ TRATA
 Al finalizar vas a distribuir las fotos de entrega de pruebas-entrega (Módulo 2) por CDN, en vez de servirlas directamente desde S3. Prerrequisitos: Módulo 2 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a distribuir las fotos de entrega de pruebas-entrega (Módulo 2) por CDN, en vez de servirlas directamente desde S3.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 CloudFront es una red de sucursales: la caché evita que cada petición tenga que viajar hasta el almacén central (el bucket S3 de origen).
 
@@ -238,6 +142,7 @@ Un detalle de comportamiento importante: todas las operaciones de mutación (`PU
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-22/tema-3-cloudfront.sh — ejecutar con: bash tema-3-cloudfront.sh
 DIST_ID=$(aws cloudfront create-distribution --distribution-config \
   '{"CallerReference":"demo-1","Enabled":true,"Origins":{"Quantity":1,"Items":[{"Id":"origen-s3","DomainName":"curso-cloud-local.s3.amazonaws.com","S3OriginConfig":{"OriginAccessIdentity":""}}]},"DefaultCacheBehavior":{"TargetOriginId":"origen-s3","ViewerProtocolPolicy":"redirect-to-https","CachePolicyId":"658327ea-f89d-4fab-a63d-7e88639e58f6"}}' \
@@ -258,44 +163,6 @@ aws cloudfront create-invalidation --distribution-id "$DIST_ID" \
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Distribuye solo recursos públicos del seguimiento mediante el borde. Comprueba que una evidencia privada no se vuelve accesible al reutilizar la misma política de caché o de origen.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que cloudfront — distribución de contenido y control de acceso al origen resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CloudFront — distribución de contenido y control de acceso al origen se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CloudFront — distribución de contenido y control de acceso al origen | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cloudfront — distribución de contenido y control de acceso al origen por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cloudfront — distribución de contenido y control de acceso al origen funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CloudFront — distribución de contenido y control de acceso al origen existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cloudfront — distribución de contenido y control de acceso al origen en tu contexto?
-2. ¿Cómo sabrías que cloudfront — distribución de contenido y control de acceso al origen no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cloudfront — distribución de contenido y control de acceso al origen?
 
 </details>
 
@@ -328,12 +195,6 @@ DIST_ID=$(aws cloudfront create-distribution --distribution-config \
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear la zona DNS de demo.example.com y apuntar fotos.demo.example.com hacia la distribución CloudFront del Tema 3. Prerrequisitos: Tema 3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear la zona DNS de demo.example.com y apuntar fotos.demo.example.com hacia la distribución CloudFront del Tema 3.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 DNS es una agenda jerárquica que traduce un nombre legible a un destino real, y una zona alojada es la página de esa agenda que le corresponde a tu dominio.
 
@@ -350,6 +211,7 @@ Un detalle útil para depurar: los IDs de zona alojada se devuelven con el prefi
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-22/tema-4-route53.sh — ejecutar con: bash tema-4-route53.sh
 ZONE_ID=$(aws route53 create-hosted-zone --name demo.example.com --caller-reference "$(date +%s)" \
   --query 'HostedZone.Id' --output text)
@@ -370,44 +232,6 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID"
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea la zona alojada del seguimiento y publica los subdominios de sus servicios como registros separados. Intenta borrar el `SOA` del vértice y conserva el rechazo como prueba de que ese registro lo gestiona el servicio, no tú.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que route53 — zonas alojadas y registros de recursos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Route53 — zonas alojadas y registros de recursos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Route53 — zonas alojadas y registros de recursos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses route53 — zonas alojadas y registros de recursos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: route53 — zonas alojadas y registros de recursos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Route53 — zonas alojadas y registros de recursos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve route53 — zonas alojadas y registros de recursos en tu contexto?
-2. ¿Cómo sabrías que route53 — zonas alojadas y registros de recursos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar route53 — zonas alojadas y registros de recursos?
 
 </details>
 
@@ -441,12 +265,6 @@ aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-bat
 #### ► DE QUÉ TRATA
 Al finalizar vas a encadenar los cuatro servicios de este módulo: demo-alb (Tema 1) con el certificado de api.demo.example.com (Tema 2), y el CNAME de Route53 apuntando al balanceador mientras fotos.demo.example.com sigue apuntando a CloudFront. Prerrequisitos: Temas 1-4 de este…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a encadenar los cuatro servicios de este módulo: demo-alb (Tema 1) con el certificado de api.demo.example.com (Tema 2), y el CNAME de Route53 apuntando al balanceador mientras fotos.demo.example.com sigue apuntando a CloudFront.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 ACM es la identidad criptográfica; el ALB es la recepción que termina esa conexión TLS; Route53 es el directorio que le dice al cliente a qué recepción ir.
 
@@ -465,6 +283,7 @@ Reconocer esta cadena de dependencias —certificado, punto de entrada de tráfi
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-22/tema-5-cadena-completa.sh — ejecutar con: bash tema-5-cadena-completa.sh
 # Cada ARN se recupera por nombre: este bloque no depende de variables de
 # los Temas 1, 2 y 4 — puedes correrlo en una terminal nueva.
@@ -493,44 +312,6 @@ aws route53 list-resource-record-sets --hosted-zone-id "$ZONE_ID" --query "Resou
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Dibuja el recorrido DNS, TLS, distribución y balanceador del seguimiento. Provoca un fallo en una capa y conserva la prueba que lo distingue de un error de aplicación.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que cómo se integran los cuatro servicios en una arquitectura de borde real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Cómo se integran los cuatro servicios en una arquitectura de borde real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Cómo se integran los cuatro servicios en una arquitectura de borde real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cómo se integran los cuatro servicios en una arquitectura de borde real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cómo se integran los cuatro servicios en una arquitectura de borde real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Cómo se integran los cuatro servicios en una arquitectura de borde real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cómo se integran los cuatro servicios en una arquitectura de borde real en tu contexto?
-2. ¿Cómo sabrías que cómo se integran los cuatro servicios en una arquitectura de borde real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cómo se integran los cuatro servicios en una arquitectura de borde real?
 
 </details>
 
@@ -573,16 +354,6 @@ aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-bat
 #### ► DE QUÉ TRATA
 Usa Terraform con el proveedor AWS. Puedes practicar el plan contra el emulador local; el bloqueo real se prueba en una cuenta con CloudFront o un balanceador.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Terraform con el proveedor AWS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -592,37 +363,6 @@ flowchart LR
     W -->|bloqueado| X["403"]
     C --> A["API RutaFlow"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde en tu contexto?
-2. ¿Cómo sabrías que waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar waf y protección ddos: limitar peticiones y bloquear ataques comunes en el borde?
 
 </details>
 
@@ -720,56 +460,6 @@ En CloudWatch, la métrica limite-por-ip muestra las peticiones bloqueadas.
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 22.1 — application load balancer con enrutamiento por ruta con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 22.1 — application load balancer con enrutamiento por ruta te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 22.1 — application load balancer con enrutamiento por ruta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 22.1 — application load balancer con enrutamiento por ruta resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 22.1 — application load balancer con enrutamiento por ruta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 22.1 — application load balancer con enrutamiento por ruta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 22.1 — Application Load Balancer con enrutamiento por ruta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 22.1 — application load balancer con enrutamiento por ruta en tu contexto?
-2. ¿Cómo sabrías que laboratorio 22.1 — application load balancer con enrutamiento por ruta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 22.1 — application load balancer con enrutamiento por ruta?
-
 </details>
 
 <details>
@@ -784,56 +474,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 22.2 — certificado, distribución cdn y zona dns con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 22.2 — certificado, distribución cdn y zona dns te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 22.2 — certificado, distribución cdn y zona dns como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 22.2 — certificado, distribución cdn y zona dns resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 22.2 — Certificado, distribución CDN y zona DNS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 22.2 — Certificado, distribución CDN y zona DNS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 22.2 — certificado, distribución cdn y zona dns por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 22.2 — certificado, distribución cdn y zona dns funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 22.2 — Certificado, distribución CDN y zona DNS existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 22.2 — certificado, distribución cdn y zona dns en tu contexto?
-2. ¿Cómo sabrías que laboratorio 22.2 — certificado, distribución cdn y zona dns no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 22.2 — certificado, distribución cdn y zona dns?
 
 </details>
 

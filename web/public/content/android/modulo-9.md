@@ -26,53 +26,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás testear un ViewModel con un repositorio fake, explicando por qué es más rápido y confiable que probar contra la API real.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás testear un ViewModel con un repositorio fake, explicando por qué es más rápido y confiable que probar contra la API real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en testing de viewmodels con fakes y runtest como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que testing de viewmodels con fakes y runtest resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Testing de ViewModels con fakes y runTest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Testing de ViewModels con fakes y runTest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses testing de viewmodels con fakes y runtest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: testing de viewmodels con fakes y runtest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Testing de ViewModels con fakes y runTest existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve testing de viewmodels con fakes y runtest en tu contexto?
-2. ¿Cómo sabrías que testing de viewmodels con fakes y runtest no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar testing de viewmodels con fakes y runtest?
-
 </details>
 
 <details>
@@ -196,53 +149,6 @@ python3 -m unittest test_viewmodel_fake.py -v
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir un test de Compose UI que verifique lo que efectivamente se renderiza, no solo el estado interno de un ViewModel.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir un test de Compose UI que verifique lo que efectivamente se renderiza, no solo el estado interno de un ViewModel.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en compose ui testing como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que compose ui testing resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compose UI Testing se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compose UI Testing | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compose ui testing por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compose ui testing funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compose UI Testing existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compose ui testing en tu contexto?
-2. ¿Cómo sabrías que compose ui testing no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compose ui testing?
-
 </details>
 
 <details>
@@ -328,12 +234,6 @@ print('con render CON BUG, UI coincide con el estado:', ui_muestra_correctamente
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar qué cubre un test end-to-end que lanza la Activity real de la app (en vez de un único composable aislado) que ni un test de ViewModel ni uno de Compose UI del Tema 2 cubren, y decidir entre un fake y un mock.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar qué cubre un test end-to-end que lanza la Activity real de la app (en vez de un único composable aislado) que ni un test de ViewModel ni uno de Compose UI del Tema 2 cubren, y decidir entre un fake y un mock.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** validación de flujos completos de usuario lanzando la Activity real, código Kotlin ordinario frente a proxies generados.
 
@@ -352,47 +252,8 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 └── Mock (proxy generado, Mockito) ──┘  verificación puntual de interacciones específicas
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► REGLA PRÁCTICA
 Prefiere un fake por defecto: es código Kotlin reutilizable con comportamiento consistente entre tests. Recurre a un mock solo cuando lo que quieres verificar es una interacción puntual muy específica (que se llamó un método exacto, con esos argumentos exactos, esa cantidad de veces) y no el comportamiento general del colaborador.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que testing end-to-end con activity real, y fakes vs mocks resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Testing end-to-end con Activity real, y fakes vs mocks se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Testing end-to-end con Activity real, y fakes vs mocks | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses testing end-to-end con activity real, y fakes vs mocks por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: testing end-to-end con activity real, y fakes vs mocks funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Testing end-to-end con Activity real, y fakes vs mocks existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve testing end-to-end con activity real, y fakes vs mocks en tu contexto?
-2. ¿Cómo sabrías que testing end-to-end con activity real, y fakes vs mocks no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar testing end-to-end con activity real, y fakes vs mocks?
 
 </details>
 

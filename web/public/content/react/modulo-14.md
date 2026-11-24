@@ -16,53 +16,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. Prerrequisitos: Módulo 10 (App Router y Server Components) y Módulo 13, Tema 3 (autorización en el servidor). Este ejemplo usa Next.js 16, runtime Node y la configura…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en next.js isr, metadata y proxy (antes middleware) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que next.js isr, metadata y proxy (antes middleware) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Next.js ISR, Metadata y Proxy (antes Middleware) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Next.js ISR, Metadata y Proxy (antes Middleware) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses next.js isr, metadata y proxy (antes middleware) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: next.js isr, metadata y proxy (antes middleware) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Next.js ISR, Metadata y Proxy (antes Middleware) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve next.js isr, metadata y proxy (antes middleware) en tu contexto?
-2. ¿Cómo sabrías que next.js isr, metadata y proxy (antes middleware) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar next.js isr, metadata y proxy (antes middleware)?
-
 </details>
 
 <details>
@@ -156,53 +109,6 @@ npm run start
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir app/components/Photo.tsx con next/image y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con next/font en vez de un <link> bloqueante, midiendo el CLS antes y después. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir app/components/Photo.tsx con next/image y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con next/font en vez de un <link> bloqueante, midiendo el CLS antes y después.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en optimización de imágenes y fuentes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que optimización de imágenes y fuentes resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Optimización de imágenes y fuentes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Optimización de imágenes y fuentes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses optimización de imágenes y fuentes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: optimización de imágenes y fuentes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Optimización de imágenes y fuentes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve optimización de imágenes y fuentes en tu contexto?
-2. ¿Cómo sabrías que optimización de imágenes y fuentes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar optimización de imágenes y fuentes?
-
 </details>
 
 <details>
@@ -243,53 +149,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir app/components/Dialog.tsx con useDialog de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un <div> plano que es invisible para un lector de pantalla. Prerrequisitos: Tema 2 de este módulo y…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir app/components/Dialog.tsx con useDialog de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un <div> plano que es invisible para un lector de pantalla.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en accesibilidad y react aria como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que accesibilidad y react aria resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Accesibilidad y React Aria se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Accesibilidad y React Aria | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses accesibilidad y react aria por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: accesibilidad y react aria funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Accesibilidad y React Aria existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve accesibilidad y react aria en tu contexto?
-2. ¿Cómo sabrías que accesibilidad y react aria no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar accesibilidad y react aria?
 
 </details>
 
@@ -333,53 +192,6 @@ export function ConfirmarEntregaDialog({ onConfirm, onClose }: Props) {
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a configurar next-intl para /[locale]/envios/[id] con un mensaje pluralizado correctamente ("1 envío" vs. "3 envíos") y dir="rtl" para un locale árabe, y vas a reproducir el fallo de una clave de traducción faltante en un idioma. Prerrequisitos: Tema 3 de este mó…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a configurar next-intl para /[locale]/envios/[id] con un mensaje pluralizado correctamente ("1 envío" vs.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en i18n, pluralización y rtl como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que i18n, pluralización y rtl resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| i18n, pluralización y RTL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar i18n, pluralización y RTL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses i18n, pluralización y rtl por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: i18n, pluralización y rtl funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- i18n, pluralización y RTL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve i18n, pluralización y rtl en tu contexto?
-2. ¿Cómo sabrías que i18n, pluralización y rtl no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar i18n, pluralización y rtl?
 
 </details>
 

@@ -14,16 +14,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a hacer que PanelEnvios consulte la API de RutaFlow dentro de un useEffect, cancelando la petición con AbortController cuando el componente se desmonte o cambie el filtro. Prerrequisitos: Módulo 1 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a hacer que PanelEnvios consulte la API de RutaFlow dentro de un useEffect, cancelando la petición con AbortController cuando el componente se desmonte o cambie el filtro.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en useeffect — dependencias y limpieza como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -40,37 +30,6 @@ graph TD
     style E fill:#ff9800
     style C fill:#4caf50
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| useEffect — dependencias y limpieza se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar useEffect — dependencias y limpieza | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses useeffect — dependencias y limpieza por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: useeffect — dependencias y limpieza funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- useEffect — dependencias y limpieza existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve useeffect — dependencias y limpieza en tu contexto?
-2. ¿Cómo sabrías que useeffect — dependencias y limpieza no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar useeffect — dependencias y limpieza?
 
 </details>
 
@@ -165,56 +124,6 @@ npm run dev
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por cuándo no usar un effect: estado derivado, eventos y reinicio con `key` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender cuándo no usar un effect: estado derivado, eventos y reinicio con `key` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en cuándo no usar un effect: estado derivado, eventos y reinicio con `key` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que cuándo no usar un effect: estado derivado, eventos y reinicio con `key` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cuándo no usar un effect: estado derivado, eventos y reinicio con `key` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cuándo no usar un effect: estado derivado, eventos y reinicio con `key` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cuándo no usar un effect: estado derivado, eventos y reinicio con `key` en tu contexto?
-2. ¿Cómo sabrías que cuándo no usar un effect: estado derivado, eventos y reinicio con `key` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cuándo no usar un effect: estado derivado, eventos y reinicio con `key`?
 
 </details>
 
@@ -392,16 +301,6 @@ export function TotalKilos({ envios }) {
 #### ► DE QUÉ TRATA
 Al finalizar vas a contar, con useRef, cuántas veces se renderizó PanelEnvios sin que ese contador dispare ningún render adicional por sí mismo. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a contar, con useRef, cuántas veces se renderizó PanelEnvios sin que ese contador dispare ningún render adicional por sí mismo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en useref — valores mutables sin re-render como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -419,37 +318,6 @@ graph TD
     style B fill:#4caf50
     style E fill:#2196f3
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| useRef — valores mutables sin re-render se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar useRef — valores mutables sin re-render | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses useref — valores mutables sin re-render por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: useref — valores mutables sin re-render funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- useRef — valores mutables sin re-render existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve useref — valores mutables sin re-render en tu contexto?
-2. ¿Cómo sabrías que useref — valores mutables sin re-render no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar useref — valores mutables sin re-render?
 
 </details>
 
@@ -515,16 +383,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar vas a medir (antes de "optimizar a ciegas") si ordenar la lista de envíos por fecha estimada es realmente costoso, y a decidir si useMemo vale la pena para ese cálculo. Prerrequisitos: Tema 3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a medir (antes de "optimizar a ciegas") si ordenar la lista de envíos por fecha estimada es realmente costoso, y a decidir si useMemo vale la pena para ese cálculo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en usememo y usecallback con criterio como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -545,37 +403,6 @@ graph TD
     style G fill:#ffebee
     style H fill:#e8f5e9
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| useMemo y useCallback con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar useMemo y useCallback con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses usememo y usecallback con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: usememo y usecallback con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- useMemo y useCallback con criterio existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve usememo y usecallback con criterio en tu contexto?
-2. ¿Cómo sabrías que usememo y usecallback con criterio no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar usememo y usecallback con criterio?
 
 </details>
 
@@ -652,16 +479,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar vas a modelar con useReducer las transiciones de estado de PanelEnvios (cargando/éxito/error), en vez de varios useState independientes que podrían quedar en combinaciones inconsistentes. Prerrequisitos: Tema 4 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a modelar con useReducer las transiciones de estado de PanelEnvios (cargando/éxito/error), en vez de varios useState independientes que podrían quedar en combinaciones inconsistentes.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en reglas de los hooks, usereducer y useimperativehandle como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -682,37 +499,6 @@ graph TD
     style H fill:#e8f5e9
     style J fill:#e8f5e9
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Reglas de los hooks, useReducer y useImperativeHandle se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Reglas de los hooks, useReducer y useImperativeHandle | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses reglas de los hooks, usereducer y useimperativehandle por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: reglas de los hooks, usereducer y useimperativehandle funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Reglas de los hooks, useReducer y useImperativeHandle existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve reglas de los hooks, usereducer y useimperativehandle en tu contexto?
-2. ¿Cómo sabrías que reglas de los hooks, usereducer y useimperativehandle no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar reglas de los hooks, usereducer y useimperativehandle?
 
 </details>
 
@@ -788,12 +574,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar podrás envolver una parte de la UI en un Error Boundary que atrape un error de render y muestre una interfaz de recuperación, en vez de que toda la app quede en blanco. Prerrequisitos: Módulo 1 (componentes y estado).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás envolver una parte de la UI en un Error Boundary que atrape un error de render y muestre una interfaz de recuperación, en vez de que toda la app quede en blanco.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un **Error Boundary** es un componente (hoy en día, de clase, porque usa `componentDidCatch`/`getDerivedStateFromError`, o el envoltorio `react-error-boundary`) que captura errores lanzados durante el render de sus hijos y renderiza una UI alternativa. No captura errores de eventos ni de código async — solo errores de renderizado.
 
@@ -819,8 +599,6 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Errores comunes:** esperar que un Error Boundary atrape errores de un manejador de eventos o de un `fetch` asíncrono, cuando solo captura errores lanzados durante el render; envolver toda la app en un único boundary en vez de uno por sección, perdiendo el aislamiento que evita que un widget derribe a los demás.
 **Fuente oficial:** [documentación de React](https://react.dev/reference/react).
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -829,37 +607,6 @@ graph TD
     C --> D[Mapa 💥 lanza error]
     C -.captura.-> E[UI de recuperación: 'No se pudo cargar el mapa']
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Error Boundaries — contener errores de render sin romper toda la app se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Error Boundaries — contener errores de render sin romper toda la app | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses error boundaries — contener errores de render sin romper toda la app por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: error boundaries — contener errores de render sin romper toda la app funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Error Boundaries — contener errores de render sin romper toda la app existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve error boundaries — contener errores de render sin romper toda la app en tu contexto?
-2. ¿Cómo sabrías que error boundaries — contener errores de render sin romper toda la app no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar error boundaries — contener errores de render sin romper toda la app?
 
 </details>
 
@@ -929,53 +676,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Al finalizar reproducirás una carrera entre dos solicitudes y evitarás mostrar datos de una selección anterior. Prerrequisitos: props, estado, efectos, promesas y cleanup. Node y npm compatibles con Vite 8. Ejemplo independiente desde carpeta vacía.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar reproducirás una carrera entre dos solicitudes y evitarás mostrar datos de una selección anterior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual en tu contexto?
-2. ¿Cómo sabrías que efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual?
-
 </details>
 
 <details>
@@ -1033,12 +733,6 @@ npm run dev
 #### ► DE QUÉ TRATA
 Usa React 19.2 o superior (ahí useEffectEvent es estable). Parte del proyecto de Vite del módulo y trabaja en src/Tooltip.jsx y src/Seguimiento.jsx.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa React 19.2 o superior (ahí useEffectEvent es estable).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** fase de layout, pintado, `useLayoutEffect`, `getBoundingClientRect`, evento de efecto, `useEffectEvent`, dependencias.
 
@@ -1068,8 +762,6 @@ flowchart LR
     E -. "usa" .-> V["useEffectEvent<br/>valores recientes"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -1079,37 +771,6 @@ flowchart LR
     P --> E["useEffect<br/>conecta, pide datos"]
     E -. "usa" .-> V["useEffectEvent<br/>valores recientes"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses uselayouteffect y useeffectevent: medir antes de pintar y leer valores sin reconectar por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: uselayouteffect y useeffectevent: medir antes de pintar y leer valores sin reconectar funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve uselayouteffect y useeffectevent: medir antes de pintar y leer valores sin reconectar en tu contexto?
-2. ¿Cómo sabrías que uselayouteffect y useeffectevent: medir antes de pintar y leer valores sin reconectar no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar uselayouteffect y useeffectevent: medir antes de pintar y leer valores sin reconectar?
 
 </details>
 

@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás lanzar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás lanzar una instancia desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el modelo de ejecución de ec2 — instancias que son contenedores docker reales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -34,37 +24,6 @@ stateDiagram-v2
  shutting_down --> terminated
  terminated --> [*]: consultable 1h, luego se elimina
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El modelo de ejecución de EC2 — instancias que son contenedores Docker reales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El modelo de ejecución de EC2 — instancias que son contenedores Docker reales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el modelo de ejecución de ec2 — instancias que son contenedores docker reales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el modelo de ejecución de ec2 — instancias que son contenedores docker reales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El modelo de ejecución de EC2 — instancias que son contenedores Docker reales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el modelo de ejecución de ec2 — instancias que son contenedores docker reales en tu contexto?
-2. ¿Cómo sabrías que el modelo de ejecución de ec2 — instancias que son contenedores docker reales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el modelo de ejecución de ec2 — instancias que son contenedores docker reales?
 
 </details>
 
@@ -111,12 +70,6 @@ aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,State
 #### ► DE QUÉ TRATA
 Al finalizar vas a preparar el grupo de seguridad y la clave SSH que el primer nodo de reparto va a usar para arrancar. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a preparar el grupo de seguridad y la clave SSH que el primer nodo de reparto va a usar para arrancar.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 La AMI es el molde de la instancia; el security group es la portería que declara qué tráfico debería entrar; la key pair es la llave real para entrar por SSH.
 
@@ -125,6 +78,7 @@ La AMI es el molde de la instancia; el security group es la portería que declar
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-21/tema-2-security-group-y-clave.sh — ejecutar con: bash tema-2-security-group-y-clave.sh
 GROUP_ID=$(aws ec2 create-security-group \
   --group-name demo-nodo --description "SG del primer nodo demo" \
@@ -151,44 +105,6 @@ Los grupos de seguridad se crean, almacenan y devuelven correctamente vía `Crea
 
 **¿Por qué es importante?** Saber que los grupos de seguridad no filtran tráfico realmente en Floci evita que confundas "mi laboratorio funcionó a pesar de reglas restrictivas" con "mis reglas de seguridad son correctas": esa validación real solo la obtienes contra AWS de verdad.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que amis, grupos de seguridad y claves ssh resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| AMIs, grupos de seguridad y claves SSH se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar AMIs, grupos de seguridad y claves SSH | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses amis, grupos de seguridad y claves ssh por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: amis, grupos de seguridad y claves ssh funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- AMIs, grupos de seguridad y claves SSH existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve amis, grupos de seguridad y claves ssh en tu contexto?
-2. ¿Cómo sabrías que amis, grupos de seguridad y claves ssh no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar amis, grupos de seguridad y claves ssh?
 
 </details>
 
@@ -220,53 +136,6 @@ aws ec2 import-key-pair --key-name demo-key --public-key-material fileb://~/.ssh
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás inicializar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás inicializar una instancia desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en userdata e imds — arranque automatizado y credenciales por instancia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que userdata e imds — arranque automatizado y credenciales por instancia resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| UserData e IMDS — arranque automatizado y credenciales por instancia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar UserData e IMDS — arranque automatizado y credenciales por instancia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses userdata e imds — arranque automatizado y credenciales por instancia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: userdata e imds — arranque automatizado y credenciales por instancia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- UserData e IMDS — arranque automatizado y credenciales por instancia existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve userdata e imds — arranque automatizado y credenciales por instancia en tu contexto?
-2. ¿Cómo sabrías que userdata e imds — arranque automatizado y credenciales por instancia no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar userdata e imds — arranque automatizado y credenciales por instancia?
 
 </details>
 
@@ -303,12 +172,6 @@ docker logs "$(docker ps -lq)" | grep -ci 'secret\|password' || true
 #### ► DE QUÉ TRATA
 Al finalizar vas a declarar demo-asg, el grupo que mantiene siempre disponible al menos un nodo de reparto activo. Prerrequisitos: Temas 2-3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a declarar demo-asg, el grupo que mantiene siempre disponible al menos un nodo de reparto activo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un Auto Scaling Group es una flota con mínimo, máximo y capacidad deseada declarados: vos decís el resultado que querés, el grupo se encarga de los pasos para lograrlo.
 
@@ -325,6 +188,7 @@ Los grupos de Auto Scaling se pueden adjuntar a grupos objetivo de un Applicatio
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-21/tema-4-launch-config.sh — ejecutar con: bash tema-4-launch-config.sh
 aws autoscaling create-launch-configuration \
   --launch-configuration-name demo-lc \
@@ -346,44 +210,6 @@ aws autoscaling create-auto-scaling-group \
 
 **Cómo crece tu proyecto:** `demo-asg` es el grupo que mantiene siempre disponible al menos un nodo de reparto activo para el proyecto integrador, incluso si uno falla.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que auto scaling — configuraciones de lanzamiento y grupos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Auto Scaling — configuraciones de lanzamiento y grupos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Auto Scaling — configuraciones de lanzamiento y grupos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses auto scaling — configuraciones de lanzamiento y grupos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: auto scaling — configuraciones de lanzamiento y grupos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Auto Scaling — configuraciones de lanzamiento y grupos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve auto scaling — configuraciones de lanzamiento y grupos en tu contexto?
-2. ¿Cómo sabrías que auto scaling — configuraciones de lanzamiento y grupos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar auto scaling — configuraciones de lanzamiento y grupos?
 
 </details>
 
@@ -420,12 +246,6 @@ aws autoscaling create-auto-scaling-group --auto-scaling-group-name demo-asg \
 #### ► DE QUÉ TRATA
 Al finalizar vas a forzar que el reconciliador de demo-asg (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible. Prerrequisitos: Tema 4 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a forzar que el reconciliador de demo-asg (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 El reconciliador compara, cada 10 segundos, cuántas instancias hay contra cuántas debería haber — como un encargado de turno que cuenta meseros y llama a alguien de guardia si faltan.
 
@@ -442,6 +262,7 @@ Los lifecycle hooks (`PutLifecycleHook`) te permiten insertar una pausa controla
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-21/tema-5-reconciliador.sh — ejecutar con: bash tema-5-reconciliador.sh
 aws autoscaling set-desired-capacity --auto-scaling-group-name demo-asg --desired-capacity 3
 sleep 12
@@ -460,44 +281,6 @@ aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Aumenta la demanda simulada de procesamiento y observa las decisiones de capacidad. Documenta umbral, enfriamiento y capacidad máxima; al bajar la carga, comprueba que las tareas en curso no se pierden.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que el reconciliador de capacidad y las políticas de escalado resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El reconciliador de capacidad y las políticas de escalado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El reconciliador de capacidad y las políticas de escalado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el reconciliador de capacidad y las políticas de escalado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el reconciliador de capacidad y las políticas de escalado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El reconciliador de capacidad y las políticas de escalado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el reconciliador de capacidad y las políticas de escalado en tu contexto?
-2. ¿Cómo sabrías que el reconciliador de capacidad y las políticas de escalado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el reconciliador de capacidad y las políticas de escalado?
 
 </details>
 
@@ -532,16 +315,6 @@ aws autoscaling describe-scaling-activities --auto-scaling-group-name demo-asg
 #### ► DE QUÉ TRATA
 Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública. Prerrequisitos: Módulo 0 (fundamentos de redes: IP, puertos) y Floci corriendo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en vpc y redes — subredes, security groups y el flujo del tráfico como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -550,37 +323,6 @@ flowchart LR
     PUB --> PRIV[Subred privada: App + Base de datos]
     PRIV -.sin ruta directa a internet.-> I
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| VPC y redes — subredes, security groups y el flujo del tráfico se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar VPC y redes — subredes, security groups y el flujo del tráfico | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses vpc y redes — subredes, security groups y el flujo del tráfico por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: vpc y redes — subredes, security groups y el flujo del tráfico funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- VPC y redes — subredes, security groups y el flujo del tráfico existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve vpc y redes — subredes, security groups y el flujo del tráfico en tu contexto?
-2. ¿Cómo sabrías que vpc y redes — subredes, security groups y el flujo del tráfico no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar vpc y redes — subredes, security groups y el flujo del tráfico?
 
 </details>
 
@@ -615,56 +357,6 @@ aws ec2 describe-security-groups --group-ids "$SG"
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 21.1 — Lanzar una instancia EC2 con acceso SSH e IMDS existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds en tu contexto?
-2. ¿Cómo sabrías que laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 21.1 — lanzar una instancia ec2 con acceso ssh e imds?
-
 </details>
 
 <details>
@@ -679,56 +371,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 21.2 — auto scaling group con reconciliador en vivo con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 21.2 — auto scaling group con reconciliador en vivo te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 21.2 — auto scaling group con reconciliador en vivo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 21.2 — auto scaling group con reconciliador en vivo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 21.2 — auto scaling group con reconciliador en vivo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 21.2 — auto scaling group con reconciliador en vivo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 21.2 — Auto Scaling Group con reconciliador en vivo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 21.2 — auto scaling group con reconciliador en vivo en tu contexto?
-2. ¿Cómo sabrías que laboratorio 21.2 — auto scaling group con reconciliador en vivo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 21.2 — auto scaling group con reconciliador en vivo?
 
 </details>
 

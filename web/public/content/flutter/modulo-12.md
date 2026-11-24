@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a organizar el proyecto integrador de RutaFlow en lib/features/envios/ y lib/features/auth/, con capas Domain/Data/Presentation dentro de cada feature. Prerrequisitos: módulos 0-11 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a organizar el proyecto integrador de RutaFlow en lib/features/envios/ y lib/features/auth/, con capas Domain/Data/Presentation dentro de cada feature.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en arquitectura por features y clean architecture como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que arquitectura por features y clean architecture resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arquitectura por features y Clean Architecture se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arquitectura por features y Clean Architecture | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arquitectura por features y clean architecture por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arquitectura por features y clean architecture funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arquitectura por features y Clean Architecture existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arquitectura por features y clean architecture en tu contexto?
-2. ¿Cómo sabrías que arquitectura por features y clean architecture no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arquitectura por features y clean architecture?
-
 </details>
 
 <details>
@@ -114,12 +67,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a conectar envioRepositoryProvider (Riverpod), el estado explícito de AsyncValue, y la persistencia offline-first en una sola pantalla ListaEnviosScreen completa. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a conectar envioRepositoryProvider (Riverpod), el estado explícito de AsyncValue, y la persistencia offline-first en una sola pantalla ListaEnviosScreen completa.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `AsyncValue.when(data:, loading:, error:)` maneja exhaustivamente los tres estados posibles de una operación asíncrona directamente en la UI.
 **Conceptos clave:** cada concepto estudiado por separado encaja como parte de un sistema mayor.
@@ -173,8 +120,6 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, `ListaEnviosScreen` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart` y `envioRepositoryProvider` en `lib/features/deliveries/domain/delivery_providers.dart`.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -184,37 +129,6 @@ flowchart TD
     D --> E["Hive (M6): caché local"]
     A --> F["AsyncValue.when: data/loading/error"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Uniendo los módulos del track se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Uniendo los módulos del track | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses uniendo los módulos del track por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: uniendo los módulos del track funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Uniendo los módulos del track existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve uniendo los módulos del track en tu contexto?
-2. ¿Cómo sabrías que uniendo los módulos del track no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar uniendo los módulos del track?
 
 </details>
 
@@ -234,16 +148,6 @@ Al finalizar vas a conectar `envioRepositoryProvider` (Riverpod), el estado expl
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en retrospectiva del proyecto integrador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -252,37 +156,6 @@ flowchart LR
     C --> D["SwiftUI (iOS)"]
     C --> E["Compose (Android/KMP)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Retrospectiva del proyecto integrador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Retrospectiva del proyecto integrador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses retrospectiva del proyecto integrador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: retrospectiva del proyecto integrador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Retrospectiva del proyecto integrador existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve retrospectiva del proyecto integrador en tu contexto?
-2. ¿Cómo sabrías que retrospectiva del proyecto integrador no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar retrospectiva del proyecto integrador?
 
 </details>
 
@@ -334,16 +207,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Usa Flutter 3.24 o superior. Crea la carpeta lib/features/envios/ con subcarpetas data/services, data/repositories y ui/. El ejemplo usa ChangeNotifier para no depender de paquetes.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Flutter 3.24 o superior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en arquitectura recomendada de flutter: views, view models, repositories y services como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -352,37 +215,6 @@ flowchart LR
     VM --> R["EnviosRepository<br/>fuente de verdad"]
     R --> S["EnviosApiService<br/>HTTP"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arquitectura recomendada de Flutter: views, view models, repositories y services se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arquitectura recomendada de Flutter: views, view models, repositories y services | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arquitectura recomendada de flutter: views, view models, repositories y services por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arquitectura recomendada de flutter: views, view models, repositories y services funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arquitectura recomendada de Flutter: views, view models, repositories y services existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arquitectura recomendada de flutter: views, view models, repositories y services en tu contexto?
-2. ¿Cómo sabrías que arquitectura recomendada de flutter: views, view models, repositories y services no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arquitectura recomendada de flutter: views, view models, repositories y services?
 
 </details>
 

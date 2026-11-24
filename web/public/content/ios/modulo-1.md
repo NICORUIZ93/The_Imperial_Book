@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir TarjetaEnvio, una vista propia que muestra un envío de RutaFlow, y a componerla dentro de otra vista como si fuera nativa. Prerrequisitos: macOS, Xcode y Swift; verifica xcodebuild -version.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir TarjetaEnvio, una vista propia que muestra un envío de RutaFlow, y a componerla dentro de otra vista como si fuera nativa.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el protocolo view y composición como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TB
@@ -43,37 +33,6 @@ graph TB
     style D fill:#ffd700
     style E fill:#ffd700
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El protocolo View y composición se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El protocolo View y composición | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el protocolo view y composición por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el protocolo view y composición funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El protocolo View y composición existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el protocolo view y composición en tu contexto?
-2. ¿Cómo sabrías que el protocolo view y composición no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el protocolo view y composición?
 
 </details>
 
@@ -190,16 +149,6 @@ struct ListaEnviosConDuplicacion: View {
 #### ► DE QUÉ TRATA
 Al finalizar vas a ver con tus propios ojos por qué .padding().background() y .background().padding() se ven distinto en TarjetaEnvio (Tema 1). Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a ver con tus propios ojos por qué .padding().background() y .background().padding() se ven distinto en TarjetaEnvio (Tema 1).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en orden de modificadores y layout con stacks como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -232,37 +181,6 @@ graph LR
     style P2 fill:#87ceeb
     style R2 fill:#ccffcc
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Orden de modificadores y layout con stacks se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Orden de modificadores y layout con stacks | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses orden de modificadores y layout con stacks por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: orden de modificadores y layout con stacks funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Orden de modificadores y layout con stacks existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve orden de modificadores y layout con stacks en tu contexto?
-2. ¿Cómo sabrías que orden de modificadores y layout con stacks no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar orden de modificadores y layout con stacks?
 
 </details>
 
@@ -347,16 +265,6 @@ struct TarjetaEnvioConOrderIncorrecto: View {
 #### ► DE QUÉ TRATA
 Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con LazyVGrid dentro de un ScrollView, e iterar su diseño con Previews sin correr la app. Prerrequisitos: Temas 1-2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con LazyVGrid dentro de un ScrollView, e iterar su diseño con Previews sin correr la app.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en previews, lazyvgrid/scrollview y property wrappers como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -364,37 +272,6 @@ flowchart TD
     B -->|Muestra fija| C["Renderiza casi instantáneo\nen el canvas de Xcode"]
     B -->|Red real| D["Carga indefinida o falla:\nPreviews no esperan respuestas async reales"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Previews, LazyVGrid/ScrollView y property wrappers se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Previews, LazyVGrid/ScrollView y property wrappers | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses previews, lazyvgrid/scrollview y property wrappers por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: previews, lazyvgrid/scrollview y property wrappers funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Previews, LazyVGrid/ScrollView y property wrappers existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve previews, lazyvgrid/scrollview y property wrappers en tu contexto?
-2. ¿Cómo sabrías que previews, lazyvgrid/scrollview y property wrappers no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar previews, lazyvgrid/scrollview y property wrappers?
 
 </details>
 

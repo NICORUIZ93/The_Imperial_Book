@@ -15,16 +15,6 @@ Cada tema parte de una carpeta vacía, crea archivos ejecutables y se comprueba 
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir un monolito modular mínimo, ejecutar una prueba que demuestre que el dominio no muta sus entradas ni depende de infraestructura, y explicar con evidencia por qué extraer un servicio todavía no está justificado. Conocimiento previo: funciones, objetos…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir un monolito modular mínimo, ejecutar una prueba que demuestre que el dominio no muta sus entradas ni depende de infraestructura, y explicar con evidencia por qué extraer un servicio todavía no está justificado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -34,37 +24,6 @@ flowchart LR
   O --> C["Contrato explícito<br/>evento o API"]
   C --> X
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta en tu contexto?
-2. ¿Cómo sabrías que límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta?
 
 </details>
 
@@ -166,16 +125,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás separar dos contextos que usan el mismo sustantivo, traducir solo los campos necesarios y demostrar con una prueba que un cambio en Facturación no altera el estado de Operaciones. Conocimiento previo: Tema 1 del módulo, objetos y pruebas con node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás separar dos contextos que usan el mismo sustantivo, traducir solo los campos necesarios y demostrar con una prueba que un cambio en Facturación no altera el estado de Operaciones.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -183,37 +132,6 @@ flowchart LR
   T --> F["Facturación<br/>Cargo: peso, tarifa, impuesto"]
   O -. "no comparte entidad mutable" .- F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo en tu contexto?
-2. ¿Cómo sabrías que lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo?
 
 </details>
 
@@ -321,16 +239,6 @@ test('un cargo no puede cambiar el estado logístico', () => {
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir un agregado Envio que valide una invariante, cambie su estado solo mediante sus métodos y emita eventos de dominio, y demostrar con pruebas que una mutación externa no puede saltarse la regla. Conocimiento previo: Temas 1 y 2, clases y node --test.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir un agregado Envio que valide una invariante, cambie su estado solo mediante sus métodos y emita eventos de dominio, y demostrar con pruebas que una mutación externa no puede saltarse la regla.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -339,37 +247,6 @@ flowchart LR
   A -. "prohibido: mutar estado" .-> S["campo público"]
   E --> P["Persistencia y publicación"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper en tu contexto?
-2. ¿Cómo sabrías que agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper?
 
 </details>
 
@@ -471,16 +348,6 @@ node --test
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir un ADR que justifique un monolito modular, implementar una fitness function que verifique las dependencias permitidas y demostrar que la prueba falla ante una violación real. Conocimiento previo: Temas 1 a 3 y manejo de archivos con Node.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir un ADR que justifique un monolito modular, implementar una fitness function que verifique las dependencias permitidas y demostrar que la prueba falla ante una violación real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en adr y fitness functions: decisiones que el código puede defender como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -489,37 +356,6 @@ flowchart LR
   F -->|"pasa"| D["Decisión vigente"]
   F -->|"falla"| C["Corregir código o reemplazar el ADR"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ADR y fitness functions: decisiones que el código puede defender se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ADR y fitness functions: decisiones que el código puede defender | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses adr y fitness functions: decisiones que el código puede defender por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: adr y fitness functions: decisiones que el código puede defender funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ADR y fitness functions: decisiones que el código puede defender existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve adr y fitness functions: decisiones que el código puede defender en tu contexto?
-2. ¿Cómo sabrías que adr y fitness functions: decisiones que el código puede defender no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar adr y fitness functions: decisiones que el código puede defender?
 
 </details>
 

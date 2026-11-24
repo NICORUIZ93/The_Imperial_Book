@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto demo-build que sube el artefacto a S3. Prerrequisitos: Módulo 2 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto demo-build que sube el artefacto a S3.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en codebuild — compilaciones reales dentro de contenedores docker como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que codebuild — compilaciones reales dentro de contenedores docker resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CodeBuild — compilaciones reales dentro de contenedores Docker se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CodeBuild — compilaciones reales dentro de contenedores Docker | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses codebuild — compilaciones reales dentro de contenedores docker por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: codebuild — compilaciones reales dentro de contenedores docker funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CodeBuild — compilaciones reales dentro de contenedores Docker existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve codebuild — compilaciones reales dentro de contenedores docker en tu contexto?
-2. ¿Cómo sabrías que codebuild — compilaciones reales dentro de contenedores docker no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar codebuild — compilaciones reales dentro de contenedores docker?
-
 </details>
 
 <details>
@@ -111,53 +64,6 @@ aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus'
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás definir fases y artefactos desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en buildspec.yml — fases y artefactos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que buildspec.yml — fases y artefactos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| buildspec.yml — fases y artefactos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar buildspec.yml — fases y artefactos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses buildspec.yml — fases y artefactos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: buildspec.yml — fases y artefactos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- buildspec.yml — fases y artefactos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve buildspec.yml — fases y artefactos en tu contexto?
-2. ¿Cómo sabrías que buildspec.yml — fases y artefactos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar buildspec.yml — fases y artefactos?
 
 </details>
 
@@ -233,12 +139,6 @@ artifacts:
 #### ► DE QUÉ TRATA
 Al finalizar vas a crear demo-app, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a crear demo-app, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 El grupo de implementación es la flota a reemplazar; la configuración de despliegue decide qué tan rápido (o cuidadosamente) se reemplaza.
 
@@ -255,6 +155,7 @@ Elegir entre estas configuraciones predefinidas es una decisión de riesgo: `All
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-24/tema-3-aplicacion-y-grupo.sh — ejecutar con: bash tema-3-aplicacion-y-grupo.sh
 aws deploy create-application --application-name demo-app --compute-platform Lambda
 aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
@@ -274,44 +175,6 @@ aws deploy list-deployment-configs --query "deploymentConfigsList" --output text
 
 **Cómo crece tu proyecto:** `demo-app` es la aplicación CodeDeploy que gestionará todos los despliegues canary de las funciones Lambda del proyecto integrador.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que codedeploy — aplicaciones, grupos y configuraciones predefinidas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CodeDeploy — aplicaciones, grupos y configuraciones predefinidas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CodeDeploy — aplicaciones, grupos y configuraciones predefinidas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses codedeploy — aplicaciones, grupos y configuraciones predefinidas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: codedeploy — aplicaciones, grupos y configuraciones predefinidas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CodeDeploy — aplicaciones, grupos y configuraciones predefinidas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve codedeploy — aplicaciones, grupos y configuraciones predefinidas en tu contexto?
-2. ¿Cómo sabrías que codedeploy — aplicaciones, grupos y configuraciones predefinidas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar codedeploy — aplicaciones, grupos y configuraciones predefinidas?
 
 </details>
 
@@ -347,12 +210,6 @@ aws deploy create-deployment-group --application-name demo-app --deployment-grou
 #### ► DE QUÉ TRATA
 Al finalizar vas a mover el alias live del servicio de seguimiento de la versión 1 a la versión 2 con el canary de demo-grupo (Tema 3), y a confirmar que un hook fallido revierte solo. Prerrequisitos: Tema 3 de este módulo, Módulo 5 (versiones y alias).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a mover el alias live del servicio de seguimiento de la versión 1 a la versión 2 con el canary de demo-grupo (Tema 3), y a confirmar que un hook fallido revierte solo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 El alias Lambda es el puntero que CodeDeploy mueve gradualmente; los lifecycle hooks son catadores que prueban cada lote antes de dejarlo avanzar al resto del tráfico.
 
@@ -369,6 +226,7 @@ El detalle más importante de este flujo es la reversión automática: si cualqu
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-24/tema-4-canary-lambda.sh — ejecutar con: bash tema-4-canary-lambda.sh
 ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
   --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
@@ -388,44 +246,6 @@ aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica dos versiones de la función de confirmación y usa un alias para seleccionar tráfico. Envía peticiones identificables, observa la versión ejecutada y practica volver a la anterior.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que despliegue blue/green de lambda — cambio de tráfico por alias resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Despliegue Blue/Green de Lambda — cambio de tráfico por alias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Despliegue Blue/Green de Lambda — cambio de tráfico por alias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses despliegue blue/green de lambda — cambio de tráfico por alias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: despliegue blue/green de lambda — cambio de tráfico por alias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Despliegue Blue/Green de Lambda — cambio de tráfico por alias existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve despliegue blue/green de lambda — cambio de tráfico por alias en tu contexto?
-2. ¿Cómo sabrías que despliegue blue/green de lambda — cambio de tráfico por alias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar despliegue blue/green de lambda — cambio de tráfico por alias?
 
 </details>
 
@@ -458,12 +278,6 @@ aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
 #### ► DE QUÉ TRATA
 Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de demo-alb (Módulo 22) para cambiar tráfico de azul a verde. Prerrequisitos: Módulo 22 completo, Módulo 14 (ECS).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de demo-alb (Módulo 22) para cambiar tráfico de azul a verde.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Blue/Green es mantener dos flotas completas y mover el letrero del listener hacia la nueva recién cuando está lista, en vez de reemplazar tareas una por una mientras siguen atendiendo tráfico real.
 
@@ -480,6 +294,7 @@ Este flujo asume que tu servicio ECS fue creado con `deploymentController.type: 
 **Practícalo tú:**
 
 ```bash
+
 # archivo: src/labs/modulo-24/tema-5-blue-green-ecs.sh — ejecutar con: bash tema-5-blue-green-ecs.sh
 # El listener se recupera por nombre del ALB del Módulo 22 — no hace falta
 # haber conservado ninguna variable de esa sesión de terminal.
@@ -508,44 +323,6 @@ aws deploy create-deployment-group --application-name demo-app-ecs --deployment-
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara dos revisiones del servicio de seguimiento con grupos objetivo separados. Cambia el listener en laboratorio y demuestra que puedes restaurar el destino anterior sin reconstruir la imagen.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que despliegue blue/green de ecs — cambio de tráfico por listener elb resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses despliegue blue/green de ecs — cambio de tráfico por listener elb por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: despliegue blue/green de ecs — cambio de tráfico por listener elb funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve despliegue blue/green de ecs — cambio de tráfico por listener elb en tu contexto?
-2. ¿Cómo sabrías que despliegue blue/green de ecs — cambio de tráfico por listener elb no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar despliegue blue/green de ecs — cambio de tráfico por listener elb?
 
 </details>
 
@@ -581,56 +358,6 @@ aws deploy create-deployment --application-name demo-app --deployment-group-name
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 24.1 — compilación real con codebuild con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 24.1 — compilación real con codebuild te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 24.1 — compilación real con codebuild como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 24.1 — compilación real con codebuild resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 24.1 — Compilación real con CodeBuild se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 24.1 — Compilación real con CodeBuild | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 24.1 — compilación real con codebuild por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 24.1 — compilación real con codebuild funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 24.1 — Compilación real con CodeBuild existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 24.1 — compilación real con codebuild en tu contexto?
-2. ¿Cómo sabrías que laboratorio 24.1 — compilación real con codebuild no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 24.1 — compilación real con codebuild?
-
 </details>
 
 <details>
@@ -645,56 +372,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por laboratorio 24.2 — despliegue canary de lambda con codedeploy con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender laboratorio 24.2 — despliegue canary de lambda con codedeploy te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en laboratorio 24.2 — despliegue canary de lambda con codedeploy como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que laboratorio 24.2 — despliegue canary de lambda con codedeploy resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses laboratorio 24.2 — despliegue canary de lambda con codedeploy por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: laboratorio 24.2 — despliegue canary de lambda con codedeploy funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve laboratorio 24.2 — despliegue canary de lambda con codedeploy en tu contexto?
-2. ¿Cómo sabrías que laboratorio 24.2 — despliegue canary de lambda con codedeploy no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar laboratorio 24.2 — despliegue canary de lambda con codedeploy?
 
 </details>
 

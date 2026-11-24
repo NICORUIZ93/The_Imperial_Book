@@ -16,53 +16,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás declarar un grafo de navegación con NavHost y explicar cómo NavController gestiona automáticamente el back stack.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás declarar un grafo de navegación con NavHost y explicar cómo NavController gestiona automáticamente el back stack.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en navhost y navcontroller como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que navhost y navcontroller resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| NavHost y NavController se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar NavHost y NavController | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses navhost y navcontroller por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: navhost y navcontroller funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- NavHost y NavController existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve navhost y navcontroller en tu contexto?
-2. ¿Cómo sabrías que navhost y navcontroller no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar navhost y navcontroller?
-
 </details>
 
 <details>
@@ -148,53 +101,6 @@ print('pantalla actual tras \"atrás\":', nav.pantalla_actual())
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás declarar un argumento de navegación con su tipo explícito, y configurar un deep link que mapee una URI externa hacia una ruta interna.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás declarar un argumento de navegación con su tipo explícito, y configurar un deep link que mapee una URI externa hacia una ruta interna.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en argumentos tipados y deep links como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que argumentos tipados y deep links resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Argumentos tipados y deep links se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Argumentos tipados y deep links | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses argumentos tipados y deep links por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: argumentos tipados y deep links funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Argumentos tipados y deep links existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve argumentos tipados y deep links en tu contexto?
-2. ¿Cómo sabrías que argumentos tipados y deep links no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar argumentos tipados y deep links?
 
 </details>
 
@@ -301,53 +207,6 @@ fun NavGraphBuilder.rutaDetalleTipada() {
 #### ► DE QUÉ TRATA
 Al finalizar podrás estructurar una app con bottom navigation donde cada sección mantiene su propio historial de navegación independiente.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás estructurar una app con bottom navigation donde cada sección mantiene su propio historial de navegación independiente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en navegación anidada con stacks independientes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que navegación anidada con stacks independientes resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Navegación anidada con stacks independientes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Navegación anidada con stacks independientes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses navegación anidada con stacks independientes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: navegación anidada con stacks independientes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Navegación anidada con stacks independientes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve navegación anidada con stacks independientes en tu contexto?
-2. ¿Cómo sabrías que navegación anidada con stacks independientes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar navegación anidada con stacks independientes?
-
 </details>
 
 <details>
@@ -449,12 +308,6 @@ fun AppConNavegacionInferior(secciones: List<SeccionPrincipal>) {
 #### ► DE QUÉ TRATA
 Al finalizar podrás usar PredictiveBackHandler para que el gesto de retroceso del sistema (swipe predictivo) muestre una previsualización coherente con lo que realmente va a pasar, en vez de prometer una navegación que luego se interrumpe con un diálogo inesperado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás usar PredictiveBackHandler para que el gesto de retroceso del sistema (swipe predictivo) muestre una previsualización coherente con lo que realmente va a pasar, en vez de prometer una navegación que luego se interrumpe con un diálogo inesperado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** Predictive Back, `PredictiveBackHandler`, `BackEventCompat`, `enableOnBackInvokedCallback`, previsualización progresiva del gesto.
 
@@ -476,8 +329,6 @@ sequenceDiagram
   S->>A: decide: diálogo o navegar
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -490,37 +341,6 @@ sequenceDiagram
   U->>S: completa el gesto
   S->>A: decide: diálogo o navegar
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Predictive Back — gesto del sistema con preview animado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Predictive Back — gesto del sistema con preview animado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses predictive back — gesto del sistema con preview animado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: predictive back — gesto del sistema con preview animado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Predictive Back — gesto del sistema con preview animado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve predictive back — gesto del sistema con preview animado en tu contexto?
-2. ¿Cómo sabrías que predictive back — gesto del sistema con preview animado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar predictive back — gesto del sistema con preview animado?
 
 </details>
 

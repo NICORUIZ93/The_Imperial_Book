@@ -11,19 +11,6 @@ Una pantalla Compose que "se ve bien" en el emulador puede seguir rota para quie
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por composetestrule ejecuta tu ui sin emulador visible con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender composetestrule ejecuta tu ui sin emulador visible te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en composetestrule ejecuta tu ui sin emulador visible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -32,37 +19,6 @@ flowchart LR
   C --> D[árbol semántico navegable]
   D --> E[finder + assertion]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ComposeTestRule ejecuta tu UI sin emulador visible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ComposeTestRule ejecuta tu UI sin emulador visible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses composetestrule ejecuta tu ui sin emulador visible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: composetestrule ejecuta tu ui sin emulador visible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ComposeTestRule ejecuta tu UI sin emulador visible existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve composetestrule ejecuta tu ui sin emulador visible en tu contexto?
-2. ¿Cómo sabrías que composetestrule ejecuta tu ui sin emulador visible no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar composetestrule ejecuta tu ui sin emulador visible?
 
 </details>
 
@@ -148,16 +104,6 @@ dependencies {
 #### ► DE QUÉ TRATA
 Al finalizar podrás elegir el finder correcto para un nodo (por texto, por tag, por rol) y encadenar assertions y actions sin ambigüedad cuando existan varios nodos similares.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás elegir el finder correcto para un nodo (por texto, por tag, por rol) y encadenar assertions y actions sin ambigüedad cuando existan varios nodos similares.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en finders, assertions y actions navegan el árbol semántico como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -165,37 +111,6 @@ flowchart LR
   A -->|un nodo| C[assertion/action sobre ESE nodo]
   A -->|varios nodos| D[falla: ambiguo, usa onAllNodes o testTag]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Finders, assertions y actions navegan el árbol semántico se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Finders, assertions y actions navegan el árbol semántico | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses finders, assertions y actions navegan el árbol semántico por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: finders, assertions y actions navegan el árbol semántico funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Finders, assertions y actions navegan el árbol semántico existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve finders, assertions y actions navegan el árbol semántico en tu contexto?
-2. ¿Cómo sabrías que finders, assertions y actions navegan el árbol semántico no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar finders, assertions y actions navegan el árbol semántico?
 
 </details>
 
@@ -265,12 +180,6 @@ class FormularioDobleTest {
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar cómo Compose fusiona (mergeDescendants) la semántica de un grupo de nodos hijos, y cuándo clearAndSetSemantics debe reemplazar esa fusión con una descripción manual coherente.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar cómo Compose fusiona (mergeDescendants) la semántica de un grupo de nodos hijos, y cuándo clearAndSetSemantics debe reemplazar esa fusión con una descripción manual coherente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** nodo semántico, `mergeDescendants`, `clearAndSetSemantics`, enunciado coherente.
 
@@ -286,45 +195,12 @@ flowchart LR
   A -->|clearAndSetSemantics manual| C["Tarea: Comprar leche, vence hoy" -- 1 anuncio coherente]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A[ícono + título + fecha] -->|mergeDescendants automático| B["ícono, Comprar leche, hoy" -- 3 anuncios sueltos]
   A -->|clearAndSetSemantics manual| C["Tarea: Comprar leche, vence hoy" -- 1 anuncio coherente]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Semantics y clearAndSetSemantics definen qué percibe la accesibilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Semantics y clearAndSetSemantics definen qué percibe la accesibilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses semantics y clearandsetsemantics definen qué percibe la accesibilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: semantics y clearandsetsemantics definen qué percibe la accesibilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Semantics y clearAndSetSemantics definen qué percibe la accesibilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve semantics y clearandsetsemantics definen qué percibe la accesibilidad en tu contexto?
-2. ¿Cómo sabrías que semantics y clearandsetsemantics definen qué percibe la accesibilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar semantics y clearandsetsemantics definen qué percibe la accesibilidad?
 
 </details>
 
@@ -346,12 +222,6 @@ Al finalizar podrás explicar cómo Compose fusiona (`mergeDescendants`) la sem�
 #### ► DE QUÉ TRATA
 Al finalizar podrás auditar una pantalla completa detectando qué nodos carecen de descripción accesible, y explicar qué anunciaría TalkBack recorriendo esa pantalla en el orden real del árbol.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás auditar una pantalla completa detectando qué nodos carecen de descripción accesible, y explicar qué anunciaría TalkBack recorriendo esa pantalla en el orden real del árbol.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `AccessibilityService`, TalkBack, orden de navegación, foco de accesibilidad.
 
@@ -368,45 +238,6 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 │  nodo 3: "Comprar leche"        │
 └─────────────────────────────────┘
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que accessibilityservice y talkback consumen el árbol semántico en producción resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| AccessibilityService y TalkBack consumen el árbol semántico en producción se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar AccessibilityService y TalkBack consumen el árbol semántico en producción | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses accessibilityservice y talkback consumen el árbol semántico en producción por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: accessibilityservice y talkback consumen el árbol semántico en producción funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- AccessibilityService y TalkBack consumen el árbol semántico en producción existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve accessibilityservice y talkback consumen el árbol semántico en producción en tu contexto?
-2. ¿Cómo sabrías que accessibilityservice y talkback consumen el árbol semántico en producción no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar accessibilityservice y talkback consumen el árbol semántico en producción?
 
 </details>
 
@@ -482,16 +313,6 @@ class AuditoriaAccesibilidadTest {
 #### ► DE QUÉ TRATA
 Al finalizar podrás calcular el valor interpolado de una animación en un instante dado usando una especificación de easing explícita, en vez de describir la animación como "algo que se ve fluida".
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calcular el valor interpolado de una animación en un instante dado usando una especificación de easing explícita, en vez de describir la animación como "algo que se ve fluida".**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en animaciones de estado y visibilidad usan una especificación medible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -499,37 +320,6 @@ flowchart LR
   B --> C[valor interpolado en instante t]
   C --> D[valor final al completarse duracion]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Animaciones de estado y visibilidad usan una especificación medible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Animaciones de estado y visibilidad usan una especificación medible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses animaciones de estado y visibilidad usan una especificación medible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: animaciones de estado y visibilidad usan una especificación medible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Animaciones de estado y visibilidad usan una especificación medible existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve animaciones de estado y visibilidad usan una especificación medible en tu contexto?
-2. ¿Cómo sabrías que animaciones de estado y visibilidad usan una especificación medible no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar animaciones de estado y visibilidad usan una especificación medible?
 
 </details>
 
@@ -621,53 +411,12 @@ class AnimacionTareaCompletadaTest {
 #### ► DE QUÉ TRATA
 Al finalizar podrás elegir entre un tween (duración fija) y un spring (basado en física) según el comportamiento deseado, y simular numéricamente cómo converge un resorte hacia su valor final.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás elegir entre un tween (duración fija) y un spring (basado en física) según el comportamiento deseado, y simular numéricamente cómo converge un resorte hacia su valor final.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en animatedcontent y animationspec especifican transiciones completas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
   A[tween: duracion fija] --> B[llega exactamente a los N ms]
   C[spring: fisica simulada] --> D[converge segun stiffness y damping, sin duracion fija]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| AnimatedContent y AnimationSpec especifican transiciones completas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar AnimatedContent y AnimationSpec especifican transiciones completas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses animatedcontent y animationspec especifican transiciones completas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: animatedcontent y animationspec especifican transiciones completas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- AnimatedContent y AnimationSpec especifican transiciones completas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve animatedcontent y animationspec especifican transiciones completas en tu contexto?
-2. ¿Cómo sabrías que animatedcontent y animationspec especifican transiciones completas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar animatedcontent y animationspec especifican transiciones completas?
 
 </details>
 

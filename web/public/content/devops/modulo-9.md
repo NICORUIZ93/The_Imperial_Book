@@ -12,53 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás instrumentar una aplicación con counters, gauges e histograms, eligiendo el tipo correcto según si un valor solo crece, sube y baja, o se distribuye en rangos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás instrumentar una aplicación con counters, gauges e histograms, eligiendo el tipo correcto según si un valor solo crece, sube y baja, o se distribuye en rangos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en modelo de métricas de prometheus — counter, gauge, histogram como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que modelo de métricas de prometheus — counter, gauge, histogram resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Modelo de métricas de Prometheus — counter, gauge, histogram se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Modelo de métricas de Prometheus — counter, gauge, histogram | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses modelo de métricas de prometheus — counter, gauge, histogram por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: modelo de métricas de prometheus — counter, gauge, histogram funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Modelo de métricas de Prometheus — counter, gauge, histogram existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve modelo de métricas de prometheus — counter, gauge, histogram en tu contexto?
-2. ¿Cómo sabrías que modelo de métricas de prometheus — counter, gauge, histogram no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar modelo de métricas de prometheus — counter, gauge, histogram?
-
 </details>
 
 <details>
@@ -120,53 +73,6 @@ curl -s http://localhost:3010/metrics | grep -E "^http_requests_total|^conexione
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir consultas PromQL con rate(), agregación y filtrado por etiquetas para convertir contadores acumulados en tasas interpretables.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir consultas PromQL con rate(), agregación y filtrado por etiquetas para convertir contadores acumulados en tasas interpretables.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en promql esencial como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que promql esencial resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| PromQL esencial se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar PromQL esencial | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses promql esencial por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: promql esencial funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- PromQL esencial existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve promql esencial en tu contexto?
-2. ¿Cómo sabrías que promql esencial no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar promql esencial?
-
 </details>
 
 <details>
@@ -217,53 +123,6 @@ curl -sS -G 'http://localhost:9090/api/v1/query' --data-urlencode 'query=rate(ht
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás conectar Grafana a Prometheus como fuente de datos y construir un panel que visualiza una consulta PromQL en tiempo real.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás conectar Grafana a Prometheus como fuente de datos y construir un panel que visualiza una consulta PromQL en tiempo real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dashboards en grafana como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que dashboards en grafana resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dashboards en Grafana se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dashboards en Grafana | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dashboards en grafana por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dashboards en grafana funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dashboards en Grafana existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dashboards en grafana en tu contexto?
-2. ¿Cómo sabrías que dashboards en grafana no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dashboards en grafana?
 
 </details>
 
@@ -325,53 +184,6 @@ curl -s -u admin:admin -X POST -H "Content-Type: application/json" -d @dashboard
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás definir una regla de alerta con una condición sostenida en el tiempo (for), evitando que fluctuaciones momentáneas disparen notificaciones innecesarias.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás definir una regla de alerta con una condición sostenida en el tiempo (for), evitando que fluctuaciones momentáneas disparen notificaciones innecesarias.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en alertmanager y reglas de alerta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que alertmanager y reglas de alerta resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Alertmanager y reglas de alerta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Alertmanager y reglas de alerta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses alertmanager y reglas de alerta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: alertmanager y reglas de alerta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Alertmanager y reglas de alerta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve alertmanager y reglas de alerta en tu contexto?
-2. ¿Cómo sabrías que alertmanager y reglas de alerta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar alertmanager y reglas de alerta?
 
 </details>
 
@@ -438,53 +250,6 @@ curl -s http://localhost:9091/api/v1/alerts | python3 -m json.tool | grep -E "al
 #### ► DE QUÉ TRATA
 Al finalizar podrás definir un SLI medible, fijar un SLO interno más estricto que cualquier SLA externo, y calcular el presupuesto de error resultante.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás definir un SLI medible, fijar un SLO interno más estricto que cualquier SLA externo, y calcular el presupuesto de error resultante.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sli, slo, sla como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sli, slo, sla resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SLI, SLO, SLA se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SLI, SLO, SLA | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sli, slo, sla por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sli, slo, sla funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SLI, SLO, SLA existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sli, slo, sla en tu contexto?
-2. ¿Cómo sabrías que sli, slo, sla no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sli, slo, sla?
-
 </details>
 
 <details>
@@ -532,53 +297,6 @@ cat slo.md
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás instrumentar código una única vez con la API de OpenTelemetry, exportando hacia Prometheus sin acoplar la instrumentación a ese backend específico.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás instrumentar código una única vez con la API de OpenTelemetry, exportando hacia Prometheus sin acoplar la instrumentación a ese backend específico.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en opentelemetry como estándar de instrumentación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que opentelemetry como estándar de instrumentación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| OpenTelemetry como estándar de instrumentación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar OpenTelemetry como estándar de instrumentación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses opentelemetry como estándar de instrumentación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: opentelemetry como estándar de instrumentación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- OpenTelemetry como estándar de instrumentación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve opentelemetry como estándar de instrumentación en tu contexto?
-2. ¿Cómo sabrías que opentelemetry como estándar de instrumentación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar opentelemetry como estándar de instrumentación?
 
 </details>
 
@@ -646,53 +364,6 @@ curl -s http://localhost:9465/metrics | grep otel_http_requests_total
 #### ► DE QUÉ TRATA
 Al finalizar podrás calcular las cuatro métricas DORA de un proyecto real a partir de su historial de Git y sus incidentes registrados.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calcular las cuatro métricas DORA de un proyecto real a partir de su historial de Git y sus incidentes registrados.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en métricas dora — lead time, deployment frequency, mttr, change failure rate como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que métricas dora — lead time, deployment frequency, mttr, change failure rate resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses métricas dora — lead time, deployment frequency, mttr, change failure rate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: métricas dora — lead time, deployment frequency, mttr, change failure rate funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve métricas dora — lead time, deployment frequency, mttr, change failure rate en tu contexto?
-2. ¿Cómo sabrías que métricas dora — lead time, deployment frequency, mttr, change failure rate no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar métricas dora — lead time, deployment frequency, mttr, change failure rate?
-
 </details>
 
 <details>
@@ -738,16 +409,6 @@ print(f'Lead Time: {(deploy - commit).total_seconds() / 3600} horas')
 #### ► DE QUÉ TRATA
 Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus. Instala Chaos Mesh con Helm o usa kubectl delete pod en un bucle para la versión sin herramientas.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -757,37 +418,6 @@ flowchart LR
     M -->|sí| P["parar y registrar hallazgo"]
     M -->|no| C["confirmar hipótesis"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos en tu contexto?
-2. ¿Cómo sabrías que chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos?
 
 </details>
 

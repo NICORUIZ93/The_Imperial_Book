@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a versionar como código ShipmentEvents (Módulo 4) y confirmar-entrega (Módulo 5), con estado remoto bloqueado, y a engancharlo al pipeline real del Módulo 24. Prerrequisitos: Módulos 4, 5 y 24 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a versionar como código ShipmentEvents (Módulo 4) y confirmar-entrega (Módulo 5), con estado remoto bloqueado, y a engancharlo al pipeline real del Módulo 24.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en terraform avanzado y ci/cd cloud como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -30,37 +20,6 @@ flowchart LR
   Review --> Merge["Merge a main"]
   Merge --> Apply["terraform apply (CI, con lock de estado)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Terraform avanzado y CI/CD cloud se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Terraform avanzado y CI/CD cloud | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses terraform avanzado y ci/cd cloud por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: terraform avanzado y ci/cd cloud funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Terraform avanzado y CI/CD cloud existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve terraform avanzado y ci/cd cloud en tu contexto?
-2. ¿Cómo sabrías que terraform avanzado y ci/cd cloud no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar terraform avanzado y ci/cd cloud?
 
 </details>
 
@@ -113,16 +72,6 @@ terraform init && terraform plan
 #### ► DE QUÉ TRATA
 Al finalizar vas a decidir si el planificador de rutas (Módulo 14, ECS) necesitaría EKS o un service mesh, y por qué todavía no. Prerrequisitos: Módulo 14 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a decidir si el planificador de rutas (Módulo 14, ECS) necesitaría EKS o un service mesh, y por qué todavía no.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en kubernetes administrado, ecs y service mesh como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -134,37 +83,6 @@ flowchart LR
     S2 <-->|sidecar mTLS| S3["Servicio C"]
   end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Kubernetes administrado, ECS y Service Mesh se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Kubernetes administrado, ECS y Service Mesh | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses kubernetes administrado, ecs y service mesh por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: kubernetes administrado, ecs y service mesh funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Kubernetes administrado, ECS y Service Mesh existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve kubernetes administrado, ecs y service mesh en tu contexto?
-2. ¿Cómo sabrías que kubernetes administrado, ecs y service mesh no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar kubernetes administrado, ecs y service mesh?
 
 </details>
 
@@ -202,16 +120,6 @@ aws ecs describe-services --cluster rutaflow-cluster --services demo-planificado
 #### ► DE QUÉ TRATA
 Al finalizar vas a agregarle a ShipmentEvents una tabla global multi-región y a rutaflow-facturacion una réplica de lectura, dos técnicas avanzadas que ningún módulo anterior cubrió. Prerrequisitos: Módulos 4 y 13 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a agregarle a ShipmentEvents una tabla global multi-región y a rutaflow-facturacion una réplica de lectura, dos técnicas avanzadas que ningún módulo anterior cubrió.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en ec2, vpc, rds, s3 y dynamodb avanzados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -220,37 +128,6 @@ flowchart LR
   Reportes["Reportes pesados"] --> Lectura
   SE["ShipmentEvents (us-east-1)"] <-->|tabla global| SE2["ShipmentEvents (us-west-2)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| EC2, VPC, RDS, S3 y DynamoDB avanzados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar EC2, VPC, RDS, S3 y DynamoDB avanzados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ec2, vpc, rds, s3 y dynamodb avanzados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ec2, vpc, rds, s3 y dynamodb avanzados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- EC2, VPC, RDS, S3 y DynamoDB avanzados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ec2, vpc, rds, s3 y dynamodb avanzados en tu contexto?
-2. ¿Cómo sabrías que ec2, vpc, rds, s3 y dynamodb avanzados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ec2, vpc, rds, s3 y dynamodb avanzados?
 
 </details>
 
@@ -301,16 +178,6 @@ aws rds create-db-instance-read-replica --db-instance-identifier rutaflow-factur
 #### ► DE QUÉ TRATA
 Al finalizar vas a reducir el cold start de confirmar-entrega con concurrencia aprovisionada, y a trazar con X-Ray una petición completa a través de API Gateway. Prerrequisitos: Módulos 5, 6 y 12 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a reducir el cold start de confirmar-entrega con concurrencia aprovisionada, y a trazar con X-Ray una petición completa a través de API Gateway.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en lambda, api gateway y observabilidad avanzada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -321,37 +188,6 @@ flowchart LR
   L -.->|traza X-Ray| XR2["Segmento: Lambda"]
   DB -.->|traza X-Ray| XR3["Segmento: DynamoDB"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Lambda, API Gateway y observabilidad avanzada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Lambda, API Gateway y observabilidad avanzada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses lambda, api gateway y observabilidad avanzada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: lambda, api gateway y observabilidad avanzada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Lambda, API Gateway y observabilidad avanzada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve lambda, api gateway y observabilidad avanzada en tu contexto?
-2. ¿Cómo sabrías que lambda, api gateway y observabilidad avanzada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar lambda, api gateway y observabilidad avanzada?
 
 </details>
 
@@ -392,12 +228,6 @@ time aws lambda invoke --function-name confirmar-entrega:produccion \
 #### ► DE QUÉ TRATA
 Al finalizar vas a conectar una alarma de presupuesto real sobre el gasto sintetizado de RutaFlow (Módulo 29) con una auditoría de qué rol la dispararía. Prerrequisitos: Módulos 7 y 29 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a conectar una alarma de presupuesto real sobre el gasto sintetizado de RutaFlow (Módulo 29) con una auditoría de qué rol la dispararía.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Una alarma de presupuesto es un sensor de humo conectado al costo, no al fuego: avisa por un umbral cruzado, antes de que el incendio (la factura) ya esté completo.
 
@@ -427,8 +257,6 @@ declares en tu propia `template.yaml` — `DeliveryCommands`, `ShipmentEvents`, 
 `ConfirmarEntregaFn` — para que un bug de cualquiera de ellos se detecte por costo antes de
 descubrirse en la factura final.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -436,37 +264,6 @@ flowchart LR
   Presupuesto -->|notifica| Equipo["equipo-rutaflow@example.com"]
   Rol["RutaFlowConfirmarEntregaRole"] -.->|NO debería poder| Presupuesto
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Seguridad, auditoría y FinOps se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Seguridad, auditoría y FinOps | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses seguridad, auditoría y finops por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: seguridad, auditoría y finops funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Seguridad, auditoría y FinOps existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve seguridad, auditoría y finops en tu contexto?
-2. ¿Cómo sabrías que seguridad, auditoría y finops no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar seguridad, auditoría y finops?
 
 </details>
 
@@ -502,16 +299,6 @@ aws budgets create-budget --account-id 000000000000 --budget \
 #### ► DE QUÉ TRATA
 Al finalizar vas a trazar, en un solo diagrama real, cómo los microservicios de RutaFlow, su analítica de Big Data y su capa de IA ya conviven hoy, módulo por módulo. Prerrequisitos: Módulos 11, 19, 20 y 31 completos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a trazar, en un solo diagrama real, cómo los microservicios de RutaFlow, su analítica de Big Data y su capa de IA ya conviven hoy, módulo por módulo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en microservicios, big data, ai/ml y multi-cloud como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -524,37 +311,6 @@ flowchart TD
   M3 --> R
   M4 --> R
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Microservicios, Big Data, AI/ML y multi-cloud se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Microservicios, Big Data, AI/ML y multi-cloud | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses microservicios, big data, ai/ml y multi-cloud por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: microservicios, big data, ai/ml y multi-cloud funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Microservicios, Big Data, AI/ML y multi-cloud existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve microservicios, big data, ai/ml y multi-cloud en tu contexto?
-2. ¿Cómo sabrías que microservicios, big data, ai/ml y multi-cloud no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar microservicios, big data, ai/ml y multi-cloud?
 
 </details>
 
@@ -591,16 +347,6 @@ aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
 #### ► DE QUÉ TRATA
 Usa Python 3.10 o superior. Crea academia-labs/cloud/amenazas. Los eventos son un ejemplo con la estructura real de CloudTrail; en una cuenta, se exportan desde CloudTrail o se consultan con Athena.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Python 3.10 o superior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -610,37 +356,6 @@ flowchart LR
     D --> A3["MEDIA: 3+ AccessDenied"]
     A1 & A2 & A3 --> R["runbook: revocar, investigar"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso en tu contexto?
-2. ¿Cómo sabrías que detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso?
 
 </details>
 

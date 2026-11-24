@@ -14,16 +14,6 @@ Cada tema verifica su garantía con código real: el error genuino de Angular al
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar que input.required() hace cumplir su contrato en dos momentos: en una plantilla padre, el compilador rechaza la omisión en el build (NG8008); al crear el componente dinámicamente sin el input, Angular lanza NG0950 en ejecución. Nunca obtienes un valo…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar que input.required() hace cumplir su contrato en dos momentos: en una plantilla padre, el compilador rechaza la omisión en el build (NG8008); al crear el componente dinámicamente sin el input, Angular lanza NG0950 en ejecución.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en input()/output() basados en signals como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -33,37 +23,6 @@ flowchart LR
   C["click del usuario"] --> O["seleccionar.emit"]
   O -->|"(seleccionar)=manejador"| P
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| input()/output() basados en signals se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar input()/output() basados en signals | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses input()/output() basados en signals por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: input()/output() basados en signals funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- input()/output() basados en signals existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve input()/output() basados en signals en tu contexto?
-2. ¿Cómo sabrías que input()/output() basados en signals no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar input()/output() basados en signals?
 
 </details>
 
@@ -167,53 +126,6 @@ describe('TarjetaPedidoComponent (input.required real y output real)', () => {
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con una comprobación real de identidad de nodos del DOM, que track con un identificador estable preserva los mismos elementos al reordenar una lista, mientras track $index fuerza a Angular a recrearlos innecesariamente.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con una comprobación real de identidad de nodos del DOM, que track con un identificador estable preserva los mismos elementos al reordenar una lista, mientras track $index fuerza a Angular a recrearlos innecesariamente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en control de flujo nativo — @if, @for, @switch como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que control de flujo nativo — @if, @for, @switch resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Control de flujo nativo — @if, @for, @switch se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Control de flujo nativo — @if, @for, @switch | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses control de flujo nativo — @if, @for, @switch por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: control de flujo nativo — @if, @for, @switch funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Control de flujo nativo — @if, @for, @switch existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve control de flujo nativo — @if, @for, @switch en tu contexto?
-2. ¿Cómo sabrías que control de flujo nativo — @if, @for, @switch no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar control de flujo nativo — @if, @for, @switch?
-
 </details>
 
 <details>
@@ -304,53 +216,6 @@ npx ng test --watch=false
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con contenido proyectado real verificado sobre fixture.nativeElement, que ng-content posiciona marcado HTML arbitrario del componente padre dentro de la plantilla del componente hijo, incluyendo el uso de múltiples slots nombrados.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con contenido proyectado real verificado sobre fixture.nativeElement, que ng-content posiciona marcado HTML arbitrario del componente padre dentro de la plantilla del componente hijo, incluyendo el uso de múltiples slots nombrados.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en content projection con ng-content como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que content projection con ng-content resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Content projection con ng-content se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Content projection con ng-content | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses content projection con ng-content por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: content projection con ng-content funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Content projection con ng-content existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve content projection con ng-content en tu contexto?
-2. ¿Cómo sabrías que content projection con ng-content no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar content projection con ng-content?
 
 </details>
 
@@ -446,9 +311,6 @@ Al finalizar podrás confirmar, con un espía real (vi.fn() de Vitest, el runner
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con un espía real (vi.fn() de Vitest, el runner que configura ng new en Angular 22) registrado en cada hook, el orden EXACTO en que Angular invoca los hooks de ciclo de vida de un componente, y que ngOnDestroy se invoca realmente al destruir el fixture.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** hooks de ciclo de vida, orden de invocación, propósito de cada uno.
 
@@ -485,8 +347,6 @@ export class MiComponente implements OnChanges, OnInit, AfterViewInit, OnDestroy
 }
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -499,37 +359,6 @@ sequenceDiagram
   A->>Cp: ngAfterViewInit (una sola vez)
   A->>Cp: ngOnDestroy (fixture.destroy)
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ciclo de vida completo de un componente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ciclo de vida completo de un componente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ciclo de vida completo de un componente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ciclo de vida completo de un componente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ciclo de vida completo de un componente existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ciclo de vida completo de un componente en tu contexto?
-2. ¿Cómo sabrías que ciclo de vida completo de un componente no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ciclo de vida completo de un componente?
 
 </details>
 
@@ -619,16 +448,6 @@ npx ng test --watch=false
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con un componente real que usa viewChild.required() y las fases write/read de afterNextRender(), que Angular puede consultar y medir el DOM de forma segura después del render, sin que esa medición rompa la compatibilidad con SSR.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con un componente real que usa viewChild.required() y las fases write/read de afterNextRender(), que Angular puede consultar y medir el DOM de forma segura después del render, sin que esa medición rompa la compatibilidad con SSR.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en consultas signal y trabajo posterior al render como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -643,37 +462,6 @@ sequenceDiagram
   C->>A: actualiza signal mapHeight
   A->>D: renderiza altura calculada
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Consultas signal y trabajo posterior al render se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Consultas signal y trabajo posterior al render | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses consultas signal y trabajo posterior al render por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: consultas signal y trabajo posterior al render funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Consultas signal y trabajo posterior al render existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve consultas signal y trabajo posterior al render en tu contexto?
-2. ¿Cómo sabrías que consultas signal y trabajo posterior al render no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar consultas signal y trabajo posterior al render?
 
 </details>
 
@@ -770,53 +558,6 @@ export class TrackingPanelComponent {
 #### ► DE QUÉ TRATA
 Al finalizar podrás crear una directiva de atributo que modifica el comportamiento de un elemento y un pipe que transforma un valor en la plantilla, reutilizables en toda la app. Prerrequisitos: Temas 1-4 de este módulo (componentes y binding).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás crear una directiva de atributo que modifica el comportamiento de un elemento y un pipe que transforma un valor en la plantilla, reutilizables en toda la app.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en directivas y pipes personalizados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que directivas y pipes personalizados resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Directivas y pipes personalizados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Directivas y pipes personalizados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses directivas y pipes personalizados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: directivas y pipes personalizados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Directivas y pipes personalizados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve directivas y pipes personalizados en tu contexto?
-2. ¿Cómo sabrías que directivas y pipes personalizados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar directivas y pipes personalizados?
-
 </details>
 
 <details>
@@ -869,16 +610,6 @@ ng serve
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar cuándo Angular vuelve a ejecutar un pipe puro y uno impuro, demostrar el error de mutar un array con un pipe puro, usar AsyncPipe con un Observable y elegir signals con actualizaciones inmutables. Prerrequisitos: Tema 6 de este módulo y Módulo 2 (sign…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar cuándo Angular vuelve a ejecutar un pipe puro y uno impuro, demostrar el error de mutar un array con un pipe puro, usar AsyncPipe con un Observable y elegir signals con actualizaciones inmutables.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pipes puros e impuros, asyncpipe y signals como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -887,37 +618,6 @@ flowchart TD
     B -->|"sí"| D["pipe puro se ejecuta: 17 kg"]
     E["pipe impuro"] --> F["se ejecuta siempre: 17 kg"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pipes puros e impuros, AsyncPipe y signals se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pipes puros e impuros, AsyncPipe y signals | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pipes puros e impuros, asyncpipe y signals por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pipes puros e impuros, asyncpipe y signals funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Pipes puros e impuros, AsyncPipe y signals existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pipes puros e impuros, asyncpipe y signals en tu contexto?
-2. ¿Cómo sabrías que pipes puros e impuros, asyncpipe y signals no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pipes puros e impuros, asyncpipe y signals?
 
 </details>
 

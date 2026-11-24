@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a decidir el layout de PanelEnvios usando LayoutBuilder en vez de MediaQuery, porque el panel vive dentro de un Row lateral que no ocupa el ancho completo de la pantalla. Prerrequisitos: Módulo 1 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a decidir el layout de PanelEnvios usando LayoutBuilder en vez de MediaQuery, porque el panel vive dentro de un Row lateral que no ocupa el ancho completo de la pantalla.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en mediaquery vs layoutbuilder como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -33,37 +23,6 @@ flowchart TD
 
 #### ► REGLA PRÁCTICA
 Usa `MediaQuery` cuando necesites el tamaño de la pantalla completa; usa `LayoutBuilder` cuando el widget vive dentro de otro layout (un panel lateral, una columna parcial) y necesitas el espacio real disponible para ese widget, no el de toda la pantalla.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| MediaQuery vs LayoutBuilder se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar MediaQuery vs LayoutBuilder | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mediaquery vs layoutbuilder por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mediaquery vs layoutbuilder funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- MediaQuery vs LayoutBuilder existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mediaquery vs layoutbuilder en tu contexto?
-2. ¿Cómo sabrías que mediaquery vs layoutbuilder no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mediaquery vs layoutbuilder?
 
 </details>
 
@@ -165,16 +124,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a diagnosticar un error de "unbounded height" en ListaEnvios causado por anidar una Column dentro de otra sin límites, entendiendo el protocolo "constraints go down, sizes go up". Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a diagnosticar un error de "unbounded height" en ListaEnvios causado por anidar una Column dentro de otra sin límites, entendiendo el protocolo "constraints go down, sizes go up".**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en cómo flutter calcula tamaños como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -186,37 +135,6 @@ sequenceDiagram
     ListView->>Expanded: tamaño final elegido
     Expanded->>Column: tamaño final elegido
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Cómo Flutter calcula tamaños se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Cómo Flutter calcula tamaños | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cómo flutter calcula tamaños por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cómo flutter calcula tamaños funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Cómo Flutter calcula tamaños existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cómo flutter calcula tamaños en tu contexto?
-2. ¿Cómo sabrías que cómo flutter calcula tamaños no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cómo flutter calcula tamaños?
 
 </details>
 
@@ -292,16 +210,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a centralizar la lógica de breakpoints de RutaFlow en una función segunAncho() reutilizable, y a envolver la pantalla principal con SafeArea para proteger el contenido del notch. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a centralizar la lógica de breakpoints de RutaFlow en una función segunAncho() reutilizable, y a envolver la pantalla principal con SafeArea para proteger el contenido del notch.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en breakpoints propios y safearea como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -311,37 +219,6 @@ flowchart LR
     C -->|Sí| T["TipoDispositivo.tablet"]
     C -->|No| E["TipoDispositivo.escritorio"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Breakpoints propios y SafeArea se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Breakpoints propios y SafeArea | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses breakpoints propios y safearea por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: breakpoints propios y safearea funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Breakpoints propios y SafeArea existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve breakpoints propios y safearea en tu contexto?
-2. ¿Cómo sabrías que breakpoints propios y safearea no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar breakpoints propios y safearea?
 
 </details>
 

@@ -14,16 +14,6 @@ Una aplicación local puede asumir que una llamada termina o falla de forma visi
 #### ► DE QUÉ TRATA
 Al finalizar vas a simular un timeout real al confirmar una entrega de RutaFlow, y a comprobar por qué el cliente no puede saber qué pasó del otro lado. Prerrequisitos: Python 3 instalado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a simular un timeout real al confirmar una entrega de RutaFlow, y a comprobar por qué el cliente no puede saber qué pasó del otro lado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en la red convierte el resultado en una incertidumbre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -36,37 +26,6 @@ sequenceDiagram
     Note over C: timeout: estado desconocido
     C->>S: reintentar op-42
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| La red convierte el resultado en una incertidumbre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar La red convierte el resultado en una incertidumbre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses la red convierte el resultado en una incertidumbre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: la red convierte el resultado en una incertidumbre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- La red convierte el resultado en una incertidumbre existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve la red convierte el resultado en una incertidumbre en tu contexto?
-2. ¿Cómo sabrías que la red convierte el resultado en una incertidumbre no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar la red convierte el resultado en una incertidumbre?
 
 </details>
 
@@ -130,16 +89,6 @@ python3 ejemplo.py
 #### ► DE QUÉ TRATA
 Al finalizar vas a simular una lectura obsoleta real sobre una réplica de ShipmentEvents de RutaFlow, y a decidir si ese envío específico tolera esa inconsistencia. Prerrequisitos: ninguno adicional.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a simular una lectura obsoleta real sobre una réplica de ShipmentEvents de RutaFlow, y a decidir si ese envío específico tolera esa inconsistencia.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en replicación, consistencia y decisiones explícitas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -147,37 +96,6 @@ flowchart LR
     A --> AVAILABLE["aceptar: disponibilidad y posible conflicto"]
     A --> CONSISTENT["esperar quorum: proteger orden y rechazar"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Replicación, consistencia y decisiones explícitas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Replicación, consistencia y decisiones explícitas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses replicación, consistencia y decisiones explícitas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: replicación, consistencia y decisiones explícitas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Replicación, consistencia y decisiones explícitas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve replicación, consistencia y decisiones explícitas en tu contexto?
-2. ¿Cómo sabrías que replicación, consistencia y decisiones explícitas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar replicación, consistencia y decisiones explícitas?
 
 </details>
 
@@ -227,16 +145,6 @@ python3 ejemplo.py
 #### ► DE QUÉ TRATA
 Al finalizar vas a implementar y ejecutar confirmDelivery para comprobar que logra el efecto "exactamente una vez" aunque el comando llegue duplicado. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a implementar y ejecutar confirmDelivery para comprobar que logra el efecto "exactamente una vez" aunque el comando llegue duplicado.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en mensajes que se procesan con efectos exactamente una vez como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -245,37 +153,6 @@ flowchart LR
     BROKER -. "reentrega evt-42" .-> CONSUMER
     CONSUMER --> DEDUPE["dedupe + efecto en una transacción"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Mensajes que se procesan con efectos exactamente una vez se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Mensajes que se procesan con efectos exactamente una vez | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mensajes que se procesan con efectos exactamente una vez por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mensajes que se procesan con efectos exactamente una vez funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Mensajes que se procesan con efectos exactamente una vez existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mensajes que se procesan con efectos exactamente una vez en tu contexto?
-2. ¿Cómo sabrías que mensajes que se procesan con efectos exactamente una vez no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mensajes que se procesan con efectos exactamente una vez?
 
 </details>
 
@@ -369,16 +246,6 @@ node reintentos.ts
 #### ► DE QUÉ TRATA
 Al finalizar vas a definir un SLI/SLO real para confirmar-entrega de RutaFlow, y a medir cuánto presupuesto de error consume una dependencia lenta. Prerrequisitos: Python 3 instalado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a definir un SLI/SLO real para confirmar-entrega de RutaFlow, y a medir cuánto presupuesto de error consume una dependencia lenta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en resiliencia y observabilidad orientadas a objetivos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -387,37 +254,6 @@ flowchart LR
     TRACE --> LOGS["logs con contexto"]
     TRACE --> METRICS["métricas agregadas"] --> ALERT["alerta"] --> RUNBOOK["runbook"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Resiliencia y observabilidad orientadas a objetivos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Resiliencia y observabilidad orientadas a objetivos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses resiliencia y observabilidad orientadas a objetivos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: resiliencia y observabilidad orientadas a objetivos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Resiliencia y observabilidad orientadas a objetivos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve resiliencia y observabilidad orientadas a objetivos en tu contexto?
-2. ¿Cómo sabrías que resiliencia y observabilidad orientadas a objetivos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar resiliencia y observabilidad orientadas a objetivos?
 
 </details>
 
@@ -472,16 +308,6 @@ python3 ejemplo.py
 #### ► DE QUÉ TRATA
 Al finalizar podrás ordenar eventos sin reloj global con relojes lógicos de Lamport, elegir un coordinador cuando el anterior falla con el algoritmo del matón (bully) y explicar cómo el commit en dos fases (2PC) logra que todos confirmen o nadie lo haga. Prerrequisitos: Temas 1 a…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás ordenar eventos sin reloj global con relojes lógicos de Lamport, elegir un coordinador cuando el anterior falla con el algoritmo del matón (bully) y explicar cómo el commit en dos fases (2PC) logra que todos confirmen o nadie lo haga.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -493,37 +319,6 @@ sequenceDiagram
     B->>M: G-1 listo (marca 4)
     Note over M: reloj = max(0, 4) + 1 = 5
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases en tu contexto?
-2. ¿Cómo sabrías que tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tiempo, coordinación y acuerdo: lamport, elección de líder y commit en dos fases?
 
 </details>
 
@@ -628,56 +423,6 @@ Transacción 2: votos={'inventario': True, 'pagos': True, 'despacho': True} -> C
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 10: inventario distribuido mínimo y observable con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 10: inventario distribuido mínimo y observable te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 10: inventario distribuido mínimo y observable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 10: inventario distribuido mínimo y observable resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 10: inventario distribuido mínimo y observable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 10: inventario distribuido mínimo y observable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 10: inventario distribuido mínimo y observable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 10: inventario distribuido mínimo y observable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 10: inventario distribuido mínimo y observable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 10: inventario distribuido mínimo y observable en tu contexto?
-2. ¿Cómo sabrías que proyecto 10: inventario distribuido mínimo y observable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 10: inventario distribuido mínimo y observable?
-
 </details>
 
 <details>
@@ -696,16 +441,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 #### ► DE QUÉ TRATA
 Al finalizar medirás latencia p95 y peticiones por segundo en dos niveles de concurrencia, conservando el número total de peticiones. Prerrequisitos: Node 24, HTTP, promesas y noción de percentil. Es un ejemplo independiente desde carpeta vacía, con servidor local y sin paquetes.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar medirás latencia p95 y peticiones por segundo en dos niveles de concurrencia, conservando el número total de peticiones.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -718,37 +453,6 @@ flowchart TD
     M1 --> CMP["Comparar: bajar el tiempo total no baja la latencia por petición"]
     M4 --> CMP
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada en tu contexto?
-2. ¿Cómo sabrías que latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada?
 
 </details>
 
@@ -819,16 +523,6 @@ node medir.mjs
 #### ► DE QUÉ TRATA
 Al finalizar vas a convertir los requisitos de una función del inventario en números (peticiones por segundo, almacenamiento, ancho de banda), identificar qué componente se satura primero y justificar una decisión de diseño con esa estimación. Prerrequisitos: el Tema 6 de este mó…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a convertir los requisitos de una función del inventario en números (peticiones por segundo, almacenamiento, ancho de banda), identificar qué componente se satura primero y justificar una decisión de diseño con esa estimación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -838,37 +532,6 @@ flowchart LR
     BOT --> DEC["decisión mínima + ADR"]
     DEC -->|"re-estimar"| EST
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella en tu contexto?
-2. ¿Cómo sabrías que diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella?
 
 </details>
 

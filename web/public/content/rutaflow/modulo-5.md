@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 1: Grafos y problema de rutas dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 1: Grafos y problema de rutas dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en grafos y problema de rutas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -33,37 +23,6 @@ flowchart LR
   R -->|"por distancia_km"| X["Deposito-A-B: 5.0 km, 31 min reales"]
   R -->|"por minutos reales"| Y["Deposito-C-B: 6.5 km, 19 min reales"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Grafos y problema de rutas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Grafos y problema de rutas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses grafos y problema de rutas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: grafos y problema de rutas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Grafos y problema de rutas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve grafos y problema de rutas en tu contexto?
-2. ¿Cómo sabrías que grafos y problema de rutas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar grafos y problema de rutas?
 
 </details>
 
@@ -143,16 +102,6 @@ print("Ruta por tiempo real:", ruta_por_tiempo, "->", minutos_reales(ruta_por_ti
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 2: Geocoding y map matching dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 2: Geocoding y map matching dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en geocoding y map matching como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -164,37 +113,6 @@ flowchart LR
   D -->|"sin viewbox"| E["Primer candidato de la lista: puede ser Cali"]
   D -->|"con viewbox y verificacion"| F["Candidato filtrado: Bogota, Chapinero"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Geocoding y map matching se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Geocoding y map matching | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses geocoding y map matching por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: geocoding y map matching funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Geocoding y map matching existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve geocoding y map matching en tu contexto?
-2. ¿Cómo sabrías que geocoding y map matching no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar geocoding y map matching?
 
 </details>
 
@@ -260,16 +178,6 @@ print(resultado_ambiguo)
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 3: Streaming y ETA con incertidumbre dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repos…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 3: Streaming y ETA con incertidumbre dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en streaming y eta con incertidumbre como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -284,37 +192,6 @@ sequenceDiagram
   Servidor->>Servidor: ingenuo sobrescribe con 10:00:05, 5 km restantes
   Servidor->>Servidor: correcto descarta por ser mas viejo que el estado actual
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Streaming y ETA con incertidumbre se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Streaming y ETA con incertidumbre | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses streaming y eta con incertidumbre por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: streaming y eta con incertidumbre funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Streaming y ETA con incertidumbre existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve streaming y eta con incertidumbre en tu contexto?
-2. ¿Cómo sabrías que streaming y eta con incertidumbre no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar streaming y eta con incertidumbre?
 
 </details>
 
@@ -402,16 +279,6 @@ print("ETA ingenuo:", eta_minutos(posicion["km_restantes"]), "min, basado en eve
 #### ► DE QUÉ TRATA
 Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas. Prerrequisitos: HTTP, JSON, eventos y Node 24 con npm. Para el cliente Dart, SDK Dart 3. El ejemplo es independiente desde una carpeta vac…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en socket.io extremo a extremo: un gateway compatible con el cliente móvil como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -429,37 +296,6 @@ sequenceDiagram
     H->>G: POST duplicado con sequence 1
     G-->>H: 409
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Socket.IO extremo a extremo: un gateway compatible con el cliente móvil se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Socket.IO extremo a extremo: un gateway compatible con el cliente móvil | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses socket.io extremo a extremo: un gateway compatible con el cliente móvil por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: socket.io extremo a extremo: un gateway compatible con el cliente móvil funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Socket.IO extremo a extremo: un gateway compatible con el cliente móvil existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve socket.io extremo a extremo: un gateway compatible con el cliente móvil en tu contexto?
-2. ¿Cómo sabrías que socket.io extremo a extremo: un gateway compatible con el cliente móvil no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar socket.io extremo a extremo: un gateway compatible con el cliente móvil?
 
 </details>
 
@@ -576,53 +412,6 @@ process.once('SIGINT', async () => { await gateway.close(); });
 
 #### ► DE QUÉ TRATA
 Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta. Prerrequisitos: coordenadas, HTTP, JSON y Python 3. Ejemplo independiente desde carpeta vacía; la primera fase usa una respuesta sintética declarada para aislar el contrato sin descarga…
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en osrm: del contrato de coordenadas a una respuesta de ruta verificable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que osrm: del contrato de coordenadas a una respuesta de ruta verificable resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| OSRM: del contrato de coordenadas a una respuesta de ruta verificable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar OSRM: del contrato de coordenadas a una respuesta de ruta verificable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses osrm: del contrato de coordenadas a una respuesta de ruta verificable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: osrm: del contrato de coordenadas a una respuesta de ruta verificable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- OSRM: del contrato de coordenadas a una respuesta de ruta verificable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve osrm: del contrato de coordenadas a una respuesta de ruta verificable en tu contexto?
-2. ¿Cómo sabrías que osrm: del contrato de coordenadas a una respuesta de ruta verificable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar osrm: del contrato de coordenadas a una respuesta de ruta verificable?
 
 </details>
 

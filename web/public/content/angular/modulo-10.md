@@ -15,9 +15,6 @@ Al finalizar podrás confirmar, con TestBed real, que un input() signal se asign
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con TestBed real, que un input() signal se asigna desde una prueba con fixture.componentRef.setInput(...) o, al crear el componente, con bindings: [inputBinding(...)] —nunca escribiéndolo directamente—, reproduciendo el error real que ocurre al intentar el atajo incorrecto.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `TestBed.configureTestingModule`, `createComponent`, `componentRef.setInput`.
 
@@ -53,45 +50,6 @@ describe('Tarjeta', () => {
   });
 });
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que testbed y componentes standalone resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| TestBed y componentes standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar TestBed y componentes standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses testbed y componentes standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: testbed y componentes standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- TestBed y componentes standalone existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve testbed y componentes standalone en tu contexto?
-2. ¿Cómo sabrías que testbed y componentes standalone no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar testbed y componentes standalone?
 
 </details>
 
@@ -197,9 +155,6 @@ Al finalizar podrás confirmar, con dos pruebas equivalentes (una por selector C
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con dos pruebas equivalentes (una por selector CSS interno y otra por rol/texto), que solo la prueba orientada al usuario sobrevive a un refactor puramente cosmético del componente — la garantía concreta que justifica preferir Angular Testing Library.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** consultas orientadas al usuario, `render`, `screen`, `userEvent`.
 
@@ -236,45 +191,6 @@ it('emite el evento al hacer click', async () => {
   expect(seleccionar).toHaveBeenCalled();
 });
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que angular testing library resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Angular Testing Library se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Angular Testing Library | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses angular testing library por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: angular testing library funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Angular Testing Library existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve angular testing library en tu contexto?
-2. ¿Cómo sabrías que angular testing library no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar angular testing library?
 
 </details>
 
@@ -367,12 +283,6 @@ npx ng test --watch=false
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con HttpTestingController real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con HttpTestingController real, tanto una respuesta exitosa como un error 500 simulados, verificando en código que un servicio maneja ambos casos sin ninguna dependencia de un backend real.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `HttpTestingController`, aislamiento de pruebas del backend real, migración de Karma a Vitest.
 
@@ -407,45 +317,6 @@ const req = httpMock.expectOne('/api/usuarios');
 req.flush([{ id: 1, nombre: 'Ana' }]);
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que mockear httpclient y el builder predeterminado basado en vitest resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Mockear HttpClient y el builder predeterminado basado en Vitest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Mockear HttpClient y el builder predeterminado basado en Vitest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mockear httpclient y el builder predeterminado basado en vitest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mockear httpclient y el builder predeterminado basado en vitest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Mockear HttpClient y el builder predeterminado basado en Vitest existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mockear httpclient y el builder predeterminado basado en vitest en tu contexto?
-2. ¿Cómo sabrías que mockear httpclient y el builder predeterminado basado en vitest no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mockear httpclient y el builder predeterminado basado en vitest?
-
 </details>
 
 <details>
@@ -465,12 +336,6 @@ Al finalizar podrás confirmar, con `HttpTestingController` real, tanto una resp
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS. Prerrequisitos: Temas 1 y 2 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 **Angular Material** ofrece componentes que siguen Material Design y las pautas de accesibilidad (roles ARIA, foco, teclado). Debajo está el **CDK** (Component Dev Kit): utilidades sin estilo como `LiveAnnouncer` (anuncia texto a lectores de pantalla), `FocusTrap` u *overlays*, que sirven aunque uses otro diseño. Los **harnesses** (`MatTableHarness`, `MatButtonHarness`) son APIs de prueba que interactúan con el componente como lo haría una persona, sin depender de su HTML interno.
@@ -498,8 +363,6 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** probar un `mat-table` consultando clases CSS internas de Material en vez de un harness (`MatTableHarness`), lo que rompe la prueba en cada actualización de versión; omitir `LiveAnnouncer` al anunciar un cambio de estado y asumir que el rol ARIA del componente ya lo cubre.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -510,37 +373,6 @@ flowchart LR
     H --> MT
     H --> MB
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Angular Material y CDK: componentes accesibles probados con harnesses se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Angular Material y CDK: componentes accesibles probados con harnesses | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses angular material y cdk: componentes accesibles probados con harnesses por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: angular material y cdk: componentes accesibles probados con harnesses funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Angular Material y CDK: componentes accesibles probados con harnesses existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve angular material y cdk: componentes accesibles probados con harnesses en tu contexto?
-2. ¿Cómo sabrías que angular material y cdk: componentes accesibles probados con harnesses no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar angular material y cdk: componentes accesibles probados con harnesses?
 
 </details>
 

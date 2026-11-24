@@ -14,16 +14,6 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 #### ► DE QUÉ TRATA
 Al finalizar podrás escribir una función suspend que combina dos llamadas asíncronas en paralelo, y explicar por qué cancelar el scope padre cancela automáticamente todas sus coroutines hijas.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás escribir una función suspend que combina dos llamadas asíncronas en paralelo, y explicar por qué cancelar el scope padre cancela automáticamente todas sus coroutines hijas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en suspend functions y concurrencia estructurada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -33,37 +23,6 @@ flowchart LR
   C --> D
   A -->|cancelado| E[cancela B y C en cascada]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| suspend functions y concurrencia estructurada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar suspend functions y concurrencia estructurada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses suspend functions y concurrencia estructurada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: suspend functions y concurrencia estructurada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- suspend functions y concurrencia estructurada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve suspend functions y concurrencia estructurada en tu contexto?
-2. ¿Cómo sabrías que suspend functions y concurrencia estructurada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar suspend functions y concurrencia estructurada?
 
 </details>
 
@@ -143,53 +102,6 @@ cd academia-kmp
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás elegir entre Flow, StateFlow y SharedFlow según si tu dato necesita un valor actual siempre consultable o representa un evento puntual de un solo uso.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás elegir entre Flow, StateFlow y SharedFlow según si tu dato necesita un valor actual siempre consultable o representa un evento puntual de un solo uso.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en flow, stateflow y sharedflow como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que flow, stateflow y sharedflow resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Flow, StateFlow y SharedFlow se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Flow, StateFlow y SharedFlow | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses flow, stateflow y sharedflow por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: flow, stateflow y sharedflow funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Flow, StateFlow y SharedFlow existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve flow, stateflow y sharedflow en tu contexto?
-2. ¿Cómo sabrías que flow, stateflow y sharedflow no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar flow, stateflow y sharedflow?
 
 </details>
 
@@ -272,53 +184,6 @@ val contadorTareas = MutableStateFlow____Int>(0)
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás capturar errores de una llamada suspend transformándolos en un estado explícito, y usar Mutex para proteger una variable compartida de una condición de carrera real entre coroutines concurrentes.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás capturar errores de una llamada suspend transformándolos en un estado explícito, y usar Mutex para proteger una variable compartida de una condición de carrera real entre coroutines concurrentes.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en manejo de errores y exclusión mutua como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que manejo de errores y exclusión mutua resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Manejo de errores y exclusión mutua se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Manejo de errores y exclusión mutua | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses manejo de errores y exclusión mutua por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: manejo de errores y exclusión mutua funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Manejo de errores y exclusión mutua existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve manejo de errores y exclusión mutua en tu contexto?
-2. ¿Cómo sabrías que manejo de errores y exclusión mutua no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar manejo de errores y exclusión mutua?
 
 </details>
 
@@ -441,16 +306,6 @@ class Contador {
 #### ► DE QUÉ TRATA
 Al finalizar podrás elegir el Dispatcher apropiado para una operación (bloqueante de I/O, intensiva en CPU, o de UI), y usar withContext para cambiar de contexto sin bloquear el hilo principal.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás elegir el Dispatcher apropiado para una operación (bloqueante de I/O, intensiva en CPU, o de UI), y usar withContext para cambiar de contexto sin bloquear el hilo principal.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dispatchers y withcontext: en qué hilo corre tu código como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -458,37 +313,6 @@ flowchart LR
   C["withContext(Dispatchers.IO)"] --> D[hilo principal libre durante el trabajo]
   D --> E[withContext devuelve el control a Main al terminar]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dispatchers y withContext: en qué hilo corre tu código se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dispatchers y withContext: en qué hilo corre tu código | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dispatchers y withcontext: en qué hilo corre tu código por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dispatchers y withcontext: en qué hilo corre tu código funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dispatchers y withContext: en qué hilo corre tu código existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dispatchers y withcontext: en qué hilo corre tu código en tu contexto?
-2. ¿Cómo sabrías que dispatchers y withcontext: en qué hilo corre tu código no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dispatchers y withcontext: en qué hilo corre tu código?
 
 </details>
 

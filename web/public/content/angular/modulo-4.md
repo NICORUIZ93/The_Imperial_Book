@@ -14,53 +14,6 @@ Cada tema verifica su garantía con navegación real (`RouterTestingHarness` ofi
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con navegación real vía RouterTestingHarness, que el orden del array Routes determina qué ruta se activa: una ruta comodín colocada antes de una ruta específica la intercepta indebidamente, un bug real y reproducible, no solo una regla teórica.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con navegación real vía RouterTestingHarness, que el orden del array Routes determina qué ruta se activa: una ruta comodín colocada antes de una ruta específica la intercepta indebidamente, un bug real y reproducible, no solo una regla teórica.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en router config con rutas standalone como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que router config con rutas standalone resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Router config con rutas standalone se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Router config con rutas standalone | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses router config con rutas standalone por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: router config con rutas standalone funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Router config con rutas standalone existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve router config con rutas standalone en tu contexto?
-2. ¿Cómo sabrías que router config con rutas standalone no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar router config con rutas standalone?
-
 </details>
 
 <details>
@@ -80,53 +33,6 @@ Al finalizar podrás confirmar, con navegación real vía `RouterTestingHarness`
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, invocando un guard funcional DIRECTAMENTE como una función pura (sin TestBed.createComponent ni navegación completa), la ventaja real de testabilidad que distingue a los guards funcionales de los guards de clase históricos.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, invocando un guard funcional DIRECTAMENTE como una función pura (sin TestBed.createComponent ni navegación completa), la ventaja real de testabilidad que distingue a los guards funcionales de los guards de clase históricos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en guards funcionales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que guards funcionales resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Guards funcionales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Guards funcionales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses guards funcionales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: guards funcionales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Guards funcionales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve guards funcionales en tu contexto?
-2. ¿Cómo sabrías que guards funcionales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar guards funcionales?
 
 </details>
 
@@ -222,50 +128,6 @@ Al finalizar podrás confirmar, con un espía real envolviendo la función de im
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con un espía real envolviendo la función de importación dinámica, que loadComponent NO descarga su chunk hasta que la navegación hacia esa ruta específica efectivamente ocurre — el equivalente automatizable a inspeccionar la pestaña Network del navegador.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en lazy loading con loadcomponent como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que lazy loading con loadcomponent resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Lazy loading con loadComponent se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Lazy loading con loadComponent | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses lazy loading con loadcomponent por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: lazy loading con loadcomponent funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Lazy loading con loadComponent existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve lazy loading con loadcomponent en tu contexto?
-2. ¿Cómo sabrías que lazy loading con loadcomponent no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar lazy loading con loadcomponent?
-
 </details>
 
 <details>
@@ -352,12 +214,6 @@ npx ng test --watch=false
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, navegando con RouterTestingHarness hacia una URL con un parámetro dinámico, que Angular llena automáticamente un input() del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a ActivatedRoute.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, navegando con RouterTestingHarness hacia una URL con un parámetro dinámico, que Angular llena automáticamente un input() del componente de destino con el valor real de ese parámetro — sin ninguna suscripción manual a ActivatedRoute.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** input binding de rutas, `ActivatedRoute`, `CanDeactivateFn`, `ResolveFn`.
 
@@ -390,45 +246,6 @@ export class Detalle {
 }
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que parámetros de ruta, query params y capacidades avanzadas de routing resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Parámetros de ruta, query params y capacidades avanzadas de routing se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Parámetros de ruta, query params y capacidades avanzadas de routing | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses parámetros de ruta, query params y capacidades avanzadas de routing por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: parámetros de ruta, query params y capacidades avanzadas de routing funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Parámetros de ruta, query params y capacidades avanzadas de routing existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve parámetros de ruta, query params y capacidades avanzadas de routing en tu contexto?
-2. ¿Cómo sabrías que parámetros de ruta, query params y capacidades avanzadas de routing no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar parámetros de ruta, query params y capacidades avanzadas de routing?
-
 </details>
 
 <details>
@@ -448,53 +265,6 @@ Al finalizar podrás confirmar, navegando con `RouterTestingHarness` hacia una U
 
 #### ► DE QUÉ TRATA
 Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida. Prerrequisitos: componentes standalone, signals, eventos y Router. Node compatible con Angular 21 y npm. Es un ejemplo independiente desde un proyecto nuevo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en candeactivate: proteger un borrador sin confundir navegación con autorización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que candeactivate: proteger un borrador sin confundir navegación con autorización resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CanDeactivate: proteger un borrador sin confundir navegación con autorización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CanDeactivate: proteger un borrador sin confundir navegación con autorización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses candeactivate: proteger un borrador sin confundir navegación con autorización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: candeactivate: proteger un borrador sin confundir navegación con autorización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CanDeactivate: proteger un borrador sin confundir navegación con autorización existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve candeactivate: proteger un borrador sin confundir navegación con autorización en tu contexto?
-2. ¿Cómo sabrías que candeactivate: proteger un borrador sin confundir navegación con autorización no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar candeactivate: proteger un borrador sin confundir navegación con autorización?
 
 </details>
 
@@ -553,12 +323,6 @@ npm start
 #### ► DE QUÉ TRATA
 Usa un proyecto Angular 18 o superior (ng new academia-ng --routing). Crea la carpeta src/app/envios. El ejemplo usa un servicio en memoria para no depender de un backend.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa un proyecto Angular 18 o superior (ng new academia-ng --routing).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `ResolveFn`, `resolve` en la ruta, `withComponentInputBinding`, `RedirectCommand`, navegación cancelada.
 
@@ -587,8 +351,6 @@ sequenceDiagram
     R->>C: activa con input envio
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -601,37 +363,6 @@ sequenceDiagram
     F-->>R: Envio o RedirectCommand
     R->>C: activa con input envio
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Resolvers funcionales: datos listos antes de mostrar la ruta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Resolvers funcionales: datos listos antes de mostrar la ruta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses resolvers funcionales: datos listos antes de mostrar la ruta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: resolvers funcionales: datos listos antes de mostrar la ruta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Resolvers funcionales: datos listos antes de mostrar la ruta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve resolvers funcionales: datos listos antes de mostrar la ruta en tu contexto?
-2. ¿Cómo sabrías que resolvers funcionales: datos listos antes de mostrar la ruta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar resolvers funcionales: datos listos antes de mostrar la ruta?
 
 </details>
 

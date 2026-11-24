@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a extraer TarjetaEnvio (guía y estado de un envío) como StatelessWidget, y a construir ContadorIntentos como StatefulWidget con un contador local. Prerrequisitos: Módulo 0 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a extraer TarjetaEnvio (guía y estado de un envío) como StatelessWidget, y a construir ContadorIntentos como StatefulWidget con un contador local.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en statelesswidget vs statefulwidget como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -41,37 +31,6 @@ graph TD
 
 #### ► REGLA PRÁCTICA
 Usa `StatefulWidget` cuando el widget necesita datos propios que sobrevivan entre reconstrucciones (`setState`) y un ciclo de vida que gestionar (`initState`/`dispose`); si solo refleja datos que recibe desde afuera y se reconstruye cuando cambia su padre, `StatelessWidget` basta y es más simple.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| StatelessWidget vs StatefulWidget se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar StatelessWidget vs StatefulWidget | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses statelesswidget vs statefulwidget por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: statelesswidget vs statefulwidget funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- StatelessWidget vs StatefulWidget existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve statelesswidget vs statefulwidget en tu contexto?
-2. ¿Cómo sabrías que statelesswidget vs statefulwidget no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar statelesswidget vs statefulwidget?
 
 </details>
 
@@ -178,16 +137,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a componer TarjetaEnvio con Row/Stack para mostrar un ícono de "urgente" superpuesto, y a usar initState/dispose para gestionar un timer que refresca el tiempo relativo de la lista. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a componer TarjetaEnvio con Row/Stack para mostrar un ícono de "urgente" superpuesto, y a usar initState/dispose para gestionar un timer que refresca el tiempo relativo de la lista.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en layout con row, column y stack, y ciclo de vida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TB
@@ -213,37 +162,6 @@ graph TB
     style Col fill:#bbdefb
     style Stk fill:#ffe0b2
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Layout con Row, Column y Stack, y ciclo de vida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Layout con Row, Column y Stack, y ciclo de vida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses layout con row, column y stack, y ciclo de vida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: layout con row, column y stack, y ciclo de vida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Layout con Row, Column y Stack, y ciclo de vida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve layout con row, column y stack, y ciclo de vida en tu contexto?
-2. ¿Cómo sabrías que layout con row, column y stack, y ciclo de vida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar layout con row, column y stack, y ciclo de vida?
 
 </details>
 
@@ -364,16 +282,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a corregir un bug de identidad en ListaEnvios reordenable, donde el estado de un checkbox "revisado" por fila se confunde al reordenar, usando ValueKey basada en el id del envío. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a corregir un bug de identidad en ListaEnvios reordenable, donde el estado de un checkbox "revisado" por fila se confunde al reordenar, usando ValueKey basada en el id del envío.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en keys como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TB
@@ -416,37 +324,6 @@ graph TB
     
     style ReorderKey fill:#ccffcc
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Keys se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Keys | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses keys por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: keys funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Keys existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve keys en tu contexto?
-2. ¿Cómo sabrías que keys no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar keys?
 
 </details>
 
@@ -588,16 +465,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Crea flutter create tres_arboles y reemplaza lib/main.dart con el código del tema. Ejecuta en cualquier dispositivo o en Chrome.
 
-#### ► LA IDEA EN UNA FRASE
-**Crea flutter create tres_arboles y reemplaza lib/main.dart con el código del tema.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en los tres árboles de flutter: widget, element y renderobject como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -605,37 +472,6 @@ flowchart LR
     E --> R["RenderObject<br/>layout y pintura"]
     W2["Padding(NotaCampo)"] -. "otro tipo en esa posición" .-> X["Element nuevo: State perdido"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Los tres árboles de Flutter: Widget, Element y RenderObject se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Los tres árboles de Flutter: Widget, Element y RenderObject | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses los tres árboles de flutter: widget, element y renderobject por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: los tres árboles de flutter: widget, element y renderobject funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Los tres árboles de Flutter: Widget, Element y RenderObject existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve los tres árboles de flutter: widget, element y renderobject en tu contexto?
-2. ¿Cómo sabrías que los tres árboles de flutter: widget, element y renderobject no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar los tres árboles de flutter: widget, element y renderobject?
 
 </details>
 
@@ -726,12 +562,6 @@ El campo aparece vacío.
 #### ► DE QUÉ TRATA
 Continúa un proyecto Flutter (flutter create gestos_rutaflow). Escribe la lista en lib/main.dart.
 
-#### ► LA IDEA EN UNA FRASE
-**Continúa un proyecto Flutter (flutter create gestos_rutaflow).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `GestureDetector`, `onTap`, `onLongPress`, `onHorizontalDragUpdate`, arena de gestos, `Dismissible`, `confirmDismiss`, `SnackBar` con deshacer, `Semantics`.
 
@@ -754,8 +584,6 @@ flowchart TB
     F --> G["GestureDetector.onLongPress: detalle"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -765,37 +593,6 @@ flowchart TB
     C -->|"false"| V["la fila vuelve"]
     F --> G["GestureDetector.onLongPress: detalle"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gestos en flutter: gesturedetector, dismissible y la arena de gestos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gestos en flutter: gesturedetector, dismissible y la arena de gestos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gestos en flutter: gesturedetector, dismissible y la arena de gestos en tu contexto?
-2. ¿Cómo sabrías que gestos en flutter: gesturedetector, dismissible y la arena de gestos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gestos en flutter: gesturedetector, dismissible y la arena de gestos?
 
 </details>
 

@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.14, la línea del curso.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en ordenamientos: insertion, merge y quick sort como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -32,37 +22,6 @@ flowchart TD
     D --> F["mezcla: [3, 27, 38, 43]"]
     E --> F
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ordenamientos: insertion, merge y quick sort se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ordenamientos: insertion, merge y quick sort | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ordenamientos: insertion, merge y quick sort por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ordenamientos: insertion, merge y quick sort funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ordenamientos: insertion, merge y quick sort existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ordenamientos: insertion, merge y quick sort en tu contexto?
-2. ¿Cómo sabrías que ordenamientos: insertion, merge y quick sort no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ordenamientos: insertion, merge y quick sort?
 
 </details>
 
@@ -152,16 +111,6 @@ quick     correcto=True tiempo=2.0 ms
 #### ► DE QUÉ TRATA
 Al finalizar podrás reconocer un algoritmo codicioso, demostrar con un contraejemplo cuándo falla y construir un árbol de expansión mínima con Kruskal. Prerrequisitos: Módulo 2, Temas 7 (grafos) y 8 (programación dinámica).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás reconocer un algoritmo codicioso, demostrar con un contraejemplo cuándo falla y construir un árbol de expansión mínima con Kruskal.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en algoritmos codiciosos y árbol de expansión mínima como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -171,37 +120,6 @@ graph LR
     N -. 7 descartada .- S
     S -. 9 descartada .- O
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Algoritmos codiciosos y árbol de expansión mínima se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Algoritmos codiciosos y árbol de expansión mínima | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses algoritmos codiciosos y árbol de expansión mínima por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: algoritmos codiciosos y árbol de expansión mínima funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Algoritmos codiciosos y árbol de expansión mínima existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve algoritmos codiciosos y árbol de expansión mínima en tu contexto?
-2. ¿Cómo sabrías que algoritmos codiciosos y árbol de expansión mínima no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar algoritmos codiciosos y árbol de expansión mínima?
 
 </details>
 
@@ -285,16 +203,6 @@ Red mínima: [('Norte', 'Centro', 3), ('Centro', 'Sur', 4), ('Centro', 'Occident
 #### ► DE QUÉ TRATA
 Al finalizar podrás calcular la ruta de menor costo en un grafo con pesos usando Dijkstra y una cola de prioridad, reconstruir el camino y explicar por qué falla con pesos negativos. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (BFS).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás calcular la ruta de menor costo en un grafo con pesos usando Dijkstra y una cola de prioridad, reconstruir el camino y explicar por qué falla con pesos negativos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en caminos más cortos con dijkstra como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -306,37 +214,6 @@ graph LR
     K -- 40 --> U
     U -- 30 --> B
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Caminos más cortos con Dijkstra se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Caminos más cortos con Dijkstra | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses caminos más cortos con dijkstra por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: caminos más cortos con dijkstra funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Caminos más cortos con Dijkstra existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve caminos más cortos con dijkstra en tu contexto?
-2. ¿Cómo sabrías que caminos más cortos con dijkstra no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar caminos más cortos con dijkstra?
 
 </details>
 
@@ -420,16 +297,6 @@ Bosa       30 min  ruta: Deposito -> Chapinero -> Kennedy -> Bosa
 #### ► DE QUÉ TRATA
 Al finalizar podrás implementar la búsqueda ingenua y el algoritmo Knuth-Morris-Pratt (KMP), construir su tabla de fallos y medir la diferencia en comparaciones. Prerrequisito: Módulo 2, Tema 4.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás implementar la búsqueda ingenua y el algoritmo Knuth-Morris-Pratt (KMP), construir su tabla de fallos y medir la diferencia en comparaciones.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en búsqueda en cadenas: de la fuerza bruta a kmp como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -437,37 +304,6 @@ flowchart TD
     F --> S["tabla de fallos de ABAB = 2"]
     S --> R["continúa comparando desde patrón[2]"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Búsqueda en cadenas: de la fuerza bruta a KMP se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Búsqueda en cadenas: de la fuerza bruta a KMP | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses búsqueda en cadenas: de la fuerza bruta a kmp por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: búsqueda en cadenas: de la fuerza bruta a kmp funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Búsqueda en cadenas: de la fuerza bruta a KMP existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve búsqueda en cadenas: de la fuerza bruta a kmp en tu contexto?
-2. ¿Cómo sabrías que búsqueda en cadenas: de la fuerza bruta a kmp no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar búsqueda en cadenas: de la fuerza bruta a kmp?
 
 </details>
 
@@ -552,53 +388,12 @@ kmp:     ([19950], 39951)
 #### ► DE QUÉ TRATA
 Al finalizar podrás explicar qué significa que un problema sea NP-completo, observar el crecimiento factorial de una búsqueda exhaustiva y justificar el uso de una heurística con su costo en calidad. Prerrequisitos: los temas anteriores de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar qué significa que un problema sea NP-completo, observar el crecimiento factorial de una búsqueda exhaustiva y justificar el uso de una heurística con su costo en calidad.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en problemas intratables: p, np y heurísticas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     P["P: se resuelve rápido"] --> NP["NP: se verifica rápido"]
     NPC["NP-completos: TSP, SAT, mochila"] --> NP
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Problemas intratables: P, NP y heurísticas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Problemas intratables: P, NP y heurísticas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses problemas intratables: p, np y heurísticas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: problemas intratables: p, np y heurísticas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Problemas intratables: P, NP y heurísticas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve problemas intratables: p, np y heurísticas en tu contexto?
-2. ¿Cómo sabrías que problemas intratables: p, np y heurísticas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar problemas intratables: p, np y heurísticas?
 
 </details>
 
@@ -669,56 +464,6 @@ n=10  rutas posibles= 362880  exacto= 303 (  197.1 ms)  heurística= 363
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto 12: planificador de entregas de rutaflow con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto 12: planificador de entregas de rutaflow te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto 12: planificador de entregas de rutaflow como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto 12: planificador de entregas de rutaflow resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto 12: planificador de entregas de RutaFlow se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto 12: planificador de entregas de RutaFlow | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto 12: planificador de entregas de rutaflow por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto 12: planificador de entregas de rutaflow funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto 12: planificador de entregas de RutaFlow existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto 12: planificador de entregas de rutaflow en tu contexto?
-2. ¿Cómo sabrías que proyecto 12: planificador de entregas de rutaflow no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto 12: planificador de entregas de rutaflow?
 
 </details>
 

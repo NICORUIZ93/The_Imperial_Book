@@ -71,53 +71,6 @@ flowchart LR
 #### ► DE QUÉ TRATA
 Al finalizar podrás crear una carpeta, entrar en ella y guardar un archivo. Conocimiento previo: ninguno. Abre Terminal en macOS/Linux o PowerShell en Windows. No necesitas saber programar ni instalar Docker.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás crear una carpeta, entrar en ella y guardar un archivo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en fundamentos absolutos — qué es una terminal, un comando y un sistema operativo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que fundamentos absolutos — qué es una terminal, un comando y un sistema operativo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses fundamentos absolutos — qué es una terminal, un comando y un sistema operativo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: fundamentos absolutos — qué es una terminal, un comando y un sistema operativo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve fundamentos absolutos — qué es una terminal, un comando y un sistema operativo en tu contexto?
-2. ¿Cómo sabrías que fundamentos absolutos — qué es una terminal, un comando y un sistema operativo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar fundamentos absolutos — qué es una terminal, un comando y un sistema operativo?
-
 </details>
 
 <details>
@@ -160,53 +113,6 @@ Get-Content nota.txt
 
 #### ► DE QUÉ TRATA
 Al finalizar distinguirás un servidor apagado de una ruta que no existe. Prerrequisitos: Node.js instalado y una terminal. Comprueba node --version; en Windows usa curl.exe. Este ejemplo independiente empieza en una carpeta vacía.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar distinguirás un servidor apagado de una ruta que no existe.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en fundamentos de redes — direcciones ip, puertos, http y apis como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que fundamentos de redes — direcciones ip, puertos, http y apis resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Fundamentos de redes — direcciones IP, puertos, HTTP y APIs se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Fundamentos de redes — direcciones IP, puertos, HTTP y APIs | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses fundamentos de redes — direcciones ip, puertos, http y apis por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: fundamentos de redes — direcciones ip, puertos, http y apis funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Fundamentos de redes — direcciones IP, puertos, HTTP y APIs existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve fundamentos de redes — direcciones ip, puertos, http y apis en tu contexto?
-2. ¿Cómo sabrías que fundamentos de redes — direcciones ip, puertos, http y apis no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar fundamentos de redes — direcciones ip, puertos, http y apis?
 
 </details>
 
@@ -265,53 +171,6 @@ const body = existe
 #### ► DE QUÉ TRATA
 Al finalizar tendrás una bitácora corta para recordar qué probaste y qué sigue. Conocimiento previo: ninguno. No necesitas memorizar los servicios antes de comenzar.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar tendrás una bitácora corta para recordar qué probaste y qué sigue.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en qué vas a aprender y cómo está estructurado el curso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que qué vas a aprender y cómo está estructurado el curso resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Qué vas a aprender y cómo está estructurado el curso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Qué vas a aprender y cómo está estructurado el curso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses qué vas a aprender y cómo está estructurado el curso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: qué vas a aprender y cómo está estructurado el curso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Qué vas a aprender y cómo está estructurado el curso existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve qué vas a aprender y cómo está estructurado el curso en tu contexto?
-2. ¿Cómo sabrías que qué vas a aprender y cómo está estructurado el curso no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar qué vas a aprender y cómo está estructurado el curso?
-
 </details>
 
 <details>
@@ -349,53 +208,6 @@ cat bitacora.md
 #### ► DE QUÉ TRATA
 Al terminar podrás reconocer qué hace Floci y comprobar si está respondiendo en tu computador. Necesitas Docker Desktop abierto y una terminal. En la carpeta principal del proyecto ejecuta docker --version.
 
-#### ► LA IDEA EN UNA FRASE
-**Al terminar podrás reconocer qué hace Floci y comprobar si está respondiendo en tu computador.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en qué es floci — definición, propósito y comparativa con localstack como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que qué es floci — definición, propósito y comparativa con localstack resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Qué es Floci — definición, propósito y comparativa con LocalStack se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Qué es Floci — definición, propósito y comparativa con LocalStack | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses qué es floci — definición, propósito y comparativa con localstack por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: qué es floci — definición, propósito y comparativa con localstack funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Qué es Floci — definición, propósito y comparativa con LocalStack existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve qué es floci — definición, propósito y comparativa con localstack en tu contexto?
-2. ¿Cómo sabrías que qué es floci — definición, propósito y comparativa con localstack no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar qué es floci — definición, propósito y comparativa con localstack?
-
 </details>
 
 <details>
@@ -429,53 +241,6 @@ curl -i http://localhost:4566/_floci/health
 #### ► DE QUÉ TRATA
 Al terminar podrás ubicar qué proveedor responde en cada puerto. No necesitas instalar tres herramientas: el Compose del proyecto ya describe los tres servicios.
 
-#### ► LA IDEA EN UNA FRASE
-**Al terminar podrás ubicar qué proveedor responde en cada puerto.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en servicios que emula floci — aws, azure y gcp como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que servicios que emula floci — aws, azure y gcp resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Servicios que emula Floci — AWS, Azure y GCP se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Servicios que emula Floci — AWS, Azure y GCP | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses servicios que emula floci — aws, azure y gcp por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: servicios que emula floci — aws, azure y gcp funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Servicios que emula Floci — AWS, Azure y GCP existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve servicios que emula floci — aws, azure y gcp en tu contexto?
-2. ¿Cómo sabrías que servicios que emula floci — aws, azure y gcp no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar servicios que emula floci — aws, azure y gcp?
-
 </details>
 
 <details>
@@ -502,53 +267,6 @@ Google Cloud: Cloud Storage — puerto 4588
 #### ► DE QUÉ TRATA
 Al terminar podrás distinguir qué confirma una prueba local y qué todavía no confirma. Necesitas la carpeta principal del proyecto y puedes hacer el ejercicio aunque Docker no esté instalado.
 
-#### ► LA IDEA EN UNA FRASE
-**Al terminar podrás distinguir qué confirma una prueba local y qué todavía no confirma.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en ventajas y limitaciones de practicar con un emulador local como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que ventajas y limitaciones de practicar con un emulador local resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ventajas y limitaciones de practicar con un emulador local se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ventajas y limitaciones de practicar con un emulador local | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ventajas y limitaciones de practicar con un emulador local por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ventajas y limitaciones de practicar con un emulador local funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ventajas y limitaciones de practicar con un emulador local existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ventajas y limitaciones de practicar con un emulador local en tu contexto?
-2. ¿Cómo sabrías que ventajas y limitaciones de practicar con un emulador local no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ventajas y limitaciones de practicar con un emulador local?
-
 </details>
 
 <details>
@@ -569,16 +287,6 @@ curl -i http://localhost:4566/_floci/health
 #### ► DE QUÉ TRATA
 Al finalizar podrás estudiar cada módulo del curso con el mismo ciclo de tres fases y dejar evidencia de cada una en una bitácora versionada. Conceptos clave: ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito. Prerrequisitos: una term…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás estudiar cada módulo del curso con el mismo ciclo de tres fases y dejar evidencia de cada una en una bitácora versionada.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en metodología de estudio — teoría, laboratorio y evaluación en cada módulo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -586,37 +294,6 @@ flowchart LR
     B --> C["Ejercicios\n(sin ayuda, autoevaluado)"]
     C --> D["Resumen\n(checklist final)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Metodología de estudio — teoría, laboratorio y evaluación en cada módulo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Metodología de estudio — teoría, laboratorio y evaluación en cada módulo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses metodología de estudio — teoría, laboratorio y evaluación en cada módulo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: metodología de estudio — teoría, laboratorio y evaluación en cada módulo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Metodología de estudio — teoría, laboratorio y evaluación en cada módulo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve metodología de estudio — teoría, laboratorio y evaluación en cada módulo en tu contexto?
-2. ¿Cómo sabrías que metodología de estudio — teoría, laboratorio y evaluación en cada módulo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar metodología de estudio — teoría, laboratorio y evaluación en cada módulo?
 
 </details>
 
@@ -656,13 +333,6 @@ Ten a mano la AWS CLI configurada contra el emulador local del curso (levántalo
 #### ► LA IDEA EN UNA FRASE
 **Ten a mano la AWS CLI configurada contra el emulador local del curso (levántalo con docker compose up -d aws-local desde la carpeta principal del proyecto y exporta AWS_ENDPOINT_URL=http://localhost:4566 junto con las credenciales test del laboratorio de este módulo) o una cuenta real en modo solo lectura.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -671,37 +341,6 @@ flowchart TB
     R --> C["AZ c: app"]
     U["usuarios en Colombia"] -->|"latencia baja"| R
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad en tu contexto?
-2. ¿Cómo sabrías que modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar modelos de servicio (iaas, paas, saas), regiones y zonas de disponibilidad?
 
 </details>
 

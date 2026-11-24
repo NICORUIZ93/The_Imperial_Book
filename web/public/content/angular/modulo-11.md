@@ -17,13 +17,6 @@ Al finalizar podrás confirmar, con renderApplication real de @angular/platform-
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con renderApplication real de @angular/platform-server (la misma API que usa el servidor de SSR de Angular internamente), que el HTML generado contiene el contenido de datos ya resuelto, sin depender de que ningún JavaScript se ejecute en el navegador.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en server-side rendering como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -31,37 +24,6 @@ flowchart LR
   B --> C[HTML completo CON datos ya resueltos]
   C --> D[navegador muestra de inmediato, sin esperar JS]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Server-Side Rendering se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Server-Side Rendering | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses server-side rendering por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: server-side rendering funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Server-Side Rendering existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve server-side rendering en tu contexto?
-2. ¿Cómo sabrías que server-side rendering no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar server-side rendering?
 
 </details>
 
@@ -138,50 +100,6 @@ Al finalizar podrás demostrar, contrastando contenido determinista con no deter
 
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás demostrar, contrastando contenido determinista con no determinista, exactamente por qué el contenido no determinista (como Date.now() o Math.random() sin coordinación) produce una discrepancia entre lo que el servidor renderizó y lo que el cliente renderizaría al hidratarse.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en hidratación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que hidratación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Hidratación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Hidratación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses hidratación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: hidratación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Hidratación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve hidratación en tu contexto?
-2. ¿Cómo sabrías que hidratación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar hidratación?
 
 </details>
 
@@ -275,16 +193,6 @@ export const config = mergeApplicationConfig(appConfig, serverConfig);
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con la API oficial de test de bloques @defer, el estado Error de un bloque diferido — el caso donde la carga del contenido falla — además de los triggers apropiados según el tipo de contenido.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con la API oficial de test de bloques @defer, el estado Error de un bloque diferido — el caso donde la carga del contenido falla — además de los triggers apropiados según el tipo de contenido.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en `@defer` — estados reales, incluyendo error como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -293,37 +201,6 @@ stateDiagram-v2
   Loading --> Complete: descarga exitosa
   Loading --> Error: descarga falla
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| `@defer` — estados reales, incluyendo error se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar `@defer` — estados reales, incluyendo error | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses `@defer` — estados reales, incluyendo error por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: `@defer` — estados reales, incluyendo error funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- `@defer` — estados reales, incluyendo error existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve `@defer` — estados reales, incluyendo error en tu contexto?
-2. ¿Cómo sabrías que `@defer` — estados reales, incluyendo error no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar `@defer` — estados reales, incluyendo error?
 
 </details>
 
@@ -410,12 +287,6 @@ await bloqueDeferido.render(DeferBlockState.____);
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con provideZonelessChangeDetection() real configurado en TestBed, que actualizar un signal refleja el cambio en el DOM automáticamente tras await fixture.whenStable(), sin depender de Zone.js interceptando operaciones asíncronas.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con provideZonelessChangeDetection() real configurado en TestBed, que actualizar un signal refleja el cambio en el DOM automáticamente tras await fixture.whenStable(), sin depender de Zone.js interceptando operaciones asíncronas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `provideZonelessChangeDetection`, precisión de signals, `fixture.whenStable()`.
 
@@ -431,45 +302,6 @@ Cuando el estado de una aplicación está modelado con signals, cada uno notific
 ┌── Zoneless (con signals) ──────────┐  un signal cambia → SOLO se actualizan sus vistas dependientes
 └──────────────────────────────┘
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que zoneless resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Zoneless se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Zoneless | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses zoneless por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: zoneless funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Zoneless existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve zoneless en tu contexto?
-2. ¿Cómo sabrías que zoneless no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar zoneless?
 
 </details>
 
@@ -487,56 +319,6 @@ Al finalizar podrás confirmar, con `provideZonelessChangeDetection()` real conf
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` en tu contexto?
-2. ¿Cómo sabrías que onpush por defecto (angular 22): qué se revisa y cuándo usar `eager` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar onpush por defecto (angular 22): qué se revisa y cuándo usar `eager`?
 
 </details>
 
@@ -635,16 +417,6 @@ Busca en tu proyecto campos planos que cambian fuera del template y clasifícalo
 #### ► DE QUÉ TRATA
 Usa Angular 19 o superior con SSR: ng new academia-ssr --ssr o ng add @angular/ssr en un proyecto existente. Trabajarás en src/app/app.routes.server.ts.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Angular 19 o superior con SSR: ng new academia-ssr --ssr o ng add @angular/ssr en un proyecto existente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -653,37 +425,6 @@ flowchart TB
     S -->|sí| SSR["RenderMode.Server<br/>cada petición"]
     S -->|no| C["RenderMode.Client<br/>navegador"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts en tu contexto?
-2. ¿Cómo sabrías que modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar modos de render por ruta: ssr, prerender (ssg) y csr con app.routes.server.ts?
 
 </details>
 
@@ -754,12 +495,6 @@ Al pedir /seguimiento/ENV-42 con el servidor SSR, el HTML de la respuesta ya tra
 #### ► DE QUÉ TRATA
 Usa Angular 22 con SSR activo (npx -y @angular/cli@22 new academia-ssr --ssr --defaults --skip-git). Desde Angular 22, la hidratación incremental viene activada por defecto: withIncrementalHydration() está marcado @deprecated («Since v22.0.0, incremental hydration is enabled by d…
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Angular 22 con SSR activo (npx -y @angular/cli@22 new academia-ssr --ssr --defaults --skip-git).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** hidratación, hidratación incremental (por defecto en Angular 22), `withNoIncrementalHydration`, `@defer (hydrate on ...)`, `hydrate when`, `hydrate never`, repetición de eventos.
 
@@ -793,8 +528,6 @@ sequenceDiagram
     N->>N: hidrata el mapa
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -807,37 +540,6 @@ sequenceDiagram
     N->>S: descarga el chunk del mapa
     N->>N: hidrata el mapa
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses hidratación incremental: @defer con hydrate on para despertar solo lo que se usa por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: hidratación incremental: @defer con hydrate on para despertar solo lo que se usa funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve hidratación incremental: @defer con hydrate on para despertar solo lo que se usa en tu contexto?
-2. ¿Cómo sabrías que hidratación incremental: @defer con hydrate on para despertar solo lo que se usa no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar hidratación incremental: @defer con hydrate on para despertar solo lo que se usa?
 
 </details>
 

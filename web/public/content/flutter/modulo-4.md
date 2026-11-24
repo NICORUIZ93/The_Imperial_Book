@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a confirmar por qué setState no alcanza para compartir el contador de "envíos pendientes" entre BarraSuperior y ListaEnvios, dos widgets que no son padre-hijo directo. Prerrequisitos: Módulo 3 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a confirmar por qué setState no alcanza para compartir el contador de "envíos pendientes" entre BarraSuperior y ListaEnvios, dos widgets que no son padre-hijo directo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en setstate y sus límites como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TD
@@ -38,37 +28,6 @@ graph TD
     style A fill:#ffebee
     style F fill:#ffcccc
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| setState y sus límites se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar setState y sus límites | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses setstate y sus límites por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: setstate y sus límites funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- setState y sus límites existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve setstate y sus límites en tu contexto?
-2. ¿Cómo sabrías que setstate y sus límites no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar setstate y sus límites?
 
 </details>
 
@@ -153,12 +112,6 @@ flutter run
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un NotifierProvider de Riverpod, consumido desde BarraSuperior y DetalleEnvio sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un NotifierProvider de Riverpod, consumido desde BarraSuperior y DetalleEnvio sin ningún prop drilling.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 Riverpod declara providers como objetos globales independientes del árbol de widgets, verificados en tiempo de compilación — un directorio centralizado de servicios verificado antes de abrir el edificio.
@@ -253,8 +206,6 @@ final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
 
 En el proyecto integrador RutaFlow, `pendientesProvider` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Práctica: extendé ese mismo provider en tu proyecto propio para un segundo contador relacionado.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph TB
@@ -281,37 +232,6 @@ graph TB
     style PropDrill fill:#ffebee
     style Riverpod fill:#e8f5e9
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Riverpod se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Riverpod | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses riverpod por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: riverpod funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Riverpod existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve riverpod en tu contexto?
-2. ¿Cómo sabrías que riverpod no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar riverpod?
 
 </details>
 
@@ -450,16 +370,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a reimplementar el contador de "envíos pendientes" con un Cubit, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a reimplementar el contador de "envíos pendientes" con un Cubit, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en bloc/cubit y otras alternativas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 graph LR
@@ -474,37 +384,6 @@ graph LR
     style D fill:#c8e6c9
     style G fill:#ffcccc
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Bloc/Cubit y otras alternativas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Bloc/Cubit y otras alternativas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses bloc/cubit y otras alternativas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: bloc/cubit y otras alternativas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Bloc/Cubit y otras alternativas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve bloc/cubit y otras alternativas en tu contexto?
-2. ¿Cómo sabrías que bloc/cubit y otras alternativas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar bloc/cubit y otras alternativas?
 
 </details>
 
@@ -617,12 +496,6 @@ class PantallaPendientes extends StatelessWidget {
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (ReasonInput, NoteInput) y un Notifier de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (ReasonInput, NoteInput) y un Notifier de Riverpod que coordine validación y envío único.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 Formz distingue `pure` (sin interacción) de `dirty` (ya modificado); el estado del formulario es inmutable y separa validez de estado de red — las entradas son inspectores especializados, el estado del formulario es el tablero de despacho.
@@ -779,8 +652,6 @@ stateDiagram-v2
 
 **¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 stateDiagram-v2
@@ -793,37 +664,6 @@ stateDiagram-v2
   Failure --> Sending: reintentar sin borrar
   Sending --> Success: confirmación remota
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Formularios profesionales con Formz y Riverpod se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Formularios profesionales con Formz y Riverpod | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses formularios profesionales con formz y riverpod por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: formularios profesionales con formz y riverpod funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Formularios profesionales con Formz y Riverpod existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve formularios profesionales con formz y riverpod en tu contexto?
-2. ¿Cómo sabrías que formularios profesionales con formz y riverpod no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar formularios profesionales con formz y riverpod?
 
 </details>
 
@@ -952,12 +792,6 @@ FilledButton(
 #### ► DE QUÉ TRATA
 Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con overrides, sin red ni servidores. Prerrequisitos: Temas 2 y 3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con overrides, sin red ni servidores.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 La **inyección de dependencias** (DI) consiste en que un componente **reciba** lo que necesita en lugar de crearlo. En Flutter con Riverpod, cada proveedor es un punto de inyección: `repositorioEnviosProvider` entrega la implementación y quien lo lee solo conoce la interfaz. En pruebas, `ProviderContainer(overrides: [...])` o `ProviderScope(overrides: [...])` reemplaza la implementación. Otras opciones son pasar dependencias por constructor o un localizador de servicios como `get_it`, que es más simple pero esconde las dependencias.
 
@@ -981,8 +815,6 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -990,37 +822,6 @@ flowchart LR
     R -- app --> H[RepositorioEnviosHttp]
     R -- prueba con override --> F[RepositorioEnviosFalso]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Inyección de dependencias con Riverpod: reemplazar implementaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Inyección de dependencias con Riverpod: reemplazar implementaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses inyección de dependencias con riverpod: reemplazar implementaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: inyección de dependencias con riverpod: reemplazar implementaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Inyección de dependencias con Riverpod: reemplazar implementaciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve inyección de dependencias con riverpod: reemplazar implementaciones en tu contexto?
-2. ¿Cómo sabrías que inyección de dependencias con riverpod: reemplazar implementaciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar inyección de dependencias con riverpod: reemplazar implementaciones?
 
 </details>
 

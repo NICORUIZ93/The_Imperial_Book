@@ -15,52 +15,8 @@ Al finalizar podrás confirmar, con espías reales (vi.fn()) y el reloj simulado
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con espías reales (vi.fn()) y el reloj simulado de Vitest (vi.useFakeTimers()), dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscribirse detiene efectivamente la operación en curso).**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en observable frente a promise como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que observable frente a promise resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
 #### ► REGLA PRÁCTICA
 Si la operación produce un único valor y no necesitas cancelarla a medias, una Promise (o `async`/`await`) es más simple. Si necesitas cancelar una operación en curso (el usuario navega a otra pantalla, escribe una nueva búsqueda) o esperas múltiples valores en el tiempo, necesitas un Observable: una Promise ya empezó a ejecutarse en cuanto se creó y no tiene forma de detenerla.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Observable frente a Promise se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Observable frente a Promise | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses observable frente a promise por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: observable frente a promise funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Observable frente a Promise existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve observable frente a promise en tu contexto?
-2. ¿Cómo sabrías que observable frente a promise no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar observable frente a promise?
 
 </details>
 
@@ -158,9 +114,6 @@ Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimer
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) sobre un Subject real, que switchMap cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condiciones de carrera en un buscador en vivo.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** transformación y combinación de flujos, cancelación automática con switchMap.
 
@@ -198,45 +151,6 @@ resultados = toSignal(
   { initialValue: [] }
 );
 ```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest en tu contexto?
-2. ¿Cómo sabrías que operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar operadores clave — debouncetime, distinctuntilchanged, switchmap, combinelatest?
 
 </details>
 
@@ -328,53 +242,6 @@ npx ng test --watch=false
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con un componente Angular real creado y destruido con TestBed, que takeUntilDestroyed() completa automáticamente una suscripción cuando el componente se destruye — sin ningún ngOnDestroy manual escrito.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con un componente Angular real creado y destruido con TestBed, que takeUntilDestroyed() completa automáticamente una suscripción cuando el componente se destruye — sin ningún ngOnDestroy manual escrito.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en manejo de suscripciones sin fugas de memoria como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que manejo de suscripciones sin fugas de memoria resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Manejo de suscripciones sin fugas de memoria se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Manejo de suscripciones sin fugas de memoria | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses manejo de suscripciones sin fugas de memoria por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: manejo de suscripciones sin fugas de memoria funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Manejo de suscripciones sin fugas de memoria existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve manejo de suscripciones sin fugas de memoria en tu contexto?
-2. ¿Cómo sabrías que manejo de suscripciones sin fugas de memoria no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar manejo de suscripciones sin fugas de memoria?
-
 </details>
 
 <details>
@@ -457,50 +324,6 @@ Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimer
 
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar podrás confirmar, con el reloj simulado de Vitest (vi.useFakeTimers()) y un espía real sobre la función de envío, que exhaustMap ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental de un formulario.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en subjects y operadores de aplanamiento avanzados como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que subjects y operadores de aplanamiento avanzados resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Subjects y operadores de aplanamiento avanzados se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Subjects y operadores de aplanamiento avanzados | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses subjects y operadores de aplanamiento avanzados por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: subjects y operadores de aplanamiento avanzados funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Subjects y operadores de aplanamiento avanzados existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve subjects y operadores de aplanamiento avanzados en tu contexto?
-2. ¿Cómo sabrías que subjects y operadores de aplanamiento avanzados no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar subjects y operadores de aplanamiento avanzados?
 
 </details>
 

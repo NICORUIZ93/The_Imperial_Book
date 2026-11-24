@@ -12,53 +12,12 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a escribir y probar un confirmDelivery de RutaFlow diseñado contra un puerto DeliveryRepository, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a escribir y probar un confirmDelivery de RutaFlow diseñado contra un puerto DeliveryRepository, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en arquitectura multi-nube y portabilidad de conocimiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
     A["Principio: #quot;desacoplar productor y consumidor con una cola#quot;"] --> A1["PORTABLE"]
     B["Sintaxis: aws sqs send-message vs az servicebus queue send"] --> B1["ESPECÍFICO de cada proveedor"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arquitectura multi-nube y portabilidad de conocimiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arquitectura multi-nube y portabilidad de conocimiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arquitectura multi-nube y portabilidad de conocimiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arquitectura multi-nube y portabilidad de conocimiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arquitectura multi-nube y portabilidad de conocimiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arquitectura multi-nube y portabilidad de conocimiento en tu contexto?
-2. ¿Cómo sabrías que arquitectura multi-nube y portabilidad de conocimiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arquitectura multi-nube y portabilidad de conocimiento?
 
 </details>
 
@@ -187,16 +146,6 @@ test('rechaza un PIN inválido antes de escribir', async () => {
 #### ► DE QUÉ TRATA
 Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás probar contra motores reales desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en arquitectura interna de cloud local y su uso en ci/cd como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -204,37 +153,6 @@ flowchart LR
     B["ECS (cloud local)"] --> B1["contenedores Docker REALES"]
     C["Lambda (cloud local)"] --> C1["runtime REAL en contenedor Docker"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arquitectura interna de cloud local y su uso en CI/CD se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arquitectura interna de cloud local y su uso en CI/CD | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arquitectura interna de cloud local y su uso en ci/cd por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arquitectura interna de cloud local y su uso en ci/cd funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arquitectura interna de cloud local y su uso en CI/CD existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arquitectura interna de cloud local y su uso en ci/cd en tu contexto?
-2. ¿Cómo sabrías que arquitectura interna de cloud local y su uso en ci/cd no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arquitectura interna de cloud local y su uso en ci/cd?
 
 </details>
 
@@ -284,52 +202,11 @@ bash ci-integracion.sh
 #### ► DE QUÉ TRATA
 Al finalizar vas a levantar Floci con un único docker-compose.yml y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS. Prerrequisitos: Módulo 30 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a levantar Floci con un único docker-compose.yml y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en migración desde otros emuladores, y límites de un emulador como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
     A["LocalStack + Azurite + gcloud emulators (3 herramientas separadas)"] -->|migración| B["cloud local (1 único endpoint, AWS + Azure + GCP)"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Migración desde otros emuladores, y límites de un emulador se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Migración desde otros emuladores, y límites de un emulador | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses migración desde otros emuladores, y límites de un emulador por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: migración desde otros emuladores, y límites de un emulador funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Migración desde otros emuladores, y límites de un emulador existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve migración desde otros emuladores, y límites de un emulador en tu contexto?
-2. ¿Cómo sabrías que migración desde otros emuladores, y límites de un emulador no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar migración desde otros emuladores, y límites de un emulador?
 
 </details>
 
@@ -361,12 +238,6 @@ aws s3 mb s3://demo-multi-nube
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás aislar suites de prueba desde cero.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 El módulo gestiona ciclo de vida como un técnico que prepara y limpia el laboratorio.
@@ -507,8 +378,6 @@ flowchart TD
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea recursos únicos por prueba de integración y consulta una evidencia recién almacenada. Ejecuta dos pruebas en paralelo y demuestra que no comparten nombres ni dejan recursos tras un fallo.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -521,37 +390,6 @@ flowchart TD
         B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
     end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Testcontainers — pruebas de integración automatizadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Testcontainers — pruebas de integración automatizadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses testcontainers — pruebas de integración automatizadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: testcontainers — pruebas de integración automatizadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Testcontainers — pruebas de integración automatizadas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve testcontainers — pruebas de integración automatizadas en tu contexto?
-2. ¿Cómo sabrías que testcontainers — pruebas de integración automatizadas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar testcontainers — pruebas de integración automatizadas?
 
 </details>
 
@@ -723,16 +561,6 @@ python3 -m pytest -q tests/test_aislado.py
 #### ► DE QUÉ TRATA
 Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/migracion. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Python 3.10 o superior.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en migrar a la nube: las 7 r para decidir qué hacer con cada aplicación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -747,37 +575,6 @@ flowchart TB
     E -->|no| R5["Replataformar"]
     E -->|sí| R6["Rehospedar"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses migrar a la nube: las 7 r para decidir qué hacer con cada aplicación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: migrar a la nube: las 7 r para decidir qué hacer con cada aplicación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve migrar a la nube: las 7 r para decidir qué hacer con cada aplicación en tu contexto?
-2. ¿Cómo sabrías que migrar a la nube: las 7 r para decidir qué hacer con cada aplicación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar migrar a la nube: las 7 r para decidir qué hacer con cada aplicación?
 
 </details>
 
@@ -862,16 +659,6 @@ intranet             -> Rehospedar (rehost): mover tal cual
 #### ► DE QUÉ TRATA
 Usa Terraform con el proveedor AWS. La VPN real necesita un equipo o software VPN del lado local (por ejemplo, strongSwan); puedes practicar el plan y el diseño de rutas sin él.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Terraform con el proveedor AWS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en nube híbrida: conectar el centro de datos con la nube de forma segura y medible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -879,37 +666,6 @@ flowchart LR
     V --> P["VPC 10.20.0.0/16<br/>API RutaFlow"]
     P -. "solo 192.168.10.50/32" .-> B
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Nube híbrida: conectar el centro de datos con la nube de forma segura y medible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Nube híbrida: conectar el centro de datos con la nube de forma segura y medible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses nube híbrida: conectar el centro de datos con la nube de forma segura y medible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: nube híbrida: conectar el centro de datos con la nube de forma segura y medible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Nube híbrida: conectar el centro de datos con la nube de forma segura y medible existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve nube híbrida: conectar el centro de datos con la nube de forma segura y medible en tu contexto?
-2. ¿Cómo sabrías que nube híbrida: conectar el centro de datos con la nube de forma segura y medible no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar nube híbrida: conectar el centro de datos con la nube de forma segura y medible?
 
 </details>
 

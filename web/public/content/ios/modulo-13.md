@@ -16,16 +16,6 @@ Una app no termina cuando compila ni cuando pasa revisión. En producción recib
 #### ► DE QUÉ TRATA
 Al finalizar vas a validar un Universal Link entrante de RutaFlow (https://rutaflow.app/envios/<id>) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente. Prerrequisitos: Módulo 5 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a validar un Universal Link entrante de RutaFlow (https://rutaflow.app/envios/<id>) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el sandbox reduce superficie, pero no valida intenciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -35,37 +25,6 @@ flowchart LR
     D -->|No| E[".forbidden"]
     D -->|Sí| F["Abrir DetalleEnvio"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El sandbox reduce superficie, pero no valida intenciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El sandbox reduce superficie, pero no valida intenciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el sandbox reduce superficie, pero no valida intenciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el sandbox reduce superficie, pero no valida intenciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El sandbox reduce superficie, pero no valida intenciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el sandbox reduce superficie, pero no valida intenciones en tu contexto?
-2. ¿Cómo sabrías que el sandbox reduce superficie, pero no valida intenciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el sandbox reduce superficie, pero no valida intenciones?
 
 </details>
 
@@ -149,12 +108,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en UserDefaults), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en UserDefaults), y a confirmar que ese token no queda expuesto en logs.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Keychain protege secretos pequeños con una clase de accesibilidad explícita; redactar logs es tan necesario como elegir bien el almacén — guardar una joya en una caja fuerte no ayuda si su fotografía queda sobre la mesa.
 **Conceptos clave:** clasificación, minimización, Keychain, access class, Data Protection, Secure Enclave, backup, log redaction, screenshot, pasteboard, notification preview, privacy manifest, token y logout.
@@ -208,8 +161,6 @@ flowchart TD
 
 En tu propio proyecto RutaFlow, crea `SesionVault.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí este contenido completo. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -218,37 +169,6 @@ flowchart TD
     C -.->|"Logger().info(token)"| D["Fuga en logs del sistema\n(copia sin control)"]
     style D fill:#ffcccc
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proteger datos es controlar todas sus copias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proteger datos es controlar todas sus copias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proteger datos es controlar todas sus copias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proteger datos es controlar todas sus copias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proteger datos es controlar todas sus copias existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proteger datos es controlar todas sus copias en tu contexto?
-2. ¿Cómo sabrías que proteger datos es controlar todas sus copias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proteger datos es controlar todas sus copias?
 
 </details>
 
@@ -322,12 +242,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar podrás guardar y leer un token de sesión en el Keychain de iOS, y explicar por qué nunca se guarda un secreto en UserDefaults. Prerrequisitos: Temas 1-2 de este módulo (seguridad y copias de datos).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás guardar y leer un token de sesión en el Keychain de iOS, y explicar por qué nunca se guarda un secreto en UserDefaults.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 `UserDefaults` es para preferencias no sensibles (tema claro/oscuro, última pestaña). El **Keychain** es el almacén cifrado del sistema para secretos (tokens, contraseñas, claves), con control de acceso por biometría y atributos de accesibilidad (`kSecAttrAccessibleWhenUnlocked`).
 
@@ -340,45 +254,6 @@ Resuelve un problema real de diseño o implementación y evita decisiones a cieg
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** llamar a `SecItemAdd` directamente para "actualizar" un token sin borrar antes el item existente con `SecItemDelete` para la misma cuenta — si ya hay un item guardado con ese `kSecAttrAccount`, `SecItemAdd` devuelve `errSecDuplicateItem` y el token viejo se queda guardado en el Keychain en vez de reemplazarse.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que keychain — guardar secretos de forma segura resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Keychain — guardar secretos de forma segura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Keychain — guardar secretos de forma segura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses keychain — guardar secretos de forma segura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: keychain — guardar secretos de forma segura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Keychain — guardar secretos de forma segura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve keychain — guardar secretos de forma segura en tu contexto?
-2. ¿Cómo sabrías que keychain — guardar secretos de forma segura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar keychain — guardar secretos de forma segura?
 
 </details>
 
@@ -432,12 +307,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en Info.plist y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega. Prerrequisitos: Temas 1-2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en Info.plist y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Cada dato sensible (ubicación, cámara, contactos, notificaciones) requiere: (1) una clave de uso en `Info.plist` con una explicación en lenguaje humano, y (2) una solicitud en runtime en el momento con contexto. El usuario puede conceder, denegar o conceder "solo esta vez".
 
@@ -450,45 +319,6 @@ Cada dato sensible (ubicación, cámara, contactos, notificaciones) requiere: (1
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** pedir `requestWhenInUseAuthorization()` antes de declarar la clave `NSLocationWhenInUseUsageDescription` en `Info.plist` — la app no muestra un diálogo vacío, crashea de inmediato, y el mensaje de la consola rara vez deja claro a primera vista que el problema es una clave faltante en `Info.plist`, no un bug en el código Swift.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que permisos y privacidad — pedir acceso con criterio resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Permisos y privacidad — pedir acceso con criterio se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Permisos y privacidad — pedir acceso con criterio | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses permisos y privacidad — pedir acceso con criterio por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: permisos y privacidad — pedir acceso con criterio funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Permisos y privacidad — pedir acceso con criterio existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve permisos y privacidad — pedir acceso con criterio en tu contexto?
-2. ¿Cómo sabrías que permisos y privacidad — pedir acceso con criterio no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar permisos y privacidad — pedir acceso con criterio?
 
 </details>
 
@@ -533,12 +363,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Agrega a Info.plist la clave NSFaceIDUsageDescription con el motivo. En el simulador, activa Features > Face ID > Enrolled y usa Matching Face o Non-matching Face para probar.
 
-#### ► LA IDEA EN UNA FRASE
-**Agrega a Info.plist la clave NSFaceIDUsageDescription con el motivo.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `LAContext`, política `.deviceOwnerAuthentication`, `.deviceOwnerAuthenticationWithBiometrics`, `canEvaluatePolicy`, `LAError`, texto de motivo.
 
@@ -567,8 +391,6 @@ flowchart TB
     E -->|cancelado| N["no hacer nada"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
@@ -579,37 +401,6 @@ flowchart TB
     E -->|falla| F["código del dispositivo"]
     E -->|cancelado| N["no hacer nada"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses face id y touch id con localauthentication: confirmar acciones sensibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: face id y touch id con localauthentication: confirmar acciones sensibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve face id y touch id con localauthentication: confirmar acciones sensibles en tu contexto?
-2. ¿Cómo sabrías que face id y touch id con localauthentication: confirmar acciones sensibles no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar face id y touch id con localauthentication: confirmar acciones sensibles?
 
 </details>
 
@@ -629,12 +420,6 @@ Agrega a `Info.plist` la clave `NSFaceIDUsageDescription` con el motivo. En el s
 #### ► DE QUÉ TRATA
 Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación. Prerrequisitos: Tema 4 (permisos) de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
 
@@ -647,45 +432,6 @@ El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y 
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 **Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
 **Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que notificaciones push con apns resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Notificaciones push con APNs se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Notificaciones push con APNs | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses notificaciones push con apns por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: notificaciones push con apns funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Notificaciones push con APNs existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve notificaciones push con apns en tu contexto?
-2. ¿Cómo sabrías que notificaciones push con apns no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar notificaciones push con apns?
 
 </details>
 
@@ -734,12 +480,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 
 #### ► DE QUÉ TRATA
 Al finalizar vas a construir una outbox persistente para confirmarEntrega (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a construir una outbox persistente para confirmarEntrega (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
@@ -804,8 +544,6 @@ sequenceDiagram
 
 En tu propio proyecto RutaFlow, crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, asígnalo al target de la app y escribe allí la implementación EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion`, incluyendo el almacén y las funciones que el fragmento del Paso 4 invoca.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -818,37 +556,6 @@ sequenceDiagram
     Outbox->>API: reintentar CON EL MISMO id
     API-->>Outbox: reconoce el id, no duplica el efecto
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Offline-first es un protocolo, no una caché se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Offline-first es un protocolo, no una caché | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses offline-first es un protocolo, no una caché por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: offline-first es un protocolo, no una caché funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Offline-first es un protocolo, no una caché existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve offline-first es un protocolo, no una caché en tu contexto?
-2. ¿Cómo sabrías que offline-first es un protocolo, no una caché no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar offline-first es un protocolo, no una caché?
 
 </details>
 
@@ -931,12 +638,6 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 #### ► DE QUÉ TRATA
 Al finalizar vas a instrumentar MotorSincronizacion.vaciar() (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 7 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a instrumentar MotorSincronizacion.vaciar() (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
 **Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
@@ -986,8 +687,6 @@ flowchart TD
 
 Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. En el grupo de la app crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona únicamente el target `RutaFlowApp` y escribe manualmente tanto el motor mínimo como la instrumentación del Paso 4. Esta práctica no reutiliza el archivo del Tema 7 ni necesita ningún archivo externo.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -997,37 +696,6 @@ flowchart TD
     D -->|Sí| E["Alerta: revertir / feature flag / investigar"]
     D -->|No| F["Sano, seguir desplegando"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Operar significa detectar, limitar y aprender del fallo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Operar significa detectar, limitar y aprender del fallo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses operar significa detectar, limitar y aprender del fallo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: operar significa detectar, limitar y aprender del fallo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Operar significa detectar, limitar y aprender del fallo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve operar significa detectar, limitar y aprender del fallo en tu contexto?
-2. ¿Cómo sabrías que operar significa detectar, limitar y aprender del fallo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar operar significa detectar, limitar y aprender del fallo?
 
 </details>
 
@@ -1100,12 +768,6 @@ swift run
 #### ► DE QUÉ TRATA
 Usa Xcode 26 o superior con destino iOS 18+: el código usa CLServiceSession y authorizationDenied, que solo existen desde iOS 18. En la pestaña Info del target (los proyectos nuevos de Xcode no traen un archivo Info.plist aparte) agrega NSLocationWhenInUseUsageDescription con un…
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Xcode 26 o superior con destino iOS 18+: el código usa CLServiceSession y authorizationDenied, que solo existen desde iOS 18.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `CLLocationUpdate`, `liveUpdates`, `CLServiceSession`, autorización «al usar la app», precisión aproximada, `isStationary`, texto de propósito.
 
@@ -1133,8 +795,6 @@ sequenceDiagram
     V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -1147,37 +807,6 @@ sequenceDiagram
     L-->>V: ubicación, isStationary
     V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Core Location moderno: CLLocationUpdate, permisos y precisión se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Core Location moderno: CLLocationUpdate, permisos y precisión | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses core location moderno: cllocationupdate, permisos y precisión por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: core location moderno: cllocationupdate, permisos y precisión funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Core Location moderno: CLLocationUpdate, permisos y precisión existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve core location moderno: cllocationupdate, permisos y precisión en tu contexto?
-2. ¿Cómo sabrías que core location moderno: cllocationupdate, permisos y precisión no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar core location moderno: cllocationupdate, permisos y precisión?
 
 </details>
 
@@ -1196,12 +825,6 @@ Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y
 
 #### ► DE QUÉ TRATA
 En el target, activa Background Modes > Background fetch y agrega a Info.plist la clave BGTaskSchedulerPermittedIdentifiers con co.rutaflow.sincronizar. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo…
-
-#### ► LA IDEA EN UNA FRASE
-**En el target, activa Background Modes > Background fetch y agrega a Info.plist la clave BGTaskSchedulerPermittedIdentifiers con co.rutaflow.sincronizar.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
 
 #### ► LA ANALOGÍA
 **Conceptos clave:** `BGTaskScheduler`, `BGAppRefreshTaskRequest`, `BGProcessingTaskRequest`, identificador permitido, `.backgroundTask(.appRefresh)`, `earliestBeginDate`, tiempo límite.
@@ -1233,8 +856,6 @@ sequenceDiagram
     T->>S: programa la siguiente
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 sequenceDiagram
@@ -1247,37 +868,6 @@ sequenceDiagram
     T->>T: sube entregas pendientes
     T->>S: programa la siguiente
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite en tu contexto?
-2. ¿Cómo sabrías que backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar backgroundtasks: actualizar datos y sincronizar cuando el sistema lo permite?
 
 </details>
 
@@ -1294,56 +884,6 @@ En el target, activa **Background Modes > Background fetch** y agrega a `Info.pl
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Este tema te guía por swift 6.2 y actualizaciones swiftui de 2026 con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender swift 6.2 y actualizaciones swiftui de 2026 te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en swift 6.2 y actualizaciones swiftui de 2026 como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que swift 6.2 y actualizaciones swiftui de 2026 resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Swift 6.2 y actualizaciones SwiftUI de 2026 se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Swift 6.2 y actualizaciones SwiftUI de 2026 | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses swift 6.2 y actualizaciones swiftui de 2026 por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: swift 6.2 y actualizaciones swiftui de 2026 funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Swift 6.2 y actualizaciones SwiftUI de 2026 existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve swift 6.2 y actualizaciones swiftui de 2026 en tu contexto?
-2. ¿Cómo sabrías que swift 6.2 y actualizaciones swiftui de 2026 no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar swift 6.2 y actualizaciones swiftui de 2026?
-
 </details>
 
 <details>
@@ -1358,56 +898,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
-2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
 
 </details>
 

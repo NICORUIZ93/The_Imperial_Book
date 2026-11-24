@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 1: Cotización y facturación reproducible dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Java básico (track Java).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 1: Cotización y facturación reproducible dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en cotización y facturación reproducible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -29,37 +19,6 @@ flowchart LR
   B --> C[cálculo con BigDecimal<br/>cotización versionada]
   C --> D[factura reproducible]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Cotización y facturación reproducible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Cotización y facturación reproducible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cotización y facturación reproducible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cotización y facturación reproducible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Cotización y facturación reproducible existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cotización y facturación reproducible en tu contexto?
-2. ¿Cómo sabrías que cotización y facturación reproducible no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cotización y facturación reproducible?
 
 </details>
 
@@ -148,16 +107,6 @@ System.out.printf("RF-4471 total (double)=%.2f%n", totalFalloso); // imprime 128
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 2: Recaudo, liquidación y conciliación dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git, Java básico (track Java) y el SQL con PostgreSQL del Módulo…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 2: Recaudo, liquidación y conciliación dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en recaudo, liquidación y conciliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -167,37 +116,6 @@ flowchart LR
   C -->|No| E[Nuevo movimiento de ajuste compensatorio]
   E --> F[Movimiento original queda intacto]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Recaudo, liquidación y conciliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Recaudo, liquidación y conciliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses recaudo, liquidación y conciliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: recaudo, liquidación y conciliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Recaudo, liquidación y conciliación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve recaudo, liquidación y conciliación en tu contexto?
-2. ¿Cómo sabrías que recaudo, liquidación y conciliación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar recaudo, liquidación y conciliación?
 
 </details>
 
@@ -283,16 +201,6 @@ WHERE envio_id = 'RF-4471' AND tipo = 'recaudo';
 #### ► DE QUÉ TRATA
 Al finalizar podrás construir y verificar Tema 3: Fraude responsable dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. Conocimiento previo: terminal, Git y Java básico (track Java).
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás construir y verificar Tema 3: Fraude responsable dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en fraude responsable como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -302,37 +210,6 @@ flowchart LR
   C -->|Si| E[Caso encolado para revision humana]
   E --> F[Un analista aprueba o revierte, nunca el sistema solo]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Fraude responsable se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Fraude responsable | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses fraude responsable por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: fraude responsable funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Fraude responsable existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve fraude responsable en tu contexto?
-2. ¿Cómo sabrías que fraude responsable no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar fraude responsable?
 
 </details>
 
@@ -415,16 +292,6 @@ public EstadoEnvio evaluarEnvioAutoBloqueo(String envioId, Coordenada confirmaci
 #### ► DE QUÉ TRATA
 Al finalizar definirás una frontera de cobro que recibe un identificador de prueba y un importe entero, sin recoger datos de tarjeta. Prerrequisitos: contratos, validación, dinero en unidades menores e idempotencia; Node 24. Ejemplo independiente desde carpeta vacía. No se proces…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar definirás una frontera de cobro que recibe un identificador de prueba y un importe entero, sin recoger datos de tarjeta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -438,37 +305,6 @@ flowchart TD
     C --> W["Verificar webhook auténtico"]
     W --> O["Marcar el pedido como pagado"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación en tu contexto?
-2. ¿Cómo sabrías que tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación?
 
 </details>
 

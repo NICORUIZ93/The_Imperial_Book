@@ -12,16 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a producir el primer artefacto de una auditoría de seguridad real: un registro de riesgos STRIDE para RutaFlow y un verificador de límites de confianza. El registro no es una lista de miedos: cada fila tendrá activo, escenario, impacto, probabilidad, control, efe…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a producir el primer artefacto de una auditoría de seguridad real: un registro de riesgos STRIDE para RutaFlow y un verificador de límites de confianza.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en activos, amenazas, riesgos y límites de confianza como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -34,37 +24,6 @@ flowchart LR
     A -. "límite DMZ/Aplicación" .-> D
     D -. "límite Aplicación/Datos" .-> B
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Activos, amenazas, riesgos y límites de confianza se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Activos, amenazas, riesgos y límites de confianza | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses activos, amenazas, riesgos y límites de confianza por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: activos, amenazas, riesgos y límites de confianza funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Activos, amenazas, riesgos y límites de confianza existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve activos, amenazas, riesgos y límites de confianza en tu contexto?
-2. ¿Cómo sabrías que activos, amenazas, riesgos y límites de confianza no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar activos, amenazas, riesgos y límites de confianza?
 
 </details>
 
@@ -169,16 +128,6 @@ por STRIDE: Denial of service=1, Elevation of privilege=1, Information disclosur
 #### ► DE QUÉ TRATA
 Al finalizar vas a implementar y auditar el control de acceso de RutaFlow: registrar contraseñas sin guardarlas en claro, emitir sesiones que expiran y se revocan, autorizar una acción sobre un recurso concreto y dejar un rastro verificable de lo ocurrido. El entregable es un pro…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a implementar y auditar el control de acceso de RutaFlow: registrar contraseñas sin guardarlas en claro, emitir sesiones que expiran y se revocan, autorizar una acción sobre un recurso concreto y dejar un rastro verificable de lo ocurrido.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en identidad, contraseñas, sesiones y autorización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -194,37 +143,6 @@ flowchart LR
     DENY2 --> AUD
     DENY3 --> AUD
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Identidad, contraseñas, sesiones y autorización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Identidad, contraseñas, sesiones y autorización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses identidad, contraseñas, sesiones y autorización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: identidad, contraseñas, sesiones y autorización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Identidad, contraseñas, sesiones y autorización existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve identidad, contraseñas, sesiones y autorización en tu contexto?
-2. ¿Cómo sabrías que identidad, contraseñas, sesiones y autorización no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar identidad, contraseñas, sesiones y autorización?
 
 </details>
 
@@ -456,13 +374,6 @@ Al finalizar vas a proteger el comando de confirmación de RutaFlow con una firm
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a proteger el comando de confirmación de RutaFlow con una firma HMAC que detecte manipulación y replay, a verificar de verdad el certificado TLS de un servidor local —incluido el nombre de host— y a comprobar por qué borrar un secreto del árbol de trabajo no lo borra del historial de Git.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en criptografía aplicada, tls, claves y secretos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -479,37 +390,6 @@ flowchart LR
     TLS["TLS: CA + nombre de host"] -.->|"protege el tramo"| SOBRE
     SEC["llavero con rotación"] -.->|"entrega la clave del kid"| MAC
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Criptografía aplicada, TLS, claves y secretos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Criptografía aplicada, TLS, claves y secretos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses criptografía aplicada, tls, claves y secretos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: criptografía aplicada, tls, claves y secretos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Criptografía aplicada, TLS, claves y secretos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve criptografía aplicada, tls, claves y secretos en tu contexto?
-2. ¿Cómo sabrías que criptografía aplicada, tls, claves y secretos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar criptografía aplicada, tls, claves y secretos?
 
 </details>
 
@@ -637,13 +517,6 @@ Al finalizar vas a endurecer el campo de nota que un conductor escribe al entreg
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a endurecer el campo de nota que un conductor escribe al entregar un envío: validar su dominio al guardar, impedir que una consulta concatenada se convierta en inyección SQL, codificar la salida según el contexto donde se muestra y redactar datos personales antes de escribirlos en un log.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en validación, vulnerabilidades web, privacidad y respuesta como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -660,37 +533,6 @@ flowchart TD
     REJ -.-> RB["runbook de incidente<br/>si algo falló"]
     RED -.-> RB
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Validación, vulnerabilidades web, privacidad y respuesta se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Validación, vulnerabilidades web, privacidad y respuesta | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses validación, vulnerabilidades web, privacidad y respuesta por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: validación, vulnerabilidades web, privacidad y respuesta funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Validación, vulnerabilidades web, privacidad y respuesta existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve validación, vulnerabilidades web, privacidad y respuesta en tu contexto?
-2. ¿Cómo sabrías que validación, vulnerabilidades web, privacidad y respuesta no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar validación, vulnerabilidades web, privacidad y respuesta?
 
 </details>
 
@@ -784,13 +626,6 @@ Al finalizar vas a analizar un correo sospechoso con código: comparar el remite
 #### ► LA IDEA EN UNA FRASE
 **Al finalizar vas a analizar un correo sospechoso con código: comparar el remitente visible con las cabeceras reales, detectar enlaces cuyo destino no coincide con el texto, distinguir un dominio parecido de uno legítimo por su dominio registrable, interpretar el resultado de SPF, DKIM y DMARC y medir el efecto de una campaña de concienciación sin inventar conclusiones con muestras pequeñas.**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -810,37 +645,6 @@ flowchart TD
     C --> URG["urgencia"] --> ALERT
     ALERT --> REP["reportar y contener sesiones"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo en tu contexto?
-2. ¿Cómo sabrías que ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo?
 
 </details>
 

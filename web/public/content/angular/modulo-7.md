@@ -12,12 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con HttpTestingController real (sin ningún servidor HTTP real levantado), que un servicio con HttpClient realiza exactamente la petición esperada y procesa correctamente la respuesta tipada del servidor.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con HttpTestingController real (sin ningún servidor HTTP real levantado), que un servicio con HttpClient realiza exactamente la petición esperada y procesa correctamente la respuesta tipada del servidor.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** `provideHttpClient()`, backend `fetch` por defecto, peticiones tipadas, integración con signals.
 
@@ -55,45 +49,6 @@ private http = inject(HttpClient);
 usuarios = toSignal(this.http.get<Usuario[]>('/api/usuarios'), { initialValue: [] });
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que httpclient (fetch por defecto) y peticiones tipadas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| HttpClient (fetch por defecto) y peticiones tipadas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar HttpClient (fetch por defecto) y peticiones tipadas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses httpclient (fetch por defecto) y peticiones tipadas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: httpclient (fetch por defecto) y peticiones tipadas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- HttpClient (fetch por defecto) y peticiones tipadas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve httpclient (fetch por defecto) y peticiones tipadas en tu contexto?
-2. ¿Cómo sabrías que httpclient (fetch por defecto) y peticiones tipadas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar httpclient (fetch por defecto) y peticiones tipadas?
-
 </details>
 
 <details>
@@ -114,53 +69,6 @@ Al finalizar podrás confirmar, con `HttpTestingController` real (sin ningún se
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con HttpTestingController real, que un interceptor funcional agrega efectivamente el header Authorization a la petición saliente antes de que llegue a su destino.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con HttpTestingController real, que un interceptor funcional agrega efectivamente el header Authorization a la petición saliente antes de que llegue a su destino.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en interceptores funcionales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que interceptores funcionales resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Interceptores funcionales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Interceptores funcionales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses interceptores funcionales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: interceptores funcionales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Interceptores funcionales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve interceptores funcionales en tu contexto?
-2. ¿Cómo sabrías que interceptores funcionales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar interceptores funcionales?
-
 </details>
 
 <details>
@@ -180,53 +88,6 @@ Al finalizar podrás confirmar, con `HttpTestingController` real, que un interce
 
 #### ► DE QUÉ TRATA
 Al finalizar podrás confirmar, con dos interceptores instrumentados y HttpTestingController, que withInterceptors los ejecuta EXACTAMENTE en el orden declarado en el array, tal como la teoría de este tema afirma.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás confirmar, con dos interceptores instrumentados y HttpTestingController, que withInterceptors los ejecuta EXACTAMENTE en el orden declarado en el array, tal como la teoría de este tema afirma.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en registro de interceptores y centralización del manejo de errores como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que registro de interceptores y centralización del manejo de errores resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Registro de interceptores y centralización del manejo de errores se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Registro de interceptores y centralización del manejo de errores | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses registro de interceptores y centralización del manejo de errores por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: registro de interceptores y centralización del manejo de errores funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Registro de interceptores y centralización del manejo de errores existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve registro de interceptores y centralización del manejo de errores en tu contexto?
-2. ¿Cómo sabrías que registro de interceptores y centralización del manejo de errores no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar registro de interceptores y centralización del manejo de errores?
 
 </details>
 

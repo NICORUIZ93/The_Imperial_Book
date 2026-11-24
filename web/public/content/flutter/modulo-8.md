@@ -12,12 +12,6 @@
 #### ► DE QUÉ TRATA
 Al finalizar vas a animar la expansión de TarjetaEnvio al tocarla con AnimatedContainer, y a comparar con la misma animación implementada explícitamente con AnimationController. Prerrequisitos: Módulo 7 completo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a animar la expansión de TarjetaEnvio al tocarla con AnimatedContainer, y a comparar con la misma animación implementada explícitamente con AnimationController.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Una animación implícita interpola automáticamente entre el valor anterior y el nuevo; una explícita con `AnimationController`/`Tween` da control total sobre curvas, repetición y composición, a costa de más código.
 **Conceptos clave:** interpolación automática frente a control total sobre curvas y composición.
@@ -64,8 +58,6 @@ flowchart TD
 
 En el proyecto integrador RutaFlow, esta animación vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Práctica: implementá ambas versiones (implícita y explícita) sobre un widget propio de tu proyecto propio y compará el código resultante.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -75,37 +67,6 @@ flowchart TD
 
 #### ► REGLA PRÁCTICA
 Usa una animación implícita (`AnimatedContainer`) cuando solo necesites interpolar entre dos valores; usa una explícita (`AnimationController`/`Tween`) cuando necesites control sobre curvas, repetición o componer varias animaciones coordinadas entre sí.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Animaciones implícitas vs explícitas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Animaciones implícitas vs explícitas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses animaciones implícitas vs explícitas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: animaciones implícitas vs explícitas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Animaciones implícitas vs explícitas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve animaciones implícitas vs explícitas en tu contexto?
-2. ¿Cómo sabrías que animaciones implícitas vs explícitas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar animaciones implícitas vs explícitas?
 
 </details>
 
@@ -206,16 +167,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a grabar con el panel de Performance de DevTools el scroll de ListaEnvios para identificar qué fase específica del renderizado causa frames perdidos. Prerrequisitos: Tema 1 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a grabar con el panel de Performance de DevTools el scroll de ListaEnvios para identificar qué fase específica del renderizado causa frames perdidos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en flutter devtools y detección de jank como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -225,37 +176,6 @@ flowchart TD
     D -->|Sí| E["¿build, layout o paint?"]
     D -->|No| F["Fluido, sin jank"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Flutter DevTools y detección de jank se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Flutter DevTools y detección de jank | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses flutter devtools y detección de jank por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: flutter devtools y detección de jank funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Flutter DevTools y detección de jank existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve flutter devtools y detección de jank en tu contexto?
-2. ¿Cómo sabrías que flutter devtools y detección de jank no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar flutter devtools y detección de jank?
 
 </details>
 
@@ -301,12 +221,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar vas a marcar los íconos estáticos de TarjetaEnvio como const, y a aislar con RepaintBoundary un indicador animado de "sincronizando" para que no fuerce repintar el resto de la tarjeta. Prerrequisitos: Tema 2 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar vas a marcar los íconos estáticos de TarjetaEnvio como const, y a aislar con RepaintBoundary un indicador animado de "sincronizando" para que no fuerce repintar el resto de la tarjeta.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Marcar un widget inmutable como `const` le permite a Flutter omitirlo por completo en reconstrucciones futuras; `RepaintBoundary` aísla una porción del árbol en su propia capa de pintura.
 **Conceptos clave:** widgets que Flutter puede omitir por completo durante una reconstrucción.
@@ -343,8 +257,6 @@ flowchart LR
 
 En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene envolver cada widget con `RepaintBoundary` "por si acaso" — cada capa de pintura adicional tiene su propio costo de memoria; usalo específicamente cuando DevTools confirma que un elemento se repinta frecuentemente dentro de contenido mayormente estático, no como optimización preventiva sin medir.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -354,37 +266,6 @@ flowchart LR
         C["RepaintBoundary"] --> D["IndicadorSincronizando\n(se repinta solo)"]
     end
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| const widgets, RepaintBoundary y shouldRepaint se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar const widgets, RepaintBoundary y shouldRepaint | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses const widgets, repaintboundary y shouldrepaint por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: const widgets, repaintboundary y shouldrepaint funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- const widgets, RepaintBoundary y shouldRepaint existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve const widgets, repaintboundary y shouldrepaint en tu contexto?
-2. ¿Cómo sabrías que const widgets, repaintboundary y shouldrepaint no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar const widgets, repaintboundary y shouldrepaint?
 
 </details>
 
@@ -461,53 +342,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar podrás mover un cálculo pesado a un isolate con compute() para que no bloquee el hilo de UI, y explicar por qué async/await por sí solo no basta para trabajo intensivo de CPU. Prerrequisitos: Módulo 0 (Futures y async/await) y Tema 2 de este módulo (detección de jank…
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás mover un cálculo pesado a un isolate con compute() para que no bloquee el hilo de UI, y explicar por qué async/await por sí solo no basta para trabajo intensivo de CPU.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en isolates — trabajo pesado sin congelar la interfaz como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que isolates — trabajo pesado sin congelar la interfaz resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Isolates — trabajo pesado sin congelar la interfaz se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Isolates — trabajo pesado sin congelar la interfaz | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses isolates — trabajo pesado sin congelar la interfaz por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: isolates — trabajo pesado sin congelar la interfaz funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Isolates — trabajo pesado sin congelar la interfaz existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve isolates — trabajo pesado sin congelar la interfaz en tu contexto?
-2. ¿Cómo sabrías que isolates — trabajo pesado sin congelar la interfaz no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar isolates — trabajo pesado sin congelar la interfaz?
-
 </details>
 
 <details>
@@ -575,12 +409,6 @@ flutter run
 #### ► DE QUÉ TRATA
 Al finalizar podrás dibujar un componente propio con CustomPainter y Canvas, controlar cuándo se repinta con shouldRepaint, aislarlo con RepaintBoundary y hacerlo accesible con Semantics. Prerrequisitos: Temas 2 y 3 de este módulo.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás dibujar un componente propio con CustomPainter y Canvas, controlar cuándo se repinta con shouldRepaint, aislarlo con RepaintBoundary y hacerlo accesible con Semantics.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Un `CustomPaint` delega el dibujo a un `CustomPainter`: su método `paint(canvas, size)` recibe un **Canvas** sobre el que dibujas líneas, círculos o rutas con objetos `Paint` (color, grosor, estilo). `shouldRepaint` decide si un nuevo painter debe volver a dibujar: compararlo con el anterior evita repintar en cada reconstrucción. `RepaintBoundary` aísla el dibujo en su propia capa, y como el Canvas no es accesible por sí solo, `Semantics` describe el resultado a los lectores de pantalla. Para efectos por píxel existen los *fragment shaders* (`FragmentProgram`), un paso más avanzado.
 
@@ -606,8 +434,6 @@ flowchart LR
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
 **Errores comunes:** agregar un campo nuevo al painter (como `fallidas` en el Paso 5) y olvidar incluirlo en la comparación de `shouldRepaint` — Flutter sigue reutilizando el dibujo anterior porque, según esa comparación, "nada cambió", aunque el estado real sí haya cambiado.
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -617,37 +443,6 @@ flowchart LR
     C --> P[ProgresoRutaPainter.paint]
     P --> K[Canvas: líneas y círculos]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CustomPainter: dibujar con Canvas sin repintar de más se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CustomPainter: dibujar con Canvas sin repintar de más | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses custompainter: dibujar con canvas sin repintar de más por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: custompainter: dibujar con canvas sin repintar de más funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CustomPainter: dibujar con Canvas sin repintar de más existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve custompainter: dibujar con canvas sin repintar de más en tu contexto?
-2. ¿Cómo sabrías que custompainter: dibujar con canvas sin repintar de más no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar custompainter: dibujar con canvas sin repintar de más?
 
 </details>
 

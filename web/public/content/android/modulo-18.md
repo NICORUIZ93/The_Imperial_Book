@@ -15,12 +15,6 @@ que depende de archivos secretos o pasos manuales en el portátil del autor.
 #### ► DE QUÉ TRATA
 Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto. Prerrequisitos: estructura del Módulo 0. Trabaja en gradle/libs.versions.toml.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Gradle construye un grafo de tareas y otro de dependencias por variante. Una dependencia
 `implementation` no expone su API a consumidores; `api` sí y aumenta acoplamiento. BOM
@@ -42,8 +36,6 @@ flowchart LR
     V -->|constraint| C[Límite explícito]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -53,37 +45,6 @@ flowchart LR
     V -->|mayor solicitada| S[1.10.2]
     V -->|constraint| C[Límite explícito]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gradle, version catalogs y resolución de dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gradle, version catalogs y resolución de dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gradle, version catalogs y resolución de dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gradle, version catalogs y resolución de dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gradle, version catalogs y resolución de dependencias existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gradle, version catalogs y resolución de dependencias en tu contexto?
-2. ¿Cómo sabrías que gradle, version catalogs y resolución de dependencias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gradle, version catalogs y resolución de dependencias?
 
 </details>
 
@@ -128,12 +89,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos correctos. Prerrequisitos: Kotlin DSL y manifest. Edita app/build.gradle.kts.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos correctos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 Build type expresa depuración/optimización; flavor expresa dimensión de producto o
 entorno. La variante fusiona manifest, recursos y código con prioridades; el source set
@@ -157,8 +112,6 @@ flowchart TD
     P1 --> PR[prodRelease]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -169,37 +122,6 @@ flowchart TD
     P1 --> PD[prodDebug]
     P1 --> PR[prodRelease]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Build types, product flavors y configuración segura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Build types, product flavors y configuración segura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses build types, product flavors y configuración segura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: build types, product flavors y configuración segura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Build types, product flavors y configuración segura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve build types, product flavors y configuración segura en tu contexto?
-2. ¿Cómo sabrías que build types, product flavors y configuración segura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar build types, product flavors y configuración segura?
 
 </details>
 
@@ -245,16 +167,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás separar feature, core y data sin ciclos. Prerrequisitos: Hilt, arquitectura por capas y Gradle. Crea feature:entregas y core:model.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás separar feature, core y data sin ciclos.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en modularización, convenciones y fronteras de arquitectura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
@@ -264,37 +176,6 @@ flowchart TD
     DATA[:core:data] --> MODEL
     FEAT -.->|no permitido| DATA
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Modularización, convenciones y fronteras de arquitectura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Modularización, convenciones y fronteras de arquitectura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses modularización, convenciones y fronteras de arquitectura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: modularización, convenciones y fronteras de arquitectura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Modularización, convenciones y fronteras de arquitectura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve modularización, convenciones y fronteras de arquitectura en tu contexto?
-2. ¿Cómo sabrías que modularización, convenciones y fronteras de arquitectura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar modularización, convenciones y fronteras de arquitectura?
 
 </details>
 
@@ -337,16 +218,6 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 #### ► DE QUÉ TRATA
 Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque y automatizar un artefacto trazable. Prerrequisitos: publicación, testing y profiling.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque y automatizar un artefacto trazable.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en r8, recursos, baseline profiles y pipeline reproducible como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -359,37 +230,6 @@ flowchart LR
     AAB --> RET[retrace de fallos]
     MAP --> RET
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| R8, recursos, Baseline Profiles y pipeline reproducible se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar R8, recursos, Baseline Profiles y pipeline reproducible | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses r8, recursos, baseline profiles y pipeline reproducible por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: r8, recursos, baseline profiles y pipeline reproducible funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- R8, recursos, Baseline Profiles y pipeline reproducible existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve r8, recursos, baseline profiles y pipeline reproducible en tu contexto?
-2. ¿Cómo sabrías que r8, recursos, baseline profiles y pipeline reproducible no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar r8, recursos, baseline profiles y pipeline reproducible?
 
 </details>
 
@@ -435,12 +275,6 @@ sha256sum app/build/outputs/bundle/prodRelease/*.aab
 #### ► DE QUÉ TRATA
 Usa Android Studio con la plantilla Baseline Profile / Macrobenchmark (File > New > New Module). Necesitas un dispositivo real o un emulador con imagen de Android 10+; los resultados de emulador solo sirven para comparar entre sí.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Android Studio con la plantilla Baseline Profile / Macrobenchmark (File > New > New Module).**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
 #### ► LA ANALOGÍA
 **Conceptos clave:** Macrobenchmark, arranque en frío, `StartupTimingMetric`, `FrameTimingMetric`, iteraciones, `CompilationMode`, mediana y percentil.
 
@@ -466,8 +300,6 @@ flowchart LR
     S & F --> R["mínimo / mediana / máximo"]
 ```
 
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
@@ -477,37 +309,6 @@ flowchart LR
     A --> F["FrameTimingMetric"]
     S & F --> R["mínimo / mediana / máximo"]
 ```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Macrobenchmark: medir el arranque y el scroll como lo vive el usuario se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Macrobenchmark: medir el arranque y el scroll como lo vive el usuario | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses macrobenchmark: medir el arranque y el scroll como lo vive el usuario por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: macrobenchmark: medir el arranque y el scroll como lo vive el usuario funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Macrobenchmark: medir el arranque y el scroll como lo vive el usuario existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve macrobenchmark: medir el arranque y el scroll como lo vive el usuario en tu contexto?
-2. ¿Cómo sabrías que macrobenchmark: medir el arranque y el scroll como lo vive el usuario no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar macrobenchmark: medir el arranque y el scroll como lo vive el usuario?
 
 </details>
 
