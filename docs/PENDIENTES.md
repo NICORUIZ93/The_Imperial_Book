@@ -1,5 +1,7 @@
 # Pendientes del proyecto
 
+> Estándar de contenido: [`PLANTILLA_CURSO.md`](PLANTILLA_CURSO.md) · Plan de migración: [`PLAN_PLANTILLA.md`](PLAN_PLANTILLA.md).
+
 Lista generada en la revisión completa del 2026-11-24. Marcar con `[x]` al cerrar cada punto.
 
 ## P1 · Contenido (prioridad Java, Spring Boot, Microservicios)
